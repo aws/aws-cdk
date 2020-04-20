@@ -12,7 +12,7 @@ beforeEach(() => {
         fileAsset: {
           type: 'file',
           source: {
-            path: 'some_file'
+            path: 'some_file',
           },
           destinations: {
             theDestination: {
@@ -28,7 +28,7 @@ beforeEach(() => {
         dockerAsset: {
           type: 'docker-image',
           source: {
-            directory: 'dockerdir'
+            directory: 'dockerdir',
           },
           destinations: {
             theDestination: {
@@ -71,11 +71,11 @@ test('check that placeholders are replaced', async () => {
 
   expect(aws.mockS3.headObject).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket-current_account-current_region',
-    Key: 'some_key-current_account-current_region'
+    Key: 'some_key-current_account-current_region',
   }));
 
   expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
     imageIds: [{imageTag: 'abcdef'}],
-    repositoryName: 'repo-current_account-explicit_region'
+    repositoryName: 'repo-current_account-explicit_region',
   }));
 });

@@ -23,28 +23,28 @@ export = {
       'FunctionName': {
         'Fn::GetAtt': [
           'Fn9270CBC0',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Principal': 'sns.amazonaws.com',
       'SourceArn': {
-        'Ref': 'TD925BC7E'
-      }
+        'Ref': 'TD925BC7E',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SNS::Subscription', {
       'Endpoint': {
         'Fn::GetAtt': [
           'Fn9270CBC0',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Protocol': 'lambda',
       'TopicArn': {
-        'Ref': 'TD925BC7E'
-      }
+        'Ref': 'TD925BC7E',
+      },
     }));
 
     test.done();
-  }
+  },
 };

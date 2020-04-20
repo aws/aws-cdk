@@ -196,7 +196,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
 
     const role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
     });
     this.grantPrincipal = role;
 

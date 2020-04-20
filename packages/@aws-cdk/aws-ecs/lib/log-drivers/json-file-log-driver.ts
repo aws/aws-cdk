@@ -65,7 +65,7 @@ export class JsonFileLogDriver extends LogDriver {
         'compress': this.props.compress,
         'labels': joinWithCommas(this.props.labels),
         'env': joinWithCommas(this.props.env),
-        'env-regex': this.props.envRegex
+        'env-regex': this.props.envRegex,
       }),
     };
   }

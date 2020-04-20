@@ -30,7 +30,7 @@ export = {
 
     // WHEN
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn'
+      targetGroupArn: 'arn',
     });
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
 
@@ -43,7 +43,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn'
+      targetGroupArn: 'arn',
     });
 
     // WHEN
@@ -63,7 +63,7 @@ export = {
     const listener = new elbv2.ApplicationListener(stack, 'Listener', {
       port: 80,
       loadBalancer: alb,
-      open: false
+      open: false,
     });
 
     // WHEN
@@ -78,8 +78,8 @@ export = {
         timeout: cdk.Duration.seconds(192),
         healthyThresholdCount: 29,
         unhealthyThresholdCount: 27,
-        path: '/arbitrary'
-      }
+        path: '/arbitrary',
+      },
     });
 
     // THEN
@@ -90,12 +90,12 @@ export = {
       HealthCheckTimeoutSeconds : 192,
       HealthyThresholdCount : 29,
       Matcher : {
-        HttpCode : '255'
+        HttpCode : '255',
       },
       Port: 80,
       UnhealthyThresholdCount : 27,
     }));
 
     test.done();
-  }
+  },
 };

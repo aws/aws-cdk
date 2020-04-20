@@ -36,7 +36,7 @@ export class PolicyStatement {
       notActions: ensureArrayOrUndefined(obj.NotAction),
       notResources: ensureArrayOrUndefined(obj.NotResource),
       principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
-      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined
+      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
     });
   }
 
@@ -368,7 +368,7 @@ export class PolicyStatement {
    */
   public toString() {
     return cdk.Token.asString(this, {
-      displayHint: 'PolicyStatement'
+      displayHint: 'PolicyStatement',
     });
   }
 
@@ -526,7 +526,7 @@ class JsonPrincipal extends PrincipalBase {
 
     this.policyFragment = {
       principalJson: json,
-      conditions: {}
+      conditions: {},
     };
   }
 }

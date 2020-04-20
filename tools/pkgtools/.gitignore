@@ -5,3 +5,4 @@ dist
 
 .LAST_BUILD
 *.snk
+!.eslintrc.js

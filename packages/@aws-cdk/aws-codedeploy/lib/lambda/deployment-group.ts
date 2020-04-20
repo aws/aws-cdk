@@ -155,7 +155,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     this.alarms = props.alarms || [];
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
     });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambda'));
@@ -168,7 +168,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       deploymentConfigName: this.deploymentConfig.deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
-        deploymentOption: 'WITH_TRAFFIC_CONTROL'
+        deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
       alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
@@ -195,7 +195,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
         deploymentGroupName: resource.ref,
         beforeAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.preHook && this.preHook.functionName }),
         afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
-      }
+      },
     };
   }
 
