@@ -28,8 +28,8 @@ function serve_npm_packages() {
     echo "Testing against latest published versions of the framework"
 
     header "Installing aws-cdk from local tarballs..."
-    (cd ${npmws} && eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" npm install aws-cdk))    
-    export PATH=$npmws/node_modules/.bin:$PATH    
+    (cd ${npmws} && eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install aws-cdk))    
+    export PATH=$npmws/node_modules/.bin:$PATH
 
   else
 
@@ -40,6 +40,9 @@ function serve_npm_packages() {
     #------------------------------------------------------------------------------
     header "Starting local NPM Repository"
     eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
+    header "Installing aws-cdk from local tarballs..."
+    (cd ${npmws} && npm install aws-cdk)
+    export PATH=$npmws/node_modules/.bin:$PATH
     trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
 
   fi
