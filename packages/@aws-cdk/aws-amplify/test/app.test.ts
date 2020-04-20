@@ -267,9 +267,9 @@ test('with SPA redirect', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
-    customRules: [amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT]
+    customRules: [amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT],
   });
 
   // THEN
@@ -278,9 +278,9 @@ test('with SPA redirect', () => {
       {
         Source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json|webmanifest)$)([^.]+$)/>',
         Status: '200',
-        Target: '/index.html'
+        Target: '/index.html',
       },
-    ]
+    ],
   });
 });
 
