@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import {Construct, Resource} from '@aws-cdk/core';
+import {Construct, Resource, Tag} from '@aws-cdk/core';
 import {CfnFileSystem, CfnMountTarget} from './efs.generated';
 
 // tslint:disable: max-line-length
@@ -115,6 +115,13 @@ export interface EfsFileSystemProps {
   readonly encrypted?: boolean;
 
   /**
+   * The filesystem's name.
+   *
+   * @default - CDK generated name
+   */
+  readonly fileSystemName?: string;
+
+  /**
    * The KMS key used for encryption. This is required to encrypt the data at rest if @encrypted is set to true.
    *
    * @default - if @encrypted is true, the default key for EFS (/aws/elasticfilesystem) is used
@@ -202,7 +209,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
       public readonly fileSystemId = attrs.fileSystemID;
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
-        defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT)
+        defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT),
       });
     }
 
@@ -246,23 +253,24 @@ export class EfsFileSystem extends EfsFileSystemBase {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
       lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: EfsLifecyclePolicyProperty[props.lifecyclePolicy]
+        transitionToIa: EfsLifecyclePolicyProperty[props.lifecyclePolicy],
       } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
-      provisionedThroughputInMibps: props.provisionedThroughputInMibps
+      provisionedThroughputInMibps: props.provisionedThroughputInMibps,
     });
 
     this.fileSystemId = this.efsFileSystem.ref;
     this.node.defaultChild = this.efsFileSystem;
+    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     }));
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT)
+      defaultPort: ec2.Port.tcp(EfsFileSystem.DEFAULT_PORT),
     });
 
     const subnets = props.vpc.selectSubnets(props.vpcSubnets);
@@ -275,7 +283,7 @@ export class EfsFileSystem extends EfsFileSystemBase {
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
-          subnetId
+          subnetId,
         });
     });
   }

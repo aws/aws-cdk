@@ -49,7 +49,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.SYNC,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -69,8 +69,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
       parameters: {
         Input: this.props.input,
         StateMachineArn: this.stateMachine.stateMachineArn,
-        Name: this.props.name
-      }
+        Name: this.props.name,
+      },
     };
   }
 
@@ -87,15 +87,15 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.stateMachine.stateMachineArn]
-      })
+        resources: [this.stateMachine.stateMachineArn],
+      }),
     ];
 
     // Step Functions use Cloud Watch managed rules to deal with synchronous tasks.
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: ['*']
+        resources: ['*'],
       }));
 
       policyStatements.push(new iam.PolicyStatement({
@@ -103,8 +103,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule'
-        })]
+          resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule',
+        })],
       }));
     }
 

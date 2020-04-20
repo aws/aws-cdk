@@ -7,11 +7,11 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const repository = new codecommit.Repository(this, 'Repo', {
-      repositoryName: 'integ-amplify-app'
+      repositoryName: 'integ-amplify-app',
     });
 
     const amplifyApp = new amplify.App(this, 'App', {
-      sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository })
+      sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository }),
     });
 
     amplifyApp.addBranch('master');

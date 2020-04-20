@@ -41,7 +41,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },
-      parameters: this.props.payload
+      parameters: this.props.payload,
     };
   }
 }

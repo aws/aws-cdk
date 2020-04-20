@@ -17,14 +17,14 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     }));
 
     // THEN
@@ -34,7 +34,7 @@ export = {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'TD925BC7E', 'Arn' ] }, '/stream/*' ] ] }
+            'Resource': { 'Fn::Join': [ '', [ { 'Fn::GetAtt': [ 'TD925BC7E', 'Arn' ] }, '/stream/*' ] ] },
           },
           {
             'Action': [
@@ -46,31 +46,31 @@ export = {
             'Resource': {
               'Fn::GetAtt': [
                 'TD925BC7E',
-                'StreamArn'
-              ]
-            }
-          }
+                'StreamArn',
+              ],
+            },
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
       'Roles': [{
-        'Ref': 'FnServiceRoleB9001A96'
-      }]
+        'Ref': 'FnServiceRoleB9001A96',
+      }],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 100,
-      'StartingPosition': 'TRIM_HORIZON'
+      'StartingPosition': 'TRIM_HORIZON',
     }));
 
     test.done();
@@ -83,15 +83,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -99,14 +99,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 50,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -119,14 +119,14 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
-      }
+        type: dynamodb.AttributeType.STRING,
+      },
     });
 
     // WHEN
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /DynamoDB Streams must be enabled on the table T/);
 
     test.done();
@@ -139,15 +139,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 0,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 1000 inclusive \(given 0\)/);
 
     test.done();
@@ -160,15 +160,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 1001,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 1000 inclusive \(given 1001\)/);
 
     test.done();
@@ -181,15 +181,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       maxBatchingWindow: cdk.Duration.minutes(2),
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -197,14 +197,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'MaximumBatchingWindowInSeconds': 120,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -217,16 +217,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxBatchingWindow: cdk.Duration.seconds(301),
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /maxBatchingWindow cannot be over 300 seconds/);
 
     test.done();
@@ -239,12 +239,12 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
     const eventSource = new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     });
 
     // WHEN
@@ -261,12 +261,12 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
     const eventSource = new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     });
 
     // WHEN/THEN
@@ -281,15 +281,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       retryAttempts: 10,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -297,14 +297,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'MaximumRetryAttempts': 10,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -317,16 +317,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: -1,
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
 
     test.done();
@@ -339,16 +339,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         retryAttempts: 10001,
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
 
     test.done();
@@ -361,15 +361,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       bisectBatchOnError: true,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -377,14 +377,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'BisectBatchOnFunctionError': true,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -397,15 +397,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       parallelizationFactor: 5,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -413,14 +413,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'ParallelizationFactor': 5,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -433,16 +433,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         parallelizationFactor: 0,
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /parallelizationFactor must be between 1 and 10 inclusive, got 0/);
 
     test.done();
@@ -455,16 +455,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         parallelizationFactor: 11,
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
 
     test.done();
@@ -477,15 +477,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       maxRecordAge: cdk.Duration.seconds(100),
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -493,14 +493,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'MaximumRecordAgeInSeconds': 100,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -513,16 +513,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(59),
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -535,16 +535,16 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // THEN
     test.throws(() =>
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxRecordAge: cdk.Duration.seconds(604801),
-        startingPosition: lambda.StartingPosition.LATEST
+        startingPosition: lambda.StartingPosition.LATEST,
       })), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -558,15 +558,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
-      stream: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       onFailure: new sources.SqsDlq(queue),
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -574,24 +574,24 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'TD925BC7E',
-          'StreamArn'
-        ]
+          'StreamArn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'DestinationConfig': {
         'OnFailure': {
           'Destination': {
             'Fn::GetAtt': [
               'Queue4A7E3555',
-              'Arn'
-            ]
-          }
+              'Arn',
+            ],
+          },
 
-        }
+        },
       },
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();

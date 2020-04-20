@@ -20,7 +20,7 @@ export = {
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
-        RequiresCompatibilities: ['EC2']
+        RequiresCompatibilities: ['EC2'],
       }));
 
       // test error if no container defs?
@@ -35,8 +35,8 @@ export = {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
             new iam.ServicePrincipal('ecs.amazonaws.com'),
-            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
-          )
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+          ),
         }),
         family: 'ecs-tasks',
         networkMode: ecs.NetworkMode.AWS_VPC,
@@ -48,8 +48,8 @@ export = {
           host: {
             sourcePath: '/tmp/cache',
           },
-          name: 'scratch'
-        }]
+          name: 'scratch',
+        }],
       });
 
       // THEN
@@ -57,34 +57,34 @@ export = {
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'ecs-tasks',
         NetworkMode: 'awsvpc',
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
-            Type: 'memberOf'
-          }
+            Type: 'memberOf',
+          },
         ],
         RequiresCompatibilities: [
-          'EC2'
+          'EC2',
         ],
         TaskRoleArn: {
           'Fn::GetAtt': [
             'TaskRole30FC0FBB',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Volumes: [
           {
             Host: {
-              SourcePath: '/tmp/cache'
+              SourcePath: '/tmp/cache',
             },
-            Name: 'scratch'
-          }
-        ]
+            Name: 'scratch',
+          },
+        ],
       }));
 
       test.done();
@@ -103,8 +103,8 @@ export = {
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
-            Type: 'memberOf'
-          }
+            Type: 'memberOf',
+          },
         ],
 
       }));
@@ -116,7 +116,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: ecs.NetworkMode.AWS_VPC
+        networkMode: ecs.NetworkMode.AWS_VPC,
       });
 
       // THEN
@@ -135,22 +135,22 @@ export = {
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512 // add validation?
+        memoryLimitMiB: 512, // add validation?
       });
 
       container.addPortMappings({
-        containerPort: 3000
+        containerPort: 3000,
       });
 
       container.addUlimits({
         hardLimit: 128,
         name: ecs.UlimitName.RSS,
-        softLimit: 128
+        softLimit: 128,
       });
 
       container.addVolumesFrom({
         sourceContainer: 'foo',
-        readOnly: true
+        readOnly: true,
       });
 
       container.addToExecutionPolicy(new iam.PolicyStatement({
@@ -169,21 +169,21 @@ export = {
           PortMappings: [{
             ContainerPort: 3000,
             HostPort: 0,
-            Protocol: Protocol.TCP
+            Protocol: Protocol.TCP,
           }],
           Ulimits: [
             {
               HardLimit: 128,
               Name: 'rss',
-              SoftLimit: 128
-            }
+              SoftLimit: 128,
+            },
           ],
           VolumesFrom: [
             {
               ReadOnly: true,
-              SourceContainer: 'foo'
-            }
-          ]
+              SourceContainer: 'foo',
+            },
+          ],
         }],
       }));
 
@@ -194,8 +194,8 @@ export = {
             {
               Action: 'ecs:*',
               Effect: 'Allow',
-              Resource: '*'
-            }
+              Resource: '*',
+            },
           ],
         },
       }));
@@ -211,7 +211,7 @@ export = {
       const secret = new secretsmanager.Secret(stack, 'Secret');
       const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
         parameterName: '/name',
-        version: 1
+        version: 1,
       });
 
       taskDefinition.addContainer('web', {
@@ -232,7 +232,7 @@ export = {
           command: ['curl localhost:8000'],
           interval: cdk.Duration.seconds(20),
           retries: 5,
-          startPeriod: cdk.Duration.seconds(10)
+          startPeriod: cdk.Duration.seconds(10),
         },
         hostname: 'webHost',
         linuxParameters: new ecs.LinuxParameters(stack, 'LinuxParameters', {
@@ -248,7 +248,7 @@ export = {
           PARAMETER: ecs.Secret.fromSsmParameter(parameter),
         },
         user: 'amazon',
-        workingDirectory: 'app/'
+        workingDirectory: 'app/',
       });
 
       // THEN
@@ -257,47 +257,47 @@ export = {
         ContainerDefinitions: [
           {
             Command: [
-              'CMD env'
+              'CMD env',
             ],
             Cpu: 256,
             DisableNetworking: true,
             DnsSearchDomains: [
-              '0.0.0.0'
+              '0.0.0.0',
             ],
             DnsServers: [
-              '1.1.1.1'
+              '1.1.1.1',
             ],
             DockerLabels: {
-              LABEL: 'label'
+              LABEL: 'label',
             },
             DockerSecurityOptions: [
-              'ECS_SELINUX_CAPABLE=true'
+              'ECS_SELINUX_CAPABLE=true',
             ],
             EntryPoint: [
-              '/app/node_modules/.bin/cdk'
+              '/app/node_modules/.bin/cdk',
             ],
             Environment: [
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE',
-                Value: 'test environment variable value'
-              }
+                Value: 'test environment variable value',
+              },
             ],
             Essential: true,
             ExtraHosts: [
               {
                 Hostname: 'EXTRAHOST',
-                IpAddress: 'extra host'
-              }
+                IpAddress: 'extra host',
+              },
             ],
             HealthCheck: {
               Command: [
                 'CMD-SHELL',
-                'curl localhost:8000'
+                'curl localhost:8000',
               ],
               Interval: 20,
               Retries: 5,
               StartPeriod: 10,
-              Timeout: 5
+              Timeout: 5,
             },
             Hostname: 'webHost',
             Image: 'amazon/amazon-ecs-sample',
@@ -310,13 +310,13 @@ export = {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'Ec2TaskDefwebLogGroup7F786C6B'
+                  Ref: 'Ec2TaskDefwebLogGroup7F786C6B',
                 },
                 'awslogs-stream-prefix': 'prefix',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Memory: 2048,
             MemoryReservation: 1024,
@@ -327,8 +327,8 @@ export = {
               {
                 Name: 'SECRET',
                 ValueFrom: {
-                  Ref: 'SecretA720EF05'
-                }
+                  Ref: 'SecretA720EF05',
+                },
               },
               {
                 Name: 'PARAMETER',
@@ -338,25 +338,25 @@ export = {
                     [
                       'arn:',
                       {
-                        Ref: 'AWS::Partition'
+                        Ref: 'AWS::Partition',
                       },
                       ':ssm:',
                       {
-                        Ref: 'AWS::Region'
+                        Ref: 'AWS::Region',
                       },
                       ':',
                       {
-                        Ref: 'AWS::AccountId'
+                        Ref: 'AWS::AccountId',
                       },
-                      ':parameter/name'
-                    ]
-                  ]
-                }
-              }
+                      ':parameter/name',
+                    ],
+                  ],
+                },
+              },
             ],
             User: 'amazon',
-            WorkingDirectory: 'app/'
-          }
+            WorkingDirectory: 'app/',
+          },
         ],
       }));
 
@@ -375,12 +375,12 @@ export = {
           lifecycleRules: [{
             rulePriority: 10,
             tagPrefixList: ['abc'],
-            maxImageCount: 1
+            maxImageCount: 1,
           }],
           removalPolicy: cdk.RemovalPolicy.DESTROY,
-          repositoryName: 'project-a/amazon-ecs-sample'
+          repositoryName: 'project-a/amazon-ecs-sample',
         })),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -388,9 +388,9 @@ export = {
         LifecyclePolicy: {
           // tslint:disable-next-line:max-line-length
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
-          RegistryId: '123456789101'
+          RegistryId: '123456789101',
         },
-        RepositoryName: 'project-a/amazon-ecs-sample'
+        RepositoryName: 'project-a/amazon-ecs-sample',
       }));
 
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
@@ -411,12 +411,12 @@ export = {
                         {
                           'Fn::GetAtt': [
                             'myECRImage7DEAE474',
-                            'Arn'
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 '.dkr.ecr.',
                 {
@@ -428,26 +428,26 @@ export = {
                         {
                           'Fn::GetAtt': [
                             'myECRImage7DEAE474',
-                            'Arn'
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 '.',
                 {
-                  Ref: 'AWS::URLSuffix'
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/',
                 {
-                  Ref: 'myECRImage7DEAE474'
+                  Ref: 'myECRImage7DEAE474',
                 },
-                ':latest'
-              ]
-            ]
+                ':latest',
+              ],
+            ],
           },
-          Name: 'web'
+          Name: 'web',
         }],
       }));
 
@@ -463,7 +463,7 @@ export = {
       // WHEN
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage')),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -481,7 +481,7 @@ export = {
       // WHEN
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -500,7 +500,7 @@ export = {
       // WHEN
       const container = taskDefinition.addContainer('web', {
         image: repo,
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -518,7 +518,7 @@ export = {
       // WHEN
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image')),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -532,23 +532,23 @@ export = {
                 '',
                 [
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
                   '.dkr.ecr.',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   '.',
                   {
-                    Ref: 'AWS::URLSuffix'
+                    Ref: 'AWS::URLSuffix',
                   },
-                  '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
-                ]
-              ]
+                  '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+                ],
+              ],
             },
             Memory: 512,
-            Name: 'web'
-          }
+            Name: 'web',
+          },
         ],
       }));
 
@@ -563,9 +563,9 @@ export = {
 
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromAsset(path.join(__dirname, '..', 'demo-image'), {
-          buildArgs: { HTTP_PROXY: 'http://10.20.30.2:1234' }
+          buildArgs: { HTTP_PROXY: 'http://10.20.30.2:1234' },
         }),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       test.done();
@@ -578,14 +578,14 @@ export = {
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       container.addScratch({
         containerPath: './cache',
         readOnly: true,
         sourcePath: '/tmp/cache',
-        name: 'scratch'
+        name: 'scratch',
       });
 
       // THEN
@@ -596,16 +596,16 @@ export = {
             {
               ContainerPath: './cache',
               ReadOnly: true,
-              SourceVolume: 'scratch'
-            }
-          ]
+              SourceVolume: 'scratch',
+            },
+          ],
         }],
         Volumes: [{
           Host: {
-            SourcePath: '/tmp/cache'
+            SourcePath: '/tmp/cache',
           },
-          Name: 'scratch'
-        }]
+          Name: 'scratch',
+        }],
       }));
 
       test.done();
@@ -617,48 +617,48 @@ export = {
 
       const dependency1 = taskDefinition.addContainer('dependency1', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       const dependency2 = taskDefinition.addContainer('dependency2', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       container.addContainerDependencies({
-        container: dependency1
+        container: dependency1,
       },
       {
         container: dependency2,
-        condition: ecs.ContainerDependencyCondition.SUCCESS
-      }
+        condition: ecs.ContainerDependencyCondition.SUCCESS,
+      },
       );
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
-          Name: 'dependency1'
+          Name: 'dependency1',
         },
         {
-          Name: 'dependency2'
+          Name: 'dependency2',
         },
         {
           Name: 'web',
           DependsOn: [{
             Condition: 'HEALTHY',
-            ContainerName: 'dependency1'
+            ContainerName: 'dependency1',
           },
           {
             Condition: 'SUCCESS',
-            ContainerName: 'dependency2'
-          }]
-        }]
+            ContainerName: 'dependency2',
+          }],
+        }],
       }));
 
       test.done();
@@ -667,22 +667,22 @@ export = {
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: ecs.NetworkMode.BRIDGE
+        networkMode: ecs.NetworkMode.BRIDGE,
       });
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       const linkedContainer1 = taskDefinition.addContainer('linked1', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       const linkedContainer2 = taskDefinition.addContainer('linked2', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       container.addLink(linkedContainer1, 'linked');
@@ -694,17 +694,17 @@ export = {
           {
             Links: [
               'linked1:linked',
-              'linked2'
+              'linked2',
             ],
-            Name: 'web'
+            Name: 'web',
           },
           {
-            Name: 'linked1'
+            Name: 'linked1',
           },
           {
-            Name: 'linked2'
-          }
-        ]
+            Name: 'linked2',
+          },
+        ],
       }));
 
       test.done();
@@ -718,7 +718,7 @@ export = {
       // WHEN
       taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: ['test:SpecialName'],
-        resources: ['*']
+        resources: ['*'],
       }));
 
       // THEN
@@ -729,8 +729,8 @@ export = {
             {
               Action: 'test:SpecialName',
               Effect: 'Allow',
-              Resource: '*'
-            }
+              Resource: '*',
+            },
           ],
         },
       }));
@@ -744,12 +744,12 @@ export = {
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       container.addVolumesFrom({
         sourceContainer: 'SourceContainer',
-        readOnly: true
+        readOnly: true,
       });
 
       // THEN
@@ -759,9 +759,9 @@ export = {
             {
               SourceContainer: 'SourceContainer',
               ReadOnly: true,
-            }
-          ]
-        }]
+            },
+          ],
+        }],
       }));
 
       test.done();
@@ -775,7 +775,7 @@ export = {
       // WHEN
       taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
         actions: ['test:SpecialName'],
-        resources: ['*']
+        resources: ['*'],
       }));
 
       // THEN
@@ -786,8 +786,8 @@ export = {
             {
               Action: 'test:SpecialName',
               Effect: 'Allow',
-              Resource: '*'
-            }
+              Resource: '*',
+            },
           ],
         },
       }));
@@ -802,17 +802,17 @@ export = {
         host: {
           sourcePath: '/tmp/cache',
         },
-        name: 'scratch'
+        name: 'scratch',
       };
 
       // Adding volumes via props is a bit clunky
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        volumes: [volume]
+        volumes: [volume],
       });
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // this needs to be a better API -- should auto-add volumes
@@ -830,16 +830,16 @@ export = {
             {
               ContainerPath: './cache',
               ReadOnly: true,
-              SourceVolume: 'scratch'
-            }
-          ]
+              SourceVolume: 'scratch',
+            },
+          ],
         }],
         Volumes: [{
           Host: {
-            SourcePath: '/tmp/cache'
+            SourcePath: '/tmp/cache',
           },
-          Name: 'scratch'
-        }]
+          Name: 'scratch',
+        }],
       }));
 
       test.done();
@@ -851,12 +851,12 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         placementConstraints: [
           ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'),
-        ]
+        ],
       });
 
       taskDefinition.addContainer('web', {
         memoryLimitMiB: 1024,
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample')
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
       // THEN
@@ -864,9 +864,9 @@ export = {
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
-            Type: 'memberOf'
-          }
-        ]
+            Type: 'memberOf',
+          },
+        ],
       }));
 
       test.done();
@@ -878,17 +878,17 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-        })
+        }),
       });
 
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       }));
 
       test.done();
@@ -901,7 +901,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       }));
 
       test.done();
@@ -916,18 +916,18 @@ export = {
           driver: 'local',
           scope: ecs.Scope.TASK,
           driverOpts: {
-            key1: 'value'
-          }
-        }
+            key1: 'value',
+          },
+        },
       };
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        volumes: [volume]
+        volumes: [volume],
       });
 
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
 
       // THEN
@@ -939,14 +939,14 @@ export = {
             Driver: 'local',
             Scope: 'task',
             DriverOpts: {
-              key1: 'value'
-            }
-          }
-        }]
+              key1: 'value',
+            },
+          },
+        }],
       }));
 
       test.done();
-    }
+    },
   },
 
   'throws when setting proxyConfiguration without networkMode AWS_VPC'(test: Test) {
@@ -960,8 +960,8 @@ export = {
         proxyIngressPort: 15000,
         proxyEgressPort: 15001,
         appPorts: [9080, 9081],
-        egressIgnoredIPs: ['169.254.170.2', '169.254.169.254']
-      }
+        egressIgnoredIPs: ['169.254.170.2', '169.254.169.254'],
+      },
     });
 
     // THEN

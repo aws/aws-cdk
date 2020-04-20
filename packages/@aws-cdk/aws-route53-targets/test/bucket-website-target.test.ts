@@ -19,14 +19,14 @@ test('use S3 bucket website as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName,
-    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite)),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: 's3-website-us-east-1.amazonaws.com',
-      HostedZoneId: 'Z3AQBSTGFYJSTF'
+      HostedZoneId: 'Z3AQBSTGFYJSTF',
     },
   });
 });
@@ -43,14 +43,14 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName,
-    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite)),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: 's3-website-us-east-1.amazonaws.com',
-      HostedZoneId: 'Z3AQBSTGFYJSTF'
+      HostedZoneId: 'Z3AQBSTGFYJSTF',
     },
   });
 });
@@ -69,7 +69,7 @@ test('throws if region agnostic', () => {
     new route53.ARecord(zone, 'Alias', {
       zone,
       recordName,
-      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite)),
     });
   }).toThrow(/Cannot use an S3 record alias in region-agnostic stacks/);
 });
@@ -89,7 +89,7 @@ test('throws if bucket website hosting is unavailable (cn-northwest-1)', () => {
     new route53.ARecord(zone, 'Alias', {
       zone,
       recordName,
-      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite))
+      target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite)),
     });
   }).toThrow(/Bucket website target is not supported/);
 });

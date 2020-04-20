@@ -155,7 +155,7 @@ class LinuxUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'`
+      `aws s3 cp '${s3Path}' '${localPath}'`,
     );
 
     return localPath;
@@ -165,7 +165,7 @@ class LinuxUserData extends UserData {
     this.addCommands(
       'set -e',
       `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments}`
+      `'${params.filePath}' ${params.arguments}`,
     );
   }
 
@@ -206,7 +206,7 @@ class WindowsUserData extends UserData {
     return `<powershell>${
       [...(this.renderOnExitLines()),
         ...this.lines,
-        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )
+        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] ),
       ].join('\n')
     }</powershell>`;
   }
@@ -215,7 +215,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`,
     );
     return localPath;
   }
@@ -223,7 +223,7 @@ class WindowsUserData extends UserData {
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
       `&'${params.filePath}' ${params.arguments}`,
-      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`
+      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
     );
   }
 

@@ -1,6 +1,5 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Stack, Token } from '@aws-cdk/core';
-import { Lazy } from 'constructs';
+import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import { CfnStack } from './cloudformation.generated';
 
@@ -182,7 +181,7 @@ export class NestedStack extends Stack {
     const templateLocation = this._parentStack.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
-      fileName: this.templateFile
+      fileName: this.templateFile,
     });
 
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
@@ -199,7 +198,7 @@ export class NestedStack extends Stack {
         } else {
           return outerValue;
         }
-      }
+      },
     });
   }
 }
