@@ -10,6 +10,12 @@ export interface GatewayResponseProps extends GatewayResponseOptions {
    * Rest api resource to target.
    */
   readonly restApi: IRestApi;
+
+  /**
+   * Name of the gateway response.
+   * @default - Auto generated
+   */
+  readonly gatewayResponseName?: string;
 }
 
 /**
@@ -52,7 +58,7 @@ export interface GatewayResponseOptions {
 export class GatewayResponse extends Resource {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id, {
-      physicalName: `${props.type}_Response`
+      physicalName: props.gatewayResponseName
     });
 
     const resource = new CfnGatewayResponse(this, 'Resource', {
