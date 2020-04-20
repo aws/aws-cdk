@@ -169,9 +169,9 @@ new UserPool(this, 'myuserpool', {
     address: true,
   },
   customAttributes: {
-    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
-    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
-    'isEmployee': new BooleanAttribute(),
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3, mutable: true }),
+    'isEmployee': new BooleanAttribute({ mutable: true }),
     'joinedOn': new DateTimeAttribute(),
   },
 });
@@ -181,6 +181,9 @@ As shown in the code snippet, there are data types that are available for custom
 data types allow for further constraints on their length and values, respectively.
 
 Custom attributes cannot be marked as required.
+
+All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
+The default value is `false`.
 
 ### Security
 
