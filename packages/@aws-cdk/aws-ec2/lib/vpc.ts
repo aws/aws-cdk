@@ -3,7 +3,7 @@ import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConst
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
@@ -11,7 +11,14 @@ import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupName
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
-import {VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGatewayProps} from './vpn';
+import {
+  EnableVpnGatewayOptions,
+  VpnConnection,
+  VpnConnectionOptions,
+  VpnConnectionType,
+  VpnGateway,
+  VpnGatewayProps
+} from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -304,11 +311,6 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly availabilityZones: string[];
 
   /**
-   * Identifier for the VPN gateway
-   */
-  public abstract readonly vpnGatewayId?: string;
-
-  /**
    * Dependencies for internet connectivity
    */
   public abstract readonly internetConnectivityEstablished: IDependable;
@@ -349,16 +351,18 @@ abstract class VpcBase extends Resource implements IVpc {
   /**
    * Adds a VPN Gateway to this VPC
    */
-  public enableVpnGateway(options: VpnGatewayProps): void {
+  public enableVpnGateway(options: EnableVpnGatewayOptions): void {
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
-    const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
+
+    const vpnGateway = new VpnGateway(this, 'VpnGateway', {
       amazonSideAsn: options.amazonSideAsn,
       type: VpnConnectionType.IPSEC_1
     });
 
-    this._vpnGatewayId = vpnGateway.ref;
+    this._vpnGatewayId = vpnGateway.gatewayId;
+    this.vpnGatewayId = vpnGateway.gatewayId;
 
     const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
@@ -421,8 +425,12 @@ abstract class VpcBase extends Resource implements IVpc {
   /**
    * Returns the Id of the VPN Gateway Id if any, or Null
    */
-  public obtainVpnGatewayId(): string | undefined {
+  public get vpnGatewayId(): string | undefined {
     return this._vpnGatewayId;
+  }
+
+  public set vpnGatewayId(gatewayId: string | undefined) {
+    this._vpnGatewayId = gatewayId;
   }
 
   /**
@@ -1045,11 +1053,6 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
-  /**
-   * Identifier for the VPN gateway
-   */
-  public readonly vpnGatewayId?: string;
-
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1166,8 +1169,6 @@ export class Vpc extends VpcBase {
         type: VpnConnectionType.IPSEC_1,
         vpnRoutePropagation: props.vpnRoutePropagation
       });
-
-      this.vpnGatewayId = this.obtainVpnGatewayId();
 
       const vpnConnections = props.vpnConnections || {};
       for (const [connectionId, connection] of Object.entries(vpnConnections)) {
@@ -1687,7 +1688,6 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
@@ -1721,7 +1721,7 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
-  public readonly vpnGatewayId?: string;
+  public readonly vpnGatewayId: string | undefined;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];

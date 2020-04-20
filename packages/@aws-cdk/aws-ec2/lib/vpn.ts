@@ -106,7 +106,9 @@ export interface VpnGatewayProps {
    * @default 65000
    */
   readonly amazonSideAsn?: number;
+}
 
+export interface EnableVpnGatewayOptions extends VpnGatewayProps {
   /**
    * Provide an array of subnets where the route propagation shoud be added.
    * @default noPropagation
