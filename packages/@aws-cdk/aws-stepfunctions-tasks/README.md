@@ -1,5 +1,5 @@
 # Tasks for AWS Step Functions
-## <!--BEGIN STABILITY BANNER-->
+<!--BEGIN STABILITY BANNER-->
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
@@ -30,6 +30,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [PutItem](#putitem)
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
+  - [ECS](#ecs)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
 
@@ -52,6 +53,43 @@ such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
+
+#### Batch
+
+Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html) through the service integration pattern.
+
+#### SubmitJob
+
+The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc },
+      }),
+    },
+  ],
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'batchjob-image')),
+  },
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue,
+  }),
+});
+```
 
 #### DynamoDB
 
@@ -130,40 +168,39 @@ const updateItemTask = new sfn.Task(this, 'UpdateItem', {
 });
 ```
 
-#### Batch
+#### ECS
 
-Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html) through the service integration pattern.
+Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) through the service integration pattern.
 
-#### SubmitJob
+#### RunTask
 
-The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
+[RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
 ```ts
-import batch = require('@aws-cdk/aws-batch');
+import ecs = require('@aws-cdk/aws-ecs');
 
-const batchQueue = new batch.JobQueue(this, 'JobQueue', {
-  computeEnvironments: [
+// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
+
+new ecs.RunEcsFargateTask({
+  cluster,
+  taskDefinition,
+  containerOverrides: [
     {
-      order: 1,
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
-        computeResources: { vpc },
-      }),
-    },
-  ],
+      containerName: 'TheContainer',
+      environment: [
+        {
+          name: 'CONTAINER_INPUT',
+          value: Data.stringAt('$.valueFromStateData'),
+        }
+      ]
+    }
+  ]
 });
 
-const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
-  container: {
-    image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'batchjob-image')),
-  },
-});
+fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
-const task = new sfn.Task(this, 'Submit Job', {
-  task: new tasks.RunBatchJob({
-    jobDefinition: batchJobDefinition,
-    jobName: 'MyJob',
-    jobQueue: batchQueue,
-  }),
+new sfn.Task(this, 'CallFargate', {
+  task: fargateTask
 });
 ```
 
