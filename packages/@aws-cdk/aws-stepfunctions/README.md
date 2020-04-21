@@ -165,7 +165,7 @@ You can specify the input to your Lambda function through the `payload` attribut
 By default, no payload is specified so Step Functions invokes Lambda with the empty
 object `{ }` as input.
 
-The following snippet invokes a Lambda Function with the task context as the input
+The following snippet invokes a Lambda Function with the state input as the payload
 by referencing the `$` path.
 
 ```ts
