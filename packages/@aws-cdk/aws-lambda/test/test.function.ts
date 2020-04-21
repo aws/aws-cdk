@@ -22,7 +22,7 @@ export = testCase({
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS]
+      compatibleRuntimes: [lambda.Runtime.NODEJS],
     });
 
     // THEN
@@ -44,7 +44,7 @@ export = testCase({
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_7]
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_7],
     });
 
     // THEN
@@ -68,7 +68,7 @@ export = testCase({
     const clone = _.cloneDeep(runtime);
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [clone]
+      compatibleRuntimes: [clone],
     });
 
     // THEN
@@ -86,7 +86,7 @@ export = testCase({
     test.throws(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_10_X,
-      code: lambda.Code.fromInline('')
+      code: lambda.Code.fromInline(''),
     }), /Lambda inline code cannot be empty/);
     test.done();
   },
@@ -109,7 +109,7 @@ export = testCase({
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
-      retentionPeriod: cdk.Duration.days(14)
+      retentionPeriod: cdk.Duration.days(14),
     });
 
     const fn = new lambda.Function(stack, 'fn', {
@@ -177,7 +177,7 @@ export = testCase({
     test.throws(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
       runtime: lambda.Runtime.PROVIDED,
-      code: lambda.Code.fromInline('foo')
+      code: lambda.Code.fromInline('foo'),
     }), /Inline source not allowed for/);
     test.done();
   },
@@ -193,8 +193,8 @@ export = testCase({
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
-          FOO: 'bar'
-        }
+          FOO: 'bar',
+        },
       });
       const stack2 = new cdk.Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
@@ -202,33 +202,33 @@ export = testCase({
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
-          FOO: 'bear'
-        }
+          FOO: 'bear',
+        },
       });
 
       // WHEN
       new cdk.CfnOutput(stack1, 'CurrentVersionArn', {
-        value: fn1.currentVersion.functionArn
+        value: fn1.currentVersion.functionArn,
       });
       new cdk.CfnOutput(stack2, 'CurrentVersionArn', {
-        value: fn2.currentVersion.functionArn
+        value: fn2.currentVersion.functionArn,
       });
 
       // THEN
       expect(stack1).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b'
-        }
+          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b',
+        },
       }));
       expect(stack2).to(haveOutput({
         outputName: 'CurrentVersionArn',
         outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6'
-        }
+          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6',
+        },
       }));
       test.done();
-    }
+    },
   },
 
 });

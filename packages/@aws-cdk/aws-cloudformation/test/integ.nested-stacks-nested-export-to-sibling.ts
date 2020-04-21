@@ -14,7 +14,7 @@ const topicInNestedUnderStack1 = new sns.Topic(nestedUnderStack1, 'TopicInNested
 new sns.Topic(stack2, 'TopicInStack2', {
   // topicName is too long for displayName, so just take the second part:
   // Stack1-NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B-EM64TEGA04J9-TopicInNestedUnderStack115E329C4-HEO7NLYC1AFL
-  displayName: Fn.select(1, Fn.split('-', topicInNestedUnderStack1.topicName))
+  displayName: Fn.select(1, Fn.split('-', topicInNestedUnderStack1.topicName)),
 });
 
 app.synth();

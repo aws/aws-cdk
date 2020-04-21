@@ -212,7 +212,7 @@ export class RecordSet extends Resource implements IRecordSet {
       resourceRecords: props.target.values,
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
       ttl,
-      comment: props.comment
+      comment: props.comment,
     });
 
     this.domainName = recordSet.ref;
@@ -297,7 +297,7 @@ export class CnameRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.CNAME,
-      target: RecordTarget.fromValues(props.domainName)
+      target: RecordTarget.fromValues(props.domainName),
     });
   }
 }
@@ -465,8 +465,8 @@ export class CaaAmazonRecord extends CaaRecord {
         {
           flag: 0,
           tag: CaaTag.ISSUE,
-          value: 'amazon.com'
-        }
+          value: 'amazon.com',
+        },
       ],
     });
   }
@@ -507,7 +507,7 @@ export class MxRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.MX,
-      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`))
+      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`)),
     });
   }
 }
@@ -532,9 +532,9 @@ export class ZoneDelegationRecord extends RecordSet {
       recordType: RecordType.NS,
       target: RecordTarget.fromValues(...Token.isUnresolved(props.nameServers)
         ? props.nameServers // Can't map a string-array token!
-        : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`)
+        : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`),
       ),
-      ttl: props.ttl || Duration.days(2)
+      ttl: props.ttl || Duration.days(2),
     });
   }
 }

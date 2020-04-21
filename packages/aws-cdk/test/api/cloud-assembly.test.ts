@@ -8,7 +8,7 @@ test('do not throw when selecting stack without errors', async () => {
 
   // WHEN
   const selected = await cxasm.selectStacks(['withouterrors'], {
-    defaultBehavior: DefaultSelection.AllStacks
+    defaultBehavior: DefaultSelection.AllStacks,
   });
   selected.processMetadataMessages();
 
@@ -22,7 +22,7 @@ test('do throw when selecting stack with errors', async () => {
 
   // WHEN
   const selected = await cxasm.selectStacks(['witherrors'], {
-    defaultBehavior: DefaultSelection.AllStacks
+    defaultBehavior: DefaultSelection.AllStacks,
   });
 
   // THEN
@@ -75,11 +75,11 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
         '/resource': [
           {
             type: cxschema.ArtifactMetadataEntryType.ERROR,
-            data: 'this is an error'
-          }
-        ]
+            data: 'this is an error',
+          },
+        ],
       },
-    }]
+    }],
   });
 
   return await cloudExec.synthesize();

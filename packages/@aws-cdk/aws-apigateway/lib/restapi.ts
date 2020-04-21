@@ -246,7 +246,7 @@ export class RestApi extends Resource implements IRestApi {
       endpointConfiguration: this.configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
-      parameters: props.parameters
+      parameters: props.parameters,
     });
     this.node.defaultChild = resource;
 
@@ -312,7 +312,7 @@ export class RestApi extends Resource implements IRestApi {
   public addDomainName(id: string, options: DomainNameOptions): DomainName {
     const domainName = new DomainName(this, id, {
       ...options,
-      mapping: this
+      mapping: this,
     });
     if (!this._domainName) {
       this._domainName = domainName;
@@ -332,7 +332,7 @@ export class RestApi extends Resource implements IRestApi {
    */
   public addApiKey(id: string): IApiKey {
     return new ApiKey(this, id, {
-      resources: [this]
+      resources: [this],
     });
   }
 
@@ -342,7 +342,7 @@ export class RestApi extends Resource implements IRestApi {
   public addModel(id: string, props: ModelOptions): Model {
     return new Model(this, id, {
       ...props,
-      restApi: this
+      restApi: this,
     });
   }
 
@@ -352,7 +352,7 @@ export class RestApi extends Resource implements IRestApi {
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
       ...props,
-      restApi: this
+      restApi: this,
     });
   }
 
@@ -377,7 +377,7 @@ export class RestApi extends Resource implements IRestApi {
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
-      resourceName: `${stage}/${method}${path}`
+      resourceName: `${stage}/${method}${path}`,
     });
   }
 
@@ -419,7 +419,7 @@ export class RestApi extends Resource implements IRestApi {
       this._latestDeployment = new Deployment(this, 'Deployment', {
         description: 'Automatically created by the RestApi construct',
         api: this,
-        retainDeployments: props.retainDeployments
+        retainDeployments: props.retainDeployments,
       });
 
       // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
@@ -428,7 +428,7 @@ export class RestApi extends Resource implements IRestApi {
 
       this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
         deployment: this._latestDeployment,
-        ...props.deployOptions
+        ...props.deployOptions,
       });
 
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
@@ -446,7 +446,7 @@ export class RestApi extends Resource implements IRestApi {
     });
 
     const resource = new CfnAccount(this, 'Account', {
-      cloudWatchRoleArn: role.roleArn
+      cloudWatchRoleArn: role.roleArn,
     });
 
     resource.node.addDependency(apiResource);
@@ -459,7 +459,7 @@ export class RestApi extends Resource implements IRestApi {
     if (props.endpointConfiguration) {
       return {
         types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId)
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
       };
     }
     if (props.endpointTypes) {

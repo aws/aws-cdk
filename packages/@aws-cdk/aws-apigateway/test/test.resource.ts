@@ -21,27 +21,27 @@ export = {
       'ParentId': {
         'Fn::GetAtt': [
           'apiC8550315',
-          'RootResourceId'
-        ]
+          'RootResourceId',
+        ],
       },
       'PathPart': '{proxy+}',
       'RestApiId': {
-        'Ref': 'apiC8550315'
-      }
+        'Ref': 'apiC8550315',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       'HttpMethod': 'ANY',
       'ResourceId': {
-        'Ref': 'proxy3A1DA9C7'
+        'Ref': 'proxy3A1DA9C7',
       },
       'RestApiId': {
-        'Ref': 'apiC8550315'
+        'Ref': 'apiC8550315',
       },
       'AuthorizationType': 'NONE',
       'Integration': {
-        'Type': 'MOCK'
-      }
+        'Type': 'MOCK',
+      },
     }));
 
     test.done();
@@ -55,7 +55,7 @@ export = {
     // WHEN
     const proxy = new apigw.ProxyResource(stack, 'proxy', {
       parent: api.root,
-      anyMethod: false
+      anyMethod: false,
     });
 
     proxy.addMethod('GET');
@@ -84,8 +84,8 @@ export = {
         'apiC8550315': {
           'Type': 'AWS::ApiGateway::RestApi',
           'Properties': {
-            'Name': 'api'
-          }
+            'Name': 'api',
+          },
         },
         'apiv25206B108': {
           'Type': 'AWS::ApiGateway::Resource',
@@ -93,44 +93,44 @@ export = {
             'ParentId': {
               'Fn::GetAtt': [
                 'apiC8550315',
-                'RootResourceId'
-              ]
+                'RootResourceId',
+              ],
             },
             'PathPart': 'v2',
             'RestApiId': {
-              'Ref': 'apiC8550315'
-            }
-          }
+              'Ref': 'apiC8550315',
+            },
+          },
         },
         'apiv2proxyAEA4DAC8': {
           'Type': 'AWS::ApiGateway::Resource',
           'Properties': {
             'ParentId': {
-              'Ref': 'apiv25206B108'
+              'Ref': 'apiv25206B108',
             },
             'PathPart': '{proxy+}',
             'RestApiId': {
-              'Ref': 'apiC8550315'
-            }
-          }
+              'Ref': 'apiC8550315',
+            },
+          },
         },
         'apiv2proxyANY889F4CE1': {
           'Type': 'AWS::ApiGateway::Method',
           'Properties': {
             'HttpMethod': 'ANY',
             'ResourceId': {
-              'Ref': 'apiv2proxyAEA4DAC8'
+              'Ref': 'apiv2proxyAEA4DAC8',
             },
             'RestApiId': {
-              'Ref': 'apiC8550315'
+              'Ref': 'apiC8550315',
             },
             'AuthorizationType': 'NONE',
             'Integration': {
-              'Type': 'MOCK'
-            }
-          }
-        }
-      }
+              'Type': 'MOCK',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -141,17 +141,17 @@ export = {
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     const proxy = api.root.addProxy({
-      anyMethod: false
+      anyMethod: false,
     });
     const deleteInteg = new apigw.MockIntegration({
       requestParameters: {
-        foo: 'bar'
-      }
+        foo: 'bar',
+      },
     });
 
     // WHEN
     proxy.addMethod('DELETE', deleteInteg, {
-      operationName: 'DeleteMe'
+      operationName: 'DeleteMe',
     });
 
     // THEN
@@ -160,9 +160,9 @@ export = {
       ResourceId: { Ref: 'apiproxy4EA44110' },
       Integration: {
         RequestParameters: { foo: 'bar' },
-        Type: 'MOCK'
+        Type: 'MOCK',
       },
-      OperationName: 'DeleteMe'
+      OperationName: 'DeleteMe',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -170,9 +170,9 @@ export = {
       ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
       Integration: {
         RequestParameters: { foo: 'bar' },
-        Type: 'MOCK'
+        Type: 'MOCK',
       },
-      OperationName: 'DeleteMe'
+      OperationName: 'DeleteMe',
     }));
 
     test.done();
@@ -214,9 +214,9 @@ export = {
           { Ref: 'AWS::URLSuffix' },
           '/',
           { Ref: 'apiDeploymentStageprod896C8101' },
-          '/a'
-        ]
-      ]
+          '/a',
+        ],
+      ],
     });
     test.deepEqual(stack.resolve(cResource.url), {
       'Fn::Join': [
@@ -230,9 +230,9 @@ export = {
           { Ref: 'AWS::URLSuffix' },
           '/',
           { Ref: 'apiDeploymentStageprod896C8101' },
-          '/a/b/c'
-        ]
-      ]
+          '/a/b/c',
+        ],
+      ],
     });
     test.done();
   },
@@ -273,13 +273,13 @@ export = {
         // WHEN
         const r1 = new apigw.Resource(stack, 'child', {
           parent: api.root,
-          pathPart: 'yello'
+          pathPart: 'yello',
         });
 
         // THEN
         test.deepEqual(api.root.getResource('yello'), r1);
         test.done();
-      }
+      },
 
     },
 
@@ -323,7 +323,7 @@ export = {
 
         const r2 = new apigw.Resource(stack, 'world', {
           parent: child,
-          pathPart: 'outside-world'
+          pathPart: 'outside-world',
         });
 
         // THEN
@@ -331,7 +331,7 @@ export = {
         test.deepEqual(child.getResource('outside-world'), r2);
         test.done();
 
-      }
+      },
     },
 
     'resourceForPath': {
@@ -382,9 +382,9 @@ export = {
         test.same(bam1, bam2);
         test.deepEqual(bam1.parentResource!.path, '/boom');
         test.done();
-      }
+      },
 
-    }
+    },
   },
 
 };

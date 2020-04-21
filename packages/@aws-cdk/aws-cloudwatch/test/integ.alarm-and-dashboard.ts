@@ -16,7 +16,7 @@ const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 const metric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') }
+  dimensions: { QueueName: queue.getAtt('QueueName') },
 });
 
 const alarm = metric.createAlarm(stack, 'Alarm', {
@@ -29,7 +29,7 @@ const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
   dashboardName: 'MyCustomDashboardName',
   start: '-9H',
   end: '2018-12-17T06:00:00.000Z',
-  periodOverride: cloudwatch.PeriodOverride.INHERIT
+  periodOverride: cloudwatch.PeriodOverride.INHERIT,
 });
 dashboard.addWidgets(
   new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),
@@ -42,11 +42,11 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
   left: [metric],
-  leftAnnotations: [alarm.toAnnotation()]
+  leftAnnotations: [alarm.toAnnotation()],
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
-  metrics: [metric]
+  metrics: [metric],
 }));
 
 app.synth();

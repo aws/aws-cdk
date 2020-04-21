@@ -148,7 +148,7 @@ export abstract class ScheduledTaskBase extends Construct {
       cluster: this.cluster,
       taskDefinition,
       taskCount: this.desiredTaskCount,
-      subnetSelection: this.subnetSelection
+      subnetSelection: this.subnetSelection,
     });
 
     this.eventRule.addTarget(eventRuleTarget);

@@ -11,7 +11,7 @@ export = {
 
       test.throws(() => {
         Vpc.fromLookup(stack, 'Vpc', {
-          vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+          vpcId: Lazy.stringValue({ produce: () => 'some-id' }),
         });
 
       }, 'All arguments to Vpc.fromLookup() must be concrete');
@@ -23,7 +23,7 @@ export = {
       // GIVEN
       const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
       const vpc = Vpc.fromLookup(stack, 'VPC', {
-        vpcId: 'vpc-1234'
+        vpcId: 'vpc-1234',
       });
 
       // WHEN

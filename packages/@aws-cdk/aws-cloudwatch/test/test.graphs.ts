@@ -8,7 +8,7 @@ export = {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'Test widget',
-      stacked: true
+      stacked: true,
     });
 
     // THEN
@@ -21,8 +21,8 @@ export = {
         title: 'Test widget',
         region: { Ref: 'AWS::Region' },
         stacked: true,
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -34,11 +34,11 @@ export = {
     const widget = new GraphWidget({
       title: 'My fancy graph',
       left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' })
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
       ],
       right: [
-        new Metric({ namespace: 'CDK', metricName: 'Tast' })
-      ]
+        new Metric({ namespace: 'CDK', metricName: 'Tast' }),
+      ],
     });
 
     // THEN
@@ -52,10 +52,10 @@ export = {
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test'],
-          ['CDK', 'Tast', { yAxis: 'right' }]
+          ['CDK', 'Tast', { yAxis: 'right' }],
         ],
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -79,8 +79,8 @@ export = {
         metrics: [
           ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
         ],
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -93,7 +93,7 @@ export = {
 
     // WHEN
     const widget = new SingleValueWidget({
-      metrics: [ metric ]
+      metrics: [ metric ],
     });
 
     // THEN
@@ -106,8 +106,8 @@ export = {
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test'],
-        ]
-      }
+        ],
+      },
     }]);
 
     test.done();
@@ -119,7 +119,7 @@ export = {
 
     const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
-      threshold: 1000
+      threshold: 1000,
     });
 
     // WHEN
@@ -136,10 +136,10 @@ export = {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         annotations: {
-          alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }]
+          alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }],
         },
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -151,14 +151,14 @@ export = {
     const widget = new GraphWidget({
       title: 'My fancy graph',
       left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' })
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
       ],
       leftAnnotations: [{
         value: 1000,
         color: '667788',
         fill: Shading.BELOW,
         label: 'this is the annotation',
-      }]
+      }],
     });
 
     // THEN
@@ -180,8 +180,8 @@ export = {
           fill: 'below',
           label: 'this is the annotation',
         }] },
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -196,13 +196,13 @@ export = {
     const alarm = metric.createAlarm(stack, 'Alarm', {
       evaluationPeriods: 7,
       datapointsToAlarm: 2,
-      threshold: 1000
+      threshold: 1000,
     });
 
     // WHEN
     const widget = new GraphWidget({
       right: [ metric ],
-      rightAnnotations: [ alarm.toAnnotation() ]
+      rightAnnotations: [ alarm.toAnnotation() ],
     });
 
     // THEN
@@ -221,10 +221,10 @@ export = {
             yAxis: 'right',
             value: 1000,
             label: 'Test >= 1000 for 2 datapoints within 35 minutes',
-          }]
+          }],
         },
-        yAxis: {}
-      }
+        yAxis: {},
+      },
     }]);
 
     test.done();
@@ -236,20 +236,20 @@ export = {
     const widget = new GraphWidget({
       title: 'My fancy graph',
       left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' })
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
       ],
       right: [
-        new Metric({ namespace: 'CDK', metricName: 'Tast' })
+        new Metric({ namespace: 'CDK', metricName: 'Tast' }),
       ],
       leftYAxis: ({
         label: 'Left yAxis',
-        max: 100
+        max: 100,
       }),
       rightYAxis: ({
         label: 'Right yAxis',
         min: 10,
-        showUnits: false
-      })
+        showUnits: false,
+      }),
     });
 
     // THEN
@@ -263,12 +263,12 @@ export = {
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test'],
-          ['CDK', 'Tast', { yAxis: 'right' }]
+          ['CDK', 'Tast', { yAxis: 'right' }],
         ],
         yAxis: {
           left: { label: 'Left yAxis', max: 100 },
-          right: { label: 'Right yAxis', min: 10, showUnits: false } }
-      }
+          right: { label: 'Right yAxis', min: 10, showUnits: false } },
+      },
     }]);
 
     test.done();
@@ -282,7 +282,7 @@ export = {
     // WHEN
     new AlarmWidget({
       title: 'My fancy graph',
-      alarm
+      alarm,
     });
 
     // THEN: Compiles
@@ -298,7 +298,7 @@ export = {
     // WHEN
     const widget = new SingleValueWidget({
       metrics: [ metric ],
-      setPeriodToTimeRange: true
+      setPeriodToTimeRange: true,
     });
 
     // THEN
@@ -312,8 +312,8 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
-        setPeriodToTimeRange: true
-      }
+        setPeriodToTimeRange: true,
+      },
     }]);
 
     test.done();
@@ -332,14 +332,14 @@ export = {
     const stack = new Stack();
     const widget = new GraphWidget({
       left: [
-        new HiddenMetric({ namespace: 'CDK', metricName: 'Test' })
-      ]
+        new HiddenMetric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
     });
 
     // test.ok(widget.toJson()[0].properties.metrics[0].visible === false);
     test.deepEqual(
       stack.resolve(widget.toJson())[0].properties.metrics[0],
-      ['CDK', 'Test', { visible: false }]
+      ['CDK', 'Test', { visible: false }],
     );
 
     test.done();
@@ -356,8 +356,8 @@ export = {
         color: Color.BLUE,
       })],
       leftAnnotations: [
-        { color: Color.RED, value: 100, },
-      ]
+        { color: Color.RED, value: 100 },
+      ],
     });
 
     test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
