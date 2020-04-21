@@ -24,6 +24,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Task](#task)
   - [Parameters](#task-parameters-from-the-state-json)
   - [Batch](#batch)
+    - [SubmitJob](#submitjob)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
