@@ -1,12 +1,13 @@
 # Tasks for AWS Step Functions
-<!--BEGIN STABILITY BANNER-->
----
+
+## <!--BEGIN STABILITY BANNER-->
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html) is a web service that enables you to coordinate the
@@ -23,7 +24,13 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 - [Task](#task)
   - [Parameters](#task-parameters-from-the-state-json)
+  - [DynamoDB](#dynamodb)
+    - [GetItem](#getitem)
+    - [PutItem](#putitem)
+    - [DeleteItem](#deleteitem)
+    - [UpdateItem](#updateitem)
   - [Lambda](#lambda)
+    - [Invoke](#invoke)
 
 ### Task
 
@@ -45,7 +52,86 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
+#### DynamoDB
+
+You can call DynamoDB APIs from a `Task` state.
+Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ddb.html)
+
+##### GetItem
+
+The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
+
+```ts
+new sfn.Task(this, 'Get Item', {
+  task: tasks.CallDynamoDB.getItem({
+    partitionKey: {
+      name: 'messageId',
+      value: new tasks.DynamoAttributeValue().withS('message-007'),
+    },
+    tableName: 'my-table',
+  }),
+});
+```
+
+##### PutItem
+
+The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
+
+```ts
+new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.putItem({
+    item: {
+      MessageId: new tasks.DynamoAttributeValue().withS('message-007'),
+      Text: new tasks.DynamoAttributeValue().withS(sfn.Data.stringAt('$.bar')),
+      TotalCount: new tasks.DynamoAttributeValue().withN('10'),
+    },
+    tableName: 'my-table',
+  }),
+});
+```
+
+##### DeleteItem
+
+The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
+
+```ts
+new sfn.Task(this, 'DeleteItem', {
+  task: tasks.CallDynamoDB.deleteItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS('message-007'),
+    },
+    tableName: 'my-table',
+  }),
+  resultPath: 'DISCARD',
+});
+```
+
+##### UpdateItem
+
+The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html) operation edits an existing item's attributes, or adds a new item
+to the table if it does not already exist.
+
+```ts
+const updateItemTask = new sfn.Task(this, 'UpdateItem', {
+  task: tasks.CallDynamoDB.updateItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS('message-007'),
+    },
+    tableName: 'my-table',
+    expressionAttributeValues: {
+      ':val': new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.Item.TotalCount.N')),
+      ':rand': new tasks.DynamoAttributeValue().withN('20'),
+    },
+    updateExpression: 'SET TotalCount = :val + :rand',
+  }),
+});
+```
+
 #### Lambda
+
+##### Invoke
 
 Step Functions supports calling [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) on a Lambda function.
 
@@ -108,15 +194,15 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
-  const task = new sfn.Task(stack, 'Invoke with callback', {
-    task: new tasks.RunLambdaTask(myLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      payload: {
-        token: sfn.Context.taskToken,
-        input: sfn.TaskInput.fromDataAt('$.someField'),
-      }
-    })
-  });
+const task = new sfn.Task(stack, 'Invoke with callback', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    payload: {
+      token: sfn.Context.taskToken,
+      input: sfn.TaskInput.fromDataAt('$.someField'),
+    },
+  }),
+});
 ```
 
 ⚠️ The Lambda function should call `SendTaskSuccess` or `SendTaskFailure` with the
