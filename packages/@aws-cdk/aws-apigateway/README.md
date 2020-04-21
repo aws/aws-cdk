@@ -845,10 +845,14 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
-## Gateway response
-To add specific paramters or change the api response you can configure gateway response at the api level.
-A gateway response is indentified by response type defined by API gateway.
-For supported event types refer to [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html)
+## Gateway responses
+
+If the Rest API fails to process an incoming request, it returns to the client an error response without forwarding the
+request to the integration backend. API Gateway has a set of standard response messages that are sent to the client for
+each type of error. These error responses can be configured on the Rest API. The list of Gateway responses that can be
+configured can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html).
+Learn more about [Gateway
+Responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-gatewayResponse-definition.html).
 
 Here is an example to configure gateway response for supported response type:
 
