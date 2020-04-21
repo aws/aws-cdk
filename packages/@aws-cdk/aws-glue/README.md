@@ -41,7 +41,7 @@ new glue.Table(stack, 'MyTable', {
     type: glue.Schema.array(Schema.string),
     comment: 'col2 is an array of strings' // comment is optional
   }]
-  dataFormat: glue.DataFormat.Json
+  dataFormat: glue.DataFormat.JSON
 });
 ```
 
@@ -74,7 +74,7 @@ new glue.Table(stack, 'MyTable', {
     name: 'month',
     type: glue.Schema.smallint
   }],
-  dataFormat: glue.DataFormat.Json
+  dataFormat: glue.DataFormat.JSON
 });
 ```
 
