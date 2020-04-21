@@ -142,7 +142,7 @@ export class BastionHostLinux extends Construct implements IInstance {
       actions: [
         'ssmmessages:*',
         'ssm:UpdateInstanceInformation',
-        'ec2messages:*'
+        'ec2messages:*',
       ],
       resources: ['*'],
     }));

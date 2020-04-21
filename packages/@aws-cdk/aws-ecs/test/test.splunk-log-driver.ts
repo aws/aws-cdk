@@ -21,9 +21,9 @@ export = {
       image,
       logging: new ecs.SplunkLogDriver({
         token: cdk.SecretValue.secretsManager('my-splunk-token'),
-        url: 'my-splunk-url'
+        url: 'my-splunk-url',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -34,11 +34,11 @@ export = {
             LogDriver: 'splunk',
             Options: {
               'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
-              'splunk-url': 'my-splunk-url'
-            }
-          }
-        }
-      ]
+              'splunk-url': 'my-splunk-url',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -50,9 +50,9 @@ export = {
       image,
       logging: ecs.LogDrivers.splunk({
         token: cdk.SecretValue.secretsManager('my-splunk-token'),
-        url: 'my-splunk-url'
+        url: 'my-splunk-url',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -63,11 +63,11 @@ export = {
             LogDriver: 'splunk',
             Options: {
               'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
-              'splunk-url': 'my-splunk-url'
-            }
-          }
-        }
-      ]
+              'splunk-url': 'my-splunk-url',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -80,9 +80,9 @@ export = {
       logging: ecs.LogDrivers.splunk({
         token: cdk.SecretValue.secretsManager('my-splunk-token'),
         url: 'my-splunk-url',
-        sourceType: 'my-source-type'
+        sourceType: 'my-source-type',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -94,11 +94,11 @@ export = {
             Options: {
               'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
               'splunk-url': 'my-splunk-url',
-              'splunk-sourcetype': 'my-source-type'
-            }
-          }
-        }
-      ]
+              'splunk-sourcetype': 'my-source-type',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();

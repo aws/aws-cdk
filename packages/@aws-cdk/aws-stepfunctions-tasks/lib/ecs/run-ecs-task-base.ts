@@ -74,7 +74,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -137,7 +137,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
         AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
         SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
-      }
+      },
     };
   }
 
@@ -156,7 +156,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) })
+        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
       }),
     ];
 
@@ -166,8 +166,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForECSTaskRule'
-        })]
+          resourceName: 'StepFunctionsGetEventsForECSTaskRule',
+        })],
       }));
     }
 
@@ -199,7 +199,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
       Environment: override.environment && override.environment.map(e => ({
         Name: e.name,
         Value: e.value,
-      }))
+      })),
     });
   }
 

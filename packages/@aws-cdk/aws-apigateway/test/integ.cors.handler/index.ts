@@ -5,7 +5,7 @@ exports.handler = async (evt: any) => {
     statusCode: 200,
     body: 'hello, cors!',
     headers: {
-      'Access-Control-Allow-Origin': '*'
-    }
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };

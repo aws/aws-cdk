@@ -94,7 +94,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addStream(id: string, props: StreamOptions = {}): LogStream {
     return new LogStream(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -107,7 +107,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter {
     return new SubscriptionFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -120,7 +120,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
     return new MetricFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -144,7 +144,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       metricNamespace,
       metricName,
       filterPattern: FilterPattern.exists(jsonField),
-      metricValue: jsonField
+      metricValue: jsonField,
     });
 
     return new cloudwatch.Metric({ metricName, namespace: metricNamespace }).attachTo(this);

@@ -16,7 +16,7 @@ export = testCase({
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
     });
 
     // THEN
@@ -25,7 +25,7 @@ export = testCase({
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs10.x']
+      CompatibleRuntimes: ['nodejs10.x'],
     }));
 
     test.done();
@@ -38,7 +38,7 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
     });
 
     // WHEN
@@ -55,7 +55,7 @@ export = testCase({
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
-      OrganizationId: 'o-123456'
+      OrganizationId: 'o-123456',
     }));
 
     test.done();
@@ -81,16 +81,16 @@ export = testCase({
 
     // WHEN
     new lambda.LayerVersion(stack, 'layer', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code'))
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.45f085ecc03a1a22cf003fba3fab28e660c92bcfcd4d0c01b62c7cd191070a2d',
-        'aws:asset:property': 'Content'
-      }
+        'aws:asset:property': 'Content',
+      },
     }, ResourcePart.CompleteDefinition));
     test.done();
-  }
+  },
 });

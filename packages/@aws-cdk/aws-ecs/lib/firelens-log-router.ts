@@ -115,8 +115,8 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
       options: {
         'enable-ecs-log-metadata': firelensConfig.options.enableECSLogMetadata ? 'true' : 'false',
         'config-file-type': firelensConfig.options.configFileType!,
-        'config-file-value': firelensConfig.options.configFileValue
-      }
+        'config-file-value': firelensConfig.options.configFileValue,
+      },
     };
   }
 
@@ -141,9 +141,9 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
       'ecr:GetAuthorizationToken',
       'ecr:BatchCheckLayerAvailability',
       'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage'
+      'ecr:BatchGetImage',
     ],
-    resources: ['*']
+    resources: ['*'],
   }));
 
   // grant cloudwatch or firehose permissions to task role
@@ -155,23 +155,23 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
         'logs:CreateLogGroup',
         'logs:CreateLogStream',
         'logs:DescribeLogStreams',
-        'logs:PutLogEvents'
+        'logs:PutLogEvents',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   } else if (logName === 'firehose') {
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'firehose:PutRecordBatch',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   } else if (logName === 'kinesis') {
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'kinesis:PutRecords',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   }
 
@@ -209,8 +209,8 @@ export class FirelensLogRouter extends ContainerDefinition {
         options: {
           enableECSLogMetadata,
           configFileType,
-          configFileValue: options.configFileValue
-        }
+          configFileValue: options.configFileValue,
+        },
       };
 
       // grant s3 access permissions
@@ -219,13 +219,13 @@ export class FirelensLogRouter extends ContainerDefinition {
           actions: [
             's3:GetObject',
           ],
-          resources: [options.configFileValue]
+          resources: [options.configFileValue],
         }));
         props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetBucketLocation',
           ],
-          resources: [options.configFileValue.split('/')[0]]
+          resources: [options.configFileValue.split('/')[0]],
         }));
       }
     } else {

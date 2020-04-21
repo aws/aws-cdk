@@ -11,14 +11,14 @@ export = {
     // WHEN
     const bucket = new Bucket(stack, 'Bucket');
     bucket.addMetric({
-      id: 'test'
+      id: 'test',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
-        Id: 'test'
-      }]
+        Id: 'test',
+      }],
     }));
 
     test.done();
@@ -32,16 +32,16 @@ export = {
     new Bucket(stack, 'Bucket', {
       metrics: [{
         id: 'test',
-        prefix: 'prefix'
-      }]
+        prefix: 'prefix',
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
-        Prefix: 'prefix'
-      }]
+        Prefix: 'prefix',
+      }],
     }));
 
     test.done();
@@ -55,8 +55,8 @@ export = {
     new Bucket(stack, 'Bucket', {
       metrics: [{
         id: 'test',
-        tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'}
-      }]
+        tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
+      }],
     });
 
     // THEN
@@ -66,8 +66,8 @@ export = {
         TagFilters: [
           { Key: 'tagname1', Value: 'tagvalue1' },
           { Key: 'tagname2', Value: 'tagvalue2' },
-        ]
-      }]
+        ],
+      }],
     }));
 
     test.done();
@@ -82,14 +82,14 @@ export = {
       metrics: [
         {
           id: 'test',
-          tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'}
+          tagFilters: {tagname1: 'tagvalue1', tagname2: 'tagvalue2'},
 
         },
         {
           id: 'test2',
-          prefix: 'prefix'
+          prefix: 'prefix',
         },
-      ]
+      ],
     });
 
     // THEN
@@ -99,12 +99,12 @@ export = {
         TagFilters: [
           { Key: 'tagname1', Value: 'tagvalue1' },
           { Key: 'tagname2', Value: 'tagvalue2' },
-        ]
+        ],
       },
       {
         Id: 'test2',
-        Prefix: 'prefix'
-      }]
+        Prefix: 'prefix',
+      }],
     }));
 
     test.done();

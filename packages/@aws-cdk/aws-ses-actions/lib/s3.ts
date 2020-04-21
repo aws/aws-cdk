@@ -55,9 +55,9 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID
-        }
-      }
+          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+        },
+      },
     });
     this.props.bucket.addToResourcePolicy(s3Statement);
 
@@ -78,12 +78,12 @@ export class S3 implements ses.IReceiptRuleAction {
         conditions: {
           Null: {
             'kms:EncryptionContext:aws:ses:rule-name': 'false',
-            'kms:EncryptionContext:aws:ses:message-id': 'false'
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID
-          }
-        }
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID,
+          },
+        },
       });
 
       this.props.kmsKey.addToResourcePolicy(kmsStatement);
@@ -94,8 +94,8 @@ export class S3 implements ses.IReceiptRuleAction {
         bucketName: this.props.bucket.bucketName,
         kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

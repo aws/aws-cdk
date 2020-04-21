@@ -340,7 +340,7 @@ abstract class BucketBase extends Resource implements IBucket {
         resources: {
           ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },
-      }
+      },
     });
     return rule;
   }
@@ -391,7 +391,7 @@ abstract class BucketBase extends Resource implements IBucket {
         eventName: [
           'CompleteMultipartUpload',
           'CopyObject',
-          'PutObject'
+          'PutObject',
         ],
         requestParameters: {
           bucketName: [ this.bucketName ],
@@ -648,12 +648,12 @@ export class BlockPublicAccess {
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
-    restrictPublicBuckets: true
+    restrictPublicBuckets: true,
   });
 
   public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
-    ignorePublicAcls: true
+    ignorePublicAcls: true,
   });
 
   public blockPublicAcls: boolean | undefined;
@@ -1215,7 +1215,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`
+        description: `Created by ${this.node.path}`,
       });
 
       const bucketEncryption = {
@@ -1223,10 +1223,10 @@ export class Bucket extends BucketBase {
           {
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
-              kmsMasterKeyId: encryptionKey.keyArn
-            }
-          }
-        ]
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
       };
       return { encryptionKey, bucketEncryption };
     }
@@ -1234,8 +1234,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+        ],
       };
 
       return { bucketEncryption };
@@ -1244,8 +1244,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+        ],
       };
       return { bucketEncryption };
     }
@@ -1278,16 +1278,16 @@ export class Bucket extends BucketBase {
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
-          transitionInDays: t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter.toDays(),
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
-          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
-        tagFilters: self.parseTagFilters(rule.tagFilters)
+        tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
       return x;
@@ -1318,7 +1318,7 @@ export class Bucket extends BucketBase {
       return {
         id: metric.id,
         prefix: metric.prefix,
-        tagFilters: self.parseTagFilters(metric.tagFilters)
+        tagFilters: self.parseTagFilters(metric.tagFilters),
       };
     }
   }
@@ -1337,7 +1337,7 @@ export class Bucket extends BucketBase {
         allowedHeaders: rule.allowedHeaders,
         allowedMethods: rule.allowedMethods,
         allowedOrigins: rule.allowedOrigins,
-        exposedHeaders: rule.exposedHeaders
+        exposedHeaders: rule.exposedHeaders,
       };
     }
   }
@@ -1349,7 +1349,7 @@ export class Bucket extends BucketBase {
 
     return Object.keys(tagFilters).map(tag => ({
       key: tag,
-      value: tagFilters[tag]
+      value: tagFilters[tag],
     }));
   }
 
@@ -1379,7 +1379,7 @@ export class Bucket extends BucketBase {
           replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
           replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
-        routingRuleCondition: rule.condition
+        routingRuleCondition: rule.condition,
       };
     }) : undefined;
 
@@ -1387,7 +1387,7 @@ export class Bucket extends BucketBase {
       indexDocument: props.websiteIndexDocument,
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
-      routingRules
+      routingRules,
     };
   }
 

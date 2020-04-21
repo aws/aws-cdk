@@ -31,8 +31,8 @@ export = {
         id: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
         packaging: 'container-image',
         path: 'asset.baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
-        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
-      }
+        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+      },
     ]);
     test.done();
   },
@@ -45,8 +45,8 @@ export = {
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
-        a: 'b'
-      }
+        a: 'b',
+      },
     });
 
     // THEN
@@ -63,9 +63,9 @@ export = {
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
-        a: 'b'
+        a: 'b',
       },
-      target: 'a-target'
+      target: 'a-target',
     });
 
     // THEN
@@ -82,7 +82,7 @@ export = {
     // WHEN
     new DockerImageAsset(stack, 'Image', {
       directory: directoryPath,
-      file: 'Dockerfile.Custom'
+      file: 'Dockerfile.Custom',
     });
 
     // THEN
@@ -96,7 +96,7 @@ export = {
     const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     // WHEN
@@ -110,7 +110,7 @@ export = {
             'Action': [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage'
+              'ecr:BatchGetImage',
             ],
             'Effect': 'Allow',
             'Resource': {
@@ -119,35 +119,35 @@ export = {
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition'
+                    'Ref': 'AWS::Partition',
                   },
                   ':ecr:',
                   {
-                    'Ref': 'AWS::Region'
+                    'Ref': 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId'
+                    'Ref': 'AWS::AccountId',
                   },
-                  ':repository/aws-cdk/assets'
-                ]
-              ]
-            }
+                  ':repository/aws-cdk/assets',
+                ],
+              ],
+            },
           },
           {
             'Action': 'ecr:GetAuthorizationToken',
             'Effect': 'Allow',
-            'Resource': '*'
-          }
+            'Resource': '*',
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'MyUserDefaultPolicy7B897426',
       'Users': [
         {
-          'Ref': 'MyUserDC45028B'
-        }
-      ]
+          'Ref': 'MyUserDC45028B',
+        },
+      ],
     }));
 
     test.done();
@@ -160,7 +160,7 @@ export = {
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'MyAsset', {
-        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`
+        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }, /Cannot find image directory at/);
     test.done();
@@ -173,7 +173,7 @@ export = {
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
-        directory: __dirname
+        directory: __dirname,
       });
     }, /Cannot find file at/);
     test.done();
@@ -187,7 +187,7 @@ export = {
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname,
-        file: 'doesnt-exist'
+        file: 'doesnt-exist',
       });
     }, /Cannot find file at/);
     test.done();
@@ -198,7 +198,7 @@ export = {
     const stack = new Stack(app, 'stack');
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     const session = app.synth();
@@ -213,7 +213,7 @@ export = {
     const stack = new Stack(app, 'stack');
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image')
+      directory: path.join(__dirname, 'dockerignore-image'),
     });
 
     const session = app.synth();
@@ -235,7 +235,7 @@ export = {
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'dockerignore-image'),
-      exclude: ['subdirectory']
+      exclude: ['subdirectory'],
     });
 
     const session = app.synth();
@@ -259,12 +259,12 @@ export = {
     // THEN
     test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
       directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { [token]: 'value' }
+      buildArgs: { [token]: 'value' },
     }), expected);
 
     test.throws(() => new DockerImageAsset(stack, 'MyAsset2', {
       directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { key: token }
+      buildArgs: { key: token },
     }), expected);
 
     test.done();
@@ -278,7 +278,7 @@ export = {
     // THEN
     test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
       directory: path.join(__dirname, 'demo-image'),
-      repositoryName: token
+      repositoryName: token,
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
@@ -305,5 +305,5 @@ export = {
     test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
     test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
-  }
+  },
 };

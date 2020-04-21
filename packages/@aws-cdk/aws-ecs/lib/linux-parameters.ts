@@ -110,7 +110,7 @@ export class LinuxParameters extends cdk.Construct {
         drop: cdk.Lazy.listValue({  produce: () => this.capDrop }, { omitEmpty: true}),
       },
       devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true })
+      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
     };
   }
 }
@@ -144,7 +144,7 @@ function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
   return {
     containerPath: device.containerPath,
     hostPath: device.hostPath,
-    permissions: device.permissions
+    permissions: device.permissions,
   };
 }
 
@@ -173,7 +173,7 @@ function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
   return {
     containerPath: tmpfs.containerPath,
     size: tmpfs.size,
-    mountOptions: tmpfs.mountOptions
+    mountOptions: tmpfs.mountOptions,
   };
 }
 

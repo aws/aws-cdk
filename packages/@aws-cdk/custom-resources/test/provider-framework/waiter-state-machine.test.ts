@@ -43,12 +43,12 @@ describe('state machine', () => {
             stack.resolve(isCompleteHandler.functionArn),
             '"},"framework-onTimeout-task":{"End":true,"Type":"Task","Resource":"',
             stack.resolve(timeoutHandler.functionArn),
-            '"}}}'
-          ]
-        ]
+            '"}}}',
+          ],
+        ],
       },
       RoleArn: {
-        'Fn::GetAtt': [ roleId, 'Arn' ]
+        'Fn::GetAtt': [ roleId, 'Arn' ],
       },
     });
     expect(stack).toHaveResourceLike('AWS::IAM::Role', {
@@ -64,15 +64,15 @@ describe('state machine', () => {
                   [
                     'states.',
                     stack.resolve(stack.region),
-                    '.amazonaws.com'
-                  ]
-                ]
-              }
-            }
-          }
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     });
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -88,9 +88,9 @@ describe('state machine', () => {
             Resource: stack.resolve(timeoutHandler.functionArn),
           },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
-      Roles: [{ Ref: roleId }]
+      Roles: [{ Ref: roleId }],
     });
   });
 });
