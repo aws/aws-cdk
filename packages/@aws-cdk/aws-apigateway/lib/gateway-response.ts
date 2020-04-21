@@ -141,6 +141,7 @@ export class ResponseType {
   /**
    * The gateway response for an integration timed out error.
    */
+  // tslint:disable:duration-prop-type
   public static readonly INTEGRATION_TIMEOUT = new ResponseType('INTEGRATION_TIMEOUT');
 
   /**
