@@ -854,7 +854,7 @@ configured can be found [here](https://docs.aws.amazon.com/apigateway/latest/dev
 Learn more about [Gateway
 Responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-gatewayResponse-definition.html).
 
-Here is an example to configure gateway response for supported response type:
+The following code configures a Gateway Response when the response is 'access denied':
 
 ```ts
 const api = new apigateway.RestApi(this, 'books-api');
@@ -869,24 +869,6 @@ api.addGatewayResponse('test-response', {
         'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"
       }
 });
-```
-
-You can also initialized a new gateway response for an exixting api as below :
-
-```ts
-const api = apigateway.RestApi.fromRestApiId(this, 'books-api', 'abhb8fds');
-new GatewayResponse(this, id, {
-      restApi: api,
-      type: ResponseType.ACCESS_DENIED,
-      statusCode: '500',
-      parameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
-        'gatewayresponse.header.test-key': 'test-value'
-      },
-      templates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"
-      }
-    });
 ```
 
 ## APIGateway v2
