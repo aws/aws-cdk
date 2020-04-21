@@ -98,6 +98,40 @@ test('Lambda function can be used in a Task with Task Token', () => {
   });
 });
 
+test('Lambda function can be provided with the task input as the payload', () => {
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.RunLambdaTask(fn, {
+      payload: sfn.TaskInput.fromDataAt('$'),
+    }),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::lambda:invoke',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'FunctionName': {
+        Ref: 'Fn9270CBC0',
+      },
+      'Payload.$': '$',
+    },
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in payLoad', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
