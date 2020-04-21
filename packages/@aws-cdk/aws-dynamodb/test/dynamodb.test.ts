@@ -314,7 +314,7 @@ test('when specifying every property', () => {
     readCapacity: 42,
     writeCapacity: 1337,
     pointInTimeRecovery: true,
-    serverSideEncryption: TableEncryption.AWS_Managed,
+    serverSideEncryption: true,
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
     timeToLiveAttribute: 'timeToLive',
@@ -351,7 +351,7 @@ test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
-    serverSideEncryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.Customer_Managed,
     partitionKey: TABLE_PARTITION_KEY
   });
   table.node.applyAspect(new Tag('Environment', 'Production'));
@@ -377,7 +377,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
   });
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
-    serverSideEncryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.Customer_Managed,
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
@@ -405,9 +405,9 @@ test('fails if encryption key is used with customer managed encryption', () => {
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
-    serverSideEncryption: TableEncryption.AWS_Managed,
+    encryption: TableEncryption.AWS_Managed,
     encryptionKey
-  })).toThrow(/encryptionKey is specified, so 'requireServerSideEncryption' must be set to Customer_Managed/);
+  })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
 });
 
 test('fails if encryption key is used with default encryption', () => {
@@ -418,9 +418,32 @@ test('fails if encryption key is used with default encryption', () => {
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
-    serverSideEncryption: TableEncryption.Default,
+    encryption: TableEncryption.Default,
     encryptionKey
-  })).toThrow(/encryptionKey is specified, so 'requireServerSideEncryption' must be set to Customer_Managed/);
+  })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
+});
+
+test('fails if encryption key is used with serverSideEncryption', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    serverSideEncryption: true,
+    encryptionKey
+  })).toThrow(/encryptionKey cannot be specified for serverSideEncryption, use encryption instead/);
+});
+
+test('fails if both encryption and serverSideEncryption is specified', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.Default,
+    serverSideEncryption: true
+  })).toThrow(/Both encryption and serverSideEncryption is specified, only either field can be set, not both/);
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {

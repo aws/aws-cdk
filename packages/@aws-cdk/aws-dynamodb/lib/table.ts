@@ -92,8 +92,17 @@ export interface TableOptions {
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    * @default - server-side encryption is enabled with an AWS owned customer master key
+   * 
+   * @deprecated - This property is deprecated, use encryption instead
    */
-  readonly serverSideEncryption?: TableEncryption;
+  readonly serverSideEncryption?: boolean;
+
+  /**
+   * Whether server-side encryption with an AWS managed customer master key is enabled.
+   * @default - server-side encryption is enabled with an AWS owned customer master key
+   * 
+   */
+  readonly encryption?: TableEncryption;
 
   /**
    * The name of TTL attribute.
@@ -1178,14 +1187,22 @@ export class Table extends TableBase {
    * user's configuration.
    */
   private parseEncryption(props:TableProps): {sseSpecification: CfnTable.SSESpecificationProperty, encryptionKey?: kms.IKey} {
-    let encryptionType = props.serverSideEncryption;
+    let encryptionType = props.encryption;
 
+    if (encryptionType !== undefined && props.serverSideEncryption) {
+      throw new Error(`Both encryption and serverSideEncryption is specified, only either field can be set, not both`);
+    }
+    
     if (encryptionType === undefined) {
       encryptionType = props.encryptionKey ? TableEncryption.Customer_Managed : TableEncryption.Default;
     }
+
+    if (props.serverSideEncryption && props.encryptionKey) {
+      throw new Error(`encryptionKey cannot be specified for serverSideEncryption, use encryption instead`);
+    }
     
     if (encryptionType !== TableEncryption.Customer_Managed && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'requireServerSideEncryption' must be set to Customer_Managed`);
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to Customer_Managed`);
     }
 
     if (encryptionType === TableEncryption.Customer_Managed) {
@@ -1197,7 +1214,7 @@ export class Table extends TableBase {
       return { sseSpecification: {sseEnabled: true, kmsMasterKeyId: encryptionKey.keyArn, sseType: 'KMS'}, encryptionKey };
     }
 
-    if (encryptionType === TableEncryption.AWS_Managed) {
+    if (encryptionType === TableEncryption.AWS_Managed || props.serverSideEncryption) {
       return { sseSpecification: {sseEnabled: true, sseType: 'KMS'} };
     }
     if (encryptionType === TableEncryption.Default) {
