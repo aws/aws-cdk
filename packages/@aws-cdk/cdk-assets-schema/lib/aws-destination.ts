@@ -23,4 +23,3 @@ export interface AwsDestination {
    */
   readonly assumeRoleExternalId?: string;
 }
-

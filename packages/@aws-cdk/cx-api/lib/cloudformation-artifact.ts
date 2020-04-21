@@ -150,7 +150,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
 
     this.stackName = properties.stackName || artifactId;
-    this.template = JSON.parse(fs.readFileSync(path.resolve(this.assembly.directory, this.templateFile), 'utf-8'));
+    this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId

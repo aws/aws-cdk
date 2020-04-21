@@ -30,7 +30,7 @@ describe('Bootstrapping', () => {
         userAgent: 'aws-cdk-bootstrap-integ-test',
       }
     });
-    sdk = await sdkProvider.forEnvironment(env.account, env.region, Mode.ForWriting);
+    sdk = await sdkProvider.forEnvironment(env, Mode.ForWriting);
     s3 = sdk.s3();
   });
 
@@ -45,8 +45,11 @@ describe('Bootstrapping', () => {
 
     beforeAll(async () => {
       // bootstrap the "old" way
-      const bootstrapResults = await bootstrapEnvironment(env, sdkProvider, bootstrapStackName, undefined, {
-        bucketName: legacyBootstrapBucketName,
+      const bootstrapResults = await bootstrapEnvironment(env, sdkProvider, {
+        toolkitStackName: bootstrapStackName,
+        parameters: {
+          bucketName: legacyBootstrapBucketName,
+        }
       });
       bootstrapStack = bootstrapResults.stackArtifact;
     });
@@ -63,13 +66,16 @@ describe('Bootstrapping', () => {
     describe('and then updates the bootstrap stack with the new resources', () => {
       beforeAll(async () => {
         // bootstrap the "new" way
-        const bootstrapResults = await bootstrapEnvironment2(env, sdkProvider, bootstrapStackName, undefined, {
-          bucketName: newBootstrapBucketName,
-          trustedAccounts: ['790124522186', '593667001225'],
-          cloudFormationExecutionPolicies: [
-            'arn:aws:iam::aws:policy/AdministratorAccess',
-            'arn:aws:iam::aws:policy/AmazonS3FullAccess',
-          ],
+        const bootstrapResults = await bootstrapEnvironment2(env, sdkProvider, {
+          toolkitStackName: bootstrapStackName,
+          parameters: {
+            bucketName: newBootstrapBucketName,
+            trustedAccounts: ['790124522186', '593667001225'],
+            cloudFormationExecutionPolicies: [
+              'arn:aws:iam::aws:policy/AdministratorAccess',
+              'arn:aws:iam::aws:policy/AmazonS3FullAccess',
+            ],
+          }
         });
         bootstrapStack = bootstrapResults.stackArtifact;
       });

@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap';
 import { waitForStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';

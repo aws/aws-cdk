@@ -1,11 +1,10 @@
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { CloudFormationStackArtifact, Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
 import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
-import { replaceAwsPlaceholders } from './util/placeholders';
 
 export interface DeployStackOptions {
   /**
@@ -170,27 +169,46 @@ export class CloudFormationDeployments {
    * - The Execution Role that should be passed to CloudFormation.
    */
   private async prepareSdkFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
+    if (!stack.environment) {
+      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+    }
+
+    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+
     // Substitute any placeholders with information about the current environment
-    const arns = await replaceAwsPlaceholders({
+    const arns = await this.replaceEnvPlaceholders({
       assumeRoleArn: stack.assumeRoleArn,
 
       // Use the override if given, otherwise use the field from the stack
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
-    }, this.sdkProvider);
-
-    if (!stack.environment) {
-      throw new Error(`The stack ${stack.displayName} does not have an environment`);
-    }
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment.account, stack.environment.region);
+    }, resolvedEnvironment);
 
     const stackSdk = arns.assumeRoleArn
       ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
-      : await this.sdkProvider.forEnvironment(resolvedEnvironment.account, resolvedEnvironment.region, mode);
+      : await this.sdkProvider.forEnvironment(resolvedEnvironment, mode);
 
     return {
       stackSdk,
       resolvedEnvironment,
       cloudFormationRoleArn: arns.cloudFormationRoleArn,
     };
+  }
+
+  /**
+   * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
+   */
+  private async replaceEnvPlaceholders<A extends { }>(object: A, env: Environment): Promise<A> {
+    return EnvironmentPlaceholders.replaceAsync(object, {
+      accountId: () => Promise.resolve(env.account),
+      region: () => Promise.resolve(env.region),
+      partition: async () => {
+        // We need to do a rather complicated dance here to get the right
+        // partition value to substitute into placeholders :(
+        const defaultAccount = await this.sdkProvider.defaultAccount();
+        return env.account === defaultAccount?.accountId
+          ? defaultAccount.partition
+          : (await (await this.sdkProvider.forEnvironment(env, Mode.ForReading)).currentAccount()).partition;
+      }
+    });
   }
 }

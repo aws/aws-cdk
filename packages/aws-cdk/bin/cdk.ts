@@ -221,7 +221,7 @@ async function initCommandLine() {
             execute: args.execute,
             trustedAccounts: args.trust,
             cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
-        });
+          });
 
       case 'deploy':
         const parameterMap: { [name: string]: string | undefined } = {};

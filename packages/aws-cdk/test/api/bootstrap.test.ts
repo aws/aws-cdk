@@ -46,7 +46,7 @@ beforeEach(() => {
 
 test('do bootstrap', async () => {
   // WHEN
-  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined);
+  const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
 
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
@@ -59,8 +59,11 @@ test('do bootstrap', async () => {
 
 test('do bootstrap using custom bucket name', async () => {
   // WHEN
-  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    bucketName: 'foobar',
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      bucketName: 'foobar',
+    }
   });
 
   // THEN
@@ -74,8 +77,11 @@ test('do bootstrap using custom bucket name', async () => {
 
 test('do bootstrap using KMS CMK', async () => {
   // WHEN
-  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    kmsKeyId: 'myKmsKey',
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      kmsKeyId: 'myKmsKey',
+    }
   });
 
   // THEN
@@ -89,8 +95,11 @@ test('do bootstrap using KMS CMK', async () => {
 
 test('do bootstrap with custom tags for toolkit stack', async () => {
   // WHEN
-  const ret = await bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    tags: [{ Key: 'Foo', Value: 'Bar' }]
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      tags: [{ Key: 'Foo', Value: 'Bar' }]
+    }
   });
 
   // THEN
@@ -103,16 +112,22 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
 });
 
 test('passing trusted accounts to the old bootstrapping results in an error', async () => {
-  await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    trustedAccounts: ['0123456789012'],
+  await expect(bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      trustedAccounts: ['0123456789012'],
+    }
   }))
     .rejects
     .toThrow('--trust can only be passed for the new bootstrap experience!');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
-  await expect(bootstrapEnvironment(env, sdk, 'mockStack', undefined, {
-    cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
+  await expect(bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
+    }
   }))
     .rejects
     .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience!');

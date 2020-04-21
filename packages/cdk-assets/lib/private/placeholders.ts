@@ -14,7 +14,7 @@ export async function replaceAwsPlaceholders<A extends { region?: string }>(obje
     return a;
   };
 
-  return EnvironmentPlaceholders.replace(object, {
+  return EnvironmentPlaceholders.replaceAsync(object, {
     async region() {
       return object.region ?? aws.discoverDefaultRegion();
     },

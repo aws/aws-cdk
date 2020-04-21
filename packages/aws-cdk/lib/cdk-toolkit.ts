@@ -457,7 +457,7 @@ export class CdkToolkit {
    * Publish all asset manifests that are referenced by the given stack
    */
   private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact) {
-    const stackEnv = await this.props.sdkProvider.resolveEnvironmentObject(stack.environment);
+    const stackEnv = await this.props.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {

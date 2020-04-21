@@ -3,7 +3,7 @@
  *
  * Account validation is relaxed to allow account aliasing in the future.
  */
-const AWS_ENV_REGEX = /aws\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
+const AWS_ENV_REGEX = /(aws(?:-[a-z-]+)?)\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
 
 /**
  * Models an AWS execution environment, for use within the CDK toolkit.
@@ -31,14 +31,28 @@ export class EnvironmentUtils {
         'Expected format: aws://account/region');
     }
 
-    const [ , account, region ] = env;
-    if (!account || !region) {
+    const [ , partition, account, region ] = env;
+    if (!partition || !account || !region) {
       throw new Error(`Invalid environment specification: ${environment}`);
     }
 
-    return { account, region, name: environment };
+    return {
+      account,
+      region,
+      name: environment,
+    };
   }
 
+  /**
+   * Build an environment object from an account and region
+   */
+  public static make(account: string, region: string): Environment {
+    return { account, region, name: this.format(account, region) };
+  }
+
+  /**
+   * Format an environment string from an account and region
+   */
   public static format(account: string, region: string): string {
     return `aws://${account}/${region}`;
   }

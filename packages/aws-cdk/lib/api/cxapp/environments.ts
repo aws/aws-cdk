@@ -13,7 +13,7 @@ export async function globEnvironmentsFromStacks(stacks: StackCollection, enviro
 
   const availableEnvironments = new Array<cxapi.Environment>();
   for (const stack of stacks.stackArtifacts) {
-    const actual = await sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
+    const actual = await sdk.resolveEnvironment(stack.environment);
     availableEnvironments.push(actual);
   }
 

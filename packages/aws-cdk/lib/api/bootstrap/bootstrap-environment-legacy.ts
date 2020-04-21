@@ -5,7 +5,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
-import { ToolkitInfo } from '../toolkit-info';
+import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { BootstrapEnvironmentOptions, bootstrapVersionFromTemplate, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap-props';
 
 // tslint:disable:max-line-length
@@ -13,6 +13,7 @@ import { BootstrapEnvironmentOptions, bootstrapVersionFromTemplate, BUCKET_DOMAI
 /** @experimental */
 export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
   const props = options.parameters ?? {};
+  const toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
   if (props.trustedAccounts?.length) {
     throw new Error('--trust can only be passed for the new bootstrap experience!');
@@ -84,13 +85,13 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
     }
   };
 
-  const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment.account, environment.region);
-  const sdk = await sdkProvider.forEnvironment(environment.account, environment.region, Mode.ForWriting);
-  const currentBootstrapStack = await ToolkitInfo.lookup(resolvedEnvironment, sdk,  options.toolkitStackName);
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
+  const sdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting);
+  const currentBootstrapStack = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
 
   const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));
   const builder = new cxapi.CloudAssemblyBuilder(outdir);
-  const templateFile = `${options.toolkitStackName}.template.json`;
+  const templateFile = `${toolkitStackName}.template.json`;
 
   const newVersion = bootstrapVersionFromTemplate(template);
   if (currentBootstrapStack && newVersion < currentBootstrapStack.version && !options.force) {
@@ -99,7 +100,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
 
   await fs.writeJson(path.join(builder.outdir, templateFile), template, { spaces: 2 });
 
-  builder.addArtifact(options.toolkitStackName, {
+  builder.addArtifact(toolkitStackName, {
     type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
@@ -110,9 +111,9 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
   const assembly = builder.buildAssembly();
 
   return await deployStack({
-    stack: assembly.getStackByName(options.toolkitStackName),
+    stack: assembly.getStackByName(toolkitStackName),
     resolvedEnvironment,
-    sdk: await sdkProvider.forEnvironment(environment.account, environment.region, Mode.ForWriting),
+    sdk: await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting),
     sdkProvider,
     roleArn: options.roleArn,
     tags: props.tags,

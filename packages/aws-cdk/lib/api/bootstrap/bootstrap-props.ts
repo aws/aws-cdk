@@ -13,8 +13,8 @@ export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
  * Options for the bootstrapEnvironment operation(s)
  */
 export interface BootstrapEnvironmentOptions {
-  readonly toolkitStackName: string;
-  readonly roleArn: string | undefined;
+  readonly toolkitStackName?: string;
+  readonly roleArn?: string;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;
 }
