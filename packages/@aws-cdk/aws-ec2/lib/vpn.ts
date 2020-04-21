@@ -108,6 +108,9 @@ export interface VpnGatewayProps {
   readonly amazonSideAsn?: number;
 }
 
+/**
+ * Options for the Vpc.enableVpnGateway() method
+ */
 export interface EnableVpnGatewayOptions extends VpnGatewayProps {
   /**
    * Provide an array of subnets where the route propagation shoud be added.
@@ -154,7 +157,10 @@ export class VpnGateway extends cdk.Resource implements IVpnGateway {
   constructor(scope: cdk.Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
 
-    const vpnGW = new CfnVPNGateway(this, 'Resource', props);
+    // This is 'Default' instead of 'Resource', because using 'Default' will generate
+    // a logical ID for a VpnGateway which is exactly the same as the logical ID that used
+    // to be created for the CfnVPNGateway (and 'Resource' would not do that).
+    const vpnGW = new CfnVPNGateway(this, 'Default', props);
     this.gatewayId = vpnGW.ref;
   }
 }

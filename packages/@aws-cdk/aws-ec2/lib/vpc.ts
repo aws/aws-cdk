@@ -323,7 +323,7 @@ abstract class VpcBase extends Resource implements IVpc {
   /**
    * Mutable private field for the vpnGatewayId
    */
-  protected mutabeVpnGatewayId?: string;
+  protected mutableVpnGatewayId?: string;
   // NOTE: Would have preferred to name this _mutableVpnGatewayId but jsii requires that
   // to be marked @internal and I don't want that.
 
@@ -356,11 +356,11 @@ abstract class VpcBase extends Resource implements IVpc {
       type: VpnConnectionType.IPSEC_1
     });
 
-    this.mutabeVpnGatewayId = vpnGateway.gatewayId;
+    this.mutableVpnGatewayId = vpnGateway.gatewayId;
 
     const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
-      vpnGatewayId: this.mutabeVpnGatewayId,
+      vpnGatewayId: this.mutableVpnGatewayId,
     });
 
     // Propagate routes on route tables associated with the right subnets
@@ -368,7 +368,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
       routeTableIds,
-      vpnGatewayId: this.mutabeVpnGatewayId
+      vpnGatewayId: this.mutableVpnGatewayId
     });
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
@@ -420,7 +420,7 @@ abstract class VpcBase extends Resource implements IVpc {
    * Returns the id of the VPN Gateway (if enabled)
    */
   public get vpnGatewayId(): string | undefined {
-    return this.mutabeVpnGatewayId;
+    return this.mutableVpnGatewayId;
   }
 
   /**
@@ -1687,7 +1687,7 @@ class ImportedVpc extends VpcBase {
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
-    this.mutabeVpnGatewayId = props.vpnGatewayId;
+    this.mutableVpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     // tslint:disable:max-line-length
