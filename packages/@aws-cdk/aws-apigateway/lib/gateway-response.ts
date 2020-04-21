@@ -58,7 +58,7 @@ export interface GatewayResponseOptions {
 export class GatewayResponse extends Resource {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id, {
-      physicalName: props.gatewayResponseName
+      physicalName: props.gatewayResponseName,
     });
 
     const resource = new CfnGatewayResponse(this, 'Resource', {
@@ -66,7 +66,7 @@ export class GatewayResponse extends Resource {
       responseType: props.type,
       responseParameters: props.parameters,
       responseTemplates: props.templates,
-      statusCode: props.statusCode
+      statusCode: props.statusCode,
     });
 
     this.node.defaultChild = resource;

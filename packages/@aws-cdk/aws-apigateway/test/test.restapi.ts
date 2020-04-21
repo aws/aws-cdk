@@ -823,7 +823,7 @@ export = {
 
     api.root.addMethod('GET');
     api.addGatewayResponse('test-response', {
-      type: apigw.ResponseType.ACCESS_DENIED
+      type: apigw.ResponseType.ACCESS_DENIED,
     });
 
     // THEN
@@ -832,7 +832,7 @@ export = {
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: ABSENT,
       ResponseParameters: ABSENT,
-      ResponseTemplates: ABSENT
+      ResponseTemplates: ABSENT,
     }));
 
     test.done();
@@ -854,8 +854,8 @@ export = {
       statusCode: '500',
       parameters: {
         'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
-        'gatewayresponse.header.test-key': 'test-value'
-      }
+        'gatewayresponse.header.test-key': 'test-value',
+      },
     });
 
     // THEN
@@ -865,9 +865,9 @@ export = {
       StatusCode: '500',
       ResponseParameters: {
         'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
-        'gatewayresponse.header.test-key': 'test-value'
+        'gatewayresponse.header.test-key': 'test-value',
       },
-      ResponseTemplates: ABSENT
+      ResponseTemplates: ABSENT,
     }));
 
     test.done();
@@ -888,8 +888,8 @@ export = {
       type: apigw.ResponseType.AUTHORIZER_FAILURE,
       statusCode: '500',
       templates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }"
-      }
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }",
+      },
     });
 
     // THEN
@@ -899,10 +899,10 @@ export = {
       StatusCode: '500',
       ResponseParameters: ABSENT,
       ResponseTemplates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }"
-      }
+        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }",
+      },
     }));
 
     test.done();
-  }
+  },
 };

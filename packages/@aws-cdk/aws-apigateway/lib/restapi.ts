@@ -397,7 +397,7 @@ export class RestApi extends Resource implements IRestApi {
   public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
     return new GatewayResponse(this, id, {
       restApi: this,
-      ...options
+      ...options,
     });
   }
 
