@@ -7,7 +7,6 @@
 > The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
-
 <!--END STABILITY BANNER-->
 
 [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html) is a web service that enables you to coordinate the
@@ -29,6 +28,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [PutItem](#putitem)
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
+  - [Batch](#batch)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
 
