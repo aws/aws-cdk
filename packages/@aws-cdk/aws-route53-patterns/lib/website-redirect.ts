@@ -7,7 +7,7 @@ import { Construct, RemovalPolicy } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 
 /**
- * Properties to configure an HTTPs Redirect
+ * Properties to configure an HTTPS Redirect
  */
 export interface HttpsRedirectProps {
   /**
