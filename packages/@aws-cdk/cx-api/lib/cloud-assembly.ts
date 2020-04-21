@@ -234,7 +234,7 @@ export class CloudAssemblyBuilder {
       version: cxschema.Manifest.version(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
-      missing: this.missing.length > 0 ? this.missing : undefined
+      missing: this.missing.length > 0 ? this.missing : undefined,
     };
 
     // now we can filter

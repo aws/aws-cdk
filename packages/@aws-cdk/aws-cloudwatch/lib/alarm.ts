@@ -329,9 +329,9 @@ export class Alarm extends Resource implements IAlarm {
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
-          }) as CfnAlarm.MetricDataQueryProperty)
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
-      }
+      },
     });
   }
 

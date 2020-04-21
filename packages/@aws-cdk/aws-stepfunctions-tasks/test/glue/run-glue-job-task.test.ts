@@ -11,10 +11,10 @@ beforeEach(() => {
 
 test('Invoke glue job with just job ARN', () => {
   const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.RunGlueJobTask(jobName)
+    task: new tasks.RunGlueJobTask(jobName),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -33,14 +33,14 @@ test('Invoke glue job with just job ARN', () => {
     },
     End: true,
     Parameters: {
-      JobName: jobName
+      JobName: jobName,
     },
   });
 });
 
 test('Invoke glue job with full properties', () => {
   const jobArguments = {
-    key: 'value'
+    key: 'value',
   };
   const timeoutMinutes = 1440;
   const timeout = Duration.minutes(timeoutMinutes);
@@ -53,11 +53,11 @@ test('Invoke glue job with full properties', () => {
       arguments: jobArguments,
       timeout,
       securityConfiguration,
-      notifyDelayAfter
-    })
+      notifyDelayAfter,
+    }),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -81,8 +81,8 @@ test('Invoke glue job with full properties', () => {
       Timeout: timeoutMinutes,
       SecurityConfiguration: securityConfiguration,
       NotificationProperty: {
-        NotifyDelayAfter: notifyDelayAfterMinutes
-      }
+        NotifyDelayAfter: notifyDelayAfterMinutes,
+      },
     },
   });
 });
@@ -91,18 +91,18 @@ test('permitted role actions limited to start job run if service integration pat
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunGlueJobTask(jobName, {
       integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-    })
+    }),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: 'glue:StartJobRun'
-      }]
-    }
+        Action: 'glue:StartJobRun',
+      }],
+    },
   });
 });
 
@@ -110,10 +110,10 @@ test('permitted role actions include start, get, and stop job run if service int
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunGlueJobTask(jobName, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-    })
+    }),
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -123,10 +123,10 @@ test('permitted role actions include start, get, and stop job run if service int
           'glue:StartJobRun',
           'glue:GetJobRun',
           'glue:GetJobRuns',
-          'glue:BatchStopJobRun'
-        ]
-      }]
-    }
+          'glue:BatchStopJobRun',
+        ],
+      }],
+    },
   });
 });
 
@@ -134,8 +134,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunGlueJobTask(jobName, {
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      })
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      }),
     });
   }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call Glue./i);
 });

@@ -19,7 +19,7 @@ export = {
       resourcePath: false,
       responseLength: false,
       status: false,
-      user: false
+      user: false,
     });
     test.deepEqual(testFormat.toString(), '{"requestId":"$context.requestId"}');
 
@@ -40,11 +40,11 @@ export = {
       method: apigateway.AccessLogField.contextHttpMethod(),
       userContext: {
         sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
-        email: apigateway.AccessLogField.contextAuthorizerClaims('email')
-      }
+        email: apigateway.AccessLogField.contextAuthorizerClaims('email'),
+      },
     }));
     test.deepEqual(testFormat.toString(), '{"requestId":"$context.requestId","sourceIp":"$context.identity.sourceIp","method":"$context.httpMethod","userContext":{"sub":"$context.authorizer.claims.sub","email":"$context.authorizer.claims.email"}}');
 
     test.done();
-  }
+  },
 };

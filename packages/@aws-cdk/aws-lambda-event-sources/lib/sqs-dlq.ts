@@ -15,7 +15,7 @@ export class SqsDlq implements IEventSourceDlq {
     this.queue.grantSendMessages(targetHandler);
 
     return {
-      destination: this.queue.queueArn
+      destination: this.queue.queueArn,
     };
   }
 }

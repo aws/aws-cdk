@@ -126,7 +126,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
           container.addPortMappings({
-            containerPort
+            containerPort,
           });
         }
       }
@@ -138,7 +138,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
-        containerPort: 80
+        containerPort: 80,
       });
     }
 
@@ -149,7 +149,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
-        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort
+        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
     }
   }

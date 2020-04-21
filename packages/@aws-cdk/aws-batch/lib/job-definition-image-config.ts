@@ -78,7 +78,7 @@ export class JobDefinitionImageConfig {
       user: container.user,
       taskDefinition: new TaskDefinition({
         executionRole: container.jobRole || new iam.LazyRole(scope, 'Resource-Batch-Task-Definition-Role', {
-          assumedBy: new iam.ServicePrincipal('batch.amazonaws.com')
+          assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
         }),
       }) as unknown as ecs.TaskDefinition,
     }));

@@ -116,7 +116,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -134,9 +134,9 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         { transformDataSource:
                     { s3DataSource:
                         { ...props.transformInput.transformDataSource.s3DataSource,
-                          s3DataType: S3DataType.S3_PREFIX
-                        }
-                    }
+                          s3DataType: S3DataType.S3_PREFIX,
+                        },
+                    },
         });
 
     // set the default value for the transform resources
@@ -152,8 +152,8 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
       this._role = new iam.Role(task, 'SagemakerTransformRole', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
         managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-        ]
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
+        ],
       });
     }
 
@@ -200,10 +200,10 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
           S3DataSource: {
             S3Uri: input.transformDataSource.s3DataSource.s3Uri,
             S3DataType: input.transformDataSource.s3DataSource.s3DataType,
-          }
+          },
         },
         ...(input.splitType) ? { SplitType: input.splitType } : {},
-      }
+      },
     };
   }
 
@@ -214,7 +214,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         ...(output.encryptionKey) ? { KmsKeyId: output.encryptionKey.keyArn } : {},
         ...(output.accept) ? { Accept: output.accept } : {},
         ...(output.assembleWith) ? { AssembleWith: output.assembleWith } : {},
-      }
+      },
     };
   }
 
@@ -224,7 +224,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         InstanceCount: resources.instanceCount,
         InstanceType: 'ml.' + resources.instanceType,
         ...(resources.volumeKmsKeyId) ? { VolumeKmsKeyId: resources.volumeKmsKeyId.keyArn } : {},
-      }
+      },
     };
   }
 
@@ -246,8 +246,8 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'sagemaker',
           resource: 'transform-job',
-          resourceName: '*'
-        })]
+          resourceName: '*',
+        })],
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
@@ -257,9 +257,9 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         actions: ['iam:PassRole'],
         resources: [this.role.roleArn],
         conditions: {
-          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' }
-        }
-      })
+          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' },
+        },
+      }),
     ];
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
@@ -268,8 +268,8 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule'
-        }) ]
+          resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule',
+        }) ],
       }));
     }
 

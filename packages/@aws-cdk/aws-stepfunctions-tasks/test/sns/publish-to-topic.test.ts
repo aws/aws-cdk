@@ -10,7 +10,7 @@ test('Publish literal message to SNS topic', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromText('Publish this message')
+    message: sfn.TaskInput.fromText('Publish this message'),
   }) });
 
   // THEN
@@ -31,7 +31,7 @@ test('Publish literal message to SNS topic', () => {
     End: true,
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
-      Message: 'Publish this message'
+      Message: 'Publish this message',
     },
   });
 });
@@ -46,8 +46,8 @@ test('Publish JSON to SNS topic with task token', () => {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     message: sfn.TaskInput.fromObject({
       Input: 'Publish this message',
-      Token: sfn.Context.taskToken
-    })
+      Token: sfn.Context.taskToken,
+    }),
   }) });
 
   // THEN
@@ -70,8 +70,8 @@ test('Publish JSON to SNS topic with task token', () => {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
       Message: {
         'Input': 'Publish this message',
-        'Token.$': '$$.Task.Token'
-      }
+        'Token.$': '$$.Task.Token',
+      },
     },
   });
 });
@@ -84,7 +84,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
     // WHEN
     new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      message: sfn.TaskInput.fromText('Publish this message')
+      message: sfn.TaskInput.fromText('Publish this message'),
     }) });
     // THEN
   }).toThrow(/Task Token is missing in message/i);
@@ -97,7 +97,7 @@ test('Publish to topic with ARN from payload', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromText('Publish this message')
+    message: sfn.TaskInput.fromText('Publish this message'),
   }) });
 
   // THEN
@@ -118,7 +118,7 @@ test('Publish to topic with ARN from payload', () => {
     End: true,
     Parameters: {
       'TopicArn.$': '$.topicArn',
-      'Message': 'Publish this message'
+      'Message': 'Publish this message',
     },
   });
 });
@@ -130,7 +130,7 @@ test('Task throws if SYNC is supplied as service integration pattern', () => {
 
     new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      message: sfn.TaskInput.fromText('Publish this message')
+      message: sfn.TaskInput.fromText('Publish this message'),
     }) });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SNS./i);
 });

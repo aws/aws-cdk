@@ -149,7 +149,7 @@ export = {
     const alarm = new Alarm(stack, 'Alarm', {
       metric: testMetric,
       threshold: 1000,
-      evaluationPeriods: 2
+      evaluationPeriods: 2,
     });
 
     alarm.addAlarmAction(new TestAlarmAction('A'));
@@ -200,7 +200,7 @@ export = {
     testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
-      statistic: 'p99.9'
+      statistic: 'p99.9',
     });
 
     // THEN
@@ -209,7 +209,7 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };
 
 class TestAlarmAction implements IAlarmAction {

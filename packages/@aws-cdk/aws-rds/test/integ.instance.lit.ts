@@ -19,8 +19,8 @@ class DatabaseInstanceStack extends cdk.Stack {
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
       family: 'oracle-se1-11.2',
       parameters: {
-        open_cursors: '2500'
-      }
+        open_cursors: '2500',
+      },
     });
 
     /// Add XMLDB and OEM with option group
@@ -29,14 +29,14 @@ class DatabaseInstanceStack extends cdk.Stack {
       majorEngineVersion: '11.2',
       configurations: [
         {
-          name: 'XMLDB'
+          name: 'XMLDB',
         },
         {
           name: 'OEM',
           port: 1158,
-          vpc
-        }
-      ]
+          vpc,
+        },
+      ],
     });
 
     // Allow connections to OEM
@@ -60,12 +60,12 @@ class DatabaseInstanceStack extends cdk.Stack {
         'trace',
         'audit',
         'alert',
-        'listener'
+        'listener',
       ],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
       optionGroup,
-      parameterGroup
+      parameterGroup,
     });
 
     // Allow connections on default port from any IPV4
@@ -78,23 +78,23 @@ class DatabaseInstanceStack extends cdk.Stack {
     new cloudwatch.Alarm(this, 'HighCPU', {
       metric: instance.metricCPUUtilization(),
       threshold: 90,
-      evaluationPeriods: 1
+      evaluationPeriods: 1,
     });
 
     // Trigger Lambda function on instance availability events
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });
     availabilityRule.addEventPattern({
       detail: {
         EventCategories: [
-          'availability'
-        ]
-      }
+          'availability',
+        ],
+      },
     });
     /// !hide
   }

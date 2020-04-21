@@ -17,6 +17,6 @@ export function policy(properties: {[key: string]: any}) {
 export function poldoc(...statements: any[]) {
   return {
     Version: '2012-10-17',
-    Statement: statements
+    Statement: statements,
   };
 }
