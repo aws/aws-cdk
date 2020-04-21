@@ -9,7 +9,7 @@ export const invoke: InvokeHook = async (targetDirectory: string) => {
   const child = child_process.spawn('dotnet', [ 'sln', slnPath, 'add', csprojPath ], {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
+    stdio: [ 'ignore', 'pipe', 'inherit' ],
   });
 
   await new Promise<string>((resolve, reject) => {

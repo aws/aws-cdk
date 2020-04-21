@@ -320,7 +320,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
-      description
+      description,
     });
 
     this.roleId = role.attrRoleId;
@@ -386,7 +386,7 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this
+      scope: this,
     });
   }
 

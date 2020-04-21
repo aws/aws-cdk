@@ -23,8 +23,8 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
-      subnetType: ec2.SubnetType.PRIVATE
-    }
+      subnetType: ec2.SubnetType.PRIVATE,
+    },
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
@@ -41,7 +41,7 @@ test('create correctly with instanceType specified', () => {
   // WHEN
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
@@ -55,15 +55,15 @@ test('throw error when subnetSelection not specified and the provided VPC has no
       {
         subnetType: ec2.SubnetType.ISOLATED,
         name: 'IsolatedSubnet',
-        cidrMask: 24
-      }
-    ]
+        cidrMask: 24,
+      },
+    ],
   });
   // THEN
   expect(() => {
     new cloud9.Ec2Environment(stack, 'C9Env', {
       vpc: privateOnlyVpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
     });
   }).toThrow(/no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection/);
 });

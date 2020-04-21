@@ -280,8 +280,8 @@ export class ServicePrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({
       Service: [
-        new ServicePrincipalToken(this.service, this.opts).toString()
-      ]
+        new ServicePrincipalToken(this.service, this.opts).toString(),
+      ],
     }, this.opts.conditions);
   }
 
@@ -305,7 +305,7 @@ export class OrganizationPrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(
       { AWS: ['*'] },
-      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
+      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } },
     );
   }
 
@@ -516,7 +516,7 @@ class ServicePrincipalToken implements cdk.IResolvable {
 
   public toString() {
     return cdk.Token.asString(this, {
-      displayHint: this.service
+      displayHint: this.service,
     });
   }
 

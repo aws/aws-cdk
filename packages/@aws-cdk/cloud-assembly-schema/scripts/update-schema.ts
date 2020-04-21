@@ -33,11 +33,11 @@ export function generate(out: string, shouldBump: boolean) {
     ref: true,
     topRef: true,
     noExtraProps: false,
-    out
+    out,
   };
 
   const compilerOptions = {
-    strictNullChecks: true
+    strictNullChecks: true,
   };
 
   const program = tjs.getProgramFromFiles([path.join(__dirname, '../lib/schema.d.ts')], compilerOptions);

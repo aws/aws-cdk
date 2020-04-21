@@ -13,14 +13,14 @@ class VpcEndpointStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'MyVpc', {
       gatewayEndpoints: {
         S3: {
-          service: ec2.GatewayVpcEndpointAwsService.S3
-        }
-      }
+          service: ec2.GatewayVpcEndpointAwsService.S3,
+        },
+      },
     });
 
     // Alternatively gateway endpoints can be added on the VPC
     const dynamoDbEndpoint = vpc.addGatewayEndpoint('DynamoDbEndpoint', {
-      service: ec2.GatewayVpcEndpointAwsService.DYNAMODB
+      service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
     });
 
     // This allows to customize the endpoint policy
