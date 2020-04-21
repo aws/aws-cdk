@@ -104,7 +104,7 @@ export class InitTemplate {
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, {
-      name: decamelize(path.basename(path.resolve(targetDirectory)))
+      name: decamelize(path.basename(path.resolve(targetDirectory))),
     });
     await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
@@ -184,7 +184,7 @@ export class InitTemplate {
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS
+      ...cxapi.FUTURE_FLAGS,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });

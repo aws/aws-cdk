@@ -16,7 +16,7 @@ test('create HTTPS redirect', () => {
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
@@ -24,9 +24,9 @@ test('create HTTPS redirect', () => {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
-        Protocol: 'https'
-      }
-    }
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -55,7 +55,7 @@ test('create HTTPS redirect for apex', () => {
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
@@ -63,9 +63,9 @@ test('create HTTPS redirect for apex', () => {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
-        Protocol: 'https'
-      }
-    }
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     Name: 'example.com.',
@@ -81,13 +81,13 @@ test('create HTTPS redirect with existing cert', () => {
   new HttpsRedirect(stack, 'Redirect', {
     recordNames: ['foo.example.com'],
     certificate: Certificate.fromCertificateArn(
-      stack, 'Certificate', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      stack, 'Certificate', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
     ),
     targetDomain: 'bar.example.com',
     zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'ID',
       zoneName: 'example.com',
-    })
+    }),
   });
 
   // THEN
@@ -95,15 +95,15 @@ test('create HTTPS redirect with existing cert', () => {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
-        Protocol: 'https'
-      }
-    }
+        Protocol: 'https',
+      },
+    },
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       ViewerCertificate: {
-        AcmCertificateArn: 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
-      }
-    }
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      },
+    },
   });
 });

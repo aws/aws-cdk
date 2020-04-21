@@ -40,7 +40,7 @@ export class InstanceIdTarget implements elbv2.IApplicationLoadBalancerTarget, e
   private attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.INSTANCE,
-      targetJson: { id: this.instanceId, port: this.port }
+      targetJson: { id: this.instanceId, port: this.port },
     };
   }
 }

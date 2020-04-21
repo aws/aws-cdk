@@ -17,7 +17,7 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: CLOUDFRONT_ZONE_ID,
-      dnsName: this.distribution.domainName
+      dnsName: this.distribution.domainName,
     };
   }
 }

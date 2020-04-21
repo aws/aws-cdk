@@ -8,14 +8,14 @@ test('parse', () => {
   expect(EnvironmentUtils.parse('aws://123456789/us-east-1')).toStrictEqual({
     name: 'aws://123456789/us-east-1',
     account: '123456789',
-    region: 'us-east-1'
+    region: 'us-east-1',
   });
 
   // parser is not super strict to allow users to do some magical things if they want
   expect(EnvironmentUtils.parse('aws://boom@voom.com/ok-x-x-123')).toStrictEqual({
     name: 'aws://boom@voom.com/ok-x-x-123',
     account: 'boom@voom.com',
-    region: 'ok-x-x-123'
+    region: 'ok-x-x-123',
   });
 });
 

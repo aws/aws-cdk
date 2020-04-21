@@ -15,7 +15,7 @@ export = {
       metricNamespace: 'AWS/Test',
       metricName: 'Latency',
       metricValue: '$.latency',
-      filterPattern: FilterPattern.exists('$.latency')
+      filterPattern: FilterPattern.exists('$.latency'),
     });
 
     // THEN
@@ -26,7 +26,7 @@ export = {
         MetricValue: '$.latency',
       }],
       FilterPattern: '{ $.latency = "*" }',
-      LogGroupName: { Ref: 'LogGroupF5B46931' }
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
     }));
 
     test.done();

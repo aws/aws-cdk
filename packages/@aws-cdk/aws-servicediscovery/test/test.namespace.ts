@@ -17,10 +17,10 @@ export = {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
           Properties: {
-            Name: 'foobar.com'
-          }
-        }
-      }
+            Name: 'foobar.com',
+          },
+        },
+      },
     });
 
     test.done();
@@ -38,10 +38,10 @@ export = {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: 'foobar.com'
-          }
-        }
-      }
+            Name: 'foobar.com',
+          },
+        },
+      },
     });
 
     test.done();
@@ -53,16 +53,16 @@ export = {
 
     new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
-      vpc
+      vpc,
     });
 
     expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'foobar.com',
       Vpc: {
-        Ref: 'MyVpcF9F0CA6F'
-      }
+        Ref: 'MyVpcF9F0CA6F',
+      },
     }));
 
     test.done();
-  }
+  },
 };

@@ -11,7 +11,7 @@ class CertStack extends Stack {
     /// !hide
 
     new CfnOutput(this, 'Output', {
-      value: cert.certificateArn
+      value: cert.certificateArn,
     });
   }
 }

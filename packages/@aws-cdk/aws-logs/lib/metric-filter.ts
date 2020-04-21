@@ -34,8 +34,8 @@ export class MetricFilter extends Resource {
         metricNamespace: props.metricNamespace,
         metricName: props.metricName,
         metricValue: props.metricValue !== undefined ? props.metricValue : '1',
-        defaultValue: props.defaultValue
-      }]
+        defaultValue: props.defaultValue,
+      }],
     });
   }
 }

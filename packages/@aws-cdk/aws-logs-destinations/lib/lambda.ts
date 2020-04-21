@@ -18,7 +18,7 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
       sourceArn: arn,
       // Using SubScription Filter as scope is okay, since every Subscription Filter has only
       // one destination.
-      scope
+      scope,
     });
     return { arn: this.fn.functionArn };
   }
