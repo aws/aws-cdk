@@ -100,7 +100,7 @@ Define a Customer managed CMK encrypted Table:
 
 ```ts
   const table = new Table(stack, CONSTRUCT_NAME, {
-    serverSideEncryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.Customer_Managed,
     partitionKey: TABLE_PARTITION_KEY
   });
 
@@ -115,7 +115,7 @@ You can also supply your own key:
     enableKeyRotation: true
   });
   const table = new Table(stack, CONSTRUCT_NAME, {
-    serverSideEncryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.Customer_Managed,
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
@@ -127,7 +127,7 @@ Use `TableEncryption.AWS_Managed`:
 
 ```ts
   const table = new Table(stack, CONSTRUCT_NAME, {
-    serverSideEncryption: TableEncryption.AWS_Managed,
+    encryption: TableEncryption.AWS_Managed,
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
