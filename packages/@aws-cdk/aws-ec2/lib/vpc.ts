@@ -11,14 +11,7 @@ import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupName
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
-import {
-  EnableVpnGatewayOptions,
-  VpnConnection,
-  VpnConnectionOptions,
-  VpnConnectionType,
-  VpnGateway,
-  VpnGatewayProps
-} from './vpn';
+import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -116,7 +109,7 @@ export interface IVpc extends IResource {
   /**
    * Adds a VPN Gateway to this VPC
    */
-  enableVpnGateway(options: VpnGatewayProps): void;
+  enableVpnGateway(options: EnableVpnGatewayOptions): void;
 
   /**
    * Adds a new VPN connection to this VPC
@@ -330,7 +323,9 @@ abstract class VpcBase extends Resource implements IVpc {
   /**
    * Mutable private field for the vpnGatewayId
    */
-  private _vpnGatewayId?: string | undefined;
+  protected mutabeVpnGatewayId?: string;
+  // NOTE: Would have preferred to name this _mutableVpnGatewayId but jsii requires that
+  // to be marked @internal and I don't want that.
 
   /**
    * Returns IDs of selected subnets
@@ -361,12 +356,11 @@ abstract class VpcBase extends Resource implements IVpc {
       type: VpnConnectionType.IPSEC_1
     });
 
-    this._vpnGatewayId = vpnGateway.gatewayId;
-    this.vpnGatewayId = vpnGateway.gatewayId;
+    this.mutabeVpnGatewayId = vpnGateway.gatewayId;
 
     const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
-      vpnGatewayId: this._vpnGatewayId,
+      vpnGatewayId: this.mutabeVpnGatewayId,
     });
 
     // Propagate routes on route tables associated with the right subnets
@@ -374,7 +368,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
       routeTableIds,
-      vpnGatewayId: this._vpnGatewayId
+      vpnGatewayId: this.mutabeVpnGatewayId
     });
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
@@ -423,14 +417,10 @@ abstract class VpcBase extends Resource implements IVpc {
   }
 
   /**
-   * Returns the Id of the VPN Gateway Id if any, or Null
+   * Returns the id of the VPN Gateway (if enabled)
    */
   public get vpnGatewayId(): string | undefined {
-    return this._vpnGatewayId;
-  }
-
-  public set vpnGatewayId(gatewayId: string | undefined) {
-    this._vpnGatewayId = gatewayId;
+    return this.mutabeVpnGatewayId;
   }
 
   /**
@@ -1697,7 +1687,7 @@ class ImportedVpc extends VpcBase {
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
-    this.vpnGatewayId = props.vpnGatewayId;
+    this.mutabeVpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     // tslint:disable:max-line-length
