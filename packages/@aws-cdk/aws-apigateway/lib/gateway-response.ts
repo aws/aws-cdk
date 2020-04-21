@@ -141,8 +141,7 @@ export class ResponseType {
   /**
    * The gateway response for an integration timed out error.
    */
-  // tslint:disable:duration-prop-type
-  public static readonly INTEGRATION_TIMEOUT = new ResponseType('INTEGRATION_TIMEOUT');
+  public static readonly INTEGRATION_TIMEOUT_RESPONSE = new ResponseType('INTEGRATION_TIMEOUT');
 
   /**
    * The gateway response for an invalid API key submitted for a method requiring an API key.
