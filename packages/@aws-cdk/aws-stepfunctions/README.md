@@ -211,10 +211,9 @@ new sfn.Task(this, 'Invoke and set function response as task output', {
 You can have Step Functions pause a task, and wait for an external process to
 return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
 
-To use the callback pattern, set the `token` property on the task and have the
-Lambda function Lambda function call the Step Functions API `SendTaskSuccess`
-or `SendTaskFailure` API with the token to indicate that the task has completed
-and the state machine should resume execution.
+To use the callback pattern, set the `token` property on the task. Call the Step
+Functions `SendTaskSuccess` or `SendTaskFailure` APIs with the token to
+indicate that the task has completed and the state machine should resume execution.
 
 The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
