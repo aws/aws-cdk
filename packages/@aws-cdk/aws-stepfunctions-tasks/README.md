@@ -1,5 +1,5 @@
 # Tasks for AWS Step Functions
-<!--BEGIN STABILITY BANNER-->
+## <!--BEGIN STABILITY BANNER-->
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
@@ -23,12 +23,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 - [Task](#task)
   - [Parameters](#task-parameters-from-the-state-json)
+  - [Batch](#batch)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
-  - [Batch](#batch)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
 
@@ -125,6 +125,43 @@ const updateItemTask = new sfn.Task(this, 'UpdateItem', {
       ':rand': new tasks.DynamoAttributeValue().withN('20'),
     },
     updateExpression: 'SET TotalCount = :val + :rand',
+  }),
+});
+```
+
+#### Batch
+
+Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html) through the service integration pattern.
+
+#### SubmitJob
+
+The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc },
+      }),
+    },
+  ],
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'batchjob-image')),
+  },
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue,
   }),
 });
 ```
