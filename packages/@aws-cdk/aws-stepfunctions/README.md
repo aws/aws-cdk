@@ -185,7 +185,7 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
-new sfn.Task(this, 'Invoke with task context', {
+new sfn.Task(this, 'Invoke with empty payload', {
   task: new tasks.RunLambdaTask(myLambda),
 });
 
