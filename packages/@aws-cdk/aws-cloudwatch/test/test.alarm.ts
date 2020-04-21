@@ -80,6 +80,7 @@ export = {
       Namespace: 'CDK/Test',
       Period: 300,
       Statistic: 'Maximum',
+      ExtendedStatistic: ABSENT,
       Threshold: 1000,
     }));
 
