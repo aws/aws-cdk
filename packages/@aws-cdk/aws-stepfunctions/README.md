@@ -189,7 +189,7 @@ new sfn.Task(this, 'Invoke with empty payload', {
   task: new tasks.RunLambdaTask(myLambda),
 });
 
-new sfn.Task(this, 'Invoke with output from another Lambda', {
+new sfn.Task(this, 'Invoke with payload field in the state input', {
   task: new tasks.RunLambdaTask(myOtherLambda, {
     payload: sfn.TaskInput.fromDataAt('$.Payload'),
   }),
