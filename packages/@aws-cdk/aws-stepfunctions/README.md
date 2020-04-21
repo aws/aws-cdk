@@ -230,8 +230,7 @@ to the Lambda.
   });
 ```
 
-⚠️ The Lambda function should call `SendTaskSuccess` or `SendTaskFailure` with the
-token provided as input or the State Machine will not resume.
+⚠️ The task will pause until it receives that task token back with a SendTaskSuccess or SendTaskFailure call. Read [more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token)
 
 #### Glue Job example
 
