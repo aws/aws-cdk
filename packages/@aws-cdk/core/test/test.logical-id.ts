@@ -112,9 +112,9 @@ export = {
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
-          Type: 'AWS::TAAS::Thing'
-        }
-      }
+          Type: 'AWS::TAAS::Thing',
+        },
+      },
     });
 
     test.done();
@@ -218,9 +218,9 @@ export = {
         Construct2: {
           Type: 'R2',
           Properties: { ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ]
-        }
-      }
+          DependsOn: [ 'NewName' ],
+        },
+      },
     });
 
     test.done();
@@ -250,11 +250,11 @@ export = {
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
-        TheC: { Type: 'Type::Of::C' }
-      }
+        TheC: { Type: 'Type::Of::C' },
+      },
     });
     test.done();
-  }
+  },
 };
 
 function generateString(chars: number) {

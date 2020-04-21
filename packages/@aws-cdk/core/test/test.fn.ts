@@ -33,7 +33,7 @@ export = nodeunit.testCase({
     'Fn.split'(test: nodeunit.Test) {
       test.deepEqual(Fn.split(':', 'hello:world:yeah'), [ 'hello', 'world', 'yeah' ]);
       test.done();
-    }
+    },
   },
   'FnJoin': {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
@@ -46,7 +46,7 @@ export = nodeunit.testCase({
       const obj = Fn.join('', [
         'a',
         Fn.join('', [Fn.getAtt('a', 'bc').toString(), 'c']),
-        'd'
+        'd',
       ]);
 
       test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ '',
@@ -54,7 +54,7 @@ export = nodeunit.testCase({
           'a',
           { 'Fn::GetAtt': ['a', 'bc'] },
           'cd',
-        ]
+        ],
       ]});
 
       test.done();
@@ -64,9 +64,9 @@ export = nodeunit.testCase({
       fc.assert(
         fc.property(
           fc.string(), anyValue,
-          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value as string])), value)
+          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value as string])), value),
         ),
-        { verbose: true }
+        { verbose: true },
       );
     }),
     'pre-concatenates string literals': asyncTest(async () => {
@@ -74,9 +74,9 @@ export = nodeunit.testCase({
       fc.assert(
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 15),
-          (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter)
+          (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter),
         ),
-        { verbose: true }
+        { verbose: true },
       );
     }),
     'pre-concatenates around tokens': asyncTest(async () => {
@@ -86,9 +86,9 @@ export = nodeunit.testCase({
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
-              { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
+              { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] }),
         ),
-        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' }
+        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' },
       );
     }),
     'flattens joins nested under joins with same delimiter': asyncTest(async () => {
@@ -101,9 +101,9 @@ export = nodeunit.testCase({
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix as string[], Fn.join(delimiter, nested as string[]), ...suffix as string[]])),
-              stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]])))
+              stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]]))),
         ),
-        { verbose: true }
+        { verbose: true },
       );
     }),
     'does not flatten joins nested under joins with different delimiter': asyncTest(async () => {
@@ -121,22 +121,22 @@ export = nodeunit.testCase({
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
                                                         && ('Fn::Join' in e)
                                                         && e['Fn::Join'][0] === delimiter2) != null;
-          }
+          },
         ),
-        { verbose: true }
+        { verbose: true },
       );
     }),
     'Fn::EachMemberIn': asyncTest(async (test) => {
       const stack = new Stack();
       const eachMemberIn = Fn.conditionEachMemberIn(
         Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
-        Fn.refAll('AWS::EC2::VPC::Id')
+        Fn.refAll('AWS::EC2::VPC::Id'),
       );
       test.deepEqual(stack.resolve(eachMemberIn), {
         'Fn::EachMemberIn': [
           { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
-          { 'Fn::RefAll': 'AWS::EC2::VPC::Id'}
-        ]
+          { 'Fn::RefAll': 'AWS::EC2::VPC::Id'},
+        ],
       });
     }),
 
@@ -148,7 +148,7 @@ export = nodeunit.testCase({
 
       // WHEN
       new CfnOutput(stack2, 'Stack1Id', {
-        value: Fn.join(' = ', [ 'Stack1Id', stack1.stackId ])
+        value: Fn.join(' = ', [ 'Stack1Id', stack1.stackId ]),
       });
 
       // THEN
@@ -160,11 +160,11 @@ export = nodeunit.testCase({
             Value: {
               'Fn::Join': [' = ', [
                 'Stack1Id',
-                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' }
-              ]]
-            }
-          }
-        }
+                { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+              ]],
+            },
+          },
+        },
       });
     }),
   },
@@ -172,10 +172,10 @@ export = nodeunit.testCase({
     'returns a reference given a logical name'(test: nodeunit.Test) {
       const stack = new Stack();
       test.deepEqual(stack.resolve(Fn.ref('hello')), {
-        Ref: 'hello'
+        Ref: 'hello',
       });
       test.done();
-    }
+    },
   },
   'nested Fn::Join with list token'(test: nodeunit.Test) {
     const stack = new Stack();
@@ -186,9 +186,9 @@ export = nodeunit.testCase({
         ',',
         [
           { 'Fn::Join': [ ',', { NotReallyList: true } ] },
-          'Foo'
-        ]
-      ]
+          'Foo',
+        ],
+      ],
     });
     test.done();
   },

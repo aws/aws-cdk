@@ -1,6 +1,6 @@
 const exclude = [
   '@aws-cdk/cloudformation-diff',
-  '@aws-cdk/assert'
+  '@aws-cdk/assert',
 ];
 
 export function rewriteFile(source: string) {

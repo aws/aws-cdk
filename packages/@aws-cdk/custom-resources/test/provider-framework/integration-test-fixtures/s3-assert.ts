@@ -67,7 +67,7 @@ class S3AssertProvider extends Construct {
     const onEvent = new lambda.Function(this, 's3assert-on-event', {
       code: lambda.Code.fromAsset(path.join(__dirname, 's3-assert-handler')),
       runtime: lambda.Runtime.PYTHON_3_7,
-      handler: 'index.on_event'
+      handler: 'index.on_event',
     });
 
     const isComplete = new lambda.Function(this, 's3assert-is-complete', {
@@ -81,9 +81,9 @@ class S3AssertProvider extends Construct {
             's3:GetObject*',
             's3:GetBucket*',
             's3:List*',
-          ]
-        })
-      ]
+          ],
+        }),
+      ],
     });
 
     this.provider = new cr.Provider(this, 's3assert-provider', {

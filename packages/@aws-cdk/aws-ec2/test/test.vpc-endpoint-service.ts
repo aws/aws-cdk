@@ -31,19 +31,19 @@ export = {
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
-        AcceptanceRequired: false
+        AcceptanceRequired: false,
       }));
 
       expect(stack).notTo(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: 'EndpointServiceED36BE1F'
+          Ref: 'EndpointServiceED36BE1F',
         },
-        AllowedPrincipals: []
+        AllowedPrincipals: [],
       }));
 
       test.done();
@@ -57,20 +57,20 @@ export = {
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
-        AcceptanceRequired: false
+        AcceptanceRequired: false,
       }));
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: 'EndpointServiceED36BE1F'
+          Ref: 'EndpointServiceED36BE1F',
         },
-        AllowedPrincipals: ['arn:aws:iam::123456789012:root']
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       }));
 
       test.done();
@@ -85,23 +85,23 @@ export = {
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: true,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
-        AcceptanceRequired: true
+        AcceptanceRequired: true,
       }));
 
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
-          Ref: 'EndpointServiceED36BE1F'
+          Ref: 'EndpointServiceED36BE1F',
         },
-        AllowedPrincipals: ['arn:aws:iam::123456789012:root']
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       }));
 
       test.done();
-    }
-  }
+    },
+  },
 };

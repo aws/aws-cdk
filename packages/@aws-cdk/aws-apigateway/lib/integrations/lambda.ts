@@ -45,7 +45,7 @@ export class LambdaIntegration extends AwsIntegration {
       proxy,
       service: 'lambda',
       path: `2015-03-31/functions/${handler.functionArn}/invocations`,
-      options
+      options,
     });
 
     this.handler = handler;

@@ -8,7 +8,7 @@ const repo = new ecr.Repository(stack, 'Repo');
 repo.addLifecycleRule({ maxImageCount: 5 });
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {
-  value: repo.repositoryUri
+  value: repo.repositoryUri,
 });
 
 app.synth();

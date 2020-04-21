@@ -16,7 +16,7 @@ const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.ST
 const STACK_PROPS: GlobalTableProps = {
   partitionKey: TABLE_PARTITION_KEY,
   tableName: TABLE_NAME,
-  regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
+  regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ],
 };
 
 export = {
@@ -31,26 +31,26 @@ export = {
           'KeySchema': [
             {
               'AttributeName': 'hashKey',
-              'KeyType': 'HASH'
-            }
+              'KeyType': 'HASH',
+            },
           ],
           'AttributeDefinitions': [
             {
               'AttributeName': 'hashKey',
-              'AttributeType': 'S'
-            }
+              'AttributeType': 'S',
+            },
           ],
           'StreamSpecification': {
-            'StreamViewType': 'NEW_AND_OLD_IMAGES'
+            'StreamViewType': 'NEW_AND_OLD_IMAGES',
           },
-          'TableName': 'GlobalTable'
+          'TableName': 'GlobalTable',
         }));
       }
       const customResourceStack = stack.node.findChild(CONSTRUCT_NAME + '-CustomResource') as Stack;
       expect(customResourceStack).to(haveResource('AWS::Lambda::Function', {
         Description: 'Lambda to make DynamoDB a global table',
         Handler: 'index.handler',
-        Timeout: 300
+        Timeout: 300,
       }));
       expect(customResourceStack).to(haveResource('AWS::CloudFormation::CustomResource', {
         Regions: STACK_PROPS.regions,
@@ -99,7 +99,7 @@ export = {
           tableName: TABLE_NAME,
           stream: StreamViewType.KEYS_ONLY,
           partitionKey: TABLE_PARTITION_KEY,
-          regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
+          regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ],
         });
       }, /dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES/);
 
@@ -113,7 +113,7 @@ export = {
       const regTables = new GlobalTable(stack, CONSTRUCT_NAME, {
         tableName: TABLE_NAME,
         partitionKey: TABLE_PARTITION_KEY,
-        regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
+        regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ],
       });
       test.equal(regTables.regionalTables.length, 3);
       for (const table of regTables.regionalTables) {
@@ -121,5 +121,5 @@ export = {
       }
       test.done();
     },
-  }
+  },
 };

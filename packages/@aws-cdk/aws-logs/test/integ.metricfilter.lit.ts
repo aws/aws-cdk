@@ -6,7 +6,7 @@ class MetricFilterIntegStack extends Stack {
     super(scope, id, props);
 
     const logGroup = new LogGroup(this, 'LogGroup', {
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     /// !show
@@ -15,7 +15,7 @@ class MetricFilterIntegStack extends Stack {
       metricNamespace: 'MyApp',
       metricName: 'Latency',
       filterPattern: FilterPattern.exists('$.latency'),
-      metricValue: '$.latency'
+      metricValue: '$.latency',
     });
     /// !hide
   }

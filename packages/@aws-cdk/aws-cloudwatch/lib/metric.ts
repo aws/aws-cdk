@@ -177,7 +177,7 @@ export class Metric implements IMetric {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['cloudwatch:PutMetricData'],
-      resourceArns: ['*']
+      resourceArns: ['*'],
     });
   }
 
@@ -256,7 +256,7 @@ export class Metric implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region)
+      region: ifUndefined(props.region, this.region),
     });
   }
 
@@ -296,8 +296,8 @@ export class Metric implements IMetric {
       },
       renderingProperties: {
         color: this.color,
-        label: this.label
-      }
+        label: this.label,
+      },
     };
   }
 
@@ -315,7 +315,7 @@ export class Metric implements IMetric {
       period: metricConfig.metricStat.period.toSeconds(),
       statistic: stat.type === 'simple' ? stat.statistic : undefined,
       extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
@@ -340,7 +340,7 @@ export class Metric implements IMetric {
       statistic: metricConfig.metricStat.statistic,
       color: asString(metricConfig.renderingProperties?.color),
       label: asString(metricConfig.renderingProperties?.label),
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
@@ -490,8 +490,8 @@ export class MathExpression implements IMetric {
       },
       renderingProperties: {
         label: this.label,
-        color: this.color
-      }
+        color: this.color,
+      },
     };
   }
 
@@ -540,7 +540,7 @@ export class MathExpression implements IMetric {
             seen.set(id, subMetric);
             visit(subMetric);
           }
-        }
+        },
       });
     }
   }

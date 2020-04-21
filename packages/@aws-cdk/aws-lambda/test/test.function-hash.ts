@@ -19,7 +19,7 @@ export = {
       test.deepEqual(trimFromStart('hello', 4), 'ello');
       test.deepEqual(trimFromStart('hello', 1), 'o');
       test.done();
-    }
+    },
 
   },
 
@@ -29,14 +29,14 @@ export = {
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
-        handler: 'index.handler'
+        handler: 'index.handler',
       });
 
       const stack2 = new Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
-        handler: 'index.handler'
+        handler: 'index.handler',
       });
 
       test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
@@ -50,7 +50,7 @@ export = {
     const fn1 = new lambda.Function(stack1, 'MyFunction1', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     test.notDeepEqual(calculateFunctionHash(fn1), 'aea5463dba236007afe91d2832b3c836');
@@ -65,8 +65,8 @@ export = {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
-        Foo: 'bar'
-      }
+        Foo: 'bar',
+      },
     });
 
     const stack2 = new Stack();
@@ -75,8 +75,8 @@ export = {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
-        Foo: 'beer'
-      }
+        Foo: 'beer',
+      },
     });
 
     test.deepEqual(calculateFunctionHash(fn1), 'd1bc824ac5022b7d62d8b12dbae6580c');
@@ -91,8 +91,8 @@ export = {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
-        Foo: 'bar'
-      }
+        Foo: 'bar',
+      },
     });
 
     const stack2 = new Stack();
@@ -101,8 +101,8 @@ export = {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       environment: {
-        Foo: 'beer'
-      }
+        Foo: 'beer',
+      },
     });
 
     test.deepEqual(calculateFunctionHash(fn1), 'd1bc824ac5022b7d62d8b12dbae6580c');
@@ -141,7 +141,7 @@ export = {
         environment: {
           Foo: 'bar',
           Bar: 'foo',
-        }
+        },
       });
 
       const stack2 = new Stack();
@@ -152,7 +152,7 @@ export = {
         environment: {
           Bar: 'foo',
           Foo: 'bar',
-        }
+        },
       });
 
       test.notDeepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
@@ -168,7 +168,7 @@ export = {
         environment: {
           Foo: 'bar',
           Bar: 'foo',
-        }
+        },
       });
 
       new CfnOutput(stack1, 'VersionArn', { value: fn1.currentVersion.functionArn });
@@ -181,14 +181,14 @@ export = {
         environment: {
           Bar: 'foo',
           Foo: 'bar',
-        }
+        },
       });
 
       new CfnOutput(stack2, 'VersionArn', { value: fn2.currentVersion.functionArn });
 
       test.deepEqual(calculateFunctionHash(fn1), calculateFunctionHash(fn2));
       test.done();
-    }
+    },
 
   },
 };

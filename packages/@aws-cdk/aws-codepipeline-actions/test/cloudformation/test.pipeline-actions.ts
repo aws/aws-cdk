@@ -44,7 +44,7 @@ export = nodeunit.testCase({
       _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
-        ChangeSetName: 'MyChangeSet'
+        ChangeSetName: 'MyChangeSet',
       });
 
       test.done();
@@ -62,14 +62,14 @@ export = nodeunit.testCase({
             changeSetName: 'MyChangeSet',
             stackName: 'StackA',
             adminPermissions: false,
-            templatePath: artifact.atPath('path/to/file')
+            templatePath: artifact.atPath('path/to/file'),
           }),
           new cpactions.CloudFormationCreateReplaceChangeSetAction({
             actionName: 'ActionB',
             changeSetName: 'MyChangeSet',
             stackName: 'StackB',
             adminPermissions: false,
-            templatePath: artifact.atPath('path/to/other/file')
+            templatePath: artifact.atPath('path/to/other/file'),
           }),
         ],
       });
@@ -82,7 +82,7 @@ export = nodeunit.testCase({
             Effect: 'Allow',
             Resource: [
               { 'Fn::GetAtt': [ 'PipelineTestStageActionARole9283FBE3', 'Arn' ] },
-              { 'Fn::GetAtt': [ 'PipelineTestStageActionBRoleCABC8FA5', 'Arn' ] }
+              { 'Fn::GetAtt': [ 'PipelineTestStageActionBRoleCABC8FA5', 'Arn' ] },
             ],
           },
           {
@@ -90,7 +90,7 @@ export = nodeunit.testCase({
               'cloudformation:CreateChangeSet',
               'cloudformation:DeleteChangeSet',
               'cloudformation:DescribeChangeSet',
-              'cloudformation:DescribeStacks'
+              'cloudformation:DescribeStacks',
             ],
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
@@ -98,14 +98,14 @@ export = nodeunit.testCase({
               // tslint:disable-next-line:max-line-length
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
               // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
             ],
-          }
-        ]
+          },
+        ],
       );
 
       test.done();
-    }
+    },
   },
 
   'ExecuteChangeSet': {
@@ -130,7 +130,7 @@ export = nodeunit.testCase({
       _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
-        ChangeSetName: 'MyChangeSet'
+        ChangeSetName: 'MyChangeSet',
       });
 
       test.done();
@@ -170,14 +170,14 @@ export = nodeunit.testCase({
               // tslint:disable-next-line:max-line-length
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
               // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
             ],
-          }
-        ]
+          },
+        ],
       );
 
       test.done();
-    }
+    },
   },
 
   'the CreateUpdateStack Action sets the DescribeStack*, Create/Update/DeleteStack & PassRole permissions'(test: nodeunit.Test) {
@@ -248,8 +248,8 @@ function _assertActionMatches(
     : '';
   const actionsStr = JSON.stringify(actions.map(a =>
     ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
-      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration)
-    })
+      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration),
+    }),
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),
     `Expected to find an action with provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);

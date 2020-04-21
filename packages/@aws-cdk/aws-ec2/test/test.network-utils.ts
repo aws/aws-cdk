@@ -3,7 +3,7 @@ import {
   CidrBlock,
   InvalidCidrRangeError,
   NetworkBuilder,
-  NetworkUtils
+  NetworkUtils,
 } from '../lib/network-util';
 
 export = {
@@ -80,7 +80,7 @@ export = {
     'minIp() should return the first usable IP from the CidrBlock'(test: Test) {
       const testValues = [
         ['192.168.0.0/18', '192.168.0.0'],
-        ['10.0.3.0/24', '10.0.3.0']
+        ['10.0.3.0/24', '10.0.3.0'],
       ];
       for (const answer of testValues) {
         const block = new CidrBlock(answer[0]);
@@ -128,7 +128,7 @@ export = {
           '192.168.4.128/28',
           '192.168.4.144/28',
           '192.168.4.160/28',
-        ]
+        ],
       ];
       const wasteful = new NetworkBuilder('192.168.0.0/18');
       const efficient = new NetworkBuilder('192.168.0.0/18');
@@ -140,7 +140,7 @@ export = {
       efficient.addSubnets(28, 3);
       const expected = [
         wasteful.cidrStrings.sort(),
-        efficient.cidrStrings.sort()
+        efficient.cidrStrings.sort(),
       ];
       for (let i = 0; i < answers.length; i++) {
         test.deepEqual(answers[i].sort(), expected[i]);
@@ -186,6 +186,6 @@ export = {
       builder5.addSubnets(26, 3);
       builder5.addSubnets(27, 3);
       test.strictEqual(18, builder5.maskForRemainingSubnets(3)); test.done();
-    }
-  }
+    },
+  },
 };

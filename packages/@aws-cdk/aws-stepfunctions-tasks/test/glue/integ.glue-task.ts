@@ -19,14 +19,14 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const codeAsset = new assets.Asset(stack, 'Glue Job Script', {
-  path: path.join(__dirname, 'my-glue-script/job.py')
+  path: path.join(__dirname, 'my-glue-script/job.py'),
 });
 
 const jobRole = new iam.Role(stack, 'Glue Job Role', {
   assumedBy: new iam.ServicePrincipal('glue'),
   managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')
-  ]
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole'),
+  ],
 });
 codeAsset.grantRead(jobRole);
 
@@ -36,29 +36,29 @@ const job = new glue.CfnJob(stack, 'Glue Job', {
   command: {
     name: 'glueetl',
     pythonVersion: '3',
-    scriptLocation: `s3://${codeAsset.s3BucketName}/${codeAsset.s3ObjectKey}`
+    scriptLocation: `s3://${codeAsset.s3BucketName}/${codeAsset.s3ObjectKey}`,
   },
-  role: jobRole.roleArn
+  role: jobRole.roleArn,
 });
 
 const jobTask = new sfn.Task(stack, 'Glue Job Task', {
   task: new tasks.RunGlueJobTask(job.name!, {
     integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     arguments: {
-      '--enable-metrics': 'true'
-    }
-  })
+      '--enable-metrics': 'true',
+    },
+  }),
 });
 
 const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
 const stateMachine = new sfn.StateMachine(stack, 'State Machine', {
-  definition: sfn.Chain.start(startTask).next(jobTask).next(endTask)
+  definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
 });
 
 new cdk.CfnOutput(stack, 'State Machine ARN Output', {
-  value: stateMachine.stateMachineArn
+  value: stateMachine.stateMachineArn,
 });
 
 app.synth();

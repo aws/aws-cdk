@@ -75,7 +75,7 @@ export class IamChanges {
         statement.effect,
         renderTargets(statement.actions),
         renderTargets(statement.principals),
-        renderCondition(statement.condition)
+        renderCondition(statement.condition),
       ].map(s => colors.green(s)));
     }
     for (const statement of this.statements.removals) {
@@ -85,7 +85,7 @@ export class IamChanges {
         statement.effect,
         renderTargets(statement.actions),
         renderTargets(statement.principals),
-        renderCondition(statement.condition)
+        renderCondition(statement.condition),
       ].map(s => colors.red(s)));
     }
 

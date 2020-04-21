@@ -75,7 +75,7 @@ export = {
       const action = new cpactions.EcsDeployAction({
         actionName: 'ECS',
         service,
-        input: artifact
+        input: artifact,
       });
 
       test.equal(action.actionProperties.resource, service);
@@ -119,7 +119,7 @@ export = {
           {
             stageName: 'Deploy',
             actions: [action],
-          }
+          },
         ],
       });
 
@@ -132,17 +132,17 @@ export = {
                 Name: 'ECS',
                 ActionTypeId: {
                   Category: 'Deploy',
-                  Provider: 'ECS'
+                  Provider: 'ECS',
                 },
                 Configuration: {
                   ClusterName: 'cluster-name',
                   ServiceName: 'service-name',
-                  FileName: 'imageFile.json'
-                }
-              }
-            ]
-          }
-        ]
+                  FileName: 'imageFile.json',
+                },
+              },
+            ],
+          },
+        ],
       }));
 
       test.done();

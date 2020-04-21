@@ -148,7 +148,7 @@ export = {
   'construct.getContext(key) can be used to read a value from context defined at the root level'(test: Test) {
     const context = {
       ctx1: 12,
-      ctx2: 'hello'
+      ctx2: 'hello',
     };
 
     const t = createTree(context);
@@ -371,7 +371,7 @@ export = {
       { path: 'MyConstruct', message: 'my-error2' },
       { path: 'TheirConstruct/YourConstruct', message: 'your-error1' },
       { path: 'TheirConstruct', message: 'their-error' },
-      { path: '', message: 'stack-error' }
+      { path: '', message: 'stack-error' },
     ]);
 
     test.done();
@@ -490,8 +490,8 @@ export = {
         /Cannot determine default child for . There is both a child with id "Resource" and id "Default"/);
       test.done();
 
-    }
-  }
+    },
+  },
 };
 
 function createTree(context?: any) {
@@ -509,7 +509,7 @@ function createTree(context?: any) {
   const child2_1 = new Construct(child2, 'Child21');
 
   return {
-    root, child1, child2, child1_1, child1_2, child1_1_1, child2_1
+    root, child1, child2, child1_1, child1_2, child1_1_1, child2_1,
   };
 }
 

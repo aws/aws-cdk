@@ -87,11 +87,11 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.0"
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.0"
+    "constructs": "^3.0.2"
   },
   "engines": {
     "node": ">= 10.12.0"

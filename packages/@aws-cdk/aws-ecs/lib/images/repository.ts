@@ -47,8 +47,8 @@ export class RepositoryImage extends ContainerImage {
     return {
       imageName: this.imageName,
       repositoryCredentials: this.props.credentials && {
-        credentialsParameter: this.props.credentials.secretArn
-      }
+        credentialsParameter: this.props.credentials.secretArn,
+      },
     };
   }
 }

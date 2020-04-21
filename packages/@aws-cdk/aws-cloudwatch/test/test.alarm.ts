@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
@@ -80,6 +80,7 @@ export = {
       Namespace: 'CDK/Test',
       Period: 300,
       Statistic: 'Maximum',
+      ExtendedStatistic: ABSENT,
       Threshold: 1000,
     }));
 
@@ -105,6 +106,7 @@ export = {
       MetricName: 'Metric',
       Namespace: 'CDK/Test',
       Period: 300,
+      Statistic: ABSENT,
       ExtendedStatistic: 'p99',
       Threshold: 1000,
     }));
@@ -147,7 +149,7 @@ export = {
     const alarm = new Alarm(stack, 'Alarm', {
       metric: testMetric,
       threshold: 1000,
-      evaluationPeriods: 2
+      evaluationPeriods: 2,
     });
 
     alarm.addAlarmAction(new TestAlarmAction('A'));
@@ -198,7 +200,7 @@ export = {
     testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
-      statistic: 'p99.9'
+      statistic: 'p99.9',
     });
 
     // THEN
@@ -207,7 +209,7 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };
 
 class TestAlarmAction implements IAlarmAction {

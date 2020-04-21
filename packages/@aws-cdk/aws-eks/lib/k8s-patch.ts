@@ -83,8 +83,8 @@ export class KubernetesPatch extends Construct {
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
         RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
-        PatchType: props.patchType ?? PatchType.STRATEGIC
-      }
+        PatchType: props.patchType ?? PatchType.STRATEGIC,
+      },
     });
   }
 }

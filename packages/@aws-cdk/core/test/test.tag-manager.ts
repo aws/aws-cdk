@@ -27,7 +27,7 @@ export = {
       mgr.setTag('dne', 'notanymore');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'notanymore'}]);
       test.done();
-    }
+    },
   },
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
@@ -43,7 +43,7 @@ export = {
       mgr.setTag('dne', 'iwin');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'iwin'}]);
       test.done();
-    }
+    },
   },
   'when there are no tags': {
     '#renderTags() returns undefined'(test: Test) {
@@ -55,7 +55,7 @@ export = {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       test.equal(mgr.hasTags(), false);
       test.done();
-    }
+    },
   },
   '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
@@ -81,7 +81,7 @@ export = {
     ]);
     test.deepEqual(keyValue.renderTags(), [
       { Key: 'foo', Value : 'bar' },
-      { Key: 'asg', Value : 'only' }
+      { Key: 'asg', Value : 'only' },
     ]);
     test.deepEqual(mapper.renderTags(), {
       foo: 'bar',
@@ -126,5 +126,5 @@ export = {
     test.equal(false, mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
 
     test.done();
-  }
+  },
 };

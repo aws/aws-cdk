@@ -24,7 +24,7 @@ class KinesisWithDLQTest extends Stack {
     const fn = new lambda.Function(this, 'F', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
     new CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
 

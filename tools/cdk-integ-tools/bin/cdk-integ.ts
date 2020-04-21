@@ -36,7 +36,7 @@ async function main() {
     try {
       // tslint:disable-next-line:max-line-length
       await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
-        verbose: argv.verbose
+        verbose: argv.verbose,
         // Note: no "context" and "env", so use default user settings!
       });
 
@@ -46,7 +46,7 @@ async function main() {
       const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
         json: true,
         verbose: argv.verbose,
-        ...DEFAULT_SYNTH_OPTIONS
+        ...DEFAULT_SYNTH_OPTIONS,
       });
 
       await test.writeExpected(actual);

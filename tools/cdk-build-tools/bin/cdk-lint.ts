@@ -8,12 +8,12 @@ async function main() {
     .option('tslint', {
       type: 'string',
       desc: 'Specify a different tslint executable',
-      defaultDescription: 'tslint provided by node dependencies'
+      defaultDescription: 'tslint provided by node dependencies',
     })
     .option('eslint', {
       type: 'string',
       desc: 'Specify a different eslint executable',
-      defaultDescription: 'eslint provided by node dependencies'
+      defaultDescription: 'eslint provided by node dependencies',
     })
     .argv;
 

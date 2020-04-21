@@ -15,7 +15,7 @@ export = {
       const containerImageInputs: cpactions.CodeDeployEcsContainerImageInput[] = [];
       for (let i = 0; i < 5; i++) {
         containerImageInputs.push({
-          input: artifact
+          input: artifact,
         });
       }
 
@@ -109,7 +109,7 @@ export = {
         actionName: 'DeployToECS',
         deploymentGroup,
         taskDefinitionTemplateInput: new codepipeline.Artifact('TaskDefArtifact'),
-        appSpecTemplateInput: new codepipeline.Artifact('AppSpecArtifact')
+        appSpecTemplateInput: new codepipeline.Artifact('AppSpecArtifact'),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -124,16 +124,16 @@ export = {
                   TaskDefinitionTemplateArtifact: 'TaskDefArtifact',
                   AppSpecTemplateArtifact: 'AppSpecArtifact',
                   TaskDefinitionTemplatePath: 'taskdef.json',
-                  AppSpecTemplatePath: 'appspec.yaml'
+                  AppSpecTemplatePath: 'appspec.yaml',
                 },
                 InputArtifacts: [
                   {
-                    Name: 'TaskDefArtifact'
+                    Name: 'TaskDefArtifact',
                   },
                   {
-                    Name: 'AppSpecArtifact'
-                  }
-                ]
+                    Name: 'AppSpecArtifact',
+                  },
+                ],
               },
             ],
           },
@@ -155,12 +155,12 @@ export = {
         appSpecTemplateFile: new codepipeline.ArtifactPath(artifact2, 'appspec-test.yaml'),
         containerImageInputs: [
           {
-            input: artifact1
+            input: artifact1,
           },
           {
-            input: artifact2
-          }
-        ]
+            input: artifact2,
+          },
+        ],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -179,16 +179,16 @@ export = {
                   Image1ArtifactName: 'Artifact1',
                   Image1ContainerName: 'IMAGE',
                   Image2ArtifactName: 'Artifact2',
-                  Image2ContainerName: 'IMAGE'
+                  Image2ContainerName: 'IMAGE',
                 },
                 InputArtifacts: [
                   {
-                    Name: 'Artifact1'
+                    Name: 'Artifact1',
                   },
                   {
-                    Name: 'Artifact2'
-                  }
-                ]
+                    Name: 'Artifact2',
+                  },
+                ],
               },
             ],
           },
@@ -204,9 +204,9 @@ function addEcsDeploymentGroup(stack: cdk.Stack): codedeploy.IEcsDeploymentGroup
   return codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(
     stack, 'EDG', {
       application: codedeploy.EcsApplication.fromEcsApplicationName(
-        stack, 'EA', 'MyApplication'
+        stack, 'EA', 'MyApplication',
       ),
-      deploymentGroupName: 'MyDeploymentGroup'
+      deploymentGroupName: 'MyDeploymentGroup',
     });
 }
 

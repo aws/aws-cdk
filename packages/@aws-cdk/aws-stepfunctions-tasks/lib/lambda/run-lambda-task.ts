@@ -67,7 +67,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -95,8 +95,8 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
         Payload: this.props.payload,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
-        Qualifier: this.props.qualifier
-      }
+        Qualifier: this.props.qualifier,
+      },
     };
   }
 }

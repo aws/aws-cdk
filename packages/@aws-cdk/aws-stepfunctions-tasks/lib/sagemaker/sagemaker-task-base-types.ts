@@ -592,7 +592,7 @@ export interface TransformOutput {
    *
    * @default - default KMS key for Amazon S3 for your role's account.
    */
-  readonly encryptionKey?: kms.Key;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * S3 path where you want Amazon SageMaker to store the results of the transform job.
@@ -714,7 +714,7 @@ class StandardDockerImage extends DockerImage {
           'ecr:GetDownloadUrlForLayer',
           'ecr:BatchGetImage',
         ],
-        resources: ['*']
+        resources: ['*'],
       }));
     }
     return {
@@ -751,7 +751,7 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'], }));
+      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
     }
     return { uri: this.uri };
   }

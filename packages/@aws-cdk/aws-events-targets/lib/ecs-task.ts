@@ -81,8 +81,8 @@ export class EcsTask implements events.IRuleTarget {
       actions: ['ecs:RunTask'],
       resources: [this.taskDefinition.taskDefinitionArn],
       conditions: {
-        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn }
-      }
+        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
+      },
     })];
 
     // If it so happens that a Task Execution Role was created for the TaskDefinition,
@@ -98,7 +98,7 @@ export class EcsTask implements events.IRuleTarget {
     if (this.taskDefinition.isFargateCompatible) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.taskRole.roleArn]
+        resources: [this.taskDefinition.taskRole.roleArn],
       }));
     }
 
@@ -123,9 +123,9 @@ export class EcsTask implements events.IRuleTarget {
           awsVpcConfiguration: {
             subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
             assignPublicIp,
-            securityGroups: this.securityGroup && [this.securityGroup.securityGroupId]
-          }
-        }
+            securityGroups: this.securityGroup && [this.securityGroup.securityGroupId],
+          },
+        },
       }
       : baseEcsParameters;
 

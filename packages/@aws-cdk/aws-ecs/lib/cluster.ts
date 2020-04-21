@@ -146,7 +146,7 @@ export class Cluster extends Resource implements ICluster {
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
-        vpc: this.vpc
+        vpc: this.vpc,
       }) :
       new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
@@ -223,9 +223,9 @@ export class Cluster extends Resource implements ICluster {
         'ecs:Submit*',
         'ecr:GetAuthorizationToken',
         'logs:CreateLogStream',
-        'logs:PutLogEvents'
+        'logs:PutLogEvents',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
@@ -233,7 +233,7 @@ export class Cluster extends Resource implements ICluster {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTime: options.taskDrainTime
+        drainTime: options.taskDrainTime,
       });
     }
   }
@@ -278,7 +278,7 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 }
@@ -597,11 +597,11 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: props.clusterName
+      resourceName: props.clusterName,
     });
 
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroups
+      securityGroups: props.securityGroups,
     });
   }
 

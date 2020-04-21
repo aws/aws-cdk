@@ -44,8 +44,8 @@ export class Sns implements ses.IReceiptRuleAction {
     return {
       snsAction: {
         encoding: this.props.encoding,
-        topicArn: this.props.topic.topicArn
-      }
+        topicArn: this.props.topic.topicArn,
+      },
     };
   }
 }

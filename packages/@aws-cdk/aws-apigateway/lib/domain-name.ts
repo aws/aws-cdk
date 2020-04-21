@@ -107,7 +107,7 @@ export class DomainName extends Resource implements IDomainName {
       certificateArn: edge ? props.certificate.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
-      securityPolicy: props.securityPolicy
+      securityPolicy: props.securityPolicy,
     });
 
     this.domainName = resource.ref;
@@ -136,7 +136,7 @@ export class DomainName extends Resource implements IDomainName {
     return new BasePathMapping(this, id, {
       domainName: this,
       restApi: targetApi,
-      ...options
+      ...options,
     });
   }
 }

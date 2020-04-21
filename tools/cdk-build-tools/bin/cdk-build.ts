@@ -12,22 +12,22 @@ async function main() {
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
-      defaultDescription: 'jsii provided by node dependencies'
+      defaultDescription: 'jsii provided by node dependencies',
     })
     .option('tsc', {
       type: 'string',
       desc: 'Specify a different tsc executable',
-      defaultDescription: 'tsc provided by node dependencies'
+      defaultDescription: 'tsc provided by node dependencies',
     })
     .option('tslint', {
       type: 'string',
       desc: 'Specify a different tslint executable',
-      defaultDescription: 'tslint provided by node dependencies'
+      defaultDescription: 'tslint provided by node dependencies',
     })
     .option('eslint', {
       type: 'string',
       desc: 'Specify a different eslint executable',
-      defaultDescription: 'eslint provided by node dependencies'
+      defaultDescription: 'eslint provided by node dependencies',
     })
     .argv;
 

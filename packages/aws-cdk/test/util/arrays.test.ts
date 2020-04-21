@@ -4,7 +4,7 @@ test('flatten combines arrays', () => {
   const output = flatten([
     ['a', 'b'],
     [],
-    ['c']
+    ['c'],
   ]);
 
   expect(output).toEqual(['a', 'b', 'c']);

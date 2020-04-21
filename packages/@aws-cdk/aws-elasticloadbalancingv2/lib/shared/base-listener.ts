@@ -49,7 +49,7 @@ export abstract class BaseListener extends Resource {
   protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
     this._addDefaultAction({
       targetGroupArn: targetGroup.targetGroupArn,
-      type: 'forward'
+      type: 'forward',
     });
   }
 }

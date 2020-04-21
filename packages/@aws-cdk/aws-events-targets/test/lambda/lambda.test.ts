@@ -27,11 +27,11 @@ test('use lambda as an event rule target', () => {
     FunctionName: {
       'Fn::GetAtt': [
         lambdaId,
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     Principal: 'events.amazonaws.com',
-    SourceArn: { 'Fn::GetAtt': ['Rule4C995B7F', 'Arn'] }
+    SourceArn: { 'Fn::GetAtt': ['Rule4C995B7F', 'Arn'] },
   }));
 
   expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -39,11 +39,11 @@ test('use lambda as an event rule target', () => {
     FunctionName: {
       'Fn::GetAtt': [
         lambdaId,
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     Principal: 'events.amazonaws.com',
-    SourceArn: { 'Fn::GetAtt': ['Rule270732244', 'Arn'] }
+    SourceArn: { 'Fn::GetAtt': ['Rule270732244', 'Arn'] },
   }));
 
   expect(stack).to(countResources('AWS::Events::Rule', 2));
@@ -51,9 +51,9 @@ test('use lambda as an event rule target', () => {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': [lambdaId, 'Arn'] },
-        Id: 'Target0'
-      }
-    ]
+        Id: 'Target0',
+      },
+    ],
   }));
 });
 
@@ -67,10 +67,10 @@ test('adding same lambda function as target mutiple times creates permission onl
 
   // WHEN
   rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value1' })
+    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
   }));
   rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value2' })
+    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
   }));
 
   // THEN
@@ -84,7 +84,7 @@ test('adding same singleton lambda function as target mutiple times creates perm
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.PYTHON_2_7,
-    uuid: 'uuid'
+    uuid: 'uuid',
   });
   const rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
@@ -92,10 +92,10 @@ test('adding same singleton lambda function as target mutiple times creates perm
 
   // WHEN
   rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value1' })
+    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
   }));
   rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value2' })
+    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
   }));
 
   // THEN
@@ -106,6 +106,6 @@ function newTestLambda(scope: cdk.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7
+    runtime: lambda.Runtime.PYTHON_2_7,
   });
 }

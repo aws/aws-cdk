@@ -9,13 +9,13 @@ const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy
 const oai = new cloudfront.CfnCloudFrontOriginAccessIdentity(stack, 'OAI', {
   cloudFrontOriginAccessIdentityConfig: {
     comment: 'Allows CloudFront to reach the bucket!',
-  }
+  },
 });
 
 const oaiImported = cloudfront.OriginAccessIdentity.fromOriginAccessIdentityName(
   stack,
   'OAIImported',
-  oai.ref
+  oai.ref,
 );
 
 const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
@@ -25,7 +25,7 @@ const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
       s3BucketSource: bucket,
       originAccessIdentity: oaiImported,
     },
-  }]
+  }],
 });
 
 new cdk.CfnOutput(stack, 'DistributionDomainName', { value: dist.domainName });

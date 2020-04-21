@@ -237,7 +237,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
     this.actions.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      type: 'forward'
+      type: 'forward',
     });
     targetGroup.registerListener(this.listener, this);
   }
@@ -250,7 +250,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     this.actions.push({
       fixedResponseConfig: fixedResponse,
-      type: 'fixed-response'
+      type: 'fixed-response',
     });
   }
 
@@ -262,7 +262,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     this.actions.push({
       redirectConfig: redirectResponse,
-      type: 'redirect'
+      type: 'redirect',
     });
   }
 

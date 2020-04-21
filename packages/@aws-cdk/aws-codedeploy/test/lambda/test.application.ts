@@ -9,7 +9,7 @@ export = {
       const stack = new cdk.Stack();
       new codedeploy.LambdaApplication(stack, 'MyApp');
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
-        ComputePlatform: 'Lambda'
+        ComputePlatform: 'Lambda',
       }));
       test.done();
     },
@@ -20,9 +20,9 @@ export = {
       });
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
         ApplicationName: 'my-name',
-        ComputePlatform: 'Lambda'
+        ComputePlatform: 'Lambda',
       }));
       test.done();
     },
-  }
+  },
 };

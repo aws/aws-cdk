@@ -186,7 +186,7 @@ class NatInstance extends NatProvider {
     // FIXME: Ideally, NAT instances don't have a role at all, but
     // 'Instance' does not allow that right now.
     const role = new iam.Role(options.vpc, 'NatRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     for (const sub of options.natSubnets) {
@@ -198,7 +198,7 @@ class NatInstance extends NatProvider {
         vpcSubnets: { subnets: [sub] },
         securityGroup: sg,
         role,
-        keyName: this.props.keyName
+        keyName: this.props.keyName,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);

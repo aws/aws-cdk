@@ -68,7 +68,7 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
 
     handleBoolean(_key: string, _x: boolean) {
       return {};
-    }
+    },
   });
 
   return found;
@@ -129,7 +129,7 @@ function recurseArray(key: string, arr: any[], handlers: FieldHandlers): {[key: 
         return recurseObject(value, handlers);
       }
       return value;
-    })
+    }),
   };
 }
 

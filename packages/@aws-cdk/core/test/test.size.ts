@@ -14,7 +14,7 @@ export = {
     test.equals(stack.resolve(lazySize.toKibibytes()), 1337);
     test.throws(
       () => stack.resolve(lazySize.toMebibytes()),
-      /Unable to perform time unit conversion on un-resolved token/
+      /Unable to perform time unit conversion on un-resolved token/,
     );
 
     test.done();
@@ -108,7 +108,7 @@ export = {
     test.equals(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE}), 5_324_800);
 
     test.done();
-  }
+  },
 };
 
 function floatEqual(test: Test, actual: number, expected: number) {

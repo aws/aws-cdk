@@ -9,8 +9,8 @@ export function mockAws() {
   mockS3.getBucketLocation = mockedApiResult({});
   mockEcr.describeRepositories = mockedApiResult({ repositories: [
     {
-      repositoryUri: '12345.amazonaws.com/repo'
-    }
+      repositoryUri: '12345.amazonaws.com/repo',
+    },
   ] });
 
   return {
@@ -31,13 +31,13 @@ export function errorWithCode(code: string, message: string) {
 
 export function mockedApiResult(returnValue: any) {
   return jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue(returnValue)
+    promise: jest.fn().mockResolvedValue(returnValue),
   });
 }
 
 export function mockedApiFailure(code: string, message: string) {
   return jest.fn().mockReturnValue({
-    promise: jest.fn().mockRejectedValue(errorWithCode(code, message))
+    promise: jest.fn().mockRejectedValue(errorWithCode(code, message)),
   });
 }
 
@@ -60,6 +60,6 @@ export function mockUpload(expectContent?: string) {
         }
         ok();
       });
-    })
+    }),
   }));
 }

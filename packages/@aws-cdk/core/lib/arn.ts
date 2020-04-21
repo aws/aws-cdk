@@ -198,7 +198,7 @@ export class Arn {
       region,
       account,
       resourceName,
-      sep
+      sep,
     });
   }
 

@@ -26,7 +26,7 @@ beforeEach(() => {
   bockfs({
     '/home/project/cloud-executable': 'ARBITRARY',
     '/home/project/windows.js': 'ARBITRARY',
-    'home/project/executable-app.js': 'ARBITRARY'
+    'home/project/executable-app.js': 'ARBITRARY',
   });
   bockfs.workingDirectory('/home/project');
   bockfs.executable('/home/project/cloud-executable');
@@ -50,8 +50,8 @@ function createApp(): cdk.App {
   new cdk.CfnResource(stack, 'Role', {
     type: 'AWS::IAM::Role',
     properties: {
-      RoleName: 'Role'
-    }
+      RoleName: 'Role',
+    },
   });
 
   return app;
@@ -115,7 +115,7 @@ test('cli does not throw when manifest version < schema version', async () => {
 test('validates --app key is present', async () => {
   // GIVEN no config key for `app`
   await expect(execProgram(sdkProvider, config)).rejects.toThrow(
-    '--app is required either in command-line, in cdk.json or in ~/.cdk.json'
+    '--app is required either in command-line, in cdk.json or in ~/.cdk.json',
   );
 
 });
@@ -194,7 +194,7 @@ test('application set in --app is `*.js` and executable', async () => {
 
 function writeOutputAssembly() {
   const asm = testAssembly({
-    stacks: []
+    stacks: [],
   });
   bockfs.write('/home/project/cdk.out/manifest.json', JSON.stringify(asm.manifest));
 }

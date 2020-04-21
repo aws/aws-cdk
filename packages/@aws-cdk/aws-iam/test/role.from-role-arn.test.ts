@@ -313,7 +313,7 @@ describe('IAM Role.fromRoleArn', () => {
             {
               'Fn::Select': [5,
                 { 'Fn::Split': [':', 'role-arn'] },
-              ]
+              ],
             },
           ],
         },

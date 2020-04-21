@@ -11,19 +11,19 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
-      vpc
+      vpc,
     });
 
     // WHEN
     new apigateway.VpcLink(stack, 'VpcLink', {
       vpcLinkName: 'MyLink',
-      targets: [nlb]
+      targets: [nlb],
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
       Name: 'MyLink',
-      TargetArns: [{ Ref: 'NLB55158F82' }]
+      TargetArns: [{ Ref: 'NLB55158F82' }],
     }));
 
     test.done();
@@ -40,7 +40,7 @@ export = {
 
     // WHEN
     const link = new apigateway.VpcLink(stack, 'VpcLink', {
-      targets: [nlb0]
+      targets: [nlb0],
     });
     link.addTargets(nlb1, nlb2);
     link.addTargets(nlb3);
@@ -52,8 +52,8 @@ export = {
         { Ref: 'NLB03D178991' },
         { Ref: 'NLB13224D47C' },
         { Ref: 'NLB2BEBACE62' },
-        { Ref: 'NLB372DB3895' }
-      ]
+        { Ref: 'NLB372DB3895' },
+      ],
     }));
 
     test.done();
@@ -70,5 +70,5 @@ export = {
     // TEST
     test.throws(() => app.synth(), /No targets added to vpc link/);
     test.done();
-  }
+  },
 };

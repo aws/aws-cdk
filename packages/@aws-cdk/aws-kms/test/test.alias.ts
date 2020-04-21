@@ -16,7 +16,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
     }));
 
     test.done();
@@ -28,17 +28,17 @@ export = {
 
     const key = new Key(stack, 'Key', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     new Alias(stack, 'Alias', {
       aliasName: 'foo',
-      targetKey: key
+      targetKey: key,
     });
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
     }));
 
     test.done();
@@ -56,7 +56,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
     }));
 
     test.done();
@@ -68,12 +68,12 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
       aliasName: 'alias/',
-      targetKey: key
+      targetKey: key,
     }));
 
     test.done();
@@ -85,12 +85,12 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
       aliasName: 'alias/@Nope',
-      targetKey: key
+      targetKey: key,
     }), 'a-zA-Z0-9:/_-');
 
     test.done();
@@ -102,22 +102,22 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias1', {
       aliasName: 'alias/aws/',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/aws\//);
 
     test.throws(() => new Alias(stack, 'Alias2', {
       aliasName: 'alias/aws/Awesome',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/aws\/Awesome/);
 
     test.throws(() => new Alias(stack, 'Alias3', {
       aliasName: 'alias/AWS/awesome',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/AWS\/awesome/);
 
     test.done();
@@ -128,7 +128,7 @@ export = {
 
     const myKey = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
     const myAlias = new Alias(stack, 'MyAlias', {
       targetKey: myKey,

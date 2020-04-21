@@ -10,7 +10,7 @@ beforeEach(() => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret')
+      oauthToken: SecretValue.plainText('secret'),
     }),
   });
 });
@@ -24,8 +24,8 @@ test('create a branch', () => {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
-        'AppId'
-      ]
+        'AppId',
+      ],
     },
     BranchName: 'dev',
     EnableAutoBuild: true,
@@ -36,7 +36,7 @@ test('create a branch', () => {
 test('with basic auth from credentials', () => {
   // WHEN
   app.addBranch('dev', {
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password'))
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
   });
 
   // THEN
@@ -44,8 +44,8 @@ test('with basic auth from credentials', () => {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: 'password',
-      Username: 'username'
-    }
+      Username: 'username',
+    },
   });
 });
 
@@ -65,14 +65,14 @@ test('with basic auth from generated password', () => {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'AppdevdevBasicAuthB25D2314'
+              Ref: 'AppdevdevBasicAuthB25D2314',
             },
-            ':SecretString:password::}}'
-          ]
-        ]
+            ':SecretString:password::}}',
+          ],
+        ],
       },
-      Username: 'username'
-    }
+      Username: 'username',
+    },
   });
 });
 
@@ -80,8 +80,8 @@ test('with env vars', () => {
   // WHEN
   const branch = app.addBranch('dev', {
     environmentVariables: {
-      key1: 'value1'
-    }
+      key1: 'value1',
+    },
   });
   branch.addEnvironment('key2', 'value2');
 
@@ -90,12 +90,12 @@ test('with env vars', () => {
     EnvironmentVariables: [
       {
         Name: 'key1',
-        Value: 'value1'
+        Value: 'value1',
       },
       {
         Name: 'key2',
-        Value: 'value2'
-      }
-    ]
+        Value: 'value2',
+      },
+    ],
   });
 });

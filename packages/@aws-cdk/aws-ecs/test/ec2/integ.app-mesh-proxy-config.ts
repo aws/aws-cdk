@@ -20,8 +20,8 @@ const prox = ecs.ProxyConfigurations.appMeshProxyConfiguration({
     proxyIngressPort: 15000,
     proxyEgressPort: 15001,
     appPorts: [9080, 9081],
-    egressIgnoredIPs: ['169.254.170.2', '169.254.169.254']
-  }
+    egressIgnoredIPs: ['169.254.170.2', '169.254.169.254'],
+  },
 });
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC, proxyConfiguration: prox });
 
@@ -37,7 +37,7 @@ taskDefinition.addContainer('envoy', {
 
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
-  taskDefinition
+  taskDefinition,
 });
 
 app.synth();

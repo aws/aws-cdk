@@ -36,7 +36,7 @@ test('deep resolves intrinsics in array', () =>
 test('removes NoValue from object', () =>
   expect(renderIntrinsics({
     Deeper1: { Ref: 'SomeLogicalId' },
-    Deeper2: { Ref: 'AWS::NoValue' }
+    Deeper2: { Ref: 'AWS::NoValue' },
   })).toEqual({
     Deeper1: '${SomeLogicalId}',
   }));

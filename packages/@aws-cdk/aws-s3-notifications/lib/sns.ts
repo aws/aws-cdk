@@ -16,14 +16,14 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
       actions: ['sns:Publish'],
       resources: [this.topic.topicArn],
       conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn }
-      }
+        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+      },
     }));
 
     return {
       arn: this.topic.topicArn,
       type: s3.BucketNotificationDestinationType.TOPIC,
-      dependencies: [ this.topic ] // make sure the topic policy resource is created before the notification config
+      dependencies: [ this.topic ], // make sure the topic policy resource is created before the notification config
     };
   }
 }

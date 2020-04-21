@@ -72,6 +72,6 @@ export = {
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: false}));
       test.done();
-    }
-  }
+    },
+  },
 };

@@ -94,13 +94,13 @@ export class LambdaInvokeAction extends Action {
     // allow pipeline to list functions
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:ListFunctions'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // allow pipeline to invoke this lambda functionn
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:InvokeFunction'],
-      resources: [this.props.lambda.functionArn]
+      resources: [this.props.lambda.functionArn],
     }));
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
@@ -116,7 +116,7 @@ export class LambdaInvokeAction extends Action {
     // (the Pipeline ARN will not be enough)
     this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
+      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult'],
     }));
 
     return {

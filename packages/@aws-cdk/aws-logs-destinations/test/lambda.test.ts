@@ -24,7 +24,7 @@ test('lambda can be used as metric subscription destination', () => {
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup,
     destination: new dests.LambdaDestination(fn),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   // THEN: subscription target is Lambda
@@ -45,13 +45,13 @@ test('can have multiple subscriptions use the same Lambda', () => {
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup,
     destination: new dests.LambdaDestination(fn),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   new logs.SubscriptionFilter(stack, 'Subscription2', {
     logGroup: new logs.LogGroup(stack, 'LG2'),
     destination: new dests.LambdaDestination(fn),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   // THEN: Lambda has permissions to be invoked by CWL from both Source Arns

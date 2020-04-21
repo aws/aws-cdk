@@ -5,7 +5,7 @@ import {
   haveResource,
   haveResourceLike,
   ResourcePart,
-  SynthUtils
+  SynthUtils,
 } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
@@ -54,27 +54,27 @@ export = {
                         [
                           'arn:',
                           {
-                            Ref: 'AWS::Partition'
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            Ref: 'AWS::AccountId'
+                            Ref: 'AWS::AccountId',
                           },
-                          ':root'
-                        ]
-                      ]
-                    }
+                          ':root',
+                        ],
+                      ],
+                    },
                   },
-                  Resource: '*'
-                }
+                  Resource: '*',
+                },
               ],
-              Version: '2012-10-17'
-            }
+              Version: '2012-10-17',
+            },
           },
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain'
-        }
-      }
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     }));
     test.done();
   },
@@ -115,35 +115,35 @@ export = {
                         [
                           'arn:',
                           {
-                            Ref: 'AWS::Partition'
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            Ref: 'AWS::AccountId'
+                            Ref: 'AWS::AccountId',
                           },
-                          ':root'
-                        ]
-                      ]
-                    }
+                          ':root',
+                        ],
+                      ],
+                    },
                   },
-                  Resource: '*'
+                  Resource: '*',
                 },
                 {
                   Action: 'kms:encrypt',
                   Effect: 'Allow',
                   Principal: {
-                    AWS: 'arn'
+                    AWS: 'arn',
                   },
-                  Resource: '*'
-                }
+                  Resource: '*',
+                },
               ],
-              Version: '2012-10-17'
-            }
+              Version: '2012-10-17',
+            },
           },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
-        }
-      }
+        },
+      },
     }));
 
     test.done();
@@ -181,51 +181,51 @@ export = {
                         [
                           'arn:',
                           {
-                            Ref: 'AWS::Partition'
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            Ref: 'AWS::AccountId'
+                            Ref: 'AWS::AccountId',
                           },
-                          ':root'
-                        ]
-                      ]
-                    }
+                          ':root',
+                        ],
+                      ],
+                    },
                   },
-                  Resource: '*'
+                  Resource: '*',
                 },
                 {
                   Action: 'kms:encrypt',
                   Effect: 'Allow',
                   Principal: {
-                    AWS: 'arn'
+                    AWS: 'arn',
                   },
-                  Resource: '*'
-                }
+                  Resource: '*',
+                },
               ],
-              Version: '2012-10-17'
+              Version: '2012-10-17',
             },
             Enabled: false,
             EnableKeyRotation: true,
             Tags: [
               {
                 Key: 'tag1',
-                Value: 'value1'
+                Value: 'value1',
               },
               {
                 Key: 'tag2',
-                Value: 'value2'
+                Value: 'value2',
               },
               {
                 Key: 'tag3',
-                Value: ''
-              }
-            ]
+                Value: '',
+              },
+            ],
           },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
-        }
-      }
+        },
+      },
     }));
 
     test.done();
@@ -237,7 +237,7 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     const alias = key.addAlias('alias/xoo');
@@ -249,9 +249,9 @@ export = {
       TargetKeyId: {
         'Fn::GetAtt': [
           'MyKey6AB29FA6',
-          'Arn'
-        ]
-      }
+          'Arn',
+        ],
+      },
     }));
     test.done();
   },
@@ -262,7 +262,7 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     const alias1 = key.addAlias('alias/alias1');
@@ -276,18 +276,18 @@ export = {
       TargetKeyId: {
         'Fn::GetAtt': [
           'MyKey6AB29FA6',
-          'Arn'
-        ]
-      }
+          'Arn',
+        ],
+      },
     }));
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/alias2',
       TargetKeyId: {
         'Fn::GetAtt': [
           'MyKey6AB29FA6',
-          'Arn'
-        ]
-      }
+          'Arn',
+        ],
+      },
     }));
     test.done();
   },
@@ -310,18 +310,18 @@ export = {
             Action: ACTIONS,
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
-            Resource: '*'
+            Resource: '*',
           },
           // This is the interesting one
           {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::GetAtt': ['User00B015A1', 'Arn'] } },
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -330,10 +330,10 @@ export = {
           {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] }
-          }
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -463,10 +463,10 @@ export = {
             Type: 'AWS::KMS::Alias',
             Properties: {
               AliasName: 'alias/hello',
-              TargetKeyId: 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'
-            }
-          }
-        }
+              TargetKeyId: 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+            },
+          },
+        },
       });
 
       test.done();

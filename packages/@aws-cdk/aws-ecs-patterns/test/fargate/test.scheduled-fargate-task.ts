@@ -19,7 +19,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryLimitMiB: 512,
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -36,25 +36,25 @@ export = {
                   {
                     'Fn::GetAtt': [
                       'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
-                      'GroupId'
-                    ]
-                  }
+                      'GroupId',
+                    ],
+                  },
                 ],
                 Subnets: [
                   {
-                    Ref: 'VpcPrivateSubnet1Subnet536B997A'
-                  }
-                ]
-              }
+                    Ref: 'VpcPrivateSubnet1Subnet536B997A',
+                  },
+                ],
+              },
             },
             TaskCount: 1,
-            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' }
+            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' },
           },
           Id: 'Target0',
           Input: '{}',
-          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] }
-        }
-      ]
+          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] },
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
@@ -66,17 +66,17 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C',
               },
               'awslogs-stream-prefix': 'ScheduledFargateTask',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -97,7 +97,7 @@ export = {
         environment: { TRIGGER: 'CloudWatch Events' },
       },
       desiredTaskCount: 2,
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -114,25 +114,25 @@ export = {
                   {
                     'Fn::GetAtt': [
                       'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
-                      'GroupId'
-                    ]
-                  }
+                      'GroupId',
+                    ],
+                  },
                 ],
                 Subnets: [
                   {
-                    Ref: 'VpcPrivateSubnet1Subnet536B997A'
-                  }
-                ]
-              }
+                    Ref: 'VpcPrivateSubnet1Subnet536B997A',
+                  },
+                ],
+              },
             },
             TaskCount: 2,
-            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' }
+            TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' },
           },
           Id: 'Target0',
           Input: '{}',
-          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] }
-        }
-      ]
+          RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] },
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
@@ -141,8 +141,8 @@ export = {
           Environment: [
             {
               Name: 'TRIGGER',
-              Value: 'CloudWatch Events'
-            }
+              Value: 'CloudWatch Events',
+            },
           ],
           Essential: true,
           Image: 'henk',
@@ -150,17 +150,17 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C',
               },
               'awslogs-stream-prefix': 'ScheduledFargateTask',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -177,7 +177,7 @@ export = {
       scheduledFargateTaskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('henk'),
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -190,17 +190,17 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C',
               },
               'awslogs-stream-prefix': 'ScheduledFargateTask',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -218,7 +218,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('henk'),
         command: ['-c', '4', 'amazon.com'],
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -228,7 +228,7 @@ export = {
           Command: [
             '-c',
             '4',
-            'amazon.com'
+            'amazon.com',
           ],
           Essential: true,
           Image: 'henk',
@@ -236,17 +236,17 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C'
+                Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainerLogGroup4134B16C',
               },
               'awslogs-stream-prefix': 'ScheduledFargateTask',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -258,7 +258,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', {
       maxAzs: 1,
       subnetConfiguration: [
-        { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }
+        { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
       ],
     });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -269,7 +269,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('henk'),
       },
       subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -282,14 +282,14 @@ export = {
                 AssignPublicIp: 'ENABLED',
                 Subnets: [
                   {
-                    Ref: 'VpcPublicSubnet1Subnet5C2D37C4'
-                  }
-                ]
-              }
+                    Ref: 'VpcPublicSubnet1Subnet5C2D37C4',
+                  },
+                ],
+              },
             },
-          }
-        }
-      ]
+          },
+        },
+      ],
     }));
 
     test.done();

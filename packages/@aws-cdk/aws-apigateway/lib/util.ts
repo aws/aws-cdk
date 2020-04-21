@@ -38,7 +38,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
 
   return {
     httpMethod,
-    resourcePath
+    resourcePath,
   };
 }
 
@@ -54,7 +54,7 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
   if (path) {
     return {
       apiType: 'path',
-      apiValue: path
+      apiValue: path,
     };
   }
 
@@ -65,7 +65,7 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
 
     return {
       apiType: 'action',
-      apiValue: action
+      apiValue: action,
     };
   }
 
@@ -95,7 +95,7 @@ export class JsonSchemaMapper {
   private static readonly SchemaPropsWithPrefix: { [key: string]: string } = {
     schema: '$schema',
     ref: '$ref',
-    id: '$id'
+    id: '$id',
   };
   // The value indicates whether direct children should be key-mapped.
   private static readonly SchemaPropsWithUserDefinedChildren: { [key: string]: boolean } = {

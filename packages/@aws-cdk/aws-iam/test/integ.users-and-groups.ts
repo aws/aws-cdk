@@ -18,7 +18,7 @@ const policy = new Policy(stack, 'MyPolicy');
 policy.attachToGroup(g1);
 policy.addStatements(new PolicyStatement({
   resources: [g2.groupArn],
-  actions: ['iam:*']
+  actions: ['iam:*'],
 }));
 
 app.synth();

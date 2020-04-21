@@ -28,7 +28,7 @@ export class FargateCluster extends Cluster {
       ...props,
       defaultCapacity: 0,
       kubectlEnabled: true,
-      coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE
+      coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
     });
 
     this.addFargateProfile(
@@ -37,8 +37,8 @@ export class FargateCluster extends Cluster {
         selectors: [
           {namespace: 'default'},
           {namespace: 'kube-system'},
-        ]
-      }
+        ],
+      },
     );
   }
 }

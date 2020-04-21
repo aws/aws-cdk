@@ -9,7 +9,7 @@ import {
   CODECOMMIT_SOURCE_TYPE,
   GITHUB_ENTERPRISE_SOURCE_TYPE,
   GITHUB_SOURCE_TYPE,
-  S3_SOURCE_TYPE
+  S3_SOURCE_TYPE,
 } from './source-types';
 
 /**
@@ -95,7 +95,7 @@ export abstract class Source implements ISource {
       sourceProperty: {
         sourceIdentifier: this.identifier,
         type: this.type,
-      }
+      },
     };
   }
 }
@@ -481,7 +481,7 @@ abstract class ThirdPartyGitSource extends GitSource {
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
-      }
+      },
     };
   }
 }
@@ -510,7 +510,7 @@ class CodeCommitSource extends GitSource {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codecommit:GitPull'],
-      resources: [this.repo.repositoryArn]
+      resources: [this.repo.repositoryArn],
     }));
 
     const superConfig = super.bind(_scope, project);

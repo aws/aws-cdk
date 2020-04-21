@@ -12,7 +12,7 @@ test('lambda as notification target', () => {
   const fn = new lambda.Function(stack, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('foo')
+    code: lambda.Code.fromInline('foo'),
   });
 
   // WHEN
@@ -24,7 +24,7 @@ test('lambda as notification target', () => {
     FunctionName: { 'Fn::GetAtt': [ 'MyFunction3BAA72D1', 'Arn' ] },
     Principal: 's3.amazonaws.com',
     SourceAccount: { Ref: 'AWS::AccountId' },
-    SourceArn: { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }
+    SourceArn: { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] },
   });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
@@ -34,13 +34,13 @@ test('lambda as notification target', () => {
           Events: [ 's3:ObjectCreated:*' ],
           Filter: {
             Key: {
-              FilterRules: [ { Name: 'suffix', Value: '.png' } ]
-            }
+              FilterRules: [ { Name: 'suffix', Value: '.png' } ],
+            },
           },
-          LambdaFunctionArn: { 'Fn::GetAtt': [ 'MyFunction3BAA72D1', 'Arn' ] }
-        }
-      ]
-    }
+          LambdaFunctionArn: { 'Fn::GetAtt': [ 'MyFunction3BAA72D1', 'Arn' ] },
+        },
+      ],
+    },
   });
 });
 
@@ -61,12 +61,12 @@ test('lambda as notification target specified by function arn', () => {
           Events: [ 's3:ObjectCreated:*' ],
           Filter: {
             Key: {
-              FilterRules: [ { Name: 'suffix', Value: '.png' } ]
-            }
+              FilterRules: [ { Name: 'suffix', Value: '.png' } ],
+            },
           },
-          LambdaFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords'
-        }
-      ]
-    }
+          LambdaFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords',
+        },
+      ],
+    },
   });
 });

@@ -17,7 +17,7 @@ export class SqsDestination implements lambda.IDestination {
     this.queue.grantSendMessages(fn);
 
     return {
-      destination: this.queue.queueArn
+      destination: this.queue.queueArn,
     };
   }
 }

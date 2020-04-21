@@ -14,7 +14,7 @@ test('built-in data is correct', () => {
       domainSuffix: region.domainSuffix,
       partition: region.partition,
       s3StaticWebsiteEndpoint: region.s3StaticWebsiteEndpoint,
-      servicePrincipals
+      servicePrincipals,
     };
   }
   expect(snapshot).toMatchSnapshot();

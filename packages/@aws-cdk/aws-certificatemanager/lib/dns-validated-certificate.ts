@@ -77,7 +77,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
       handler: 'index.certificateRequestHandler',
       runtime: lambda.Runtime.NODEJS_10_X,
       timeout: cdk.Duration.minutes(15),
-      role: props.customResourceRole
+      role: props.customResourceRole,
     });
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
       actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
@@ -100,7 +100,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
-      }
+      },
     });
 
     this.certificateArn = certificate.getAtt('Arn').toString();

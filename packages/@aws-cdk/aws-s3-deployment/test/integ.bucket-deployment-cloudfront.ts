@@ -9,17 +9,17 @@ class TestBucketDeployment extends cdk.Stack {
     super(scope, id);
 
     const bucket = new s3.Bucket(this, 'Destination3', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: bucket
+            s3BucketSource: bucket,
           },
-          behaviors : [ {isDefaultBehavior: true}]
-        }
-      ]
+          behaviors : [ {isDefaultBehavior: true}],
+        },
+      ],
     });
 
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {

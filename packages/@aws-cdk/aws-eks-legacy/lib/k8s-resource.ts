@@ -67,7 +67,7 @@ export class KubernetesResource extends Construct {
         // render a CloudFormation-compatible JSON string (similar to
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
-      }
+      },
     });
   }
 }

@@ -14,10 +14,10 @@ export const handler = async (event: any, _context: any = {}): Promise<any> => {
           {
             Action: 'execute-api:Invoke',
             Effect: authToken,
-            Resource: event.methodArn
-          }
-        ]
-      }
+            Resource: event.methodArn,
+          },
+        ],
+      },
     };
   } else {
     throw new Error('Unauthorized');

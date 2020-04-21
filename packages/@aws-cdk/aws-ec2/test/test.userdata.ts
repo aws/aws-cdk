@@ -56,7 +56,7 @@ export = {
         'break\n' +
         '}\n' +
         'command1\n' +
-        'throw "Success"</powershell>'
+        'throw "Success"</powershell>',
     );
     test.done();
   },
@@ -70,12 +70,12 @@ export = {
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
-      bucketKey: 'filename.bat'
+      bucketKey: 'filename.bat',
     } );
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.bat',
-      localFile: 'c:\\test\\location\\otherScript.bat'
+      localFile: 'c:\\test\\location\\otherScript.bat',
     } );
 
     // THEN
@@ -83,7 +83,7 @@ export = {
     test.equals(rendered, '<powershell>mkdir (Split-Path -Path \'C:/temp/filename.bat\' ) -ea 0\n' +
       'Read-S3Object -BucketName \'test\' -key \'filename.bat\' -file \'C:/temp/filename.bat\' -ErrorAction Stop\n' +
       'mkdir (Split-Path -Path \'c:\\test\\location\\otherScript.bat\' ) -ea 0\n' +
-      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop</powershell>'
+      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop</powershell>',
     );
     test.done();
   },
@@ -97,7 +97,7 @@ export = {
     } );
     userData.addExecuteFileCommand({
       filePath: 'C:\\test\\filename2.bat',
-      arguments: 'arg1 arg2 -arg $variable'
+      arguments: 'arg1 arg2 -arg $variable',
     } );
 
     // THEN
@@ -105,7 +105,7 @@ export = {
     test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\' undefined\n' +
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
       '&\'C:\\test\\filename2.bat\' arg1 arg2 -arg $variable\n' +
-      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>'
+      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>',
     );
     test.done();
   },
@@ -173,12 +173,12 @@ export = {
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
-      bucketKey: 'filename.sh'
+      bucketKey: 'filename.sh',
     } );
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.sh',
-      localFile: 'c:\\test\\location\\otherScript.sh'
+      localFile: 'c:\\test\\location\\otherScript.sh',
     } );
 
     // THEN
@@ -187,7 +187,7 @@ export = {
       'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
       'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
       'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
-      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\''
+      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\'',
     );
     test.done();
   },
@@ -201,7 +201,7 @@ export = {
     } );
     userData.addExecuteFileCommand({
       filePath: '/test/filename2.sh',
-      arguments: 'arg1 arg2 -arg $variable'
+      arguments: 'arg1 arg2 -arg $variable',
     } );
 
     // THEN
@@ -212,7 +212,7 @@ export = {
       '\'/tmp/filename.sh\' undefined\n' +
       'set -e\n' +
       'chmod +x \'/test/filename2.sh\'\n' +
-      '\'/test/filename2.sh\' arg1 arg2 -arg $variable'
+      '\'/test/filename2.sh\' arg1 arg2 -arg $variable',
     );
     test.done();
   },
@@ -257,7 +257,7 @@ export = {
     // THEN
     test.throws(() => userData.addS3DownloadCommand({
       bucket,
-      bucketKey: 'filename.sh'
+      bucketKey: 'filename.sh',
     } ));
     test.done();
   },

@@ -16,7 +16,7 @@ describe('Fields', () => {
             deepField: Data.numberAt('$.numField'),
           },
         ],
-      })
+      }),
     ).toStrictEqual({
       'bool': true,
       'literal': 'literal',
@@ -37,7 +37,7 @@ describe('Fields', () => {
         count: Context.numberAt('$$.State.RetryCount'),
         token: Context.taskToken,
         entire: Context.entireContext,
-      })
+      }),
     ).toStrictEqual({
       'str.$': '$$.Execution.StartTime',
       'count.$': '$$.State.RetryCount',
@@ -59,7 +59,7 @@ describe('Fields', () => {
             deepField: Data.numberAt('$.numField'),
           },
         ],
-      })
+      }),
     ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   }),
   test('cannot have JsonPath fields in arrays', () => {
@@ -85,38 +85,38 @@ describe('Fields', () => {
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
         field: Context.taskToken,
-      })
+      }),
     );
 
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
         field: Context.stringAt('$$.Task'),
-      })
+      }),
     );
 
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
         field: Context.entireContext,
-      })
+      }),
     );
 
     expect(false).toEqual(
       FieldUtils.containsTaskToken({
         oops: 'not here',
-      })
+      }),
     );
 
     expect(false).toEqual(
       FieldUtils.containsTaskToken({
         oops: Context.stringAt('$$.Execution.StartTime'),
-      })
+      }),
     );
   }),
   test('arbitrary JSONPath fields are not replaced', () => {
     expect(
       FieldUtils.renderObject({
         field: '$.content',
-      })
+      }),
     ).toStrictEqual({
       field: '$.content',
     });

@@ -11,7 +11,7 @@ const key = new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 key.addToResourcePolicy(new iam.PolicyStatement({
   resources: ['*'],
   actions: ['kms:encrypt'],
-  principals: [new iam.ArnPrincipal(stack.account)]
+  principals: [new iam.ArnPrincipal(stack.account)],
 }));
 
 key.addAlias('alias/bar');

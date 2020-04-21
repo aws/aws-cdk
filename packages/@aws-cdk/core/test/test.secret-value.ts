@@ -22,7 +22,7 @@ export = {
     const v = SecretValue.secretsManager('secret-id', {
       jsonField: 'json-key',
       versionId: 'version-id',
-      versionStage: 'version-stage'
+      versionStage: 'version-stage',
     });
 
     // THEN
@@ -97,6 +97,6 @@ export = {
     // THEN
     test.throws(() => SecretValue.cfnParameter(p), /CloudFormation parameter must be configured with "NoEcho"/);
     test.done();
-  }
+  },
 
 };

@@ -12,105 +12,105 @@ export function spotInterruptHandler(nodeSelector: { [name: string]: string } = 
       apiVersion: 'rbac.authorization.k8s.io/v1',
       metadata: {
         name: 'node-termination-handler',
-        namespace: 'default'
+        namespace: 'default',
       },
       rules: [
         {
           apiGroups: [
-            'apps'
+            'apps',
           ],
           resources: [
-            'daemonsets'
+            'daemonsets',
           ],
           verbs: [
             'get',
-            'delete'
-          ]
+            'delete',
+          ],
         },
         {
           apiGroups: [
-            ''
+            '',
           ],
           resources: [
-            '*'
+            '*',
           ],
           verbs: [
-            '*'
-          ]
+            '*',
+          ],
         },
         {
           apiGroups: [
-            'rbac.authorization.k8s.io'
+            'rbac.authorization.k8s.io',
           ],
           resources: [
-            '*'
+            '*',
           ],
           verbs: [
-            '*'
-          ]
+            '*',
+          ],
         },
         {
           apiGroups: [
-            'apiextensions.k8s.io'
+            'apiextensions.k8s.io',
           ],
           resources: [
-            'customresourcedefinitions'
+            'customresourcedefinitions',
           ],
           verbs: [
             'get',
             'list',
             'watch',
             'create',
-            'delete'
-          ]
-        }
-      ]
+            'delete',
+          ],
+        },
+      ],
     },
     {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {
-        name: 'node-termination-handler'
-      }
+        name: 'node-termination-handler',
+      },
     },
     {
       kind: 'ClusterRoleBinding',
       apiVersion: 'rbac.authorization.k8s.io/v1',
       metadata: {
         name: 'node-termination-handler',
-        namespace: 'default'
+        namespace: 'default',
       },
       subjects: [
         {
           kind: 'ServiceAccount',
           name: 'node-termination-handler',
-          namespace: 'default'
-        }
+          namespace: 'default',
+        },
       ],
       roleRef: {
         kind: 'ClusterRole',
         name: 'node-termination-handler',
-        apiGroup: 'rbac.authorization.k8s.io'
-      }
+        apiGroup: 'rbac.authorization.k8s.io',
+      },
     },
     {
       apiVersion: 'apps/v1beta2',
       kind: 'DaemonSet',
       metadata: {
         name: 'node-termination-handler',
-        namespace: 'default'
+        namespace: 'default',
       },
       spec: {
         selector: {
           matchLabels: {
-            app: 'node-termination-handler'
-          }
+            app: 'node-termination-handler',
+          },
         },
         template: {
           metadata: {
             labels: {
-              app: 'node-termination-handler'
-            }
+              app: 'node-termination-handler',
+            },
           },
           spec: {
             serviceAccountName: 'node-termination-handler',
@@ -124,52 +124,52 @@ export function spotInterruptHandler(nodeSelector: { [name: string]: string } = 
                     name: 'NODE_NAME',
                     valueFrom: {
                       fieldRef: {
-                        fieldPath: 'spec.nodeName'
-                      }
-                    }
+                        fieldPath: 'spec.nodeName',
+                      },
+                    },
                   },
                   {
                     name: 'POD_NAME',
                     valueFrom: {
                       fieldRef: {
-                        fieldPath: 'metadata.name'
-                      }
-                    }
+                        fieldPath: 'metadata.name',
+                      },
+                    },
                   },
                   {
                     name: 'NAMESPACE',
                     valueFrom: {
                       fieldRef: {
-                        fieldPath: 'metadata.namespace'
-                      }
-                    }
+                        fieldPath: 'metadata.namespace',
+                      },
+                    },
                   },
                   {
                     name: 'SPOT_POD_IP',
                     valueFrom: {
                       fieldRef: {
-                        fieldPath: 'status.podIP'
-                      }
-                    }
-                  }
+                        fieldPath: 'status.podIP',
+                      },
+                    },
+                  },
                 ],
                 resources: {
                   requests: {
                     memory: '64Mi',
-                    cpu: '50m'
+                    cpu: '50m',
                   },
                   limits: {
                     memory: '128Mi',
-                    cpu: '100m'
-                  }
-                }
-              }
+                    cpu: '100m',
+                  },
+                },
+              },
             ],
-            nodeSelector
-          }
-        }
-      }
-    }
+            nodeSelector,
+          },
+        },
+      },
+    },
 
   ];
 }

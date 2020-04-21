@@ -40,7 +40,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'unknown-region',
-        name: 'aws://unknown-account/unknown-region'
+        name: 'aws://unknown-account/unknown-region',
       });
 
       test.done();
@@ -59,7 +59,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'explicit-region',
-        name: 'aws://unknown-account/explicit-region'
+        name: 'aws://unknown-account/explicit-region',
       });
 
       test.done();
@@ -72,7 +72,7 @@ export = {
       // WHEN
       const stack = new Stack(app, 'stack', { env: {
         account: 'explicit-account',
-        region: 'explicit-region'
+        region: 'explicit-region',
       }});
 
       // THEN
@@ -81,7 +81,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'explicit-account',
         region: 'explicit-region',
-        name: 'aws://explicit-account/explicit-region'
+        name: 'aws://explicit-account/explicit-region',
       });
 
       test.done();
@@ -95,8 +95,8 @@ export = {
       const stack = new Stack(app, 'stack', {
         env: {
           account: Aws.ACCOUNT_ID,
-          region: Aws.REGION
-        }
+          region: Aws.REGION,
+        },
       });
 
       // THEN
@@ -105,7 +105,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'unknown-region',
-        name: 'aws://unknown-account/unknown-region'
+        name: 'aws://unknown-account/unknown-region',
       });
 
       test.done();
@@ -119,8 +119,8 @@ export = {
       const stack = new Stack(app, 'stack', {
         env: {
           account: Aws.ACCOUNT_ID,
-          region: 'us-east-2'
-        }
+          region: 'us-east-2',
+        },
       });
 
       // THEN
@@ -129,10 +129,10 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'us-east-2',
-        name: 'aws://unknown-account/us-east-2'
+        name: 'aws://unknown-account/us-east-2',
       });
 
       test.done();
-    }
+    },
   },
 };

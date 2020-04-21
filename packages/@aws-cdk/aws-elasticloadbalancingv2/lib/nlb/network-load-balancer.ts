@@ -61,7 +61,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
-          ...props
+          ...props,
         });
       }
 
@@ -97,7 +97,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public addListener(id: string, props: BaseNetworkListenerProps): NetworkListener {
     return new NetworkListener(this, id, {
       loadBalancer: this,
-      ...props
+      ...props,
     });
   }
 
@@ -111,7 +111,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       namespace: 'AWS/NetworkELB',
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -127,7 +127,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveFlowCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -139,7 +139,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -151,7 +151,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -163,7 +163,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -175,7 +175,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewFlowCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -187,7 +187,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -201,7 +201,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Client_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -213,7 +213,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_ELB_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -227,7 +227,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Target_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 }

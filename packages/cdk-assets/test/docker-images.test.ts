@@ -15,7 +15,7 @@ beforeEach(() => {
       dockerImages: {
         theAsset: {
           source: {
-            directory: 'dockerdir'
+            directory: 'dockerdir',
           },
           destinations: {
             theDestination: {
@@ -34,7 +34,7 @@ beforeEach(() => {
       dockerImages: {
         theAsset: {
           source: {
-            directory: absoluteDockerPath
+            directory: absoluteDockerPath,
           },
           destinations: {
             theDestination: {
@@ -80,7 +80,7 @@ describe('with a complete manifest', () => {
 
     expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
       imageIds: [{imageTag: 'abcdef'}],
-      repositoryName: 'repo'
+      repositoryName: 'repo',
     }));
   });
 
@@ -88,8 +88,8 @@ describe('with a complete manifest', () => {
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
-      ]
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
     });
 
     mockSpawn(
@@ -106,8 +106,8 @@ describe('with a complete manifest', () => {
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
-      ]
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
     });
 
     mockSpawn(
@@ -128,13 +128,13 @@ test('correctly identify Docker directory if path is absolute', async () => {
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({
     authorizationData: [
-      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
-    ]
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
   });
 
   mockSpawn(
     // Only care about the 'build' command line
-    { commandLine: ['docker', 'login'], prefix: true, },
+    { commandLine: ['docker', 'login'], prefix: true },
     { commandLine: ['docker', 'inspect'], exitCode: 1, prefix: true },
     { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
     { commandLine: ['docker', 'tag'], prefix: true },

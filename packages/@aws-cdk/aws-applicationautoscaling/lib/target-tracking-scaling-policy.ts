@@ -144,8 +144,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
         } : undefined,
         scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
         scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
-        targetValue: props.targetValue
-      }
+        targetValue: props.targetValue,
+      },
     });
 
     this.scalingPolicyArn = resource.ref;

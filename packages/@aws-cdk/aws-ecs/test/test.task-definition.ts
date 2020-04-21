@@ -21,5 +21,5 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };

@@ -115,7 +115,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
     });
 
     const resource = new CfnScalableTarget(this, 'Resource', {
@@ -125,7 +125,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
       scheduledActions: Lazy.anyValue({ produce: () => this.actions}, { omitEmptyArray: true}),
-      serviceNamespace: props.serviceNamespace
+      serviceNamespace: props.serviceNamespace,
     });
 
     this.scalableTargetId = resource.ref;
@@ -152,7 +152,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       endTime: action.endTime,
       scalableTargetAction: {
         maxCapacity: action.maxCapacity,
-        minCapacity: action.minCapacity
+        minCapacity: action.minCapacity,
       },
     });
   }

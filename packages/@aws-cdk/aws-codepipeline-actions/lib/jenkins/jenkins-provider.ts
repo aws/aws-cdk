@@ -232,5 +232,5 @@ export const jenkinsArtifactsBounds: codepipeline.ActionArtifactBounds = {
   minInputs: 0,
   maxInputs: 5,
   minOutputs: 0,
-  maxOutputs: 5
+  maxOutputs: 5,
 };

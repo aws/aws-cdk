@@ -27,11 +27,11 @@ beforeEach(() => {
         '/resource': [
           {
             type: cxschema.ArtifactMetadataEntryType.ERROR,
-            data: 'this is an error'
-          }
-        ]
-      }
-    }]
+            data: 'this is an error',
+          },
+        ],
+      },
+    }],
   });
 
   cloudFormation = classMockOf(CloudFormationDeployments);
@@ -40,7 +40,7 @@ beforeEach(() => {
     cloudExecutable,
     cloudFormation,
     configuration: cloudExecutable.configuration,
-    sdkProvider: cloudExecutable.sdkProvider
+    sdkProvider: cloudExecutable.sdkProvider,
   });
 
   // Default implementations
@@ -49,7 +49,7 @@ beforeEach(() => {
     noOp: true,
     outputs: {},
     stackArn: '',
-    stackArtifact: options.stack
+    stackArtifact: options.stack,
   }));
 });
 
@@ -60,7 +60,7 @@ test('diff can diff multiple stacks', async () => {
   // WHEN
   const exitCode = await toolkit.diff({
     stackNames: ['B'],
-    stream: buffer
+    stream: buffer,
   });
 
   // THEN
@@ -79,7 +79,7 @@ test('exits with 1 with diffs and fail set to true', async () => {
   const exitCode = await toolkit.diff({
     stackNames: ['A'],
     stream: buffer,
-    fail: true
+    fail: true,
   });
 
   // THEN
@@ -93,7 +93,7 @@ test('throws an error during diffs on stack with error metadata', async () => {
   try {
     const exitCode = await toolkit.diff({
       stackNames: ['C'],
-      stream: buffer
+      stream: buffer,
     });
 
     // THEN

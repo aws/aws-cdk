@@ -174,9 +174,9 @@ export class CfnParameter extends CfnElement {
           MaxValue: this.props.maxValue,
           MinLength: this.props.minLength,
           MinValue: this.props.minValue,
-          NoEcho: this.props.noEcho
-        }
-      }
+          NoEcho: this.props.noEcho,
+        },
+      },
     };
   }
 

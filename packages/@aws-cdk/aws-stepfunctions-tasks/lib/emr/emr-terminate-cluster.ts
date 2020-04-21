@@ -38,7 +38,7 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -51,8 +51,8 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
       resourceArn: getResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
       policyStatements: this.createPolicyStatements(_task),
       parameters: {
-        ClusterId: this.props.clusterId
-      }
+        ClusterId: this.props.clusterId,
+      },
     };
   }
 
@@ -66,10 +66,10 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
       new iam.PolicyStatement({
         actions: [
           'elasticmapreduce:DescribeCluster',
-          'elasticmapreduce:TerminateJobFlows'
+          'elasticmapreduce:TerminateJobFlows',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
-      })
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+      }),
     ];
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
@@ -78,8 +78,8 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRTerminateJobFlowsRule'
-        })]
+          resourceName: 'StepFunctionsGetEventForEMRTerminateJobFlowsRule',
+        })],
       }));
     }
 

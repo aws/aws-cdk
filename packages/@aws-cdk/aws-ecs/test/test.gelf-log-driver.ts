@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.GelfLogDriver({
-        address: 'my-gelf-address'
+        address: 'my-gelf-address',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
-              'gelf-address': 'my-gelf-address'
-            }
-          }
-        }
-      ]
+              'gelf-address': 'my-gelf-address',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,9 +47,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.gelf({
-        address: 'my-gelf-address'
+        address: 'my-gelf-address',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -59,11 +59,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
-              'gelf-address': 'my-gelf-address'
-            }
-          }
-        }
-      ]
+              'gelf-address': 'my-gelf-address',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();

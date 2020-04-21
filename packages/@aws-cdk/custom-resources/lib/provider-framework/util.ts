@@ -15,6 +15,6 @@ export function calculateRetryPolicy(props: { totalTimeout?: Duration, queryInte
   return {
     maxAttempts,
     interval,
-    backoffRate: 1
+    backoffRate: 1,
   };
 }

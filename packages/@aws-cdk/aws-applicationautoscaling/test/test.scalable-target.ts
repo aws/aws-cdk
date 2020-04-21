@@ -74,12 +74,12 @@ export = {
         {
           ScalableTargetAction: {
             MaxCapacity: 50,
-            MinCapacity: 1
+            MinCapacity: 1,
           },
           Schedule: 'rate(1 minute)',
-          ScheduledActionName: 'ScaleUp'
-        }
-      ]
+          ScheduledActionName: 'ScaleUp',
+        },
+      ],
     }));
 
     test.done();
@@ -98,20 +98,20 @@ export = {
           a: new cloudwatch.Metric({
             namespace: 'Test',
             metricName: 'Metric',
-          })
+          }),
         },
       }),
       adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
       scalingSteps: [
         { change: -1, lower: 0, upper: 49 },
         { change: 0, lower: 50, upper: 99 },
-        { change: 1, lower: 100 }
-      ]
+        { change: 1, lower: 100 },
+      ],
     });
 
     // THEN
     expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
-      Period: 60
+      Period: 60,
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -120,22 +120,22 @@ export = {
       Metrics: [
         {
           Expression: 'a',
-          Id: 'expr_1'
+          Id: 'expr_1',
         },
         {
           Id: 'a',
           MetricStat: {
             Metric: {
               MetricName: 'Metric',
-              Namespace: 'Test'
+              Namespace: 'Test',
             },
             Period: 300,
-            Stat: 'Average'
+            Stat: 'Average',
           },
-          ReturnData: false
-        }
+          ReturnData: false,
+        },
       ],
-      Threshold: 49
+      Threshold: 49,
     }));
 
     test.done();

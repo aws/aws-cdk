@@ -58,7 +58,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -77,14 +77,14 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       resourceArn: getResourceArn('sns', 'publish', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sns:Publish'],
-        resources: [this.topic.topicArn]
+        resources: [this.topic.topicArn],
       })],
       parameters: {
         TopicArn: this.topic.topicArn,
         Message: this.props.message.value,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
         Subject: this.props.subject,
-      }
+      },
     };
   }
 }

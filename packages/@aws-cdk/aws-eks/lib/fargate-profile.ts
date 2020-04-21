@@ -137,7 +137,7 @@ export class FargateProfile extends Construct implements ITaggable {
 
     const role = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
-      managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ]
+      managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ],
     });
 
     let subnets: string[] | undefined;
@@ -167,9 +167,9 @@ export class FargateProfile extends Construct implements ITaggable {
           podExecutionRoleArn: role.roleArn,
           selectors: props.selectors,
           subnets,
-          tags: Lazy.anyValue({ produce: () => this.tags.renderTags() })
-        }
-      }
+          tags: Lazy.anyValue({ produce: () => this.tags.renderTags() }),
+        },
+      },
     });
 
     this.fargateProfileArn = resource.getAttString('fargateProfileArn');

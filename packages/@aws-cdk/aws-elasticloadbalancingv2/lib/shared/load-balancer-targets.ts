@@ -44,7 +44,7 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
   private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
     return {
       targetType: TargetType.INSTANCE,
-      targetJson: { id: this.instanceId, port: this.port }
+      targetJson: { id: this.instanceId, port: this.port },
     };
   }
 }
@@ -111,7 +111,7 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
   private attach(_targetGroup: ITargetGroup): LoadBalancerTargetProps {
     return {
       targetType: TargetType.IP,
-      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone }
+      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone },
     };
   }
 }

@@ -150,7 +150,7 @@ export = {
     const type = Schema.array(
       Schema.struct([{
         name: 'key',
-        type: Schema.STRING
+        type: Schema.STRING,
       }]));
     test.equals(type.inputString, 'array<struct<key:string>>');
     test.equals(type.isPrimitive, false);
@@ -160,7 +160,7 @@ export = {
   'map<string,string>'(test: Test) {
     const type = Schema.map(
       Schema.STRING,
-      Schema.STRING
+      Schema.STRING,
     );
     test.equals(type.inputString, 'map<string,string>');
     test.equals(type.isPrimitive, false);
@@ -170,7 +170,7 @@ export = {
   'map<int,string>'(test: Test) {
     const type = Schema.map(
       Schema.INTEGER,
-      Schema.STRING
+      Schema.STRING,
     );
     test.equals(type.inputString, 'map<int,string>');
     test.equals(type.isPrimitive, false);
@@ -180,7 +180,7 @@ export = {
   'map<char(1),char(1)>'(test: Test) {
     const type = Schema.map(
       Schema.char(1),
-      Schema.char(1)
+      Schema.char(1),
     );
     test.equals(type.inputString, 'map<char(1),char(1)>');
     test.equals(type.isPrimitive, false);
@@ -190,7 +190,7 @@ export = {
   'map<string,array>'(test: Test) {
     const type = Schema.map(
       Schema.char(1),
-      Schema.array(Schema.STRING)
+      Schema.array(Schema.STRING),
     );
     test.equals(type.inputString, 'map<char(1),array<string>>');
     test.equals(type.isPrimitive, false);
@@ -202,7 +202,7 @@ export = {
       Schema.char(1),
       Schema.map(
         Schema.STRING,
-        Schema.STRING)
+        Schema.STRING),
     );
     test.equals(type.inputString, 'map<char(1),map<string,string>>');
     test.equals(type.isPrimitive, false);
@@ -214,8 +214,8 @@ export = {
       Schema.char(1),
       Schema.struct([{
         name: 'key',
-        type: Schema.STRING
-      }])
+        type: Schema.STRING,
+      }]),
     );
     test.equals(type.inputString, 'map<char(1),struct<key:string>>');
     test.equals(type.isPrimitive, false);
@@ -225,18 +225,18 @@ export = {
   'map throws if keyType is non-primitive'(test: Test) {
     test.throws(() => Schema.map(
       Schema.array(Schema.STRING),
-      Schema.STRING
+      Schema.STRING,
     ));
     test.throws(() => Schema.map(
       Schema.map(Schema.STRING, Schema.STRING),
-      Schema.STRING
+      Schema.STRING,
     ));
     test.throws(() => Schema.map(
       Schema.struct([{
         name: 'key',
-        type: Schema.STRING
+        type: Schema.STRING,
       }]),
-      Schema.STRING
+      Schema.STRING,
     ));
     test.done();
   },
@@ -244,24 +244,24 @@ export = {
   'struct type'(test: Test) {
     const type = Schema.struct([{
       name: 'primitive',
-      type: Schema.STRING
+      type: Schema.STRING,
     }, {
       name: 'with_comment',
       type: Schema.STRING,
-      comment: 'this has a comment'
+      comment: 'this has a comment',
     }, {
       name: 'array',
-      type: Schema.array(Schema.STRING)
+      type: Schema.array(Schema.STRING),
     }, {
       name: 'map',
-      type: Schema.map(Schema.STRING, Schema.STRING)
+      type: Schema.map(Schema.STRING, Schema.STRING),
     }, {
       name: 'nested_struct',
       type: Schema.struct([{
         name: 'nested',
         type: Schema.STRING,
-        comment: 'nested comment'
-      }])
+        comment: 'nested comment',
+      }]),
     }]);
 
     test.equals(type.isPrimitive, false);
@@ -270,5 +270,5 @@ export = {
       // tslint:disable-next-line:max-line-length
       'struct<primitive:string,with_comment:string COMMENT \'this has a comment\',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT \'nested comment\'>>');
     test.done();
-  }
+  },
 };

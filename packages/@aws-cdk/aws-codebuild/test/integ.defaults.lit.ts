@@ -12,11 +12,11 @@ class TestStack extends cdk.Stack {
         phases: {
           build: {
             commands: [
-              'echo "Hello, CodeBuild!"'
-            ]
-          }
-        }
-      })
+              'echo "Hello, CodeBuild!"',
+            ],
+          },
+        },
+      }),
     });
     /// !hide
   }

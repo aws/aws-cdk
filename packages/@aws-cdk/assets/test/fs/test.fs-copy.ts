@@ -24,7 +24,7 @@ export = {
       '    empty-subdir (D)',
       '        .hidden',
       '    subdir3 (D)',
-      '        file3.txt'
+      '        file3.txt',
     ]);
     test.done();
   },
@@ -35,7 +35,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.ALWAYS
+      follow: FollowMode.ALWAYS,
     });
 
     // THEN
@@ -49,7 +49,7 @@ export = {
       'local-link.txt',
       'normal-dir (D)',
       '    file-in-subdir.txt',
-      'normal-file.txt'
+      'normal-file.txt',
     ]);
     test.done();
   },
@@ -60,7 +60,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.NEVER
+      follow: FollowMode.NEVER,
     });
 
     // THEN
@@ -72,7 +72,7 @@ export = {
       'local-link.txt => normal-file.txt',
       'normal-dir (D)',
       '    file-in-subdir.txt',
-      'normal-file.txt'
+      'normal-file.txt',
     ]);
     test.done();
   },
@@ -83,7 +83,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.EXTERNAL
+      follow: FollowMode.EXTERNAL,
     });
 
     // THEN
@@ -96,7 +96,7 @@ export = {
       'local-link.txt => normal-file.txt',
       'normal-dir (D)',
       '    file-in-subdir.txt',
-      'normal-file.txt'
+      'normal-file.txt',
     ]);
 
     test.done();
@@ -112,8 +112,8 @@ export = {
         '*',
         '!subdir2',
         '!subdir2/**/*',
-        '.*'
-      ]
+        '.*',
+      ],
     });
 
     // THEN
@@ -121,7 +121,7 @@ export = {
       'subdir2 (D)',
       '    empty-subdir (D)',
       '    subdir3 (D)',
-      '        file3.txt'
+      '        file3.txt',
     ]);
     test.done();
   },

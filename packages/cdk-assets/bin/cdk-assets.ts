@@ -12,7 +12,7 @@ async function main() {
       type: 'boolean',
       desc: 'Increase logging verbosity',
       count: true,
-      default: 0
+      default: 0,
     })
     .option('path', {
       alias: 'p',
@@ -20,7 +20,7 @@ async function main() {
       desc: 'The path (file or directory) to load the assets from. If a directory, ' +
     `the file '${AssetManifest.DEFAULT_FILENAME}' will be loaded from it.`,
       default: '.',
-      requiresArg: true
+      requiresArg: true,
     })
     .command('ls', 'List assets from the given manifest', command => command
       , wrapHandler(async args => {
@@ -33,7 +33,7 @@ async function main() {
       await publish({
         path: args.path,
         assets: args.ASSET,
-        profile: args.profile
+        profile: args.profile,
       });
     }))
     .demandCommand()

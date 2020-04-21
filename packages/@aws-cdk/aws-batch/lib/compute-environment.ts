@@ -354,9 +354,9 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
             roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
-              ]
-            }).roleName]
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+              ],
+            }).roleName],
           }).attrArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         launchTemplate: props.computeResources.launchTemplate,

@@ -1,6 +1,6 @@
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
-import { CfnAlarm } from './cloudwatch.generated';
+import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricStatConfig } from './metric-types';
@@ -159,6 +159,21 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
+    // Render metric, process potential overrides from the alarm
+    // (It would be preferable if the statistic etc. was worked into the metric,
+    // but hey we're allowing overrides...)
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = this.renderMetric(props.metric);
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
+
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -179,13 +194,7 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...this.renderMetric(props.metric),
-      ...dropUndefined({
-        // Alarm overrides
-        period: props.period && props.period.toSeconds(),
-        statistic: renderIfSimpleStatistic(props.statistic),
-        extendedStatistic: renderIfExtendedStatistic(props.statistic),
-      })
+      ...metricProps,
     });
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
@@ -320,9 +329,9 @@ export class Alarm extends Resource implements IAlarm {
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
-          }) as CfnAlarm.MetricDataQueryProperty)
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
-      }
+      },
     });
   }
 
@@ -378,3 +387,5 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   }
   return undefined;
 }
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

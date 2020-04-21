@@ -25,7 +25,7 @@ export class DynamoEventSource extends StreamEventSource {
     }
 
     const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn})
+      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn}),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

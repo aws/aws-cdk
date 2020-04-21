@@ -40,7 +40,7 @@ class JobPollerStack extends cdk.Stack {
 
     new sfn.StateMachine(this, 'StateMachine', {
       definition: chain,
-      timeout: cdk.Duration.seconds(30)
+      timeout: cdk.Duration.seconds(30),
     });
   }
 }

@@ -62,7 +62,7 @@ test('unknown parameter in overrides, pass it anyway', () => {
   const params = TemplateParameters.fromTemplate({
     Parameters: {
       Foo: { Default: 'Foo' },
-    }
+    },
   });
 
   expect(params.makeApiParameters({ Bar: 'Bar' }, [])).toEqual([
@@ -76,7 +76,7 @@ function makeParams(defaultValue: boolean, hasPrevValue: boolean, override: bool
       [PARAM]: {
         Default: defaultValue ? DEFAULT : undefined,
       },
-    }
+    },
   });
   const prevParams = hasPrevValue ? [PARAM] : [];
   return params.makeApiParameters({ [PARAM]: override ? OVERRIDE : undefined }, prevParams);

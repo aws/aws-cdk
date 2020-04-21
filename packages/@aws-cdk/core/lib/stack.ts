@@ -94,7 +94,7 @@ export class Stack extends Construct implements ITaggable {
         enumerable: false,
         writable: false,
         configurable: false,
-        value
+        value,
       });
       return value;
     }
@@ -291,7 +291,7 @@ export class Stack extends Construct implements ITaggable {
       scope: this,
       prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-      preparing: false
+      preparing: false,
     });
   }
 
@@ -502,7 +502,7 @@ export class Stack extends Construct implements ITaggable {
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
         Fn.select(0, Fn.getAzs()),
-        Fn.select(1, Fn.getAzs())
+        Fn.select(1, Fn.getAzs()),
       ];
     }
 
@@ -588,7 +588,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       imageUri: `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}:${imageTag}`,
-      repositoryName
+      repositoryName,
     };
   }
 
@@ -653,7 +653,7 @@ export class Stack extends Construct implements ITaggable {
     if (!dep) {
       dep = this._stackDependencies[target.node.uniqueId] = {
         stack: target,
-        reasons: []
+        reasons: [],
       };
     }
 
@@ -787,7 +787,7 @@ export class Stack extends Construct implements ITaggable {
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: this.templateFile,
-      ...stackNameProperty
+      ...stackNameProperty,
     };
 
     // add an artifact that represents this stack
@@ -827,7 +827,7 @@ export class Stack extends Construct implements ITaggable {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata
+      Metadata: this.templateOptions.metadata,
     };
 
     const elements = cfnElements(this);
@@ -878,7 +878,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       account, region,
-      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion)
+      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
 

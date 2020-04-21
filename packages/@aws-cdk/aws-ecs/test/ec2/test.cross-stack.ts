@@ -21,14 +21,14 @@ export = {
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     cluster = new ecs.Cluster(stack1, 'Cluster', {
       vpc,
-      capacity: { instanceType: new ec2.InstanceType('t2.micro'), }
+      capacity: { instanceType: new ec2.InstanceType('t2.micro') },
     });
 
     stack2 = new Stack(app, 'Stack2');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack2, 'TD');
     const container = taskDefinition.addContainer('Main', {
       image: ecs.ContainerImage.fromRegistry('asdf'),
-      memoryLimitMiB: 512
+      memoryLimitMiB: 512,
     });
     container.addPortMappings({ containerPort: 8000 });
 
@@ -46,7 +46,7 @@ export = {
     const listener = lb.addListener('listener', { port: 80 });
     listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
@@ -63,7 +63,7 @@ export = {
     const listener = lb.addListener('listener', { port: 80 });
     listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
@@ -80,7 +80,7 @@ export = {
     const listener = lb.addListener('listener', { port: 80 });
     listener.addTargets('target', {
       port: 80,
-      targets: [service]
+      targets: [service],
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies

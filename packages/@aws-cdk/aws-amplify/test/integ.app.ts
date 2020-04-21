@@ -7,7 +7,7 @@ class TestStack extends Stack {
 
     const amplifyApp = new amplify.App(this, 'App', {
       basicAuth: amplify.BasicAuth.fromGeneratedPassword('aws'),
-      autoBranchCreation: {}
+      autoBranchCreation: {},
     });
 
     amplifyApp.addCustomRule({

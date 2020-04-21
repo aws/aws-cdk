@@ -12,19 +12,19 @@ test('use aws batch job as an eventrule target', () => {
     computeEnvironments: [
       {
         computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
-          managed: false
+          managed: false,
         }),
-        order: 1
-      }
-    ]
+        order: 1,
+      },
+    ],
   });
   const jobDefinition = new batch.JobDefinition(stack, 'MyJob', {
     container: {
-      image: ContainerImage.fromRegistry('test-repo')
-    }
+      image: ContainerImage.fromRegistry('test-repo'),
+    },
   });
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)')
+    schedule: events.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -37,21 +37,21 @@ test('use aws batch job as an eventrule target', () => {
     Targets: [
       {
         Arn: {
-          Ref: 'MyQueueE6CA6235'
+          Ref: 'MyQueueE6CA6235',
         },
         Id: 'Target0',
         RoleArn: {
           'Fn::GetAtt': [
             'MyJobEventsRoleCF43C336',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         BatchParameters: {
           JobDefinition: { Ref: 'MyJob8719E923' },
-          JobName: 'Rule'
+          JobName: 'Rule',
         },
-      }
-    ]
+      },
+    ],
   }));
 
   expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -62,14 +62,14 @@ test('use aws batch job as an eventrule target', () => {
           Effect: 'Allow',
           Resource: [
             { Ref: 'MyJob8719E923' },
-            { Ref: 'MyQueueE6CA6235' }
+            { Ref: 'MyQueueE6CA6235' },
           ],
-        }
+        },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     },
     Roles: [
-      { Ref: 'MyJobEventsRoleCF43C336' }
-    ]
+      { Ref: 'MyJobEventsRoleCF43C336' },
+    ],
   }));
 });

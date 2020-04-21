@@ -14,15 +14,15 @@ test('can use topic as alarm action', () => {
     maxCapacity: 100,
     instanceType: new ec2.InstanceType('t-1000.macro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    vpc
+    vpc,
   });
   const action = new autoscaling.StepScalingAction(stack, 'Action', {
-    autoScalingGroup
+    autoScalingGroup,
   });
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
     metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Henk' }),
     evaluationPeriods: 3,
-    threshold: 100
+    threshold: 100,
   });
 
   // WHEN
@@ -31,7 +31,7 @@ test('can use topic as alarm action', () => {
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
     AlarmActions: [
-      { Ref: 'Action62AD07C0' }
+      { Ref: 'Action62AD07C0' },
     ],
   });
 });

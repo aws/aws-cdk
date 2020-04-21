@@ -18,7 +18,7 @@ export = {
     new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test')
+      image: ecs.ContainerImage.fromRegistry('test'),
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -32,15 +32,15 @@ export = {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
             'ServiceEcsProcessingDeadLetterQueue4A89196E',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        maxReceiveCount: 3
-      }
+        maxReceiveCount: 3,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
-      MessageRetentionPeriod: 1209600
+      MessageRetentionPeriod: 1209600,
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -52,29 +52,29 @@ export = {
               Value: {
                 'Fn::GetAtt': [
                   'ServiceEcsProcessingQueueC266885C',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1'
+                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1',
               },
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Essential: true,
           Image: 'test',
-          Memory: 512
-        }
+          Memory: 512,
+        },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1'
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();
@@ -93,7 +93,7 @@ export = {
       memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test'),
       maxReceiveCount: 42,
-      retentionPeriod: cdk.Duration.days(7)
+      retentionPeriod: cdk.Duration.days(7),
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -107,15 +107,15 @@ export = {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
             'ServiceEcsProcessingDeadLetterQueue4A89196E',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        maxReceiveCount: 42
-      }
+        maxReceiveCount: 42,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
-      MessageRetentionPeriod: 604800
+      MessageRetentionPeriod: 604800,
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -127,29 +127,29 @@ export = {
               Value: {
                 'Fn::GetAtt': [
                   'ServiceEcsProcessingQueueC266885C',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1'
+                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1',
               },
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Essential: true,
           Image: 'test',
-          Memory: 512
-        }
+          Memory: 512,
+        },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1'
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();
@@ -175,23 +175,23 @@ export = {
       desiredTaskCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
       },
       queue,
       maxScalingCapacity: 5,
       serviceName: 'ecs-test-service',
-      family: 'ecs-task-family'
+      family: 'ecs-task-family',
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
       LaunchType: 'EC2',
-      ServiceName: 'ecs-test-service'
+      ServiceName: 'ecs-test-service',
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
-      QueueName: 'ecs-test-sqs-queue'
+      QueueName: 'ecs-test-sqs-queue',
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -200,32 +200,32 @@ export = {
           Command: [
             '-c',
             '4',
-            'amazon.com'
+            'amazon.com',
           ],
           Environment: [
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE1',
-              Value: 'test environment variable 1 value'
+              Value: 'test environment variable 1 value',
             },
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE2',
-              Value: 'test environment variable 2 value'
+              Value: 'test environment variable 2 value',
             },
             {
               Name: 'QUEUE_NAME',
               Value: {
                 'Fn::GetAtt': [
                   'ecstestqueueD1FDA34B',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           Image: 'test',
-          Memory: 1024
-        }
+          Memory: 1024,
+        },
       ],
-      Family: 'ecs-task-family'
+      Family: 'ecs-task-family',
     }));
 
     test.done();
@@ -244,7 +244,7 @@ export = {
       desiredTaskCount: 0,
       maxScalingCapacity: 2,
       memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test')
+      image: ecs.ContainerImage.fromRegistry('test'),
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -269,7 +269,7 @@ export = {
         cluster,
         desiredTaskCount: 0,
         memoryLimitMiB: 512,
-        image: ecs.ContainerImage.fromRegistry('test')
+        image: ecs.ContainerImage.fromRegistry('test'),
       })
     , /maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
 

@@ -17,28 +17,28 @@ const database = new glue.Database(stack, 'MyDatabase', {
 
 const columns = [{
   name: 'col1',
-  type: glue.Schema.STRING
+  type: glue.Schema.STRING,
 }, {
   name: 'col2',
   type: glue.Schema.STRING,
-  comment: 'col2 comment'
+  comment: 'col2 comment',
 }, {
   name: 'col3',
-  type: glue.Schema.array(glue.Schema.STRING)
+  type: glue.Schema.array(glue.Schema.STRING),
 }, {
   name: 'col4',
-  type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING)
+  type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING),
 }, {
   name: 'col5',
   type: glue.Schema.struct([{
     name: 'col1',
-    type: glue.Schema.STRING
-  }])
+    type: glue.Schema.STRING,
+  }]),
 }];
 
 const partitionKeys = [{
   name: 'year',
-  type: glue.Schema.SMALL_INT
+  type: glue.Schema.SMALL_INT,
 }];
 
 const avroTable = new glue.Table(stack, 'AVROTable', {
@@ -47,7 +47,7 @@ const avroTable = new glue.Table(stack, 'AVROTable', {
   tableName: 'avro_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Avro
+  dataFormat: glue.DataFormat.AVRO,
 });
 
 const csvTable = new glue.Table(stack, 'CSVTable', {
@@ -56,7 +56,7 @@ const csvTable = new glue.Table(stack, 'CSVTable', {
   tableName: 'csv_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.CSV
+  dataFormat: glue.DataFormat.CSV,
 });
 
 const jsonTable = new glue.Table(stack, 'JSONTable', {
@@ -65,7 +65,7 @@ const jsonTable = new glue.Table(stack, 'JSONTable', {
   tableName: 'json_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Json
+  dataFormat: glue.DataFormat.JSON,
 });
 
 const parquetTable = new glue.Table(stack, 'ParquetTable', {
@@ -74,7 +74,7 @@ const parquetTable = new glue.Table(stack, 'ParquetTable', {
   tableName: 'parquet_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Parquet
+  dataFormat: glue.DataFormat.PARQUET,
 });
 
 const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
@@ -83,11 +83,11 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   columns,
   partitionKeys: [{
     name: 'year',
-    type: glue.Schema.SMALL_INT
+    type: glue.Schema.SMALL_INT,
   }],
-  dataFormat: glue.DataFormat.Json,
+  dataFormat: glue.DataFormat.JSON,
   encryption: glue.TableEncryption.KMS,
-  encryptionKey: new kms.Key(stack, 'MyKey')
+  encryptionKey: new kms.Key(stack, 'MyKey'),
 });
 
 const user = new iam.User(stack, 'MyUser');

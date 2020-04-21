@@ -47,7 +47,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 
@@ -61,7 +61,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 
@@ -79,7 +79,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldown: props.scaleInCooldown,
-      scaleOutCooldown: props.scaleOutCooldown
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 

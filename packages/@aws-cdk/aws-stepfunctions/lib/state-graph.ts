@@ -112,7 +112,7 @@ export class StateGraph {
     return {
       StartAt: this.startState.stateId,
       States: states,
-      TimeoutSeconds: this.timeout && this.timeout.toSeconds()
+      TimeoutSeconds: this.timeout && this.timeout.toSeconds(),
     };
   }
 

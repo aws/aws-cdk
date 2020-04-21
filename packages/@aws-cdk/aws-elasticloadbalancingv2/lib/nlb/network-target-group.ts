@@ -123,13 +123,13 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (healthCheck.path && !NLB_PATH_HEALTH_CHECK_PROTOCOLS.includes(healthCheck.protocol)) {
       ret.push([
         `'${healthCheck.protocol}' health checks do not support the path property.`,
-        `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+        `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
       ].join(' '));
     }
     if (healthCheck.timeout && healthCheck.timeout.toSeconds() !== NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]) {
       ret.push([
         'Custom health check timeouts are not supported for Network Load Balancer health checks.',
-        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`
+        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`,
       ].join(' '));
     }
 

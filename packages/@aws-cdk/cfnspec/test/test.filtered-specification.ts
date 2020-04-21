@@ -14,7 +14,7 @@ const tests: any = {
     test.notDeepEqual(filteredSpec, specification, 'The filteredSpecification result is not the whole specification');
     test.notDeepEqual(filteredSpec.ResourceTypes, {}, 'The filtered spec is not empty');
     test.done();
-  }
+  },
 };
 
 for (const name of resourceTypes().sort()) {

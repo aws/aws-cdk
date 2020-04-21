@@ -19,7 +19,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.firelens({}),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -27,16 +27,16 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'awsfirelens'
-          }
+            LogDriver: 'awsfirelens',
+          },
         },
         {
           Essential: true,
           FirelensConfiguration: {
-            Type: 'fluentbit'
+            Type: 'fluentbit',
           },
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -52,10 +52,10 @@ export = {
           region: 'us-west-2',
           log_group_name: 'firelens-fluent-bit',
           auto_create_group: 'true',
-          log_stream_prefix: 'from-fluent-bit'
-        }
+          log_stream_prefix: 'from-fluent-bit',
+        },
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -69,17 +69,17 @@ export = {
               region: 'us-west-2',
               log_group_name: 'firelens-fluent-bit',
               auto_create_group: 'true',
-              log_stream_prefix: 'from-fluent-bit'
-            }
-          }
+              log_stream_prefix: 'from-fluent-bit',
+            },
+          },
         },
         {
           Essential: true,
           FirelensConfiguration: {
-            Type: 'fluentbit'
-          }
-        }
-      ]
+            Type: 'fluentbit',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -94,9 +94,9 @@ export = {
           Name: 'firehose',
           region: 'us-west-2',
           delivery_stream: 'my-stream',
-        }
+        },
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -109,16 +109,16 @@ export = {
               Name: 'firehose',
               region: 'us-west-2',
               delivery_stream: 'my-stream',
-            }
-          }
+            },
+          },
         },
         {
           Essential: true,
           FirelensConfiguration: {
-            Type: 'fluentbit'
-          }
-        }
-      ]
+            Type: 'fluentbit',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -146,8 +146,8 @@ export = {
             FirelensConfiguration: {
               Type: 'fluentd',
             },
-          }
-        ]
+          },
+        ],
       }));
       test.done();
     },
@@ -162,8 +162,8 @@ export = {
           type: ecs.FirelensLogRouterType.FLUENTBIT,
           options: {
             enableECSLogMetadata: false,
-            configFileValue: 'arn:aws:s3:::mybucket/fluent.conf'
-          }
+            configFileValue: 'arn:aws:s3:::mybucket/fluent.conf',
+          },
         },
         logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
         memoryReservationMiB: 50,
@@ -181,11 +181,11 @@ export = {
               Options: {
                 'enable-ecs-log-metadata': 'false',
                 'config-file-type': 's3',
-                'config-file-value': 'arn:aws:s3:::mybucket/fluent.conf'
-              }
+                'config-file-value': 'arn:aws:s3:::mybucket/fluent.conf',
+              },
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
@@ -200,8 +200,8 @@ export = {
           options: {
             enableECSLogMetadata: false,
             configFileType: ecs.FirelensConfigFileType.FILE,
-            configFileValue: '/my/working/dir/firelens/config'
-          }
+            configFileValue: '/my/working/dir/firelens/config',
+          },
         },
         logging: new ecs.AwsLogDriver({streamPrefix: 'firelens'}),
         memoryReservationMiB: 50,
@@ -219,14 +219,14 @@ export = {
               Options: {
                 'enable-ecs-log-metadata': 'false',
                 'config-file-type': 'file',
-                'config-file-value': '/my/working/dir/firelens/config'
-              }
+                'config-file-value': '/my/working/dir/firelens/config',
+              },
             },
-          }
-        ]
+          },
+        ],
       }));
 
       test.done();
-    }
+    },
   },
 };

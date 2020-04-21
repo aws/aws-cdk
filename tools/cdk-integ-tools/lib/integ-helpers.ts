@@ -103,7 +103,7 @@ export class IntegrationTest {
         cwd: this.directory,
         json: options.json,
         verbose: options.verbose,
-        env: options.env
+        env: options.env,
       });
     } finally {
       this.deleteCdkContext();
@@ -225,7 +225,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
     CDK_INTEG_REGION: 'test-region',
-  }
+  },
 };
 
 /**
@@ -239,7 +239,7 @@ function exec(commandLine: string[], options: { cwd?: string, json?: boolean, ve
       CDK_INTEG_MODE: '1',
       ...options.env,
     },
-    cwd: options.cwd
+    cwd: options.cwd,
   });
 
   if (proc.error) { throw proc.error; }

@@ -14,15 +14,15 @@ describe('State Machine Resources', () => {
           resourceArn: 'resource',
           policyStatements: [new iam.PolicyStatement({
             actions: ['resource:Everything'],
-            resources: ['resource']
+            resources: ['resource'],
           })],
-        })
-      }
+        }),
+      },
     });
 
     // WHEN
     new stepfunctions.StateMachine(stack, 'SM', {
-      definition: task
+      definition: task,
     });
 
     // THEN
@@ -33,10 +33,10 @@ describe('State Machine Resources', () => {
           {
             Action: 'resource:Everything',
             Effect: 'Allow',
-            Resource: 'resource'
-          }
+            Resource: 'resource',
+          },
         ],
-      }
+      },
     });
   }),
 
@@ -50,11 +50,11 @@ describe('State Machine Resources', () => {
           policyStatements: [
             new iam.PolicyStatement({
               actions: ['resource:Everything'],
-              resources: ['resource']
-            })
-          ]
-        })
-      }
+              resources: ['resource'],
+            }),
+          ],
+        }),
+      },
     });
 
     const para = new stepfunctions.Parallel(stack, 'Para');
@@ -62,7 +62,7 @@ describe('State Machine Resources', () => {
 
     // WHEN
     new stepfunctions.StateMachine(stack, 'SM', {
-      definition: para
+      definition: para,
     });
 
     // THEN
@@ -73,10 +73,10 @@ describe('State Machine Resources', () => {
           {
             Action: 'resource:Everything',
             Effect: 'Allow',
-            Resource: 'resource'
-          }
+            Resource: 'resource',
+          },
         ],
-      }
+      },
     });
   }),
 
@@ -94,10 +94,10 @@ describe('State Machine Resources', () => {
             'stringArgument': 'inital-task',
             'numberArgument': 123,
             'booleanArgument': true,
-            'arrayArgument': ['a', 'b', 'c']
-          }
-        })
-      }
+            'arrayArgument': ['a', 'b', 'c'],
+          },
+        }),
+      },
     });
 
     // WHEN
@@ -120,7 +120,7 @@ describe('State Machine Resources', () => {
       Resource: 'resource',
       ResultPath: undefined,
       TimeoutSeconds: undefined,
-      HeartbeatSeconds: undefined
+      HeartbeatSeconds: undefined,
     });
   }),
 
@@ -135,12 +135,12 @@ describe('State Machine Resources', () => {
           resourceArn: 'resource',
           parameters: {
             a: 'aa',
-          }
-        })
+          },
+        }),
       },
       parameters: {
-        b: 'bb'
-      }
+        b: 'bb',
+      },
     });
 
     // WHEN
@@ -153,14 +153,14 @@ describe('State Machine Resources', () => {
       InputPath: '$',
       Parameters:
              { a: 'aa',
-               b: 'bb', },
+               b: 'bb' },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
       Resource: 'resource',
       ResultPath: undefined,
       TimeoutSeconds: undefined,
-      HeartbeatSeconds: undefined
+      HeartbeatSeconds: undefined,
     });
   }),
 
@@ -169,14 +169,14 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
       task: {
-        bind: () => ({ resourceArn: 'resource' })
-      }
+        bind: () => ({ resourceArn: 'resource' }),
+      },
     });
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task
+      definition: task,
     });
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
     // WHEN
@@ -190,18 +190,18 @@ describe('State Machine Resources', () => {
             Action: 'states:StartExecution',
             Effect: 'Allow',
             Resource: {
-              Ref: 'StateMachine2E01A3A5'
-            }
-          }
+              Ref: 'StateMachine2E01A3A5',
+            },
+          },
         ],
         Version: '2012-10-17',
       },
       PolicyName: 'RoleDefaultPolicy5FFB7DAB',
       Roles: [
         {
-          Ref: 'Role1ABCC5F0'
-        }
-      ]
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
     });
 
   }),
@@ -212,7 +212,7 @@ describe('State Machine Resources', () => {
     const stateMachineArn = 'arn:aws:states:::my-state-machine';
     const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
     // WHEN
@@ -225,17 +225,17 @@ describe('State Machine Resources', () => {
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: stateMachineArn
-          }
+            Resource: stateMachineArn,
+          },
         ],
         Version: '2012-10-17',
       },
       PolicyName: 'RoleDefaultPolicy5FFB7DAB',
       Roles: [
         {
-          Ref: 'Role1ABCC5F0'
-        }
-      ]
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
     });
   }),
 
@@ -250,8 +250,8 @@ describe('State Machine Resources', () => {
         'stringArgument': 'inital-task',
         'numberArgument': 123,
         'booleanArgument': true,
-        'arrayArgument': ['a', 'b', 'c']
-      }
+        'arrayArgument': ['a', 'b', 'c'],
+      },
     });
 
     // WHEN
@@ -285,21 +285,21 @@ describe('State Machine Resources', () => {
             new iam.PolicyStatement({
               resources: ['resource'],
               actions: ['lambda:InvokeFunction'],
-            })
+            }),
           ],
-        })
-      }
+        }),
+      },
     });
     new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task
+      definition: task,
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       DependsOn: [
         'StateMachineRoleDefaultPolicyDF1E6607',
-        'StateMachineRoleB840431D'
-      ]
+        'StateMachineRoleB840431D',
+      ],
     }, ResourcePart.CompleteDefinition);
   });
 

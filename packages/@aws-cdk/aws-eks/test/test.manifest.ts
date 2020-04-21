@@ -21,31 +21,31 @@ export = {
         spec: {
           type: 'LoadBalancer',
           ports: [
-            { port: 80, targetPort: 8080 }
+            { port: 80, targetPort: 8080 },
           ],
           selector: {
-            app: 'hello-kubernetes'
-          }
-        }
+            app: 'hello-kubernetes',
+          },
+        },
       },
       {
         apiVersion: 'apps/v1',
         kind: 'Deployment',
         metadata: {
-          name: 'hello-kubernetes'
+          name: 'hello-kubernetes',
         },
         spec: {
           replicas: 2,
           selector: {
             matchLabels: {
-              app: 'hello-kubernetes'
-            }
+              app: 'hello-kubernetes',
+            },
           },
           template: {
             metadata: {
               labels: {
-                app: 'hello-kubernetes'
-              }
+                app: 'hello-kubernetes',
+              },
             },
             spec: {
               containers: [
@@ -53,25 +53,25 @@ export = {
                   name: 'hello-kubernetes',
                   image: 'paulbouwer/hello-kubernetes:1.5',
                   ports: [
-                    { containerPort: 8080 }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      }
+                    { containerPort: 8080 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
     ];
 
     // WHEN
     new KubernetesResource(stack, 'manifest', {
       cluster,
-      manifest
+      manifest,
     });
 
     expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
-      Manifest: JSON.stringify(manifest)
+      Manifest: JSON.stringify(manifest),
     }));
     test.done();
-  }
+  },
 };

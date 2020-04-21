@@ -9,7 +9,7 @@ class LateBoundDeploymentStageStack extends Stack {
     const fn = new Function(this, 'myfn', {
       code: Code.fromInline('foo'),
       runtime: Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const api = new LambdaRestApi(this, 'lambdarestapi', {
@@ -19,8 +19,8 @@ class LateBoundDeploymentStageStack extends Stack {
 
     api.deploymentStage = new Stage(this, 'stage', {
       deployment: new Deployment(this, 'deployment', {
-        api
-      })
+        api,
+      }),
     });
   }
 }

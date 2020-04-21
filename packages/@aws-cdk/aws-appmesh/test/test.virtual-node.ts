@@ -55,7 +55,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -79,7 +79,7 @@ export = {
           portMapping: {
             port: 8081,
             protocol: appmesh.Protocol.TCP,
-          }
+          },
         });
 
         // THEN
@@ -95,7 +95,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -124,7 +124,7 @@ export = {
       portMapping: {
         port: 8081,
         protocol: appmesh.Protocol.TCP,
-      }
+      },
     });
 
     // THEN
@@ -149,7 +149,7 @@ export = {
           },
         },
         VirtualNodeName: 'meshtestnode428A9479',
-      })
+      }),
     );
 
     test.done();

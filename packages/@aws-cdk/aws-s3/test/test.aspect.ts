@@ -25,7 +25,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      versioned: true
+      versioned: true,
     });
 
     // WHEN

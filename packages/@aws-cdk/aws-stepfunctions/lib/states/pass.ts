@@ -147,7 +147,7 @@ export class Pass extends State implements INextable {
       Result: this.result ? this.result.value : undefined,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderInputOutput(),
-      ...this.renderNextEnd()
+      ...this.renderNextEnd(),
     };
   }
 }

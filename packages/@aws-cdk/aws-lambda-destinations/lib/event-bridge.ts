@@ -25,8 +25,8 @@ export class EventBridgeDestination implements lambda.IDestination {
       destination: this.eventBus && this.eventBus.eventBusArn || Stack.of(fn).formatArn({
         service: 'events',
         resource: 'event-bus',
-        resourceName: 'default'
-      })
+        resourceName: 'default',
+      }),
     };
   }
 }

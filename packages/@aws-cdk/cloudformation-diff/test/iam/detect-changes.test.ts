@@ -8,9 +8,9 @@ test('shows new AssumeRolePolicyDocument', () => {
       AssumeRolePolicyDocument: poldoc({
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
-        Principal: { Service: 'lambda.amazonaws.com' }
-      })
-    })
+        Principal: { Service: 'lambda.amazonaws.com' },
+      }),
+    }),
   }));
 
   // THEN
@@ -21,8 +21,8 @@ test('shows new AssumeRolePolicyDocument', () => {
         resources: { not: false, values: [ '${MyRole.Arn}' ] },
         principals: { not: false, values: [ 'Service:lambda.amazonaws.com' ] },
         actions: { not: false, values: [ 'sts:AssumeRole' ] },
-      }
-    ]
+      },
+    ],
   });
 });
 
@@ -35,9 +35,9 @@ test('implicitly knows principal of identity policy for all resource types', () 
         PolicyDocument: poldoc({
           Effect: 'Allow',
           Action: 's3:DoThatThing',
-          Resource: '*'
-        })
-      })
+          Resource: '*',
+        }),
+      }),
     }));
 
     // THEN
@@ -48,8 +48,8 @@ test('implicitly knows principal of identity policy for all resource types', () 
           resources: { not: false, values: [ '*' ] },
           principals: { not: false, values: [ 'AWS:${MyRole}' ] },
           actions: { not: false, values: [ 's3:DoThatThing' ] },
-        }
-      ]
+        },
+      ],
     });
   }
 });
@@ -65,11 +65,11 @@ test('policies on an identity object', () => {
             PolicyDocument: poldoc({
               Effect: 'Allow',
               Action: 's3:DoThatThing',
-              Resource: '*'
-            })
-          }
+              Resource: '*',
+            }),
+          },
         ],
-      })
+      }),
     }));
 
     // THEN
@@ -80,8 +80,8 @@ test('policies on an identity object', () => {
           resources: { not: false, values: [ '*' ] },
           principals: { not: false, values: [ 'AWS:${MyIdentity}' ] },
           actions: { not: false, values: [ 's3:DoThatThing' ] },
-        }
-      ]
+        },
+      ],
     });
   }
 });
@@ -94,9 +94,9 @@ test('if policy is attached to multiple roles all are shown', () => {
       PolicyDocument: poldoc({
         Effect: 'Allow',
         Action: 's3:DoThatThing',
-        Resource: '*'
-      })
-    })
+        Resource: '*',
+      }),
+    }),
   }));
 
   // THEN
@@ -114,7 +114,7 @@ test('if policy is attached to multiple roles all are shown', () => {
         principals: { not: false, values: [ 'AWS:${ThyRole}' ] },
         actions: { not: false, values: [ 's3:DoThatThing' ] },
       },
-    ]
+    ],
   });
 });
 
@@ -127,7 +127,7 @@ test('correctly parses Lambda permissions', () => {
       Principal: 's3.amazonaws.com',
       SourceAccount: {Ref: 'AWS::AccountId' },
       SourceArn: {'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn']},
-    })
+    }),
   }));
 
   // THEN
@@ -140,10 +140,10 @@ test('correctly parses Lambda permissions', () => {
         actions: { not: false, values: [ 'lambda:InvokeFunction' ] },
         condition: {
           StringEquals: { 'AWS:SourceAccount': '${AWS::AccountId}' },
-          ArnLike: { 'AWS:SourceArn': '${MyBucketF68F3FF0.Arn}' }
+          ArnLike: { 'AWS:SourceArn': '${MyBucketF68F3FF0.Arn}' },
         },
-      }
-    ]
+      },
+    ],
   });
 });
 
@@ -156,9 +156,9 @@ test('implicitly knows resource of (queue) resource policy even if * given', () 
         Effect: 'Allow',
         Action: 'sqs:SendMessage',
         Resource: '*',
-        Principal: { Service: 'sns.amazonaws.com' }
-      })
-    })
+        Principal: { Service: 'sns.amazonaws.com' },
+      }),
+    }),
   }));
 
   // THEN
@@ -169,8 +169,8 @@ test('implicitly knows resource of (queue) resource policy even if * given', () 
         resources: { not: false, values: [ '${MyQueue}' ] },
         principals: { not: false, values: [ 'Service:sns.amazonaws.com' ] },
         actions: { not: false, values: [ 'sqs:SendMessage' ] },
-      }
-    ]
+      },
+    ],
   });
 });
 
@@ -183,9 +183,9 @@ test('finds sole statement removals', () => {
         Effect: 'Allow',
         Action: 's3:PutObject',
         Resource: '*',
-        Principal: { AWS: 'me' }
-      })
-    })
+        Principal: { AWS: 'me' },
+      }),
+    }),
   }), {});
 
   // THEN
@@ -196,8 +196,8 @@ test('finds sole statement removals', () => {
         resources: { not: false, values: [ '${MyBucket}' ] },
         principals: { not: false, values: [ 'AWS:me' ] },
         actions: { not: false, values: [ 's3:PutObject' ] },
-      }
-    ]
+      },
+    ],
   });
 });
 
@@ -211,14 +211,14 @@ test('finds one of many statement removals', () => {
           Effect: 'Allow',
           Action: 's3:PutObject',
           Resource: '*',
-          Principal: { AWS: 'me' }
+          Principal: { AWS: 'me' },
         }, {
           Effect: 'Allow',
           Action: 's3:LookAtObject',
           Resource: '*',
-          Principal: { AWS: 'me' }
-        })
-      })
+          Principal: { AWS: 'me' },
+        }),
+      }),
     }),
     template({
       BucketPolicy: resource('AWS::S3::BucketPolicy', {
@@ -227,9 +227,9 @@ test('finds one of many statement removals', () => {
           Effect: 'Allow',
           Action: 's3:LookAtObject',
           Resource: '*',
-          Principal: { AWS: 'me' }
-        })
-      })
+          Principal: { AWS: 'me' },
+        }),
+      }),
     }));
 
   // THEN
@@ -240,8 +240,8 @@ test('finds one of many statement removals', () => {
         resources: { not: false, values: [ '${MyBucket}' ] },
         principals: { not: false, values: [ 'AWS:me' ] },
         actions: { not: false, values: [ 's3:PutObject' ] },
-      }
-    ]
+      },
+    ],
   });
 });
 
@@ -250,7 +250,7 @@ test('finds policy attachments', () => {
   const diff = diffTemplate({}, template({
     SomeRole: resource('AWS::IAM::Role', {
       ManagedPolicyArns: ['arn:policy'],
-    })
+    }),
   }));
 
   // THEN
@@ -258,9 +258,9 @@ test('finds policy attachments', () => {
     managedPolicyAdditions: [
       {
         identityArn: '${SomeRole}',
-        managedPolicyArn: 'arn:policy'
-      }
-    ]
+        managedPolicyArn: 'arn:policy',
+      },
+    ],
   });
 });
 
@@ -270,12 +270,12 @@ test('finds policy removals', () => {
     template({
       SomeRole: resource('AWS::IAM::Role', {
         ManagedPolicyArns: ['arn:policy', 'arn:policy2'],
-      })
+      }),
     }),
     template({
       SomeRole: resource('AWS::IAM::Role', {
         ManagedPolicyArns: ['arn:policy2'],
-      })
+      }),
     }));
 
   // THEN
@@ -283,9 +283,9 @@ test('finds policy removals', () => {
     managedPolicyRemovals: [
       {
         identityArn: '${SomeRole}',
-        managedPolicyArn: 'arn:policy'
-      }
-    ]
+        managedPolicyArn: 'arn:policy',
+      },
+    ],
   });
 });
 
@@ -298,9 +298,9 @@ test('queuepolicy queue change counts as removal+addition', () => {
         Effect: 'Allow',
         Action: 'sqs:SendMessage',
         Resource: '*',
-        Principal: { Service: 'sns.amazonaws.com' }
-      })
-    })
+        Principal: { Service: 'sns.amazonaws.com' },
+      }),
+    }),
   }), template({
     QueuePolicy: resource('AWS::SQS::QueuePolicy', {
       Queues: [ { Ref: 'MyQueue2' } ],
@@ -308,9 +308,9 @@ test('queuepolicy queue change counts as removal+addition', () => {
         Effect: 'Allow',
         Action: 'sqs:SendMessage',
         Resource: '*',
-        Principal: { Service: 'sns.amazonaws.com' }
-      })
-    })
+        Principal: { Service: 'sns.amazonaws.com' },
+      }),
+    }),
   }));
 
   // THEN
@@ -321,7 +321,7 @@ test('queuepolicy queue change counts as removal+addition', () => {
         resources: { not: false, values: [ '${MyQueue2}' ] },
         principals: { not: false, values: [ 'Service:sns.amazonaws.com' ] },
         actions: { not: false, values: [ 'sqs:SendMessage' ] },
-      }
+      },
     ],
     statementRemovals: [
       {
@@ -329,7 +329,7 @@ test('queuepolicy queue change counts as removal+addition', () => {
         resources: { not: false, values: [ '${MyQueue1}' ] },
         principals: { not: false, values: [ 'Service:sns.amazonaws.com' ] },
         actions: { not: false, values: [ 'sqs:SendMessage' ] },
-      }
-    ]
+      },
+    ],
   });
 });

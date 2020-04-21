@@ -16,7 +16,7 @@ const stack = new Stack(app, 'TokenAuthorizerInteg');
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler'))
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });
 
 const restapi = new RestApi(stack, 'MyRestApi');
@@ -27,7 +27,7 @@ const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
 
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
-    { statusCode: '200' }
+    { statusCode: '200' },
   ],
   passthroughBehavior: PassthroughBehavior.NEVER,
   requestTemplates: {
@@ -35,7 +35,7 @@ restapi.root.addMethod('ANY', new MockIntegration({
   },
 }), {
   methodResponses: [
-    { statusCode: '200' }
+    { statusCode: '200' },
   ],
-  authorizer
+  authorizer,
 });

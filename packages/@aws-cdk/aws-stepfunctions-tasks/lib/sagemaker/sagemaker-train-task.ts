@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { getResourceArn } from '../resource-arn-suffix';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
-  S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
+  S3DataType, StoppingCondition, VpcConfig  } from './sagemaker-task-base-types';
 
 /**
  * Properties for creating an Amazon SageMaker training job
@@ -135,7 +135,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -146,12 +146,12 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
     this.resourceConfig = props.resourceConfig || {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
-      volumeSizeInGB: 10
+      volumeSizeInGB: 10,
     };
 
     // set the stopping condition if not defined
     this.stoppingCondition = props.stoppingCondition || {
-      maxRuntime: Duration.hours(1)
+      maxRuntime: Duration.hours(1),
     };
 
     // check that either algorithm name or image is defined
@@ -241,10 +241,10 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
                   : [],
               ],
               resources: ['*'], // Those permissions cannot be resource-scoped
-            })
-          ]
+            }),
+          ],
         }),
-      }
+      },
     });
 
     if (this.props.outputDataConfig.encryptionKey) {
@@ -258,7 +258,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
     // create a security group if not defined
     if (this.vpc && this.securityGroup === undefined) {
       this.securityGroup = new ec2.SecurityGroup(task, 'TrainJobSecurityGroup', {
-        vpc: this.vpc
+        vpc: this.vpc,
       });
       this.connections.addSecurityGroup(this.securityGroup);
       this.securityGroups.push(this.securityGroup);
@@ -294,8 +294,8 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         ...(spec.algorithmName) ? { AlgorithmName: spec.algorithmName } : {},
         ...(spec.metricDefinitions) ?
           { MetricDefinitions: spec.metricDefinitions
-            .map(metric => ({ Name: metric.name, Regex: metric.regex })) } : {}
-      }
+            .map(metric => ({ Name: metric.name, Regex: metric.regex })) } : {},
+      },
     };
   }
 
@@ -311,13 +311,13 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
               { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType} : {},
             ...(channel.dataSource.s3DataSource.attributeNames) ?
               { AtttributeNames: channel.dataSource.s3DataSource.attributeNames } : {},
-          }
+          },
         },
         ...(channel.compressionType) ? { CompressionType: channel.compressionType } : {},
         ...(channel.contentType) ? { ContentType: channel.contentType } : {},
         ...(channel.inputMode) ? { InputMode: channel.inputMode } : {},
         ...(channel.recordWrapperType) ? { RecordWrapperType: channel.recordWrapperType } : {},
-      }))
+      })),
     };
   }
 
@@ -326,7 +326,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
       OutputDataConfig: {
         S3OutputPath: config.s3OutputLocation.bind(this, { forWriting: true }).uri,
         ...(config.encryptionKey) ? { KmsKeyId: config.encryptionKey.keyArn } : {},
-      }
+      },
     };
   }
 
@@ -337,15 +337,15 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         InstanceType: 'ml.' + config.instanceType,
         VolumeSizeInGB: config.volumeSizeInGB,
         ...(config.volumeEncryptionKey) ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {},
-      }
+      },
     };
   }
 
   private renderStoppingCondition(config: StoppingCondition): {[key: string]: any} {
     return {
       StoppingCondition: {
-        MaxRuntimeInSeconds: config.maxRuntime && config.maxRuntime.toSeconds()
-      }
+        MaxRuntimeInSeconds: config.maxRuntime && config.maxRuntime.toSeconds(),
+      },
     };
   }
 
@@ -376,21 +376,21 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             service: 'sagemaker',
             resource: 'training-job',
             // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-            resourceName: sfn.Data.isJsonPathString(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`
-          })
+            resourceName: sfn.Data.isJsonPathString(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
+          }),
         ],
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
-        resources: ['*']
+        resources: ['*'],
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         resources: [this._role!.roleArn],
         conditions: {
-          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' }
-        }
-      })
+          StringEquals: { 'iam:PassedToService': 'sagemaker.amazonaws.com' },
+        },
+      }),
     ];
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
@@ -399,8 +399,8 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule'
-        })]
+          resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule',
+        })],
       }));
     }
 

@@ -13,8 +13,8 @@ const params = new ClusterParameterGroup(stack, 'Params', {
   family: 'aurora5.6',
   description: 'A nice parameter group',
   parameters: {
-    character_set_database: 'utf8mb4'
-  }
+    character_set_database: 'utf8mb4',
+  },
 });
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
@@ -28,7 +28,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-    vpc
+    vpc,
   },
   parameterGroup: params,
   kmsKey,

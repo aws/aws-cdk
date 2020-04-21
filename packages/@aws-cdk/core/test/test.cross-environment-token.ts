@@ -200,11 +200,11 @@ export = {
     const app = new App();
 
     const parentStack = new Stack(app, 'ParentStack', {
-      env: { account: '112233', region: 'us-east-1' }
+      env: { account: '112233', region: 'us-east-1' },
     });
 
     const childStack = new Stack(parentStack, 'ChildStack', {
-      env: { account: '998877', region: 'eu-west-2' }
+      env: { account: '998877', region: 'eu-west-2' },
     });
 
     const childResource = new MyResource(childStack, 'ChildResource', PhysicalName.GENERATE_IF_NEEDED);
@@ -212,8 +212,8 @@ export = {
     new CfnResource(parentStack, 'ParentResource', {
       type: 'Parent::Resource',
       properties: {
-        RefToChildResource: childResource.name
-      }
+        RefToChildResource: childResource.name,
+      },
     });
 
     const assembly = app.synth();
@@ -223,10 +223,10 @@ export = {
         ParentResource: {
           Type: 'Parent::Resource',
           Properties: {
-            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e'
-          }
-        }
-      }
+            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
+          },
+        },
+      },
     });
 
     test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
@@ -234,14 +234,14 @@ export = {
         ChildResource8C37244D: {
           Type: 'My::Resource',
           Properties: {
-            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e'
-          }
-        }
-      }
+            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
+          },
+        },
+      },
     });
 
     test.done();
-  }
+  },
 };
 
 class MyResource extends Resource {
@@ -263,8 +263,8 @@ class MyResource extends Resource {
     new CfnResource(this, 'Resource', {
       type: 'My::Resource',
       properties: {
-        resourceName: this.physicalName
-      }
+        resourceName: this.physicalName,
+      },
     });
   }
 }

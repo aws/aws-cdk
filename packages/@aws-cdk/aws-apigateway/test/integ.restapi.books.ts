@@ -9,19 +9,19 @@ class BookStack extends cdk.Stack {
     const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`)
+      code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const bookHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BookHandler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`)
+      code: lambda.Code.fromInline(`exports.handler = ${echoHandlerCode}`),
     }));
 
     const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${helloCode}`)
+      code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     }));
 
     const api = new apigw.RestApi(this, 'books-api');
@@ -29,14 +29,14 @@ class BookStack extends cdk.Stack {
 
     const books = api.root.addResource('books', {
       defaultIntegration: booksHandler,
-      defaultMethodOptions: { authorizationType: apigw.AuthorizationType.IAM }
+      defaultMethodOptions: { authorizationType: apigw.AuthorizationType.IAM },
     });
 
     books.addMethod('GET');
     books.addMethod('POST');
 
     const book = books.addResource('{book_id}', {
-      defaultIntegration: bookHandler
+      defaultIntegration: bookHandler,
       // note that authorization type is inherited from /books
     });
 
@@ -58,14 +58,14 @@ function echoHandlerCode(event: any, _: any, callback: any) {
     isBase64Encoded: false,
     statusCode: 200,
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(event)
+    body: JSON.stringify(event),
   });
 }
 
 function helloCode(_event: any, _context: any, callback: any) {
   return callback(undefined, {
     statusCode: 200,
-    body: 'hello, world!'
+    body: 'hello, world!',
   });
 }
 

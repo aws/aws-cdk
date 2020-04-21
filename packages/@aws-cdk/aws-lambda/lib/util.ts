@@ -6,6 +6,6 @@ export function addAlias(scope: Construct, version: IVersion, aliasName: string,
   return new Alias(scope, `Alias${aliasName}`, {
     aliasName,
     version,
-    ...options
+    ...options,
   });
 }

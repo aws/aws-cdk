@@ -23,7 +23,7 @@ export = {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
         vpc: this.vpc,
-        allowAllOutbound: false
+        allowAllOutbound: false,
       });
     }
 
@@ -32,13 +32,13 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {'Fn::GetAtt': [ 'LambdaSecurityGroupE74659A1', 'GroupId' ]}
+            {'Fn::GetAtt': [ 'LambdaSecurityGroupE74659A1', 'GroupId' ]},
           ],
           SubnetIds: [
             {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
             {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
-          ]
-        }
+          ],
+        },
       }));
 
       test.done();
@@ -57,13 +57,13 @@ export = {
       expect(this.stack).to(haveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
-            {'Fn::GetAtt': [ 'CustomSecurityGroupX6C7F3A78', 'GroupId' ]}
+            {'Fn::GetAtt': [ 'CustomSecurityGroupX6C7F3A78', 'GroupId' ]},
           ],
           SubnetIds: [
             {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
             {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
-          ]
-        }
+          ],
+        },
       }));
 
       test.done();
@@ -86,13 +86,13 @@ export = {
         VpcConfig: {
           SecurityGroupIds: [
             {'Fn::GetAtt': [ 'CustomSecurityGroupA267F62DE', 'GroupId' ]},
-            {'Fn::GetAtt': [ 'CustomSecurityGroupB1118D0D5', 'GroupId' ]}
+            {'Fn::GetAtt': [ 'CustomSecurityGroupB1118D0D5', 'GroupId' ]},
           ],
           SubnetIds: [
             {Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'},
             {Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'},
-          ]
-        }
+          ],
+        },
       }));
 
       test.done();
@@ -132,7 +132,7 @@ export = {
         Description: 'Lambda can call connectable',
         DestinationSecurityGroupId: {'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ]},
         FromPort: 0,
-        ToPort: 65535
+        ToPort: 65535,
       }));
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
@@ -142,7 +142,7 @@ export = {
         FromPort: 0,
         GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
         SourceSecurityGroupId: {'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId' ]},
-        ToPort: 65535
+        ToPort: 65535,
       }));
 
       test.done();
@@ -160,18 +160,18 @@ export = {
       // THEN: SomeSecurityGroup accepts connections from Lambda
       expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
         GroupId: {
-          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1'
+          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
         },
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         DestinationSecurityGroupId: {
           'Fn::GetAtt': [
             'SomeSecurityGroupEF219AD6',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         FromPort: 0,
-        ToPort: 65535
+        ToPort: 65535,
       }));
 
       // THEN: Lambda can connect to SomeSecurityGroup
@@ -182,13 +182,13 @@ export = {
         GroupId: {
           'Fn::GetAtt': [
             'SomeSecurityGroupEF219AD6',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         SourceSecurityGroupId: {
-          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1'
+          'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
         },
-        ToPort: 65535
+        ToPort: 65535,
       }));
 
       test.done();
@@ -224,12 +224,12 @@ export = {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
         vpc,
-        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
     });
 
     test.done();
-  }
+  },
 };
 
 /**
@@ -252,7 +252,7 @@ function classFixture(klass: any) {
       } else {
         cb();
       }
-    }
+    },
   };
 
   const testNames = Reflect.ownKeys(klass.prototype).filter(m => m !== 'tearDown' && m !== 'constructor');

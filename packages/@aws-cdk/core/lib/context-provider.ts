@@ -78,7 +78,7 @@ export class ContextProvider {
     const propStrings = propsToArray(props);
     return {
       key: `${options.provider}:${propStrings.join(':')}`,
-      props
+      props,
     };
   }
 
@@ -99,7 +99,7 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      stack.reportMissingContext({ key, props, provider: options.provider, });
+      stack.reportMissingContext({ key, props, provider: options.provider });
 
       if (providerError !== undefined) {
         scope.node.addError(providerError);

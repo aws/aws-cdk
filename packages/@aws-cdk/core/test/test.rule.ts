@@ -16,17 +16,17 @@ export = {
           Assertions: [
             {
               Assert: { 'Fn::Equals': [ 'lhs', 'rhs' ] },
-              AssertDescription: 'lhs equals rhs'
+              AssertDescription: 'lhs equals rhs',
             },
             {
               Assert: { 'Fn::Not': [ { 'Fn::And': [ { 'Fn::Contains': [ [ 'hello', 'world' ], 'world' ] } ] } ] },
-              AssertDescription: 'some assertion'
-            }
-          ]
-        }
-      }
+              AssertDescription: 'some assertion',
+            },
+          ],
+        },
+      },
     });
 
     test.done();
-  }
+  },
 };

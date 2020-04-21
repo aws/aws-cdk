@@ -17,7 +17,7 @@ export class SnsDestination implements lambda.IDestination {
     this.topic.grantPublish(fn);
 
     return {
-      destination: this.topic.topicArn
+      destination: this.topic.topicArn,
     };
   }
 }

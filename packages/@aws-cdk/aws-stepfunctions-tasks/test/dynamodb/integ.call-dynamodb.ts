@@ -36,65 +36,65 @@ class CallDynamoDBStack extends cdk.Stack {
         item: {
           MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
           Text: new tasks.DynamoAttributeValue().withS(
-            sfn.Data.stringAt('$.bar')
+            sfn.Data.stringAt('$.bar'),
           ),
-          TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
+          TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`),
         },
-        tableName: TABLE_NAME
-      })
+        tableName: TABLE_NAME,
+      }),
     });
 
     const getItemTaskAfterPut = new sfn.Task(this, 'GetItemAfterPut', {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
         },
-        tableName: TABLE_NAME
-      })
+        tableName: TABLE_NAME,
+      }),
     });
 
     const updateItemTask = new sfn.Task(this, 'UpdateItem', {
       task: tasks.CallDynamoDB.updateItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
         },
         tableName: TABLE_NAME,
         expressionAttributeValues: {
           ':val': new tasks.DynamoAttributeValue().withN(
-            sfn.Data.stringAt('$.Item.TotalCount.N')
+            sfn.Data.stringAt('$.Item.TotalCount.N'),
           ),
-          ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
+          ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`),
         },
-        updateExpression: 'SET TotalCount = :val + :rand'
-      })
+        updateExpression: 'SET TotalCount = :val + :rand',
+      }),
     });
 
     const getItemTaskAfterUpdate = new sfn.Task(this, 'GetItemAfterUpdate', {
       task: tasks.CallDynamoDB.getItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
         },
-        tableName: TABLE_NAME
+        tableName: TABLE_NAME,
       }),
-      outputPath: sfn.Data.stringAt('$.Item.TotalCount.N')
+      outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
     });
 
     const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
       task: tasks.CallDynamoDB.deleteItem({
         partitionKey: {
           name: 'MessageId',
-          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+          value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
         },
-        tableName: TABLE_NAME
+        tableName: TABLE_NAME,
       }),
-      resultPath: 'DISCARD'
+      resultPath: 'DISCARD',
     });
 
     const definition = new sfn.Pass(this, 'Start', {
-      result: sfn.Result.fromObject({ bar: 'SomeValue' })
+      result: sfn.Result.fromObject({ bar: 'SomeValue' }),
     })
       .next(putItemTask)
       .next(getItemTaskAfterPut)
@@ -103,11 +103,11 @@ class CallDynamoDBStack extends cdk.Stack {
       .next(deleteItemTask);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition
+      definition,
     });
 
     new cdk.CfnOutput(this, 'StateMachineArn', {
-      value: stateMachine.stateMachineArn
+      value: stateMachine.stateMachineArn,
     });
   }
 }

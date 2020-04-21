@@ -37,8 +37,8 @@ passingExample('expect <synthStack> to match (exactly) <template>', () => {
   });
   const expected = {
     Resources: {
-      TestResource: { Type: resourceType }
-    }
+      TestResource: { Type: resourceType },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.EXACT));
 });
@@ -62,8 +62,8 @@ passingExample('expect <synthStack> to be a superset of <template>', () => {
   const expected = {
     Resources: {
       TestResourceA: { Type: 'Test::Resource' },
-      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } }
-    }
+      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
@@ -73,9 +73,9 @@ passingExample('sugar for matching stack to a template', () => {
   cdkExpect(stack).toMatch({
     Resources: {
       TestResource: {
-        Type: 'Test::Resource'
-      }
-    }
+        Type: 'Test::Resource',
+      },
+    },
   });
 });
 passingExample('expect <synthStack> to match (no replaces) <template> with parameters', () => {
@@ -98,8 +98,8 @@ passingExample('expect <synthStack> to be a superset of <template> with paramete
   const expected = {
     Parameters: {
       TestParameterA: { Type: 'Test::Parameter' },
-      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Bar' } }
-    }
+      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Bar' } },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
@@ -132,8 +132,8 @@ failingExample('expect <synthStack> to match (exactly) <template>', () => {
   });
   const expected = {
     Resources: {
-      TestResource: { Type: resourceType, DependsOn: ['Something'] }
-    }
+      TestResource: { Type: resourceType, DependsOn: ['Something'] },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.EXACT));
 });
@@ -144,8 +144,8 @@ failingExample('expect <synthStack> to match (no replaces) <template>', () => {
   });
   const expected = {
     Resources: {
-      TestResource: { Type: 'AWS::S3::Bucket' }
-    }
+      TestResource: { Type: 'AWS::S3::Bucket' },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
 });
@@ -162,8 +162,8 @@ failingExample('expect <synthStack> to be a superset of <template>', () => {
   const expected = {
     Resources: {
       TestResourceA: { Type: 'Test::Resource' },
-      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Baz' } }
-    }
+      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Baz' } },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
@@ -174,8 +174,8 @@ failingExample('expect <synthStack> to match (no replaces) <template> with param
   });
   const expected = {
     Parameters: {
-      TestParameter: { Type: 'AWS::S3::Bucket' }
-    }
+      TestParameter: { Type: 'AWS::S3::Bucket' },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
 });
@@ -192,8 +192,8 @@ failingExample('expect <synthStack> to be a superset of <template> with paramete
   const expected = {
     Parameters: {
       TestParameterA: { Type: 'Test::Parameter' },
-      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Baz' } }
-    }
+      TestParameterB: { Type: 'Test::Parameter', Default: { Foo: 'Baz' } },
+    },
   };
   cdkExpect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });

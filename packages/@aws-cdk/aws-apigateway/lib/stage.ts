@@ -219,7 +219,7 @@ export class Stage extends Resource implements IStage {
 
       accessLogSetting = {
         destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString()
+        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
       };
     }
 
@@ -245,7 +245,7 @@ export class Stage extends Resource implements IStage {
       documentationVersion: props.documentationVersion,
       variables: props.variables,
       tracingEnabled: props.tracingEnabled,
-      methodSettings
+      methodSettings,
     });
 
     this.stageName = resource.ref;
@@ -276,7 +276,7 @@ export class Stage extends Resource implements IStage {
       throttlingRateLimit: props.throttlingRateLimit,
       cachingEnabled: props.cachingEnabled,
       cacheTtl: props.cacheTtl,
-      cacheDataEncrypted: props.cacheDataEncrypted
+      cacheDataEncrypted: props.cacheDataEncrypted,
     };
 
     // if any of them are defined, add an entry for '/*/*'.

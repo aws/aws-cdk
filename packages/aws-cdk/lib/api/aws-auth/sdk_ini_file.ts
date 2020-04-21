@@ -39,7 +39,7 @@ export class SharedIniFile {
     return path.join(
       os.homedir(),
       '.aws',
-      this.isConfig ? 'config' : 'credentials'
+      this.isConfig ? 'config' : 'credentials',
     );
   }
 

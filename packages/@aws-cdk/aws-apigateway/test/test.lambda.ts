@@ -12,7 +12,7 @@ export = {
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'boom',
-      code: lambda.Code.fromInline('foo')
+      code: lambda.Code.fromInline('foo'),
     });
 
     // WHEN
@@ -30,24 +30,24 @@ export = {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
               ':apigateway:',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               ':lambda:path/2015-03-31/functions/',
               {
                 'Fn::GetAtt': [
                   'Handler886CB40B',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              '/invocations'
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
     test.done();
   },
@@ -58,7 +58,7 @@ export = {
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('foo'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const api = new apigateway.RestApi(stack, 'api');
@@ -74,10 +74,10 @@ export = {
           '',
           [
             'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':',
-            { Ref: 'apiC8550315' }, '/', { Ref: 'apiDeploymentStageprod896C8101' }, '/GET/'
-          ]
-        ]
-      }
+            { Ref: 'apiC8550315' }, '/', { Ref: 'apiDeploymentStageprod896C8101' }, '/GET/',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(not(haveResource('AWS::Lambda::Permission', {
@@ -93,10 +93,10 @@ export = {
             { Ref: 'AWS::AccountId' },
             ':',
             { Ref: 'apiC8550315' },
-            '/test-invoke-stage/GET/'
-          ]
-        ]
-      }
+            '/test-invoke-stage/GET/',
+          ],
+        ],
+      },
     })));
 
     test.done();
@@ -108,7 +108,7 @@ export = {
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('foo'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const api = new apigateway.RestApi(stack, 'api');
@@ -120,8 +120,8 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Type: 'AWS'
-      }
+        Type: 'AWS',
+      },
     }));
 
     test.done();
@@ -134,7 +134,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline('loo')
+      code: lambda.Code.fromInline('loo'),
     });
 
     const target = new apigateway.LambdaIntegration(handler);
@@ -154,10 +154,10 @@ export = {
             { Ref: 'AWS::AccountId' },
             ':',
             { Ref: 'testapiD6451F70' },
-            '/test-invoke-stage/*/'
-          ]
-        ]
-      }
+            '/test-invoke-stage/*/',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -167,28 +167,28 @@ export = {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition'
+              Ref: 'AWS::Partition',
             },
             ':execute-api:',
             {
-              Ref: 'AWS::Region'
+              Ref: 'AWS::Region',
             },
             ':',
             {
-              Ref: 'AWS::AccountId'
+              Ref: 'AWS::AccountId',
             },
             ':',
             {
-              Ref: 'testapiD6451F70'
+              Ref: 'testapiD6451F70',
             },
             '/',
             { Ref: 'testapiDeploymentStageprod5C9E92A4' },
-            '/*/'
-          ]
-        ]
-      }
+            '/*/',
+          ],
+        ],
+      },
     }));
 
     test.done();
-  }
+  },
 };

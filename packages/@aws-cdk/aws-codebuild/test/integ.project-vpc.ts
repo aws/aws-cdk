@@ -26,7 +26,7 @@ new codebuild.Project(stack, 'MyProject', {
     },
   }),
   securityGroups: [securityGroup],
-  vpc
+  vpc,
 });
 
 app.synth();

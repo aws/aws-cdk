@@ -15,9 +15,9 @@ export = {
       majorEngineVersion: '11.2',
       configurations: [
         {
-          name: 'XMLDB'
-        }
-      ]
+          name: 'XMLDB',
+        },
+      ],
     });
 
     // THEN
@@ -27,9 +27,9 @@ export = {
       OptionGroupDescription: 'Option group for oracle-se1 11.2',
       OptionConfigurations: [
         {
-          OptionName: 'XMLDB'
-        }
-      ]
+          OptionName: 'XMLDB',
+        },
+      ],
     }));
 
     test.done();
@@ -48,9 +48,9 @@ export = {
         {
           name: 'OEM',
           port: 1158,
-          vpc
-        }
-      ]
+          vpc,
+        },
+      ],
     });
     optionGroup.optionConnections.OEM.connections.allowDefaultPortFromAnyIpv4();
 
@@ -67,12 +67,12 @@ export = {
             {
               'Fn::GetAtt': [
                 'OptionsSecurityGroupOEM6C9FE79D',
-                'GroupId'
-              ]
-            }
-          ]
-        }
-      ]
+                'GroupId',
+              ],
+            },
+          ],
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -83,12 +83,12 @@ export = {
           Description: 'from 0.0.0.0/0:1158',
           FromPort: 1158,
           IpProtocol: 'tcp',
-          ToPort: 1158
-        }
+          ToPort: 1158,
+        },
       ],
       VpcId: {
-        Ref: 'VPCB9E5F0B4'
-      }
+        Ref: 'VPCB9E5F0B4',
+      },
     }));
 
     test.done();
@@ -105,11 +105,11 @@ export = {
       configurations: [
         {
           name: 'OEM',
-          port: 1158
-        }
-      ]
+          port: 1158,
+        },
+      ],
     }), /`port`.*`vpc`/);
 
     test.done();
-  }
+  },
 };

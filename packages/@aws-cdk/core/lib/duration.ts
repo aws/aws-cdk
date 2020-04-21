@@ -79,7 +79,7 @@ export class Duration {
       _toInt(seconds) * TimeUnit.Seconds.inMillis
       + (_toInt(minutes) * TimeUnit.Minutes.inMillis)
       + (_toInt(hours) * TimeUnit.Hours.inMillis)
-      + (_toInt(days) * TimeUnit.Days.inMillis)
+      + (_toInt(days) * TimeUnit.Days.inMillis),
     );
 
     function _toInt(str: string): number {
@@ -223,7 +223,7 @@ export class Duration {
       () => {
         throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
       },
-      { displayHint: `${this.amount} ${this.unit.label}` }
+      { displayHint: `${this.amount} ${this.unit.label}` },
     );
   }
 

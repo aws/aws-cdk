@@ -176,13 +176,13 @@ class FieldAwareEventInput extends RuleTargetInput {
       // JSONify individual lines
       resolved = Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       });
       resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
       resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
-        resolver: new EventFieldReplacer()
+        resolver: new EventFieldReplacer(),
       }));
     }
 
@@ -193,7 +193,7 @@ class FieldAwareEventInput extends RuleTargetInput {
 
     return {
       inputTemplate: this.unquoteKeyPlaceholders(resolved),
-      inputPathsMap
+      inputPathsMap,
     };
   }
 

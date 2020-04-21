@@ -13,7 +13,7 @@ export = {
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
@@ -21,8 +21,8 @@ export = {
       Endpoint: 'endpoint',
       Protocol: 'lambda',
       TopicArn: {
-        Ref: 'TopicBFC7AF6E'
-      }
+        Ref: 'TopicBFC7AF6E',
+      },
     }));
     test.done();
   },
@@ -49,10 +49,10 @@ export = {
           betweenStrict: { start: 2000, stop: 3000 },
           greaterThanOrEqualTo: 1000,
           lessThanOrEqualTo: -2,
-        })
+        }),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
@@ -63,7 +63,7 @@ export = {
           'green',
           {'anything-but': ['white', 'orange']},
           { prefix: 'bl'},
-          { prefix: 'ye'}
+          { prefix: 'ye'},
         ],
         price: [
           { numeric: ['=', 100] },
@@ -74,7 +74,7 @@ export = {
           { numeric: ['<=', -2] },
           { numeric: ['>=', 300, '<=', 350] },
           { numeric: ['>', 2000, '<', 3000] },
-        ]
+        ],
       },
     }));
     test.done();
@@ -92,13 +92,13 @@ export = {
         size: sns.SubscriptionFilter.existsFilter(),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::Subscription', {
       FilterPolicy: {
-        size: [{ exists: true }]
+        size: [{ exists: true }],
       },
     }));
     test.done();
@@ -114,7 +114,7 @@ export = {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
-      rawMessageDelivery: true
+      rawMessageDelivery: true,
     }), /Raw message delivery/);
     test.done();
   },
@@ -159,5 +159,5 @@ export = {
       },
     }), /\(120\) must not exceed 100/);
     test.done();
-  }
+  },
 };

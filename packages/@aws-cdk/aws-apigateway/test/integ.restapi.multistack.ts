@@ -33,7 +33,7 @@ class SecondStack extends cdk.Stack {
     super(scope, id, props);
 
     const api = new apig.RestApi(this, 'BooksApi', {
-      restApiName: 'SecondRestAPI'
+      restApiName: 'SecondRestAPI',
     });
     api.root.addMethod('ANY');
     const booksApi = api.root.addResource('books');

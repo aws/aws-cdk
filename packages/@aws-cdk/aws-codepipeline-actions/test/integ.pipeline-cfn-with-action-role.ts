@@ -26,11 +26,11 @@ const sourceStage = {
 };
 
 const role = new iam.Role(stack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID)
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
 });
 role.addToPolicy(new iam.PolicyStatement({
   actions: ['sqs:*'],
-  resources: ['*']
+  resources: ['*'],
 }));
 const cfnStage = {
   stageName: 'CFN',
@@ -40,7 +40,7 @@ const cfnStage = {
       stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
       templatePath: sourceOutput.atPath('template.yml'),
       adminPermissions: false,
-      role
+      role,
     }),
   ],
 };

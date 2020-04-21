@@ -18,7 +18,7 @@ export = {
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       cluster,
       memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test')
+      image: ecs.ContainerImage.fromRegistry('test'),
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
@@ -32,15 +32,15 @@ export = {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
             'ServiceEcsProcessingDeadLetterQueue4A89196E',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        maxReceiveCount: 3
-      }
+        maxReceiveCount: 3,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
-      MessageRetentionPeriod: 1209600
+      MessageRetentionPeriod: 1209600,
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy',  {
@@ -52,19 +52,19 @@ export = {
               'sqs:ChangeMessageVisibility',
               'sqs:GetQueueUrl',
               'sqs:DeleteMessage',
-              'sqs:GetQueueAttributes'
+              'sqs:GetQueueAttributes',
             ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
                 'ServiceEcsProcessingQueueC266885C',
-                'Arn'
-              ]
-            }
-          }
+                'Arn',
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -76,27 +76,27 @@ export = {
               Value: {
                 'Fn::GetAtt': [
                   'ServiceEcsProcessingQueueC266885C',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1'
+                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1',
               },
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Image: 'test',
-        }
+        },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1'
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();
@@ -115,7 +115,7 @@ export = {
       memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test'),
       maxReceiveCount: 42,
-      retentionPeriod: cdk.Duration.days(7)
+      retentionPeriod: cdk.Duration.days(7),
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
@@ -129,15 +129,15 @@ export = {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
             'ServiceEcsProcessingDeadLetterQueue4A89196E',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        maxReceiveCount: 42
-      }
+        maxReceiveCount: 42,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
-      MessageRetentionPeriod: 604800
+      MessageRetentionPeriod: 604800,
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy',  {
@@ -149,19 +149,19 @@ export = {
               'sqs:ChangeMessageVisibility',
               'sqs:GetQueueUrl',
               'sqs:DeleteMessage',
-              'sqs:GetQueueAttributes'
+              'sqs:GetQueueAttributes',
             ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
                 'ServiceEcsProcessingQueueC266885C',
-                'Arn'
-              ]
-            }
-          }
+                'Arn',
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -173,27 +173,27 @@ export = {
               Value: {
                 'Fn::GetAtt': [
                   'ServiceEcsProcessingQueueC266885C',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1'
+                Ref: 'ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1',
               },
               'awslogs-stream-prefix': 'Service',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Image: 'test',
-        }
+        },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1'
+      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
     }));
 
     test.done();
@@ -219,19 +219,19 @@ export = {
       desiredTaskCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
       },
       queue,
       maxScalingCapacity: 5,
       serviceName: 'fargate-test-service',
-      family: 'fargate-task-family'
+      family: 'fargate-task-family',
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
       LaunchType: 'FARGATE',
-      ServiceName: 'fargate-test-service'
+      ServiceName: 'fargate-test-service',
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' }));
@@ -242,33 +242,33 @@ export = {
           Command: [
             '-c',
             '4',
-            'amazon.com'
+            'amazon.com',
           ],
           Environment: [
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE1',
-              Value: 'test environment variable 1 value'
+              Value: 'test environment variable 1 value',
             },
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE2',
-              Value: 'test environment variable 2 value'
+              Value: 'test environment variable 2 value',
             },
             {
               Name: 'QUEUE_NAME',
               Value: {
                 'Fn::GetAtt': [
                   'fargatetestqueue28B43841',
-                  'QueueName'
-                ]
-              }
-            }
+                  'QueueName',
+                ],
+              },
+            },
           ],
           Image: 'test',
-        }
+        },
       ],
-      Family: 'fargate-task-family'
+      Family: 'fargate-task-family',
     }));
 
     test.done();
-  }
+  },
 };

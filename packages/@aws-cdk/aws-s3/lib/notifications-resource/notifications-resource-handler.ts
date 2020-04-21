@@ -50,14 +50,14 @@ export class NotificationsResourceHandler extends cdk.Construct {
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
-      ]
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      ],
     });
 
     // handler allows to put bucket notification on s3 buckets.
     role.addToPolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     const resourceType = 'AWS::Lambda::Function';
@@ -80,7 +80,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         Role: role.roleArn,
         Runtime: 'nodejs10.x',
         Timeout: 300,
-      }
+      },
     });
 
     resource.node.addDependency(role);
@@ -116,7 +116,7 @@ const handler = (event: any, context: any) => {
 
   const req = {
     Bucket: props.BucketName,
-    NotificationConfiguration: props.NotificationConfiguration
+    NotificationConfiguration: props.NotificationConfiguration,
   };
 
   return s3.putBucketNotificationConfiguration(req, (err: any, data: any) => {
@@ -156,8 +156,8 @@ const handler = (event: any, context: any) => {
       method: 'PUT',
       headers: {
         'content-type': '',
-        'content-length': responseBody.length
-      }
+        'content-length': responseBody.length,
+      },
     };
 
     const request = https.request(options, (r: any) => {

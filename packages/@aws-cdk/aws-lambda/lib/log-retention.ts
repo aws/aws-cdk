@@ -69,8 +69,8 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention
-      }
+        RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention,
+      },
     });
 
     const logGroupName = resource.getAtt('LogGroupName').toString();
@@ -80,7 +80,7 @@ export class LogRetention extends cdk.Construct {
       service: 'logs',
       resource: 'log-group',
       resourceName: `${logGroupName}:*`,
-      sep: ':'
+      sep: ':',
     });
   }
 }

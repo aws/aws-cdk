@@ -10,7 +10,7 @@ class TestBucketDeployment extends cdk.Stack {
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
@@ -36,7 +36,7 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
       cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1))],
       contentType: 'text/html',
-      metadata: { A: 'aaa', B: 'bbb', C: 'ccc' }
+      metadata: { A: 'aaa', B: 'bbb', C: 'ccc' },
     });
   }
 }

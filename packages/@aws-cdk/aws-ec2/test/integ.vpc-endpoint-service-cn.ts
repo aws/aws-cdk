@@ -25,13 +25,13 @@ class CnVpcEndpointServiceStack extends cdk.Stack {
 
     const service1 = new ec2.VpcEndpointService(this, 'MyCnVpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [nlb],
-      acceptanceRequired: false
+      acceptanceRequired: false,
     });
 
     new cdk.CfnOutput(this, 'MyCnVpcEndpointServiceServiceName', {
       exportName: 'ServiceName',
       value: service1.vpcEndpointServiceName,
-      description: 'Give this to service consumers so they can connect via VPC Endpoint'
+      description: 'Give this to service consumers so they can connect via VPC Endpoint',
     });
 
   }
@@ -40,7 +40,7 @@ class CnVpcEndpointServiceStack extends cdk.Stack {
 new CnVpcEndpointServiceStack(app, 'aws-cdk-ec2-cn-vpc-endpoint-service', {
   env: {
     account: '123456789012',
-    region: 'cn-north-1'
-  }
+    region: 'cn-north-1',
+  },
 });
 app.synth();

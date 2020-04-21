@@ -18,8 +18,8 @@ export = {
       new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test')
-        }
+          image: ContainerImage.fromRegistry('test'),
+        },
       });
 
       // THEN - stack contains a load balancer and a service
@@ -33,9 +33,9 @@ export = {
             ContainerName: 'web',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C'
-            }
-          }
+              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+            },
+          },
         ],
       }));
 
@@ -47,36 +47,36 @@ export = {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'ServiceTaskDefwebLogGroup2A898F61'
+                  Ref: 'ServiceTaskDefwebLogGroup2A898F61',
                 },
                 'awslogs-stream-prefix': 'Service',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
-                Protocol: 'tcp'
-              }
-            ]
-          }
+                Protocol: 'tcp',
+              },
+            ],
+          },
         ],
         Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ServiceTaskDefExecutionRole919F7BE3',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
-          'FARGATE'
-        ]
+          'FARGATE',
+        ],
       }));
 
       test.done();
@@ -98,22 +98,22 @@ export = {
           enableLogging: false,
           environment: {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
           logDriver: new AwsLogDriver({
-            streamPrefix: 'TestStream'
+            streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
           executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
             assumedBy: new CompositePrincipal(
               new ServicePrincipal('ecs.amazonaws.com'),
-              new ServicePrincipal('ecs-tasks.amazonaws.com')
-            )
+              new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            ),
           }),
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
-          })
+          }),
         },
         cpu: 256,
         assignPublicIp: true,
@@ -131,9 +131,9 @@ export = {
             containerPort: 90,
             pathPattern: 'a/b/c',
             priority: 10,
-            protocol: Protocol.TCP
-          }
-        ]
+            protocol: Protocol.TCP,
+          },
+        ],
       });
 
       // THEN - stack contains a load balancer and a service
@@ -147,16 +147,16 @@ export = {
             ContainerName: 'hello',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSTargetGrouphello80Group233A4D54'
-            }
+              Ref: 'ServiceLBPublicListenerECSTargetGrouphello80Group233A4D54',
+            },
           },
           {
             ContainerName: 'hello',
             ContainerPort: 90,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSTargetGrouphello90GroupE58E4EAB'
-            }
-          }
+              Ref: 'ServiceLBPublicListenerECSTargetGrouphello90GroupE58E4EAB',
+            },
+          },
         ],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -165,22 +165,22 @@ export = {
               {
                 'Fn::GetAtt': [
                   'ServiceSecurityGroupEEA09B68',
-                  'GroupId'
-                ]
-              }
+                  'GroupId',
+                ],
+              },
             ],
             Subnets: [
               {
-                Ref: 'VPCPublicSubnet1SubnetB4246D30'
+                Ref: 'VPCPublicSubnet1SubnetB4246D30',
               },
               {
-                Ref: 'VPCPublicSubnet2Subnet74179F39'
-              }
-            ]
-          }
+                Ref: 'VPCPublicSubnet2Subnet74179F39',
+              },
+            ],
+          },
         },
         PropagateTags: 'SERVICE',
-        ServiceName: 'myService'
+        ServiceName: 'myService',
       }));
 
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -189,12 +189,12 @@ export = {
             Environment: [
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE1',
-                Value: 'test environment variable 1 value'
+                Value: 'test environment variable 1 value',
               },
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE2',
-                Value: 'test environment variable 2 value'
-              }
+                Value: 'test environment variable 2 value',
+              },
             ],
             Essential: true,
             Image: 'test',
@@ -202,46 +202,46 @@ export = {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'ServiceTaskDefhelloLogGroup44519781'
+                  Ref: 'ServiceTaskDefhelloLogGroup44519781',
                 },
                 'awslogs-stream-prefix': 'TestStream',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Name: 'hello',
             PortMappings: [
               {
                 ContainerPort: 80,
-                Protocol: 'tcp'
+                Protocol: 'tcp',
               },
               {
                 ContainerPort: 90,
-                Protocol: 'tcp'
-              }
-            ]
-          }
+                Protocol: 'tcp',
+              },
+            ],
+          },
         ],
         Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'Ec2TaskDef',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
-          'FARGATE'
+          'FARGATE',
         ],
         TaskRoleArn: {
           'Fn::GetAtt': [
             'TaskRole30FC0FBB',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       }));
 
       test.done();
@@ -280,7 +280,7 @@ export = {
           taskImageOptions: {
             image: ContainerImage.fromRegistry('test'),
           },
-          taskDefinition
+          taskDefinition,
         });
       }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
@@ -296,12 +296,12 @@ export = {
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
-          cluster
+          cluster,
         });
       }, /You must specify one of: taskDefinition or image/);
 
       test.done();
-    }
+    },
   },
 
   'When Network Load Balancer': {
@@ -315,8 +315,8 @@ export = {
       new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test')
-        }
+          image: ContainerImage.fromRegistry('test'),
+        },
       });
 
       // THEN - stack contains a load balancer and a service
@@ -330,9 +330,9 @@ export = {
             ContainerName: 'web',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C'
-            }
-          }
+              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+            },
+          },
         ],
       }));
 
@@ -344,36 +344,36 @@ export = {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'ServiceTaskDefwebLogGroup2A898F61'
+                  Ref: 'ServiceTaskDefwebLogGroup2A898F61',
                 },
                 'awslogs-stream-prefix': 'Service',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Name: 'web',
             PortMappings: [
               {
                 ContainerPort: 80,
-                Protocol: 'tcp'
-              }
-            ]
-          }
+                Protocol: 'tcp',
+              },
+            ],
+          },
         ],
         Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ServiceTaskDefExecutionRole919F7BE3',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
-          'FARGATE'
-        ]
+          'FARGATE',
+        ],
       }));
 
       test.done();
@@ -395,22 +395,22 @@ export = {
           enableLogging: false,
           environment: {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
           logDriver: new AwsLogDriver({
-            streamPrefix: 'TestStream'
+            streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
           executionRole: new Role(stack, 'ExecutionRole', {
             path: '/',
             assumedBy: new CompositePrincipal(
               new ServicePrincipal('ecs.amazonaws.com'),
-              new ServicePrincipal('ecs-tasks.amazonaws.com')
-            )
+              new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            ),
           }),
           taskRole: new Role(stack, 'TaskRole', {
             assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
-          })
+          }),
         },
         cpu: 256,
         assignPublicIp: true,
@@ -425,9 +425,9 @@ export = {
             containerPort: 80,
           },
           {
-            containerPort: 90
-          }
-        ]
+            containerPort: 90,
+          },
+        ],
       });
 
       // THEN - stack contains a load balancer and a service
@@ -441,16 +441,16 @@ export = {
             ContainerName: 'hello',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSTargetGrouphello80Group233A4D54'
-            }
+              Ref: 'ServiceLBPublicListenerECSTargetGrouphello80Group233A4D54',
+            },
           },
           {
             ContainerName: 'hello',
             ContainerPort: 90,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSTargetGrouphello90GroupE58E4EAB'
-            }
-          }
+              Ref: 'ServiceLBPublicListenerECSTargetGrouphello90GroupE58E4EAB',
+            },
+          },
         ],
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -459,22 +459,22 @@ export = {
               {
                 'Fn::GetAtt': [
                   'ServiceSecurityGroupEEA09B68',
-                  'GroupId'
-                ]
-              }
+                  'GroupId',
+                ],
+              },
             ],
             Subnets: [
               {
-                Ref: 'VPCPublicSubnet1SubnetB4246D30'
+                Ref: 'VPCPublicSubnet1SubnetB4246D30',
               },
               {
-                Ref: 'VPCPublicSubnet2Subnet74179F39'
-              }
-            ]
-          }
+                Ref: 'VPCPublicSubnet2Subnet74179F39',
+              },
+            ],
+          },
         },
         PropagateTags: 'SERVICE',
-        ServiceName: 'myService'
+        ServiceName: 'myService',
       }));
 
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -483,12 +483,12 @@ export = {
             Environment: [
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE1',
-                Value: 'test environment variable 1 value'
+                Value: 'test environment variable 1 value',
               },
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE2',
-                Value: 'test environment variable 2 value'
-              }
+                Value: 'test environment variable 2 value',
+              },
             ],
             Essential: true,
             Image: 'test',
@@ -496,46 +496,46 @@ export = {
               LogDriver: 'awslogs',
               Options: {
                 'awslogs-group': {
-                  Ref: 'ServiceTaskDefhelloLogGroup44519781'
+                  Ref: 'ServiceTaskDefhelloLogGroup44519781',
                 },
                 'awslogs-stream-prefix': 'TestStream',
                 'awslogs-region': {
-                  Ref: 'AWS::Region'
-                }
-              }
+                  Ref: 'AWS::Region',
+                },
+              },
             },
             Name: 'hello',
             PortMappings: [
               {
                 ContainerPort: 80,
-                Protocol: 'tcp'
+                Protocol: 'tcp',
               },
               {
                 ContainerPort: 90,
-                Protocol: 'tcp'
-              }
-            ]
-          }
+                Protocol: 'tcp',
+              },
+            ],
+          },
         ],
         Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Family: 'Ec2TaskDef',
         Memory: '512',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
-          'FARGATE'
+          'FARGATE',
         ],
         TaskRoleArn: {
           'Fn::GetAtt': [
             'TaskRole30FC0FBB',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       }));
 
       test.done();
@@ -574,7 +574,7 @@ export = {
           taskImageOptions: {
             image: ContainerImage.fromRegistry('test'),
           },
-          taskDefinition
+          taskDefinition,
         });
       }, /You must specify only one of TaskDefinition or TaskImageOptions./);
 
@@ -590,11 +590,11 @@ export = {
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
-          cluster
+          cluster,
         });
       }, /You must specify one of: taskDefinition or image/);
 
       test.done();
-    }
-  }
+    },
+  },
 };

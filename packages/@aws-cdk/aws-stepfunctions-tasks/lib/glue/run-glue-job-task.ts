@@ -72,7 +72,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC
+      sfn.ServiceIntegrationPattern.SYNC,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -90,7 +90,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
         'glue:StartJobRun',
         'glue:GetJobRun',
         'glue:GetJobRuns',
-        'glue:BatchStopJobRun'
+        'glue:BatchStopJobRun',
       ];
     }
     return {
@@ -100,10 +100,10 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
           Stack.of(task).formatArn({
             service: 'glue',
             resource: 'job',
-            resourceName: this.glueJobName
-          })
+            resourceName: this.glueJobName,
+          }),
         ],
-        actions: iamActions
+        actions: iamActions,
       })],
       metricPrefixSingular: 'GlueJob',
       metricPrefixPlural: 'GlueJobs',
@@ -113,8 +113,8 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
         Arguments: this.props.arguments,
         Timeout: this.props.timeout?.toMinutes(),
         SecurityConfiguration: this.props.securityConfiguration,
-        NotificationProperty: notificationProperty
-      }
+        NotificationProperty: notificationProperty,
+      },
     };
   }
 }

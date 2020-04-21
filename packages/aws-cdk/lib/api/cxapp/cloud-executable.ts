@@ -102,8 +102,8 @@ export class CloudExecutable {
               stack.template.Resources.CDKMetadata = {
                 Type: 'AWS::CDK::Metadata',
                 Properties: {
-                  Modules: modules
-                }
+                  Modules: modules,
+                },
               };
               if (stack.environment.region === cxapi.UNKNOWN_REGION) {
                 stack.template.Conditions = stack.template.Conditions || {};

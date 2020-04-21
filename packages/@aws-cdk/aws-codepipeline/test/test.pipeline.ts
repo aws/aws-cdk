@@ -15,10 +15,10 @@ export = {
     'can be passed an IAM role during pipeline creation'(test: Test) {
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
       });
       new codepipeline.Pipeline(stack, 'Pipeline', {
-        role
+        role,
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -26,8 +26,8 @@ export = {
           'Fn::GetAtt': [
             'Role1ABCC5F0',
             'Arn',
-          ]
-        }
+          ],
+        },
       }));
 
       test.done();
@@ -253,7 +253,7 @@ export = {
             [replicationRegion]: s3.Bucket.fromBucketAttributes(pipelineStack, 'ReplicationBucket', {
               bucketArn: 'arn:aws:s3:::my-us-west-1-replication-bucket',
               encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'ReplicationKey',
-                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`
+                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`,
               ),
             }),
           },

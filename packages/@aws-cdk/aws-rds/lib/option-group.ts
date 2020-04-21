@@ -114,7 +114,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       engineName: props.engine.name,
       majorEngineVersion: props.majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.name} ${props.majorEngineVersion}`,
-      optionConfigurations: this.renderConfigurations(props.configurations)
+      optionConfigurations: this.renderConfigurations(props.configurations),
     });
 
     this.optionGroupName = optionGroup.ref;
@@ -129,7 +129,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       let configuration: CfnOptionGroup.OptionConfigurationProperty = {
         optionName: config.name,
         optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
-        optionVersion: config.version
+        optionVersion: config.version,
       };
 
       if (config.port) {
@@ -139,18 +139,18 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
         const securityGroup = new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
           description: `Security group for ${config.name} option`,
-          vpc: config.vpc
+          vpc: config.vpc,
         });
 
         this.optionConnections[config.name] = new ec2.Connections({
           securityGroups: [securityGroup],
-          defaultPort: ec2.Port.tcp(config.port)
+          defaultPort: ec2.Port.tcp(config.port),
         });
 
         configuration = {
           ...configuration,
           port: config.port,
-          vpcSecurityGroupMemberships: [securityGroup.securityGroupId]
+          vpcSecurityGroupMemberships: [securityGroup.securityGroupId],
         };
       }
 

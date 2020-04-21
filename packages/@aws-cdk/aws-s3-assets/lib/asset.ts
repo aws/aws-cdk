@@ -113,7 +113,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     const location = stack.addFileAsset({
       packaging,
       sourceHash: this.sourceHash,
-      fileName: staging.stagedPath
+      fileName: staging.stagedPath,
     });
 
     this.s3BucketName = location.bucketName;

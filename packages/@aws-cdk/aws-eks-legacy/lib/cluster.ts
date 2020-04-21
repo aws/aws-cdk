@@ -373,8 +373,8 @@ export class Cluster extends Resource implements ICluster {
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
-        subnetIds
-      }
+        subnetIds,
+      },
     };
 
     let resource;
@@ -466,7 +466,7 @@ export class Cluster extends Resource implements ICluster {
     this.addAutoScalingGroup(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
+      bootstrapEnabled: options.bootstrapEnabled,
     });
 
     return asg;
@@ -524,7 +524,7 @@ export class Cluster extends Resource implements ICluster {
 
     // EKS Required Tags
     Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
-      applyToLaunchedInstances: true
+      applyToLaunchedInstances: true,
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
@@ -540,14 +540,14 @@ export class Cluster extends Resource implements ICluster {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
-          'system:nodes'
-        ]
+          'system:nodes',
+        ],
       });
     } else {
       // since we are not mapping the instance role to RBAC, synthesize an
       // output so it can be pasted into `aws-auth-cm.yaml`
       new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-        value: autoScalingGroup.role.roleArn
+        value: autoScalingGroup.role.roleArn,
       });
     }
 

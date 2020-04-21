@@ -27,7 +27,7 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-      }
+      },
     ]);
 
     // WHEN
@@ -50,7 +50,7 @@ describe('file assets', () => {
           packaging: 'file',
           path: __filename,
         },
-      })
+      }),
     ]);
   });
 
@@ -65,7 +65,7 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-      }
+      },
     ]);
 
     // WHEN
@@ -78,7 +78,7 @@ describe('file assets', () => {
           bucketName: 'bucket',
           objectKey: 'assets/source-hash.js',
         },
-      })
+      }),
     ]);
   });
 
@@ -92,8 +92,8 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-        sourceHash: 'boom'
-      }
+        sourceHash: 'boom',
+      },
     ]);
 
     // WHEN
@@ -117,7 +117,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
     mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
@@ -139,7 +139,7 @@ describe('docker assets', () => {
         source: {
           directory: '/foo',
         },
-      })
+      }),
     ]);
   });
 
@@ -151,7 +151,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
 
     await expect(addMetadataAssetsToManifest(stack, assets, toolkit)).rejects.toThrow('Invalid Docker image asset');
@@ -167,7 +167,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
     mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
@@ -187,7 +187,7 @@ describe('docker assets', () => {
         source: {
           directory: '/foo',
         },
-      })
+      }),
     ]);
   });
 
@@ -199,8 +199,8 @@ describe('docker assets', () => {
         id: 'SomeStackSomeResource4567',
         packaging: 'container-image',
         imageNameParameter: 'asdf',
-        sourceHash: 'source-hash'
-      }
+        sourceHash: 'source-hash',
+      },
     ]);
 
     // WHEN
@@ -221,10 +221,10 @@ function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
     template: {
       Resources: {
         SomeResource: {
-          Type: 'AWS::Something::Something'
-        }
-      }
-    }
+          Type: 'AWS::Something::Something',
+        },
+      },
+    },
   });
 }
 

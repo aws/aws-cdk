@@ -16,7 +16,7 @@ export class StateTransitionMetric {
       namespace: 'AWS/States',
       metricName,
       dimensions: { ServiceMetric: 'StateTransition' },
-      ...props
+      ...props,
     });
   }
 

@@ -223,7 +223,7 @@ export class AmazonLinuxImage implements IMachineImage {
       this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
       'x86_64', // No 32-bits images vended through this
-      this.storage
+      this.storage,
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
