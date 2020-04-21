@@ -31,6 +31,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [DeleteItem](#deleteitem)
     - [UpdateItem](#updateitem)
   - [ECS](#ecs)
+    - [RunTask](#runtask)
+  - [EMR](#emr)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
 
