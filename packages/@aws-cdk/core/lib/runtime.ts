@@ -51,7 +51,7 @@ function pad(x: number) {
 export function cfnTagToCloudFormation(x: any): any {
   return {
     Key: x.key,
-    Value: x.value
+    Value: x.value,
   };
 }
 

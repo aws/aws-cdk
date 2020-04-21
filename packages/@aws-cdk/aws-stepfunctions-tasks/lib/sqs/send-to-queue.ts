@@ -64,7 +64,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -83,7 +83,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       resourceArn: getResourceArn('sqs', 'sendMessage', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
-        resources: [this.queue.queueArn]
+        resources: [this.queue.queueArn],
       })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
@@ -91,7 +91,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
         DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
-      }
+      },
     };
   }
 }

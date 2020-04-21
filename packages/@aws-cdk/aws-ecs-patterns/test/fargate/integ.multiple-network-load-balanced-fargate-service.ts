@@ -21,29 +21,29 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
       name: 'lb1',
       listeners: [
         {
-          name: 'listener1'
-        }
-      ]
+          name: 'listener1',
+        },
+      ],
     },
     {
       name: 'lb2',
       listeners: [
         {
-          name: 'listener2'
-        }
-      ]
-    }
+          name: 'listener2',
+        },
+      ],
+    },
   ],
   targetGroups: [
     {
       containerPort: 80,
-      listener: 'listener1'
+      listener: 'listener1',
     },
     {
       containerPort: 90,
-      listener: 'listener2'
-    }
-  ]
+      listener: 'listener2',
+    },
+  ],
 });
 
 app.synth();

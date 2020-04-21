@@ -48,7 +48,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      PhysicalResourceId: resp.cluster.name
+      PhysicalResourceId: resp.cluster.name,
     };
   }
 
@@ -72,7 +72,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       }
     }
     return {
-      PhysicalResourceId: this.clusterName
+      PhysicalResourceId: this.clusterName,
     };
   }
 
@@ -93,7 +93,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      IsComplete: false
+      IsComplete: false,
     };
   }
 
@@ -134,7 +134,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       await this.eks.updateClusterConfig({
         name: this.clusterName,
         logging: this.newProps.logging,
-        resourcesVpcConfig: this.newProps.resourcesVpcConfig
+        resourcesVpcConfig: this.newProps.resourcesVpcConfig,
       });
     }
 
@@ -172,7 +172,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // returning attributes (Data) if isComplete is false.
     if (cluster?.status !== 'ACTIVE') {
       return {
-        IsComplete: false
+        IsComplete: false,
       };
     } else {
       return {
@@ -181,8 +181,8 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data
-        }
+          CertificateAuthorityData: cluster.certificateAuthority?.data,
+        },
       };
     }
   }

@@ -105,17 +105,17 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       Filters: [
         {
           Name: 'attachment.vpc-id',
-          Values: [vpcId]
+          Values: [vpcId],
         },
         {
           Name: 'attachment.state',
-          Values: ['attached']
+          Values: ['attached'],
         },
         {
           Name: 'state',
-          Values: ['available']
-        }
-      ]
+          Values: ['available'],
+        },
+      ],
     }).promise();
     const vpnGatewayId = vpnGatewayResponse.VpnGateways && vpnGatewayResponse.VpnGateways.length === 1
       ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId

@@ -27,7 +27,7 @@ class VpcEndpointServiceStack extends cdk.Stack {
     const service1 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithNoPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbNoPrincipals],
       acceptanceRequired: false,
-      whitelistedPrincipals: []
+      whitelistedPrincipals: [],
     });
 
     const nlbWithPrincipals = new DummyEndpointLoadBalacer(
@@ -37,19 +37,19 @@ class VpcEndpointServiceStack extends cdk.Stack {
     const service2 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbWithPrincipals],
       acceptanceRequired: false,
-      whitelistedPrincipals: [principalArn]
+      whitelistedPrincipals: [principalArn],
     });
 
     new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithNoPrincipalsServiceName', {
       exportName: 'ServiceName',
       value: service1.vpcEndpointServiceName,
-      description: 'Give this to service consumers so they can connect via VPC Endpoint'
+      description: 'Give this to service consumers so they can connect via VPC Endpoint',
     });
 
     new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithPrincipalsEndpointServiceId', {
       exportName: 'EndpointServiceId',
       value: service2.vpcEndpointServiceId,
-      description: 'Reference this service from other stacks'
+      description: 'Reference this service from other stacks',
     });
   }
 }

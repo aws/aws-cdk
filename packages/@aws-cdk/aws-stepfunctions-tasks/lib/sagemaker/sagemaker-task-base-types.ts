@@ -714,7 +714,7 @@ class StandardDockerImage extends DockerImage {
           'ecr:GetDownloadUrlForLayer',
           'ecr:BatchGetImage',
         ],
-        resources: ['*']
+        resources: ['*'],
       }));
     }
     return {
@@ -751,7 +751,7 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'], }));
+      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
     }
     return { uri: this.uri };
   }

@@ -20,12 +20,12 @@ export = {
     expect(stack).toMatch({
       Outputs: {
         ARN: {
-          Value: 'arn:aws:lambda:region:account-id:function:function-name:version'
+          Value: 'arn:aws:lambda:region:account-id:function:function-name:version',
         },
         Name: {
-          Value: 'function-name:version'
-        }
-      }
+          Value: 'function-name:version',
+        },
+      },
     });
 
     test.done();
@@ -44,22 +44,22 @@ export = {
     new lambda.Version(stack, 'Version', {
       lambda: fn,
       maxEventAge: cdk.Duration.hours(1),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
-        Ref: 'Fn9270CBC0'
+        Ref: 'Fn9270CBC0',
       },
       Qualifier: {
         'Fn::GetAtt': [
           'Version6A868472',
-          'Version'
-        ]
+          'Version',
+        ],
       },
       MaximumEventAgeInSeconds: 3600,
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 0,
     }));
 
     test.done();
@@ -76,7 +76,7 @@ export = {
     const version = new lambda.Version(stack, 'Version', {
       lambda: fn,
       maxEventAge: cdk.Duration.hours(1),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     // THEN
@@ -93,22 +93,22 @@ export = {
 
     // WHEN
     version1.configureAsyncInvoke({
-      retryAttempts: 1
+      retryAttempts: 1,
     });
     version2.configureAsyncInvoke({
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version1',
-      MaximumRetryAttempts: 1
+      MaximumRetryAttempts: 1,
     }));
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version2',
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 0,
     }));
 
     test.done();
@@ -130,16 +130,16 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
       'FunctionName': {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'FunctionVersion': {
         'Fn::GetAtt': [
           'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005',
-          'Version'
-        ]
+          'Version',
+        ],
       },
-      'Name': 'foo'
+      'Name': 'foo',
     }));
     test.done();
-  }
+  },
 };

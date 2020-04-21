@@ -65,7 +65,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: this.physicalName,
-      computePlatform: 'Lambda'
+      computePlatform: 'Lambda',
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
