@@ -1,3 +1,2 @@
-export * from './bootstrap-environment-legacy';
+export * from './bootstrap-environment';
 export * from './bootstrap-props';
-export * from './bootstrap-environment2';

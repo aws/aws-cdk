@@ -4,7 +4,15 @@ jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
-import { bootstrapEnvironment2 } from '../../lib/api/bootstrap/bootstrap-environment2';
+jest.mock('../../lib/api/toolkit-info', () => ({
+  // Pretend there's no toolkit deployed yet
+  DEFAULT_TOOLKIT_STACK_NAME: 'CDKToolkit',
+  ToolkitInfo: {
+    lookup: () => undefined,
+  }
+}));
+
+import { bootstrapEnvironment2 } from '../../lib/api/bootstrap';
 import { MockSdkProvider } from '../util/mock-sdk';
 
 describe('Bootstrapping v2', () => {

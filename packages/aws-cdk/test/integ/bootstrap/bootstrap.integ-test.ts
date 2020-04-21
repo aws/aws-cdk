@@ -4,7 +4,7 @@ import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { bootstrapEnvironment, deployStack, destroyStack, ISDK, Mode, SdkProvider, ToolkitInfo } from '../../../lib/api';
-import { bootstrapEnvironment2 } from '../../../lib/api/bootstrap/bootstrap-environment2';
+import { bootstrapEnvironment2 } from '../../../lib/api/bootstrap';
 import { ExampleAsset, MyTestCdkStack } from './example-cdk-app/my-test-cdk-stack';
 
 jest.setTimeout(600_000);
