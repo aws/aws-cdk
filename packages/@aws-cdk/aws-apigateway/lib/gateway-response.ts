@@ -16,12 +16,6 @@ export interface GatewayResponseProps extends GatewayResponseOptions {
    * Rest api resource to target.
    */
   readonly restApi: IRestApi;
-
-  /**
-   * Name of the gateway response.
-   * @default - Auto generated
-   */
-  readonly gatewayResponseName?: string;
 }
 
 /**
@@ -63,9 +57,7 @@ export interface GatewayResponseOptions {
  */
 export class GatewayResponse extends Resource implements IGatewayResponse {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
-    super(scope, id, {
-      physicalName: props.gatewayResponseName,
-    });
+    super(scope, id);
 
     const resource = new CfnGatewayResponse(this, 'Resource', {
       restApiId: props.restApi.restApiId,
@@ -141,7 +133,7 @@ export class ResponseType {
   /**
    * The gateway response for an integration timed out error.
    */
-  public static readonly INTEGRATION_TIMEOUT_RESPONSE = new ResponseType('INTEGRATION_TIMEOUT');
+  public static readonly INTEGRATION_TIMEOUT = new ResponseType('INTEGRATION_TIMEOUT');
 
   /**
    * The gateway response for an invalid API key submitted for a method requiring an API key.
