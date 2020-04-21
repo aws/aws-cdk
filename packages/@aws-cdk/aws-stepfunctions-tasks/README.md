@@ -1,4 +1,4 @@
-# Tasks for AWS CloudWatch StepFunctions
+# Tasks for AWS Step Functions
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -9,4 +9,115 @@
 ---
 <!--END STABILITY BANNER-->
 
-See the README of the `@aws-cdk/aws-stepfunctions` library.
+[AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html) is a web service that enables you to coordinate the
+components of distributed applications and microservices using visual workflows.
+You build applications from individual components that each perform a discrete
+function, or task, allowing you to scale and change applications quickly.
+
+A [Task](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-task-state.html) state represents a single unit of work performed by a state machine. All work in your state
+machine is performed by tasks.
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+## Table Of Contents
+
+- [Task](#task)
+  - [Parameters](#task-parameters-from-the-state-json)
+  - [Lambda](#lambda)
+
+### Task
+
+A `Task` represents some work that needs to be done. In the CDK, the exact work to be
+done is determine by a class that implements `IStepFunctionsTask`.
+
+AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
+actions, and coordinate executions directly from the Amazon States Language in
+Step Functions. You can directly call and pass parameters to the APIs of those
+services.
+
+#### Task parameters from the state JSON
+
+Many tasks take parameters. Parameter values can either be supplied
+directly in the workflow definition (by specifying their values), or at
+runtime by passing a value obtained from the static functions on `Data`,
+such as `Data.stringAt()`.
+
+If so, the value is taken from the indicated location in the state JSON,
+similar to (for example) `inputPath`.
+
+#### Lambda
+
+Step Functions supports calling [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) on a Lambda function.
+
+You can specify the input to your Lambda function through the `payload` attribute.
+By default, no payload is specified so Step Functions invokes Lambda with the empty
+object `{ }` as input.
+
+The following snippet invokes a Lambda Function with the task context as the input
+by referencing the `$` path.
+
+```ts
+new sfn.Task(this, 'Invoke with task context', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromDataAt('$'),
+  }),
+});
+```
+
+When a function is invoked, the Lambda service sends back the following
+[response elements](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseElements)
+
+⚠️ The response from the Lambda function is in an attribute called `Payload`
+
+The following snippet invokes a Lambda Function by referencing the `$.Payload` path
+to reference the output of a Lambda executed before it.
+
+```ts
+new sfn.Task(this, 'Invoke with task context', {
+  task: new tasks.RunLambdaTask(myLambda),
+});
+
+new sfn.Task(this, 'Invoke with output from another Lambda', {
+  task: new tasks.RunLambdaTask(myOtherLambda, {
+    payload: sfn.TaskInput.fromDataAt('$.Payload'),
+  }),
+});
+```
+
+The following snippet invokes a Lambda and sets the task output to only include
+the Lambda function response.
+
+```ts
+new sfn.Task(this, 'Invoke and set function response as task output', {
+  task: new tasks.RunLambdaTask(checkJobStateLambda, {
+    payload: sfn.TaskInput.fromDataAt('$'),
+  }),
+  outputPath: '$.Payload',
+});
+```
+
+You can have Step Functions pause a task, and wait for an external process to
+return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
+
+To use the callback pattern, set the `token` property on the task and have the
+Lambda function Lambda function call the Step Functions API `SendTaskSuccess`
+or `SendTaskFailure` API with the token to indicate that the task has completed
+and the state machine should resume execution.
+
+The following snippet invokes a Lambda with the task token as part of the input
+to the Lambda.
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke with callback', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken,
+        input: sfn.TaskInput.fromDataAt('$.someField'),
+      }
+    })
+  });
+```
+
+⚠️ The Lambda function should call `SendTaskSuccess` or `SendTaskFailure` with the
+token provided as input or the State Machine will not resume.
