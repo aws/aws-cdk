@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.FluentdLogDriver({
-        tag: 'hello'
+        tag: 'hello',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
-              tag: 'hello'
-            }
-          }
-        }
-      ]
+              tag: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.FluentdLogDriver(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -55,10 +55,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'fluentd'
-          }
-        }
-      ]
+            LogDriver: 'fluentd',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -79,16 +79,16 @@ export = {
         labels: [
           'one',
           'two',
-          'three'
+          'three',
         ],
         env: [
           'one',
           'two',
-          'three'
+          'three',
         ],
-        envRegex: '[0-9]{1}'
+        envRegex: '[0-9]{1}',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -107,11 +107,11 @@ export = {
               'tag': 'my-tag',
               'labels': 'one,two,three',
               'env': 'one,two,three',
-              'env-regex': '[0-9]{1}'
-            }
-          }
-        }
-      ]
+              'env-regex': '[0-9]{1}',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -122,7 +122,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.fluentd(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -130,10 +130,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'fluentd'
-          }
-        }
-      ]
+            LogDriver: 'fluentd',
+          },
+        },
+      ],
     }));
 
     test.done();

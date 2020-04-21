@@ -216,13 +216,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
       this.sqsQueue = props.queue;
     } else {
       this.deadLetterQueue = new Queue(this, 'EcsProcessingDeadLetterQueue', {
-        retentionPeriod: props.retentionPeriod || Duration.days(14)
+        retentionPeriod: props.retentionPeriod || Duration.days(14),
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
         deadLetterQueue: {
           queue: this.deadLetterQueue,
-          maxReceiveCount: props.maxReceiveCount || 3
-        }
+          maxReceiveCount: props.maxReceiveCount || 3,
+        },
       });
 
       new CfnOutput(this, 'SQSDeadLetterQueue', { value: this.deadLetterQueue.queueName });
@@ -269,7 +269,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
-      scalingSteps: this.scalingSteps
+      scalingSteps: this.scalingSteps,
     });
   }
 

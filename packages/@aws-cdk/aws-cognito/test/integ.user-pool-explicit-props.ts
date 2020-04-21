@@ -76,7 +76,7 @@ const cognitoDomain = userpool.addDomain('myuserpooldomain', {
 });
 
 new CfnOutput(stack, 'userpoolId', {
-  value: userpool.userPoolId
+  value: userpool.userPoolId,
 });
 
 new CfnOutput(stack, 'cognitoDomainName', {

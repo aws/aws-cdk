@@ -38,7 +38,7 @@ export default class CodeGenerator {
 
     const meta = {
       generated: new Date(),
-      fingerprint: spec.Fingerprint
+      fingerprint: spec.Fingerprint,
     };
 
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
@@ -161,7 +161,7 @@ export default class CodeGenerator {
         propName,
         spec: propSpec,
         additionalDocs: quoteCode(additionalDocs)},
-      container
+      container,
       );
       propertyMap[propName] = newName;
     });

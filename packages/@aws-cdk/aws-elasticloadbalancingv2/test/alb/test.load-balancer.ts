@@ -25,7 +25,7 @@ export = {
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
         { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
       ],
-      Type: 'application'
+      Type: 'application',
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
-      ]
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -68,7 +68,7 @@ export = {
         { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
         { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
       ],
-      Type: 'application'
+      Type: 'application',
     }));
 
     test.done();
@@ -92,17 +92,17 @@ export = {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
-          Value: 'true'
+          Value: 'true',
         },
         {
           Key: 'routing.http2.enabled',
-          Value: 'false'
+          Value: 'false',
         },
         {
           Key: 'idle_timeout.timeout_seconds',
-          Value: '1000'
-        }
-      ]
+          Value: '1000',
+        },
+      ],
     }));
 
     test.done();
@@ -125,12 +125,12 @@ export = {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
-          Value: 'true'
+          Value: 'true',
         },
         {
           Key: 'access_logs.s3.bucket',
-          Value: { Ref: 'AccessLoggingBucketA6D88F29' }
-        }
+          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+        },
       ],
     }));
 
@@ -145,16 +145,16 @@ export = {
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']]
-            }
-          }
-        ]
-      }
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+        ],
+      },
     }));
 
     // verify the ALB depends on the bucket *and* the bucket policy
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29']
+      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -176,16 +176,16 @@ export = {
       LoadBalancerAttributes: [
         {
           Key: 'access_logs.s3.enabled',
-          Value: 'true'
+          Value: 'true',
         },
         {
           Key: 'access_logs.s3.bucket',
-          Value: { Ref: 'AccessLoggingBucketA6D88F29' }
+          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
         {
           Key: 'access_logs.s3.prefix',
-          Value: 'prefix-of-access-logs'
-        }
+          Value: 'prefix-of-access-logs',
+        },
       ],
     }));
 
@@ -200,11 +200,11 @@ export = {
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']]
-            }
-          }
-        ]
-      }
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -244,7 +244,7 @@ export = {
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
       test.deepEqual(stack.resolve(metric.dimensions), {
-        LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
+        LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
       });
     }
 
@@ -259,12 +259,12 @@ export = {
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
       loadBalancerName: 'myLoadBalancer',
-      vpc
+      vpc,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Name: 'myLoadBalancer'
+      Name: 'myLoadBalancer',
     }));
     test.done();
   },

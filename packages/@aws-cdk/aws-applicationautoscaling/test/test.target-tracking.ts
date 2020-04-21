@@ -22,8 +22,8 @@ export = {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
-        TargetValue: 30
-      }
+        TargetValue: 30,
+      },
 
     }));
 
@@ -46,8 +46,8 @@ export = {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
-        TargetValue: 0.9
-      }
+        TargetValue: 0.9,
+      },
 
     }));
 
@@ -72,13 +72,13 @@ export = {
         CustomizedMetricSpecification: {
           MetricName: 'Metric',
           Namespace: 'Test',
-          Statistic: 'Average'
+          Statistic: 'Average',
         },
-        TargetValue: 30
-      }
+        TargetValue: 30,
+      },
 
     }));
 
     test.done();
-  }
+  },
 };

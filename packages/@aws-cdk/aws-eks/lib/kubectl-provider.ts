@@ -30,14 +30,14 @@ export class KubectlProvider extends NestedStack {
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
-      onEventHandler: handler
+      onEventHandler: handler,
     });
 
     this.role = handler.role!;
 
     this.role.addToPolicy(new iam.PolicyStatement({
       actions: [ 'eks:DescribeCluster' ],
-      resources: [ '*' ]
+      resources: [ '*' ],
     }));
   }
 }

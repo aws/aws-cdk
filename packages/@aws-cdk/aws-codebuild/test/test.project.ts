@@ -25,8 +25,8 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: 'hello.yml'
-      }
+        BuildSpec: 'hello.yml',
+      },
     }));
 
     test.done();
@@ -38,14 +38,14 @@ export = {
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
-      buildSpec: codebuild.BuildSpec.fromObject({ phases: ['say hi'] })
+      buildSpec: codebuild.BuildSpec.fromObject({ phases: ['say hi'] }),
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: '{\n  "phases": [\n    "say hi"\n  ]\n}',
-      }
+      },
     }));
 
     test.done();
@@ -87,7 +87,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
-        })
+        }),
       });
 
       // THEN
@@ -97,7 +97,7 @@ export = {
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: true,
           GitCloneDepth: 3,
-        }
+        },
       }));
 
       test.done();
@@ -113,7 +113,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           branchOrRef: 'testbranch',
-        })
+        }),
       });
 
       // THEN
@@ -134,7 +134,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           reportBuildStatus: false,
-        })
+        }),
       });
 
       // THEN
@@ -157,7 +157,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           webhook: true,
-        })
+        }),
       });
 
       // THEN
@@ -258,7 +258,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           branchOrRef: 'testbranch',
-        })
+        }),
       });
 
       // THEN
@@ -302,8 +302,8 @@ export = {
         path: 'path',
       }),
       cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
-        prefix: 'cache-prefix'
-      })
+        prefix: 'cache-prefix',
+      }),
     });
 
     // THEN
@@ -315,12 +315,12 @@ export = {
             '/',
             [
               {
-                'Ref': 'Bucket83908E77'
+                'Ref': 'Bucket83908E77',
               },
-              'cache-prefix'
-            ]
-          ]
-        }
+              'cache-prefix',
+            ],
+          ],
+        },
       },
     }));
 
@@ -336,10 +336,10 @@ export = {
       source: codebuild.Source.s3({
         bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
-        version: 's3version'
+        version: 's3version',
       }),
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-        codebuild.LocalCacheMode.SOURCE)
+        codebuild.LocalCacheMode.SOURCE),
     });
 
     // THEN
@@ -361,7 +361,7 @@ export = {
         path: 'path',
       }),
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-        codebuild.LocalCacheMode.SOURCE)
+        codebuild.LocalCacheMode.SOURCE),
     });
 
     // THEN
@@ -371,8 +371,8 @@ export = {
         Modes: [
           'LOCAL_CUSTOM_CACHE',
           'LOCAL_DOCKER_LAYER_CACHE',
-          'LOCAL_SOURCE_CACHE'
-        ]
+          'LOCAL_SOURCE_CACHE',
+        ],
       },
     }));
 
@@ -393,7 +393,7 @@ export = {
 
     // THEN
     expect(stack).to(not(haveResourceLike('AWS::CodeBuild::Project', {
-      Cache: {}
+      Cache: {},
     })));
 
     test.done();
@@ -454,7 +454,7 @@ export = {
     const stack = new cdk.Stack();
 
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
     });
 
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -486,7 +486,7 @@ export = {
     const project = new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.gitHubEnterprise({
         httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
-      })
+      }),
     });
 
     const metric = project.metric('Builds');
@@ -495,5 +495,5 @@ export = {
     test.equal(metric.statistic, 'Average');
 
     test.done();
-  }
+  },
 };
