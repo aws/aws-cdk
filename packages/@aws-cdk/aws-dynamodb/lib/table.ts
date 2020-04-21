@@ -348,7 +348,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly tableStreamArn?: string;
 
-  protected abstract readonly regionalArns: string[];
+  protected readonly regionalArns: string[] = [];
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM
@@ -582,7 +582,6 @@ export class Table extends TableBase {
       public readonly tableName: string;
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
-      protected readonly regionalArns: string[] = [];
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -633,8 +632,6 @@ export class Table extends TableBase {
    * @attribute
    */
   public readonly tableStreamArn: string | undefined;
-
-  protected readonly regionalArns: string[] = [];
 
   private readonly table: CfnTable;
 
