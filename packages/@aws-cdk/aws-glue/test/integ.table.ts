@@ -47,7 +47,7 @@ const avroTable = new glue.Table(stack, 'AVROTable', {
   tableName: 'avro_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Avro,
+  dataFormat: glue.DataFormat.AVRO,
 });
 
 const csvTable = new glue.Table(stack, 'CSVTable', {
@@ -65,7 +65,7 @@ const jsonTable = new glue.Table(stack, 'JSONTable', {
   tableName: 'json_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Json,
+  dataFormat: glue.DataFormat.JSON,
 });
 
 const parquetTable = new glue.Table(stack, 'ParquetTable', {
@@ -74,7 +74,7 @@ const parquetTable = new glue.Table(stack, 'ParquetTable', {
   tableName: 'parquet_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.Parquet,
+  dataFormat: glue.DataFormat.PARQUET,
 });
 
 const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
@@ -85,7 +85,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
     name: 'year',
     type: glue.Schema.SMALL_INT,
   }],
-  dataFormat: glue.DataFormat.Json,
+  dataFormat: glue.DataFormat.JSON,
   encryption: glue.TableEncryption.KMS,
   encryptionKey: new kms.Key(stack, 'MyKey'),
 });
