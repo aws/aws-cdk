@@ -201,7 +201,7 @@ the Lambda function response.
 
 ```ts
 new sfn.Task(this, 'Invoke and set function response as task output', {
-  task: new tasks.RunLambdaTask(checkJobStateLambda, {
+  task: new tasks.RunLambdaTask(myLambda, {
     payload: sfn.TaskInput.fromDataAt('$'),
   }),
   outputPath: '$.Payload',
