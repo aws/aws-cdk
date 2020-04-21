@@ -57,17 +57,17 @@ export class ReplicaProvider extends NestedStack {
           service: 'iam',
           region: '', // IAM is region-less
           resource: 'role',
-          resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication'
+          resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
         })],
-      })
+      }),
     );
 
     // Required for replica table creation
     this.onEventHandler.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['dynamodb:DescribeLimits'],
-        resources: ['*']
-      })
+        resources: ['*'],
+      }),
     );
 
     this.provider = new cr.Provider(this, 'Provider', {

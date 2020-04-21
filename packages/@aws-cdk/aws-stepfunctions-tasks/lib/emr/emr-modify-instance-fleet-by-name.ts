@@ -55,19 +55,19 @@ export class EmrModifyInstanceFleetByName implements sfn.IStepFunctionsTask {
         new iam.PolicyStatement({
           actions: [
             'elasticmapreduce:ModifyInstanceFleet',
-            'elasticmapreduce:ListInstanceFleets'
+            'elasticmapreduce:ListInstanceFleets',
           ],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`]
-        })
+          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        }),
       ],
       parameters: {
         ClusterId: this.props.clusterId,
         InstanceFleetName: this.props.instanceFleetName,
         InstanceFleet: {
           TargetOnDemandCapacity: this.props.targetOnDemandCapacity,
-          TargetSpotCapacity: this.props.targetSpotCapacity
-        }
-      }
+          TargetSpotCapacity: this.props.targetSpotCapacity,
+        },
+      },
     };
   }
 }

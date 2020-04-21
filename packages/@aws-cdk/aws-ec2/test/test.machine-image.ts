@@ -9,7 +9,7 @@ export = {
   'setUp'(cb: () => void) {
     app = new App();
     stack = new Stack(app, 'Stack', {
-      env: { account: '1234', region: 'testregion' }
+      env: { account: '1234', region: 'testregion' },
     });
 
     cb();
@@ -17,7 +17,7 @@ export = {
   'can make and use a Windows image'(test: Test) {
     // WHEN
     const image = new ec2.GenericWindowsImage({
-      testregion: 'ami-1234'
+      testregion: 'ami-1234',
     });
 
     // THEN
@@ -35,7 +35,7 @@ export = {
     const image = new ec2.GenericWindowsImage({
       testregion: 'ami-1234',
     }, {
-      userData: ud
+      userData: ud,
     });
 
     // THEN
@@ -76,11 +76,11 @@ export = {
           filters: {
             'name': [ 'bla*' ],
             'state': [ 'available' ],
-            'image-type': [ 'machine' ]
-          }
+            'image-type': [ 'machine' ],
+          },
         },
-        provider: 'ami'
-      }
+        provider: 'ami',
+      },
     ]);
 
     test.done();

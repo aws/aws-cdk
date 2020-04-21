@@ -74,7 +74,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {
       name: props.name,
       description: props.description,
-      vpc: props.vpc.vpcId
+      vpc: props.vpc.vpcId,
     });
 
     this.namespaceName = props.name;
@@ -98,7 +98,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
-      ...props
+      ...props,
     });
   }
 }

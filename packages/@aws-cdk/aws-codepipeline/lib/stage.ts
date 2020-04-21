@@ -131,7 +131,7 @@ export class Stage implements IStage {
     return validation.validateArtifactBounds('input', action.inputs, action.artifactBounds.minInputs,
       action.artifactBounds.maxInputs, action.category, action.provider)
       .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
-        action.artifactBounds.maxOutputs, action.category, action.provider)
+        action.artifactBounds.maxOutputs, action.category, action.provider),
       );
   }
 

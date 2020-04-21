@@ -94,7 +94,7 @@ export class AwsApi implements events.IRuleTarget {
     } else {
       handler.addToRolePolicy(new iam.PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],
-        resources: ['*']
+        resources: ['*'],
       }));
     }
 
