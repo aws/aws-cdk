@@ -19,7 +19,7 @@ test('Invoke lambda with default magic ARN', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunLambdaTask(fn, {
       payload: sfn.TaskInput.fromObject({
-        foo: 'bar'
+        foo: 'bar',
       }),
       invocationType: tasks.InvocationType.REQUEST_RESPONSE,
       clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
@@ -64,7 +64,7 @@ test('Lambda function can be used in a Task with Task Token', () => {
     task: new tasks.RunLambdaTask(fn, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: sfn.TaskInput.fromObject({
-        token: sfn.Context.taskToken
+        token: sfn.Context.taskToken,
       }),
     }),
   });

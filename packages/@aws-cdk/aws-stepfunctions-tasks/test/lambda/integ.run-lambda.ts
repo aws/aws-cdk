@@ -36,7 +36,7 @@ const checkJobState = new sfn.Task(stack, 'Check the job state', {
   task: new tasks.RunLambdaTask(checkJobStateLambda, {
     payload: sfn.TaskInput.fromDataAt('$.Payload'),
   }),
-  outputPath: '$.Payload'
+  outputPath: '$.Payload',
 });
 
 const isComplete = new sfn.Choice(stack, 'Job Complete?');
@@ -51,7 +51,7 @@ const chain = sfn.Chain.start(submitJob)
   .next(
     isComplete
       .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-      .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+      .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus),
   );
 
 new sfn.StateMachine(stack, 'StateMachine', {
