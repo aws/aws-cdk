@@ -10,5 +10,5 @@ export = {
   'test utc cron, hour and minute'(test: Test) {
     test.equals(autoscaling.Schedule.cron({ hour: '18', minute: '24' }).expressionString, '24 18 * * *');
     test.done();
-  }
+  },
 };

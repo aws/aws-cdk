@@ -164,7 +164,7 @@ export class SdkProvider {
     return  {
       region,
       account,
-      name: cxapi.EnvironmentUtils.format(account, region)
+      name: cxapi.EnvironmentUtils.format(account, region),
     };
   }
 
@@ -298,7 +298,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath)
+      ca: readIfPossible(caBundlePath),
     });
   }
 

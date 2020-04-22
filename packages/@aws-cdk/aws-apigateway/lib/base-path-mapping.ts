@@ -62,7 +62,7 @@ export class BasePathMapping extends Resource {
       basePath: props.basePath,
       domainName: props.domainName.domainName,
       restApiId: props.restApi.restApiId,
-      stage: stage && stage.stageName
+      stage: stage && stage.stageName,
     });
   }
 }

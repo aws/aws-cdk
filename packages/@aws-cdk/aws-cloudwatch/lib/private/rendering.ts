@@ -55,7 +55,7 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
 
     withExpression(expr) {
       options.expression = expr.expression;
-    }
+    },
   });
 
   // Options

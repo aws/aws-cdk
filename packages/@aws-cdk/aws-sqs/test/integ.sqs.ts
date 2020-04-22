@@ -14,7 +14,7 @@ const queue = new Queue(stack, 'Queue', {
 });
 const fifo = new Queue(stack, 'FifoQueue', {
   fifo: true,
-  encryptionMasterKey: new Key(stack, 'EncryptionKey', { removalPolicy: RemovalPolicy.DESTROY })
+  encryptionMasterKey: new Key(stack, 'EncryptionKey', { removalPolicy: RemovalPolicy.DESTROY }),
 });
 
 const role = new Role(stack, 'Role', {

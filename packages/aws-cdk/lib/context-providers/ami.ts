@@ -24,8 +24,8 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({
         Name: key,
-        Values: values
-      }))
+        Values: values,
+      })),
     }).promise();
 
     const images = [...response.Images || []].filter(i => i.ImageId !== undefined);

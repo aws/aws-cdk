@@ -30,12 +30,7 @@
   "cdk-build": {
     "pre": [
       "npm run gen"
-    ],
-    "eslint": {
-      "ignore-pattern": [
-        "lib/built-ins.generated.ts"
-      ]
-    }
+    ]
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",
@@ -87,6 +82,7 @@
     "node": ">= 10.12.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",

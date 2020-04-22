@@ -221,7 +221,7 @@ export = {
     test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
     test.deepEqual(asgResource.testProperties().tags, [
       {key: 'aspects', value: 'rule', propagateAtLaunch: true},
-      {key: 'cfn', value: 'is cool', propagateAtLaunch: true}
+      {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
     ]);
     test.deepEqual(mapTaggable.testProperties().tags, {
       aspects: 'rule',

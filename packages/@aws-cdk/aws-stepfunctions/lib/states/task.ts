@@ -176,7 +176,7 @@ export class Task extends State implements INextable {
       metricName,
       dimensions: this.taskProps.metricDimensions,
       statistic: 'sum',
-      ...props
+      ...props,
     }).attachTo(this);
   }
 

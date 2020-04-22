@@ -137,7 +137,7 @@ export class CloudFormationDeployments {
       tags: options.tags,
       execute: options.execute,
       force: options.force,
-      parameters: options.parameters
+      parameters: options.parameters,
     });
   }
 

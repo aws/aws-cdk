@@ -28,7 +28,7 @@ describe('Bootstrapping', () => {
     sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
       httpOptions: {
         userAgent: 'aws-cdk-bootstrap-integ-test',
-      }
+      },
     });
     sdk = await sdkProvider.forEnvironment(env, Mode.ForWriting);
     s3 = sdk.s3();

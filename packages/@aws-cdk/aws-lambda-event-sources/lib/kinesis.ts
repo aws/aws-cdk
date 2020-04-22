@@ -21,11 +21,18 @@ export class KinesisEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${this.stream.node.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.stream.streamArn})
+      this.enrichMappingOptions({eventSourceArn: this.stream.streamArn}),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
     this.stream.grantRead(target);
+
+    // The `grantRead` API provides all the permissions recommended by the Kinesis team for reading a stream.
+    // `DescribeStream` permissions are not required to read a stream as it's covered by the `DescribeStreamSummary`
+    // and `SubscribeToShard` APIs.
+    // The Lambda::EventSourceMapping resource validates against the `DescribeStream` permission. So we add it explicitly.
+    // FIXME This permission can be removed when the event source mapping resource drops it from validation.
+    this.stream.grant(target, 'kinesis:DescribeStream');
   }
 
   /**

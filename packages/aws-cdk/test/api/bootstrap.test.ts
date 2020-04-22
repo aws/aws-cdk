@@ -27,7 +27,7 @@ beforeEach(() => {
         {
           StackStatus: 'CREATE_COMPLETE',
           StackStatusReason: 'It is magic',
-        }
+        },
       ] })),
     createChangeSet: jest.fn((info: CreateChangeSetInput) => {
       changeSetTemplate = fromYAML(info.TemplateBody as string);
@@ -99,7 +99,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
   const ret = await bootstrapEnvironment(env, sdk, {
     toolkitStackName: 'mockStack',
     parameters: {
-      tags: [{ Key: 'Foo', Value: 'Bar' }]
+      tags: [{ Key: 'Foo', Value: 'Bar' }],
     }
   });
 

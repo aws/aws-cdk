@@ -42,7 +42,7 @@ export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environme
     ret.push({
       name: spec,
       account: parts[0],
-      region: parts[1]
+      region: parts[1],
     });
   }
 

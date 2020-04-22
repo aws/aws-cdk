@@ -19,7 +19,7 @@ test('Invoke lambda with function ARN', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeFunction(fn) });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   // THEN
@@ -28,8 +28,8 @@ test('Invoke lambda with function ARN', () => {
       'Fn::Join': ['', [
         '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
         { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
-        '"}}}'
-      ]]
+        '"}}}',
+      ]],
     },
   });
 });
@@ -39,10 +39,10 @@ test('Lambda function payload ends up in Parameters', () => {
     definition: new sfn.Task(stack, 'Task', {
       task: new tasks.InvokeFunction(fn, {
         payload: {
-          foo: sfn.Data.stringAt('$.bar')
-        }
-      })
-    })
+          foo: sfn.Data.stringAt('$.bar'),
+        },
+      }),
+    }),
   });
 
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
@@ -50,8 +50,8 @@ test('Lambda function payload ends up in Parameters', () => {
       'Fn::Join': ['', [
         '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"foo.$":"$.bar"},"Type":"Task","Resource":"',
         { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
-        '"}}}'
-      ]]
+        '"}}}',
+      ]],
     },
   });
 });

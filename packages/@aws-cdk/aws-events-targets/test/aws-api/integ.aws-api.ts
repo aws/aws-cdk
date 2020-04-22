@@ -12,8 +12,8 @@ class AwsApi extends cdk.Stack {
     const scheduleRule = new events.Rule(this, 'ScheduleRule', {
       schedule: events.Schedule.cron({
         hour: '0',
-        minute: '0'
-      })
+        minute: '0',
+      }),
     });
 
     scheduleRule.addTarget(new targets.AwsApi({
@@ -21,7 +21,7 @@ class AwsApi extends cdk.Stack {
       action: 'updateService',
       parameters: {
         service: 'cool-service',
-        forceNewDeployment: true
+        forceNewDeployment: true,
       } as AWS.ECS.UpdateServiceRequest,
     }));
 
@@ -29,7 +29,7 @@ class AwsApi extends cdk.Stack {
       service: 'RDS',
       action: 'stopDBInstance',
       parameters: {
-        DBInstanceIdentifier: 'dev-instance'
+        DBInstanceIdentifier: 'dev-instance',
       } as AWS.RDS.StopDBInstanceMessage,
     }));
 
@@ -38,17 +38,17 @@ class AwsApi extends cdk.Stack {
       eventPattern: {
         detailType: ['RDS DB Instance Event'],
         detail: {
-          Message: ['DB instance restarted']
-        }
-      }
+          Message: ['DB instance restarted'],
+        },
+      },
     });
 
     patternRule.addTarget(new targets.AwsApi({
       service: 'RDS',
       action: 'createDBSnapshot',
       parameters: {
-        DBInstanceIdentifier: events.EventField.fromPath('$.detail.SourceArn')
-      } as AWS.RDS.CreateDBSnapshotMessage
+        DBInstanceIdentifier: events.EventField.fromPath('$.detail.SourceArn'),
+      } as AWS.RDS.CreateDBSnapshotMessage,
     }));
   }
 }

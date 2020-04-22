@@ -193,7 +193,7 @@ export class CdkToolkit {
           tags,
           execute: options.execute,
           force: options.force,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName])
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
         });
 
         const message = result.noOp
@@ -227,7 +227,7 @@ export class CdkToolkit {
           fs.ensureFileSync(outputsFile);
           await fs.writeJson(outputsFile, stackOutputs, {
             spaces: 2,
-            encoding: 'utf8'
+            encoding: 'utf8',
           });
         }
       }
@@ -255,7 +255,7 @@ export class CdkToolkit {
         await this.props.cloudFormation.destroyStack({
           stack,
           deployName: stack.stackName,
-          roleArn: options.roleArn
+          roleArn: options.roleArn,
         });
         success(`\n ✅  %s: ${action}ed`, colors.blue(stack.displayName));
       } catch (e) {
@@ -275,7 +275,7 @@ export class CdkToolkit {
         long.push({
           id: stack.id,
           name: stack.stackName,
-          environment: stack.environment
+          environment: stack.environment,
         });
       }
       return long; // will be YAML formatted output
@@ -386,7 +386,7 @@ export class CdkToolkit {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.OnlySingle
+      defaultBehavior: DefaultSelection.OnlySingle,
     });
 
     await this.validateStacks(stacks);
@@ -398,7 +398,7 @@ export class CdkToolkit {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.AllStacks
+      defaultBehavior: DefaultSelection.AllStacks,
     });
 
     await this.validateStacks(stacks);
@@ -410,7 +410,7 @@ export class CdkToolkit {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
-      defaultBehavior: DefaultSelection.OnlySingle
+      defaultBehavior: DefaultSelection.OnlySingle,
     });
 
     // No validation
@@ -425,7 +425,7 @@ export class CdkToolkit {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
-      verbose: this.props.verbose
+      verbose: this.props.verbose,
     });
   }
 
@@ -437,7 +437,7 @@ export class CdkToolkit {
 
     const stacks = await assembly.selectStacks([stackName], {
       extend: ExtendedStackSelection.None,
-      defaultBehavior: DefaultSelection.None
+      defaultBehavior: DefaultSelection.None,
     });
 
     // Could have been a glob so check that we evaluated to exactly one

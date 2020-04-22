@@ -129,8 +129,8 @@ export class S3Code extends Code {
       s3Location: {
         bucketName: this.bucketName,
         objectKey: this.key,
-        objectVersion: this.objectVersion
-      }
+        objectVersion: this.objectVersion,
+      },
     };
   }
 }
@@ -155,7 +155,7 @@ export class InlineCode extends Code {
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      inlineCode: this.code
+      inlineCode: this.code,
     };
   }
 }
@@ -179,7 +179,7 @@ export class AssetCode extends Code {
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
-        ...this.options
+        ...this.options,
       });
     }
 
@@ -190,8 +190,8 @@ export class AssetCode extends Code {
     return {
       s3Location: {
         bucketName: this.asset.s3BucketName,
-        objectKey: this.asset.s3ObjectKey
-      }
+        objectKey: this.asset.s3ObjectKey,
+      },
     };
   }
 
@@ -274,7 +274,7 @@ export class CfnParametersCode extends Code {
       s3Location: {
         bucketName: this._bucketNameParam.valueAsString,
         objectKey: this._objectKeyParam.valueAsString,
-      }
+      },
     };
   }
 
