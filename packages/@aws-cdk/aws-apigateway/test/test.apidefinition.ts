@@ -15,8 +15,7 @@ export = {
         /too large, must be <= 4096 but is 4097/);
       test.throws(
         () => defineRestApi(apigw.APIDefinition.fromInline('')),
-        /cannot be empty/
-      );
+        /cannot be empty/);
       test.done();
     },
   },
@@ -37,12 +36,12 @@ export = {
       const directoryAsset = apigw.APIDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
 
       // WHEN
-      new apigw.RestApi(stack, 'API1', {
-        apiDefinition: directoryAsset
+      new apigw.APIDefinitionRestApi(stack, 'API1', {
+        apiDefinition: directoryAsset,
       });
 
-      new apigw.RestApi(stack, 'API2', {
-        apiDefinition: directoryAsset
+      new apigw.APIDefinitionRestApi(stack, 'API2', {
+        apiDefinition: directoryAsset,
       });
 
       // THEN
@@ -62,26 +61,26 @@ export = {
       const definition = apigw.APIDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
 
       // WHEN
-      new apigw.RestApi(stack, 'API1', {
-        apiDefinition: definition
+      new apigw.APIDefinitionRestApi(stack, 'API1', {
+        apiDefinition: definition,
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.b4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58.yaml',
-          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'APIDefinition'
-        }
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'APIDefinition',
+        },
       }, ResourcePart.CompleteDefinition));
       test.done();
-    }
+    },
   },
 
   'apigateway.APIDefinition.fromCfnParameters': {
     "automatically creates the Bucket and Key parameters when it's used in a Rest API"(test: Test) {
       const stack = new cdk.Stack();
       const definition = new apigw.CfnParametersAPIDefinition();
-      new apigw.RestApi(stack, 'API', {
+      new apigw.APIDefinitionRestApi(stack, 'API', {
         apiDefinition: definition,
       });
 
@@ -134,8 +133,8 @@ export = {
       test.equal(stack.resolve(definition.bucketNameParam), 'BucketNameParam');
       test.equal(stack.resolve(definition.objectKeyParam), 'ObjectKeyParam');
 
-      new apigw.RestApi(stack, 'API', {
-        apiDefinition: definition
+      new apigw.APIDefinitionRestApi(stack, 'API', {
+        apiDefinition: definition,
       });
 
       expect(stack).to(haveResourceLike('AWS::ApiGateway::RestApi', {
@@ -181,8 +180,8 @@ export = {
 
 function defineRestApi(definition: apigw.APIDefinition) {
   const stack = new cdk.Stack();
-  return new apigw.RestApi(stack, 'API', {
-    apiDefinition: definition
+  return new apigw.APIDefinitionRestApi(stack, 'API', {
+    apiDefinition: definition,
   });
 }
 

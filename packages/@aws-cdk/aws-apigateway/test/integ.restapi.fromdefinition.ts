@@ -6,8 +6,8 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'test-apigateway-restapi-fromdefinition');
 
-new apigateway.RestApi(stack, 'my-api', {
-  apiDefinition: apigateway.APIDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'))
+new apigateway.APIDefinitionRestApi(stack, 'my-api', {
+  apiDefinition: apigateway.APIDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
 });
 
 app.synth();

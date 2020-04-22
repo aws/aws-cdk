@@ -110,8 +110,8 @@ export class S3APIDefinition extends APIDefinition {
       s3Location: {
         bucket: this.bucketName,
         key: this.key,
-        version: this.objectVersion
-      }
+        version: this.objectVersion,
+      },
     };
   }
 }
@@ -136,7 +136,7 @@ export class InlineAPIDefinition extends APIDefinition {
 
   public bind(_scope: cdk.Construct): APIDefinitionConfig {
     return {
-      inlineDefinition: this.definition
+      inlineDefinition: this.definition,
     };
   }
 }
@@ -160,7 +160,7 @@ export class AssetAPIDefinition extends APIDefinition {
     if (this.asset === undefined) {
       this.asset = new s3_assets.Asset(scope, 'APIDefinition', {
         path: this.path,
-        ...this.options
+        ...this.options,
       });
     }
 
@@ -171,8 +171,8 @@ export class AssetAPIDefinition extends APIDefinition {
     return {
       s3Location: {
         bucket: this.asset?.s3BucketName,
-        key: this.asset?.s3ObjectKey
-      }
+        key: this.asset?.s3ObjectKey,
+      },
     };
   }
 
@@ -258,7 +258,7 @@ export class CfnParametersAPIDefinition extends APIDefinition {
       s3Location: {
         bucket: this._bucketNameParam.valueAsString,
         key: this._objectKeyParam.valueAsString,
-      }
+      },
     };
   }
 
