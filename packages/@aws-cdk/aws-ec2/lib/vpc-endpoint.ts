@@ -483,8 +483,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       dummyValue: this.stack.availabilityZones,
       props: {serviceName},
     }).value;
-    if (!Array.isArray(availableAZs) || availableAZs.every(az => typeof az === 'string')) {
-      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be a string[]`);
+    if (!Array.isArray(availableAZs)) {
+      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);
     }
     return availableAZs;
   }
