@@ -431,7 +431,7 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    // image scan on push custom resource
+    // image scanOnPush
     if (props.imageScanOnPush) {
       new cr.AwsCustomResource(this, 'ImageScanOnPush', {
         resourceType: 'Custom::ECRImageScanOnPush',
