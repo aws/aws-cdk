@@ -36,7 +36,7 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
   private attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.LAMBDA,
-      targetJson: { id: this.fn.functionArn }
+      targetJson: { id: this.fn.functionArn },
     };
   }
 }

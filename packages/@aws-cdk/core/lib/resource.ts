@@ -132,7 +132,7 @@ export abstract class Resource extends Construct implements IResource {
         } else {
           return nameAttr;
         }
-      }
+      },
     });
   }
 
@@ -164,7 +164,7 @@ export abstract class Resource extends Construct implements IResource {
         } else {
           return arnAttr;
         }
-      }
+      },
     });
   }
 }

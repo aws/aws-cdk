@@ -15,7 +15,7 @@ export class SnsDlq implements IEventSourceDlq {
     this.topic.grantPublish(targetHandler);
 
     return {
-      destination: this.topic.topicArn
+      destination: this.topic.topicArn,
     };
   }
 }

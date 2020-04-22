@@ -18,12 +18,12 @@ export = {
             'Type': 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
             'Properties': {
               'CloudFrontOriginAccessIdentityConfig': {
-                'Comment': 'Allows CloudFront to reach the bucket'
-              }
-            }
-          }
-        }
-      }
+                'Comment': 'Allows CloudFront to reach the bucket',
+              },
+            },
+          },
+        },
+      },
     );
 
     test.done();
@@ -32,7 +32,7 @@ export = {
     const stack = new cdk.Stack();
 
     new OriginAccessIdentity(stack, 'OAI', {
-      comment: 'test comment'
+      comment: 'test comment',
     });
 
     expect(stack).toMatch(
@@ -42,12 +42,12 @@ export = {
             'Type': 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
             'Properties': {
               'CloudFrontOriginAccessIdentityConfig': {
-                'Comment': 'test comment'
-              }
-            }
-          }
-        }
-      }
+                'Comment': 'test comment',
+              },
+            },
+          },
+        },
+      },
     );
 
     test.done();
@@ -60,10 +60,10 @@ export = {
 
     test.ok(
       oai.grantPrincipal.policyFragment.principalJson.AWS[0].endsWith(
-        ':iam::cloudfront:user/CloudFront Origin Access Identity OAITest'
-      )
+        ':iam::cloudfront:user/CloudFront Origin Access Identity OAITest',
+      ),
     );
 
     test.done();
-  }
+  },
 };

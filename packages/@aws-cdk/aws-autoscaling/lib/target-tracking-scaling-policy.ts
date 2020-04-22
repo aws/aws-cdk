@@ -136,7 +136,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           resourceLabel: props.resourceLabel,
         } : undefined,
         targetValue: props.targetValue,
-      }
+      },
     });
 
     this.scalingPolicyArn = this.resource.ref;

@@ -15,7 +15,27 @@ access data, business logic, or functionality from your back-end services, such
 as applications running on Amazon Elastic Compute Cloud (Amazon EC2), code
 running on AWS Lambda, or any web application.
 
-### Defining APIs
+## Table of Contents
+
+- [Defining APIs](#defining-apis)
+- [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
+- [Integration Targets](#integration-targets)
+- [Working with models](#working-with-models)
+- [Default Integration and Method Options](#default-integration-and-method-options)
+- [Proxy Routes](#proxy-routes)
+- [Authorizers](#authorizers)
+  - [IAM-based authorizer](#iam-based-authorizer)
+  - [Lambda-based token authorizer](#lambda-based-token-authorizer)
+  - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+- [Deployments](#deployments)
+  - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
+- [Custom Domains](#custom-domains)
+- [Access Logging](#access-logging)
+- [Cross Origin Resource Sharing (CORS)](cross-origin-resource-sharing-cors)
+- [Endpoint Configuration](#endpoint-configuration)
+- [APIGateway v2](#apigateway-v2)
+
+## Defining APIs
 
 APIs are defined as a hierarchy of resources and methods. `addResource` and
 `addMethod` can be used to build this hierarchy. The root resource is
@@ -38,7 +58,7 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
-### AWS Lambda-backed APIs
+## AWS Lambda-backed APIs
 
 A very common practice is to use Amazon API Gateway with AWS Lambda as the
 backend integration. The `LambdaRestApi` construct makes it easy:
@@ -75,7 +95,7 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
-### Integration Targets
+## Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
 method is called. API Gateway supports the following integrations:
@@ -183,7 +203,7 @@ const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
 
 ```
 
-### Working with models
+## Working with models
 
 When you work with Lambda integrations that are not Proxy integrations, you
 have to define your models and mappings for the request, response, and integration.
@@ -342,7 +362,7 @@ resource.addMethod('GET', integration, {
 Specifying `requestValidatorOptions` automatically creates the RequestValidator construct with the given options.
 However, if you have your RequestValidator already initialized or imported, use the `requestValidator` option instead.
 
-#### Default Integration and Method Options
+## Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to
 configure a default integration at any resource level. These options will be
@@ -385,7 +405,7 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-### Proxy Routes
+## Proxy Routes
 
 The `addProxy` method can be used to install a greedy `{proxy+}` resource
 on a path. By default, this also installs an `"ANY"` method:
@@ -399,12 +419,12 @@ const proxy = resource.addProxy({
 });
 ```
 
-### Authorizers
+## Authorizers
 
 API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)
 that can be used for controlling access to your REST APIs.
 
-#### IAM-based authorizer
+### IAM-based authorizer
 
 The following CDK code provides 'execute-api' permission to an IAM user, via IAM policies, for the 'GET' method on the `books` resource:
 
@@ -424,7 +444,7 @@ iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
 }))
 ```
 
-#### Lambda-based token authorizer
+### Lambda-based token authorizer
 
 API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
 
@@ -466,7 +486,7 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
-#### Lambda-based request authorizer
+### Lambda-based request authorizer
 
 This module provides support for request-based Lambda authorizers. When a client makes a request to an API's methods configured with such
 an authorizer, API Gateway calls the Lambda authorizer, which takes specified parts of the request, known as identity sources,
@@ -507,7 +527,7 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
-### Deployments
+## Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway
 [Deployment] and a "prod" [Stage] which represent the API configuration you
@@ -547,7 +567,116 @@ const api = new apigateway.RestApi(this, 'books', {
   }
 })
 ```
-### Access Logging
+
+### Deep dive: Invalidation of deployments
+
+API Gateway deployments are an immutable snapshot of the API. This means that we
+want to automatically create a new deployment resource every time the API model
+defined in our CDK app changes.
+
+In order to achieve that, the AWS CloudFormation logical ID of the
+`AWS::ApiGateway::Deployment` resource is dynamically calculated by hashing the
+API configuration (resources, methods). This means that when the configuration
+changes (i.e. a resource or method are added, configuration is changed), a new
+logical ID will be assigned to the deployment resource. This will cause
+CloudFormation to create a new deployment resource.
+
+By default, old deployments are _deleted_. You can set `retainDeployments: true`
+to allow users revert the stage to an old deployment manually.
+
+[Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
+[Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
+
+## Custom Domains
+
+To associate an API with a custom domain, use the `domainName` configuration when
+you define your API:
+
+```ts
+const api = new apigw.RestApi(this, 'MyDomain', {
+  domainName: {
+    domainName: 'example.com',
+    certificate: acmCertificateForExampleCom,
+  },
+});
+```
+
+This will define a `DomainName` resource for you, along with a `BasePathMapping`
+from the root of the domain to the deployment stage of the API. This is a common
+set up.
+
+To route domain traffic to an API Gateway API, use Amazon Route 53 to create an
+alias record. An alias record is a Route 53 extension to DNS. It's similar to a
+CNAME record, but you can create an alias record both for the root domain, such
+as `example.com`, and for subdomains, such as `www.example.com`. (You can create
+CNAME records only for subdomains.)
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+});
+```
+
+You can also define a `DomainName` resource directly in order to customize the default behavior:
+
+```ts
+new apigw.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
+  securityPolicy: apigw.SecurityPolicy.TLS_1_2
+});
+```
+
+Once you have a domain, you can map base paths of the domain to APIs.
+The following example will map the URL https://example.com/go-to-api1
+to the `api1` API and https://example.com/boom to the `api2` API.
+
+```ts
+domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
+domain.addBasePathMapping(api2, { basePath: 'boom' });
+```
+
+You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
+`deploymentStage` of the `RestApi`. 
+
+```ts
+const betaDeploy = new Deployment(this, 'beta-deployment', {
+  api: restapi,
+});
+const betaStage = new Stage(this, 'beta-stage', {
+  deployment: betaDeploy,
+});
+domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
+```
+
+If you don't specify `basePath`, all URLs under this domain will be mapped
+to the API, and you won't be able to map another API to the same domain:
+
+```ts
+domain.addBasePathMapping(api);
+```
+
+This can also be achieved through the `mapping` configuration when defining the
+domain as demonstrated above.
+
+If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
+
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
+});
+```
+
+## Access Logging
 
 Access logging creates logs everytime an API method is accessed. Access logs can have information on
 who has accessed the API, how the caller accessed the API and what responses were generated.
@@ -649,115 +778,7 @@ const api = new apigateway.RestApi(this, 'books', {
 });
 ```
 
-#### Deeper dive: invalidation of deployments
-
-API Gateway deployments are an immutable snapshot of the API. This means that we
-want to automatically create a new deployment resource every time the API model
-defined in our CDK app changes.
-
-In order to achieve that, the AWS CloudFormation logical ID of the
-`AWS::ApiGateway::Deployment` resource is dynamically calculated by hashing the
-API configuration (resources, methods). This means that when the configuration
-changes (i.e. a resource or method are added, configuration is changed), a new
-logical ID will be assigned to the deployment resource. This will cause
-CloudFormation to create a new deployment resource.
-
-By default, old deployments are _deleted_. You can set `retainDeployments: true`
-to allow users revert the stage to an old deployment manually.
-
-[Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
-[Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
-
-### Custom Domains
-
-To associate an API with a custom domain, use the `domainName` configuration when
-you define your API:
-
-```ts
-const api = new apigw.RestApi(this, 'MyDomain', {
-  domainName: {
-    domainName: 'example.com',
-    certificate: acmCertificateForExampleCom,
-  },
-});
-```
-
-This will define a `DomainName` resource for you, along with a `BasePathMapping`
-from the root of the domain to the deployment stage of the API. This is a common
-set up.
-
-To route domain traffic to an API Gateway API, use Amazon Route 53 to create an
-alias record. An alias record is a Route 53 extension to DNS. It's similar to a
-CNAME record, but you can create an alias record both for the root domain, such
-as `example.com`, and for subdomains, such as `www.example.com`. (You can create
-CNAME records only for subdomains.)
-
-```ts
-import * as route53 from '@aws-cdk/aws-route53';
-import * as targets from '@aws-cdk/aws-route53-targets';
-
-new route53.ARecord(this, 'CustomDomainAliasRecord', {
-  zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
-});
-```
-
-You can also define a `DomainName` resource directly in order to customize the default behavior:
-
-```ts
-new apigw.DomainName(this, 'custom-domain', {
-  domainName: 'example.com',
-  certificate: acmCertificateForExampleCom,
-  endpointType: apigw.EndpointType.EDGE, // default is REGIONAL
-  securityPolicy: apigw.SecurityPolicy.TLS_1_2
-});
-```
-
-Once you have a domain, you can map base paths of the domain to APIs.
-The following example will map the URL https://example.com/go-to-api1
-to the `api1` API and https://example.com/boom to the `api2` API.
-
-```ts
-domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
-domain.addBasePathMapping(api2, { basePath: 'boom' });
-```
-
-You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
-`deploymentStage` of the `RestApi`. 
-
-```ts
-const betaDeploy = new Deployment(this, 'beta-deployment', {
-  api: restapi,
-});
-const betaStage = new Stage(this, 'beta-stage', {
-  deployment: betaDeploy,
-});
-domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
-```
-
-If you don't specify `basePath`, all URLs under this domain will be mapped
-to the API, and you won't be able to map another API to the same domain:
-
-```ts
-domain.addBasePathMapping(api);
-```
-
-This can also be achieved through the `mapping` configuration when defining the
-domain as demonstrated above.
-
-If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
-
-```ts
-import * as route53 from '@aws-cdk/aws-route53';
-import * as targets from '@aws-cdk/aws-route53-targets';
-
-new route53.ARecord(this, 'CustomDomainAliasRecord', {
-  zone: hostedZoneForExampleCom,
-  target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
-});
-```
-
-### Cross Origin Resource Sharing (CORS)
+## Cross Origin Resource Sharing (CORS)
 
 [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a mechanism
 that uses additional HTTP headers to tell browsers to give a web application
@@ -809,7 +830,8 @@ OPTIONS added to them.
 See [#906](https://github.com/aws/aws-cdk/issues/906) for a list of CORS
 features which are not yet supported.
 
-### Endpoint Configuration
+## Endpoint Configuration
+
 API gateway allows you to specify an 
 [API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html). 
 To define an endpoint type for the API gateway, use `endpointConfiguration` property:

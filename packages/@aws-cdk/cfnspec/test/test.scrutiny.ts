@@ -69,5 +69,5 @@ export = {
     test.equals(eRes.ScrutinyType, ResourceScrutinyType.EgressRuleResource);
 
     test.done();
-  }
+  },
 };

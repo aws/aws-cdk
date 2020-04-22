@@ -86,7 +86,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -104,7 +104,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -360,7 +360,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.securityGroupName
+      physicalName: props.securityGroupName,
     });
 
     const groupDescription = props.description || this.node.path;
@@ -395,7 +395,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     });
   }
 
@@ -424,7 +424,7 @@ export class SecurityGroup extends SecurityGroupBase {
     const rule = {
       ...peer.toEgressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     };
 
     if (isAllTrafficRule(rule)) {
@@ -518,7 +518,7 @@ const MATCH_NO_TRAFFIC = {
   description: 'Disallow all traffic',
   ipProtocol: 'icmp',
   fromPort: 252,
-  toPort: 86
+  toPort: 86,
 };
 
 /**

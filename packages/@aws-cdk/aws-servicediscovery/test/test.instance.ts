@@ -21,7 +21,7 @@ export = {
     service.registerIpInstance('IpInstance', {
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
-      port: 443
+      port: 443,
     });
 
     // THEN
@@ -29,15 +29,15 @@ export = {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
-        AWS_INSTANCE_PORT: '443'
+        AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -53,13 +53,13 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
     });
 
     service.registerIpInstance('IpInstance', {
       ipv4: '54.239.25.192',
       ipv6: '0:0:0:0:0:ffff:a00:0',
-      port: 443
+      port: 443,
     });
 
     // THEN
@@ -67,15 +67,15 @@ export = {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '54.239.25.192',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
-        AWS_INSTANCE_PORT: '443'
+        AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -88,18 +88,18 @@ export = {
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'public',
-      vpc
+      vpc,
     });
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
     });
 
     service.registerIpInstance('IpInstance', {
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
-      port: 443
+      port: 443,
     });
 
     // THEN
@@ -107,15 +107,15 @@ export = {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
-        AWS_INSTANCE_PORT: '443'
+        AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     }));
 
     test.done();
@@ -131,7 +131,7 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.SRV
+      dnsRecordType: servicediscovery.DnsRecordType.SRV,
     });
 
     // THEN
@@ -154,13 +154,13 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.SRV
+      dnsRecordType: servicediscovery.DnsRecordType.SRV,
     });
 
     // THEN
     test.throws(() => {
       service.registerIpInstance('IpInstance', {
-        port: 3306
+        port: 3306,
       });
     }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
 
@@ -177,13 +177,13 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.A
+      dnsRecordType: servicediscovery.DnsRecordType.A,
     });
 
     // THEN
     test.throws(() => {
       service.registerIpInstance('IpInstance', {
-        port: 3306
+        port: 3306,
       });
     }, /An `ipv4` must be specified for a service using a `A` record./);
 
@@ -200,13 +200,13 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.AAAA
+      dnsRecordType: servicediscovery.DnsRecordType.AAAA,
     });
 
     // THEN
     test.throws(() => {
       service.registerIpInstance('IpInstance', {
-        port: 3306
+        port: 3306,
       });
     }, /An `ipv6` must be specified for a service using a `AAAA` record./);
 
@@ -223,13 +223,13 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.CNAME
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME,
     });
 
     // THEN
     test.throws(() => {
       service.registerIpInstance('IpInstance', {
-        port: 3306
+        port: 3306,
       });
     }, /Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
 
@@ -245,7 +245,7 @@ export = {
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      vpc
+      vpc,
     });
 
     const service = namespace.createService('MyService', {
@@ -262,18 +262,18 @@ export = {
         AWS_ALIAS_DNS_NAME: {
           'Fn::GetAtt': [
             'MyALB911A8556',
-            'DNSName'
-          ]
+            'DNSName',
+          ],
         },
-        foo: 'bar'
+        foo: 'bar',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76'
+      InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76',
     }));
 
     test.done();
@@ -312,7 +312,7 @@ export = {
     });
 
     const service = namespace.createService('MyService', {
-      routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE
+      routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
     });
 
     const vpc = new ec2.Vpc(stack, 'MyVPC');
@@ -335,27 +335,27 @@ export = {
     });
 
     const service = namespace.createService('MyService', {
-      dnsRecordType: servicediscovery.DnsRecordType.CNAME
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME,
     });
 
     service.registerCnameInstance('CnameInstance', {
       instanceCname: 'foo.com',
-      customAttributes: { dogs: 'good' }
+      customAttributes: { dogs: 'good' },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_CNAME: 'foo.com',
-        dogs: 'good'
+        dogs: 'good',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D'
+      InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D',
     }));
 
     test.done();
@@ -394,21 +394,21 @@ export = {
     const service = namespace.createService('MyService');
 
     service.registerNonIpInstance('NonIpInstance', {
-      customAttributes: { dogs: 'good' }
+      customAttributes: { dogs: 'good' },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        dogs: 'good'
+        dogs: 'good',
       },
       ServiceId: {
         'Fn::GetAtt': [
           'MyNamespaceMyService365E2470',
-          'Id'
-        ]
+          'Id',
+        ],
       },
-      InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A'
+      InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
     }));
 
     test.done();
@@ -468,7 +468,7 @@ export = {
     test.throws(() => {
       service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
-        customAttributes: {}
+        customAttributes: {},
       });
     }, /You must specify at least one custom attribute for this instance type./);
 
@@ -487,16 +487,16 @@ export = {
 
     // WHEN
     service.registerIpInstance('First', {
-      ipv4: '10.0.0.0'
+      ipv4: '10.0.0.0',
     });
 
     service.registerIpInstance('Second', {
-      ipv4: '10.0.0.1'
+      ipv4: '10.0.0.1',
     });
 
     // THEN
     expect(stack).to(countResources('AWS::ServiceDiscovery::Instance', 2));
 
     test.done();
-  }
+  },
 };

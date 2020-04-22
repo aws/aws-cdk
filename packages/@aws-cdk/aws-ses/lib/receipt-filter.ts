@@ -59,7 +59,7 @@ export class ReceiptFilter extends Resource {
           policy: props.policy || ReceiptFilterPolicy.BLOCK,
         },
         name: this.physicalName,
-      }
+      },
     });
   }
 }
@@ -86,7 +86,7 @@ export class WhiteListReceiptFilter extends Construct {
     props.ips.forEach(ip => {
       new ReceiptFilter(this, `Allow${ip.replace(/[^\d]/g, '')}`, {
         ip,
-        policy: ReceiptFilterPolicy.ALLOW
+        policy: ReceiptFilterPolicy.ALLOW,
       });
     });
   }
