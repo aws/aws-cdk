@@ -40,6 +40,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Cancel Step](#cancel-step)
     - [Modify Instance Fleet](#modify-instance-fleet)
     - [Modify Instance Group](#modify-instance-group)
+  - [Evaluate Expression](#evaluate-expression)
   - [Glue](#glue)
   - [Lambda](#lambda)
   - [SageMaker](#sagemaker)
@@ -364,6 +365,49 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
+#### Evaluate Expression
+
+Use the `EvaluateExpression` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows you to not have to write Lambda code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
+
+```ts
+const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
+  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
+  resultPath: '$.waitSeconds'
+});
+
+const createMessage = new sfn.Task(this, 'Create message', {
+  // Note: this is a string inside a string.
+  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
+  resultPath: '$.message'
+});
+
+const publishMessage = new sfn.Task(this, 'Publish message', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromDataAt('$.message'),
+  }),
+  resultPath: '$.sns'
+});
+
+const wait = new sfn.Wait(this, 'Wait', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+});
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definition: convertToSeconds
+    .next(createMessage)
+    .next(publishMessage)
+    .next(wait)
+});
+```
+
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
+runtime to use to evaluate the expression. Currently, the only runtime
+supported is `lambda.Runtime.NODEJS_10_X`.
+
 #### Glue
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
 
@@ -383,13 +427,13 @@ new sfn.Task(stack, 'Task', {
 
 #### Lambda
 
-Step Functions supports calling [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) on a Lambda function.
+[Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
 
 You can specify the input to your Lambda function through the `payload` attribute.
 By default, no payload is specified so Step Functions invokes Lambda with the empty
 object `{ }` as input.
 
-The following snippet invokes a Lambda Function with the task context as the input
+The following snippet invokes a Lambda Function with the state input as the payload
 by referencing the `$` path.
 
 ```ts
@@ -409,11 +453,11 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
-new sfn.Task(this, 'Invoke with task context', {
+new sfn.Task(this, 'Invoke with empty payload', {
   task: new tasks.RunLambdaTask(myLambda),
 });
 
-new sfn.Task(this, 'Invoke with output from another Lambda', {
+new sfn.Task(this, 'Invoke with payload field in the state input', {
   task: new tasks.RunLambdaTask(myOtherLambda, {
     payload: sfn.TaskInput.fromDataAt('$.Payload'),
   }),
@@ -425,7 +469,7 @@ the Lambda function response.
 
 ```ts
 new sfn.Task(this, 'Invoke and set function response as task output', {
-  task: new tasks.RunLambdaTask(checkJobStateLambda, {
+  task: new tasks.RunLambdaTask(myLambda, {
     payload: sfn.TaskInput.fromDataAt('$'),
   }),
   outputPath: '$.Payload',
@@ -435,28 +479,27 @@ new sfn.Task(this, 'Invoke and set function response as task output', {
 You can have Step Functions pause a task, and wait for an external process to
 return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
 
-To use the callback pattern, set the `token` property on the task and have the
-Lambda function Lambda function call the Step Functions API `SendTaskSuccess`
-or `SendTaskFailure` API with the token to indicate that the task has completed
-and the state machine should resume execution.
+To use the callback pattern, set the `token` property on the task. Call the Step
+Functions `SendTaskSuccess` or `SendTaskFailure` APIs with the token to
+indicate that the task has completed and the state machine should resume execution.
 
 The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
-const task = new sfn.Task(stack, 'Invoke with callback', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    payload: {
-      token: sfn.Context.taskToken,
-      input: sfn.TaskInput.fromDataAt('$.someField'),
-    },
-  }),
-});
+  const task = new sfn.Task(stack, 'Invoke with callback', {
+    task: new tasks.RunLambdaTask(myLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      payload: {
+        token: sfn.Context.taskToken,
+        input: sfn.TaskInput.fromDataAt('$.someField'),
+      }
+    })
+  });
 ```
 
-⚠️ The Lambda function should call `SendTaskSuccess` or `SendTaskFailure` with the
-token provided as input or the State Machine will not resume.
+⚠️ The task will pause until it receives that task token back with a SendTaskSuccess or SendTaskFailure call.
+Read [more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token)
 
 #### SageMaker
 
@@ -538,10 +581,29 @@ Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
-new sfn.Task(stack, 'Publish', {
-  task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromText('Publish this message'),
-  }),
+import sns = require('@aws-cdk/aws-sns');
+
+// ...
+
+const topic = new sns.Topic(this, 'Topic');
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Publish1', {
+    task: new tasks.PublishToTopic(topic, {
+        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+        message: TaskInput.fromDataAt('$.state.message'),
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Publish2', {
+    task: new tasks.PublishToTopic(topic, {
+        message: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        })
+    })
 });
 ```
 
@@ -553,8 +615,31 @@ You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueServi
 to send a message to an SQS queue.
 
 ```ts
-new tasks.SendToQueue(queue, {
-  messageBody: sfn.TaskInput.fromText('Send this message'),
-  messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
+import sqs = require('@aws-cdk/aws-sqs');
+
+// ...
+
+const queue = new sns.Queue(this, 'Queue');
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Send1', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromDataAt('$.message'),
+        // Only for FIFO queues
+        messageGroupId: '1234'
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Send2', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        }),
+        // Only for FIFO queues
+        messageGroupId: '1234'
+    })
 });
 ```
