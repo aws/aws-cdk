@@ -3,7 +3,7 @@
  *
  * Account validation is relaxed to allow account aliasing in the future.
  */
-const AWS_ENV_REGEX = /(aws(?:-[a-z-]+)?)\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
+const AWS_ENV_REGEX = /aws\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
 
 /**
  * Models an AWS execution environment, for use within the CDK toolkit.
@@ -31,16 +31,12 @@ export class EnvironmentUtils {
         'Expected format: aws://account/region');
     }
 
-    const [ , partition, account, region ] = env;
-    if (!partition || !account || !region) {
+    const [ , account, region ] = env;
+    if (!account || !region) {
       throw new Error(`Invalid environment specification: ${environment}`);
     }
 
-    return {
-      account,
-      region,
-      name: environment,
-    };
+    return { account, region, name: environment };
   }
 
   /**

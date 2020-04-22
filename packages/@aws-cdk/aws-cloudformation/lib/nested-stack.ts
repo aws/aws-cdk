@@ -1,5 +1,5 @@
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnResource, Construct, Duration, FileAssetPackaging, Fn, IResolveContext, Lazy, Stack, Token, NestedStackDeploymentConfiguration } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import { CfnStack } from './cloudformation.generated';
 
@@ -90,7 +90,7 @@ export class NestedStack extends Stack {
 
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
-      deploymentEnvironment: new NestedStackDeploymentEnvironment(parentStack.deploymentEnvironment),
+      deploymentConfiguration: new NestedStackDeploymentConfiguration(parentStack.deploymentConfiguration),
     });
 
     this._parentStack = parentStack;

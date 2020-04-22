@@ -32,7 +32,7 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 /**
  * Switch to convention mode deployments which enable CI/CD
  */
-export const CONVENTION_MODE_DEPLOYMENTS_CONTEXT = 'aws-cdk:conventionModeDeployments';
+export const NEW_STYLE_DEPLOYMENT_CONTEXT = '@aws-cdk/core:newStyleDeployment';
 
 /**
  * This map includes context keys and values for feature flags that enable
@@ -52,5 +52,5 @@ export const FUTURE_FLAGS = {
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
 
   // We will advertise this flag when the feature is complete
-  // [CONVENTION_MODE_DEPLOYMENTS_CONTEXT]: 'true',
+  // [NEW_STYLE_DEPLOYMENT_CONTEXT]: 'true',
 };

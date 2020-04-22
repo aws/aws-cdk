@@ -49,7 +49,8 @@ export interface StackProps {
   /**
    * Deployment environment to use while deploying this stack
    *
-   * @default - Convention mode deployments if the 'aws-cdk:conventionModeDeployments' flag is set, legacy mode otherwise
+   * @default - `DefaultDeploymentConfiguration` if the 'aws-cdk:conventionModeDeployments' feature flag
+   * is set, `LegacyDeploymentConfiguration` otherwise.
    */
   readonly deploymentConfiguration?: IDeploymentConfiguration;
 }
@@ -196,8 +197,6 @@ export class Stack extends Construct implements ITaggable {
   /**
    * The deployment environment for this stack.
    *
-   * TODO: Does this need to be public?
-   *
    * @experimental
    */
   public readonly deploymentConfiguration: IDeploymentConfiguration;
@@ -271,7 +270,7 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.deploymentConfiguration = props.deploymentConfiguration ?? (this.node.tryGetContext(cxapi.CONVENTION_MODE_DEPLOYMENTS_CONTEXT)
+    this.deploymentConfiguration = props.deploymentConfiguration ?? (this.node.tryGetContext(cxapi.NEW_STYLE_DEPLOYMENT_CONTEXT)
       ? new DefaultDeploymentConfiguration()
       : new LegacyDeploymentConfiguration());
     this.deploymentConfiguration.bind(this);
