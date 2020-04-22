@@ -119,7 +119,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
