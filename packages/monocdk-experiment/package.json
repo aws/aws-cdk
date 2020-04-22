@@ -17,6 +17,31 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package"
   },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.monocdkexperiment",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "monocdk-experiment",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.monocdk-experiment",
+        "module": "aws_cdk.monocdk_experiment"
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.MonoCDK.Experiment",
+        "packageId": "Amazon.CDK.MonoCDK.Experiment",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "versionSuffix": "-devpreview",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      }
+    }
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
