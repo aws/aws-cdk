@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -81,7 +82,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
                 SSEAlgorithm: 'aws:kms',
                 KMSMasterKeyID: props.kmsKeyId,
               },
-            }]
+            }],
           },
           PublicAccessBlockConfiguration: {
             BlockPublicAcls: true,
@@ -89,7 +90,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
             IgnorePublicAcls: true,
             RestrictPublicBuckets: true,
           },
-        }
+        },
       },
       StagingBucketPolicy: {
         Type: 'AWS::S3::BucketPolicy',
@@ -108,12 +109,12 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
                   { 'Fn::Sub': '${StagingBucket.Arn}/*' },
                 ],
                 Condition: {
-                  Bool: { 'aws:SecureTransport': 'false' }
+                  Bool: { 'aws:SecureTransport': 'false' },
                 },
-                Principal: '*'
-              }
-            ]
-          }
+                Principal: '*',
+              },
+            ],
+          },
         },
 
       },
@@ -121,13 +122,13 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
         Description: 'The name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { Ref: 'StagingBucket' }
+        Value: { Ref: 'StagingBucket' },
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] }
-      }
-    }
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
+      },
+    },
   };
 
   const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));
@@ -137,10 +138,10 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
   await fs.writeJson(path.join(builder.outdir, templateFile), template, { spaces: 2 });
 
   builder.addArtifact(toolkitStackName, {
-    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
-      templateFile
+      templateFile,
     },
   });
 
@@ -155,6 +156,6 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
     sdkProvider,
     roleArn,
     tags: props.tags,
-    execute: props.execute
+    execute: props.execute,
   });
 }

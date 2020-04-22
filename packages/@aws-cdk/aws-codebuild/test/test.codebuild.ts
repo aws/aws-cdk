@@ -29,13 +29,13 @@ export = {
                     'Action': 'sts:AssumeRole',
                     'Effect': 'Allow',
                     'Principal': {
-                      'Service': 'codebuild.amazonaws.com'
-                    }
-                  }
+                      'Service': 'codebuild.amazonaws.com',
+                    },
+                  },
                 ],
-                'Version': '2012-10-17'
-              }
-            }
+                'Version': '2012-10-17',
+              },
+            },
           },
           'MyProjectRoleDefaultPolicyB19B7C29': {
             'Type': 'AWS::IAM::Policy',
@@ -46,7 +46,7 @@ export = {
                     'Action': [
                       'logs:CreateLogGroup',
                       'logs:CreateLogStream',
-                      'logs:PutLogEvents'
+                      'logs:PutLogEvents',
                     ],
                     'Effect': 'Allow',
                     'Resource': [
@@ -56,22 +56,22 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
-                            }
-                          ]
-                        ]
+                              'Ref': 'MyProject39F7B0AE',
+                            },
+                          ],
+                        ],
                       },
                       {
                         'Fn::Join': [
@@ -79,61 +79,61 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
+                              'Ref': 'MyProject39F7B0AE',
                             },
-                            ':*'
-                          ]
-                        ]
-                      }
-                    ]
-                  }
+                            ':*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
                 ],
-                'Version': '2012-10-17'
+                'Version': '2012-10-17',
               },
               'PolicyName': 'MyProjectRoleDefaultPolicyB19B7C29',
               'Roles': [
                 {
-                  'Ref': 'MyProjectRole9BBE5233'
-                }
-              ]
-            }
+                  'Ref': 'MyProjectRole9BBE5233',
+                },
+              ],
+            },
           },
           'MyProject39F7B0AE': {
             'Type': 'AWS::CodeBuild::Project',
             'Properties': {
               'Source': {
-                'Type': 'CODEPIPELINE'
+                'Type': 'CODEPIPELINE',
               },
               'Artifacts': {
-                'Type': 'CODEPIPELINE'
+                'Type': 'CODEPIPELINE',
               },
               'ServiceRole': {
                 'Fn::GetAtt': [
                   'MyProjectRole9BBE5233',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               'Environment': {
                 'Type': 'LINUX_CONTAINER',
                 'PrivilegedMode': false,
                 'Image': 'aws/codebuild/standard:1.0',
-                'ComputeType': 'BUILD_GENERAL1_SMALL'
-              }
-            }
-          }
-        }
+                'ComputeType': 'BUILD_GENERAL1_SMALL',
+              },
+            },
+          },
+        },
       });
 
       test.done();
@@ -148,7 +148,7 @@ export = {
       const source = codebuild.Source.codeCommit({ repository: repo, cloneDepth: 2 });
 
       new codebuild.Project(stack, 'MyProject', {
-        source
+        source,
       });
 
       expect(stack).toMatch({
@@ -156,8 +156,8 @@ export = {
           'MyRepoF4F48043': {
             'Type': 'AWS::CodeCommit::Repository',
             'Properties': {
-              'RepositoryName': 'hello-cdk'
-            }
+              'RepositoryName': 'hello-cdk',
+            },
           },
           'MyProjectRole9BBE5233': {
             'Type': 'AWS::IAM::Role',
@@ -168,13 +168,13 @@ export = {
                     'Action': 'sts:AssumeRole',
                     'Effect': 'Allow',
                     'Principal': {
-                      'Service': 'codebuild.amazonaws.com'
-                    }
-                  }
+                      'Service': 'codebuild.amazonaws.com',
+                    },
+                  },
                 ],
-                'Version': '2012-10-17'
-              }
-            }
+                'Version': '2012-10-17',
+              },
+            },
           },
           'MyProjectRoleDefaultPolicyB19B7C29': {
             'Type': 'AWS::IAM::Policy',
@@ -187,15 +187,15 @@ export = {
                     'Resource': {
                       'Fn::GetAtt': [
                         'MyRepoF4F48043',
-                        'Arn'
-                      ]
-                    }
+                        'Arn',
+                      ],
+                    },
                   },
                   {
                     'Action': [
                       'logs:CreateLogGroup',
                       'logs:CreateLogStream',
-                      'logs:PutLogEvents'
+                      'logs:PutLogEvents',
                     ],
                     'Effect': 'Allow',
                     'Resource': [
@@ -205,22 +205,22 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
-                            }
-                          ]
-                        ]
+                              'Ref': 'MyProject39F7B0AE',
+                            },
+                          ],
+                        ],
                       },
                       {
                         'Fn::Join': [
@@ -228,68 +228,68 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
+                              'Ref': 'MyProject39F7B0AE',
                             },
-                            ':*'
-                          ]
-                        ]
-                      }
-                    ]
-                  }
+                            ':*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
                 ],
-                'Version': '2012-10-17'
+                'Version': '2012-10-17',
               },
               'PolicyName': 'MyProjectRoleDefaultPolicyB19B7C29',
               'Roles': [
                 {
-                  'Ref': 'MyProjectRole9BBE5233'
-                }
-              ]
-            }
+                  'Ref': 'MyProjectRole9BBE5233',
+                },
+              ],
+            },
           },
           'MyProject39F7B0AE': {
             'Type': 'AWS::CodeBuild::Project',
             'Properties': {
               'Artifacts': {
-                'Type': 'NO_ARTIFACTS'
+                'Type': 'NO_ARTIFACTS',
               },
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
                 'Image': 'aws/codebuild/standard:1.0',
                 'PrivilegedMode': false,
-                'Type': 'LINUX_CONTAINER'
+                'Type': 'LINUX_CONTAINER',
               },
               'ServiceRole': {
                 'Fn::GetAtt': [
                   'MyProjectRole9BBE5233',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               'Source': {
                 'Location': {
                   'Fn::GetAtt': [
                     'MyRepoF4F48043',
-                    'CloneUrlHttp'
-                  ]
+                    'CloneUrlHttp',
+                  ],
                 },
                 'GitCloneDepth': 2,
-                'Type': 'CODECOMMIT'
-              }
-            }
-          }
-        }
+                'Type': 'CODECOMMIT',
+              },
+            },
+          },
+        },
       });
       test.done();
     },
@@ -312,7 +312,7 @@ export = {
           'MyBucketF68F3FF0': {
             'Type': 'AWS::S3::Bucket',
             'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain'
+            'UpdateReplacePolicy': 'Retain',
           },
           'MyProjectRole9BBE5233': {
             'Type': 'AWS::IAM::Role',
@@ -323,13 +323,13 @@ export = {
                     'Action': 'sts:AssumeRole',
                     'Effect': 'Allow',
                     'Principal': {
-                      'Service': 'codebuild.amazonaws.com'
-                    }
-                  }
+                      'Service': 'codebuild.amazonaws.com',
+                    },
+                  },
                 ],
-                'Version': '2012-10-17'
-              }
-            }
+                'Version': '2012-10-17',
+              },
+            },
           },
           'MyProjectRoleDefaultPolicyB19B7C29': {
             'Type': 'AWS::IAM::Policy',
@@ -340,15 +340,15 @@ export = {
                     'Action': [
                       's3:GetObject*',
                       's3:GetBucket*',
-                      's3:List*'
+                      's3:List*',
                     ],
                     'Effect': 'Allow',
                     'Resource': [
                       {
                         'Fn::GetAtt': [
                           'MyBucketF68F3FF0',
-                          'Arn'
-                        ]
+                          'Arn',
+                        ],
                       },
                       {
                         'Fn::Join': [
@@ -357,20 +357,20 @@ export = {
                             {
                               'Fn::GetAtt': [
                                 'MyBucketF68F3FF0',
-                                'Arn'
-                              ]
+                                'Arn',
+                              ],
                             },
-                            '/*'
-                          ]
-                        ]
-                      }
-                    ]
+                            '/*',
+                          ],
+                        ],
+                      },
+                    ],
                   },
                   {
                     'Action': [
                       'logs:CreateLogGroup',
                       'logs:CreateLogStream',
-                      'logs:PutLogEvents'
+                      'logs:PutLogEvents',
                     ],
                     'Effect': 'Allow',
                     'Resource': [
@@ -380,22 +380,22 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
-                            }
-                          ]
-                        ]
+                              'Ref': 'MyProject39F7B0AE',
+                            },
+                          ],
+                        ],
                       },
                       {
                         'Fn::Join': [
@@ -403,54 +403,54 @@ export = {
                           [
                             'arn:',
                             {
-                              'Ref': 'AWS::Partition'
+                              'Ref': 'AWS::Partition',
                             },
                             ':logs:',
                             {
-                              'Ref': 'AWS::Region'
+                              'Ref': 'AWS::Region',
                             },
                             ':',
                             {
-                              'Ref': 'AWS::AccountId'
+                              'Ref': 'AWS::AccountId',
                             },
                             ':log-group:/aws/codebuild/',
                             {
-                              'Ref': 'MyProject39F7B0AE'
+                              'Ref': 'MyProject39F7B0AE',
                             },
-                            ':*'
-                          ]
-                        ]
-                      }
-                    ]
-                  }
+                            ':*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
                 ],
-                'Version': '2012-10-17'
+                'Version': '2012-10-17',
               },
               'PolicyName': 'MyProjectRoleDefaultPolicyB19B7C29',
               'Roles': [
                 {
-                  'Ref': 'MyProjectRole9BBE5233'
-                }
-              ]
-            }
+                  'Ref': 'MyProjectRole9BBE5233',
+                },
+              ],
+            },
           },
           'MyProject39F7B0AE': {
             'Type': 'AWS::CodeBuild::Project',
             'Properties': {
               'Artifacts': {
-                'Type': 'NO_ARTIFACTS'
+                'Type': 'NO_ARTIFACTS',
               },
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_MEDIUM',
                 'Image': 'aws/codebuild/windows-base:2.0',
                 'PrivilegedMode': false,
-                'Type': 'WINDOWS_CONTAINER'
+                'Type': 'WINDOWS_CONTAINER',
               },
               'ServiceRole': {
                 'Fn::GetAtt': [
                   'MyProjectRole9BBE5233',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               'Source': {
                 'Location': {
@@ -458,17 +458,17 @@ export = {
                     '',
                     [
                       {
-                        'Ref': 'MyBucketF68F3FF0'
+                        'Ref': 'MyBucketF68F3FF0',
                       },
-                      '/path/to/source.zip'
-                    ]
-                  ]
+                      '/path/to/source.zip',
+                    ],
+                  ],
                 },
-                'Type': 'S3'
-              }
-            }
-          }
-        }
+                'Type': 'S3',
+              },
+            },
+          },
+        },
       });
       test.done();
     },
@@ -486,7 +486,7 @@ export = {
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
           ],
-        })
+        }),
       });
 
       expect(stack).to(haveResource('AWS::CodeBuild::Project', {
@@ -495,7 +495,7 @@ export = {
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: false,
           GitCloneDepth: 3,
-        }
+        },
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -532,7 +532,7 @@ export = {
             pushFilterGroup.andBranchIs('develop'),
             pushFilterGroup.andFilePathIs('ReadMe.md'),
           ],
-        })
+        }),
       });
 
       expect(stack).to(haveResource('AWS::CodeBuild::Project', {
@@ -541,8 +541,8 @@ export = {
           InsecureSsl: true,
           GitCloneDepth: 4,
           ReportBuildStatus: false,
-          Location: 'https://github.testcompany.com/testowner/testrepo'
-        }
+          Location: 'https://github.testcompany.com/testowner/testrepo',
+        },
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -585,7 +585,7 @@ export = {
             // duplicate event actions are fine
             codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
           ],
-        })
+        }),
       });
 
       expect(stack).to(haveResource('AWS::CodeBuild::Project', {
@@ -642,7 +642,7 @@ export = {
           path: 'path/to/source.zip',
         }),
         vpc,
-        securityGroups: [securityGroup]
+        securityGroups: [securityGroup],
       });
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         'VpcConfig': {
@@ -650,22 +650,22 @@ export = {
             {
               'Fn::GetAtt': [
                 'SecurityGroup1F554B36F',
-                'GroupId'
-              ]
-            }
+                'GroupId',
+              ],
+            },
           ],
           'Subnets': [
             {
-              'Ref': 'MyVPCPrivateSubnet1Subnet641543F4'
+              'Ref': 'MyVPCPrivateSubnet1Subnet641543F4',
             },
             {
-              'Ref': 'MyVPCPrivateSubnet2SubnetA420D3F0'
-            }
+              'Ref': 'MyVPCPrivateSubnet2SubnetA420D3F0',
+            },
           ],
           'VpcId': {
-            'Ref': 'MyVPCAFB07A31'
-          }
-        }
+            'Ref': 'MyVPCAFB07A31',
+          },
+        },
       }));
 
       test.notEqual(project.connections, undefined);
@@ -690,7 +690,7 @@ export = {
             bucket,
             path: 'path/to/source.zip',
           }),
-          securityGroups: [securityGroup]
+          securityGroups: [securityGroup],
         })
       , /Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC/);
       test.done();
@@ -713,7 +713,7 @@ export = {
           }),
           vpc,
           allowAllOutbound: true,
-          securityGroups: [securityGroup]
+          securityGroups: [securityGroup],
         })
       , /Configure 'allowAllOutbound' directly on the supplied SecurityGroup/);
       test.done();
@@ -880,7 +880,7 @@ export = {
         bucket,
         path: 'another/path',
         identifier: 'source1',
-        version: 'someversion'
+        version: 'someversion',
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -893,9 +893,9 @@ export = {
         'SecondarySourceVersions': [
           {
             'SourceIdentifier': 'source1',
-            'SourceVersion': 'someversion'
-          }
-        ]
+            'SourceVersion': 'someversion',
+          },
+        ],
       }));
 
       test.done();
@@ -923,7 +923,7 @@ export = {
             'SourceIdentifier': 'source1',
             'Type': 'S3',
           },
-        ]
+        ],
       }));
 
       test.done();
@@ -941,8 +941,8 @@ export = {
           identifier: 'myidentifier2',
           location: 'myclodation.mydnsroot.com:/loc',
           mountPoint: '/media',
-          mountOptions: 'opts'
-        })]
+          mountOptions: 'opts',
+        })],
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -952,7 +952,7 @@ export = {
             'MountPoint': '/media',
             'MountOptions': 'opts',
             'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS'
+            'Type': 'EFS',
           },
         ],
       }));
@@ -969,14 +969,14 @@ export = {
           identifier: 'myidentifier2',
           location: 'myclodation.mydnsroot.com:/loc',
           mountPoint: '/media',
-          mountOptions: 'opts'
-        })]
+          mountOptions: 'opts',
+        })],
       });
       project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
         identifier: 'myidentifier3',
         location: 'myclodation.mydnsroot.com:/loc',
         mountPoint: '/media',
-        mountOptions: 'opts'
+        mountOptions: 'opts',
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -986,20 +986,20 @@ export = {
             'MountPoint': '/media',
             'MountOptions': 'opts',
             'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS'
+            'Type': 'EFS',
           },
           {
             'Identifier': 'myidentifier3',
             'MountPoint': '/media',
             'MountOptions': 'opts',
             'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS'
-          }
+            'Type': 'EFS',
+          },
         ],
       }));
 
       test.done();
-    }
+    },
   },
 
   'secondary artifacts': {
@@ -1111,23 +1111,23 @@ export = {
 
         expect(stack).to(haveResource('AWS::CodeBuild::Project', {
           'Source': {
-            'Type': 'CODEPIPELINE'
+            'Type': 'CODEPIPELINE',
           },
           'Artifacts': {
-            'Type': 'CODEPIPELINE'
+            'Type': 'CODEPIPELINE',
           },
           'ServiceRole': {
             'Fn::GetAtt': [
               'MyProjectRole9BBE5233',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           'Environment': {
             'Type': 'LINUX_CONTAINER',
             'PrivilegedMode': false,
             'Image': 'aws/codebuild/standard:1.0',
-            'ComputeType': 'BUILD_GENERAL1_SMALL'
-          }
+            'ComputeType': 'BUILD_GENERAL1_SMALL',
+          },
         }));
 
         test.done();
@@ -1153,105 +1153,105 @@ export = {
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
-          'aws.codebuild'
+          'aws.codebuild',
         ],
         'detail-type': [
-          'CodeBuild Build State Change'
+          'CodeBuild Build State Change',
         ],
         'detail': {
           'project-name': [
             {
-              'Ref': 'MyProject39F7B0AE'
-            }
+              'Ref': 'MyProject39F7B0AE',
+            },
           ],
           'build-status': [
-            'FAILED'
-          ]
-        }
+            'FAILED',
+          ],
+        },
       },
-      'State': 'ENABLED'
+      'State': 'ENABLED',
     }));
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
-          'aws.codebuild'
+          'aws.codebuild',
         ],
         'detail-type': [
-          'CodeBuild Build State Change'
+          'CodeBuild Build State Change',
         ],
         'detail': {
           'project-name': [
             {
-              'Ref': 'MyProject39F7B0AE'
-            }
+              'Ref': 'MyProject39F7B0AE',
+            },
           ],
           'build-status': [
-            'SUCCEEDED'
-          ]
-        }
+            'SUCCEEDED',
+          ],
+        },
       },
-      'State': 'ENABLED'
+      'State': 'ENABLED',
     }));
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
-          'aws.codebuild'
+          'aws.codebuild',
         ],
         'detail-type': [
-          'CodeBuild Build Phase Change'
+          'CodeBuild Build Phase Change',
         ],
         'detail': {
           'project-name': [
             {
-              'Ref': 'MyProject39F7B0AE'
-            }
-          ]
-        }
+              'Ref': 'MyProject39F7B0AE',
+            },
+          ],
+        },
       },
-      'State': 'ENABLED'
+      'State': 'ENABLED',
     }));
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
-          'aws.codebuild'
+          'aws.codebuild',
         ],
         'detail-type': [
-          'CodeBuild Build State Change'
+          'CodeBuild Build State Change',
         ],
         'detail': {
           'project-name': [
             {
-              'Ref': 'MyProject39F7B0AE'
-            }
-          ]
-        }
+              'Ref': 'MyProject39F7B0AE',
+            },
+          ],
+        },
       },
-      'State': 'ENABLED'
+      'State': 'ENABLED',
     }));
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
-          'aws.codebuild'
+          'aws.codebuild',
         ],
         'detail-type': [
-          'CodeBuild Build State Change'
+          'CodeBuild Build State Change',
         ],
         'detail': {
           'project-name': [
             {
-              'Ref': 'MyProject39F7B0AE'
-            }
+              'Ref': 'MyProject39F7B0AE',
+            },
           ],
           'build-status': [
-            'IN_PROGRESS'
-          ]
-        }
+            'IN_PROGRESS',
+          ],
+        },
       },
-      'State': 'ENABLED'
+      'State': 'ENABLED',
     }));
 
     test.done();
@@ -1264,27 +1264,27 @@ export = {
       environment: {
         environmentVariables: {
           FOO: { value: '1234' },
-          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE }
-        }
+          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE },
+        },
       },
       environmentVariables: {
         GOO: { value: 'ABC' },
-        FOO: { value: 'OVERRIDE!' }
-      }
+        FOO: { value: 'OVERRIDE!' },
+      },
     });
 
     expect(stack).to(haveResource('AWS::CodeBuild::Project', {
       'Source': {
-        'Type': 'CODEPIPELINE'
+        'Type': 'CODEPIPELINE',
       },
       'Artifacts': {
-        'Type': 'CODEPIPELINE'
+        'Type': 'CODEPIPELINE',
       },
       'ServiceRole': {
         'Fn::GetAtt': [
           'ProjectRole4CCB274E',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'Environment': {
         'Type': 'LINUX_CONTAINER',
@@ -1292,7 +1292,7 @@ export = {
           {
             'Type': 'PLAINTEXT',
             'Value': 'OVERRIDE!',
-            'Name': 'FOO'
+            'Name': 'FOO',
           },
           {
             'Type': 'PARAMETER_STORE',
@@ -1301,22 +1301,22 @@ export = {
                 '',
                 [
                   '111',
-                  { twotwotwo: '222' }
-                ]
-              ]
+                  { twotwotwo: '222' },
+                ],
+              ],
             },
-            'Name': 'BAR'
+            'Name': 'BAR',
           },
           {
             'Type': 'PLAINTEXT',
             'Value': 'ABC',
-            'Name': 'GOO'
-          }
+            'Name': 'GOO',
+          },
         ],
         'PrivilegedMode': false,
         'Image': 'aws/codebuild/standard:1.0',
-        'ComputeType': 'BUILD_GENERAL1_SMALL'
-      }
+        'ComputeType': 'BUILD_GENERAL1_SMALL',
+      },
     }));
 
     test.done();
@@ -1373,7 +1373,7 @@ export = {
     const stack = new cdk.Stack();
     new codebuild.PipelineProject(stack, 'Project', {
       environment: {
-        buildImage: codebuild.LinuxBuildImage.fromCodeBuildImageId('aws/codebuild/standard:4.0')
+        buildImage: codebuild.LinuxBuildImage.fromCodeBuildImageId('aws/codebuild/standard:4.0'),
       },
     });
 

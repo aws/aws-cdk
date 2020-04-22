@@ -1,10 +1,10 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxapi.RuntimeInfo {
+export function collectRuntimeInformation(): cxschema.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {
@@ -59,7 +59,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     const packagePath = require.resolve(
       // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths }
+      { paths },
     );
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);

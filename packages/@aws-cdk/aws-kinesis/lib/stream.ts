@@ -1,8 +1,21 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
-import { IResolvable } from 'constructs';
+import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnStream } from './kinesis.generated';
+
+const READ_OPERATIONS = [
+  'kinesis:DescribeStreamSummary',
+  'kinesis:GetRecords',
+  'kinesis:GetShardIterator',
+  'kinesis:ListShards',
+  'kinesis:SubscribeToShard',
+];
+
+const WRITE_OPERATIONS = [
+  'kinesis:ListShards',
+  'kinesis:PutRecord',
+  'kinesis:PutRecords',
+];
 
 /**
  * A Kinesis Stream
@@ -53,6 +66,11 @@ export interface IStream extends IResource {
    * encrypt/decrypt will also be granted.
    */
   grantReadWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the indicated permissions on this stream to the provided IAM principal.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -76,20 +94,6 @@ export interface StreamAttributes {
 
 /**
  * Represents a Kinesis Stream.
- *
- * Streams can be either defined within this stack:
- *
- *   new Stream(this, 'MyStream', { props });
- *
- * Or imported from an existing stream:
- *
- *   Stream.import(this, 'MyImportedStream', { streamArn: ... });
- *
- * You can also export a stream and import it into another stack:
- *
- *   const ref = myStream.export();
- *   Stream.import(this, 'MyImportedStream', ref);
- *
  */
 abstract class StreamBase extends Resource implements IStream {
   /**
@@ -115,7 +119,7 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantRead(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+    const ret = this.grant(grantee, ...READ_OPERATIONS);
 
     if (this.encryptionKey) {
       this.encryptionKey.grantDecrypt(grantee);
@@ -132,11 +136,8 @@ abstract class StreamBase extends Resource implements IStream {
    * contents of the stream will also be granted.
    */
   public grantWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncrypt(grantee);
-    }
+    const ret = this.grant(grantee, ...WRITE_OPERATIONS);
+    this.encryptionKey?.grantEncrypt(grantee);
 
     return ret;
   }
@@ -149,22 +150,16 @@ abstract class StreamBase extends Resource implements IStream {
    * encrypt/decrypt will also be granted.
    */
   public grantReadWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(
-      grantee,
-      'kinesis:DescribeStream',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:PutRecord',
-      'kinesis:PutRecords');
-
-    if (this.encryptionKey) {
-      this.encryptionKey.grantEncryptDecrypt(grantee);
-    }
+    const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
+    this.encryptionKey?.grantEncryptDecrypt(grantee);
 
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+  /**
+   * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
@@ -276,7 +271,7 @@ export class Stream extends StreamBase {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
-      streamEncryption
+      streamEncryption,
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
@@ -309,15 +304,15 @@ export class Stream extends StreamBase {
         new CfnCondition(Stack.of(this), conditionName, {
           expression: Fn.conditionOr(
             Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
-            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1')
-          )
+            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1'),
+          ),
         });
       }
 
       return {
         streamEncryption: Fn.conditionIf(conditionName,
           Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'})
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'}),
       };
     }
 
@@ -341,12 +336,12 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`
+        description: `Created by ${this.node.path}`,
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',
-        keyId: encryptionKey.keyArn
+        keyId: encryptionKey.keyArn,
       };
       return { encryptionKey, streamEncryption };
     }

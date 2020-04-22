@@ -20,3 +20,4 @@ lambda/*.sh
 *.tsbuildinfo
 
 tsconfig.json
+.eslintrc.js

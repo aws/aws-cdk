@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
@@ -63,12 +64,12 @@ class MockStack {
     metadata: {
       '/Test-Stack-A': [
         {
-          type: cxapi.STACK_TAGS_METADATA_KEY,
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { Key: 'Foo', Value: 'Bar' } as Tag
-          ]
-        }
-      ]
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
     },
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
@@ -78,12 +79,12 @@ class MockStack {
     metadata: {
       '/Test-Stack-B': [
         {
-          type: cxapi.STACK_TAGS_METADATA_KEY,
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
           data: [
-            { Key: 'Baz', Value: 'Zinga!' } as Tag
-          ]
-        }
-      ]
+            { key: 'Baz', value: 'Zinga!' },
+          ],
+        },
+      ],
     },
   };
 }

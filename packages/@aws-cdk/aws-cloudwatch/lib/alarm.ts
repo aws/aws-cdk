@@ -1,6 +1,6 @@
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
-import { CfnAlarm } from './cloudwatch.generated';
+import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric, MetricStatConfig } from './metric-types';
@@ -9,13 +9,20 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
 
+/**
+ * Represents a CloudWatch Alarm
+ */
 export interface IAlarm extends IResource {
   /**
+   * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   *
    * @attribute
    */
   readonly alarmArn: string;
 
   /**
+   * Name of the alarm
+   *
    * @attribute
    */
   readonly alarmName: string;
@@ -38,10 +45,30 @@ export interface AlarmProps extends CreateAlarmOptions {
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
+  /**
+   * Specified statistic is greater than or equal to the threshold
+   */
   GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is strictly greater than the threshold
+   */
   GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+
+  /**
+   * Specified statistic is strictly less than the threshold
+   */
   LESS_THAN_THRESHOLD = 'LessThanThreshold',
+
+  /**
+   * Specified statistic is less than or equal to the threshold.
+   */
   LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is lower than or greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
 }
 
@@ -82,6 +109,13 @@ export enum TreatMissingData {
  */
 export class Alarm extends Resource implements IAlarm {
 
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends Resource implements IAlarm {
       public readonly alarmArn = alarmArn;
@@ -125,6 +159,21 @@ export class Alarm extends Resource implements IAlarm {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
+    // Render metric, process potential overrides from the alarm
+    // (It would be preferable if the statistic etc. was worked into the metric,
+    // but hey we're allowing overrides...)
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = this.renderMetric(props.metric);
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
+
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -145,13 +194,7 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...this.renderMetric(props.metric),
-      ...dropUndefined({
-        // Alarm overrides
-        period: props.period && props.period.toSeconds(),
-        statistic: renderIfSimpleStatistic(props.statistic),
-        extendedStatistic: renderIfExtendedStatistic(props.statistic),
-      })
+      ...metricProps,
     });
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
@@ -163,9 +206,10 @@ export class Alarm extends Resource implements IAlarm {
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
   }
@@ -285,9 +329,9 @@ export class Alarm extends Resource implements IAlarm {
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
-          }) as CfnAlarm.MetricDataQueryProperty)
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
-      }
+      },
     });
   }
 
@@ -343,3 +387,5 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   }
   return undefined;
 }
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

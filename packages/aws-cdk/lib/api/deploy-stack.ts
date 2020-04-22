@@ -208,7 +208,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
-    Tags: options.tags
+    Tags: options.tags,
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
@@ -314,6 +314,7 @@ export async function destroyStack(options: DestroyStackOptions) {
     return;
   }
   const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
+
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
     const destroyedStack = await waitForStack(cfn, deployName, false);

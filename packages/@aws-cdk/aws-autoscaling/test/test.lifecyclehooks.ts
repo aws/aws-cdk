@@ -35,7 +35,7 @@ export = {
       DependsOn: [
         'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
         'ASGLifecycleHookTransitionRole3AAA6BB7',
-      ]
+      ],
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -46,11 +46,11 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'autoscaling.amazonaws.com'
-            }
-          }
+              Service: 'autoscaling.amazonaws.com',
+            },
+          },
         ],
-      }
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -60,22 +60,22 @@ export = {
           {
             Action: 'action:Work',
             Effect: 'Allow',
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-      }
+      },
     }));
 
     test.done();
-  }
+  },
 };
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: cdk.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
     lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
-      resources: ['*']
+      resources: ['*'],
     }));
-    return { notificationTargetArn: 'target:arn', };
+    return { notificationTargetArn: 'target:arn' };
   }
 }

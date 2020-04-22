@@ -24,17 +24,17 @@ export = {
       MyLambdaVersion16CDE3C40: {
         Type: 'AWS::Lambda::Version',
         Properties: {
-          FunctionName: { Ref: 'MyLambdaCCE802FB' }
-        }
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
+        },
       },
       Alias325C5727: {
         Type: 'AWS::Lambda::Alias',
         Properties: {
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
           FunctionVersion: stack.resolve(version.version),
-          Name: 'prod'
-        }
-      }
+          Name: 'prod',
+        },
+      },
     }));
 
     test.done();
@@ -84,7 +84,7 @@ export = {
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
-      Name: 'prod'
+      Name: 'prod',
     }));
 
     test.done();
@@ -105,7 +105,7 @@ export = {
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version: version1,
-      additionalVersions: [{ version: version2, weight: 0.1 }]
+      additionalVersions: [{ version: version2, weight: 0.1 }],
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
@@ -114,10 +114,10 @@ export = {
         AdditionalVersionWeights: [
           {
             FunctionVersion: stack.resolve(version2.version),
-            FunctionWeight: 0.1
-          }
-        ]
-      }
+            FunctionWeight: 0.1,
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -136,7 +136,7 @@ export = {
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version,
-      provisionedConcurrentExecutions: pce
+      provisionedConcurrentExecutions: pce,
     });
 
     expect(stack).to(beASupersetOfTemplate({
@@ -144,12 +144,12 @@ export = {
         Type: 'AWS::Lambda::Version',
         Properties: {
           FunctionName: {
-            Ref: 'MyLambdaCCE802FB'
+            Ref: 'MyLambdaCCE802FB',
           },
           ProvisionedConcurrencyConfig: {
-            ProvisionedConcurrentExecutions: 5
-          }
-        }
+            ProvisionedConcurrentExecutions: 5,
+          },
+        },
       },
       Alias325C5727: {
         Type: 'AWS::Lambda::Alias',
@@ -158,10 +158,10 @@ export = {
           FunctionVersion: stack.resolve(version.version),
           Name: 'prod',
           ProvisionedConcurrencyConfig: {
-            ProvisionedConcurrentExecutions: 5
-          }
-        }
-      }
+            ProvisionedConcurrentExecutions: 5,
+          },
+        },
+      },
     }));
 
     test.done();
@@ -181,7 +181,7 @@ export = {
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod', version,
-        additionalVersions: [{ version, weight: 5 }]
+        additionalVersions: [{ version, weight: 5 }],
       });
     });
 
@@ -189,7 +189,7 @@ export = {
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
         aliasName: 'prod', version,
-        additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }]
+        additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
     });
 
@@ -214,7 +214,7 @@ export = {
       metric: alias.metric('Test'),
       alarmName: 'Test',
       threshold: 1,
-      evaluationPeriods: 1
+      evaluationPeriods: 1,
     });
 
     // THEN
@@ -222,8 +222,8 @@ export = {
       Dimensions: [{
         Name: 'FunctionName',
         Value: {
-          Ref: 'MyLambdaCCE802FB'
-        }
+          Ref: 'MyLambdaCCE802FB',
+        },
       }, {
         Name: 'Resource',
         Value: {
@@ -231,11 +231,11 @@ export = {
             '',
             [
               { Ref: 'MyLambdaCCE802FB' },
-              ':prod'
-            ]
-          ]
-        }
-      }]
+              ':prod',
+            ],
+          ],
+        },
+      }],
     }));
 
     test.done();
@@ -256,7 +256,7 @@ export = {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
         version: fn.addVersion('1'),
-        provisionedConcurrentExecutions: pce
+        provisionedConcurrentExecutions: pce,
       });
     });
 
@@ -266,7 +266,7 @@ export = {
         lambda: fn,
         codeSha256: undefined,
         description: undefined,
-        provisionedConcurrentExecutions: pce
+        provisionedConcurrentExecutions: pce,
       });
     });
 
@@ -322,15 +322,15 @@ export = {
                 'Fn::Split': [
                   ':',
                   {
-                    Ref: 'Alias325C5727'
-                  }
-                ]
-              }
-            ]
+                    Ref: 'Alias325C5727',
+                  },
+                ],
+              },
+            ],
           },
-          ':prod'
-        ]
-      ]
+          ':prod',
+        ],
+      ],
     });
 
     test.done();
@@ -352,15 +352,15 @@ export = {
       version,
       onSuccess: {
         bind: () => ({
-          destination: 'on-success-arn'
-        })
-      }
+          destination: 'on-success-arn',
+        }),
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
-        Ref: 'fn5FF616E3'
+        Ref: 'fn5FF616E3',
       },
       Qualifier: {
         'Fn::Select': [
@@ -369,17 +369,17 @@ export = {
             'Fn::Split': [
               ':',
               {
-                Ref: 'Alias325C5727'
-              }
-            ]
-          }
-        ]
+                Ref: 'Alias325C5727',
+              },
+            ],
+          },
+        ],
       },
       DestinationConfig: {
         OnSuccess: {
-          Destination: 'on-success-arn'
-        }
-      }
+          Destination: 'on-success-arn',
+        },
+      },
     }));
 
     test.done();
@@ -399,9 +399,9 @@ export = {
       version,
       onSuccess: {
         bind: () => ({
-          destination: 'on-success-arn'
-        })
-      }
+          destination: 'on-success-arn',
+        }),
+      },
     });
 
     // THEN
@@ -418,16 +418,16 @@ export = {
 
     // WHEN
     alias.configureAsyncInvoke({
-      retryAttempts: 1
+      retryAttempts: 1,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'alias-name',
-      MaximumRetryAttempts: 1
+      MaximumRetryAttempts: 1,
     }));
 
     test.done();
-  }
+  },
 };

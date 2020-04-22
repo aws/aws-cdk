@@ -44,8 +44,8 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
         region: '', // global
         account: 'cloudfront',
         resource: 'user',
-        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`
-      }
+        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`,
+      },
     );
   }
 }
@@ -108,8 +108,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
 
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: {
-        comment: (props && props.comment) || 'Allows CloudFront to reach the bucket'
-      }
+        comment: (props && props.comment) || 'Allows CloudFront to reach the bucket',
+      },
     });
     // physical id - OAI name
     this.originAccessIdentityName = this.getResourceNameAttribute(this.resource.ref);

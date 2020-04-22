@@ -18,8 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
   - [Useful aliases](#useful-aliases)
-  - [pkglint](#pkglint)
-  - [awslint](#awslint)
+  - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
@@ -36,6 +35,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
@@ -48,13 +48,13 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
  - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -143,7 +143,7 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -261,7 +261,47 @@ alias lt='lr test'
 alias lw='lr watch'
 ```
 
-### pkglint
+### Linters
+
+All linters are executed automatically as part of the build script, `yarn build`.
+
+They can also be executed independently of the build script. From the root of a specific package (e.g.
+`packages/@aws-cdk/aws-ec2`), run the following command to execute all the linters on that package -
+
+```bash
+yarn lint
+```
+
+The following linters are used -
+
+- [eslint](#eslint)
+- [pkglint](#pkglint)
+- [awslint](#awslint)
+
+#### eslint
+
+Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
+2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
+
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+This can be customized for any package by modifying the `.eslintrc` file found at its root.
+
+If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+
+The following additional [VS Code setting](https://code.visualstudio.com/docs/getstarted/settings) is required when the
+entire project is opened (not required if only a specific module is opened) -
+
+```json
+"eslint.workingDirectories": [
+  { "pattern": "./packages/@aws-cdk/*" },
+  { "pattern": "./packages/@monocdk-experiment/*" },
+  { "pattern": "./packages/*" },
+  { "pattern": "./tools/*" },
+],
+```
+
+#### pkglint
 
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
 
@@ -278,7 +318,7 @@ You can also do that per package:
 $ lr pkglint
 ```
 
-### awslint
+#### awslint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS
@@ -555,6 +595,11 @@ The CLI package (`packages/aws-cdk`) has some integration tests that aren't
 run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
+
+### Changing Cloud Assembly Schema
+
+If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
+its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
 
 ### API Compatibility Checks
 
