@@ -64,7 +64,7 @@ test('do bootstrap using custom bucket name', async () => {
     toolkitStackName: 'mockStack',
     parameters: {
       bucketName: 'foobar',
-    }
+    },
   });
 
   // THEN
@@ -82,7 +82,7 @@ test('do bootstrap using KMS CMK', async () => {
     toolkitStackName: 'mockStack',
     parameters: {
       kmsKeyId: 'myKmsKey',
-    }
+    },
   });
 
   // THEN
@@ -100,7 +100,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
     toolkitStackName: 'mockStack',
     parameters: {
       tags: [{ Key: 'Foo', Value: 'Bar' }],
-    }
+    },
   });
 
   // THEN
@@ -117,7 +117,7 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
     toolkitStackName: 'mockStack',
     parameters: {
       trustedAccounts: ['0123456789012'],
-    }
+    },
   }))
     .rejects
     .toThrow('--trust can only be passed for the new bootstrap experience.');
@@ -128,7 +128,7 @@ test('passing CFN execution policies to the old bootstrapping results in an erro
     toolkitStackName: 'mockStack',
     parameters: {
       cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
-    }
+    },
   }))
     .rejects
     .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience.');

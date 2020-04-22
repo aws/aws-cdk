@@ -49,7 +49,7 @@ describe('Bootstrapping', () => {
         toolkitStackName: bootstrapStackName,
         parameters: {
           bucketName: legacyBootstrapBucketName,
-        }
+        },
       });
       bootstrapStack = bootstrapResults.stackArtifact;
     });
@@ -75,7 +75,7 @@ describe('Bootstrapping', () => {
               'arn:aws:iam::aws:policy/AdministratorAccess',
               'arn:aws:iam::aws:policy/AmazonS3FullAccess',
             ],
-          }
+          },
         });
         bootstrapStack = bootstrapResults.stackArtifact;
       });

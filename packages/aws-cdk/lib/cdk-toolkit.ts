@@ -334,7 +334,7 @@ export class CdkToolkit {
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
   public async bootstrap(
-    environmentSpecs: string[], toolkitStackName: string, roleArn: string | undefined,
+    environmentSpecs: string[], toolkitStackName: string | undefined, roleArn: string | undefined,
     useNewBootstrapping: boolean, force: boolean | undefined, props: BootstrappingParameters): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise use what the user said.
@@ -360,7 +360,7 @@ export class CdkToolkit {
           toolkitStackName,
           roleArn,
           force,
-          parameters: props
+          parameters: props,
         });
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'

@@ -64,7 +64,3 @@ export interface BootstrappingParameters {
    */
   readonly cloudFormationExecutionPolicies?: string[];
 }
-
-export function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
-}

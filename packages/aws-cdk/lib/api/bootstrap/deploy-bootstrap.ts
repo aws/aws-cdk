@@ -6,7 +6,7 @@ import * as path from 'path';
 import { Mode, SdkProvider } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { BootstrapEnvironmentOptions, bootstrapVersionFromTemplate } from './bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions } from './bootstrap-props';
 
 /**
  * Perform the actual deployment of a bootstrap stack, given a template and some parameters
@@ -38,7 +38,7 @@ export async function deployBootstrapStack(
     type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
     properties: {
-      templateFile
+      templateFile,
     },
   });
 
@@ -54,4 +54,8 @@ export async function deployBootstrapStack(
     execute: options?.parameters?.execute,
     parameters,
   });
+}
+
+function bootstrapVersionFromTemplate(template: any): number {
+  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
 }

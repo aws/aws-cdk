@@ -15,7 +15,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
                 SSEAlgorithm: 'aws:kms',
                 KMSMasterKeyID: params.kmsKeyId,
               },
-            }]
+            }],
           },
           PublicAccessBlockConfiguration: {
             BlockPublicAcls: true,
@@ -23,7 +23,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
             IgnorePublicAcls: true,
             RestrictPublicBuckets: true,
           },
-        }
+        },
       },
       StagingBucketPolicy: {
         Type: 'AWS::S3::BucketPolicy',
@@ -42,25 +42,24 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
                   { 'Fn::Sub': '${StagingBucket.Arn}/*' },
                 ],
                 Condition: {
-                  Bool: { 'aws:SecureTransport': 'false' }
+                  Bool: { 'aws:SecureTransport': 'false' },
                 },
-                Principal: '*'
-              }
-            ]
-          }
+                Principal: '*',
+              },
+            ],
+          },
         },
-
       },
     },
     Outputs: {
       [BUCKET_NAME_OUTPUT]: {
         Description: 'The name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { Ref: 'StagingBucket' }
+        Value: { Ref: 'StagingBucket' },
       },
       [BUCKET_DOMAIN_NAME_OUTPUT]: {
         Description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
-        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] }
-      }
-    }
+        Value: { 'Fn::GetAtt': ['StagingBucket', 'RegionalDomainName'] },
+      },
+    },
   };
 }

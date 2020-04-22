@@ -61,7 +61,7 @@ class PublishingAws implements cdk_assets.IAws {
   private sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
     const env = {
       ...this.targetEnv,
-      region: options.region ?? this.targetEnv.region // Default: same region as the stack
+      region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
     return options.assumeRoleArn
