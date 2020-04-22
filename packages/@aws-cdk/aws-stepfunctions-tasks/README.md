@@ -33,6 +33,13 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ECS](#ecs)
     - [RunTask](#runtask)
   - [EMR](#emr)
+    - [Create Cluster](#create-cluster)
+    - [Termination Protection](#termination-protection)
+    - [Terminate Cluster](#terminate-cluster)
+    - [Add Step](#add-step)
+    - [Cancel Step](#cancel-step)
+    - [Modify Instance Fleet](#modify-instance-fleet)
+    - [Modify Instance Group](#modify-instance-group)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
 
@@ -174,7 +181,7 @@ const updateItemTask = new sfn.Task(this, 'UpdateItem', {
 
 Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) through the service integration pattern.
 
-#### RunTask
+##### RunTask
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
@@ -203,6 +210,128 @@ fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
 new sfn.Task(this, 'CallFargate', {
   task: fargateTask
+});
+```
+
+#### EMR
+
+Step Functions supports Amazon EMR through the service integration pattern.
+The service integration APIs correspond to Amazon EMR APIs but differ in the
+parameters that are used.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr.html) about the differences when using these service integrations.
+
+##### Create Cluster
+
+Creates and starts running a cluster (job flow).
+Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html) API in EMR.
+
+```ts
+const task = new sfn.Task(stack, 'Create Cluster', {
+  task: new tasks.EmrCreateCluster({
+    instances: {},
+    clusterRole,
+    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+  }),
+});
+```
+
+##### Termination Protection
+
+Locks a cluster (job flow) so the EC2 instances in the cluster cannot be
+terminated by user intervention, an API call, or a job-flow error.
+
+Corresponds to the [`setTerminationProtection`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrSetClusterTerminationProtection({
+    clusterId: 'ClusterId',
+    terminationProtected: false,
+  }),
+});
+```
+
+##### Terminate Cluster
+
+Shuts down a cluster (job flow).
+Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/APIReference/API_TerminateJobFlows.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrTerminateCluster({
+    clusterId: 'ClusterId',
+    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  }),
+});
+```
+
+##### Add Step
+
+Adds a new step to a running cluster.
+Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrAddStep({
+    clusterId: 'ClusterId',
+    name: 'StepName',
+    jar: 'Jar',
+    actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+  }),
+});
+```
+
+##### Cancel Step
+
+Cancels a pending step in a running cluster.
+Corresponds to the [`cancelSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_CancelSteps.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrCancelStep({
+    clusterId: 'ClusterId',
+    stepId: 'StepId',
+  }),
+});
+```
+
+##### Modify Instance Fleet
+
+Modifies the target On-Demand and target Spot capacities for the instance
+fleet with the specified InstanceFleetName.
+
+Corresponds to the [`modifyInstanceFleet`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceFleet.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrModifyInstanceFleetByName({
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
+  }),
+});
+```
+
+##### Modify Instance Group
+
+Modifies the number of nodes and configuration settings of an instance group.
+
+Corresponds to the [`modifyInstanceGroups`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceGroups.html) API in EMR.
+
+```ts
+new sfn.Task(stack, 'Task', {
+  task: new tasks.EmrModifyInstanceGroupByName({
+    clusterId: 'ClusterId',
+    instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
+    instanceGroup: {
+      instanceCount: 1,
+    },
+  }),
 });
 ```
 
