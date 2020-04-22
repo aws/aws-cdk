@@ -5,11 +5,11 @@ import * as tasks from '../../lib';
 
 /*
  * Stack verification steps:
- *
- * Verifies that the stack is a valid CloudFormation template and deployed successfully.
- *
  * The generatedState Machine can be executed from the Step Functions console (or CLI)
  * and run with an execution status of `Succeeded`.
+ *
+ * -- aws stepfunctions start-execution --state-machine-arn  <deployed state machine arn> provides execution arn
+ * -- aws stepfunctions describe-execution --execution-arn <from previous command> returns a status of `Succeeded`
  */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-run-lambda-integ');
