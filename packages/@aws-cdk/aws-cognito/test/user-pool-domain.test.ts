@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolDomain, UserPoolDomainType } from '../lib';
+import { UserPool, UserPoolDomain } from '../lib';
 
 describe('User Pool Client', () => {
   test('custom domain name', () => {
@@ -14,10 +14,10 @@ describe('User Pool Client', () => {
       'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      domain: UserPoolDomainType.customDomain({
+      customDomain: {
         domainName: 'test-domain.example.com',
         certificate,
-      }),
+      },
     });
 
     // THEN
@@ -25,8 +25,8 @@ describe('User Pool Client', () => {
       UserPoolId: stack.resolve(pool.userPoolId),
       Domain: 'test-domain.example.com',
       CustomDomainConfig: {
-        CertificateArn: 'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8'
-      }
+        CertificateArn: 'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8',
+      },
     });
   });
 
@@ -38,9 +38,9 @@ describe('User Pool Client', () => {
     // WHEN
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
-      domain: UserPoolDomainType.cognitoDomain({
-        domainPrefix: 'cognito-domain-prefix'
-      }),
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
     });
 
     // THEN
@@ -50,15 +50,45 @@ describe('User Pool Client', () => {
     });
   });
 
+  test('fails when neither cognitoDomain nor customDomain are specified', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const certificate = Certificate.fromCertificateArn(stack, 'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
+
+    expect(() => new UserPoolDomain(stack, 'Domain', {
+      userPool: pool,
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+      customDomain: {
+        domainName: 'mydomain.com',
+        certificate,
+      },
+    })).toThrow(/cognitoDomain or customDomain must be specified/);
+  });
+
+  test('fails when both cognitoDomain and customDomain are specified', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => new UserPoolDomain(stack, 'Domain', {
+      userPool: pool,
+    })).toThrow(/cognitoDomain or customDomain must be specified/);
+  });
+
   test('fails when domainPrefix has characters outside the allowed charset', () => {
-    expect(() => UserPoolDomainType.cognitoDomain({
-      domainPrefix: 'domain.prefix'
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addDomain('Domain1', {
+      cognitoDomain: { domainPrefix: 'domain.prefix' },
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => UserPoolDomainType.cognitoDomain({
-      domainPrefix: 'Domain-Prefix'
+    expect(() => pool.addDomain('Domain2', {
+      cognitoDomain: { domainPrefix: 'Domain-Prefix' },
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => UserPoolDomainType.cognitoDomain({
-      domainPrefix: 'dómäin-prefix'
+    expect(() => pool.addDomain('Domain3', {
+      cognitoDomain: { domainPrefix: 'dómäin-prefix' },
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
   });
 
@@ -67,9 +97,9 @@ describe('User Pool Client', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
-      domain: UserPoolDomainType.cognitoDomain({
+      cognitoDomain: {
         domainPrefix: 'cognito-domain-prefix',
-      }),
+      },
     });
 
     // WHEN
@@ -80,7 +110,7 @@ describe('User Pool Client', () => {
       'Fn::GetAtt': [
         'PoolDomainCloudFrontDomainName340BF87E',
         'DomainDescription.CloudFrontDistribution',
-      ]
+      ],
     });
 
     expect(stack).toHaveResource('Custom::UserPoolCloudFrontDomainName');
@@ -91,8 +121,8 @@ describe('User Pool Client', () => {
           Effect: 'Allow',
           Resource: '*',
         }],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     });
   });
 });

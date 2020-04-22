@@ -44,60 +44,25 @@ export interface CognitoDomainOptions {
   readonly domainPrefix: string;
 }
 
-interface UserPoolDomainTypeConfig {
-  readonly domain: string;
-
-  readonly certificate?: ICertificate;
-}
-
-/**
- * The type of user pool domain. Two types are currently supported - custom domain and cognito domain.
- */
-export class UserPoolDomainType {
-  /**
-   * Associate a custom domain with your user pool
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
-   */
-  public static customDomain(options: CustomDomainOptions): UserPoolDomainType {
-    return new UserPoolDomainType({
-      domain: options.domainName,
-      certificate: options.certificate,
-    });
-  }
-
-  /**
-   * Associate a cognito prefix domain with your user pool
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html
-   */
-  public static cognitoDomain(options: CognitoDomainOptions): UserPoolDomainType {
-    if (options.domainPrefix && !/^[a-z0-9-]+$/.test(options.domainPrefix)) {
-      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
-    }
-    return new UserPoolDomainType({
-      domain: options.domainPrefix,
-    });
-  }
-
-  private constructor(private readonly domainConfig: UserPoolDomainTypeConfig) {}
-
-  /**
-   * @internal
-   */
-  public _domainConfig(): UserPoolDomainTypeConfig {
-    return this.domainConfig;
-  }
-}
-
 /**
  * Options to create a UserPoolDomain
  */
 export interface UserPoolDomainOptions {
   /**
-   * Domain configuration options for the two types of user pool domains.
-   * Create a cognito prefix domain via `UserPoolDomainType.cognitoPrefixDomain()` or,
-   * a custom domain via `UserPoolDomainType.customDomain()`,
+   * Associate a custom domain with your user pool
+   * Either `customDomain` or `cognitoDomain` must be specified.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
+   * @default - not set if `cognitoDomain` is specified, otherwise, throws an error.
    */
-  readonly domain: UserPoolDomainType;
+  readonly customDomain?: CustomDomainOptions;
+
+  /**
+   * Associate a cognito prefix domain with your user pool
+   * Either `customDomain` or `cognitoDomain` must be specified.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html
+   * @default - not set if `customDomain` is specified, otherwise, throws an error.
+   */
+  readonly cognitoDomain?: CognitoDomainOptions;
 }
 
 /**
@@ -119,11 +84,19 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
 
-    const domainConfig = props.domain._domainConfig();
+    if (!!props.customDomain === !!props.cognitoDomain) {
+      throw new Error('One of, and only one of, cognitoDomain or customDomain must be specified');
+    }
+
+    if (props.cognitoDomain?.domainPrefix && !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
+      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
+    }
+
+    const domainName = props.cognitoDomain?.domainPrefix || props.customDomain?.domainName!;
     const resource = new CfnUserPoolDomain(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
-      domain: domainConfig.domain,
-      customDomainConfig: domainConfig.certificate ? { certificateArn: domainConfig.certificate.certificateArn } : undefined,
+      domain: domainName,
+      customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
     });
 
     this.domainName = resource.ref;

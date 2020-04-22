@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { UserPool, UserPoolDomain, UserPoolDomainType } from '@aws-cdk/aws-cognito';
+import { UserPool, UserPoolDomain } from '@aws-cdk/aws-cognito';
 import { ARecord, PublicHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
 import { UserPoolDomainTarget } from '../lib';
@@ -11,7 +11,7 @@ test('use user pool domain as record target', () => {
   const userPool = new UserPool(stack, 'UserPool');
   const domain = new UserPoolDomain(stack, 'UserPoolDomain', {
     userPool,
-    domain: UserPoolDomainType.cognitoDomain({ domainPrefix: 'domain-prefix' }),
+    cognitoDomain: { domainPrefix: 'domain-prefix' },
   });
 
   // WHEN
@@ -25,7 +25,7 @@ test('use user pool domain as record target', () => {
     AliasTarget: {
       DNSName: { 'Fn::GetAtt': [
         'UserPoolDomainCloudFrontDomainName0B254952',
-        'DomainDescription.CloudFrontDistribution'
+        'DomainDescription.CloudFrontDistribution',
       ] },
       HostedZoneId: 'Z2FDTNDATAQYW2',
     },

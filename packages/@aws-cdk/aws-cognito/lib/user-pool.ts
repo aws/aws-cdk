@@ -677,7 +677,7 @@ export class UserPool extends Resource implements IUserPool {
   public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
       userPool: this,
-      ...options
+      ...options,
     });
   }
 

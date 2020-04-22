@@ -1,5 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolDomainType } from '../lib';
+import { UserPool } from '../lib';
 
 /*
  * Stack verification steps:
@@ -12,9 +12,9 @@ const stack = new Stack(app, 'integ-user-pool-domain-cfdist');
 const userpool = new UserPool(stack, 'UserPool');
 
 const domain = userpool.addDomain('Domain', {
-  domain: UserPoolDomainType.cognitoDomain({
-    domainPrefix: 'cdk-integ-user-pool-domain'
-  }),
+  cognitoDomain: {
+    domainPrefix: 'cdk-integ-user-pool-domain',
+  },
 });
 
 new CfnOutput(stack, 'Domain', {
