@@ -16,9 +16,9 @@ export = {
       expect(stack).toMatch({
         'Resources': {
           'MyTopic86869434': {
-            'Type': 'AWS::SNS::Topic'
-          }
-        }
+            'Type': 'AWS::SNS::Topic',
+          },
+        },
       });
 
       test.done();
@@ -36,10 +36,10 @@ export = {
           'MyTopic86869434': {
             'Type': 'AWS::SNS::Topic',
             'Properties': {
-              'TopicName': 'topicName'
-            }
-          }
-        }
+              'TopicName': 'topicName',
+            },
+          },
+        },
       });
 
       test.done();
@@ -49,7 +49,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        displayName: 'displayName'
+        displayName: 'displayName',
       });
 
       expect(stack).toMatch({
@@ -57,10 +57,10 @@ export = {
           'MyTopic86869434': {
             'Type': 'AWS::SNS::Topic',
             'Properties': {
-              'DisplayName': 'displayName'
-            }
-          }
-        }
+              'DisplayName': 'displayName',
+            },
+          },
+        },
       });
 
       test.done();
@@ -86,7 +86,7 @@ export = {
 
       new sns.Topic(stack, 'MyTopic', {
         topicName: 'topicName',
-        displayName: 'displayName'
+        displayName: 'displayName',
       });
 
       expect(stack).toMatch({
@@ -95,10 +95,10 @@ export = {
             'Type': 'AWS::SNS::Topic',
             'Properties': {
               'DisplayName': 'displayName',
-              'TopicName': 'topicName'
-            }
-          }
-        }
+              'TopicName': 'topicName',
+            },
+          },
+        },
       });
 
       test.done();
@@ -114,7 +114,7 @@ export = {
     topic.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['sns:*'],
-      principals: [new iam.ArnPrincipal('arn')]
+      principals: [new iam.ArnPrincipal('arn')],
     }));
 
     // THEN
@@ -126,9 +126,9 @@ export = {
           'Action': 'sns:*',
           'Effect': 'Allow',
           'Principal': { 'AWS': 'arn' },
-          'Resource': '*'
-        }]
-      }
+          'Resource': '*',
+        }],
+      },
     }));
 
     test.done();
@@ -151,10 +151,10 @@ export = {
           {
             'Action': 'sns:Publish',
             'Effect': 'Allow',
-            'Resource': stack.resolve(topic.topicArn)
-          }
+            'Resource': stack.resolve(topic.topicArn),
+          },
         ],
-      }
+      },
     }));
 
     test.done();
@@ -171,7 +171,7 @@ export = {
     expect(stack).toMatch({
       'Resources': {
         'MyTopic86869434': {
-          'Type': 'AWS::SNS::Topic'
+          'Type': 'AWS::SNS::Topic',
         },
         'MyTopicPolicy12A5EC17': {
           'Type': 'AWS::SNS::TopicPolicy',
@@ -181,24 +181,24 @@ export = {
                 {
                   'Action': 'service:statement0',
                   'Effect': 'Allow',
-                  'Sid': '0'
+                  'Sid': '0',
                 },
                 {
                   'Action': 'service:statement1',
                   'Effect': 'Allow',
-                  'Sid': '1'
-                }
+                  'Sid': '1',
+                },
               ],
-              'Version': '2012-10-17'
+              'Version': '2012-10-17',
             },
             'Topics': [
               {
-                'Ref': 'MyTopic86869434'
-              }
-            ]
-          }
-        }
-      }
+                'Ref': 'MyTopic86869434',
+              },
+            ],
+          },
+        },
+      },
     });
 
     test.done();
@@ -228,7 +228,7 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
       period: cdk.Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
     });
 
     test.deepEqual(stack.resolve(topic.metricPublishSize()), {
@@ -236,7 +236,7 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     test.done();
@@ -252,8 +252,8 @@ export = {
       bind: () => ({
         protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
-        subscriberId: 'my-subscription'
-      })
+        subscriberId: 'my-subscription',
+      }),
     });
 
     // THEN
@@ -274,13 +274,13 @@ export = {
         protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
         subscriberScope: stack2,
-        subscriberId: 'subscriberId'
-      })
+        subscriberId: 'subscriberId',
+      }),
     });
 
     // THEN
     expect(stack).notTo(haveResource('AWS::SNS::Subscription'));
     expect(stack2).to(haveResource('AWS::SNS::Subscription'));
     test.done();
-  }
+  },
 };

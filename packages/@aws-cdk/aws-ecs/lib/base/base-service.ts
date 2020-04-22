@@ -219,10 +219,10 @@ class ApplicationListenerConfig extends ListenerConfig {
       ... props,
       targets: [
         service.loadBalancerTarget({
-          ...target
-        })
+          ...target,
+        }),
       ],
-      port
+      port,
     });
   }
 }
@@ -244,10 +244,10 @@ class NetworkListenerConfig extends ListenerConfig {
       ... this.props,
       targets: [
         service.loadBalancerTarget({
-          ...target
-        })
+          ...target,
+        }),
       ],
-      port
+      port,
     });
   }
 }
@@ -342,7 +342,7 @@ export abstract class BaseService extends Resource
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
-        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
+        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
@@ -352,7 +352,7 @@ export abstract class BaseService extends Resource
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
-      ...additionalProps
+      ...additionalProps,
     });
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
@@ -427,7 +427,7 @@ export abstract class BaseService extends Resource
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
         return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
-      }
+      },
     };
   }
 
@@ -455,7 +455,7 @@ export abstract class BaseService extends Resource
       target.listener.addTargets(target.newTargetGroupId, {
         containerName: target.containerName,
         containerPort: target.containerPort,
-        protocol: target.protocol
+        protocol: target.protocol,
       }, this);
     }
   }
@@ -483,7 +483,7 @@ export abstract class BaseService extends Resource
       resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
-      ...props
+      ...props,
     });
   }
 
@@ -542,7 +542,7 @@ export abstract class BaseService extends Resource
     this.addServiceRegistry({
       arn: serviceArn,
       containerName,
-      containerPort
+      containerPort,
     });
 
     this.cloudmapService = cloudmapService;
@@ -558,7 +558,7 @@ export abstract class BaseService extends Resource
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -598,7 +598,7 @@ export abstract class BaseService extends Resource
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
-      }
+      },
     };
   }
 
@@ -624,7 +624,7 @@ export abstract class BaseService extends Resource
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
-      containerPort
+      containerPort,
     });
   }
 
@@ -652,7 +652,7 @@ export abstract class BaseService extends Resource
 
   private get defaultLoadBalancerTarget() {
     return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
+      containerName: this.taskDefinition.defaultContainer!.containerName,
     });
   }
 
@@ -685,7 +685,7 @@ export abstract class BaseService extends Resource
     return Lazy.anyValue({
       produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
         this.loadBalancers.length > 0 ? 60 :
-          undefined
+          undefined,
     });
   }
 }

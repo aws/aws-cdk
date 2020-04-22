@@ -21,7 +21,7 @@ export = {
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
         'ApplicationName': {
-          'Ref': 'MyApp3CE31C26'
+          'Ref': 'MyApp3CE31C26',
         },
       }));
 
@@ -60,7 +60,7 @@ export = {
           {
             'Ref': 'ASG46ED3070',
           },
-        ]
+        ],
       }));
 
       test.done();
@@ -83,7 +83,7 @@ export = {
           {
             'Ref': 'ASG46ED3070',
           },
-        ]
+        ],
       }));
 
       test.done();

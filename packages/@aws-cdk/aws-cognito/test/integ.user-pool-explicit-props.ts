@@ -70,7 +70,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
 });
 
 new CfnOutput(stack, 'userpoolId', {
-  value: userpool.userPoolId
+  value: userpool.userPoolId,
 });
 
 function dummyTrigger(name: string): IFunction {

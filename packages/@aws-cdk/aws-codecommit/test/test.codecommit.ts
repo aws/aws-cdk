@@ -26,15 +26,15 @@ export = {
               Triggers: [
                 {
                   Events: [
-                    'all'
+                    'all',
                   ],
                   DestinationArn: 'arn:aws:sns:*:123456789012:my_topic',
-                  Name: 'MyRepository/arn:aws:sns:*:123456789012:my_topic'
-                }
-              ]
-            }
-          }
-        }
+                  Name: 'MyRepository/arn:aws:sns:*:123456789012:my_topic',
+                },
+              ],
+            },
+          },
+        },
       });
 
       test.done();
@@ -83,7 +83,7 @@ export = {
           { Ref: 'AWS::Region' },
           ':',
           { Ref: 'AWS::AccountId' },
-          ':my-repo'
+          ':my-repo',
         ]],
       });
       test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
@@ -95,10 +95,10 @@ export = {
       // GIVEN
       const stack = new Stack();
       const repository = new Repository(stack, 'Repo', {
-        repositoryName: 'repo-name'
+        repositoryName: 'repo-name',
       });
       const role = new Role(stack, 'Role', {
-        assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       });
 
       // WHEN
@@ -114,8 +114,8 @@ export = {
               Resource: {
                 'Fn::GetAtt': [
                   'Repo02AC86CF',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
             },
             {
@@ -124,16 +124,16 @@ export = {
               Resource: {
                 'Fn::GetAtt': [
                   'Repo02AC86CF',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-            }
+            },
           ],
-          Version: '2012-10-17'
-        }
+          Version: '2012-10-17',
+        },
       }));
 
       test.done();
-    }
+    },
   },
 };

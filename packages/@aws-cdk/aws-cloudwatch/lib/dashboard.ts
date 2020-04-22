@@ -86,7 +86,7 @@ export class Dashboard extends Resource {
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
         throw new Error([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
-          'It can only contain alphanumerics, dash (-) and underscore (_).'
+          'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '));
       }
     }
@@ -102,7 +102,7 @@ export class Dashboard extends Resource {
           periodOverride: props.periodOverride,
           widgets: column.toJson(),
         });
-      }})
+      }}),
     });
 
     (props.widgets || []).forEach(row => {
