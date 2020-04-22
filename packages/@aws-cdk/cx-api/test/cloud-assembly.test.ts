@@ -144,3 +144,9 @@ test('displayName shows both artifact ID and stack name if needed', () => {
   expect(art1.id).toBe('MyStackName');
   expect(art1.stackName).toBe('MyStackName');
 });
+
+test('can read assembly with asset manifest', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'asset-manifest'));
+  expect(assembly.stacks).toHaveLength(1);
+  expect(assembly.artifacts).toHaveLength(2);
+});

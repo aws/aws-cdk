@@ -239,7 +239,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
     this.assets.files![asset.sourceHash] = {
       source: {
         path: asset.fileName,
-        packaging: asset.packaging
+        packaging: asset.packaging,
       },
       destinations: {
         [this.manifestEnvName]: {
@@ -248,7 +248,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
           region: resolvedOr(this.stack.region, undefined),
           assumeRoleArn: this.assetPublishingRoleArn,
           assumeRoleExternalId: this.props.assetPublishingExternalId,
-        }
+        },
       },
     };
 
@@ -270,7 +270,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
         directory: asset.directoryName,
         dockerBuildArgs: asset.dockerBuildArgs,
         dockerBuildTarget: asset.dockerBuildTarget,
-        dockerFile: asset.dockerFile
+        dockerFile: asset.dockerFile,
       },
       destinations: {
         [this.manifestEnvName]: {
@@ -279,7 +279,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
           region: resolvedOr(this.stack.region, undefined),
           assumeRoleArn: this.assetPublishingRoleArn,
           assumeRoleExternalId: this.props.assetPublishingExternalId,
-        }
+        },
       },
     };
 
@@ -318,7 +318,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
     const assetLocation = this.addFileAsset({
       fileName: this.stack.templateFile,
       packaging: FileAssetPackaging.FILE,
-      sourceHash: contentHash(template)
+      sourceHash: contentHash(template),
     });
 
     return assetLocation.s3Url;
@@ -337,7 +337,7 @@ export class DefaultDeploymentConfiguration implements IDeploymentConfiguration 
     session.assembly.addArtifact(artifactId, {
       type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
-        file: manifestFile
+        file: manifestFile,
       },
     });
 
@@ -463,7 +463,7 @@ export class LegacyDeploymentConfiguration implements IDeploymentConfiguration {
 
     return {
       imageUri: `${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${repositoryName}:${imageTag}`,
-      repositoryName
+      repositoryName,
     };
   }
 
@@ -552,7 +552,7 @@ function writeStackToCloudAssembly(
 
   const deps = [
     ...stack.dependencies.map(s => s.artifactId),
-    ...additionalStackDependencies
+    ...additionalStackDependencies,
   ];
   const meta = collectStackMetadata(stack);
 
@@ -570,7 +570,7 @@ function writeStackToCloudAssembly(
   const properties: cxapi.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     ...stackProps,
-    ...stackNameProperty
+    ...stackNameProperty,
   };
 
   // add an artifact that represents this stack

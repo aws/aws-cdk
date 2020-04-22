@@ -14,7 +14,7 @@ test('complex placeholder substitution', async () => {
         bucketName: 'some_bucket-${AWS::AccountId}-${AWS::Region}',
         objectKey: 'some_key-${AWS::AccountId}-${AWS::Region}',
       },
-    }
+    },
   }, replacer)).toEqual({
     destinations: {
       theDestination: {
@@ -22,6 +22,6 @@ test('complex placeholder substitution', async () => {
         bucketName: 'some_bucket-current_account-current_region',
         objectKey: 'some_key-current_account-current_region',
       },
-    }
+    },
   });
 });
