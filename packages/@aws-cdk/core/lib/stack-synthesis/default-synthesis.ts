@@ -154,7 +154,7 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   constructor(private readonly props: DefaultStackSynthesisProps = {}) {
   }
 
-  public bind(stack: Stack): void {
+  public bindStack(stack: Stack): void {
     this.stack = stack;
 
     const qualifier = this.props.qualifier ?? DefaultStackSynthesis.DEFAULT_QUALIFIER;

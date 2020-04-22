@@ -32,7 +32,7 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 /**
  * Switch to new stack synthesis method which enable CI/CD
  */
-export const NEW_STYLE_STACK_SYNTHESIS = '@aws-cdk/core:newStyleStackSynthesis';
+export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
 
 /**
  * This map includes context keys and values for feature flags that enable

@@ -270,10 +270,10 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.stackSynthesis = props.stackSynthesis ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS)
+    this.stackSynthesis = props.stackSynthesis ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
       ? new DefaultStackSynthesis()
       : new LegacyStackSynthesis());
-    this.stackSynthesis.bind(this);
+    this.stackSynthesis.bindStack(this);
   }
 
   /**
@@ -694,6 +694,12 @@ export class Stack extends Construct implements ITaggable {
   }
 
   protected synthesize(session: ISynthesisSession): void {
+    // In principle, stack synthesis is delegated to the
+    // StackSynthesis object.
+    //
+    // However, some parts of synthesis currently use some private
+    // methods on Stack, and I don't really see the value in refactoring
+    // this right now, so some parts still happen here.
     const builder = session.assembly;
 
     // write the CloudFormation template as a JSON file

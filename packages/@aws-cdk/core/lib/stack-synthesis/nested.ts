@@ -8,11 +8,11 @@ import { IStackSynthesis } from './types';
  *
  * Interoperates with the DeploymentConfiguration of the parent stack.
  */
-export class NestedStackDeploymentConfiguration implements IStackSynthesis {
+export class NestedStackSynthesis implements IStackSynthesis {
   constructor(private readonly parentDeployment: IStackSynthesis) {
   }
 
-  public bind(_stack: Stack): void {
+  public bindStack(_stack: Stack): void {
     // Nothing to do
   }
 

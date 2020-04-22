@@ -47,7 +47,7 @@ export class LegacyStackSynthesis implements IStackSynthesis {
    */
   private readonly addedImageAssets = new Set<string>();
 
-  public bind(stack: Stack): void {
+  public bindStack(stack: Stack): void {
     this.stack = stack;
   }
 

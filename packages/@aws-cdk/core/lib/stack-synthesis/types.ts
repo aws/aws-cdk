@@ -11,7 +11,7 @@ export interface IStackSynthesis {
    *
    * Must be called before any of the other methods are called.
    */
-  bind(stack: Stack): void;
+  bindStack(stack: Stack): void;
 
   /**
    * Register a File Asset
@@ -33,16 +33,4 @@ export interface IStackSynthesis {
    * @experimental
    */
   synthesizeStackArtifacts(session: ISynthesisSession): void;
-}
-
-/**
- * Result of synthesis
- */
-export interface DeploymentConfigurationSynthesisResult {
-  /**
-   * Artifact names that got generated that the stack should depend on
-   *
-   * @default - No additional dependencies
-   */
-  readonly additionalStackDependencies?: string[];
 }
