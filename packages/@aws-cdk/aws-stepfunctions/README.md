@@ -176,8 +176,9 @@ new sfn.Task(this, 'Invoke with task context', {
 });
 ```
 
-When a function is invoked, the Lambda service sends back the following
-[response elements](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseElements)
+When a function is invoked, the Lambda service sends  [these response
+elements](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseElements)
+back.
 
 ⚠️ The response from the Lambda function is in an attribute called `Payload`
 
@@ -230,7 +231,9 @@ to the Lambda.
   });
 ```
 
-⚠️ The task will pause until it receives that task token back with a SendTaskSuccess or SendTaskFailure call. Read [more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token)
+⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
+call. Learn more about [Callback with the Task
+Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
 #### Glue Job example
 
