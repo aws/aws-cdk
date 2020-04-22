@@ -6,6 +6,9 @@ import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { Construct, RemovalPolicy } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 
+/**
+ * Properties to configure an HTTPS Redirect
+ */
 export interface HttpsRedirectProps {
   /**
    * HostedZone of the domain
@@ -29,6 +32,10 @@ export interface HttpsRedirectProps {
   readonly certificate?: ICertificate;
 }
 
+/**
+ * Allows creating a domainA -> domainB redirect using CloudFront and S3.
+ * You can specify multiple domains to be redirected.
+ */
 export class HttpsRedirect extends Construct {
   constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
