@@ -9,7 +9,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.Anyone()
+      assumedBy: new iam.Anyone(),
     });
 
     // WHEN
@@ -23,8 +23,8 @@ export = {
           {
             Action: 'cloudwatch:PutMetricData',
             Effect: 'Allow',
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
       },
     }));

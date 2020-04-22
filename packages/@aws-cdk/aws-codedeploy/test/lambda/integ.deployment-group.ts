@@ -16,18 +16,18 @@ const handler = new lambda.Function(stack, 'Handler', {
 const version = handler.addVersion('1');
 const blueGreenAlias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'alias',
-  version
+  version,
 });
 
 const preHook = new lambda.Function(stack, 'PreHook', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'preHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 const postHook = new lambda.Function(stack, 'PostHook', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'postHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 
 new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
@@ -38,11 +38,11 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       threshold: 1,
       evaluationPeriods: 1,
-      metric: blueGreenAlias.metricErrors()
-    })
+      metric: blueGreenAlias.metricErrors(),
+    }),
   ],
   preHook,
-  postHook
+  postHook,
 });
 
 app.synth();

@@ -15,7 +15,7 @@ beforeEach(() => {
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addCapacity('Capacity', {
-    instanceType: new ec2.InstanceType('t3.medium')
+    instanceType: new ec2.InstanceType('t3.medium'),
   });
 });
 
@@ -48,7 +48,7 @@ test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
-    compatibility: ecs.Compatibility.FARGATE
+    compatibility: ecs.Compatibility.FARGATE,
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -64,14 +64,14 @@ test('Running a Fargate Task', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
-        ]
-      }
-    ]
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')},
+        ],
+      },
+    ],
   }) });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask
+    definition: runTask,
   });
 
   // THEN
@@ -86,7 +86,7 @@ test('Running a Fargate Task', () => {
           Subnets: [
             {Ref: 'VpcPrivateSubnet1Subnet536B997A'},
             {Ref: 'VpcPrivateSubnet2Subnet3788AAA1'},
-          ]
+          ],
         },
       },
       TaskDefinition: {Ref: 'TD49C78F36'},
@@ -125,17 +125,17 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {Ref: 'TD49C78F36'}
+          Resource: {Ref: 'TD49C78F36'},
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
           Effect: 'Allow',
-          Resource: '*'
+          Resource: '*',
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}]
+          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}],
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -147,9 +147,9 @@ test('Running a Fargate Task', () => {
             {Ref: 'AWS::Region'},
             ':',
             {Ref: 'AWS::AccountId'},
-            ':rule/StepFunctionsGetEventsForECSTaskRule'
-          ]]}
-        }
+            ':rule/StepFunctionsGetEventsForECSTaskRule',
+          ]]},
+        },
       ],
     },
   });
@@ -157,7 +157,7 @@ test('Running a Fargate Task', () => {
 
 test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.EC2
+    compatibility: ecs.Compatibility.EC2,
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -173,14 +173,14 @@ test('Running an EC2 Task with bridge network', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
-        ]
-      }
-    ]
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')},
+        ],
+      },
+    ],
   }) });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask
+    definition: runTask,
   });
 
   // THEN
@@ -225,17 +225,17 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {Ref: 'TD49C78F36'}
+          Resource: {Ref: 'TD49C78F36'},
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
           Effect: 'Allow',
-          Resource: '*'
+          Resource: '*',
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}]
+          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}],
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -247,9 +247,9 @@ test('Running an EC2 Task with bridge network', () => {
             {Ref: 'AWS::Region'},
             ':',
             {Ref: 'AWS::AccountId'},
-            ':rule/StepFunctionsGetEventsForECSTaskRule'
-          ]]}
-        }
+            ':rule/StepFunctionsGetEventsForECSTaskRule',
+          ]]},
+        },
       ],
     },
   });
@@ -257,7 +257,7 @@ test('Running an EC2 Task with bridge network', () => {
 
 test('Running an EC2 Task with placement strategies', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.EC2
+    compatibility: ecs.Compatibility.EC2,
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -280,7 +280,7 @@ test('Running an EC2 Task with placement strategies', () => {
   const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
   new sfn.StateMachine(stack, 'SM', {
-    definition: runTask
+    definition: runTask,
   });
 
   // THEN
@@ -291,12 +291,12 @@ test('Running an EC2 Task with placement strategies', () => {
       LaunchType: 'EC2',
       TaskDefinition: {Ref: 'TD49C78F36'},
       PlacementConstraints: [
-        { Type: 'memberOf', Expression: 'blieptuut', },
+        { Type: 'memberOf', Expression: 'blieptuut' },
       ],
       PlacementStrategy: [
-        { Field: 'instanceId', Type: 'spread', },
-        { Field: 'cpu', Type: 'binpack', },
-        { Type: 'random', },
+        { Field: 'instanceId', Type: 'spread' },
+        { Field: 'cpu', Type: 'binpack' },
+        { Type: 'random' },
       ],
     },
     Resource: {
@@ -317,7 +317,7 @@ test('Running an EC2 Task with placement strategies', () => {
 
 test('Running an EC2 Task with overridden number values', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.EC2
+    compatibility: ecs.Compatibility.EC2,
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -334,8 +334,8 @@ test('Running an EC2 Task with overridden number values', () => {
         command: sfn.Data.listAt('$.TheCommand'),
         cpu: 5,
         memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
-      }
-    ]
+      },
+    ],
   });
 
   // WHEN

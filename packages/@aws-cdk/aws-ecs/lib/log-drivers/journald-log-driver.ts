@@ -31,7 +31,7 @@ export class JournaldLogDriver extends LogDriver {
     return {
       logDriver: 'journald',
       options: stringifyOptions({
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

@@ -2,7 +2,7 @@ import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import {Stack} from '@aws-cdk/core';
+import {Stack, Tag} from '@aws-cdk/core';
 import {EfsFileSystem, EfsLifecyclePolicyProperty, EfsPerformanceMode, EfsThroughputMode} from '../lib/efs-file-system';
 
 let stack = new Stack();
@@ -28,7 +28,7 @@ test('unencrypted file system is created correctly with default KMS', () => {
   // WHEN
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
-    encrypted: false
+    encrypted: false,
   });
   // THEN
   expectCDK(stack).notTo(haveResource('AWS::EFS::FileSystem', {
@@ -40,7 +40,7 @@ test('encrypted file system is created correctly with default KMS', () => {
   // WHEN
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
-    encrypted: true
+    encrypted: true,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
@@ -55,7 +55,7 @@ test('encrypted file system is created correctly with custom KMS', () => {
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
     encrypted: true,
-    kmsKey: key
+    kmsKey: key,
   });
   // THEN
 
@@ -68,8 +68,8 @@ test('encrypted file system is created correctly with custom KMS', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     Encrypted: true,
     KmsKeyId: {
-      Ref: 'customKeyFSDDB87C6D'
-    }
+      Ref: 'customKeyFSDDB87C6D',
+    },
   }));
 });
 
@@ -77,13 +77,13 @@ test('file system is created correctly with life cycle property', () => {
   // WHEN
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
-    lifecyclePolicy: EfsLifecyclePolicyProperty.AFTER_14_DAYS
+    lifecyclePolicy: EfsLifecyclePolicyProperty.AFTER_14_DAYS,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_14_DAYS'
-    }]
+      TransitionToIA: 'AFTER_14_DAYS',
+    }],
   }));
 });
 
@@ -91,11 +91,11 @@ test('file system is created correctly with performance mode', () => {
   // WHEN
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
-    performanceMode: EfsPerformanceMode.MAX_IO
+    performanceMode: EfsPerformanceMode.MAX_IO,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-    PerformanceMode: 'maxIO'
+    PerformanceMode: 'maxIO',
   }));
 });
 
@@ -103,11 +103,11 @@ test('file system is created correctly with bursting throughput mode', () => {
   // WHEN
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
-    throughputMode: EfsThroughputMode.BURSTING
+    throughputMode: EfsThroughputMode.BURSTING,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-    ThroughputMode: 'bursting'
+    ThroughputMode: 'bursting',
   }));
 });
 
@@ -115,7 +115,7 @@ test('Exception when throughput mode is set to PROVISIONED, but provisioned thro
   expect(() => {
     new EfsFileSystem(stack, 'EfsFileSystem', {
       vpc,
-      throughputMode: EfsThroughputMode.PROVISIONED
+      throughputMode: EfsThroughputMode.PROVISIONED,
     });
   }).toThrowError(/Property provisionedThroughputInMibps is required when throughputMode is PROVISIONED/);
 });
@@ -124,7 +124,7 @@ test('Warning when provisioned throughput is less than the valid range', () => {
   const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
     throughputMode: EfsThroughputMode.PROVISIONED,
-    provisionedThroughputInMibps: 0
+    provisionedThroughputInMibps: 0,
   });
 
   expect(fileSystem.node.metadata[0].type).toMatch(cxschema.ArtifactMetadataEntryType.WARN);
@@ -138,7 +138,7 @@ test('Warning when provisioned throughput is above than the valid range', () => 
   const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem1', {
     vpc,
     throughputMode: EfsThroughputMode.PROVISIONED,
-    provisionedThroughputInMibps: 1025
+    provisionedThroughputInMibps: 1025,
   });
 
   expect(fileSystem.node.metadata[0].type).toMatch(cxschema.ArtifactMetadataEntryType.WARN);
@@ -153,7 +153,7 @@ test('Error when provisioned throughput is invalid number', () => {
     new EfsFileSystem(stack, 'EfsFileSystem2', {
       vpc,
       throughputMode: EfsThroughputMode.PROVISIONED,
-      provisionedThroughputInMibps: 1.5
+      provisionedThroughputInMibps: 1.5,
     });
   }).toThrowError(/Invalid input for provisionedThroughputInMibps/);
 });
@@ -163,12 +163,12 @@ test('file system is created correctly with provisioned throughput mode', () => 
   new EfsFileSystem(stack, 'EfsFileSystem', {
     vpc,
     throughputMode: EfsThroughputMode.PROVISIONED,
-    provisionedThroughputInMibps: 5
+    provisionedThroughputInMibps: 5,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     ThroughputMode: 'provisioned',
-    ProvisionedThroughputInMibps: 5
+    ProvisionedThroughputInMibps: 5,
   }));
 });
 
@@ -177,8 +177,8 @@ test('existing file system is imported correctly', () => {
   const fs = EfsFileSystem.fromEfsFileSystemAttributes(stack, 'existingFS', {
     fileSystemID: 'fs123',
     securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-      allowAllOutbound: false
-    })
+      allowAllOutbound: false,
+    }),
   });
 
   fs.connections.allowToAnyIpv4(ec2.Port.tcp(443));
@@ -186,5 +186,49 @@ test('existing file system is imported correctly', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
+  }));
+});
+
+test('support tags', () => {
+  // WHEN
+  const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  Tag.add(fileSystem, 'Name', 'LookAtMeAndMyFancyTags');
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: 'LookAtMeAndMyFancyTags'},
+    ],
+  }));
+});
+
+test('file system is created correctly when given a name', () => {
+  // WHEN
+  new EfsFileSystem(stack, 'EfsFileSystem', {
+    fileSystemName: 'MyNameableFileSystem',
+    vpc,
+  });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: 'MyNameableFileSystem'},
+    ],
+  }));
+});
+
+test('auto-named if none provided', () => {
+  // WHEN
+  const fileSystem = new EfsFileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    FileSystemTags: [
+      {Key: 'Name', Value: fileSystem.node.path},
+    ],
   }));
 });

@@ -11,7 +11,7 @@ export = {
     // WHEN
     const ref = ssm.StringParameter.fromStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
-      version: 123
+      version: 123,
     });
 
     // THEN
@@ -34,9 +34,9 @@ export = {
       Parameters: {
         RefParameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',
-          Default: '/some/key'
-        }
-      }
+          Default: '/some/key',
+        },
+      },
     });
 
     test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter' });
@@ -51,7 +51,7 @@ export = {
     // WHEN
     const ref = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
-      version: 123
+      version: 123,
     }).stringValue;
 
     // THEN

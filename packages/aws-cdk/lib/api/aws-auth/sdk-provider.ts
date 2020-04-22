@@ -166,7 +166,7 @@ export class SdkProvider {
     }
 
     const environment: cxapi.Environment = {
-      region, account: accountId, name: cxapi.EnvironmentUtils.format(accountId, region)
+      region, account: accountId, name: cxapi.EnvironmentUtils.format(accountId, region),
     };
 
     return environment;
@@ -306,7 +306,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath)
+      ca: readIfPossible(caBundlePath),
     });
   }
 
