@@ -62,12 +62,10 @@ book.addMethod('DELETE');
 
 Optionally, you can import a Swagger/OpenAPI definition, and API Gateway will create resources
 and methods from your specification:
-```
-const api = apigateway.RestApi.fromAPIDefinition(
-  this,
-  'books-api',
-  apigateway.APIDefinition.fromAsset('path-to-your-swagger-file.json')
-);
+```ts
+const api = new apigateway.APIDefinitionRestApi(this, 'books-api', {
+  apiDefinition: apigateway.APIDefinition.fromAsset('path-to-your-swagger-file.json')
+});
 ```
 [API Gateway Swagger/OpenAPI import limitations](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html) apply when creating a Rest API in this way.
 
