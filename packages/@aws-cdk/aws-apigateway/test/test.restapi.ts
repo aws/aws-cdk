@@ -50,7 +50,7 @@ export = {
             RestApiId: { Ref: 'myapi4C7BF186' },
             DeploymentId: { Ref: 'myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a' },
             StageName: 'prod',
-          }
+          },
         },
         myapiCloudWatchRole095452E5: {
           Type: 'AWS::IAM::Role',
