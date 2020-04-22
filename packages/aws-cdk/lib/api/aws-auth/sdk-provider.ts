@@ -113,8 +113,8 @@ export class SdkProvider {
    * The `region` and `accountId` parameters are interpreted as in `resolveEnvironment()` (which is to
    * say, `undefined` doesn't do what you expect).
    */
-  public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
-    const env = await this.resolveEnvironment(accountId, region);
+  public async forEnvironment(environment: cxapi.Environment, mode: Mode): Promise<ISDK> {
+    const env = await this.resolveEnvironment(environment);
     const creds = await this.obtainCredentials(env.account, mode);
     return new SDK(creds, env.region, this.sdkOptions);
   }
@@ -153,27 +153,19 @@ export class SdkProvider {
    * `undefined` actually means `undefined`, and is NOT changed to default values! Only the magic values UNKNOWN_REGION
    * and UNKNOWN_ACCOUNT will be replaced with looked-up values!
    */
-  public async resolveEnvironment(accountId: string | undefined, region: string | undefined) {
-    region = region !== cxapi.UNKNOWN_REGION ? region : this.defaultRegion;
-    accountId = accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : (await this.defaultAccount())?.accountId;
+  public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
+    const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
+    const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
-    if (!region) {
-      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
-    }
-
-    if (!accountId) {
+    if (!account) {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
-    const environment: cxapi.Environment = {
-      region, account: accountId, name: cxapi.EnvironmentUtils.format(accountId, region),
+    return  {
+      region,
+      account,
+      name: cxapi.EnvironmentUtils.format(account, region),
     };
-
-    return environment;
-  }
-
-  public async resolveEnvironmentObject(env: cxapi.Environment) {
-    return this.resolveEnvironment(env.account, env.region);
   }
 
   /**
