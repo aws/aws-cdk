@@ -6,7 +6,7 @@ const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 
 const repo = new ecr.Repository(stack, 'Repo', {
   imageScanOnPush: true,
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 repo.onImageScanCompleted('ImageScanComplete');
