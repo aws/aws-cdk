@@ -5,7 +5,7 @@ import * as tasks from '../../lib';
 
 /*
  * Stack verification steps:
- * The generatedState Machine can be executed from the Step Functions console (or CLI)
+ * The generated State Machine can be executed from the Step Functions console (or CLI)
  * and run with an execution status of `Succeeded`.
  *
  * -- aws stepfunctions start-execution --state-machine-arn  <deployed state machine arn> provides execution arn
