@@ -57,5 +57,5 @@ export async function deployBootstrapStack(
 }
 
 function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT].Value ?? '0', 10);
+  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
 }
