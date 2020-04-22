@@ -24,7 +24,7 @@ export abstract class ResourceHandler {
 
     eks.configureAssumeRole({
       RoleArn: roleToAssume,
-      RoleSessionName: `AWSCDK.EKSCluster.${this.requestType}.${this.requestId}`
+      RoleSessionName: `AWSCDK.EKSCluster.${this.requestType}.${this.requestId}`,
     });
   }
 

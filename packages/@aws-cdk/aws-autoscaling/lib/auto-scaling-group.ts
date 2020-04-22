@@ -7,7 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved
+  Tag, Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -244,7 +244,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -266,7 +266,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_CPU_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
-      ...props
+      ...props,
     });
   }
 
@@ -278,7 +278,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_IN,
       targetValue: props.targetBytesPerSecond,
-      ...props
+      ...props,
     });
   }
 
@@ -290,7 +290,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_OUT,
       targetValue: props.targetBytesPerSecond,
-      ...props
+      ...props,
     });
   }
 
@@ -312,7 +312,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       targetValue: props.targetRequestsPerSecond,
       resourceLabel,
-      ...props
+      ...props,
     });
 
     policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
@@ -326,7 +326,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       customMetric: props.metric,
-      ...props
+      ...props,
     });
   }
 
@@ -347,7 +347,8 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * It allows adding arbitrary commands to the startup scripts of the instances
  * in the fleet.
  *
- * The ASG spans all availability zones.
+ * The ASG spans the availability zones specified by vpcSubnets, falling back to
+ * the Vpc default strategy if not specified.
  */
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
@@ -362,7 +363,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       public autoScalingGroupArn = Stack.of(this).formatArn({
         service: 'autoscaling',
         resource: 'autoScalingGroup:*:autoScalingGroupName',
-        resourceName: this.autoScalingGroupName
+        resourceName: this.autoScalingGroupName,
       });
     }
 
@@ -421,7 +422,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
-      allowAllOutbound: props.allowAllOutbound !== false
+      allowAllOutbound: props.allowAllOutbound !== false,
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
@@ -429,13 +430,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ]
+      roles: [ this.role.roleName ],
     });
 
     // use delayed evaluation
@@ -456,8 +457,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       blockDeviceMappings: (props.blockDevices !== undefined ?
         synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
           ({ deviceName, ebs, virtualName, noDevice }) => ({
-            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined
-          })
+            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined,
+          }),
         ) : undefined),
     });
 
@@ -507,9 +508,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
             'autoscaling:EC2_INSTANCE_LAUNCH',
             'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
             'autoscaling:EC2_INSTANCE_TERMINATE',
-            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
-        }
+        },
       ],
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
@@ -526,7 +527,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
-      resourceName: this.autoScalingGroupName
+      resourceName: this.autoScalingGroupName,
     });
     this.node.defaultChild = this.autoScalingGroup;
 
@@ -602,8 +603,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingReplacingUpdate: {
-          willReplace: true
-        }
+          willReplace: true,
+        },
       };
 
       if (props.replacingUpdateMinSuccessfulInstancesPercent !== undefined) {
@@ -615,14 +616,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.autoScalingGroup.cfnOptions.creationPolicy = {
           ...this.autoScalingGroup.cfnOptions.creationPolicy,
           autoScalingCreationPolicy: {
-            minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
-          }
+            minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent),
+          },
         };
       }
     } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
-        autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
+        autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration),
       };
     }
 
@@ -630,7 +631,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.ignoreUnmodifiedSizeProperties !== false) {
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
-        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
+        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
     }
 
@@ -640,7 +641,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resourceSignal: {
           count: props.resourceSignalCount,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
-        }
+        },
       };
     }
   }

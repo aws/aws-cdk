@@ -141,7 +141,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-verify-connection': this.props.verifyConnection,
         'splunk-gzip': this.props.gzip,
         'splunk-gzip-level': this.props.gzipLevel,
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

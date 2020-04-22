@@ -15,7 +15,7 @@ export = {
 
       // WHEN
       fixture.asg.scaleOnCpuUtilization('ScaleCpu', {
-        targetUtilizationPercent: 30
+        targetUtilizationPercent: 30,
       });
 
       // THEN
@@ -23,8 +23,8 @@ export = {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageCPUUtilization' },
-          TargetValue: 30
-        }
+          TargetValue: 30,
+        },
       }));
 
       test.done();
@@ -37,7 +37,7 @@ export = {
 
       // WHEN
       fixture.asg.scaleOnIncomingBytes('ScaleNetwork', {
-        targetBytesPerSecond: 100
+        targetBytesPerSecond: 100,
       });
 
       // THEN
@@ -45,8 +45,8 @@ export = {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkIn' },
-          TargetValue: 100
-        }
+          TargetValue: 100,
+        },
       }));
 
       test.done();
@@ -59,7 +59,7 @@ export = {
 
       // WHEN
       fixture.asg.scaleOnOutgoingBytes('ScaleNetwork', {
-        targetBytesPerSecond: 100
+        targetBytesPerSecond: 100,
       });
 
       // THEN
@@ -67,8 +67,8 @@ export = {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkOut' },
-          TargetValue: 100
-        }
+          TargetValue: 100,
+        },
       }));
 
       test.done();
@@ -87,14 +87,14 @@ export = {
 
       // WHEN
       fixture.asg.scaleOnRequestCount('ScaleRequest', {
-        targetRequestsPerSecond: 10
+        targetRequestsPerSecond: 10,
       });
 
       // THEN
       const arnParts = {
         'Fn::Split': [
           '/',
-          { Ref: 'ALBListener3B99FF85' }
+          { Ref: 'ALBListener3B99FF85' },
         ]};
 
       expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
@@ -110,10 +110,10 @@ export = {
               '/',
               { 'Fn::Select': [ 3, arnParts ] },
               '/',
-              { 'Fn::GetAtt': [ 'ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName' ] }
-            ]
-            ]
-            }
+              { 'Fn::GetAtt': [ 'ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName' ] },
+            ],
+            ],
+            },
           },
         },
       }));
@@ -132,10 +132,10 @@ export = {
           metricName: 'Henk',
           namespace: 'Test',
           dimensions: {
-            Mustache: 'Bushy'
-          }
+            Mustache: 'Bushy',
+          },
         }),
-        targetValue: 2
+        targetValue: 2,
       });
 
       // THEN
@@ -146,10 +146,10 @@ export = {
             Dimensions: [{ Name: 'Mustache', Value: 'Bushy' }],
             MetricName: 'Henk',
             Namespace: 'Test',
-            Statistic: 'Average'
+            Statistic: 'Average',
           },
-          TargetValue: 2
-        }
+          TargetValue: 2,
+        },
       }));
 
       test.done();
@@ -166,14 +166,14 @@ export = {
       metric: new cloudwatch.Metric({
         metricName: 'Legs',
         namespace: 'Henk',
-        dimensions: { Mustache: 'Bushy' }
+        dimensions: { Mustache: 'Bushy' },
       }),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
         { lower: 0, upper: 2, change: +1 },
         { lower: 3, upper: 5, change: -1 },
-        { lower: 5, change: -2 } // Must work harder to remove legs
-      ]
+        { lower: 5, change: -2 }, // Must work harder to remove legs
+      ],
     });
 
     // THEN: scaling in policy
@@ -184,13 +184,13 @@ export = {
         {
           MetricIntervalLowerBound: 0,
           MetricIntervalUpperBound: 2,
-          ScalingAdjustment: -1
+          ScalingAdjustment: -1,
         },
         {
           MetricIntervalLowerBound: 2,
-          ScalingAdjustment: -2
-        }
-      ]
+          ScalingAdjustment: -2,
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -207,9 +207,9 @@ export = {
       StepAdjustments: [
         {
           MetricIntervalUpperBound: 0,
-          ScalingAdjustment: 1
-        }
-      ]
+          ScalingAdjustment: 1,
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -220,7 +220,7 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };
 
 class ASGFixture extends cdk.Construct {

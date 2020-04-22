@@ -16,9 +16,9 @@ export function flatten(object: object): { [key: string]: string } {
         .map(key =>
           typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] })
+            : ({ [path.concat([key]).join('.')]: child[key] }),
         ));
-    }(object)
+    }(object),
   );
 }
 
@@ -47,7 +47,7 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
       (acc, [k, v]) => pred(k)
         ? { ...acc, [k]: v }
         : acc,
-      {}
+      {},
     );
 }
 
@@ -147,7 +147,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,
       NoEcho: false,
-      Data: data
+      Data: data,
     });
 
     console.log('Responding', responseBody);
@@ -158,7 +158,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       hostname: parsedUrl.hostname,
       path: parsedUrl.path,
       method: 'PUT',
-      headers: { 'content-type': '', 'content-length': responseBody.length }
+      headers: { 'content-type': '', 'content-length': responseBody.length },
     };
 
     return new Promise((resolve, reject) => {

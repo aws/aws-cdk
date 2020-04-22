@@ -49,7 +49,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -87,13 +87,16 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "engines": {
     "node": ">= 10.12.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
+  "nyc": {
+    "statements": 75
+  },
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/app-delivery.PipelineDeployStackAction.actionProperties",

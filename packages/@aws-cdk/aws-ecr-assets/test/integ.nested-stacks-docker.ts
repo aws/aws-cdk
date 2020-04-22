@@ -9,7 +9,7 @@ class TheNestedStack extends cfn.NestedStack {
     super(scope, id, props);
 
     const asset = new ecr_assets.DockerImageAsset(this, 'my-image', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     const user = new iam.User(this, 'User');

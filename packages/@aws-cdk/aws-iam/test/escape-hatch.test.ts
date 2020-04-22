@@ -22,10 +22,10 @@ describe('IAM escape hatches', () => {
         'user2C2B57AE': {
           'Type': 'AWS::IAM::User',
           'Properties': {
-            'UserName': 'OverriddenUserName'
-          }
-        }
-      }
+            'UserName': 'OverriddenUserName',
+          },
+        },
+      },
     });
   });
 
@@ -46,11 +46,11 @@ describe('IAM escape hatches', () => {
           'Properties': {
             'UserName': 'MyUserName',
             'Hello': {
-              'World': 'Boom'
-            }
-          }
-        }
-      }
+              'World': 'Boom',
+            },
+          },
+        },
+      },
     });
   });
 
@@ -76,19 +76,19 @@ describe('IAM escape hatches', () => {
           'Properties': {
             'UserName': 'HA!',
             'Hello': {
-              'World': 'Bam'
-            }
+              'World': 'Bam',
+            },
           },
           'Joob': {
-            'Jab': 'Jib'
+            'Jab': 'Jib',
           },
           'UpdatePolicy': {
             'UseOnlineResharding': {
-              'Type': 'None'
-            }
-          }
-        }
-      }
+              'Type': 'None',
+            },
+          },
+        },
+      },
     });
   });
 });
