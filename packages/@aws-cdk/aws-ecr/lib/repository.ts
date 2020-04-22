@@ -441,7 +441,7 @@ export class Repository extends RepositoryBase {
           parameters: {
             repositoryName: this.repositoryName,
             imageScanningConfiguration: {
-              scanOnPush: props.imageScanOnPush
+              scanOnPush: props.imageScanOnPush,
             },
           },
           physicalResourceId: cr.PhysicalResourceId.of(this.repositoryName),
