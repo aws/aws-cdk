@@ -45,6 +45,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
+  - [SNS](#sns)
+  - [SQS](#sqs)
 
 ### Task
 
@@ -526,5 +528,33 @@ const transformJob = new tasks.SagemakerTransformTask(
 
 const task = new sfn.Task(this, 'Batch Inference', {
     task: transformJob
+});
+```
+
+#### SNS
+
+Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
+
+You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
+
+```ts
+new sfn.Task(stack, 'Publish', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromText('Publish this message'),
+  }),
+});
+```
+
+#### SQS
+
+Step Functions supports [Amazon SQS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sqs.html)
+
+You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html) API from a `Task` state
+to send a message to an SQS queue.
+
+```ts
+new tasks.SendToQueue(queue, {
+  messageBody: sfn.TaskInput.fromText('Send this message'),
+  messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
 });
 ```
