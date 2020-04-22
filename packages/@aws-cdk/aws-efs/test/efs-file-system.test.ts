@@ -116,7 +116,7 @@ test('Exception when throughput mode is set to PROVISIONED, but provisioned thro
       vpc,
       throughputMode: ThroughputMode.PROVISIONED,
     });
-  }).toThrowError(/Property provisionedThroughputInMibps is required when throughputMode is PROVISIONED/);
+  }).toThrowError(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
 });
 
 test('fails when provisioned throughput is less than the valid range', () => {
