@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
+    "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -38,7 +38,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
+          "Ref": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
         },
         "Description": "beta stage",
         "MethodSettings": [
