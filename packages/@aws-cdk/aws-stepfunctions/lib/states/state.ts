@@ -74,9 +74,28 @@ export abstract class State extends cdk.Construct implements IChainable {
   }
 
   /**
+   * Find the set of states reachable through transitions from the given start state.
+   * This does not retrieve states from within sub-graphs, such as states within a Parallel state's branch.
+   */
+  public static findReachableStates(start: State, options: FindStateOptions = {}): State[] {
+    const visited = new Set<State>();
+    const ret = new Set<State>();
+    const queue = [start];
+    while (queue.length > 0) {
+      const state = queue.splice(0, 1)[0]!;
+      if (visited.has(state)) { continue; }
+      visited.add(state);
+      const outgoing = state.outgoingTransitions(options);
+      queue.push(...outgoing);
+      ret.add(state);
+    }
+    return Array.from(ret);
+  }
+
+  /**
    * Find the set of end states states reachable through transitions from the given start state
    */
-  public static findReachableEndStates(start: State, options: FindStateOptions = {}) {
+  public static findReachableEndStates(start: State, options: FindStateOptions = {}): State[] {
     const visited = new Set<State>();
     const ret = new Set<State>();
     const queue = [start];
