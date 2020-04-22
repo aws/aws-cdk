@@ -13,25 +13,25 @@ const ExpectedBucketPolicyProperties = {
         Action: 's3:GetBucketAcl',
         Effect: 'Allow',
         Principal: {
-          Service: 'cloudtrail.amazonaws.com'
+          Service: 'cloudtrail.amazonaws.com',
         },
         Resource: {
           'Fn::GetAtt': [
             'MyAmazingCloudTrailS3A580FE27',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       },
       {
         Action: 's3:PutObject',
         Condition: {
           StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control'
-          }
+            's3:x-amz-acl': 'bucket-owner-full-control',
+          },
         },
         Effect: 'Allow',
         Principal: {
-          Service: 'cloudtrail.amazonaws.com'
+          Service: 'cloudtrail.amazonaws.com',
         },
         Resource: {
           'Fn::Join': [
@@ -40,17 +40,17 @@ const ExpectedBucketPolicyProperties = {
               {
                 'Fn::GetAtt': [
                   'MyAmazingCloudTrailS3A580FE27',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               '/AWSLogs/123456789012/*',
-            ]
-          ]
-        }
-      }
+            ],
+          ],
+        },
+      },
     ],
-    Version: '2012-10-17'
-  }
+    Version: '2012-10-17',
+  },
 };
 
 const logsRolePolicyName = 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7';
@@ -84,8 +84,8 @@ export = {
         actions: ['s3:PutObject'],
         principals: [cloudTrailPrincipal],
         conditions: {
-          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
-        }
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
       }));
 
       new Trail(stack, 'Trail', { bucket: Trailbucket });
@@ -106,7 +106,7 @@ export = {
       new Trail(stack, 'Trail', { bucket });
 
       expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
-        S3BucketName: 'SomeBucket'
+        S3BucketName: 'SomeBucket',
       }));
 
       test.done();
@@ -129,12 +129,12 @@ export = {
               Action: 's3:GetBucketAcl',
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
-              Resource: { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] }
+              Resource: { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
             },
             {
               Action: 's3:PutObject',
               Condition: {
-                StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
+                StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
               },
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
@@ -143,14 +143,14 @@ export = {
                   '',
                   [
                     { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
-                    '/someprefix/AWSLogs/123456789012/*'
-                  ]
-                ]
-              }
-            }
+                    '/someprefix/AWSLogs/123456789012/*',
+                  ],
+                ],
+              },
+            },
           ],
-          Version: '2012-10-17'
-        }
+          Version: '2012-10-17',
+        },
       }));
 
       test.done();
@@ -160,7 +160,7 @@ export = {
       'enabled'(test: Test) {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
-          sendToCloudWatchLogs: true
+          sendToCloudWatchLogs: true,
         });
 
         expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
@@ -177,8 +177,8 @@ export = {
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
                 'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
-              }
-            }]
+              },
+            }],
           },
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
@@ -191,7 +191,7 @@ export = {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
-          cloudWatchLogsRetention: RetentionDays.ONE_WEEK
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
 
         expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
@@ -200,7 +200,7 @@ export = {
         expect(stack).to(haveResource('AWS::Logs::LogGroup'));
         expect(stack).to(haveResource('AWS::IAM::Role'));
         expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-          RetentionInDays: 7
+          RetentionInDays: 7,
         }));
         const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
@@ -273,7 +273,7 @@ export = {
         test.equals(selector.DataResources, undefined, 'Expected there to be no data resources');
         test.done();
       },
-    }
+    },
   },
 
   'add an event rule'(test: Test) {
@@ -287,24 +287,24 @@ export = {
         bind: () => ({
           id: '',
           arn: 'arn',
-        })
-      }
+        }),
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventPattern: {
         'detail-type': [
-          'AWS API Call via CloudTrail'
-        ]
+          'AWS API Call via CloudTrail',
+        ],
       },
       State: 'ENABLED',
       Targets: [
         {
           Arn: 'arn',
-          Id: 'Target0'
-        }
-      ]
+          Id: 'Target0',
+        },
+      ],
     }));
 
     test.done();

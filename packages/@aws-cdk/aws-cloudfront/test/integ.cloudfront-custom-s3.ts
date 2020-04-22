@@ -20,11 +20,11 @@ class TestStack extends Stack {
           behaviors: [ { isDefaultBehavior: true } ],
           customOriginSource: {
             originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-            domainName: bucket.bucketWebsiteDomainName
+            domainName: bucket.bucketWebsiteDomainName,
           },
-        }
-      ]
-    }
+        },
+      ],
+    },
     );
   }
 }

@@ -49,7 +49,7 @@ export class BatchJob implements events.IRuleTarget {
   constructor(
     private readonly jobQueue: batch.IJobQueue,
     private readonly jobDefinition: batch.IJobDefinition,
-    private readonly props: BatchJobProps = {}
+    private readonly props: BatchJobProps = {},
   ) { }
 
   /**
@@ -75,12 +75,12 @@ export class BatchJob implements events.IRuleTarget {
           resources: [
             this.jobDefinition.jobDefinitionArn,
             this.jobQueue.jobQueueArn,
-          ]
-        })
+          ],
+        }),
       ]),
       input: this.props.event,
       targetResource: this.jobQueue,
-      batchParameters
+      batchParameters,
     };
   }
 }

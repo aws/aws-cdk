@@ -29,7 +29,7 @@ class CopyOperation extends Construct {
       properties: {
         sourceBucketArn: props.sourceBucket.bucketArn,
         targetBucketArn: props.targetBucket.bucketArn,
-      }
+      },
     });
   }
 }

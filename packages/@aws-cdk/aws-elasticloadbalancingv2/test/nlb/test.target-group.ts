@@ -14,7 +14,7 @@ export = {
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      proxyProtocolV2: true
+      proxyProtocolV2: true,
     });
 
     // THEN
@@ -22,9 +22,9 @@ export = {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
-          Value: 'true'
-        }
-      ]
+          Value: 'true',
+        },
+      ],
     }));
 
     test.done();
@@ -39,7 +39,7 @@ export = {
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      proxyProtocolV2: false
+      proxyProtocolV2: false,
     });
 
     // THEN
@@ -47,9 +47,9 @@ export = {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
-          Value: 'false'
-        }
-      ]
+          Value: 'false',
+        },
+      ],
     }));
 
     test.done();

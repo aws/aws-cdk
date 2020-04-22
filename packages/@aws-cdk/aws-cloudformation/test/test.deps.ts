@@ -23,7 +23,7 @@ export = {
       // THEN
       test.deepEqual(app.synth().getStackArtifact(stack.artifactId).template, {
         Resources:
-          { r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' } }
+          { r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' } },
       });
 
       test.done();
@@ -77,7 +77,7 @@ export = {
 
       // THEN: resource in parent needs to depend on the nested stack
       expect(parent).to(haveResource('PARENT', {
-        DependsOn: [ parent.resolve(nested.nestedStackResource!.logicalId) ]
+        DependsOn: [ parent.resolve(nested.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
       test.done();
     }),
@@ -95,7 +95,7 @@ export = {
 
       // THEN: resource in grantparent needs to depend on the top-level nested stack
       expect(grandparent).to(haveResource('GRANDPARENT', {
-        DependsOn: [ grandparent.resolve(parent.nestedStackResource!.logicalId) ]
+        DependsOn: [ grandparent.resolve(parent.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -159,11 +159,11 @@ export = {
 
       // THEN: dependency transfered to nested stack resources
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).notTo(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ]
+        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -241,7 +241,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -258,7 +258,7 @@ export = {
 
       // THEN: transfered to a resource dep between the resources in the common stack
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -275,7 +275,7 @@ export = {
 
       // THEN: transfered to a resource dep between the resources in the common stack
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ]
+        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -339,7 +339,7 @@ function matrixForResourceDependencyTest(testFunction: (test: Test, addDep: (sou
     },
     'resource dependency'(test: Test) {
       testFunction(test, (source, target) => source.addDependsOn(target));
-    }
+    },
   };
 }
 

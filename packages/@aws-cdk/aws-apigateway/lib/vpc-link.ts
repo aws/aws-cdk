@@ -49,7 +49,7 @@ export class VpcLink extends Resource {
     const cfnResource = new CfnVpcLink(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      targetArns: Lazy.listValue({ produce: () => this.renderTargets() })
+      targetArns: Lazy.listValue({ produce: () => this.renderTargets() }),
     });
 
     this.vpcLinkId = cfnResource.ref;

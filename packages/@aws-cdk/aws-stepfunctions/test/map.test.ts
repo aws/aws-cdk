@@ -13,8 +13,8 @@ describe('Map State', () => {
       itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       parameters: {
         foo: 'foo',
-        bar: stepfunctions.Data.stringAt('$.bar')
-      }
+        bar: stepfunctions.Data.stringAt('$.bar'),
+      },
     });
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -31,14 +31,14 @@ describe('Map State', () => {
             States: {
               'Pass State': {
                 Type: 'Pass',
-                End: true
-              }
-            }
+                End: true,
+              },
+            },
           },
           ItemsPath: '$.inputForMap',
-          MaxConcurrency: 1
-        }
-      }
+          MaxConcurrency: 1,
+        },
+      },
     });
   }),
 
@@ -47,7 +47,7 @@ describe('Map State', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: 1,
-        itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       });
       map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
       return map;
@@ -61,7 +61,7 @@ describe('Map State', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: 1,
-        itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       });
 
       return map;
@@ -75,7 +75,7 @@ describe('Map State', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: 1.2,
-        itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       });
       map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -90,7 +90,7 @@ describe('Map State', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: -1,
-        itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       });
       map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -105,7 +105,7 @@ describe('Map State', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: Number.MAX_VALUE,
-        itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+        itemsPath: stepfunctions.Data.stringAt('$.inputForMap'),
       });
       map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 

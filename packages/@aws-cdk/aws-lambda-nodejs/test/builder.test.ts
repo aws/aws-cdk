@@ -17,7 +17,7 @@ jest.mock('child_process', () => ({
     }
 
     return { error: null, status: 0 };
-  })
+  }),
 }));
 
 test('calls docker with the correct args', () => {
@@ -83,4 +83,3 @@ test('throws if docker is not installed', () => {
     nodeDockerTag: '13.8.0-alpine3.11'
   });
   expect(() => builder.build()).toThrow('Error: spawnSync docker ENOENT');
-});
