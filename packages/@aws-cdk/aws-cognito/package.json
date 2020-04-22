@@ -72,16 +72,20 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.2"
   },
   "jest": {},
@@ -91,7 +95,8 @@
   "awslint": {
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret"
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps"
     ]
   },
   "stability": "experimental",
