@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -316,6 +317,13 @@ export interface RepositoryProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enable the scan on push when creating the repository
+   *
+   *  @default false
+   */
+  readonly imageScanOnPush?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -422,6 +430,36 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    // image scan on push custom resource
+    if (props.imageScanOnPush) {
+      new cr.AwsCustomResource(this, 'ImageScanOnPush', {
+        resourceType: 'Custom::ECRImageScanOnPush',
+        onUpdate: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: props.imageScanOnPush ?? false,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryName),
+        },
+        onDelete: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: false,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryName),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE }),
+      });
+    }
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
