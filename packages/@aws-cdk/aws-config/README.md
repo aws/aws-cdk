@@ -23,6 +23,19 @@ Not supported
 * Delivery channel
 * Aggregation
 
+### Initial Setup
+
+Before using the constructs provided in this module, you need to setup 
+AWS Config in the region you plan on using it in. This setup includes:
+
+- `ConfigurationRecorder`: Configure which resources will be recorded for config changes.
+- `DeliveryChannel`: Configure where to store the recorded data.
+
+Following are the guides to setup AWS Config:
+
+- [Using the AWS Console](https://docs.aws.amazon.com/config/latest/developerguide/gs-console.html)
+- [Using the AWS CLI](https://docs.aws.amazon.com/config/latest/developerguide/gs-cli.html)
+
 ### Rules
 
 #### AWS managed rules
