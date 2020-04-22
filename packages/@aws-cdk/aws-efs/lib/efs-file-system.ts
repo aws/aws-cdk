@@ -10,7 +10,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 // tslint:enable
-export enum LifecyclePolicyProperty {
+export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.
    */
@@ -134,7 +134,7 @@ export interface FileSystemProps {
    *
    * @default - none
    */
-  readonly lifecyclePolicy?: LifecyclePolicyProperty;
+  readonly lifecyclePolicy?: LifecyclePolicy;
 
   /**
    * Enum to mention the performance mode of the file system.
@@ -153,9 +153,9 @@ export interface FileSystemProps {
   /**
    * Provisioned throughput for the file system.
    * This is a required property if the throughput mode is set to PROVISIONED.
-   * Valid values are 1MiB/s -> 1GiB/s
+   * Must be at least 1MiB/s.
    *
-   * @default - None, errors out
+   * @default - none, errors out
    */
   readonly provisionedThroughputPerSecond?: Size;
 }
@@ -172,7 +172,7 @@ export interface FileSystemAttributes {
   /**
    * The File System's ID.
    */
-  readonly fileSystemID: string;
+  readonly fileSystemId: string;
 }
 
 /**
@@ -192,7 +192,7 @@ export class FileSystem extends Resource implements IFileSystem {
    */
   public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
     class Import extends Resource implements IFileSystem {
-      public readonly fileSystemId = attrs.fileSystemID;
+      public readonly fileSystemId = attrs.fileSystemId;
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
         defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
@@ -223,23 +223,19 @@ export class FileSystem extends Resource implements IFileSystem {
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
-    if (props.throughputMode === ThroughputMode.PROVISIONED) {
-      if (props.provisionedThroughputPerSecond === undefined) {
-        throw new Error('Property provisionedThroughputInMibps is required when throughputMode is PROVISIONED');
-      } else if (props.provisionedThroughputPerSecond.toMebibytes() > 1024) {
-        throw new Error('Valid values for throughput are 1MiB/s - 1GiB/s. You can get this limit increased by contacting AWS Support.');
-      }
+    if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
+      throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
       lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: LifecyclePolicyProperty[props.lifecyclePolicy],
+        transitionToIa: LifecyclePolicy[props.lifecyclePolicy],
       } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
-      provisionedThroughputInMibps: props.provisionedThroughputPerSecond ? props.provisionedThroughputPerSecond.toMebibytes() : undefined,
+      provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
     });
 
     this.fileSystemId = filesystem.ref;

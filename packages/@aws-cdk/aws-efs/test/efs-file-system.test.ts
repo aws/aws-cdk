@@ -2,7 +2,7 @@ import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { Size, Stack, Tag } from '@aws-cdk/core';
-import { FileSystem, LifecyclePolicyProperty, PerformanceMode, ThroughputMode} from '../lib';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode} from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -76,7 +76,7 @@ test('file system is created correctly with life cycle property', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    lifecyclePolicy: LifecyclePolicyProperty.AFTER_14_DAYS,
+    lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
@@ -127,14 +127,6 @@ test('fails when provisioned throughput is less than the valid range', () => {
   })).toThrow(/cannot be converted into a whole number/);
 });
 
-test('fails when provisioned throughput is above 1Gibps', () => {
-  expect(() => new FileSystem(stack, 'EfsFileSystem1', {
-    vpc,
-    throughputMode: ThroughputMode.PROVISIONED,
-    provisionedThroughputPerSecond: Size.mebibytes(1025),
-  })).toThrow(/values for throughput/);
-});
-
 test('fails when provisioned throughput is not a whole number of mebibytes', () => {
   expect(() => {
     new FileSystem(stack, 'EfsFileSystem2', {
@@ -162,7 +154,7 @@ test('file system is created correctly with provisioned throughput mode', () => 
 test('existing file system is imported correctly', () => {
   // WHEN
   const fs = FileSystem.fromFileSystemAttributes(stack, 'existingFS', {
-    fileSystemID: 'fs123',
+    fileSystemId: 'fs123',
     securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
       allowAllOutbound: false,
     }),
