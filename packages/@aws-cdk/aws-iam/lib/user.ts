@@ -134,7 +134,7 @@ export class User extends Resource implements IIdentity, IUser {
       service: 'iam',
       region: '',
       resource: 'user',
-      resourceName: userName
+      resourceName: userName,
     });
 
     class Import extends Resource implements IUser {
@@ -211,7 +211,7 @@ export class User extends Resource implements IIdentity, IUser {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
-      loginProfile: this.parseLoginProfile(props)
+      loginProfile: this.parseLoginProfile(props),
     });
 
     this.userName = this.getResourceNameAttribute(user.ref);
@@ -272,7 +272,7 @@ export class User extends Resource implements IIdentity, IUser {
     if (props.password) {
       return {
         password: props.password.toString(),
-        passwordResetRequired: props.passwordResetRequired
+        passwordResetRequired: props.passwordResetRequired,
       };
     }
 

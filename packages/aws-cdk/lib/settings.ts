@@ -30,7 +30,7 @@ export class Configuration {
   public readonly defaultConfig = new Settings({
     versionReporting: true,
     pathMetadata: true,
-    output: 'cdk.out'
+    output: 'cdk.out',
   });
 
   private readonly commandLineArguments: Settings;
@@ -271,7 +271,7 @@ export class Settings {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
           Key: parts[0],
-          Value: parts[1]
+          Value: parts[1],
         });
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);

@@ -15,7 +15,7 @@ beforeEach(() => {
   role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
     managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
     ],
   });
 });
@@ -29,8 +29,8 @@ test('create basic transform job', () => {
       transformDataSource: {
         s3DataSource: {
           s3Uri: 's3://inputbucket/prefix',
-        }
-      }
+        },
+      },
     },
     transformOutput: {
       s3OutputPath: 's3://outputbucket/prefix',
@@ -61,8 +61,8 @@ test('create basic transform job', () => {
           S3DataSource: {
             S3Uri: 's3://inputbucket/prefix',
             S3DataType: 'S3Prefix',
-          }
-        }
+          },
+        },
       },
       TransformOutput: {
         S3OutputPath: 's3://outputbucket/prefix',
@@ -70,7 +70,7 @@ test('create basic transform job', () => {
       TransformResources: {
         InstanceCount: 1,
         InstanceType: 'ml.m4.xlarge',
-      }
+      },
     },
   });
 });
@@ -85,8 +85,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
         transformDataSource: {
           s3DataSource: {
             s3Uri: 's3://inputbucket/prefix',
-          }
-        }
+          },
+        },
       },
       transformOutput: {
         s3OutputPath: 's3://outputbucket/prefix',
@@ -108,8 +108,8 @@ test('create complex transform job', () => {
         s3DataSource: {
           s3Uri: 's3://inputbucket/prefix',
           s3DataType: tasks.S3DataType.S3_PREFIX,
-        }
-      }
+        },
+      },
     },
     transformOutput: {
       s3OutputPath: 's3://outputbucket/prefix',
@@ -125,7 +125,7 @@ test('create complex transform job', () => {
     },
     batchStrategy: tasks.BatchStrategy.MULTI_RECORD,
     environment: {
-      SOMEVAR: 'myvalue'
+      SOMEVAR: 'myvalue',
     },
     maxConcurrentTransforms: 3,
     maxPayloadInMB: 100,
@@ -155,8 +155,8 @@ test('create complex transform job', () => {
           S3DataSource: {
             S3Uri: 's3://inputbucket/prefix',
             S3DataType: 'S3Prefix',
-          }
-        }
+          },
+        },
       },
       TransformOutput: {
         S3OutputPath: 's3://outputbucket/prefix',
@@ -168,14 +168,14 @@ test('create complex transform job', () => {
         VolumeKmsKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
       },
       Tags: [
-        { Key: 'Project', Value: 'MyProject' }
+        { Key: 'Project', Value: 'MyProject' },
       ],
       MaxConcurrentTransforms: 3,
       MaxPayloadInMB: 100,
       Environment: {
-        SOMEVAR: 'myvalue'
+        SOMEVAR: 'myvalue',
       },
-      BatchStrategy: 'MultiRecord'
+      BatchStrategy: 'MultiRecord',
     },
   });
 });
@@ -191,8 +191,8 @@ test('pass param to transform job', () => {
         s3DataSource: {
           s3Uri: 's3://inputbucket/prefix',
           s3DataType: tasks.S3DataType.S3_PREFIX,
-        }
-      }
+        },
+      },
     },
     transformOutput: {
       s3OutputPath: 's3://outputbucket/prefix',
@@ -200,7 +200,7 @@ test('pass param to transform job', () => {
     transformResources: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-    }
+    },
   }) });
 
   // THEN
@@ -227,8 +227,8 @@ test('pass param to transform job', () => {
           S3DataSource: {
             S3Uri: 's3://inputbucket/prefix',
             S3DataType: 'S3Prefix',
-          }
-        }
+          },
+        },
       },
       'TransformOutput': {
         S3OutputPath: 's3://outputbucket/prefix',
@@ -236,7 +236,7 @@ test('pass param to transform job', () => {
       'TransformResources': {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
-      }
+      },
     },
   });
 });

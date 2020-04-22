@@ -49,7 +49,7 @@ describe('given an AutoScalingGroup', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' }
+      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
     });
   });
 
@@ -69,12 +69,12 @@ describe('given an AutoScalingGroup', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' }
+      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
     });
     expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-      Endpoint: { 'Fn::GetAtt': [ 'Fn9270CBC0', 'Arn' ] }
+      Endpoint: { 'Fn::GetAtt': [ 'Fn9270CBC0', 'Arn' ] },
     });
   });
 });

@@ -89,7 +89,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
       });
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
@@ -105,7 +105,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
           container.addPortMappings({
-            containerPort
+            containerPort,
           });
         }
       }
@@ -117,7 +117,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
-        containerPort: 80
+        containerPort: 80,
       });
     }
 
@@ -128,7 +128,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
-        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort
+        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
     }
   }

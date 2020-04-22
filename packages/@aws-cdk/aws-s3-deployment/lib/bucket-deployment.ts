@@ -172,7 +172,7 @@ export class BucketDeployment extends cdk.Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit
+      memorySize: props.memoryLimit,
     });
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
@@ -199,8 +199,8 @@ export class BucketDeployment extends cdk.Construct {
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
-        DistributionPaths: props.distributionPaths
-      }
+        DistributionPaths: props.distributionPaths,
+      },
     });
   }
 

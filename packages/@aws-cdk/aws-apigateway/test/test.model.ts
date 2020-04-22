@@ -20,8 +20,8 @@ export = {
         schema: apigw.JsonSchemaVersion.DRAFT4,
         title: 'test',
         type: apigw.JsonSchemaType.OBJECT,
-        properties: { message: { type: apigw.JsonSchemaType.STRING } }
-      }
+        properties: { message: { type: apigw.JsonSchemaType.STRING } },
+      },
     });
 
     // THEN
@@ -31,9 +31,9 @@ export = {
         $schema: 'http://json-schema.org/draft-04/schema#',
         title: 'test',
         type: 'object',
-        properties: { message: { type: 'string' } }
+        properties: { message: { type: 'string' } },
       },
-      ContentType: 'application/json'
+      ContentType: 'application/json',
     }));
 
     test.done();
@@ -55,8 +55,8 @@ export = {
         schema: apigw.JsonSchemaVersion.DRAFT4,
         title: 'test',
         type: apigw.JsonSchemaType.OBJECT,
-        properties: { message: { type: apigw.JsonSchemaType.STRING } }
-      }
+        properties: { message: { type: apigw.JsonSchemaType.STRING } },
+      },
     });
 
     // THEN
@@ -66,10 +66,10 @@ export = {
         $schema: 'http://json-schema.org/draft-04/schema#',
         title: 'test',
         type: 'object',
-        properties: { message: { type: 'string' } }
-      }
+        properties: { message: { type: 'string' } },
+      },
     }));
 
     test.done();
-  }
+  },
 };

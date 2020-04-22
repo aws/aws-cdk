@@ -20,49 +20,49 @@ test('queues can be used as destinations', () => {
           Action: [
             'sqs:SendMessage',
             'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl'
+            'sqs:GetQueueUrl',
           ],
           Condition: {
             ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] }
-            }
+              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] },
+            },
           },
           Effect: 'Allow',
           Principal: {
-            Service: 's3.amazonaws.com'
+            Service: 's3.amazonaws.com',
           },
-          Resource: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }
+          Resource: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] },
 
-        }
+        },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     },
     Queues: [
       {
-        Ref: 'Queue4A7E3555'
-      }
-    ]
+        Ref: 'Queue4A7E3555',
+      },
+    ],
   });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
     BucketName: {
-      Ref: 'Bucket83908E77'
+      Ref: 'Bucket83908E77',
     },
     NotificationConfiguration: {
       QueueConfigurations: [
         {
           Events: [
-            's3:ObjectRemoved:*'
+            's3:ObjectRemoved:*',
           ],
           QueueArn: {
             'Fn::GetAtt': [
               'Queue4A7E3555',
-              'Arn'
-            ]
-          }
-        }
-      ]
-    }
+              'Arn',
+            ],
+          },
+        },
+      ],
+    },
   });
 
   // make sure the queue policy is added as a dependency to the bucket
@@ -96,45 +96,45 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
             'kms:CancelKeyDeletion',
             'kms:GenerateDataKey',
             'kms:TagResource',
-            'kms:UntagResource'
+            'kms:UntagResource',
           ],
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] }
+            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
           },
-          Resource: '*'
+          Resource: '*',
         },
         {
           Action: [
             'kms:Encrypt',
             'kms:ReEncrypt*',
-            'kms:GenerateDataKey*'
+            'kms:GenerateDataKey*',
           ],
           Condition: {
             ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] }
-            }
+              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] },
+            },
           },
           Effect: 'Allow',
           Principal: {
-            Service: 's3.amazonaws.com'
+            Service: 's3.amazonaws.com',
           },
-          Resource: '*'
+          Resource: '*',
         },
         {
           Action: [
             'kms:GenerateDataKey*',
-            'kms:Decrypt'
+            'kms:Decrypt',
           ],
           Effect: 'Allow',
           Principal: {
-            Service: 's3.amazonaws.com'
+            Service: 's3.amazonaws.com',
           },
-          Resource: '*'
-        }
+          Resource: '*',
+        },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     },
-    Description: 'Created by Queue'
+    Description: 'Created by Queue',
   });
 });

@@ -23,22 +23,22 @@ export = {
       ServiceToken: {
         'Fn::GetAtt': [
           'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-          'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn'
-        ]
+          'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+        ],
       },
       ResourceName: 'myResourceName',
       ResourceNamespace: 'default',
       ApplyPatchJson: '{"patch":{"to":"apply"}}',
       RestorePatchJson: '{"restore":{"patch":123}}',
       ClusterName: {
-        Ref: 'MyCluster8AD82BF8'
+        Ref: 'MyCluster8AD82BF8',
       },
       RoleArn: {
         'Fn::GetAtt': [
           'MyClusterCreationRoleB5FA4FF3',
-          'Arn'
-        ]
-      }
+          'Arn',
+        ],
+      },
     }));
     test.done();
   },
@@ -55,7 +55,7 @@ export = {
       resourceName: 'myResourceName',
     });
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
-      PatchType: 'strategic'
+      PatchType: 'strategic',
     }));
     test.done();
   },
@@ -70,35 +70,35 @@ export = {
       applyPatch: { patch: { to: 'apply' } },
       restorePatch: { restore: { patch: 123 }},
       resourceName: 'jsonPatchResource',
-      patchType: PatchType.JSON
+      patchType: PatchType.JSON,
     });
     new KubernetesPatch(stack, 'mergePatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
       restorePatch: { restore: { patch: 123 }},
       resourceName: 'mergePatchResource',
-      patchType: PatchType.MERGE
+      patchType: PatchType.MERGE,
     });
     new KubernetesPatch(stack, 'strategicPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
       restorePatch: { restore: { patch: 123 }},
       resourceName: 'strategicPatchResource',
-      patchType: PatchType.STRATEGIC
+      patchType: PatchType.STRATEGIC,
     });
 
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'jsonPatchResource',
-      PatchType: 'json'
+      PatchType: 'json',
     }));
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'mergePatchResource',
-      PatchType: 'merge'
+      PatchType: 'merge',
     }));
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'strategicPatchResource',
-      PatchType: 'strategic'
+      PatchType: 'strategic',
     }));
     test.done();
-  }
+  },
 };

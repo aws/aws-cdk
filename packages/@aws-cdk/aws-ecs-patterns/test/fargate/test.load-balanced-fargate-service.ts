@@ -18,14 +18,14 @@ export = {
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app')
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Type: 'network',
-      Scheme: 'internet-facing'
+      Scheme: 'internet-facing',
     }));
 
     test.done();
@@ -41,7 +41,7 @@ export = {
     new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
       cluster,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app')
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
       publicLoadBalancer: false,
     });
@@ -49,7 +49,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Type: 'network',
-      Scheme: 'internal'
+      Scheme: 'internal',
     }));
 
     test.done();
@@ -66,7 +66,7 @@ export = {
       cluster,
       vpc,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app')
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
     }));
 
@@ -83,8 +83,8 @@ export = {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
-      )
+        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      ),
     });
 
     // WHEN
@@ -92,7 +92,7 @@ export = {
       cluster,
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        executionRole
+        executionRole,
       },
     });
 
@@ -111,8 +111,8 @@ export = {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
-      )
+        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      ),
     });
 
     // WHEN
@@ -120,7 +120,7 @@ export = {
       cluster,
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        taskRole
+        taskRole,
       },
     });
 
@@ -141,7 +141,7 @@ export = {
       cluster,
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        containerName: 'bob'
+        containerName: 'bob',
       },
     });
 
@@ -243,7 +243,7 @@ export = {
         enableLogging: false,
         environment: {
           TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value'
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
         },
         family: 'fargate-task-family',
       },
@@ -256,7 +256,7 @@ export = {
     expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
       LaunchType: 'FARGATE',
-      ServiceName: 'fargate-test-service'
+      ServiceName: 'fargate-test-service',
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -265,17 +265,17 @@ export = {
           Environment: [
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE1',
-              Value: 'test environment variable 1 value'
+              Value: 'test environment variable 1 value',
             },
             {
               Name: 'TEST_ENVIRONMENT_VARIABLE2',
-              Value: 'test environment variable 2 value'
-            }
+              Value: 'test environment variable 2 value',
+            },
           ],
           Image: '/aws/aws-example-app',
-        }
+        },
       ],
-      Family: 'fargate-task-family'
+      Family: 'fargate-task-family',
     }));
 
     test.done();
@@ -293,7 +293,7 @@ export = {
       listenerPort: 2015,
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -301,11 +301,11 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          Type: 'forward'
-        }
+          Type: 'forward',
+        },
       ],
       Port: 2015,
-      Protocol: 'TCP'
+      Protocol: 'TCP',
     }));
 
     test.done();
@@ -323,7 +323,7 @@ export = {
       listenerPort: 2015,
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -331,11 +331,11 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          Type: 'forward'
-        }
+          Type: 'forward',
+        },
       ],
       Port: 2015,
-      Protocol: 'HTTP'
+      Protocol: 'HTTP',
     }));
 
     test.done();
@@ -361,7 +361,7 @@ export = {
       },
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -369,11 +369,11 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          Type: 'forward'
-        }
+          Type: 'forward',
+        },
       ],
       Port: 443,
-      Protocol: 'HTTPS'
+      Protocol: 'HTTPS',
     }));
 
     test.done();
@@ -399,7 +399,7 @@ export = {
       },
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -423,7 +423,7 @@ export = {
       protocol: ApplicationProtocol.HTTP,
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -431,11 +431,11 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          Type: 'forward'
-        }
+          Type: 'forward',
+        },
       ],
       Port: 80,
-      Protocol: 'HTTP'
+      Protocol: 'HTTP',
     }));
 
     test.done();
@@ -452,7 +452,7 @@ export = {
       cluster,
       taskImageOptions: {
         containerPort: 2015,
-        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
       },
     });
 
@@ -460,11 +460,11 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
-          Type: 'forward'
-        }
+          Type: 'forward',
+        },
       ],
       Port: 80,
-      Protocol: 'HTTP'
+      Protocol: 'HTTP',
     }));
 
     test.done();
@@ -490,7 +490,7 @@ export = {
       LaunchType: 'FARGATE',
     }));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Type: 'network'
+      Type: 'network',
     }));
     test.done();
   },
@@ -505,7 +505,7 @@ export = {
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
       vpc: vpc1,
       securityGroups: cluster1.connections.securityGroups,
-      clusterName: 'cluster-name'
+      clusterName: 'cluster-name',
     });
 
     // WHEN
@@ -519,7 +519,7 @@ export = {
     });
     const container = taskDef.addContainer('myContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 1024
+      memoryLimitMiB: 1024,
     });
     container.addPortMappings({
       containerPort: 80,
@@ -535,7 +535,7 @@ export = {
     // THEN
     expect(stack2).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}]
+      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
     }));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -561,7 +561,7 @@ export = {
       loadBalancer: alb,
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      }
+      },
     });
 
     // THEN
@@ -569,7 +569,7 @@ export = {
       LaunchType: 'FARGATE',
     }));
     expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Type: 'application'
+      Type: 'application',
     }));
     test.done();
   },
@@ -579,14 +579,14 @@ export = {
     const stack1 = new cdk.Stack();
     const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
     const vpc = new ec2.Vpc(stack1, 'Vpc');
-    const cluster = new ecs.Cluster(stack1, 'Cluster', { vpc, clusterName: 'MyClusterName', });
+    const cluster = new ecs.Cluster(stack1, 'Cluster', { vpc, clusterName: 'MyClusterName' });
     const sg = new ec2.SecurityGroup(stack1, 'SecurityGroup', { vpc });
     cluster.connections.addSecurityGroup(sg);
     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack1, 'ALB', {
       loadBalancerArn: albArn,
       vpc,
       securityGroupId: sg.securityGroupId,
-      loadBalancerDnsName: 'MyDnsName'
+      loadBalancerDnsName: 'MyDnsName',
     });
 
     // WHEN
@@ -612,7 +612,7 @@ export = {
     // THEN
     expect(stack1).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}]
+      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
     }));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
