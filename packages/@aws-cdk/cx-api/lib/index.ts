@@ -4,6 +4,7 @@ export * from './context/vpc';
 export * from './context/ssm-parameter';
 export * from './context/ami';
 export * from './context/availability-zones';
+export * from './context/endpoint-service-availability-zones';
 export * from './cloud-artifact';
 export * from './cloudformation-artifact';
 export * from './tree-cloud-artifact';

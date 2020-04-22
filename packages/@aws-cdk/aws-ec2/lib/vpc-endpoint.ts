@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
@@ -443,8 +444,19 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
-    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
-    const subnetIds = subnets.subnetIds;
+    const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    let subnets;
+
+    // If we don't have an account/region, we will not be able to do filtering on AZs since
+    // they will be undefined
+    // Otherwise, we filter by AZ
+    if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.stack.region)) {
+      subnets = subnetSelection.subnets;
+    } else {
+      const availableAZs = this.availableAvailabilityZones(props.service.name);
+      subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
+    }
+    const subnetIds = subnets.map(s => s.subnetId);
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
@@ -460,6 +472,21 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
+  }
+
+  private availableAvailabilityZones(serviceName: string): string[] {
+    // Here we check what AZs the endpoint service is available in
+    // If for whatever reason we can't retrieve the AZs, and no context is set,
+    // we will fall back to all AZs
+    const availableAZs = ContextProvider.getValue(this, {
+      provider: cxapi.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: this.stack.availabilityZones,
+      props: {serviceName},
+    }).value;
+    if (!Array.isArray(availableAZs)) { // || availableAZs.every(az => typeof az === 'string')) {
+      throw new Error(`Context provider ${cxapi.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER} must be a string[]`);
+    }
+    return availableAZs;
   }
 }
 
