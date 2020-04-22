@@ -146,7 +146,7 @@ export class OAuthScope {
 }
 
 /**
- * Properties for the UserPoolClient construct
+ * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
   /**

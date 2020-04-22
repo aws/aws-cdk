@@ -37,6 +37,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
   - [App Clients](#app-clients)
+  - [Domains](#domains)
 
 ## User Pools
 
@@ -396,5 +397,36 @@ pool.addClient('app-client', {
     scopes: [ OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
   }
+});
+```
+
+### Domains
+
+After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
+configured using domains. There are two ways to set up a domain - either the Amazon Cognito hosted domain can be chosen
+with an available domain prefix, or a custom domain name can be chosen. The custom domain must be one that is already
+owned, and whose certificate is registered in AWS Certificate Manager.
+
+The following code sets up a user pool domain in Amazon Cognito hosted domain with the prefix 'my-awesome-app' -
+
+```ts
+const pool = new UserPool(this, 'Pool');
+pool.addDomain('domain', {
+  domain: UserPoolDomainType.cognitoDomain({
+    domainPrefix: 'my-awesome-app',
+  }),
+});
+```
+
+On the other hand, the following code sets up a user pool domain and use your own custom domain -
+
+```ts
+const domainCert = new acm.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
+const pool = new UserPool(this, 'Pool');
+pool.addDomain('domain', {
+  domain: UserPoolDomainType.customDomain({
+    domainPrefix: 'my-awesome-app',
+    certificate: domainCert,
+  }),
 });
 ```
