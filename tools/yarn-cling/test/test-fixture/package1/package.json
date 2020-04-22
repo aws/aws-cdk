@@ -1,0 +1,8 @@
+{
+    "name": "package1",
+    "version": "1.1.1",
+    "dependencies": {
+        "registrydependency1": "^1.2.3",
+        "package2": "2.2.2"
+    }
+}
