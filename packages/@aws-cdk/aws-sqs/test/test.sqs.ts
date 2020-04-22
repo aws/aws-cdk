@@ -274,7 +274,8 @@ export = {
               'Action': [
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
-                'kms:GenerateDataKey*'
+                'kms:GenerateDataKey*',
+                'kms:Decrypt'
               ],
               'Effect': 'Allow',
               'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] }
@@ -285,7 +286,7 @@ export = {
       }));
 
       test.done();
-    },
+    }
   },
 
   'test ".fifo" suffixed queues register as fifo'(test: Test) {
