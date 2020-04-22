@@ -348,7 +348,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly tableStreamArn?: string;
 
-  protected readonly regionalArns: string[] = [];
+  protected readonly regionalArns = new Array<string>();
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM
