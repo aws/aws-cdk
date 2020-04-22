@@ -47,12 +47,12 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
-   * Deployment environment to use while deploying this stack
+   * Synthesis method to use while deploying this stack
    *
-   * @default - `DefaultDeploymentConfiguration` if the 'aws-cdk:conventionModeDeployments' feature flag
-   * is set, `LegacyDeploymentConfiguration` otherwise.
+   * @default - `DefaultStackSynthesis` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
+   * is set, `LegacyStackSynthesis` otherwise.
    */
-  readonly deploymentConfiguration?: IDeploymentConfiguration;
+  readonly stackSynthesis?: IStackSynthesis;
 }
 
 /**
@@ -195,11 +195,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly artifactId: string;
 
   /**
-   * The deployment environment for this stack.
+   * Synthesis method for this stack
    *
    * @experimental
    */
-  public readonly deploymentConfiguration: IDeploymentConfiguration;
+  public readonly stackSynthesis: IStackSynthesis;
 
   /**
    * Logical ID generation strategy
@@ -270,10 +270,10 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.deploymentConfiguration = props.deploymentConfiguration ?? (this.node.tryGetContext(cxapi.NEW_STYLE_DEPLOYMENT_CONTEXT)
-      ? new DefaultDeploymentConfiguration()
-      : new LegacyDeploymentConfiguration());
-    this.deploymentConfiguration.bind(this);
+    this.stackSynthesis = props.stackSynthesis ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS)
+      ? new DefaultStackSynthesis()
+      : new LegacyStackSynthesis());
+    this.stackSynthesis.bind(this);
   }
 
   /**
@@ -518,7 +518,7 @@ export class Stack extends Construct implements ITaggable {
    * and a different IDeploymentEnvironment class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    return this.deploymentConfiguration.addFileAsset(asset);
+    return this.stackSynthesis.addFileAsset(asset);
   }
 
   /**
@@ -528,7 +528,7 @@ export class Stack extends Construct implements ITaggable {
    * and a different `IDeploymentEnvironment` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    return this.deploymentConfiguration.addDockerImageAsset(asset);
+    return this.stackSynthesis.addDockerImageAsset(asset);
   }
 
   /**
@@ -706,7 +706,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     // Delegate adding artifacts to the DeploymentConfiguration
-    this.deploymentConfiguration.writeStackArtifacts(session);
+    this.stackSynthesis.synthesizeStackArtifacts(session);
   }
 
   /**
@@ -911,11 +911,11 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { DefaultDeploymentConfiguration, IDeploymentConfiguration, LegacyDeploymentConfiguration } from './deployment-configuration';
 import { addDependency } from './deps';
 import { prepareApp } from './private/prepare-app';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
+import { DefaultStackSynthesis, IStackSynthesis, LegacyStackSynthesis } from './stack-synthesis';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 
