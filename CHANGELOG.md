@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.34.1](https://github.com/aws/aws-cdk/compare/v1.34.0...v1.34.1) (2020-04-22)
+
+
+### Bug Fixes
+
+* **cli:** Javascript init-templates cannot be synthesized ([ce4b8dd](https://github.com/aws/aws-cdk/commit/ce4b8dde205ca03891e0aee21b473b974d674154)), closes [#7356](https://github.com/aws/aws-cdk/issues/7356)
+
 ## [1.34.0](https://github.com/aws/aws-cdk/compare/v1.33.1...v1.34.0) (2020-04-21)
 
 
