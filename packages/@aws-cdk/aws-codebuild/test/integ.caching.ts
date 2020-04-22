@@ -9,19 +9,19 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 
 const bucket = new s3.Bucket(stack, 'CacheBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new codebuild.Project(stack, 'MyProject', {
   cache: Cache.bucket(bucket),
   buildSpec: codebuild.BuildSpec.fromObject({
     build: {
-      commands: ['echo Hello']
+      commands: ['echo Hello'],
     },
     cache: {
-      paths: ['/root/.cache/pip/**/*']
-    }
-  })
+      paths: ['/root/.cache/pip/**/*'],
+    },
+  }),
 });
 
 app.synth();

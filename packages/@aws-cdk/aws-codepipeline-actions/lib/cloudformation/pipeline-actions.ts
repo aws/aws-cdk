@@ -278,7 +278,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
           });
       } else {
         this._deploymentRole = new iam.Role(scope, 'Role', {
-          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
         });
       }
 
@@ -562,7 +562,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
       actions: [
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
-      ]
+      ],
     }).addResources(this.stackArnFromProps(props));
   }
 
@@ -607,7 +607,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',
-      resourceName: `${props.stackName}/*`
+      resourceName: `${props.stackName}/*`,
     });
   }
 }

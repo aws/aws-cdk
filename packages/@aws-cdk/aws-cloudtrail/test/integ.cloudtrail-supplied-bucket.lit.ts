@@ -25,8 +25,8 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['s3:PutObject'],
   principals: [cloudTrailPrincipal],
   conditions:  {
-    StringEquals: {'s3:x-amz-acl': 'bucket-owner-full-control'}
-  }
+    StringEquals: {'s3:x-amz-acl': 'bucket-owner-full-control'},
+  },
 }));
 
 const trail = new cloudtrail.Trail(stack, 'Trail', {bucket: Trailbucket});

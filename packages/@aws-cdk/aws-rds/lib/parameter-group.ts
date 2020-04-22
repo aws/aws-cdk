@@ -94,7 +94,7 @@ export class ParameterGroup extends ParameterGroupBase {
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       description: props.description || `Parameter group for ${props.family}`,
       family: props.family,
-      parameters: Lazy.anyValue({ produce: () => this.parameters })
+      parameters: Lazy.anyValue({ produce: () => this.parameters }),
     });
 
     this.parameterGroupName = resource.ref;

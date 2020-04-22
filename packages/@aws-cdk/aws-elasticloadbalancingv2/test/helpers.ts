@@ -11,7 +11,7 @@ export class FakeSelfRegisteringTarget extends cdk.Construct implements elbv2.IA
     super(scope, id);
     this.securityGroup = new ec2.SecurityGroup(this, 'SG', { vpc });
     this.connections = new ec2.Connections({
-      securityGroups: [this.securityGroup]
+      securityGroups: [this.securityGroup],
     });
   }
 

@@ -11,7 +11,7 @@ test('State machine can be used as Event Rule target', () => {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
   });
 
   // WHEN
@@ -23,8 +23,8 @@ test('State machine can be used as Event Rule target', () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        Input: '{"SomeParam":"SomeValue"}'
-      }
-    ]
+        Input: '{"SomeParam":"SomeValue"}',
+      },
+    ],
   });
 });

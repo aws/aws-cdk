@@ -1,3 +1,25 @@
+# CloudFormation Resource Specification v12.3.0
+
+## New Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Glue::DevEndpoint PublicKeys (__added__)
+* AWS::Glue::MLTransform Tags (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v12.2.0
 
 ## New Resource Types

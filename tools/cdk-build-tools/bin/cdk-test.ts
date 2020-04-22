@@ -12,19 +12,19 @@ async function main() {
       type: 'string',
       desc: 'Specify a different jest executable',
       default: require.resolve('jest/bin/jest'),
-      defaultDescription: 'jest provided by node dependencies'
+      defaultDescription: 'jest provided by node dependencies',
     })
     .option('nyc', {
       type: 'string',
       desc: 'Specify a different nyc executable',
       default: require.resolve('nyc/bin/nyc'),
-      defaultDescription: 'nyc provided by node dependencies'
+      defaultDescription: 'nyc provided by node dependencies',
     })
     .option('nodeunit', {
       type: 'string',
       desc: 'Specify a different nodeunit executable',
       default: require.resolve('nodeunit/bin/nodeunit'),
-      defaultDescription: 'nodeunit provided by node dependencies'
+      defaultDescription: 'nodeunit provided by node dependencies',
     })
     .argv;
 
@@ -91,6 +91,6 @@ main().then(() => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
   process.stderr.write(`Tests failed. ${timers.display()}\n`);
-  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
+  process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
 });
