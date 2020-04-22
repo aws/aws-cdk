@@ -42,6 +42,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Modify Instance Group](#modify-instance-group)
   - [Glue](#glue)
   - [Lambda](#lambda)
+  - [SageMaker](#sagemaker)
+    - [Create Training Job](#create-training-job)
+    - [Create Transform Job](#create-transform-job)
 
 ### Task
 
@@ -227,7 +230,32 @@ Creates and starts running a cluster (job flow).
 Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html) API in EMR.
 
 ```ts
-const task = new sfn.Task(stack, 'Create Cluster', {
+
+const clusterRole = new iam.Role(stack, 'ClusterRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const serviceRole = new iam.Role(stack, 'ServiceRole', {
+  assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
+});
+
+const autoScalingRole = new iam.Role(stack, 'AutoScalingRole', {
+  assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
+});
+
+autoScalingRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
+    ],
+    actions: [
+      'sts:AssumeRole',
+    ],
+  });
+)
+
+new sfn.Task(stack, 'Create Cluster', {
   task: new tasks.EmrCreateCluster({
     instances: {},
     clusterRole,
@@ -263,8 +291,7 @@ Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/
 ```ts
 new sfn.Task(stack, 'Task', {
   task: new tasks.EmrTerminateCluster({
-    clusterId: 'ClusterId',
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    clusterId: 'ClusterId'
   }),
 });
 ```
@@ -428,3 +455,76 @@ const task = new sfn.Task(stack, 'Invoke with callback', {
 
 ⚠️ The Lambda function should call `SendTaskSuccess` or `SendTaskFailure` with the
 token provided as input or the State Machine will not resume.
+
+#### SageMaker
+
+Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
+
+##### Create Training Job
+
+You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
+
+```ts
+new sfn.Task(stack, 'TrainSagemaker', {
+  task: new tasks.SagemakerTrainTask({
+    trainingJobName: sfn.Data.stringAt('$.JobName'),
+    role,
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+      trainingInputMode: tasks.InputMode.FILE,
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3DataType: tasks.S3DataType.S3_PREFIX,
+            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+    },
+    resourceConfig: {
+      instanceCount: 1,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      volumeSizeInGB: 50,
+    },
+    stoppingCondition: {
+      maxRuntime: cdk.Duration.hours(1),
+    },
+  }),
+});
+```
+
+##### Create Transform Job
+
+You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
+});
+```
