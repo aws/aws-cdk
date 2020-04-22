@@ -8,7 +8,7 @@ import { Fn } from '../cfn-fn';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { contentHash, writeStackToCloudAssembly } from './shared';
+import { addStackArtifactToCloudAsm, contentHash } from './shared';
 import { IStackSynthesis } from './types';
 
 /**
@@ -246,7 +246,7 @@ export class DefaultStackSynthesis implements IStackSynthesis {
 
     const artifactId = this.writeAssetManifest(session);
 
-    writeStackToCloudAssembly(session, this.stack, {
+    addStackArtifactToCloudAsm(session, this.stack, {
       assumeRoleArn: this.deployActionRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3Url,

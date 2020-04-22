@@ -7,9 +7,14 @@ import { Stack } from '../stack';
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
  *
- * This logic is shared between DeploymentConfigurations.
+ * This logic is shared between StackSyntheses.
+ *
+ * It could have been a protected method on a base class, but it
+ * uses `Partial<cxapi.AwsCloudFormationStackProperties>` in the
+ * parameters (which is convenient so I can remain typesafe without
+ * copy/pasting), and jsii will choke on this type.
  */
-export function writeStackToCloudAssembly(
+export function addStackArtifactToCloudAsm(
   session: ISynthesisSession,
   stack: Stack,
   stackProps: Partial<cxapi.AwsCloudFormationStackProperties>,
@@ -51,7 +56,7 @@ export function writeStackToCloudAssembly(
 /**
  * Collect the metadata from a stack
  */
-export function collectStackMetadata(stack: Stack) {
+function collectStackMetadata(stack: Stack) {
   const output: { [id: string]: cxschema.MetadataEntry[] } = { };
 
   visit(stack);
@@ -88,6 +93,9 @@ export function collectStackMetadata(stack: Stack) {
   }
 }
 
+/**
+ * Hash a string
+ */
 export function contentHash(content: string) {
   return crypto.createHash('sha256').update(content).digest('hex');
 }

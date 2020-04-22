@@ -5,7 +5,7 @@ import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { writeStackToCloudAssembly } from './shared';
+import { addStackArtifactToCloudAsm } from './shared';
 import { IStackSynthesis } from './types';
 
 /**
@@ -89,7 +89,7 @@ export class LegacyStackSynthesis implements IStackSynthesis {
 
   public synthesizeStackArtifacts(session: ISynthesisSession): void {
     // Just do the default stuff, nothing special
-    writeStackToCloudAssembly(session, this.stack, {}, []);
+    addStackArtifactToCloudAsm(session, this.stack, {}, []);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
