@@ -361,13 +361,21 @@ export = {
           }, {
             version: undefined,
           }));
+
+          let count = 3;
+          const restore = mocks.client.describeCluster;
+          mocks.client.describeCluster = async () => ({
+            cluster: { status: --count === 0 ? 'UPDATING' : 'ACTIVE' },
+          });
           const resp = await handler.onEvent();
+          mocks.client.describeCluster = restore;
           test.equal(resp, undefined);
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
             version: '12.34',
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.equal(count, 0); // make sure "describeCluster" was called until it returned 'UPDATING'
           test.done();
         },
 
@@ -377,13 +385,21 @@ export = {
           }, {
             version: '1.1',
           }));
+
+          let count = 3;
+          const restore = mocks.client.describeCluster;
+          mocks.client.describeCluster = async () => ({
+            cluster: { status: --count === 0 ? 'UPDATING' : 'ACTIVE' },
+          });
           const resp = await handler.onEvent();
+          mocks.client.describeCluster = restore;
           test.equal(resp, undefined);
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
             version: '2.0',
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.equal(count, 0); // make sure "describeCluster" was called until it returned 'UPDATING'
           test.done();
         },
 

@@ -159,6 +159,36 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     await this.eks.updateClusterVersion({ name: this.clusterName, version: newVersion });
+
+    // it take a while for the cluster to start the version update, and until
+    // then the cluster's status is still "ACTIVE", which causes version
+    // upgrades to complete prematurely. so, we wait here until the cluster
+    // status changes status from "ACTIVE" and only then yield execution to the
+    // async waiter. technically the status is expected to be "UPDATING", but it
+    // is more robust to just make sure it's not "ACTIVE" before we carry on
+
+    // wait a total of 5 minutes for this to happen.
+    let remainingSec = 5 * 60;
+
+    while (remainingSec > 0) {
+      console.log(`waiting for cluster to transition from ACTIVE status (remaining time: ${remainingSec}s)`);
+      const resp = await this.eks.describeCluster({ name: this.clusterName });
+      console.log('describeCluster result:', JSON.stringify(resp, undefined, 2));
+
+      const status = resp.cluster?.status;
+      if (status !== 'ACTIVE') {
+        console.log(`cluster is now in ${status} state`);
+        break;
+      }
+
+      // wait 2sec before trying again
+      await sleep(2000);
+      remainingSec -= 2;
+    }
+
+    if (remainingSec === 0) {
+      throw new Error('version update failure: cluster did not transition from ACTIVE status after 5 minutes elapsed');
+    }
   }
 
   private async isActive(): Promise<IsCompleteResponse> {
@@ -226,4 +256,9 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
     updateVersion: newProps.version !== oldProps.version,
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
+}
+
+async function sleep(ms: number) {
+  console.log(`waiting ${ms} milliseconds`);
+  return new Promise(ok => setTimeout(ok, ms));
 }
