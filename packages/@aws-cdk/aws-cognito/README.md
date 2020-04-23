@@ -407,26 +407,26 @@ configured using domains. There are two ways to set up a domain - either the Ama
 with an available domain prefix, or a custom domain name can be chosen. The custom domain must be one that is already
 owned, and whose certificate is registered in AWS Certificate Manager.
 
-The following code sets up a user pool domain in Amazon Cognito hosted domain with the prefix 'my-awesome-app' -
+The following code sets up a user pool domain in Amazon Cognito hosted domain with the prefix 'my-awesome-app', and another domain with the custom domain 'user.myapp.com' -
 
 ```ts
 const pool = new UserPool(this, 'Pool');
-pool.addDomain('domain', {
-  domain: UserPoolDomainType.cognitoDomain({
+
+pool.addDomain('CognitoDomain', {
+  cognitoDomain: {
     domainPrefix: 'my-awesome-app',
-  }),
+  },
 });
-```
 
-On the other hand, the following code sets up a user pool domain and use your own custom domain -
-
-```ts
 const domainCert = new acm.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
-const pool = new UserPool(this, 'Pool');
-pool.addDomain('domain', {
-  domain: UserPoolDomainType.customDomain({
-    domainPrefix: 'my-awesome-app',
+pool.addDomain('CustomDomain', {
+  customDomain: {
+    domainName: 'user.myapp.com',
     certificate: domainCert,
-  }),
+  },
 });
 ```
+
+Read more about [Using the Amazon Cognito
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
