@@ -28,10 +28,6 @@
           "versionSuffix": ".DEVPREVIEW"
         }
       },
-      "python": {
-        "distName": "aws-cdk.monocdk-experiment",
-        "module": "aws_cdk.monocdk_experiment"
-      },
       "dotnet": {
         "namespace": "Amazon.CDK.MonoCDK.Experiment",
         "packageId": "Amazon.CDK.MonoCDK.Experiment",
