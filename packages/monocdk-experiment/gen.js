@@ -46,6 +46,10 @@ async function main() {
   const modules = await fs.readdir(root);
   const manifest = await fs.readJson(path.join(monocdkroot, 'package.json'));
 
+  // Adjust index location for initial compilation
+  manifest.main = manifest.main.replace(/^staging\//, '');
+  manifest.types = manifest.types.replace(/^staging\//, '');
+
   const nodeTypes = manifest.devDependencies['@types/node'];
   if (!nodeTypes) {
     throw new Error(`@types/node must be defined in devDependencies`);

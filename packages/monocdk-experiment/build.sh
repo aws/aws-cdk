@@ -35,3 +35,4 @@ mv ${outdir}/dist ${scriptdir}/dist
 # so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
 rm -fr ${scriptdir}/staging
 mv ${unpacked} ${scriptdir}/staging
+mv ${scriptdir}/staging/.jsii ${scriptdir}
