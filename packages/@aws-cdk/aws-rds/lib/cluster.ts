@@ -332,6 +332,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   /**
    * The subnets used by the DB subnet group.
+   *
+   * @default - the Vpc default strategy if not specified.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
