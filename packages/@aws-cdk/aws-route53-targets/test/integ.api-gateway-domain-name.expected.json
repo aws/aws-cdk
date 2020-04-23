@@ -212,7 +212,7 @@
         "Name": "api"
       }
     },
-    "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4": {
+    "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -233,7 +233,7 @@
           "Ref": "apiC8550315"
         },
         "DeploymentId": {
-          "Ref": "apiDeployment149F12949ab8cbc5717926c7a1a01815778330c4"
+          "Ref": "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950"
         },
         "StageName": "prod"
       }

@@ -22,7 +22,7 @@ export = {
         name: 'col',
         type: glue.Schema.STRING,
       }],
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
     test.equals(table.encryption, glue.TableEncryption.UNENCRYPTED);
 
@@ -98,7 +98,7 @@ export = {
         name: 'year',
         type: glue.Schema.SMALL_INT,
       }],
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
     test.equals(table.encryption, glue.TableEncryption.UNENCRYPTED);
     test.equals(table.encryptionKey, undefined);
@@ -171,7 +171,7 @@ export = {
         type: glue.Schema.STRING,
       }],
       compressed: true,
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
     test.equals(table.encryptionKey, undefined);
     test.equals(table.bucket.encryptionKey, undefined);
@@ -239,7 +239,7 @@ export = {
         type: glue.Schema.STRING,
       }],
       compressed: true,
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
 
     // THEN
@@ -262,7 +262,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         encryption: glue.TableEncryption.S3_MANAGED,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.S3_MANAGED);
       test.equals(table.encryptionKey, undefined);
@@ -341,7 +341,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         encryption: glue.TableEncryption.KMS,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
@@ -475,7 +475,7 @@ export = {
         }],
         encryption: glue.TableEncryption.KMS,
         encryptionKey,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
@@ -607,7 +607,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         encryption: glue.TableEncryption.KMS_MANAGED,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.KMS_MANAGED);
       test.equals(table.encryptionKey, undefined);
@@ -686,7 +686,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
@@ -802,7 +802,7 @@ export = {
         }],
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         encryptionKey,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
@@ -920,7 +920,7 @@ export = {
         bucket,
         encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
         encryptionKey,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
       test.equals(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
       test.notEqual(table.encryptionKey, undefined);
@@ -1039,7 +1039,7 @@ export = {
         name: 'col',
         type: glue.Schema.STRING,
       }],
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
 
     expect(stack).to(haveResource('AWS::Glue::Table', {
@@ -1107,7 +1107,7 @@ export = {
         name: 'col',
         type: glue.Schema.STRING,
       }],
-      dataFormat: glue.DataFormat.Json,
+      dataFormat: glue.DataFormat.JSON,
     });
 
     expect(stack).to(haveResource('AWS::Glue::Table', {
@@ -1173,7 +1173,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         compressed: true,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
 
       table.grantRead(user);
@@ -1279,7 +1279,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         compressed: true,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
 
       table.grantWrite(user);
@@ -1383,7 +1383,7 @@ export = {
           type: glue.Schema.STRING,
         }],
         compressed: true,
-        dataFormat: glue.DataFormat.Json,
+        dataFormat: glue.DataFormat.JSON,
       });
 
       table.grantReadWrite(user);
@@ -1621,6 +1621,6 @@ function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps,
     database: new glue.Database(stack, 'db', {
       databaseName: 'database_name',
     }),
-    dataFormat: glue.DataFormat.Json,
+    dataFormat: glue.DataFormat.JSON,
   });
 }
