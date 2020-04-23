@@ -1078,6 +1078,6 @@ export enum MachineImageType {
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
 
-export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
+function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }

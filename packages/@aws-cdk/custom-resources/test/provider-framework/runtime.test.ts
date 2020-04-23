@@ -32,11 +32,13 @@ test('async flow: isComplete returns true only after 3 times', async () => {
     return {
       PhysicalResourceId: MOCK_PHYSICAL_ID,
       Data: MOCK_ATTRS,
+      ArbitraryField: 1234,
     };
   };
 
   mocks.isCompleteImplMock = async event => {
     isCompleteCalls++;
+    expect((event as any).ArbitraryField).toEqual(1234); // any field is passed through
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
     expect(event.Data).toStrictEqual(MOCK_ATTRS); // attributes are propagated between the calls
 
