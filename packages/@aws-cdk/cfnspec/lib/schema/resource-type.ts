@@ -31,7 +31,7 @@ export interface ResourceType extends Documented {
 export interface TaggableResource extends ResourceType {
   Properties: {
     FileSystemTags: TagProperty;
-    HostedzoneTags: TagProperty;
+    HostedZoneTags: TagProperty;
     Tags: TagProperty;
     UserPoolTags: TagProperty;
     [name: string]: Property;
