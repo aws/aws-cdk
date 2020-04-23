@@ -22,7 +22,10 @@ ${CDK_PACKAGE_JSII_PACMAK:-jsii-pacmak}
 tarball=$PWD/dist/js/monocdk-experiment@*.tgz
 
 echo "verifying package..."
-cd $(mktemp -d)
+checkdir=$(mktemp -d)
+
+cd ${checkdir}
+
 npm init -y
 npm install ${tarball} constructs@${constructs_version}
 node -e "require('monocdk-experiment')"
@@ -40,3 +43,5 @@ mv ${unpacked} ${scriptdir}/staging
 # this is needed because the generated code is hosted under staging/, but during
 # it's creation, it was directly in the package root.
 mv ${scriptdir}/staging/.jsii ${scriptdir}
+
+rm -fr ${outdir} ${checkdir}
