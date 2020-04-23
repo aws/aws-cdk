@@ -27,6 +27,9 @@
       "./generate.sh"
     ]
   },
+  "cdk-package": {
+    "shrinkWrap": true
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -65,7 +68,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.660.0",
+    "aws-sdk": "^2.661.0",
     "camelcase": "^6.0.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
