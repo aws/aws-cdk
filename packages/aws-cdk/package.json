@@ -49,7 +49,7 @@
     "@types/semver": "^7.1.0",
     "@types/sinon": "^9.0.0",
     "@types/table": "^4.0.7",
-    "@types/uuid": "^7.0.2",
+    "@types/uuid": "^7.0.3",
     "@types/yaml": "^1.9.7",
     "@types/yargs": "^15.0.4",
     "aws-sdk-mock": "^5.1.0",
