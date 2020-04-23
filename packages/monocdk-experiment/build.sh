@@ -35,4 +35,8 @@ mv ${outdir}/dist ${scriptdir}/dist
 # so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
 rm -fr ${scriptdir}/staging
 mv ${unpacked} ${scriptdir}/staging
+
+# move .jsii to package root, where our build tools, etc... will look for it.
+# this is needed because the generated code is hosted under staging/, but during
+# it's creation, it was directly in the package root.
 mv ${scriptdir}/staging/.jsii ${scriptdir}
