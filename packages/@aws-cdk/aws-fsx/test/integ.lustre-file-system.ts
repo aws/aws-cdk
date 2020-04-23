@@ -16,20 +16,19 @@ const fs = new LustreFileSystem(stack, 'FsxLustreFileSystem', {
   lustreConfiguration,
   storageCapacityGiB: storageCapacity,
   vpc,
-  vpcSubnet: vpc.privateSubnets[0]});
+  vpcSubnet: vpc.privateSubnets[0],
+});
 
 const inst = new Instance(stack, 'inst', {
   instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
   machineImage: new AmazonLinuxImage({
-    generation: AmazonLinuxGeneration.AMAZON_LINUX_2
+    generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
   vpc,
   vpcSubnets: {
     subnetType: SubnetType.PUBLIC,
-  }
+  },
 });
-inst.connections.securityGroups.forEach((securityGroup => {
-  fs.connections.addSecurityGroup(securityGroup);
-}));
+fs.connections.allowDefaultPortFrom(inst);
 
 app.synth();

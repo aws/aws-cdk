@@ -9,7 +9,7 @@ test.each([
 ])('valid maintenance time %s:%d:%d returns %s', (day: Weekday, hour: number, minute: number, expected: string) => {
   strictEqual(
     new LustreMaintenanceTime({day, hour, minute}).toTimestamp(),
-    expected
+    expected,
   );
 });
 

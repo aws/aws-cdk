@@ -124,19 +124,19 @@ export class LustreFileSystem extends FileSystemBase {
   private static readonly DEFAULT_FILE_SYSTEM_TYPE: string = 'LUSTRE';
 
   /**
-   * The default port the file system listens on.
+   * The default ports the file system listens on. Actual port list is: [988, 1021, 1022, 1023]
    */
-  private static readonly DEFAULT_PORTS: number[] = [988, 1021, 1022, 1023];
+  private static readonly DEFAULT_PORT_RANGE = {startPort: 988, endPort: 1023};
 
   /**
    * Configures a Connections object with all the ports required by FSx for Lustre
    */
   private static configureConnections(securityGroup: ISecurityGroup): Connections {
     const connections = new Connections({
-      securityGroups: [securityGroup]
-    });
-    LustreFileSystem.DEFAULT_PORTS.forEach((port) => {
-      connections.allowInternally(Port.tcp(port), `FSx Lustre port ${port}`);
+      securityGroups: [securityGroup],
+      defaultPort: Port.tcpRange(
+        LustreFileSystem.DEFAULT_PORT_RANGE.startPort,
+        LustreFileSystem.DEFAULT_PORT_RANGE.endPort),
     });
 
     return connections;
@@ -169,13 +169,16 @@ export class LustreFileSystem extends FileSystemBase {
 
     const updatedLustureProps = {
       importedFileChunkSize: props.lustreConfiguration.importedFileChunkSizeMiB,
-      weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp()
+      weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
     const securityGroup = (props.securityGroup || new SecurityGroup(this, 'FsxLustreSecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     }));
+    securityGroup.addIngressRule(
+      securityGroup,
+      Port.tcpRange(LustreFileSystem.DEFAULT_PORT_RANGE.startPort, LustreFileSystem.DEFAULT_PORT_RANGE.endPort));
     this.connections = LustreFileSystem.configureConnections(securityGroup);
 
     this.fileSystem = new CfnFileSystem(this, 'Resource', {
@@ -185,7 +188,7 @@ export class LustreFileSystem extends FileSystemBase {
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
-      storageCapacity: props.storageCapacityGiB
+      storageCapacity: props.storageCapacityGiB,
     });
 
     this.fileSystemId = this.fileSystem.ref;

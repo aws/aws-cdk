@@ -19,7 +19,7 @@ describe('FSx for Lustre File System', () => {
     vpcSubnet = new Subnet(stack, 'Subnet', {
       availabilityZone: 'us-west-2',
       cidrBlock: vpc.vpcCidrBlock,
-      vpcId: vpc.vpcId
+      vpcId: vpc.vpcId,
     });
   });
 
@@ -48,7 +48,7 @@ describe('FSx for Lustre File System', () => {
     };
 
     const securityGroup = new SecurityGroup(stack, 'FsxLustreSecurityGroup', {
-      vpc
+      vpc,
     });
 
     new LustreFileSystem(stack, 'FsxFileSystem', {
@@ -75,7 +75,7 @@ describe('FSx for Lustre File System', () => {
       lustreConfiguration,
       storageCapacityGiB: storageCapacity,
       vpc,
-      vpcSubnet
+      vpcSubnet,
     });
 
     /**
@@ -86,8 +86,8 @@ describe('FSx for Lustre File System', () => {
      */
     expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
       KmsKeyId: {
-        Ref: 'customKeyFSDDB87C6D'
-      }
+        Ref: 'customKeyFSDDB87C6D',
+      },
     }));
   });
 
@@ -98,11 +98,11 @@ describe('FSx for Lustre File System', () => {
       minute: 34});
     lustreConfiguration = {
       deploymentType: LustreDeploymentType.SCRATCH_2,
-      weeklyMaintenanceStartTime: maintenanceTime
+      weeklyMaintenanceStartTime: maintenanceTime,
     };
 
     const securityGroup = new SecurityGroup(stack, 'FsxLustreSecurityGroup', {
-      vpc
+      vpc,
     });
 
     new LustreFileSystem(stack, 'FsxFileSystem', {
@@ -129,21 +129,21 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
           lustreConfiguration,
           storageCapacityGiB: storageCapacity,
           vpc,
-          vpcSubnet
+          vpcSubnet,
         });
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ExportPath: exportPath,
-            ImportPath: importPath
+            ImportPath: importPath,
           },
         }));
       });
@@ -156,22 +156,22 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
           lustreConfiguration,
           storageCapacityGiB: storageCapacity,
           vpc,
-          vpcSubnet
+          vpcSubnet,
         });
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
             ExportPath: exportPathResolved,
-            ImportPath: importPathResolved
-          }
+            ImportPath: importPathResolved,
+          },
         }));
       });
 
@@ -182,7 +182,7 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -190,7 +190,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
       });
@@ -202,7 +202,7 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -210,7 +210,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
       });
@@ -223,7 +223,7 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -231,7 +231,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(`The export path "${exportPath}" exceeds the maximum length of 900 characters`);
       });
@@ -243,7 +243,7 @@ describe('FSx for Lustre File System', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           exportPath,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -251,7 +251,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(`The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`);
       });
@@ -261,7 +261,7 @@ describe('FSx for Lustre File System', () => {
 
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          exportPath
+          exportPath,
         };
 
         expect(() => {
@@ -269,7 +269,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError('Cannot define an export path without also defining an import path');
       });
@@ -279,11 +279,11 @@ describe('FSx for Lustre File System', () => {
       test.each([
         1,
         256000,
-        512000
+        512000,
       ])('valid file chunk size of %d', (size: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importedFileChunkSizeMiB: size
+          importedFileChunkSizeMiB: size,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
@@ -296,18 +296,18 @@ describe('FSx for Lustre File System', () => {
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
-            ImportedFileChunkSize: size
-          }
+            ImportedFileChunkSize: size,
+          },
         }));
       });
 
       test.each([
         0,
-        512001
+        512001,
       ])('invalid file chunk size of %d', (size: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importedFileChunkSizeMiB: size
+          importedFileChunkSizeMiB: size,
         };
 
         expect(() => {
@@ -315,7 +315,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(`importedFileChunkSize cannot be ${size} MiB. It must be a value from 1 to 512,000 MiB`);
       });
@@ -326,20 +326,20 @@ describe('FSx for Lustre File System', () => {
         const importPath = 's3://import-bucket';
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importPath
+          importPath,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
           lustreConfiguration,
           storageCapacityGiB: storageCapacity,
           vpc,
-          vpcSubnet
+          vpcSubnet,
         });
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
-            ImportPath: importPath
+            ImportPath: importPath,
           },
         }));
       });
@@ -349,20 +349,20 @@ describe('FSx for Lustre File System', () => {
         const importPath = Token.asString(Token.asAny(importPathResolved));
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importPath
+          importPath,
         };
         new LustreFileSystem(stack, 'FsxFileSystem', {
           lustreConfiguration,
           storageCapacityGiB: storageCapacity,
           vpc,
-          vpcSubnet
+          vpcSubnet,
         });
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.SCRATCH_2,
-            ImportPath: importPathResolved
-          }
+            ImportPath: importPathResolved,
+          },
         }));
       });
 
@@ -371,7 +371,7 @@ describe('FSx for Lustre File System', () => {
 
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -379,7 +379,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(`The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`);
       });
@@ -390,7 +390,7 @@ describe('FSx for Lustre File System', () => {
 
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          importPath
+          importPath,
         };
 
         expect(() => {
@@ -398,7 +398,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
       });
@@ -408,24 +408,24 @@ describe('FSx for Lustre File System', () => {
       test.each([
         50,
         100,
-        200
+        200,
       ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: throughput
+          perUnitStorageThroughput: throughput,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
           lustreConfiguration,
           storageCapacityGiB: storageCapacity,
           vpc,
-          vpcSubnet
+          vpcSubnet,
         });
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
             DeploymentType: LustreDeploymentType.PERSISTENT_1,
-            PerUnitStorageThroughput: throughput
+            PerUnitStorageThroughput: throughput,
           },
         }));
       });
@@ -433,7 +433,7 @@ describe('FSx for Lustre File System', () => {
       test('invalid perUnitStorageThroughput', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 1
+          perUnitStorageThroughput: 1,
         };
 
         expect(() => {
@@ -441,7 +441,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB');
       });
@@ -449,7 +449,7 @@ describe('FSx for Lustre File System', () => {
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
-          perUnitStorageThroughput: 50
+          perUnitStorageThroughput: 50,
         };
 
         expect(() => {
@@ -457,7 +457,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: storageCapacity,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1 deployment type');
       });
@@ -470,10 +470,10 @@ describe('FSx for Lustre File System', () => {
         [4800, LustreDeploymentType.SCRATCH_2],
         [1200, LustreDeploymentType.PERSISTENT_1],
         [2400, LustreDeploymentType.PERSISTENT_1],
-        [4800, LustreDeploymentType.PERSISTENT_1]
+        [4800, LustreDeploymentType.PERSISTENT_1],
       ])('proper multiple for storage capacity of %d on %s', (value: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
-          deploymentType
+          deploymentType,
         };
 
         new LustreFileSystem(stack, 'FsxFileSystem', {
@@ -485,9 +485,9 @@ describe('FSx for Lustre File System', () => {
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
-            DeploymentType: deploymentType
+            DeploymentType: deploymentType,
           },
-          StorageCapacity: value
+          StorageCapacity: value,
         }));
       });
 
@@ -495,10 +495,10 @@ describe('FSx for Lustre File System', () => {
         [1, LustreDeploymentType.SCRATCH_2],
         [2401, LustreDeploymentType.SCRATCH_2],
         [1, LustreDeploymentType.PERSISTENT_1],
-        [2401, LustreDeploymentType.PERSISTENT_1]
+        [2401, LustreDeploymentType.PERSISTENT_1],
       ])('invalid value of %d for storage capacity on %s', (invalidValue: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
-          deploymentType
+          deploymentType,
         };
 
         expect(() => {
@@ -506,7 +506,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: invalidValue,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(/storageCapacity must be 1,200, 2,400, or a multiple of 2,400/);
       });
@@ -525,9 +525,9 @@ describe('FSx for Lustre File System', () => {
 
         expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
           LustreConfiguration: {
-            DeploymentType: LustreDeploymentType.SCRATCH_1
+            DeploymentType: LustreDeploymentType.SCRATCH_1,
           },
-          StorageCapacity: validValue
+          StorageCapacity: validValue,
         }));
       });
 
@@ -541,7 +541,7 @@ describe('FSx for Lustre File System', () => {
             lustreConfiguration,
             storageCapacityGiB: invalidValue,
             vpc,
-            vpcSubnet
+            vpcSubnet,
           });
         }).toThrowError(/storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600/);
       });
@@ -554,8 +554,8 @@ describe('FSx for Lustre File System', () => {
       dnsName: `${fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`,
       fileSystemId,
       securityGroup: SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-        allowAllOutbound: false
-      })
+        allowAllOutbound: false,
+      }),
     });
 
     fs.connections.allowToAnyIpv4(Port.tcp(443));

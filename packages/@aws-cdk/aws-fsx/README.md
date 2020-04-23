@@ -97,24 +97,17 @@ const fs = new LustreFileSystem(stack, 'FsxLustreFileSystem', {
 const inst = new Instance(stack, 'inst', {
   instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
   machineImage: new AmazonLinuxImage({
-    generation: AmazonLinuxGeneration.AMAZON_LINUX_2
+    generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
   vpc,
   vpcSubnets: {
     subnetType: SubnetType.PUBLIC,
-  }
+  },
 });
-inst.connections.securityGroups.forEach((securityGroup => {
-    fs.connections.addSecurityGroup(securityGroup);
-}));
-// Need to give the instance access to read information about FSx to determine the file system's mount name.
-inst.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("AmazonFSxReadOnlyAccess"));
+fs.connections.allowDefaultPortFrom(inst);
 
-// Add a dependency on the file system to the instance so that we can be sure the file system is instantiated before querying
-// for its mount name.
-if (fs.node.defaultChild) {
-  inst.node.addDependency(fs.node.defaultChild);
-}
+// Need to give the instance access to read information about FSx to determine the file system's mount name.
+inst.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonFSxReadOnlyAccess'));
 
 const mountPath = '/mnt/fsx';
 const dnsName = fs.dnsName;
@@ -128,14 +121,14 @@ inst.userData.addCommands(
   'unzip awscliv2.zip',
   './aws/install',
   // Call the AWS CLI and extract the mount name.
-  `mountName=$(/usr/local/bin/aws fsx describe-file-systems --output text --query 'FileSystems[?DNSName==\`${dnsName}\`].LustreConfiguration.MountName')`,
+  `mountName=$(/usr/local/bin/aws fsx describe-file-systems --region ${stack.region} --output text --query 'FileSystems[?DNSName==\`${dnsName}\`].LustreConfiguration.MountName')`,
   // Set up the directory to mount the file system to and change the owner to the AL2 default ec2-user.
   `mkdir -p ${mountPath}`,
   `chmod 777 ${mountPath}`,
   `chown ec2-user:ec2-user ${mountPath}`,
   // Set the file system up to mount automatically on start up and mount it.
   `echo "${dnsName}@tcp:/$mountName ${mountPath} lustre defaults,noatime,flock,_netdev 0 0" >> /etc/fstab`,
-  `mount -a`);
+  'mount -a');
 ```
 
 ### Importing
@@ -171,10 +164,7 @@ const inst = new Instance(stack, 'inst', {
     subnetType: SubnetType.PUBLIC,
   }
 });
-
-inst.connections.securityGroups.forEach((securityGroup => {
-  fs.connections.addSecurityGroup(securityGroup);
-}));
+fs.connections.allowDefaultPortFrom(inst);
 ```
 
 ## FSx for Windows File Server
