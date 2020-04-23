@@ -351,7 +351,7 @@ test('when specifying sse with customer managed CMK', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
-    encryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY
   });
   table.node.applyAspect(new Tag('Environment', 'Production'));
@@ -377,7 +377,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
   });
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
-    encryption: TableEncryption.Customer_Managed,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
@@ -405,7 +405,7 @@ test('fails if encryption key is used with customer managed encryption', () => {
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
-    encryption: TableEncryption.AWS_Managed,
+    encryption: TableEncryption.AWS_MANAGED,
     encryptionKey
   })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
 });
@@ -418,7 +418,7 @@ test('fails if encryption key is used with default encryption', () => {
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
-    encryption: TableEncryption.Default,
+    encryption: TableEncryption.DEFAULT,
     encryptionKey
   })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
 });
@@ -441,7 +441,7 @@ test('fails if both encryption and serverSideEncryption is specified', () => {
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
-    encryption: TableEncryption.Default,
+    encryption: TableEncryption.DEFAULT,
     serverSideEncryption: true
   })).toThrow(/Both encryption and serverSideEncryption is specified, only either field can be set, not both/);
 });
@@ -1281,7 +1281,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    table.grant(user, ['dynamodb:action1', 'dynamodb:action2'], ['kms:*'], '*');
+    table.grant(user, ['dynamodb:action1', 'dynamodb:action2']);
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -1303,7 +1303,6 @@ describe('grants', () => {
               {
                 "Ref": "AWS::NoValue"
               },
-              "*"
             ]
           }
         ],

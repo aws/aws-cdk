@@ -21,15 +21,15 @@ export enum TableEncryption {
    * Server-side KMS encryption with a customer master key managed by customer.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Customer_Managed = 'Customer_Managed',
+  CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
   /**
    * Server-side KMS encryption with a master key managed by AWS.
    */
-  AWS_Managed = 'AWS_Managed',
+  AWS_MANAGED = 'AWS_MANAGED',
   /**
    * Server-side KMS encryption with a master key owned by AWS.
    */
-  Default = 'AWS_Owned'
+  DEFAULT = 'AWS_OWNED'
 }
 
 export interface Attribute {
@@ -424,7 +424,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
    * @param otherResourceArns 
    */
-  public grant(grantee: iam.IGrantable, tableActions: string[], keyActions: string[], ...otherResourceArns: string[]) {
+  public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], ...otherResourceArns: string[]) {
     const resources = [this.tableArn, Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }), ...otherResourceArns];
     const ret = iam.Grant.addToPrincipal({
       grantee,
@@ -432,7 +432,7 @@ abstract class TableBase extends Resource implements ITable {
       resourceArns: resources,
       scope: this
     });
-    if (this.encryptionKey) {
+    if (this.encryptionKey && keyActions) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
     return ret;
@@ -446,7 +446,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
    * @param otherResourceArns
    */
-  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions: string[], ...otherResourceArns: string[]) {
+  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], ...otherResourceArns: string[]) {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
@@ -457,7 +457,7 @@ abstract class TableBase extends Resource implements ITable {
       resourceArns: resources,
       scope: this
     });
-    if (this.encryptionKey) {
+    if (this.encryptionKey && keyActions) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
     return ret;
@@ -1135,8 +1135,8 @@ export class Table extends TableBase {
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
 
     // Permissions in the source region
-    this.grant(provider.onEventHandler, ['dynamodb:*'], ['kms:*'], '*');
-    this.grant(provider.isCompleteHandler, ['dynamodb:DescribeTable'], perms.KEY_READ_ACTIONS, '*');
+    this.grant(provider.onEventHandler, ['dynamodb:*']);
+    this.grant(provider.isCompleteHandler, ['dynamodb:DescribeTable']);
 
     // Permissions in the destination regions
     provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
@@ -1194,18 +1194,18 @@ export class Table extends TableBase {
     }
     
     if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey ? TableEncryption.Customer_Managed : TableEncryption.Default;
+      encryptionType = props.encryptionKey ? TableEncryption.CUSTOMER_MANAGED : TableEncryption.DEFAULT;
     }
 
     if (props.serverSideEncryption && props.encryptionKey) {
       throw new Error(`encryptionKey cannot be specified for serverSideEncryption, use encryption instead`);
     }
     
-    if (encryptionType !== TableEncryption.Customer_Managed && props.encryptionKey) {
+    if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to Customer_Managed`);
     }
 
-    if (encryptionType === TableEncryption.Customer_Managed) {
+    if (encryptionType === TableEncryption.CUSTOMER_MANAGED) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
           description: `Created by ${this.node.path}`,
           enableKeyRotation: true
@@ -1214,10 +1214,10 @@ export class Table extends TableBase {
       return { sseSpecification: {sseEnabled: true, kmsMasterKeyId: encryptionKey.keyArn, sseType: 'KMS'}, encryptionKey };
     }
 
-    if (encryptionType === TableEncryption.AWS_Managed || props.serverSideEncryption) {
+    if (encryptionType === TableEncryption.AWS_MANAGED || props.serverSideEncryption) {
       return { sseSpecification: {sseEnabled: true, sseType: 'KMS'} };
     }
-    if (encryptionType === TableEncryption.Default) {
+    if (encryptionType === TableEncryption.DEFAULT) {
       return { sseSpecification: {sseEnabled: false} };
     }
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
