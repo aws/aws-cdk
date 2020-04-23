@@ -41,7 +41,7 @@ export class ClusterResourceProvider extends NestedStack {
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       handler: 'index.onEvent',
-      timeout: Duration.minutes(15),
+      timeout: Duration.minutes(1),
     });
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
