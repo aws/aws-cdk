@@ -89,7 +89,7 @@ Example:
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  webhook: true, // optional, default: true if `webhookFilteres` were provided, false otherwise
+  webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
     codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
