@@ -2,8 +2,8 @@
   "name": "monocdk-experiment",
   "version": "0.0.0",
   "description": "An experiment to bundle the entire CDK into a single module",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "staging/index.js",
+  "types": "staging/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git"
@@ -16,6 +16,27 @@
     "package": "echo done",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package"
+  },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.monocdkexperiment",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "monocdk-experiment",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.MonoCDK.Experiment",
+        "packageId": "Amazon.CDK.MonoCDK.Experiment",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "versionSuffix": "-devpreview",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      }
+    }
   },
   "author": {
     "name": "Amazon Web Services",
