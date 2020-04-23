@@ -8,7 +8,7 @@ import { Fn } from '../cfn-fn';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { addStackArtifactToCloudAsm, contentHash } from './shared';
+import { addStackArtifactToCloudAsm, assertBound, contentHash } from './shared';
 import { IStackSynthesis } from './types';
 
 /**
@@ -138,18 +138,15 @@ export class DefaultStackSynthesis implements IStackSynthesis {
    */
   public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
-  private stack!: Stack;
-  private bucketName!: string;
-  private repositoryName!: string;
-  private deployActionRoleArn!: string;
-  private cloudFormationExecutionRoleArn!: string;
-  private assetPublishingRoleArn!: string;
+  private stack?: Stack;
+  private bucketName?: string;
+  private repositoryName?: string;
+  private deployActionRoleArn?: string;
+  private cloudFormationExecutionRoleArn?: string;
+  private assetPublishingRoleArn?: string;
 
-  private readonly assets: asset_schema.ManifestFile = {
-    version: asset_schema.AssetManifestSchema.currentVersion(),
-    files: {},
-    dockerImages: {},
-  };
+  private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
+  private readonly dockerImages: NonNullable<asset_schema.ManifestFile['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesisProps = {}) {
   }
@@ -168,8 +165,8 @@ export class DefaultStackSynthesis implements IStackSynthesis {
     const specialize = (s: string) => {
       s = replaceAll(s, '${Qualifier}', qualifier);
       return cxapi.EnvironmentPlaceholders.replace(s, {
-        region: resolvedOr(this.stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
-        accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
+        region: resolvedOr(stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
+        accountId: resolvedOr(stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
         partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
       });
     };
@@ -184,10 +181,13 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
+    assertBound(this.stack);
+    assertBound(this.bucketName);
+
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
     // Add to manifest
-    this.assets.files![asset.sourceHash] = {
+    this.files[asset.sourceHash] = {
       source: {
         path: asset.fileName,
         packaging: asset.packaging,
@@ -212,10 +212,13 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    assertBound(this.stack);
+    assertBound(this.repositoryName);
+
     const imageTag = asset.sourceHash;
 
     // Add to manifest
-    this.assets.dockerImages![asset.sourceHash] = {
+    this.dockerImages[asset.sourceHash] = {
       source: {
         directory: asset.directoryName,
         dockerBuildArgs: asset.dockerBuildArgs,
@@ -241,6 +244,8 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   }
 
   public synthesizeStackArtifacts(session: ISynthesisSession): void {
+    assertBound(this.stack);
+
     // Add the stack's template to the artifact manifest
     const templateAsset = this.addStackTemplateToAssetManifest(session);
 
@@ -261,6 +266,8 @@ export class DefaultStackSynthesis implements IStackSynthesis {
    * the URL.
    */
   private addStackTemplateToAssetManifest(session: ISynthesisSession) {
+    assertBound(this.stack);
+
     const templatePath = path.join(session.assembly.outdir, this.stack.templateFile);
     const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
 
@@ -275,12 +282,19 @@ export class DefaultStackSynthesis implements IStackSynthesis {
    * Write an asset manifest to the Cloud Assembly, return the artifact IDs written
    */
   private writeAssetManifest(session: ISynthesisSession): string {
+    assertBound(this.stack);
+
     const artifactId = `${this.stack.artifactId}.assets`;
     const manifestFile = `${artifactId}.json`;
     const outPath = path.join(session.assembly.outdir, manifestFile);
-    const text = JSON.stringify(this.assets, undefined, 2);
-    fs.writeFileSync(outPath, text);
 
+    const manifest: asset_schema.ManifestFile = {
+      version: asset_schema.AssetManifestSchema.currentVersion(),
+      files: this.files,
+      dockerImages: this.dockerImages,
+    };
+
+    fs.writeFileSync(outPath, JSON.stringify(manifest, undefined, 2));
     session.assembly.addArtifact(artifactId, {
       type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
@@ -292,6 +306,8 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   }
 
   private get manifestEnvName(): string {
+    assertBound(this.stack);
+
     return [
       resolvedOr(this.stack.account, 'current_account'),
       resolvedOr(this.stack.region, 'current_region'),

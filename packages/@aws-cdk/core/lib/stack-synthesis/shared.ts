@@ -17,7 +17,7 @@ import { Stack } from '../stack';
 export function addStackArtifactToCloudAsm(
   session: ISynthesisSession,
   stack: Stack,
-  stackProps: Partial<cxapi.AwsCloudFormationStackProperties>,
+  stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
   additionalStackDependencies: string[]) {
 
   const deps = [
@@ -37,7 +37,7 @@ export function addStackArtifactToCloudAsm(
     ? { }
     : { stackName: stack.stackName };
 
-  const properties: cxapi.AwsCloudFormationStackProperties = {
+  const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     ...stackProps,
     ...stackNameProperty,
@@ -98,4 +98,15 @@ function collectStackMetadata(stack: Stack) {
  */
 export function contentHash(content: string) {
   return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
+ * Throw an error message about binding() if we don't have a value for x.
+ *
+ * This replaces the ! assertions we would need everywhere otherwise.
+ */
+export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
+  if (x === null && x === undefined) {
+    throw new Error('You must call bindStack() first');
+  }
 }

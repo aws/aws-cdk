@@ -5,7 +5,7 @@ import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { addStackArtifactToCloudAsm } from './shared';
+import { addStackArtifactToCloudAsm, assertBound } from './shared';
 import { IStackSynthesis } from './types';
 
 /**
@@ -33,7 +33,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
 export class LegacyStackSynthesis implements IStackSynthesis {
-  private stack!: Stack;
+  private stack?: Stack;
   private cycle = false;
 
   /**
@@ -52,6 +52,8 @@ export class LegacyStackSynthesis implements IStackSynthesis {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
+    assertBound(this.stack);
+
     // Backwards compatibility hack. We have a number of conflicting goals here:
     //
     // - We want put the actual logic in this class
@@ -75,6 +77,8 @@ export class LegacyStackSynthesis implements IStackSynthesis {
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    assertBound(this.stack);
+
     // See `addFileAsset` for explanation.
     if (this.cycle) {
       return this.doAddDockerImageAsset(asset);
@@ -88,11 +92,15 @@ export class LegacyStackSynthesis implements IStackSynthesis {
   }
 
   public synthesizeStackArtifacts(session: ISynthesisSession): void {
+    assertBound(this.stack);
+
     // Just do the default stuff, nothing special
     addStackArtifactToCloudAsm(session, this.stack, {}, []);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    assertBound(this.stack);
+
     // check if we have an override from context
     const repositoryNameOverride = this.stack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
     const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
@@ -124,6 +132,8 @@ export class LegacyStackSynthesis implements IStackSynthesis {
   }
 
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
+    assertBound(this.stack);
+
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
@@ -157,6 +167,8 @@ export class LegacyStackSynthesis implements IStackSynthesis {
   }
 
   private get assetParameters() {
+    assertBound(this.stack);
+
     if (!this._assetParameters) {
       this._assetParameters = new Construct(this.stack, 'AssetParameters');
     }
