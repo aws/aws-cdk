@@ -15,7 +15,7 @@ export class AssetManifestArtifact extends CloudArtifact {
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
-    const properties = (this.manifest.properties || {});
+    const properties = (this.manifest.properties || {}) as cxschema.AssetManifestProperties;
     if (!properties.file) {
       throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
     }

@@ -63,8 +63,17 @@
                 },
                 "properties": {
                     "description": "The set of properties for this artifact (depends on type) (Default - no properties.)",
-                    "type": "object",
-                    "additionalProperties": {}
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AwsCloudFormationStackProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/AssetManifestProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/TreeArtifactProperties"
+                        }
+                    ]
                 }
             },
             "required": [
@@ -245,6 +254,72 @@
             "required": [
                 "key",
                 "value"
+            ]
+        },
+        "AwsCloudFormationStackProperties": {
+            "description": "Artifact properties for CloudFormation stacks.",
+            "type": "object",
+            "properties": {
+                "templateFile": {
+                    "description": "A file relative to the assembly root which contains the CloudFormation template for this stack.",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "Values for CloudFormation stack parameters that should be passed when the stack is deployed. (Default - No parameters)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "stackName": {
+                    "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
+                    "type": "string"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
+                    "type": "string"
+                },
+                "cloudFormationExecutionRoleArn": {
+                    "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
+                    "type": "string"
+                },
+                "stackTemplateAssetObjectUrl": {
+                    "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 0 (legacy bootstrap stack))",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "templateFile"
+            ]
+        },
+        "AssetManifestProperties": {
+            "description": "Artifact properties for the Asset Manifest",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the asset manifest",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "TreeArtifactProperties": {
+            "description": "Artifact properties for the Construct Tree Artifact",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the tree artifact",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file"
             ]
         },
         "MissingContext": {
