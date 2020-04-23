@@ -208,7 +208,7 @@ export class CloudFormationDeployments {
         return env.account === defaultAccount?.accountId
           ? defaultAccount.partition
           : (await (await this.sdkProvider.forEnvironment(env, Mode.ForReading)).currentAccount()).partition;
-      }
+      },
     });
   }
 }
