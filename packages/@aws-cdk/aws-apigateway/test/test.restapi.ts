@@ -36,7 +36,7 @@ export = {
             },
           },
         },
-        myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029: {
+        myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a: {
           Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: { Ref: 'myapi4C7BF186' },
@@ -48,7 +48,7 @@ export = {
           Type: 'AWS::ApiGateway::Stage',
           Properties: {
             RestApiId: { Ref: 'myapi4C7BF186' },
-            DeploymentId: { Ref: 'myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029' },
+            DeploymentId: { Ref: 'myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a' },
             StageName: 'prod',
           },
         },
@@ -590,7 +590,7 @@ export = {
         'myapiAccountC3A4750C',
         'myapiCloudWatchRoleEB425128',
         'myapiGET9B7CD29E',
-        'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9',
+        'myapiDeploymentB7EF8EB7b8edc043bcd33e0d85a3c85151f47e98',
         'myapiDeploymentStageprod329F21FF',
         'myapi162F20B8',
       ],
