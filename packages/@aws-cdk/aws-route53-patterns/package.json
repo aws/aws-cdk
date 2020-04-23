@@ -111,12 +111,6 @@
   },
   "stability": "experimental",
   "maturity": "developer-preview",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirect",
-      "docs-public-apis:@aws-cdk/aws-route53-patterns.HttpsRedirectProps"
-    ]
-  },
   "awscdkio": {
     "announce": false
   }
