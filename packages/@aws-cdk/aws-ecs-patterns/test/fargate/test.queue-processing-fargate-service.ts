@@ -4,6 +4,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import * as ecsPatterns from '../../lib';
 
 export = {
@@ -225,6 +226,7 @@ export = {
       maxScalingCapacity: 5,
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
+      platformVersion: FargatePlatformVersion.VERSION1_4,
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
@@ -232,6 +234,7 @@ export = {
       DesiredCount: 2,
       LaunchType: 'FARGATE',
       ServiceName: 'fargate-test-service',
+      PlatformVersion: FargatePlatformVersion.VERSION1_4,
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' }));

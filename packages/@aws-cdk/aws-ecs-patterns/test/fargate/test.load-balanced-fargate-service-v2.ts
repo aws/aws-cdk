@@ -4,6 +4,7 @@ import { AwsLogDriver, Cluster, ContainerImage, FargateTaskDefinition, Propagate
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import { ApplicationMultipleTargetGroupsFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 export = {
@@ -121,6 +122,7 @@ export = {
         desiredCount: 3,
         enableECSManagedTags: true,
         healthCheckGracePeriod: Duration.millis(2000),
+        platformVersion: FargatePlatformVersion.VERSION1_4,
         propagateTags: PropagatedTagSource.SERVICE,
         serviceName: 'myService',
         targetGroups: [

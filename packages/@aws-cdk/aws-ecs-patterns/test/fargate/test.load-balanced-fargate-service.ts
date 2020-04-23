@@ -5,6 +5,7 @@ import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } fro
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import * as ecsPatterns from '../../lib';
 
 export = {
@@ -225,6 +226,24 @@ export = {
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
     test.deepEqual(serviceTaskDefinition.Properties.HealthCheckGracePeriodSeconds, 600);
+    test.done();
+  },
+
+  'setting platform version'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      platformVersion: FargatePlatformVersion.VERSION1_4,
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      PlatformVersion: FargatePlatformVersion.VERSION1_4,
+    }));
     test.done();
   },
 

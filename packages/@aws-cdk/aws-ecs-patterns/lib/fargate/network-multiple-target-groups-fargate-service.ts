@@ -1,6 +1,7 @@
 import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
+import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import { NetworkMultipleTargetGroupsServiceBase,
   NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
 
@@ -67,6 +68,17 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -165,6 +177,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      platformVersion: props.platformVersion,
     });
   }
 }
