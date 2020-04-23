@@ -3,7 +3,7 @@
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
-import { EksClient, ResourceHandler } from './common';
+import { EksClient, ResourceEvent, ResourceHandler } from './common';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -19,7 +19,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   private readonly newProps: aws.EKS.CreateClusterRequest;
   private readonly oldProps: Partial<aws.EKS.CreateClusterRequest>;
 
-  constructor(eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
 
     this.newProps = parseProps(this.event.ResourceProperties);
@@ -127,15 +127,17 @@ export class ClusterResourceHandler extends ResourceHandler {
         throw new Error(`Cannot remove cluster version configuration. Current version is ${this.oldProps.version}`);
       }
 
-      await this.updateClusterVersion(this.newProps.version);
+      return await this.updateClusterVersion(this.newProps.version);
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      await this.eks.updateClusterConfig({
+      const updateResponse = await this.eks.updateClusterConfig({
         name: this.clusterName,
         logging: this.newProps.logging,
         resourcesVpcConfig: this.newProps.resourcesVpcConfig,
       });
+
+      return { EksUpdateId: updateResponse.update?.id };
     }
 
     // no updates
@@ -144,6 +146,12 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   protected async isUpdateComplete() {
     console.log('isUpdateComplete');
+
+    // if this is an EKS update, we will monitor the update event itself
+    if (this.event.EksUpdateId) {
+      return this.isEksUpdateComplete(this.event.EksUpdateId);
+    }
+
     return this.isActive();
   }
 
@@ -158,37 +166,8 @@ export class ClusterResourceHandler extends ResourceHandler {
       return;
     }
 
-    await this.eks.updateClusterVersion({ name: this.clusterName, version: newVersion });
-
-    // it take a while for the cluster to start the version update, and until
-    // then the cluster's status is still "ACTIVE", which causes version
-    // upgrades to complete prematurely. so, we wait here until the cluster
-    // status changes status from "ACTIVE" and only then yield execution to the
-    // async waiter. technically the status is expected to be "UPDATING", but it
-    // is more robust to just make sure it's not "ACTIVE" before we carry on
-
-    // wait a total of 5 minutes for this to happen.
-    let remainingSec = 5 * 60;
-
-    while (remainingSec > 0) {
-      console.log(`waiting for cluster to transition from ACTIVE status (remaining time: ${remainingSec}s)`);
-      const resp = await this.eks.describeCluster({ name: this.clusterName });
-      console.log('describeCluster result:', JSON.stringify(resp, undefined, 2));
-
-      const status = resp.cluster?.status;
-      if (status !== 'ACTIVE') {
-        console.log(`cluster is now in ${status} state`);
-        break;
-      }
-
-      // wait 2sec before trying again
-      await sleep(2000);
-      remainingSec -= 2;
-    }
-
-    if (remainingSec === 0) {
-      throw new Error('version update failure: cluster did not transition from ACTIVE status after 5 minutes elapsed');
-    }
+    const updateResponse = await this.eks.updateClusterVersion({ name: this.clusterName, version: newVersion });
+    return { EksUpdateId: updateResponse.update?.id };
   }
 
   private async isActive(): Promise<IsCompleteResponse> {
@@ -214,6 +193,33 @@ export class ClusterResourceHandler extends ResourceHandler {
           CertificateAuthorityData: cluster.certificateAuthority?.data,
         },
       };
+    }
+  }
+
+  private async isEksUpdateComplete(eksUpdateId: string) {
+    this.log({ isEksUpdateComplete: eksUpdateId });
+
+    const describeUpdateResponse = await this.eks.describeUpdate({
+      name: this.clusterName,
+      updateId: eksUpdateId,
+    });
+
+    this.log({ describeUpdateResponse });
+
+    if (!describeUpdateResponse.update) {
+      throw new Error(`unable to describe update with id "${eksUpdateId}"`);
+    }
+
+    switch (describeUpdateResponse.update.status) {
+      case 'InProgress':
+        return { IsComplete: false };
+      case 'Successful':
+        return { IsComplete: true };
+      case 'Failed':
+      case 'Cancelled':
+        throw new Error(`cluster update id "${eksUpdateId}" failed with errors: ${JSON.stringify(describeUpdateResponse.update.errors)}`);
+      default:
+        throw new Error(`unknown status "${describeUpdateResponse.update.status}" for update id "${eksUpdateId}"`);
     }
   }
 
@@ -256,9 +262,4 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
     updateVersion: newProps.version !== oldProps.version,
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
   };
-}
-
-async function sleep(ms: number) {
-  console.log(`waiting ${ms} milliseconds`);
-  return new Promise(ok => setTimeout(ok, ms));
 }
