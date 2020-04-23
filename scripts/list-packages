@@ -24,7 +24,7 @@ child_process.exec('lerna ls --toposort --json', { shell: true }, (error, stdout
 
   for (const module of modules) {
     const pkgJson = require(path.join(module.location, 'package.json'));
-    // MonoCDK-Experiment does it's own packaging, should be handled "non-JSII style"
+    // MonoCDK-Experiment does its own packaging, should be handled "non-JSII style"
     if (pkgJson.jsii && pkgJson.name !== 'monocdk-experiment') {
       jsiiDirectories.push(module.location);
     } else {
