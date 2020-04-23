@@ -1,5 +1,5 @@
 import { Construct, Resource } from '@aws-cdk/core';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { CommonTaskDefinitionProps, Compatibility, IpcMode, ITaskDefinition, NetworkMode, PidMode, TaskDefinition } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -23,6 +23,22 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The IPC resource namespace to use for the containers in the task.
+   *
+   * @default - If no value is specified, then the IPC resource namespace sharing depends on the Docker daemon setting on the container instance.
+   * For more information, see [IPC Settings](https://docs.docker.com/engine/reference/run/#ipc-settings---ipc)
+   */
+  readonly ipcMode?: IpcMode;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * @default - If no value is specified, the default is a private namespace. For more information,
+   * see [PID Settings](https://docs.docker.com/engine/reference/run/#pid-settings---pid)
+   */
+  readonly pidMode?: PidMode;
 }
 
 /**
@@ -60,6 +76,8 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       ...props,
       compatibility: Compatibility.EC2,
       placementConstraints: props.placementConstraints,
+      ipcMode: props.ipcMode,
+      pidMode: props.pidMode,
     });
   }
 }

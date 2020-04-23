@@ -146,6 +146,26 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - Memory used by task is not specified.
    */
   readonly memoryMiB?: string;
+
+  /**
+   * The IPC resource namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - If no value is specified, then the IPC resource namespace sharing depends on the Docker daemon setting on the container instance.
+   * For more information, see [IPC Settings](https://docs.docker.com/engine/reference/run/#ipc-settings---ipc)
+   */
+  readonly ipcMode?: IpcMode;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - If no value is specified, the default is a private namespace. For more information,
+   * see [PID Settings](https://docs.docker.com/engine/reference/run/#pid-settings---pid)
+   */
+  readonly pidMode?: PidMode;
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
@@ -294,6 +314,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
+      ipcMode: props.ipcMode,
+      pidMode: props.pidMode,
     });
 
     if (props.placementConstraints) {
@@ -520,6 +542,44 @@ export enum NetworkMode {
    * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
    */
   NAT = 'nat'
+}
+
+/**
+ * The IPC resource namespace to use for the containers in the task.
+ */
+export enum IpcMode {
+  /**
+   * If none is specified, then IPC resources within the containers of a task are private and not
+   * shared with other containers in a task or on the container instance
+   */
+  NONE = 'none',
+
+  /**
+   * If host is specified, then all containers within the tasks that specified the host IPC mode on
+   * the same container instance share the same IPC resources with the host Amazon EC2 instance.
+   */
+  HOST = 'host',
+
+  /**
+   * If task is specified, all containers within the specified task share the same IPC resources.
+   */
+  TASK = 'task',
+}
+
+/**
+ * The process namespace to use for the containers in the task.
+ */
+export enum PidMode {
+  /**
+   * If host is specified, then all containers within the tasks that specified the host PID mode
+   * on the same container instance share the same process namespace with the host Amazon EC2 instance.
+   */
+  HOST = 'host',
+
+  /**
+   * If task is specified, all containers within the specified task share the same process namespace.
+   */
+  TASK = 'task',
 }
 
 /**

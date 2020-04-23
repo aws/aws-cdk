@@ -40,6 +40,8 @@ export = {
         }),
         family: 'ecs-tasks',
         networkMode: ecs.NetworkMode.AWS_VPC,
+        ipcMode: ecs.IpcMode.HOST,
+        pidMode: ecs.PidMode.TASK,
         placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*')],
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -122,6 +124,36 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
+      }));
+
+      test.done();
+    },
+
+    'correctly sets ipc mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        ipcMode: ecs.IpcMode.TASK,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        IpcMode: ecs.IpcMode.TASK,
+      }));
+
+      test.done();
+    },
+
+    'correctly sets pid mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        pidMode: ecs.PidMode.HOST,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        PidMode: ecs.PidMode.HOST,
       }));
 
       test.done();
