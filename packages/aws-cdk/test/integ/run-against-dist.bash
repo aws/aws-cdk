@@ -39,8 +39,13 @@ function serve_npm_packages() {
     # Start a mock npm repository from the given tarballs
     #------------------------------------------------------------------------------
     header "Starting local NPM Repository"
+
+    # When using '--daemon', 'npm install' first so the files are permanent, or
+    # 'npx' will remove them too soon.
+    npm install serve-npm-tarballs    
     eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
     trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
+
     header "Installing aws-cdk from local tarballs..."
     (cd ${npmws} && npm install aws-cdk)
     export PATH=$npmws/node_modules/.bin:$PATH

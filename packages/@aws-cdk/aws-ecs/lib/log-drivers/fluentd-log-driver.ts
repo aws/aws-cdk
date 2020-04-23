@@ -82,7 +82,7 @@ export class FluentdLogDriver extends LogDriver {
         'fluentd-retry-wait': this.props.retryWait && this.props.retryWait.toSeconds(),
         'fluentd-max-retries': this.props.maxRetries,
         'fluentd-sub-second-precision': this.props.subSecondPrecision,
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

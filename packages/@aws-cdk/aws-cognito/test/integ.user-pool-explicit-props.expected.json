@@ -838,12 +838,38 @@
           "SmsMessage": "verification sms message from the integ test. Code is {####}."
         }
       }
+    },
+    "myuserpoolmyuserpooldomainEE1E11AF": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "myawesomeapp",
+        "UserPoolId": {
+          "Ref": "myuserpool01998219"
+        }
+      }
     }
   },
   "Outputs": {
     "userpoolId": {
       "Value": {
         "Ref": "myuserpool01998219"
+      }
+    },
+    "cognitoDomainName": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Ref": "myuserpoolmyuserpooldomainEE1E11AF"
+            },
+            ".auth.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazoncognito.com"
+          ]
+        ]
       }
     }
   }

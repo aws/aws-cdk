@@ -55,22 +55,22 @@ export class ClusterResource extends Construct {
     // since we don't know the cluster name at this point, we must give this role star resource permissions
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion' ],
-      resources: [ '*' ]
+      resources: [ '*' ],
     }));
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: [ 'iam:PassRole' ],
-      resources: [ props.roleArn ]
+      resources: [ props.roleArn ],
     }));
 
     const resource = new cfn.CustomResource(this, 'Resource', {
       resourceType: ClusterResource.RESOURCE_TYPE,
       provider: cfn.CustomResourceProvider.lambda(handler),
       properties: {
-        Config: props
-      }
+        Config: props,
+      },
     });
 
     this.ref = resource.ref;

@@ -47,16 +47,16 @@ export class EmrModifyInstanceGroupByName implements sfn.IStepFunctionsTask {
         new iam.PolicyStatement({
           actions: [
             'elasticmapreduce:ModifyInstanceGroups',
-            'elasticmapreduce:ListInstanceGroups'
+            'elasticmapreduce:ListInstanceGroups',
           ],
-          resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`]
-        })
+          resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+        }),
       ],
       parameters: {
         ClusterId: this.props.clusterId,
         InstanceGroupName: this.props.instanceGroupName,
-        InstanceGroup: EmrModifyInstanceGroupByName.InstanceGroupModifyConfigPropertyToJson(this.props.instanceGroup)
-      }
+        InstanceGroup: EmrModifyInstanceGroupByName.InstanceGroupModifyConfigPropertyToJson(this.props.instanceGroup),
+      },
     };
   }
 }
@@ -101,7 +101,7 @@ export namespace EmrModifyInstanceGroupByName {
     return {
       InstancesToProtect: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToProtect),
       InstancesToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToTerminate),
-      InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds())
+      InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds()),
     };
   }
 
@@ -138,7 +138,7 @@ export namespace EmrModifyInstanceGroupByName {
       DecommissionTimeout: cdk.numberToCloudFormation(property.decommissionTimeout?.toSeconds()),
       InstanceResizePolicy: (property.instanceResizePolicy === undefined) ?
         property.instanceResizePolicy :
-        InstanceResizePolicyPropertyToJson(property.instanceResizePolicy)
+        InstanceResizePolicyPropertyToJson(property.instanceResizePolicy),
     };
   }
 
@@ -193,7 +193,7 @@ export namespace EmrModifyInstanceGroupByName {
       InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
       ShrinkPolicy: (property.shrinkPolicy === undefined) ?
         property.shrinkPolicy :
-        ShrinkPolicyPropertyToJson(property.shrinkPolicy)
+        ShrinkPolicyPropertyToJson(property.shrinkPolicy),
     };
   }
 }

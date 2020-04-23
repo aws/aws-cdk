@@ -18,7 +18,7 @@ async function main() {
       type: 'string',
       desc: 'Specify a different jsii-pacmak executable',
       default: require.resolve('jsii-pacmak/bin/jsii-pacmak'),
-      defaultDescription: 'jsii-pacmak provided by node dependencies'
+      defaultDescription: 'jsii-pacmak provided by node dependencies',
     })
     .argv;
 
