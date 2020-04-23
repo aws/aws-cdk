@@ -56,7 +56,7 @@
         "Name": "hello-api"
       }
     },
-    "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2": {
+    "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -76,7 +76,7 @@
           "Ref": "helloapi4446A35B"
         },
         "DeploymentId": {
-          "Ref": "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2"
+          "Ref": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
         },
         "StageName": "prod"
       }
@@ -265,7 +265,7 @@
         "Name": "second-api"
       }
     },
-    "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70": {
+    "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -285,7 +285,7 @@
           "Ref": "secondapi730EF3C7"
         },
         "DeploymentId": {
-          "Ref": "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70"
+          "Ref": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
         },
         "StageName": "prod"
       }
