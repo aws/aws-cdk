@@ -98,7 +98,39 @@ test('Lambda function can be used in a Task with Task Token', () => {
   });
 });
 
-test('Lambda function can be provided with the task input as the payload', () => {
+test('Lambda function is invoked with the state input as payload by default', () => {
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.RunLambdaTask(fn),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::lambda:invoke',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'FunctionName': {
+        Ref: 'Fn9270CBC0',
+      },
+      'Payload.$': '$',
+    },
+  });
+});
+
+test('Lambda function can be provided with the state input as the payload', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunLambdaTask(fn, {
       payload: sfn.TaskInput.fromDataAt('$'),

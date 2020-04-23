@@ -5,8 +5,8 @@ import * as tasks from '../../lib';
 
 /*
  * Stack verification steps:
- * The generated State Machine can be executed from the Step Functions console (or CLI)
- * and run with an execution status of `Succeeded`.
+ * The generated State Machine can be executed from the CLI (or Step Functions console)
+ * and runs with an execution status of `Succeeded`.
  *
  * -- aws stepfunctions start-execution --state-machine-arn  <deployed state machine arn> provides execution arn
  * -- aws stepfunctions describe-execution --execution-arn <from previous command> returns a status of `Succeeded`
@@ -33,7 +33,7 @@ const submitJob = new sfn.Task(stack, 'Invoke Handler', {
 const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
   code: Code.fromInline(`exports.handler = async function(event, context) {
         return {
-          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED';
+          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
         };
   };`),
   runtime: Runtime.NODEJS_10_X,
@@ -41,9 +41,7 @@ const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
 });
 
 const checkJobState = new sfn.Task(stack, 'Check the job state', {
-  task: new tasks.RunLambdaTask(checkJobStateLambda, {
-    payload: sfn.TaskInput.fromDataAt('$.Payload'),
-  }),
+  task: new tasks.RunLambdaTask(checkJobStateLambda),
   outputPath: '$.Payload',
 });
 

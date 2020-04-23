@@ -162,18 +162,14 @@ similar to (for example) `inputPath`.
 [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
 
 You can specify the input to your Lambda function through the `payload` attribute.
-By default, no payload is specified so Step Functions invokes Lambda with the empty
-object `{ }` as input.
+By default, Step Functions invokes Lambda function with the state input (JSON path '$')
+as the input.
 
 The following snippet invokes a Lambda Function with the state input as the payload
 by referencing the `$` path.
 
 ```ts
-new sfn.Task(this, 'Invoke with task context', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    payload: sfn.TaskInput.fromDataAt('$'),
-  }),
-});
+new sfn.Task(this, 'Invoke with state input');
 ```
 
 When a function is invoked, the Lambda service sends  [these response
@@ -186,8 +182,10 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
-new sfn.Task(this, 'Invoke with empty payload', {
-  task: new tasks.RunLambdaTask(myLambda),
+new sfn.Task(this, 'Invoke with empty object as payload', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromObject({})
+  }),
 });
 
 new sfn.Task(this, 'Invoke with payload field in the state input', {
