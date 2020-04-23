@@ -82,11 +82,11 @@ export class BackupResource {
   /**
    * An EFS file system
    */
-  public static fromEfsFileSystem(efsFileSystem: efs.EfsFileSystem) {
-    return BackupResource.fromArn(Stack.of(efsFileSystem).formatArn({
+  public static fromEfsFileSystem(fileSystem: efs.FileSystem) {
+    return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
       resource: 'file-system',
-      resourceName: efsFileSystem.fileSystemId,
+      resourceName: fileSystem.fileSystemId,
     }));
   }
 
