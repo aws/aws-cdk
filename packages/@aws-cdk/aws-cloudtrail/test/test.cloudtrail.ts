@@ -1,5 +1,6 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
@@ -271,6 +272,59 @@ export = {
         test.equals(selector.ReadWriteType, 'WriteOnly', 'Expected selector read write type to be All');
         test.equals(selector.IncludeManagementEvents, true, 'Expected management events to be false');
         test.equals(selector.DataResources, undefined, 'Expected there to be no data resources');
+        test.done();
+      },
+
+      'for Lambda function data event'(test: Test) {
+        const stack = getTestStack();
+        const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
+          runtime: lambda.Runtime.NODEJS_10_X,
+          handler: 'hello.handler',
+          code: lambda.Code.fromInline('exports.handler = {}'),
+        });
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addLambdaEventSelector([lambdaFunction.functionArn]);
+
+        expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
+        expect(stack).to(haveResource('AWS::Lambda::Function'));
+        expect(stack).to(not(haveResource('AWS::Logs::LogGroup')));
+
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        test.equals(trail.Properties.EventSelectors.length, 1);
+        const selector = trail.Properties.EventSelectors[0];
+        test.equals(selector.ReadWriteType, null, 'Expected selector read write type to be undefined');
+        test.equals(selector.IncludeManagementEvents, null, 'Expected management events to be undefined');
+        test.equals(selector.DataResources.length, 1, 'Expected there to be one data resource');
+        const dataResource = selector.DataResources[0];
+        test.equals(dataResource.Type, 'AWS::Lambda::Function', 'Expected the data resrouce type to be AWS::Lambda::Function');
+        test.equals(dataResource.Values.length, 1, 'Expected there to be one value');
+        test.deepEqual(dataResource.Values[0], { 'Fn::GetAtt': [ 'LambdaFunctionBF21E41F', 'Arn' ] }, 'Expected the first type value to be the Lambda type');
+        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.done();
+      },
+
+      'for all Lambda function data events'(test: Test) {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addLambdaEventSelector(['arn:aws:lambda']);
+
+        expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
+        expect(stack).to(not(haveResource('AWS::Logs::LogGroup')));
+        expect(stack).to(not(haveResource('AWS::IAM::Role')));
+
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        test.equals(trail.Properties.EventSelectors.length, 1);
+        const selector = trail.Properties.EventSelectors[0];
+        test.equals(selector.ReadWriteType, null, 'Expected selector read write type to be undefined');
+        test.equals(selector.IncludeManagementEvents, null, 'Expected management events to be undefined');
+        test.equals(selector.DataResources.length, 1, 'Expected there to be one data resource');
+        const dataResource = selector.DataResources[0];
+        test.equals(dataResource.Type, 'AWS::Lambda::Function', 'Expected the data resource type to be AWS::Lambda::Function');
+        test.equals(dataResource.Values.length, 1, 'Expected there to be one value');
+        test.equals(dataResource.Values[0], 'arn:aws:lambda', 'Expected the first type value to be the Lambda type');
+        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
     },

@@ -72,3 +72,24 @@ trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
   readWriteType: ReadWriteType.ALL,
 });
 ```
+
+For using CloudTrail event selector to log events about Lambda
+functions, you can use `addLambdaEventSelector`.
+
+```ts
+import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import lambda = require('@aws-cdk/aws-lambda');
+
+const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
+const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: "hello.handler",
+  code: lambda.Code.fromAsset("lambda"),
+});
+
+// Add an event selector to log data events for all functions in the account.
+trail.addLambdaEventSelector(["arn:aws:lambda"]);
+
+// Add an event selector to log data events for the provided Lambda functions.
+trail.addLambdaEventSelector([lambdaFunction.functionArn]);
+```
