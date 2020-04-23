@@ -156,7 +156,7 @@
         "Name": "books-api"
       }
     },
-    "booksapiDeployment308B08F1c828b08824c062376eba921738884f85": {
+    "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -181,7 +181,7 @@
           "Ref": "booksapiE1885304"
         },
         "DeploymentId": {
-          "Ref": "booksapiDeployment308B08F1c828b08824c062376eba921738884f85"
+          "Ref": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
         },
         "StageName": "prod"
       }
