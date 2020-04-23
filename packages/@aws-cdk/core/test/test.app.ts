@@ -301,31 +301,6 @@ export = {
     test.done();
   },
 
-  'version reporting includes @aws-solutions-konstruk libraries'(test: Test) {
-    const response = withApp({ runtimeInfo: true }, app => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const resolved = require('path').resolve('test/@aws-solutions-konstruk/foo');
-
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-      require(resolved);
-      const stack = new Stack(app, 'stack1');
-      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-    });
-
-    const libs = (response.runtime && response.runtime.libraries) || {};
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(libs, {
-      '@aws-cdk/core': version,
-      '@aws-cdk/cx-api': version,
-      '@aws-cdk/cloud-assembly-schema': version,
-      '@aws-solutions-konstruk/foo': version,
-      'jsii-runtime': `node.js/${process.version}`,
-    });
-    test.done();
-  },
-
   'deep stack is shown and synthesized properly'(test: Test) {
   // WHEN
     const response = withApp({}, (app) => {
