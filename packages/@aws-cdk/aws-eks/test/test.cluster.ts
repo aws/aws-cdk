@@ -831,6 +831,7 @@ export = {
               Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
+                'eks:DescribeUpdate',
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',
@@ -941,6 +942,7 @@ export = {
               Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
+                'eks:DescribeUpdate',
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',
