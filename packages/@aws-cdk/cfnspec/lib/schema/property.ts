@@ -87,7 +87,7 @@ export interface ComplexMapProperty extends MapPropertyBase {
 }
 
 export interface TagPropertyStandard extends PropertyBase {
-  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag';
+  ItemType: 'Tag' | 'TagsEntry' | 'TagRef' | 'ElasticFileSystemTag' | 'HostedZoneTag';
   Type: 'Tags';
 }
 
@@ -224,6 +224,7 @@ export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType
 
 const tagPropertyNames = {
   FileSystemTags: '',
+  HostedZoneTags: '',
   Tags: '',
   UserPoolTags: '',
 };
@@ -257,7 +258,8 @@ export function isTagPropertyStandard(prop: Property): prop is TagPropertyStanda
     (prop as TagPropertyStandard).ItemType === 'TagsEntry' ||
     (prop as TagPropertyStandard).Type === 'Tags' ||
     (prop as TagPropertyStandard).ItemType === 'TagRef' ||
-    (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag'
+    (prop as TagPropertyStandard).ItemType === 'ElasticFileSystemTag' ||
+    (prop as TagPropertyStandard).ItemType === 'HostedZoneTag'
   );
 
 }
