@@ -11,7 +11,7 @@ beforeEach(() => {
       files: {
         theAsset: {
           source: {
-            path: 'some_file'
+            path: 'some_file',
           },
           destinations: {
             theDestination1: {

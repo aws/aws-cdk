@@ -149,13 +149,13 @@ export class Trail extends Resource {
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.arnForObjects(
-        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`
+        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`,
       )],
       actions: ['s3:PutObject'],
       principals: [cloudTrailPrincipal],
       conditions: {
-        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
-      }
+        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+      },
     }));
 
     let logGroup: logs.CfnLogGroup | undefined;
@@ -163,7 +163,7 @@ export class Trail extends Resource {
 
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, 'LogGroup', {
-        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
+        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR,
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
@@ -177,7 +177,7 @@ export class Trail extends Resource {
     if (props.managementEvents) {
       const managementEvent = {
         includeManagementEvents: true,
-        readWriteType: props.managementEvents
+        readWriteType: props.managementEvents,
       };
       this.eventSelectors.push(managementEvent);
     }
@@ -195,7 +195,7 @@ export class Trail extends Resource {
       cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
       snsTopicName: props.snsTopic,
-      eventSelectors: this.eventSelectors
+      eventSelectors: this.eventSelectors,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -242,8 +242,8 @@ export class Trail extends Resource {
       readWriteType: options.readWriteType,
       dataResources: [{
         type: 'AWS::S3::Object',
-        values: prefixes
-      }]
+        values: prefixes,
+      }],
     });
   }
 
@@ -259,7 +259,7 @@ export class Trail extends Resource {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
-      detailType: ['AWS API Call via CloudTrail']
+      detailType: ['AWS API Call via CloudTrail'],
     });
     return rule;
   }

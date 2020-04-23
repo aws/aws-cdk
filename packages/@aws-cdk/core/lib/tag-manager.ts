@@ -57,7 +57,7 @@ class StandardFormatter implements ITagFormatter {
       tags.push({
         key: `${tag.key}`,
         value: `${tag.value}`,
-        priority
+        priority,
       });
     }
     return tags;
@@ -68,7 +68,7 @@ class StandardFormatter implements ITagFormatter {
     for (const tag of tags) {
       cfnTags.push({
         key: tag.key,
-        value: tag.value
+        value: tag.value,
       });
     }
     return cfnTags.length === 0 ? undefined : cfnTags;
@@ -96,7 +96,7 @@ class AsgFormatter implements ITagFormatter {
         key: `${tag.key}`,
         value: `${tag.value}`,
         priority,
-        applyToLaunchedInstances: !!tag.propagateAtLaunch
+        applyToLaunchedInstances: !!tag.propagateAtLaunch,
       });
     }
 
@@ -130,7 +130,7 @@ class MapFormatter implements ITagFormatter {
       tags.push({
         key,
         value: `${value}`,
-        priority
+        priority,
       });
     }
 
@@ -158,7 +158,7 @@ class KeyValueFormatter implements ITagFormatter {
         tags.push({
           key,
           value,
-          priority
+          priority,
         });
       }
     }
@@ -169,7 +169,7 @@ class KeyValueFormatter implements ITagFormatter {
     unformattedTags.forEach(tag => {
       tags.push({
         Key: tag.key,
-        Value: tag.value
+        Value: tag.value,
       });
     });
     return tags;

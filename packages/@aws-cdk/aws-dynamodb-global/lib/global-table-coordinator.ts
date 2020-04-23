@@ -50,7 +50,7 @@ function grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
         'dynamodb:CreateGlobalTable', 'dynamodb:DescribeLimits',
         'dynamodb:DeleteTable', 'dynamodb:DescribeGlobalTable',
         'dynamodb:UpdateGlobalTable',
-      ]
+      ],
     }));
   }
 }

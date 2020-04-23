@@ -18,10 +18,10 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       behaviors: [
         {
           isDefaultBehavior: true,
-        }
-      ]
-    }
-  ]
+        },
+      ],
+    },
+  ],
 });
 
 app.synth();

@@ -105,8 +105,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
         shell: true,
         env: {
           ...process.env,
-          ...env
-        }
+          ...env,
+        },
       });
 
       proc.on('error', fail);

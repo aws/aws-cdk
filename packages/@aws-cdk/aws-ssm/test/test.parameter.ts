@@ -115,7 +115,7 @@ export = {
         eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
         varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
         Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
-        sem neque sed ipsum.'
+        sem neque sed ipsum.',
       });
     }, /Description cannot be longer than 1024 characters./);
 
@@ -148,7 +148,7 @@ export = {
         eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
         varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
         Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
-        sem neque sed ipsum.'
+        sem neque sed ipsum.',
       });
     }, /Name cannot be longer than 2048 characters./);
 
@@ -172,7 +172,7 @@ export = {
         eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
         varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
         Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
-        sem neque sed ipsum.'
+        sem neque sed ipsum.',
       });
     }, /Description cannot be longer than 1024 characters./);
 
@@ -205,7 +205,7 @@ export = {
         eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
         varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
         Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
-        sem neque sed ipsum.'
+        sem neque sed ipsum.',
       });
     }, /Name cannot be longer than 2048 characters./);
 
@@ -259,8 +259,8 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':parameter/',
-        { Ref: 'Parameter9E1B4FBA' }
-      ]]
+        { Ref: 'Parameter9E1B4FBA' },
+      ]],
     });
     test.done();
   },
@@ -277,7 +277,7 @@ export = {
 
     test.throws(() => new ssm.StringListParameter(stack, 'myParam2', {
       stringListValue: [ 'foo', 'bar' ],
-      parameterName: 'path/to/parameter2'
+      parameterName: 'path/to/parameter2',
     }), /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
 
     test.done();
@@ -299,7 +299,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -308,9 +308,9 @@ export = {
       Parameters: {
         MyParamNameParameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',
-          Default: 'MyParamName'
-        }
-      }
+          Default: 'MyParamName',
+        },
+      },
     });
     test.done();
   },
@@ -322,7 +322,7 @@ export = {
     // WHEN
     const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
-      version: 2
+      version: 2,
     });
 
     // THEN
@@ -334,7 +334,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -349,7 +349,7 @@ export = {
     // WHEN
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
-      version: 2
+      version: 2,
     });
 
     // THEN
@@ -361,7 +361,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
@@ -381,7 +381,7 @@ export = {
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
       version: 2,
-      encryptionKey: key
+      encryptionKey: key,
     });
     param.grantRead(role);
 
@@ -392,14 +392,14 @@ export = {
           {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
           },
           {
             Action: [
               'ssm:DescribeParameters',
               'ssm:GetParameters',
               'ssm:GetParameter',
-              'ssm:GetParameterHistory'
+              'ssm:GetParameterHistory',
             ],
             Effect: 'Allow',
             Resource: {
@@ -408,23 +408,23 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
-                  ':parameter/MyParamName'
-                ]
-              ]
-            }
-          }
+                  ':parameter/MyParamName',
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -443,7 +443,7 @@ export = {
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
       version: 2,
-      encryptionKey: key
+      encryptionKey: key,
     });
     param.grantWrite(role);
 
@@ -455,10 +455,10 @@ export = {
             Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
-              'kms:GenerateDataKey*'
+              'kms:GenerateDataKey*',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
           },
           {
             Action: 'ssm:PutParameter',
@@ -469,23 +469,23 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
-                  ':parameter/MyParamName'
-                ]
-              ]
-            }
-          }
+                  ':parameter/MyParamName',
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -508,7 +508,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
@@ -532,10 +532,10 @@ export = {
         props: {
           account: '12344',
           region: 'us-east-1',
-          parameterName: 'my-param-name'
+          parameterName: 'my-param-name',
         },
-        provider: 'ssm'
-      }
+        provider: 'ssm',
+      },
     ]);
     test.done();
   },
@@ -554,9 +554,9 @@ export = {
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
             Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name'
-          }
-        }
+            Default: 'my-param-name',
+          },
+        },
       });
       test.deepEqual(stack.resolve(value), { Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter' });
       test.done();
@@ -577,13 +577,13 @@ export = {
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
             Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name'
+            Default: 'my-param-name',
           },
           SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
             Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name-2'
-          }
-        }
+            Default: 'my-param-name-2',
+          },
+        },
       });
       test.done();
     },
@@ -702,5 +702,5 @@ export = {
     // THEN
     test.throws(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' }), /If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
     test.done();
-  }
+  },
 };

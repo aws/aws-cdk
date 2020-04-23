@@ -1,4 +1,4 @@
-import { expect, haveResource,  } from '@aws-cdk/assert';
+import { expect, haveResource  } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Vpc, VpnConnection } from '../lib';
@@ -13,25 +13,25 @@ export = {
       vpnConnections: {
         VpnConnection: {
           asn: 65001,
-          ip: '192.0.2.1'
-        }
-      }
+          ip: '192.0.2.1',
+        },
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
       BgpAsn: 65001,
       IpAddress: '192.0.2.1',
-      Type: 'ipsec.1'
+      Type: 'ipsec.1',
     }));
 
     expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
-        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF'
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
       Type: 'ipsec.1',
       VpnGatewayId: {
-        Ref: 'VpcNetworkVpnGateway501295FA'
+        Ref: 'VpcNetworkVpnGateway501295FA',
       },
       StaticRoutesOnly: false,
     }));
@@ -50,20 +50,20 @@ export = {
           ip: '192.0.2.1',
           staticRoutes: [
             '192.168.10.0/24',
-            '192.168.20.0/24'
-          ]
-        }
-      }
+            '192.168.20.0/24',
+          ],
+        },
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
-        Ref: 'VpcNetworkstaticCustomerGatewayAF2651CC'
+        Ref: 'VpcNetworkstaticCustomerGatewayAF2651CC',
       },
       Type: 'ipsec.1',
       VpnGatewayId: {
-        Ref: 'VpcNetworkVpnGateway501295FA'
+        Ref: 'VpcNetworkVpnGateway501295FA',
       },
       StaticRoutesOnly: true,
     }));
@@ -71,15 +71,15 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.10.0/24',
       VpnConnectionId: {
-        Ref: 'VpcNetworkstaticE33EA98C'
-      }
+        Ref: 'VpcNetworkstaticE33EA98C',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.20.0/24',
       VpnConnectionId: {
-        Ref: 'VpcNetworkstaticE33EA98C'
-      }
+        Ref: 'VpcNetworkstaticE33EA98C',
+      },
     }));
 
     test.done();
@@ -96,28 +96,28 @@ export = {
           tunnelOptions: [
             {
               preSharedKey: 'secretkey1234',
-              tunnelInsideCidr: '169.254.10.0/30'
-            }
-          ]
-        }
-      }
+              tunnelInsideCidr: '169.254.10.0/30',
+            },
+          ],
+        },
+      },
     });
 
     expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
-        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF'
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
       Type: 'ipsec.1',
       VpnGatewayId: {
-        Ref: 'VpcNetworkVpnGateway501295FA'
+        Ref: 'VpcNetworkVpnGateway501295FA',
       },
       StaticRoutesOnly: false,
       VpnTunnelOptionsSpecifications: [
         {
           PreSharedKey: 'secretkey1234',
-          TunnelInsideCidr: '169.254.10.0/30'
-        }
-      ]
+          TunnelInsideCidr: '169.254.10.0/30',
+        },
+      ],
     }));
 
     test.done();
@@ -131,7 +131,7 @@ export = {
 
     test.throws(() => vpc.addVpnConnection('VpnConnection', {
       asn: 65000,
-      ip: '192.0.2.1'
+      ip: '192.0.2.1',
     }), /VPN gateway/);
 
     test.done();
@@ -144,9 +144,9 @@ export = {
     test.throws(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
-          ip: '192.0.2.256'
-        }
-      }
+          ip: '192.0.2.256',
+        },
+      },
     }), /`ip`.+IPv4/);
 
     test.done();
@@ -169,10 +169,10 @@ export = {
             },
             {
               preSharedKey: 'secretkey1234',
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     }), /two.+`tunnelOptions`/);
 
     test.done();
@@ -192,10 +192,10 @@ export = {
             },
             {
               tunnelInsideCidr: '169.254.10.0/30',
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     }), /`tunnelInsideCidr`.+both tunnels/);
 
     test.done();
@@ -212,10 +212,10 @@ export = {
           tunnelOptions: [
             {
               preSharedKey: '0invalid',
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     }), /`preSharedKey`/);
 
     test.done();
@@ -232,10 +232,10 @@ export = {
           tunnelOptions: [
             {
               tunnelInsideCidr: '169.254.1.0/30',
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     }), /`tunnelInsideCidr`.+reserved/);
 
     test.done();
@@ -252,10 +252,10 @@ export = {
           tunnelOptions: [
             {
               tunnelInsideCidr: '169.200.10.0/30',
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     }), /`tunnelInsideCidr`.+size/);
 
     test.done();
@@ -266,11 +266,11 @@ export = {
     const stack = new Stack();
 
     const vpc = new Vpc(stack, 'VpcNetwork', {
-      vpnGateway: true
+      vpnGateway: true,
     });
 
     const vpn = vpc.addVpnConnection('Vpn', {
-      ip: '192.0.2.1'
+      ip: '192.0.2.1',
     });
 
     // THEN
@@ -279,7 +279,7 @@ export = {
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
       period: Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     test.done();
@@ -294,9 +294,9 @@ export = {
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
       period: Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
     });
 
     test.done();
-  }
+  },
 };

@@ -13,7 +13,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
@@ -22,7 +22,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryLimitMiB: 512,
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -32,13 +32,13 @@ export = {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
           EcsParameters: {
             TaskCount: 1,
-            TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' }
+            TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' },
           },
           Id: 'Target0',
           Input: '{}',
-          RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] }
-        }
-      ]
+          RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] },
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
@@ -50,18 +50,18 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6'
+                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6',
               },
               'awslogs-stream-prefix': 'ScheduledEc2Task',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Memory: 512,
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -73,7 +73,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
@@ -85,7 +85,7 @@ export = {
         environment: { TRIGGER: 'CloudWatch Events' },
       },
       desiredTaskCount: 2,
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -95,13 +95,13 @@ export = {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
           EcsParameters: {
             TaskCount: 2,
-            TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' }
+            TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' },
           },
           Id: 'Target0',
           Input: '{}',
-          RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] }
-        }
-      ]
+          RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] },
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
@@ -111,8 +111,8 @@ export = {
           Environment: [
             {
               Name: 'TRIGGER',
-              Value: 'CloudWatch Events'
-            }
+              Value: 'CloudWatch Events',
+            },
           ],
           Essential: true,
           Image: 'henk',
@@ -120,18 +120,18 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6'
+                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6',
               },
               'awslogs-stream-prefix': 'ScheduledEc2Task',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           Memory: 512,
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -143,7 +143,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
@@ -152,7 +152,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryReservationMiB: 512,
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -165,18 +165,18 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6'
+                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6',
               },
               'awslogs-stream-prefix': 'ScheduledEc2Task',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           MemoryReservation: 512,
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -188,7 +188,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
@@ -198,7 +198,7 @@ export = {
         memoryReservationMiB: 512,
         command: ['-c', '4', 'amazon.com'],
       },
-      schedule: events.Schedule.expression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)'),
     });
 
     // THEN
@@ -208,7 +208,7 @@ export = {
           Command: [
             '-c',
             '4',
-            'amazon.com'
+            'amazon.com',
           ],
           Essential: true,
           Image: 'henk',
@@ -216,18 +216,18 @@ export = {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6'
+                Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6',
               },
               'awslogs-stream-prefix': 'ScheduledEc2Task',
               'awslogs-region': {
-                Ref: 'AWS::Region'
-              }
-            }
+                Ref: 'AWS::Region',
+              },
+            },
           },
           MemoryReservation: 512,
-          Name: 'ScheduledContainer'
-        }
-      ]
+          Name: 'ScheduledContainer',
+        },
+      ],
     }));
 
     test.done();
@@ -239,7 +239,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     // THEN

@@ -22,7 +22,7 @@ describe('Condition Variables', () => {
           { Variable: '$.a', BooleanEquals: true },
           { Variable: '$.b', NumericGreaterThan: 3 },
         ],
-      }
+      },
     );
   }),
   test('Exercise a number of other conditions', () => {

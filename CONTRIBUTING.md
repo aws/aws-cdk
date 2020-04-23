@@ -278,7 +278,7 @@ The following linters are used -
 - [pkglint](#pkglint)
 - [awslint](#awslint)
 
-#### eslint
+#### eslint
 
 Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
 2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.

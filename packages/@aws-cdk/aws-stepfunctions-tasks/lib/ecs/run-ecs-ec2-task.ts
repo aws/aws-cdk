@@ -62,7 +62,7 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
         LaunchType: 'EC2',
         PlacementConstraints: noEmpty(flatten((props.placementConstraints || []).map(c => c.toJson().map(uppercaseKeys)))),
         PlacementStrategy: noEmpty(flatten((props.placementStrategies || []).map(c => c.toJson().map(uppercaseKeys)))),
-      }
+      },
     });
 
     if (props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
