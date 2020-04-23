@@ -5,11 +5,11 @@ const path = require('path');
 const glob = require('glob');
 const os = require('os');
 
-const exclude_modules = [ 
+const exclude_modules = [
   // 'aws-lambda-nodejs' // bundles "parcel" which is unacceptable for now
 ];
 
-const include_non_jsii = [ 
+const include_non_jsii = [
   // 'assert',
   // 'cloudformation-diff',
 ];
@@ -22,14 +22,14 @@ const include_dev_deps = [
 const exclude_files = [
   'test',
   'scripts',
-  'node_modules', 
-  'package.json', 
-  'tsconfig.json', 
-  'tsconfig.tsbuildinfo', 
-  '.gitignore', 
-  '.jsii', 
-  'LICENSE', 
-  'NOTICE' 
+  'node_modules',
+  'package.json',
+  'tsconfig.json',
+  'tsconfig.tsbuildinfo',
+  '.gitignore',
+  '.jsii',
+  'LICENSE',
+  'NOTICE'
 ];
 
 async function main() {
@@ -45,6 +45,10 @@ async function main() {
   const root = path.resolve(__dirname, '..', '@aws-cdk');
   const modules = await fs.readdir(root);
   const manifest = await fs.readJson(path.join(monocdkroot, 'package.json'));
+
+  // Adjust index location for initial compilation
+  manifest.main = manifest.main.replace(/^staging\//, '');
+  manifest.types = manifest.types.replace(/^staging\//, '');
 
   const nodeTypes = manifest.devDependencies['@types/node'];
   if (!nodeTypes) {
@@ -134,12 +138,12 @@ async function main() {
     const bundled = [ ...meta.bundleDependencies || [], ...meta.bundledDependencies || [] ];
     for (const d of bundled) {
       const ver = meta.dependencies[d];
-  
+
       console.error(`adding bundled dep ${d} with version ${ver}`);
       if (!pkgBundled.includes(d)) {
         pkgBundled.push(d);
       }
-  
+
       if (!ver) {
         throw new Error(`cannot determine version for bundled dep ${d} of module ${meta.name}`);
       }
@@ -151,7 +155,7 @@ async function main() {
           throw new Error(`version mismatch for bundled dep ${d}: ${meta.name} requires version ${ver} but we already have version ${existingVer}`);
         }
       }
-    }    
+    }
   }
 
   await fs.writeFile(path.join(outdir, 'index.ts'), reexports.join('\n'));
@@ -162,12 +166,12 @@ async function main() {
     await rewriteImports(outdir, source);
   }
 
-  // copy tsconfig.json and .npmignore
-  const files = [ 'tsconfig.json', '.npmignore', 'README.md', 'LICENSE', 'NOTICE' ];
+  // copy .npmignore, license stuff, readme, ...
+  const files = [ '.npmignore', 'README.md', 'LICENSE', 'NOTICE' ];
   for (const file of files) {
     await fs.copy(path.join(monocdkroot, file), path.join(outdir, file));
   }
-  
+
   console.error('writing package.json');
   await fs.writeJson(path.join(outdir, 'package.json'), manifest, { spaces: 2 });
 

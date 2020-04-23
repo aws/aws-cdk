@@ -16,9 +16,9 @@
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.31",
     "fs-extra": "^8.1.0",
-    "jsii-diff": "^1.3.2",
-    "jsii-pacmak": "^1.3.2",
-    "jsii-rosetta": "^1.3.2",
+    "jsii-diff": "^1.4.1",
+    "jsii-pacmak": "^1.4.1",
+    "jsii-rosetta": "^1.4.1",
     "lerna": "^3.20.2",
     "standard-version": "^7.1.0",
     "typescript": "~3.8.3"
