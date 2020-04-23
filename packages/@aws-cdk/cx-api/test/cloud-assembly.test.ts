@@ -44,7 +44,7 @@ test('assembly with invalid tree metadata', () => {
 });
 
 test('assembly with tree metadata having no file property specified', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid TreeCloudArtifact/);
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('assembly with cloudformation artifact having no environment property specified', () => {
