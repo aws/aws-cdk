@@ -4,3 +4,5 @@
 !gen.js
 staging/
 tsconfig.json
+.jsii
+*.tsbuildinfo
