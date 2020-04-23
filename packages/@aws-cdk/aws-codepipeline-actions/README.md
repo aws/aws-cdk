@@ -764,10 +764,10 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
-        var AWS = require('aws-sdk');
+        const AWS = require('aws-sdk');
 
         exports.handler = async function(event, context) {
-            var codepipeline = new AWS.CodePipeline();
+            const codepipeline = new AWS.CodePipeline();
             await codepipeline.putJobSuccessResult({
                 jobId: event['CodePipeline.job'].id,
                 outputVariables: {
