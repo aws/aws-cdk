@@ -64,7 +64,10 @@ export interface Attribute {
   readonly type: AttributeType;
 }
 
-export interface TableKMSOptions {
+/**
+ * Options used for KMS encryption support
+ */
+export interface KMSOptions {
   /**
    * The identity that will have access to the KMS CMK via DynamoDB
    */
@@ -134,7 +137,7 @@ export interface TableOptions {
    * DynamoDB customer master key alias/aws/dynamodb.
    * @default - KMS Master Key server-side encryption is enabled with a customer owned master key
    */
-  readonly kmsEncryption?: TableKMSOptions;
+  readonly kmsEncryption?: KMSOptions;
 
   /**
    * The name of TTL attribute.
