@@ -2,11 +2,8 @@ import { deployStack } from '../../lib';
 import { testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
-const FAKE_TEMPLATE = { resource: 'noerrorresource' };
-
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
-  template: FAKE_TEMPLATE,
 });
 
 let sdk: MockSdk;
@@ -33,7 +30,7 @@ beforeEach(() => {
       Changes: [],
     })),
     executeChangeSet: jest.fn((_o) => ({})),
-    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(FAKE_TEMPLATE) })),
+    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify({}) })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
 });
@@ -227,6 +224,28 @@ test('not executed and no error if --no-execute is given', async () => {
 
   // THEN
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('use S3 url for stack deployment if present in Stack Artifact', async () => {
+  // GIVEN
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 'https://use-me-use-me/'
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://use-me-use-me/'
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 /**

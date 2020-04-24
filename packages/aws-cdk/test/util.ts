@@ -8,11 +8,12 @@ import { MockSdkProvider } from './util/mock-sdk';
 
 export interface TestStackArtifact {
   stackName: string;
-  template: any;
+  template?: any;
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
 }
 
 export interface TestAssembly {
@@ -48,7 +49,8 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
+    const template = stack.template ?? { No: 'Resources' };
+    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
@@ -70,6 +72,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       dependencies: stack.depends,
       metadata,
       properties: {
+        ...stack.properties,
         templateFile,
       },
     });

@@ -51,5 +51,6 @@ changed-type:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions
 changed-type:@aws-cdk/aws-iam.PrincipalWithConditions.conditions
 removed:@aws-cdk/cdk-assets-schema.Placeholders
 # Following two are because we're turning: properties: {string=>any} into a union of typed interfaces
+# Needs to be removed after next release.
 incompatible-argument:@aws-cdk/cloud-assembly-schema.Manifest.save
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
