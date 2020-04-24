@@ -2,8 +2,8 @@
   "name": "monocdk-experiment",
   "version": "0.0.0",
   "description": "An experiment to bundle the entire CDK into a single module",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "staging/index.js",
+  "types": "staging/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git"
@@ -17,6 +17,27 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package"
   },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.monocdkexperiment",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "monocdk-experiment",
+          "versionSuffix": ".DEVPREVIEW"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.MonoCDK.Experiment",
+        "packageId": "Amazon.CDK.MonoCDK.Experiment",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
+        "versionSuffix": "-devpreview",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      }
+    }
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -24,7 +45,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "typescript": "~3.8.3",
+    "jsii": "^1.4.1",
     "constructs": "^3.0.2",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
@@ -161,7 +182,7 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@types/node": "^10.17.18",
+    "@types/node": "^10.17.21",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-codestarconnections": "0.0.0",
@@ -169,8 +190,7 @@
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-resourcegroups": "0.0.0",
-    "@aws-cdk/aws-detective": "0.0.0",
-    "@aws-cdk/aws-imagebuilder": "0.0.0"
+    "@aws-cdk/aws-detective": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^3.0.2"
