@@ -8,6 +8,7 @@ import { IPeer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
+import { BlockDeviceVolume } from './volume';
 
 /**
  * Properties of the bastion host
@@ -64,6 +65,14 @@ export interface BastionHostLinuxProps {
    * may be replaced on every deployment).
    */
   readonly machineImage?: IMachineImage;
+
+  /**
+   * Encryption for EBS volume
+   * If true, encrypted volume will be created with a default voulme size of 10 GiB.
+   * 
+   * @default false 
+   */
+  readonly ebsVolumeEncryption?: boolean;
 }
 
 /**
@@ -129,15 +138,34 @@ export class BastionHostLinux extends Construct implements IInstance {
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
-    this.instance = new Instance(this, 'Resource', {
-      vpc: props.vpc,
-      availabilityZone: props.availabilityZone,
-      securityGroup: props.securityGroup,
-      instanceName: props.instanceName ?? 'BastionHost',
-      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      vpcSubnets: props.subnetSelection ?? {},
-    });
+
+    if (props.ebsVolumeEncryption) {
+      this.instance = new Instance(this, 'Resource', {
+        vpc: props.vpc,
+        availabilityZone: props.availabilityZone,
+        securityGroup: props.securityGroup,
+        instanceName: props.instanceName ?? 'BastionHost',
+        instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
+        machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+        vpcSubnets: props.subnetSelection ?? {},
+        blockDevices: [{
+          deviceName: 'EBSBastionHost',
+          volume: BlockDeviceVolume.ebs(10, {
+            encrypted: props.ebsVolumeEncryption ?? false
+          })
+        }]
+      });
+    } else {
+      this.instance = new Instance(this, 'Resource', {
+        vpc: props.vpc,
+        availabilityZone: props.availabilityZone,
+        securityGroup: props.securityGroup,
+        instanceName: props.instanceName ?? 'BastionHost',
+        instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
+        machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+        vpcSubnets: props.subnetSelection ?? {}
+      });
+    }
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
         'ssmmessages:*',

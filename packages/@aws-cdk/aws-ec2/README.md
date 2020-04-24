@@ -543,6 +543,14 @@ host.allowSshAccessFrom(ec2.Peer.ipv4('1.2.3.4/32'));
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
 
+EBS volume for the bastion host can be encrypted like:
+```ts
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      ebsVolumeEncryption: true
+    });
+```
+
 
 ## Block Devices
 
