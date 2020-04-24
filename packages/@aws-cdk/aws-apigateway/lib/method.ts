@@ -185,7 +185,7 @@ export class Method extends Resource {
         `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
     }
 
-    if (authorizer instanceof Authorizer) {
+    if (Authorizer.isAuthorizer(authorizer)) {
       authorizer._attachToApi(this.restApi);
     }
 
