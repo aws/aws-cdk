@@ -80,7 +80,7 @@
     "promptly": "^3.0.3",
     "proxy-agent": "^3.1.1",
     "semver": "^7.2.2",
-    "source-map-support": "^0.5.18",
+    "source-map-support": "^0.5.19",
     "table": "^5.4.6",
     "uuid": "^7.0.3",
     "yaml": "^1.9.2",
