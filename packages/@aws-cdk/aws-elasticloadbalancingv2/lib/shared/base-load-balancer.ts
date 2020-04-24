@@ -29,11 +29,10 @@ export interface BaseLoadBalancerProps {
   readonly internetFacing?: boolean;
 
   /**
-   * Where in the VPC to place the load balancer
+   * Which subnets place the load balancer in
    *
-   * @default - Public subnets if internetFacing, Private subnets if internal and
-   * there are Private subnets, Isolated subnets if internal and there are no
-   * Private subnets.
+   * @default - the Vpc default strategy.
+   *
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -139,7 +138,7 @@ export abstract class BaseLoadBalancer extends Resource {
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, {omitEmptyArray: true} ),
-      ...additionalProps
+      ...additionalProps,
     });
     if (internetFacing) {
       resource.node.addDependency(internetConnectivityEstablished);

@@ -8,31 +8,31 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 
 const sourceBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 
 const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
-  lambda: lambdaFunction
+  lambda: lambdaFunction,
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
-        s3BucketSource: sourceBucket
+        s3BucketSource: sourceBucket,
       },
       behaviors : [ {isDefaultBehavior: true, lambdaFunctionAssociations: [{
         eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-        lambdaFunction: lambdaVersion
-      }]}]
-    }
-  ]
+        lambdaFunction: lambdaVersion,
+      }]}],
+    },
+  ],
 });
 
 app.synth();

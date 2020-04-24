@@ -22,9 +22,9 @@ export = {
         roleArn: 'arn:of:role',
         resourcesVpcConfig: {
           subnetIds: ['subnet1', 'subnet2'],
-          securityGroupIds: ['sg1', 'sg2', 'sg3']
+          securityGroupIds: ['sg1', 'sg2', 'sg3'],
         },
-        name: 'MyResourceId-fakerequestid'
+        name: 'MyResourceId-fakerequestid',
       });
 
       test.done();
@@ -43,8 +43,8 @@ export = {
         ResourceProperties: {
           ServiceToken: 'boom',
           Config: mocks.MOCK_PROPS,
-          AssumeRoleArn: mocks.MOCK_ASSUME_ROLE_ARN
-        }
+          AssumeRoleArn: mocks.MOCK_ASSUME_ROLE_ARN,
+        },
       };
 
       // WHEN
@@ -60,7 +60,7 @@ export = {
     async 'onCreate: explicit cluster name'(test: Test) {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
         ...mocks.MOCK_PROPS,
-        name: 'ExplicitCustomName'
+        name: 'ExplicitCustomName',
       }));
       await handler.onEvent();
 
@@ -98,8 +98,8 @@ export = {
           Name: 'physical-resource-id',
           Endpoint: 'http://endpoint',
           Arn: 'arn:cluster-arn',
-          CertificateAuthorityData: 'certificateAuthority-data'
-        }
+          CertificateAuthorityData: 'certificateAuthority-data',
+        },
       });
       test.done();
     },
@@ -149,7 +149,7 @@ export = {
       }
       test.equal(error.code, 'OtherException');
       test.done();
-    }
+    },
   },
 
   update: {
@@ -188,9 +188,9 @@ export = {
           // GIVEN
           const req = mocks.newRequest('Update', {
             ...mocks.MOCK_PROPS,
-            name: 'new-cluster-name-1234'
+            name: 'new-cluster-name-1234',
           }, {
-            name: 'old-cluster-name'
+            name: 'old-cluster-name',
           });
           const handler = new ClusterResourceHandler(mocks.client, req);
 
@@ -204,8 +204,8 @@ export = {
             resourcesVpcConfig:
             {
               subnetIds: ['subnet1', 'subnet2'],
-              securityGroupIds: ['sg1', 'sg2', 'sg3']
-            }
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+            },
           });
           test.deepEqual(resp, { PhysicalResourceId: 'new-cluster-name-1234' });
           test.done();
@@ -215,9 +215,9 @@ export = {
           // GIVEN
           const req = mocks.newRequest('Update', {
             ...mocks.MOCK_PROPS,
-            name: undefined // auto-gen
+            name: undefined, // auto-gen
           }, {
-            name: 'explicit' // auto-gen
+            name: 'explicit', // auto-gen
           });
 
           const handler = new ClusterResourceHandler(mocks.client, req);
@@ -232,8 +232,8 @@ export = {
             resourcesVpcConfig:
             {
               subnetIds: ['subnet1', 'subnet2'],
-              securityGroupIds: ['sg1', 'sg2', 'sg3']
-            }
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+            },
           });
           test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
           test.done();
@@ -246,14 +246,14 @@ export = {
           ...mocks.MOCK_PROPS,
           resourcesVpcConfig: {
             subnetIds: ['subnet1', 'subnet2'],
-            securityGroupIds: ['sg1']
-          }
+            securityGroupIds: ['sg1'],
+          },
         }, {
           ...mocks.MOCK_PROPS,
           resourcesVpcConfig: {
             subnetIds: ['subnet1'],
-            securityGroupIds: ['sg2']
-          }
+            securityGroupIds: ['sg2'],
+          },
         }));
         const resp = await handler.onEvent();
 
@@ -264,24 +264,24 @@ export = {
           resourcesVpcConfig:
           {
             subnetIds: ['subnet1', 'subnet2'],
-            securityGroupIds: ['sg1']
-          }
+            securityGroupIds: ['sg1'],
+          },
         });
         test.done();
       },
 
       async '"roleArn" requires a replcement'(test: Test) {
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          roleArn: 'new-arn'
+          roleArn: 'new-arn',
         }, {
-          roleArn: 'old-arn'
+          roleArn: 'old-arn',
         }));
         const resp = await handler.onEvent();
 
         test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
           name: 'MyResourceId-fakerequestid',
-          roleArn: 'new-arn'
+          roleArn: 'new-arn',
         });
         test.done();
       },
@@ -290,10 +290,10 @@ export = {
         // GIVEN
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           roleArn: 'new-arn',
-          name: 'explicit-cluster-name'
+          name: 'explicit-cluster-name',
         }, {
           roleArn: 'old-arn',
-          name: 'explicit-cluster-name'
+          name: 'explicit-cluster-name',
         }));
 
         // THEN
@@ -312,10 +312,10 @@ export = {
         // GIVEN
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           roleArn: 'new-arn',
-          name: undefined // auto-gen
+          name: undefined, // auto-gen
         }, {
           roleArn: 'old-arn',
-          name: 'explicit-cluster-name'
+          name: 'explicit-cluster-name',
         }));
 
         // WHEN
@@ -325,7 +325,7 @@ export = {
         test.deepEqual(resp, { PhysicalResourceId: 'MyResourceId-fakerequestid' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
           name: 'MyResourceId-fakerequestid',
-          roleArn: 'new-arn'
+          roleArn: 'new-arn',
         });
         test.done();
       },
@@ -334,10 +334,10 @@ export = {
         // GIVEN
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           roleArn: 'new-arn',
-          name: 'new-explicit-cluster-name'
+          name: 'new-explicit-cluster-name',
         }, {
           roleArn: 'old-arn',
-          name: 'old-explicit-cluster-name'
+          name: 'old-explicit-cluster-name',
         }));
 
         // WHEN
@@ -347,25 +347,92 @@ export = {
         test.deepEqual(resp, { PhysicalResourceId: 'new-explicit-cluster-name' });
         test.deepEqual(mocks.actualRequest.createClusterRequest, {
           name: 'new-explicit-cluster-name',
-          roleArn: 'new-arn'
+          roleArn: 'new-arn',
         });
         test.done();
-      }
+      },
+    },
+
+    'isUpdateComplete with EKS update ID': {
+
+      async 'with "Failed" status'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'Failed';
+        mocks.simulateResponse.describeUpdateResponseMockErrors = [
+          {
+            errorMessage: 'errorMessageMock',
+            errorCode: 'errorCodeMock',
+            resourceIds: [
+              'foo', 'bar',
+            ],
+          },
+        ];
+
+        let error;
+        try {
+          await isCompleteHandler.isComplete();
+        } catch (e) {
+          error = e;
+        }
+        test.ok(error);
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(error.message, 'cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]');
+        test.done();
+      },
+
+      async 'with "InProgress" status, returns IsComplete=false'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'InProgress';
+
+        const response = await isCompleteHandler.isComplete();
+
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(response.IsComplete, false);
+        test.done();
+      },
+
+      async 'with "Successful" status, returns IsComplete=true'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'Successful';
+
+        const response = await isCompleteHandler.isComplete();
+
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(response.IsComplete, true);
+        test.done();
+      },
+
     },
 
     'in-place': {
+
       'version change': {
         async 'from undefined to a specific value'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '12.34'
+            version: '12.34',
           }, {
-            version: undefined
+            version: undefined,
           }));
           const resp = await handler.onEvent();
-          test.equal(resp, undefined);
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
-            version: '12.34'
+            version: '12.34',
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
           test.done();
@@ -373,15 +440,16 @@ export = {
 
         async 'from a specific value to another value'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '2.0'
+            version: '2.0',
           }, {
-            version: '1.1'
+            version: '1.1',
           }));
+
           const resp = await handler.onEvent();
-          test.equal(resp, undefined);
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
-            version: '2.0'
+            version: '2.0',
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
           test.done();
@@ -389,7 +457,7 @@ export = {
 
         async 'to a new value that is already the current version'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '1.0'
+            version: '1.0',
           }));
           const resp = await handler.onEvent();
           test.equal(resp, undefined);
@@ -401,9 +469,9 @@ export = {
 
         async 'fails from specific value to undefined'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: undefined
+            version: undefined,
           }, {
-            version: '1.2'
+            version: '1.2',
           }));
           let error;
           try {
@@ -414,8 +482,8 @@ export = {
 
           test.equal(error.message, 'Cannot remove cluster version configuration. Current version is 1.2');
           test.done();
-        }
-      }
+        },
+      },
     },
   },
 

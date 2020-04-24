@@ -127,7 +127,7 @@ class DefaultAwsClient implements IAws {
   private async assumeRole(region: string | undefined, roleArn: string, externalId?: string): Promise<AWS.Credentials> {
     const msg = [
       `Assume ${roleArn}`,
-      ...externalId ? [`(ExternalId ${externalId})`] : []
+      ...externalId ? [`(ExternalId ${externalId})`] : [],
     ];
     log('verbose', msg.join(' '));
 

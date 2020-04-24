@@ -56,13 +56,16 @@ export class PolicyDocument implements cdk.IResolvable {
     return this.render();
   }
 
+  /**
+   * Whether the policy document contains any statements.
+   */
   public get isEmpty(): boolean {
     return this.statements.length === 0;
   }
 
   /**
    * The number of statements already added to this policy.
-   * Can be used, for example, to generate uniuqe "sid"s within the policy.
+   * Can be used, for example, to generate unique "sid"s within the policy.
    */
   public get statementCount(): number {
     return this.statements.length;
@@ -82,7 +85,7 @@ export class PolicyDocument implements cdk.IResolvable {
    */
   public toString() {
     return cdk.Token.asString(this, {
-      displayHint: 'PolicyDocument'
+      displayHint: 'PolicyDocument',
     });
   }
 
@@ -102,7 +105,7 @@ export class PolicyDocument implements cdk.IResolvable {
 
     const doc = {
       Statement: this.statements.map(s => s.toStatementJson()),
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     };
 
     return doc;
@@ -143,7 +146,7 @@ class RemoveDuplicateStatements implements cdk.IPostProcessor {
 
     return {
       ...input,
-      Statement: statements
+      Statement: statements,
     };
   }
 }

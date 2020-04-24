@@ -33,7 +33,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 

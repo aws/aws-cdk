@@ -14,7 +14,7 @@ export = nodeunit.testCase({
     test.equals(stack.resolve(lazyDuration.toSeconds()), 1337);
     test.throws(
       () => stack.resolve(lazyDuration.toMinutes()),
-      /Unable to perform time unit conversion on un-resolved token/
+      /Unable to perform time unit conversion on un-resolved token/,
     );
 
     test.done();

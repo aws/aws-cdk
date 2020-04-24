@@ -8,6 +8,11 @@ import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+/**
+ * Represents an IAM user
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+ */
 export interface IUser extends IIdentity {
   /**
    * The user's name
@@ -27,6 +32,9 @@ export interface IUser extends IIdentity {
   addToGroup(group: IGroup): void;
 }
 
+/**
+ * Properties for defining an IAM user
+ */
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
@@ -126,7 +134,7 @@ export class User extends Resource implements IIdentity, IUser {
       service: 'iam',
       region: '',
       resource: 'user',
-      resourceName: userName
+      resourceName: userName,
     });
 
     class Import extends Resource implements IUser {
@@ -203,7 +211,7 @@ export class User extends Resource implements IIdentity, IUser {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
-      loginProfile: this.parseLoginProfile(props)
+      loginProfile: this.parseLoginProfile(props),
     });
 
     this.userName = this.getResourceNameAttribute(user.ref);
@@ -264,7 +272,7 @@ export class User extends Resource implements IIdentity, IUser {
     if (props.password) {
       return {
         password: props.password.toString(),
-        passwordResetRequired: props.passwordResetRequired
+        passwordResetRequired: props.passwordResetRequired,
       };
     }
 

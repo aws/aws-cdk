@@ -56,8 +56,8 @@ const template = {
   Parameters: {
     MyParam: {
       Type: 'String',
-      Default: 'Hello'
-    }
+      Default: 'Hello',
+    },
   },
   Resources: {
     MyResource1: {
@@ -65,12 +65,12 @@ const template = {
       Properties: {
         P1: 1,
         P2: 2,
-      }
+      },
     },
     MyResource2: {
-      Type: 'ResourceType2'
-    }
-  }
+      Type: 'ResourceType2',
+    },
+  },
 };
 
 /**

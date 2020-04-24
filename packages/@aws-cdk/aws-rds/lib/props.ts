@@ -27,17 +27,17 @@ export interface ParameterGroupFamily {
 export class DatabaseClusterEngine {
   /* tslint:disable max-line-length */
   public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' }
+    { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' },
   ]);
 
   public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' }
+    { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' },
   ]);
 
   public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
     { engineMajorVersion: '9.6', parameterGroupFamily: 'aurora-postgresql9.6'},
     { engineMajorVersion: '10', parameterGroupFamily: 'aurora-postgresql10' },
-    { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11'}
+    { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11'},
   ]);
   /* tslint:enable max-line-length */
 
@@ -107,7 +107,7 @@ export interface InstanceProps {
   /**
    * Where to place the instances within the VPC
    *
-   * @default private subnets
+   * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 

@@ -41,3 +41,11 @@ change-return-type:@aws-cdk/aws-lambda-destinations.LambdaDestination.bind
 change-return-type:@aws-cdk/aws-lambda-destinations.SnsDestination.bind
 change-return-type:@aws-cdk/aws-lambda-destinations.SqsDestination.bind
 removed:@aws-cdk/cdk-assets-schema.DockerImageDestination.imageUri
+incompatible-argument:@aws-cdk/aws-iam.FederatedPrincipal.<initializer>
+incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addCondition
+incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addConditions
+incompatible-argument:@aws-cdk/aws-iam.PolicyStatement.addFederatedPrincipal
+incompatible-argument:@aws-cdk/aws-iam.PrincipalPolicyFragment.<initializer>
+changed-type:@aws-cdk/aws-iam.FederatedPrincipal.conditions
+changed-type:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions
+changed-type:@aws-cdk/aws-iam.PrincipalWithConditions.conditions

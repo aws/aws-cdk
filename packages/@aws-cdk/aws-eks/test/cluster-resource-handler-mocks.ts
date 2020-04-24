@@ -9,6 +9,7 @@ export let actualRequest: {
   configureAssumeRoleRequest?: sdk.STS.AssumeRoleRequest;
   createClusterRequest?: sdk.EKS.CreateClusterRequest;
   describeClusterRequest?: sdk.EKS.DescribeClusterRequest;
+  describeUpdateRequest?: sdk.EKS.DescribeUpdateRequest;
   deleteClusterRequest?: sdk.EKS.DeleteClusterRequest;
   updateClusterConfigRequest?: sdk.EKS.UpdateClusterConfigRequest;
   updateClusterVersionRequest?: sdk.EKS.UpdateClusterVersionRequest;
@@ -22,6 +23,8 @@ export let actualRequest: {
  */
 export let simulateResponse: {
   describeClusterResponseMockStatus?: string;
+  describeUpdateResponseMockStatus?: string;
+  describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
   deleteClusterErrorCode?: string;
   describeClusterExceptionCode?: string;
 } = { };
@@ -30,6 +33,8 @@ export function reset() {
   actualRequest = { };
   simulateResponse = { };
 }
+
+export const MOCK_UPDATE_STATUS_ID = 'MockEksUpdateStatusId';
 
 export const client: EksClient = {
 
@@ -46,8 +51,8 @@ export const client: EksClient = {
         version: '1.0',
         arn: `arn:${req.name}`,
         certificateAuthority: { data: 'certificateAuthority-data' },
-        status: 'CREATING'
-      }
+        status: 'CREATING',
+      },
     };
   },
 
@@ -60,8 +65,8 @@ export const client: EksClient = {
     }
     return {
       cluster: {
-        name: req.name
-      }
+        name: req.name,
+      },
     };
   },
 
@@ -82,19 +87,39 @@ export const client: EksClient = {
         arn: 'arn:cluster-arn',
         certificateAuthority: { data: 'certificateAuthority-data' },
         endpoint: 'http://endpoint',
-        status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE'
-      }
+        status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE',
+      },
+    };
+  },
+
+  describeUpdate: async req => {
+    actualRequest.describeUpdateRequest = req;
+
+    return {
+      update: {
+        id: req.updateId,
+        errors: simulateResponse.describeUpdateResponseMockErrors,
+        status: simulateResponse.describeUpdateResponseMockStatus,
+      },
     };
   },
 
   updateClusterConfig: async req => {
     actualRequest.updateClusterConfigRequest = req;
-    return { };
+    return {
+      update: {
+        id: MOCK_UPDATE_STATUS_ID,
+      },
+    };
   },
 
   updateClusterVersion: async req => {
     actualRequest.updateClusterVersionRequest = req;
-    return { };
+    return {
+      update: {
+        id: MOCK_UPDATE_STATUS_ID,
+      },
+    };
   },
 
   createFargateProfile: async req => {
@@ -117,8 +142,8 @@ export const MOCK_PROPS = {
   roleArn: 'arn:of:role',
   resourcesVpcConfig: {
     subnetIds: [ 'subnet1', 'subnet2' ],
-    securityGroupIds: [ 'sg1', 'sg2', 'sg3' ]
-  }
+    securityGroupIds: [ 'sg1', 'sg2', 'sg3' ],
+  },
 };
 
 export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
@@ -138,12 +163,12 @@ export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
     RequestType: requestType,
     OldResourceProperties: {
       Config: oldProps,
-      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN
+      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN,
     },
     ResourceProperties: {
       ServiceToken: 'boom',
       Config: props,
-      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN
-    }
+      AssumeRoleArn: MOCK_ASSUME_ROLE_ARN,
+    },
   };
 }

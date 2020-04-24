@@ -28,7 +28,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The subnets to associate with the service.
    *
-   * @default - Private subnets.
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -158,9 +158,18 @@ export class FargateService extends BaseService implements IFargateService {
  */
 export enum FargatePlatformVersion {
   /**
-   * The latest, recommended platform version
+   * The latest, recommended platform version.
    */
   LATEST = 'LATEST',
+
+  /**
+   * Version 1.4.0
+   *
+   * Supports EFS endpoints, CAP_SYS_PTRACE Linux capability,
+   * network performance metrics in CloudWatch Container Insights,
+   * consolidated 20 GB ephemeral volume.
+   */
+  VERSION1_4 = '1.4.0',
 
   /**
    * Version 1.3.0

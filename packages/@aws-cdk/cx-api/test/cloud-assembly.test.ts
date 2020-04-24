@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { CloudAssembly } from '../lib';
-import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from '../lib/versioning';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 
@@ -9,7 +8,7 @@ test('empty assembly', () => {
   expect(assembly.artifacts).toEqual([]);
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.stacks).toEqual([]);
-  expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
+  expect(assembly.version).toEqual('0.0.0');
   expect(assembly.manifest).toMatchSnapshot();
   expect(assembly.tree()).toBeUndefined();
 });
@@ -20,7 +19,6 @@ test('assembly with a single cloudformation stack and tree metadata', () => {
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.manifest.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
-  expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
 
   const stack = assembly.stacks[0];
   expect(stack.manifest).toMatchSnapshot();
@@ -64,11 +62,6 @@ test('assembly with multiple stacks', () => {
   expect(assembly.artifacts).toHaveLength(2);
 });
 
-test('fails for invalid artifact type', () => {
-  const assembly = new CloudAssembly(path.join(FIXTURES, 'invalid-artifact-type'));
-  expect(assembly.tryGetArtifact('MyArt')).toBeUndefined();
-});
-
 test('fails for invalid environment format', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-env-format')))
     .toThrow('Unable to parse environment specification');
@@ -110,13 +103,6 @@ test('dependencies', () => {
 
 test('fails for invalid dependencies', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow('Artifact StackC depends on non-existing artifact StackX');
-});
-
-test('verifyManifestVersion', () => {
-  verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
-  // tslint:disable-next-line:max-line-length
-  expect(() => verifyManifestVersion('0.31.0')).toThrow(`The CDK CLI you are using requires your app to use CDK modules with version >= ${CLOUD_ASSEMBLY_VERSION}`);
-  expect(() => verifyManifestVersion('99.99.99')).toThrow('A newer version of the CDK CLI (>= 99.99.99) is necessary to interact with this app');
 });
 
 test('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
