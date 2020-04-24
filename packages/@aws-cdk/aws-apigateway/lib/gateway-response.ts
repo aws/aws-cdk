@@ -30,7 +30,7 @@ export interface GatewayResponseOptions {
 
   /**
    * Http status code for response.
-   * @default - standart http status code for the response type.
+   * @default - standard http status code for the response type.
    */
   readonly statusCode?: string;
 
