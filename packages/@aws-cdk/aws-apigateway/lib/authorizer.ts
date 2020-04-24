@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, Resource, ResourceProps } from '@aws-cdk/core';
 import { AuthorizationType } from './method';
 import { RestApi } from './restapi';
 
@@ -18,8 +18,8 @@ export abstract class Authorizer extends Resource implements IAuthorizer {
   public readonly abstract authorizerId: string;
   public readonly authorizationType?: AuthorizationType = AuthorizationType.CUSTOM;
 
-  public constructor(scope: Construct, id: string) {
-    super(scope, id);
+  public constructor(scope: Construct, id: string, props?: ResourceProps) {
+    super(scope, id, props);
 
     Object.defineProperty(this, AUTHORIZER_SYMBOL, { value: true });
   }
