@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, ConcreteDependable } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -73,7 +73,7 @@ export interface IBucket extends IResource {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  addToResourcePolicy(permission: iam.PolicyStatement): void;
+  addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The https URL of an S3 object. For example:
@@ -408,14 +408,17 @@ abstract class BucketBase extends Resource implements IBucket {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: iam.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
   }
 
   /**

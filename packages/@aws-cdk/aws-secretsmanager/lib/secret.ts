@@ -163,14 +163,16 @@ abstract class SecretBase extends Resource implements ISecret {
     });
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new ResourcePolicy(this, 'Policy', { secret: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+    return { statementAdded: false };
   }
 
   public denyAccountRootDelete() {

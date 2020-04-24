@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
+import { ConcreteDependable } from '@aws-cdk/core';
 
 /**
  * Basic options for a grant operation
@@ -100,7 +101,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
  * This class is not instantiable by consumers on purpose, so that they will be
  * required to call the Grant factory functions.
  */
-export class Grant {
+export class Grant implements cdk.IDependable {
   /**
    * Grant the given permissions to the principal
    *
@@ -129,9 +130,13 @@ export class Grant {
       principals: [options.grantee!.grantPrincipal],
     });
 
-    options.resource.addToResourcePolicy(statement);
+    const resourceResult = options.resource.addToResourcePolicy(statement);
 
-    return new Grant({ resourceStatement: statement, options });
+    return new Grant({
+      resourceStatement: statement,
+      options,
+      policyApplied: resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined,
+    });
   }
 
   /**
@@ -147,8 +152,9 @@ export class Grant {
     });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
+    const policyApplied = addedToPrincipal ? guessPolicyDependable(options.grantee.grantPrincipal) : new cdk.ConcreteDependable();
 
-    return new Grant({ principalStatement: addedToPrincipal ? statement : undefined, options });
+    return new Grant({ principalStatement: addedToPrincipal ? statement : undefined, options, policyApplied });
   }
 
   /**
@@ -172,9 +178,15 @@ export class Grant {
       principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
     });
 
-    options.resource.addToResourcePolicy(statement);
+    const resourceResult = options.resource.addToResourcePolicy(statement);
+    const resourceDependable = resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined;
 
-    return new Grant({ principalStatement: statement, resourceStatement: result.resourceStatement, options });
+    return new Grant({
+      principalStatement: statement,
+      resourceStatement: result.resourceStatement,
+      options,
+      policyApplied: resourceDependable ? new CompositeDependable(result, resourceDependable) : result,
+    });
   }
 
   /**
@@ -218,6 +230,12 @@ export class Grant {
     this.options = props.options;
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
+
+    cdk.DependableTrait.implement(this, {
+      get dependencyRoots() {
+        return props.policyApplied ? cdk.DependableTrait.get(props.policyApplied).dependencyRoots : [];
+      },
+    });
   }
 
   /**
@@ -236,6 +254,17 @@ export class Grant {
       throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }
+
+  /**
+   * Make sure this grant is applied before the given constructs are deployed
+   *
+   * The same as construct.node.addDependency(grant), but slightly nicer to read.
+   */
+  public applyBefore(...constructs: cdk.IConstruct[]) {
+    for (const construct of constructs) {
+      construct.node.addDependency(this);
+    }
+  }
 }
 
 function describeGrant(options: CommonGrantOptions) {
@@ -246,6 +275,13 @@ interface GrantProps {
   readonly options: CommonGrantOptions;
   readonly principalStatement?: PolicyStatement;
   readonly resourceStatement?: PolicyStatement;
+
+  /**
+   * Constructs whose deployment applies the grant
+   *
+   * Used to add dependencies on grants
+   */
+  readonly policyApplied?: cdk.IDependable;
 }
 
 /**
@@ -255,5 +291,80 @@ export interface IResourceWithPolicy extends cdk.IConstruct {
   /**
    * Add a statement to the resource's resource policy
    */
-  addToResourcePolicy(statement: PolicyStatement): void;
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * Result of calling addToResourcePolicy
+ */
+export interface AddToResourcePolicyResult {
+  /**
+   * Whether the statement as added
+   */
+  readonly statementAdded: boolean;
+
+  /**
+   * Dependable which allows depending on the policy change being applied
+   *
+   * @default - The resource itself applies the policy change, if `didAddStatement`
+   * is true. Otherwise, no dependable.
+   */
+  readonly policyDependable?: cdk.IDependable;
+}
+
+/**
+ * Guess the policy object that just got modified from a principal
+ *
+ * This is a mega-extreme hack. We SHOULD have gotten the policy that
+ * was modified back from the principal when doing `addToPolicy()`. However,
+ * that API was cast in stone to return a `boolean` and cannot be changed
+ * anymore since it's stable.
+ *
+ * It's also occupying prime real estate, in that `addToPolicy` is the name
+ * we'd want this thing to have, so deprecating it feels silly and wasteful.
+ *
+ * So we do nasty things here in order to take a good guess at finding the
+ * Policy object, and hope we are correct. We should at least be fine for
+ * the CDK built-in Principal types that have mutable Policies (Role,
+ * User, Group, which are the main ones that matter).
+ */
+function guessPolicyDependable(principal: IPrincipal): cdk.IDependable {
+  // Role, Group and User Constructs have a default `Policy` object.
+  if (cdk.Construct.isConstruct(principal)) {
+    const pol = principal.node.tryFindChild('Policy');
+    if (pol) { return pol; }
+
+    // LazyRole wraps another role, but that may not be reified yet.
+    // It is itself a construct, so we can return it. We may capture too much
+    // (resource and any of its policies), but not too little. It's also
+    // no worse than what we used to have before Grants being IDependable,
+    // where users would ALWAYS have to depend on the Role (in order to depend
+    // on its Policy).
+    return principal;
+  }
+
+  // PrincipalWithCondition wraps another principal.
+  if ((principal as any).principal) {
+    return guessPolicyDependable((principal as any).principal);
+  }
+
+  // Give up (empty dependable)
+  return new cdk.ConcreteDependable();
+}
+
+/**
+ * Composite dependable
+ *
+ * Not as simple as eagerly getting the dependency roots from the
+ * inner dependables, as they may be mutable so we need to defer
+ * the query.
+ */
+export class CompositeDependable implements cdk.IDependable {
+  constructor(...dependables: cdk.IDependable[]) {
+    cdk.DependableTrait.implement(this, {
+      get dependencyRoots(): cdk.IConstruct[] {
+        return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
+      },
+    });
+  }
 }

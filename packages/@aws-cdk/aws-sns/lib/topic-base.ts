@@ -83,14 +83,16 @@ export abstract class TopicBase extends Resource implements ITopic {
    * will be automatically created upon the first call to `addToPolicy`. If
    * the topic is improted (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+    return { statementAdded: false };
   }
 
   /**
