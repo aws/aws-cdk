@@ -883,9 +883,9 @@ const api = new apigateway.RestApi(this, 'books-api');
 api.addGatewayResponse('test-response', {
       type: ResponseType.ACCESS_DENIED,
       statusCode: '500',
-      parameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': "test.com",
-        'gatewayresponse.header.test-key': 'test-value'
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "test.com",
+        'test-key': 'test-value'
       },
       templates: {
         'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"

@@ -852,9 +852,9 @@ export = {
     api.addGatewayResponse('test-response', {
       type: apigw.ResponseType.AUTHORIZER_FAILURE,
       statusCode: '500',
-      parameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
-        'gatewayresponse.header.test-key': 'test-value',
+      responseHeaders: {
+        'Access-Control-Allow-Origin': 'test.com',
+        'test-key': 'test-value',
       },
     });
 

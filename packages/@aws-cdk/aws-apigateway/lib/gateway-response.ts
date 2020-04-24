@@ -35,10 +35,10 @@ export interface GatewayResponseOptions {
   readonly statusCode?: string;
 
   /**
-   * Custom path, query and headers for response.
+   * Custom headers parameters for response.
    * @default - No custom paramter will be added to response.
    */
-  readonly parameters?: { [key: string]: string };
+  readonly responseHeaders?: { [key: string]: string };
 
   /**
    * Custom templates to get mapped as response.
@@ -62,12 +62,23 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     const resource = new CfnGatewayResponse(this, 'Resource', {
       restApiId: props.restApi.restApiId,
       responseType: props.type.responseType,
-      responseParameters: props.parameters,
+      responseParameters: this.buildResponseParamters(props.responseHeaders),
       responseTemplates: props.templates,
       statusCode: props.statusCode,
     });
 
     this.node.defaultChild = resource;
+  }
+
+  private buildResponseParamters(responseHeaders?: { [key: string] : string }) {
+    if (!responseHeaders) {
+      return undefined;
+    }
+
+    return Object.entries(responseHeaders).map(([header, value]) => ({
+      key: `gatewayresponse.header.${header}`,
+      value,
+    }));
   }
 }
 
