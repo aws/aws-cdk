@@ -1082,6 +1082,7 @@ export = {
                     'Fn::GetAtt': [
                       'MyBucketF68F3FF0',
 <<<<<<< HEAD
+<<<<<<< HEAD
                       'Arn',
                     ],
                   },
@@ -1094,6 +1095,8 @@ export = {
         'Version': '2012-10-17',
       },
 =======
+=======
+>>>>>>> Fix linting errors
                       'Arn'
                     ]
                   },
