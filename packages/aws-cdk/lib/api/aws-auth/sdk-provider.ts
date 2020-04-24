@@ -88,14 +88,15 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds);
+    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
+
+    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, options.httpOptions);
+    return new SdkProvider(chain, region, sdkOptions);
   }
 
   private readonly plugins = new CredentialPlugins();
-  private readonly httpOptions: ConfigurationOptions;
 
   public constructor(
     private readonly defaultChain: AWS.CredentialProviderChain,
@@ -103,20 +104,18 @@ export class SdkProvider {
      * Default region
      */
     public readonly defaultRegion: string,
-    httpOptions: SdkHttpOptions = {}) {
-    this.httpOptions = defaultHttpOptions(httpOptions);
+    private readonly sdkOptions: ConfigurationOptions = {}) {
   }
 
   /**
    * Return an SDK which can do operations in the given environment
    *
-   * The `region` and `accountId` parameters are interpreted as in `resolveEnvironment()` (which is to
-   * say, `undefined` doesn't do what you expect).
+   * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
-  public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
-    const env = await this.resolveEnvironment(accountId, region);
+  public async forEnvironment(environment: cxapi.Environment, mode: Mode): Promise<ISDK> {
+    const env = await this.resolveEnvironment(environment);
     const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.httpOptions);
+    return new SDK(creds, env.region, this.sdkOptions);
   }
 
   /**
@@ -139,41 +138,37 @@ export class SdkProvider {
       },
       stsConfig: {
         region,
-        ...this.httpOptions,
+        ...this.sdkOptions,
       },
       masterCredentials: await this.defaultCredentials(),
     });
 
-    return new SDK(creds, region, this.httpOptions);
+    return new SDK(creds, region, this.sdkOptions);
   }
 
   /**
    * Resolve the environment for a stack
    *
-   * `undefined` actually means `undefined`, and is NOT changed to default values! Only the magic values UNKNOWN_REGION
-   * and UNKNOWN_ACCOUNT will be replaced with looked-up values!
+   * Replaces the magic values `UNKNOWN_REGION` and `UNKNOWN_ACCOUNT`
+   * with the defaults for the current SDK configuration (`~/.aws/config` or
+   * otherwise).
+   *
+   * It is an error if `UNKNOWN_ACCOUNT` is used but the user hasn't configured
+   * any SDK credentials.
    */
-  public async resolveEnvironment(accountId: string | undefined, region: string | undefined) {
-    region = region !== cxapi.UNKNOWN_REGION ? region : this.defaultRegion;
-    accountId = accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : (await this.defaultAccount())?.accountId;
+  public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
+    const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
+    const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
-    if (!region) {
-      throw new Error('AWS region must be configured either when you configure your CDK stack or through the environment');
-    }
-
-    if (!accountId) {
+    if (!account) {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
-    const environment: cxapi.Environment = {
-      region, account: accountId, name: cxapi.EnvironmentUtils.format(accountId, region)
+    return  {
+      region,
+      account,
+      name: cxapi.EnvironmentUtils.format(account, region),
     };
-
-    return environment;
-  }
-
-  public async resolveEnvironmentObject(env: cxapi.Environment) {
-    return this.resolveEnvironment(env.account, env.region);
   }
 
   /**
@@ -199,7 +194,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return new SDK(creds, this.defaultRegion, this.httpOptions).currentAccount();
+        return new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
         debug('Unable to determine the default AWS account:', e);
         return undefined;
@@ -269,8 +264,11 @@ export interface Account {
  * Get HTTP options for the SDK
  *
  * Read from user input or environment variables.
+ *
+ * Returns a complete `ConfigurationOptions` object because that's where
+ * `customUserAgent` lives, but `httpOptions` is the most important attribute.
  */
-function defaultHttpOptions(options: SdkHttpOptions) {
+function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
 
@@ -303,7 +301,7 @@ function defaultHttpOptions(options: SdkHttpOptions) {
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath)
+      ca: readIfPossible(caBundlePath),
     });
   }
 

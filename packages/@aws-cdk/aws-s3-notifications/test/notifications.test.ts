@@ -18,9 +18,9 @@ test('bucket without notifications', () => {
       'MyBucketF68F3FF0': {
         'Type': 'AWS::S3::Bucket',
         'DeletionPolicy': 'Retain',
-        'UpdateReplacePolicy': 'Retain'
-      }
-    }
+        'UpdateReplacePolicy': 'Retain',
+      },
+    },
   });
 });
 
@@ -68,8 +68,8 @@ test('bucketNotificationTarget is not called during synthesis', () => {
   expect(stack).toHaveResourceLike('AWS::SNS::TopicPolicy', {
     'Topics': [
       {
-        'Ref': 'TopicBFC7AF6E'
-      }
+        'Ref': 'TopicBFC7AF6E',
+      },
     ],
     'PolicyDocument': {
       'Statement': [
@@ -80,22 +80,22 @@ test('bucketNotificationTarget is not called during synthesis', () => {
               'aws:SourceArn': {
                 'Fn::GetAtt': [
                   'MyBucketF68F3FF0',
-                  'Arn'
-                ]
-              }
-            }
+                  'Arn',
+                ],
+              },
+            },
           },
           'Effect': 'Allow',
           'Principal': {
-            'Service': 's3.amazonaws.com'
+            'Service': 's3.amazonaws.com',
           },
           'Resource': {
-            'Ref': 'TopicBFC7AF6E'
+            'Ref': 'TopicBFC7AF6E',
           },
-        }
+        },
       ],
-      'Version': '2012-10-17'
-    }
+      'Version': '2012-10-17',
+    },
   });
 });
 
@@ -107,22 +107,22 @@ test('subscription types', () => {
   const queueTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
-      arn: 'arn:aws:sqs:...'
-    })
+      arn: 'arn:aws:sqs:...',
+    }),
   };
 
   const lambdaTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
       type: s3.BucketNotificationDestinationType.LAMBDA,
-      arn: 'arn:aws:lambda:...'
-    })
+      arn: 'arn:aws:lambda:...',
+    }),
   };
 
   const topicTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
       type: s3.BucketNotificationDestinationType.TOPIC,
-      arn: 'arn:aws:sns:...'
-    })
+      arn: 'arn:aws:sns:...',
+    }),
   };
 
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, queueTarget);
@@ -133,33 +133,33 @@ test('subscription types', () => {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     'BucketName': {
-      'Ref': 'TestBucket560B80BC'
+      'Ref': 'TestBucket560B80BC',
     },
     'NotificationConfiguration': {
       'LambdaFunctionConfigurations': [
         {
           'Events': [
-            's3:ObjectCreated:*'
+            's3:ObjectCreated:*',
           ],
-          'LambdaFunctionArn': 'arn:aws:lambda:...'
-        }
+          'LambdaFunctionArn': 'arn:aws:lambda:...',
+        },
       ],
       'QueueConfigurations': [
         {
           'Events': [
-            's3:ObjectCreated:*'
+            's3:ObjectCreated:*',
           ],
-          'QueueArn': 'arn:aws:sqs:...'
-        }
+          'QueueArn': 'arn:aws:sqs:...',
+        },
       ],
       'TopicConfigurations': [
         {
           'Events': [
-            's3:ObjectRemoved:*'
+            's3:ObjectRemoved:*',
           ],
           'TopicArn': 'arn:aws:sns:...',
           'Filter': {
@@ -167,14 +167,14 @@ test('subscription types', () => {
               'FilterRules': [
                 {
                   'Name': 'prefix',
-                  'Value': 'prefix'
-                }
-              ]
-            }
-          }
-        }
-      ]
-    }
+                  'Value': 'prefix',
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
   });
 });
 
@@ -186,43 +186,43 @@ test('multiple subscriptions of the same type', () => {
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
     bind: _ => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
-      arn: 'arn:aws:sqs:...:queue1'
-    })
+      arn: 'arn:aws:sqs:...:queue1',
+    }),
   });
 
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
     bind: _ => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
-      arn: 'arn:aws:sqs:...:queue2'
-    })
+      arn: 'arn:aws:sqs:...:queue2',
+    }),
   });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     'BucketName': {
-      'Ref': 'TestBucket560B80BC'
+      'Ref': 'TestBucket560B80BC',
     },
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
           'Events': [
-            's3:ObjectRemoved:Delete'
+            's3:ObjectRemoved:Delete',
           ],
-          'QueueArn': 'arn:aws:sqs:...:queue1'
+          'QueueArn': 'arn:aws:sqs:...:queue1',
         },
         {
           'Events': [
-            's3:ObjectRemoved:Delete'
+            's3:ObjectRemoved:Delete',
           ],
-          'QueueArn': 'arn:aws:sqs:...:queue2'
-        }
-      ]
-    }
+          'QueueArn': 'arn:aws:sqs:...:queue2',
+        },
+      ],
+    },
   });
 });
 
@@ -233,7 +233,7 @@ test('prefix/suffix filters', () => {
 
   const bucketNotificationTarget = {
     type: s3.BucketNotificationDestinationType.QUEUE,
-    arn: 'arn:aws:sqs:...'
+    arn: 'arn:aws:sqs:...',
   };
 
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, { bind: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
@@ -242,36 +242,36 @@ test('prefix/suffix filters', () => {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn'
-      ]
+        'Arn',
+      ],
     },
     'BucketName': {
-      'Ref': 'TestBucket560B80BC'
+      'Ref': 'TestBucket560B80BC',
     },
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
           'Events': [
-            's3:ObjectRemoved:Delete'
+            's3:ObjectRemoved:Delete',
           ],
           'Filter': {
             'Key': {
               'FilterRules': [
                 {
                   'Name': 'suffix',
-                  'Value': '.jpg'
+                  'Value': '.jpg',
                 },
                 {
                   'Name': 'prefix',
-                  'Value': 'images/'
-                }
-              ]
-            }
+                  'Value': 'images/',
+                },
+              ],
+            },
           },
-          'QueueArn': 'arn:aws:sqs:...'
-        }
-      ]
-    }
+          'QueueArn': 'arn:aws:sqs:...',
+        },
+      ],
+    },
   });
 });
 
@@ -284,8 +284,8 @@ test('a notification destination can specify a set of dependencies that must be 
     bind: () => ({
       arn: 'arn',
       type: s3.BucketNotificationDestinationType.QUEUE,
-      dependencies: [ dependent ]
-    })
+      dependencies: [ dependent ],
+    }),
   };
 
   bucket.addObjectCreatedNotification(dest);
@@ -297,9 +297,9 @@ test('a notification destination can specify a set of dependencies that must be 
     Properties: {
       ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },
       BucketName: { Ref: 'Bucket83908E77' },
-      NotificationConfiguration: { QueueConfigurations: [ { Events: [ 's3:ObjectCreated:*' ], QueueArn: 'arn' } ] }
+      NotificationConfiguration: { QueueConfigurations: [ { Events: [ 's3:ObjectCreated:*' ], QueueArn: 'arn' } ] },
     },
-    DependsOn: [ 'Dependent' ]
+    DependsOn: [ 'Dependent' ],
   });
 });
 
@@ -311,8 +311,8 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: '' })
-      }
+        bind: () => ({ arn: 'ARN', id: '' }),
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::Events::Rule', {
@@ -353,9 +353,9 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: '' })
+        bind: () => ({ arn: 'ARN', id: '' }),
       },
-      paths: ['my/path.zip']
+      paths: ['my/path.zip'],
     });
 
     expect(stack).toHaveResourceLike('AWS::Events::Rule', {
@@ -377,7 +377,7 @@ describe('CloudWatch Events', () => {
                     {
                       'Ref': 'AWS::Partition',
                     },
-                    ':s3:::MyBucket/my/path.zip'
+                    ':s3:::MyBucket/my/path.zip',
                   ],
                 ],
               },
@@ -396,8 +396,8 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: '' })
-      }
+        bind: () => ({ arn: 'ARN', id: '' }),
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::Events::Rule', {
@@ -424,7 +424,7 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: '' })
+        bind: () => ({ arn: 'ARN', id: '' }),
       },
     });
 
@@ -451,9 +451,9 @@ describe('CloudWatch Events', () => {
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
-        bind: () => ({ arn: 'ARN', id: '' })
+        bind: () => ({ arn: 'ARN', id: '' }),
       },
-      paths: ['my/path.zip']
+      paths: ['my/path.zip'],
     });
 
     expect(stack).toHaveResourceLike('AWS::Events::Rule', {

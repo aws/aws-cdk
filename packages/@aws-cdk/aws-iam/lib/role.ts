@@ -10,6 +10,9 @@ import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals'
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
+/**
+ * Properties for defining an IAM Role
+ */
 export interface RoleProps {
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
@@ -317,7 +320,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
-      description
+      description,
     });
 
     this.roleId = role.attrRoleId;
@@ -383,7 +386,7 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this
+      scope: this,
     });
   }
 

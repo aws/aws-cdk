@@ -48,7 +48,7 @@ export class SecretValue extends Intrinsic {
       'SecretString',
       options.jsonField      || '',
       options.versionStage || '',
-      options.versionId    || ''
+      options.versionId    || '',
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));

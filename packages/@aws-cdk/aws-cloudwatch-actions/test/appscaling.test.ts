@@ -20,7 +20,7 @@ test('can use topic as alarm action', () => {
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
     metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Henk' }),
     evaluationPeriods: 3,
-    threshold: 100
+    threshold: 100,
   });
 
   // WHEN
@@ -29,7 +29,7 @@ test('can use topic as alarm action', () => {
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
     AlarmActions: [
-      { Ref: 'Action62AD07C0' }
+      { Ref: 'Action62AD07C0' },
     ],
   });
 });

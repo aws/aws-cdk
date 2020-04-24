@@ -14,7 +14,7 @@ test('stream can be subscription destination', () => {
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup,
     destination: new dests.KinesisDestination(stream),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   // THEN: subscription target is Stream
@@ -36,13 +36,13 @@ test('stream can be subscription destination', () => {
               'logs.',
               { Ref: 'AWS::Region' },
               '.',
-              { Ref: 'AWS::URLSuffix' }
-            ]
-            ]
-          }
-        }
+              { Ref: 'AWS::URLSuffix' },
+            ],
+            ],
+          },
+        },
       }],
-    }
+    },
   });
 
   expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -51,20 +51,20 @@ test('stream can be subscription destination', () => {
       Statement: [
         {
           Action: [
-            'kinesis:DescribeStream',
+            'kinesis:ListShards',
             'kinesis:PutRecord',
             'kinesis:PutRecords',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] }
+          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] }
-        }
+          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+        },
       ],
-    }
+    },
   });
 });
 
@@ -79,13 +79,13 @@ test('stream can be subscription destination twice, without duplicating permissi
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup: logGroup1,
     destination: new dests.KinesisDestination(stream),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   new logs.SubscriptionFilter(stack, 'Subscription2', {
     logGroup: logGroup2,
     destination: new dests.KinesisDestination(stream),
-    filterPattern: logs.FilterPattern.allEvents()
+    filterPattern: logs.FilterPattern.allEvents(),
   });
 
   // THEN: subscription target is Stream
@@ -107,13 +107,13 @@ test('stream can be subscription destination twice, without duplicating permissi
               'logs.',
               { Ref: 'AWS::Region' },
               '.',
-              { Ref: 'AWS::URLSuffix' }
-            ]
-            ]
-          }
-        }
+              { Ref: 'AWS::URLSuffix' },
+            ],
+            ],
+          },
+        },
       }],
-    }
+    },
   });
 
   expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -122,19 +122,19 @@ test('stream can be subscription destination twice, without duplicating permissi
       Statement: [
         {
           Action: [
-            'kinesis:DescribeStream',
+            'kinesis:ListShards',
             'kinesis:PutRecord',
             'kinesis:PutRecords',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] }
+          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] }
-        }
+          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+        },
       ],
-    }
+    },
   });
 });

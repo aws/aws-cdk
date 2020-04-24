@@ -33,7 +33,7 @@ export class SfnStateMachine implements events.IRuleTarget {
       arn: this.machine.stateMachineArn,
       role: singletonEventRole(this.machine, [new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.machine.stateMachineArn]
+        resources: [this.machine.stateMachineArn],
       })]),
       input: this.props.input,
       targetResource: this.machine,

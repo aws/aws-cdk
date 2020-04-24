@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
@@ -69,7 +69,7 @@ export = {
               'ssm:DescribeParameters',
               'ssm:GetParameters',
               'ssm:GetParameter',
-              'ssm:GetParameterHistory'
+              'ssm:GetParameterHistory',
             ],
             Effect: 'Allow',
             Resource: {
@@ -78,26 +78,26 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
                   ':parameter/',
                   {
-                    Ref: 'Param165332EC'
-                  }
-                ]
-              ]
-            }
-          }
+                    Ref: 'Param165332EC',
+                  },
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -123,7 +123,7 @@ export = {
             encrypted: true,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
-          })
+          }),
         }, {
           deviceName: 'ebs-snapshot',
           mappingEnabled: false,
@@ -131,11 +131,11 @@ export = {
             volumeSize: 500,
             deleteOnTermination: false,
             volumeType: EbsDeviceVolumeType.SC1,
-          })
+          }),
         }, {
           deviceName: 'ephemeral',
-          volume: BlockDeviceVolume.ephemeral(0)
-        }]
+          volume: BlockDeviceVolume.ephemeral(0),
+        }],
       });
 
       // THEN
@@ -148,8 +148,8 @@ export = {
               Encrypted: true,
               Iops: 5000,
               VolumeSize: 15,
-              VolumeType: 'io1'
-            }
+              VolumeType: 'io1',
+            },
           },
           {
             DeviceName: 'ebs-snapshot',
@@ -157,15 +157,15 @@ export = {
               DeleteOnTermination: false,
               SnapshotId: 'snapshot-id',
               VolumeSize: 500,
-              VolumeType: 'sc1'
+              VolumeType: 'sc1',
             },
-            NoDevice: {}
+            NoDevice: {},
           },
           {
             DeviceName: 'ephemeral',
-            VirtualName: 'ephemeral0'
-          }
-        ]
+            VirtualName: 'ephemeral0',
+          },
+        ],
       }));
 
       test.done();
@@ -184,8 +184,8 @@ export = {
           instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
           blockDevices: [{
             deviceName: 'ephemeral',
-            volume: BlockDeviceVolume.ephemeral(-1)
-          }]
+            volume: BlockDeviceVolume.ephemeral(-1),
+          }],
         });
       }, /volumeIndex must be a number starting from 0/);
 
@@ -209,8 +209,8 @@ export = {
               deleteOnTermination: true,
               encrypted: true,
               volumeType: EbsDeviceVolumeType.IO1,
-            })
-          }]
+            }),
+          }],
         });
       }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
 
@@ -232,12 +232,12 @@ export = {
             deleteOnTermination: true,
             encrypted: true,
             iops: 5000,
-          })
-        }]
+          }),
+        }],
       });
 
       // THEN
-      test.deepEqual(instance.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
       test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
@@ -259,12 +259,12 @@ export = {
             encrypted: true,
             volumeType: EbsDeviceVolumeType.GP2,
             iops: 5000,
-          })
-        }]
+          }),
+        }],
       });
 
       // THEN
-      test.deepEqual(instance.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
+      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
       test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
@@ -281,13 +281,13 @@ export = {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      privateIpAddress: '10.0.0.2'
+      privateIpAddress: '10.0.0.2',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
       InstanceType: 't3.large',
-      PrivateIpAddress: '10.0.0.2'
+      PrivateIpAddress: '10.0.0.2',
     }));
 
     test.done();
