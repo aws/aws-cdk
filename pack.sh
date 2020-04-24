@@ -15,7 +15,8 @@ rm -fr ${distdir}
 mkdir -p ${distdir}
 
 # Split out jsii and non-jsii packages. Jsii packages will be built all at once.
-# Non-jsii packages will be run individually.
+# Non-jsii packages will be run individually. Note that currently the monoCDK
+# package is handled as non-jsii because of the way it is packaged.
 echo "Collecting package list..." >&2
 scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
 
