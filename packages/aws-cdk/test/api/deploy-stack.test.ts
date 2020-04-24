@@ -233,7 +233,7 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
     stack: testStack({
       stackName: 'withouterrors',
       properties: {
-        stackTemplateAssetObjectUrl: 'https://use-me-use-me/'
+        stackTemplateAssetObjectUrl: 'https://use-me-use-me/',
       },
     }),
     sdk,
@@ -243,7 +243,7 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
 
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    TemplateURL: 'https://use-me-use-me/'
+    TemplateURL: 'https://use-me-use-me/',
   }));
   expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });

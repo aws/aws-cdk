@@ -3,7 +3,7 @@ jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/api/toolkit-info', () => ({
   ToolkitInfo: {
     lookup: mockToolkitInfoLookup,
-  }
+  },
 }));
 
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
@@ -30,7 +30,7 @@ test('placeholders are substituted in CloudFormation execution role', async () =
   });
 
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    roleArn: 'bloop:here:12345'
+    roleArn: 'bloop:here:12345',
   }));
 });
 
@@ -64,7 +64,7 @@ test('deployment fails if bootstrap stack is missing', async () => {
 
 test('deployment fails if bootstrap stack is too old', async () => {
   mockToolkitInfoLookup.mockResolvedValue({
-    version: 5
+    version: 5,
   });
 
   await expect(deployments.deployStack({

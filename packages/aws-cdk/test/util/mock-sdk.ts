@@ -5,7 +5,7 @@ import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '});
 
 const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
-  () => FAKE_CREDENTIALS
+  () => FAKE_CREDENTIALS,
 ]);
 
 /**
