@@ -1069,28 +1069,28 @@ export = {
 
     // then
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": "s3:DeleteObject*",
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::Join": [
-                "",
+            'Action': 's3:DeleteObject*',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
                 [
                   {
-                    "Fn::GetAtt": [
-                      "MyBucketF68F3FF0",
-                      "Arn"
+                    'Fn::GetAtt': [
+                      'MyBucketF68F3FF0',
+                      'Arn'
                     ]
                   },
-                  "/*"
+                  '/*'
                 ]
               ]
             }
           }
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17'
       }
     }));
 
