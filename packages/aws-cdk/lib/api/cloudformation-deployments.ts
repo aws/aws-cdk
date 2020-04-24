@@ -172,9 +172,9 @@ export class CloudFormationDeployments {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment.account, stack.environment.region);
+    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
-    const stackSdk = await this.sdkProvider.forEnvironment(stack.environment.account, stack.environment.region, mode);
+    const stackSdk = await this.sdkProvider.forEnvironment(stack.environment, mode);
 
     return {
       stackSdk,
