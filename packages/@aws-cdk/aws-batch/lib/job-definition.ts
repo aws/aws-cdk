@@ -337,6 +337,9 @@ export class JobDefinition extends Resource implements IJobDefinition {
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
+      resourceRequirements: container.gpuCount
+        ? [{ type: "GPU", value: container.gpuCount }]
+        : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
