@@ -27,7 +27,10 @@
           },
           "physicalResourceId": {
             "id": {
-              "Ref": "Repo02AC86CF"
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "Arn"
+              ]
             }
           }
         },
@@ -44,7 +47,10 @@
           },
           "physicalResourceId": {
             "id": {
-              "Ref": "Repo02AC86CF"
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "Arn"
+              ]
             }
           }
         },
@@ -61,7 +67,10 @@
           },
           "physicalResourceId": {
             "id": {
-              "Ref": "Repo02AC86CF"
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "Arn"
+              ]
             }
           }
         }

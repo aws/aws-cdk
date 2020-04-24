@@ -444,7 +444,7 @@ export class Repository extends RepositoryBase {
               scanOnPush: props.imageScanOnPush,
             },
           },
-          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryName),
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
         onDelete: {
           service: 'ECR',
@@ -455,7 +455,7 @@ export class Repository extends RepositoryBase {
               scanOnPush: false,
             },
           },
-          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryName),
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
         policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE }),
       });
