@@ -65,10 +65,10 @@ export interface MethodOptions {
   readonly requestParameters?: { [param: string]: boolean };
 
   /**
-   * The models which describe data structure of request payload. This can work
-   * together with `requestValidator` or `requestValidatorOptions` to validate
-   * the API request payload before it reaches integrations like Lambda Proxy
-   * Integration. Specify `requestModels` as key-value pairs, with a content type
+   * The models which describe data structure of request payload. When
+   * combined with `requestValidator` or `requestValidatorOptions`, the service
+   * will validate the API request payload before it reaches the API's Integration (including proxies).
+   * Specify `requestModels` as key-value pairs, with a content type
    * (e.g. `'application/json'`) as the key and an API Gateway Model as the value.
    *
    * @example
@@ -102,7 +102,7 @@ export interface MethodOptions {
   /**
    * The ID of the associated request validator.
    * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
-   * It can work together with `requestModels` or `requestParameters` to validate
+   * Works together with `requestModels` or `requestParameters` to validate
    * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
@@ -119,7 +119,7 @@ export interface MethodOptions {
   /**
    * Request validator options to create new validator
    * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
-   * It can work together with `requestModels` or `requestParameters` to validate
+   * Works together with `requestModels` or `requestParameters` to validate
    * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
