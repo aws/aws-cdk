@@ -43,13 +43,13 @@ const KMS_USAGE_ACTIONS = [
   'kms:ReEncrypt*',
   'kms:GenerateDataKey*',
   'kms:DescribeKey',
-  'kms:CreateGrant'
+  'kms:CreateGrant',
 ];
 
 const KMS_DYNAMODB_USAGE_ACTIONS = [
   'kms:Describe*',
   'kms:Get*',
-  'kms:List*'
+  'kms:List*',
 ];
 
 export interface Attribute {

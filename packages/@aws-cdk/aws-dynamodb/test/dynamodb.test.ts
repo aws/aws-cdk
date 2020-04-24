@@ -345,7 +345,7 @@ test('when specifying every property', () => {
         SSEEnabled: true,
         KMSMasterKey: {
           keyArn: 'kmsMasterKeyArn',
-        }
+        },
       },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
