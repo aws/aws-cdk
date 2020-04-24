@@ -79,7 +79,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     for (const [header, value] of Object.entries(responseHeaders)) {
       responseParameters[`gatewayresponse.header.${header}`] = value;
     }
-    return responseHeaders;
+    return responseParameters;
   }
 }
 
