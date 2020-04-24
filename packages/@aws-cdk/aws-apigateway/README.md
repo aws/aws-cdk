@@ -34,6 +34,7 @@ running on AWS Lambda, or any web application.
 - [Cross Origin Resource Sharing (CORS)](cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
 - [APIGateway v2](#apigateway-v2)
+- [Gateway Response](#gateway-response)
 
 ## Defining APIs
 
@@ -867,7 +868,7 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
-## Gateway responses
+## Gateway response
 
 If the Rest API fails to process an incoming request, it returns to the client an error response without forwarding the
 request to the integration backend. API Gateway has a set of standard response messages that are sent to the client for
