@@ -78,7 +78,7 @@ describe('Batch Job Definition', () => {
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
-        ResourceRequirements: [{ type: 'GPU', value: jobDefProps.container.gpuCount}],
+        ResourceRequirements: [{ type: 'GPU', value: String(jobDefProps.container.gpuCount)}],
         Ulimits: [],
         User: jobDefProps.container.user,
         Vcpus: jobDefProps.container.vcpus,
