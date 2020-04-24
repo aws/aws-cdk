@@ -164,7 +164,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     if (props.onFailure) {
       destinationConfig = {
-        onFailure: props.onFailure.bind(this, props.target)
+        onFailure: props.onFailure.bind(this, props.target),
       };
     }
 
@@ -179,7 +179,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
-      parallelizationFactor: props.parallelizationFactor
+      parallelizationFactor: props.parallelizationFactor,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

@@ -11,24 +11,24 @@ const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
 const sourceBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
-        s3BucketSource: sourceBucket
+        s3BucketSource: sourceBucket,
       },
-      behaviors : [ {isDefaultBehavior: true}]
-    }
-  ]
+      behaviors : [ {isDefaultBehavior: true}],
+    },
+  ],
 });
 
 new route53.ARecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
 });
 
 app.synth();

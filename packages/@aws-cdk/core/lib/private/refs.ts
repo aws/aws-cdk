@@ -1,12 +1,12 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
-import { IResolvable } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { Construct } from '../construct-compat';
 import { Reference } from '../reference';
+import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { CfnReference } from './cfn-reference';
@@ -128,7 +128,7 @@ function findAllReferences(root: Construct) {
 
         result.push({
           source: consumer,
-          value: token
+          value: token,
         });
       }
     }  catch (e) {

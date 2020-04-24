@@ -64,7 +64,7 @@ class ObjectBuildSpec extends BuildSpec {
     // We have to pretty-print the buildspec, otherwise
     // CodeBuild will not recognize it as an inline buildspec.
     return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      Stack.of(ctx.scope).toJsonString(this.spec, 2)
+      Stack.of(ctx.scope).toJsonString(this.spec, 2),
     });
   }
 }

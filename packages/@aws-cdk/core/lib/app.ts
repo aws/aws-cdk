@@ -141,7 +141,7 @@ export class App extends Construct {
 
     const assembly = ConstructNode.synth(this.node, {
       outdir: this.outdir,
-      runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined
+      runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined,
     });
 
     this._assembly = assembly;

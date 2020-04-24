@@ -12,8 +12,8 @@ export = {
     new CfnResource(stack, 'MyResource', {
       type: 'MyResourceType',
       properties: {
-        Prop1: 'p1', Prop2: 123
-      }
+        Prop1: 'p1', Prop2: 123,
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
@@ -22,10 +22,10 @@ export = {
           Type: 'MyResourceType',
           Properties: {
             Prop1: 'p1',
-            Prop2: 123
-          }
-        }
-      }
+            Prop2: 123,
+          },
+        },
+      },
     });
 
     test.done();
@@ -59,8 +59,8 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        MyResource: { Type: 'My::Counter', Properties: { Count: 13 } }
-      }
+        MyResource: { Type: 'My::Counter', Properties: { Count: 13 } },
+      },
     });
 
     test.done();
@@ -76,7 +76,7 @@ export = {
         CounterName: res.getAtt('Name'),
         CounterArn: res.arn,
         CounterURL: res.url,
-      }
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
@@ -87,10 +87,10 @@ export = {
           Properties: {
             CounterName: { 'Fn::GetAtt': [ 'MyResource', 'Name' ] },
             CounterArn: { 'Fn::GetAtt': [ 'MyResource', 'Arn' ] } ,
-            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] }
-          }
-        }
-      }
+            CounterURL: { 'Fn::GetAtt': [ 'MyResource', 'URL' ] },
+          },
+        },
+      },
     });
 
     test.done();
@@ -102,8 +102,8 @@ export = {
     new CfnResource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
-        Perm: res.arn
-      }
+        Perm: res.arn,
+      },
     });
 
     test.deepEqual(toCloudFormation(stack), {
@@ -113,11 +113,11 @@ export = {
           Type: 'Type',
           Properties: {
             Perm: {
-              'Fn::GetAtt': [ 'MyResource', 'Arn' ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [ 'MyResource', 'Arn' ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -136,18 +136,18 @@ export = {
       Resources: {
         Counter1: {
           Type: 'My::Counter',
-          Properties: { Count: 1 }
+          Properties: { Count: 1 },
         },
         Counter2: {
           Type: 'My::Counter',
           Properties: { Count: 1 },
           DependsOn: [
             'Counter1',
-            'Resource3'
-          ]
+            'Resource3',
+          ],
         },
-        Resource3: { Type: 'MyResourceType' }
-      }
+        Resource3: { Type: 'MyResourceType' },
+      },
     });
 
     test.done();
@@ -172,16 +172,16 @@ export = {
         Counter1: {
           Type: 'My::Counter',
           Properties: {
-            Count: 1
-          }
+            Count: 1,
+          },
         },
         Dependent: {
           Type: 'R',
           DependsOn: [
-            'Counter1'
-          ]
-        }
-      }
+            'Counter1',
+          ],
+        },
+      },
     });
     test.done();
   },
@@ -194,7 +194,7 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
-      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } }
+      Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } },
     });
 
     test.done();
@@ -233,9 +233,9 @@ export = {
             },
           },
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Snapshot'
-        }
-      }
+          UpdateReplacePolicy: 'Snapshot',
+        },
+      },
     });
 
     test.done();
@@ -254,8 +254,8 @@ export = {
           UpdatePolicy: {
             UseOnlineResharding: true,
           },
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -267,7 +267,7 @@ export = {
 
     r1.cfnOptions.metadata = {
       MyKey: 10,
-      MyValue: 99
+      MyValue: 99,
     };
 
     test.deepEqual(toCloudFormation(stack), {
@@ -276,10 +276,10 @@ export = {
           Type: 'Type',
           Metadata: {
             MyKey: 10,
-            MyValue: 99
-          }
-        }
-      }
+            MyValue: 99,
+          },
+        },
+      },
     });
 
     test.done();
@@ -309,8 +309,8 @@ export = {
         Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain'  },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
         Default1: { Type: 'T4', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, // explicit default
-        Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' } // implicit default
-      }
+        Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
+      },
     });
     test.done();
   },
@@ -414,9 +414,9 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       // WHEN
@@ -442,9 +442,9 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       // WHEN
@@ -489,10 +489,10 @@ export = {
             World: {
               Value1: 'Hello',
               Value2: 129,
-              Value3: [ 'foo', 'bar' ]
-            }
-          }
-        }
+              Value3: [ 'foo', 'bar' ],
+            },
+          },
+        },
       });
 
       // WHEN
@@ -515,9 +515,9 @@ export = {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
-            World: 42
-          }
-        }
+            World: 42,
+          },
+        },
       });
 
       // WHEN
@@ -532,7 +532,7 @@ export = {
             Properties:
             { Hello: { World: { Foo: { Bar: 42 } } },
               Override1: {
-                Override2: { Heyy: [ 1] }
+                Override2: { Heyy: [ 1] },
               } } } } });
       test.done();
     },
@@ -542,7 +542,7 @@ export = {
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
-        properties: { Hello: { World: 42 } }
+        properties: { Hello: { World: 42 } },
       });
 
       // WHEN
@@ -579,11 +579,11 @@ export = {
               Fixed: 123,
               Boom: 'Hi',
               Foo: {
-                Bar: 'Bar'
-              }
-            }
-          }
-        }
+                Bar: 'Bar',
+              },
+            },
+          },
+        },
       });
       test.done();
     },
@@ -594,7 +594,7 @@ export = {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', {
-          prop1: 'foo'
+          prop1: 'foo',
         });
 
         r.prop2 = 'bar';
@@ -634,7 +634,7 @@ export = {
               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
         test.done();
       },
-    }
+    },
   },
 
   '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
@@ -673,10 +673,10 @@ export = {
     test.deepEqual(templateB, {
       Resources: {
         Resource: {
-          Type: 'R'
+          Type: 'R',
           // Notice absence of 'DependsOn'
-        }
-      }
+        },
+      },
     });
     test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
 
@@ -688,7 +688,7 @@ export = {
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.updatePolicy = {
-      enableVersionUpgrade: true
+      enableVersionUpgrade: true,
     };
 
     test.deepEqual(toCloudFormation(stack), {
@@ -696,10 +696,10 @@ export = {
         Resource: {
           Type: 'Type',
           UpdatePolicy: {
-            EnableVersionUpgrade: true
-          }
-        }
-      }
+            EnableVersionUpgrade: true,
+          },
+        },
+      },
     });
 
     test.done();

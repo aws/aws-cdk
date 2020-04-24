@@ -119,7 +119,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -290,7 +290,7 @@ export class Function extends FunctionBase {
 
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
-      ...this.currentVersionOptions
+      ...this.currentVersionOptions,
     });
 
     return this._currentVersion;
@@ -329,11 +329,11 @@ export class Function extends FunctionBase {
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [attrs.securityGroup]
+            securityGroups: [attrs.securityGroup],
           });
         } else if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)],
           });
         }
       }
@@ -349,7 +349,7 @@ export class Function extends FunctionBase {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
-      ...props
+      ...props,
     });
   }
   /**
@@ -477,7 +477,7 @@ export class Function extends FunctionBase {
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies
+      managedPolicies,
     });
     this.grantPrincipal = this.role;
 
@@ -497,7 +497,7 @@ export class Function extends FunctionBase {
         s3Bucket: code.s3Location && code.s3Location.bucketName,
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
-        zipFile: code.inlineCode
+        zipFile: code.inlineCode,
       },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
@@ -509,7 +509,7 @@ export class Function extends FunctionBase {
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
-      reservedConcurrentExecutions: props.reservedConcurrentExecutions
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
     resource.node.addDependency(this.role);
@@ -537,7 +537,7 @@ export class Function extends FunctionBase {
       const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
-        role: props.logRetentionRole
+        role: props.logRetentionRole,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
@@ -679,7 +679,7 @@ export class Function extends FunctionBase {
     // stacks.
     if (!this._currentVersion) {
       return {
-        variables: this.environment
+        variables: this.environment,
       };
     }
 
@@ -723,7 +723,7 @@ export class Function extends FunctionBase {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-        allowAllOutbound: props.allowAllOutbound
+        allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
     }
@@ -748,7 +748,7 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: securityGroups.map(sg => sg.securityGroupId)
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
 
@@ -762,12 +762,12 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14)
+      retentionPeriod: Duration.days(14),
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn]
+      resources: [deadLetterQueue.queueArn],
     }));
 
     return deadLetterQueue;
@@ -776,7 +776,7 @@ export class Function extends FunctionBase {
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn
+        targetArn: deadLetterQueue.queueArn,
       };
     } else {
       return undefined;
@@ -790,11 +790,11 @@ export class Function extends FunctionBase {
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     return {
-      mode: props.tracing
+      mode: props.tracing,
     };
   }
 }

@@ -3,7 +3,7 @@
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
-import { EksClient, ResourceHandler } from './common';
+import { EksClient, ResourceEvent, ResourceHandler } from './common';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -19,7 +19,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   private readonly newProps: aws.EKS.CreateClusterRequest;
   private readonly oldProps: Partial<aws.EKS.CreateClusterRequest>;
 
-  constructor(eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  constructor(eks: EksClient, event: ResourceEvent) {
     super(eks, event);
 
     this.newProps = parseProps(this.event.ResourceProperties);
@@ -48,7 +48,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      PhysicalResourceId: resp.cluster.name
+      PhysicalResourceId: resp.cluster.name,
     };
   }
 
@@ -72,7 +72,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       }
     }
     return {
-      PhysicalResourceId: this.clusterName
+      PhysicalResourceId: this.clusterName,
     };
   }
 
@@ -93,7 +93,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     return {
-      IsComplete: false
+      IsComplete: false,
     };
   }
 
@@ -127,15 +127,17 @@ export class ClusterResourceHandler extends ResourceHandler {
         throw new Error(`Cannot remove cluster version configuration. Current version is ${this.oldProps.version}`);
       }
 
-      await this.updateClusterVersion(this.newProps.version);
+      return await this.updateClusterVersion(this.newProps.version);
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      await this.eks.updateClusterConfig({
+      const updateResponse = await this.eks.updateClusterConfig({
         name: this.clusterName,
         logging: this.newProps.logging,
-        resourcesVpcConfig: this.newProps.resourcesVpcConfig
+        resourcesVpcConfig: this.newProps.resourcesVpcConfig,
       });
+
+      return { EksUpdateId: updateResponse.update?.id };
     }
 
     // no updates
@@ -144,6 +146,12 @@ export class ClusterResourceHandler extends ResourceHandler {
 
   protected async isUpdateComplete() {
     console.log('isUpdateComplete');
+
+    // if this is an EKS update, we will monitor the update event itself
+    if (this.event.EksUpdateId) {
+      return this.isEksUpdateComplete(this.event.EksUpdateId);
+    }
+
     return this.isActive();
   }
 
@@ -158,7 +166,8 @@ export class ClusterResourceHandler extends ResourceHandler {
       return;
     }
 
-    await this.eks.updateClusterVersion({ name: this.clusterName, version: newVersion });
+    const updateResponse = await this.eks.updateClusterVersion({ name: this.clusterName, version: newVersion });
+    return { EksUpdateId: updateResponse.update?.id };
   }
 
   private async isActive(): Promise<IsCompleteResponse> {
@@ -172,7 +181,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // returning attributes (Data) if isComplete is false.
     if (cluster?.status !== 'ACTIVE') {
       return {
-        IsComplete: false
+        IsComplete: false,
       };
     } else {
       return {
@@ -181,9 +190,36 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data
-        }
+          CertificateAuthorityData: cluster.certificateAuthority?.data,
+        },
       };
+    }
+  }
+
+  private async isEksUpdateComplete(eksUpdateId: string) {
+    this.log({ isEksUpdateComplete: eksUpdateId });
+
+    const describeUpdateResponse = await this.eks.describeUpdate({
+      name: this.clusterName,
+      updateId: eksUpdateId,
+    });
+
+    this.log({ describeUpdateResponse });
+
+    if (!describeUpdateResponse.update) {
+      throw new Error(`unable to describe update with id "${eksUpdateId}"`);
+    }
+
+    switch (describeUpdateResponse.update.status) {
+      case 'InProgress':
+        return { IsComplete: false };
+      case 'Successful':
+        return { IsComplete: true };
+      case 'Failed':
+      case 'Cancelled':
+        throw new Error(`cluster update id "${eksUpdateId}" failed with errors: ${JSON.stringify(describeUpdateResponse.update.errors)}`);
+      default:
+        throw new Error(`unknown status "${describeUpdateResponse.update.status}" for update id "${eksUpdateId}"`);
     }
   }
 

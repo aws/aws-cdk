@@ -48,7 +48,7 @@ export = {
       Description: 'Connect there',
       DestinationSecurityGroupId: 'sg-12345',
       FromPort: 0,
-      ToPort: 65535
+      ToPort: 65535,
     }));
 
     // THEN: rule to imported security group to allow connections from generated
@@ -58,7 +58,7 @@ export = {
       FromPort: 0,
       GroupId: 'sg-12345',
       SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
-      ToPort: 65535
+      ToPort: 65535,
     }));
 
     test.done();
@@ -85,9 +85,9 @@ export = {
           CidrIp: '0.0.0.0/0',
           FromPort: 88,
           ToPort: 88,
-          IpProtocol: 'tcp'
-        }
-      ]
+          IpProtocol: 'tcp',
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -98,9 +98,9 @@ export = {
           CidrIp: '0.0.0.0/0',
           FromPort: 88,
           ToPort: 88,
-          IpProtocol: 'tcp'
-        }
-      ]
+          IpProtocol: 'tcp',
+        },
+      ],
     }));
 
     test.done();
@@ -126,14 +126,14 @@ export = {
       GroupId: { 'Fn::GetAtt': [ 'SecurityGroup23BE86BB7', 'GroupId' ] },
       SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
-      ToPort: 88
+      ToPort: 88,
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': [ 'SecurityGroup3E5E374B9', 'GroupId' ] },
       SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
-      ToPort: 88
+      ToPort: 88,
     }));
 
     test.done();
@@ -156,14 +156,14 @@ export = {
       GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       SourceSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
-      ToPort: 88
+      ToPort: 88,
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       GroupId: { 'Fn::GetAtt': [ 'SecurityGroup1F554B36F', 'GroupId' ] },
       FromPort: 88,
-      ToPort: 88
+      ToPort: 88,
     }));
 
     test.done();
@@ -282,7 +282,7 @@ export = {
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
-      ToPort: 65535
+      ToPort: 65535,
     }));
 
     // THEN: rule to imported security group to allow connections from generated
@@ -298,7 +298,7 @@ export = {
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345', {
-      allowAllOutbound: false
+      allowAllOutbound: false,
     });
 
     // WHEN
@@ -311,7 +311,7 @@ export = {
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
-      ToPort: 65535
+      ToPort: 65535,
     }));
 
     // THEN: rule to imported security group to allow connections from generated
@@ -321,11 +321,11 @@ export = {
       FromPort: 0,
       GroupId: 'sg-12345',
       DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'SomeSecurityGroupEF219AD6', 'GroupId' ] },
-      ToPort: 65535
+      ToPort: 65535,
     }));
 
     test.done();
-  }
+  },
 };
 
 class SomethingConnectable implements IConnectable {
