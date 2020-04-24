@@ -316,7 +316,7 @@ test('when specifying every property', () => {
     serverSideEncryption: true,
     kmsEncryption: {
       grantee: new iam.ArnPrincipal('arn:aws:iam::111122223333:user/db-lead'),
-      masterKey: kms.Key.fromKeyArn(stack, '', 'kmsMasterKeyArn'),
+      masterKey: kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
     },
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
