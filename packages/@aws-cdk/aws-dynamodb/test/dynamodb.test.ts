@@ -315,8 +315,8 @@ test('when specifying every property', () => {
     pointInTimeRecovery: true,
     serverSideEncryption: true,
     kmsEncryption: {
-      arnPrincipal: 'arn:aws:iam::111122223333:user/db-lead',
-      masterKey: 'kmsMasterKeyArn',
+      grantee: new iam.ArnPrincipal('arn:aws:iam::111122223333:user/db-lead'),
+      masterKey: kms.Key.fromKeyArn(stack, '', 'kmsMasterKeyArn'),
     },
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
@@ -341,11 +341,11 @@ test('when specifying every property', () => {
         WriteCapacityUnits: 1337
       },
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
-      SSESpecification: { 
-        SSEEnabled: true, 
+      SSESpecification: {
+        SSEEnabled: true,
         KMSMasterKey: {
           keyArn: 'kmsMasterKeyArn',
-        } 
+        }
       },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
