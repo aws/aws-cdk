@@ -67,12 +67,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
-      "BlockDeviceMappings": [
+      'BlockDeviceMappings': [
         {
-          "DeviceName": "EBSBastionHost",
-          "Ebs": {
-            "Encrypted": true,
-            "VolumeSize": 10
+          'DeviceName': 'EBSBastionHost',
+          'Ebs': {
+            'Encrypted': true,
+            'VolumeSize': 10
           }
         }
       ]
