@@ -150,20 +150,18 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The IPC resource namespace to use for the containers in the task.
    *
-   * Not supported in Fargate.
+   * Not supported in Fargate and Windows containers.
    *
-   * @default - If no value is specified, then the IPC resource namespace sharing depends on the Docker daemon setting on the container instance.
-   * For more information, see [IPC Settings](https://docs.docker.com/engine/reference/run/#ipc-settings---ipc)
+   * @default - IpcMode used by the task is not specified
    */
   readonly ipcMode?: IpcMode;
 
   /**
    * The process namespace to use for the containers in the task.
    *
-   * Not supported in Fargate.
+   * Not supported in Fargate and Windows containers.
    *
-   * @default - If no value is specified, the default is a private namespace. For more information,
-   * see [PID Settings](https://docs.docker.com/engine/reference/run/#pid-settings---pid)
+   * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
 }

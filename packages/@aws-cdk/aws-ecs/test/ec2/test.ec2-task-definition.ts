@@ -64,6 +64,8 @@ export = {
         },
         Family: 'ecs-tasks',
         NetworkMode: 'awsvpc',
+        IpcMode: 'host',
+        PidMode: 'task',
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
