@@ -288,7 +288,7 @@
                     "type": "string"
                 },
                 "requiresBootstrapStackVersion": {
-                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 0 (legacy bootstrap stack))",
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - No bootstrap stack required)",
                     "type": "number"
                 }
             },
@@ -303,6 +303,10 @@
                 "file": {
                     "description": "Filename of the asset manifest",
                     "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 1 (basic modern bootstrap stack))",
+                    "type": "number"
                 }
             },
             "required": [
