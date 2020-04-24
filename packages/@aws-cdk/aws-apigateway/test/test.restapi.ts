@@ -888,7 +888,7 @@ export = {
       type: apigw.ResponseType.AUTHORIZER_FAILURE,
       statusCode: '500',
       templates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }",
+        'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
       },
     });
 
