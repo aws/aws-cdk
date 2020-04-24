@@ -33,6 +33,9 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * The list of additional input Artifacts for this action.
+   *
+   * Artifacts reside in subfolders [01, 02, ...] where primary input artifact
+   * resides in "00“. Shell home is always on primary input folder.
    */
   readonly extraInputs?: codepipeline.Artifact[];
 
