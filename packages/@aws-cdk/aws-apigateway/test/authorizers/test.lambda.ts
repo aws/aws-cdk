@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuthorizationType, Authorizer, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
+import { AuthorizationType, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
 
 export = {
   'default token authorizer'(test: Test) {
@@ -298,39 +298,6 @@ export = {
     });
 
     test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);
-
-    test.done();
-  },
-
-  'token authorizer is of type Authorizer'(test: Test) {
-    const stack = new Stack();
-
-    const handler = new lambda.Function(stack, 'token', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: 'index.handler',
-    });
-    const authorizer = new TokenAuthorizer(stack, 'authorizer', { handler });
-
-    test.ok(Authorizer.isAuthorizer(authorizer), 'TokenAuthorizer is not of type Authorizer');
-
-    test.done();
-  },
-
-  'request authorizer is of type Authorizer'(test: Test) {
-    const stack = new Stack();
-
-    const handler = new lambda.Function(stack, 'token', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: 'index.handler',
-    });
-    const authorizer = new RequestAuthorizer(stack, 'authorizer', {
-      handler,
-      identitySources: [ IdentitySource.header('my-header') ],
-    });
-
-    test.ok(Authorizer.isAuthorizer(authorizer), 'RequestAuthorizer is not of type Authorizer');
 
     test.done();
   },
