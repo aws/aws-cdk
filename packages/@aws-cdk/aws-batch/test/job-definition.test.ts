@@ -62,56 +62,44 @@ describe('Batch Job Definition', () => {
     new batch.JobDefinition(stack, 'job-def', jobDefProps);
 
     // THEN
-    expect(stack).toHaveResourceLike(
-      "AWS::Batch::JobDefinition",
-      {
-        JobDefinitionName: jobDefProps.jobDefinitionName,
-        ContainerProperties: jobDefProps.container
-          ? {
-              Command: jobDefProps.container.command,
-              Environment: [
-                {
-                  Name: "foo",
-                  Value: "bar",
-                },
-              ],
-              InstanceType: jobDefProps.container.instanceType
-                ? jobDefProps.container.instanceType.toString()
-                : "",
-              LinuxParameters: {},
-              Memory: jobDefProps.container.memoryLimitMiB,
-              MountPoints: [],
-              Privileged: jobDefProps.container.privileged,
-              ResourceRequirements: [{ type: "GPU", value: jobDefProps.container.gpuCount }],
-              ReadonlyRootFilesystem: jobDefProps.container.readOnly,
-              Ulimits: [],
-              User: jobDefProps.container.user,
-              Vcpus: jobDefProps.container.vcpus,
-              Volumes: [],
-            }
-          : undefined,
-        NodeProperties: jobDefProps.nodeProps
-          ? {
-              MainNode: jobDefProps.nodeProps.mainNode,
-              NodeRangeProperties: [],
-              NumNodes: jobDefProps.nodeProps.count,
-            }
-          : undefined,
-        Parameters: {
-          foo: "bar",
-        },
-        RetryStrategy: {
-          Attempts: jobDefProps.retryAttempts,
-        },
-        Timeout: {
-          AttemptDurationSeconds: jobDefProps.timeout
-            ? jobDefProps.timeout.toSeconds()
-            : -1,
-        },
-        Type: "container",
+    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+      JobDefinitionName: jobDefProps.jobDefinitionName,
+      ContainerProperties: jobDefProps.container ? {
+        Command: jobDefProps.container.command,
+        Environment: [
+          {
+            Name: 'foo',
+            Value: 'bar',
+          },
+        ],
+        InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
+        LinuxParameters: {},
+        Memory: jobDefProps.container.memoryLimitMiB,
+        MountPoints: [],
+        Privileged: jobDefProps.container.privileged,
+        ReadonlyRootFilesystem: jobDefProps.container.readOnly,
+        ResourceRequirements: [{ type: 'GPU', value: jobDefProps.container.gpuCount}],
+        Ulimits: [],
+        User: jobDefProps.container.user,
+        Vcpus: jobDefProps.container.vcpus,
+        Volumes: [],
+      } : undefined,
+      NodeProperties: jobDefProps.nodeProps ? {
+        MainNode: jobDefProps.nodeProps.mainNode,
+        NodeRangeProperties: [],
+        NumNodes: jobDefProps.nodeProps.count,
+      } : undefined,
+      Parameters: {
+        foo: 'bar',
       },
-      ResourcePart.Properties
-    );
+      RetryStrategy: {
+        Attempts: jobDefProps.retryAttempts,
+      },
+      Timeout: {
+        AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
+      },
+      Type: 'container',
+    }, ResourcePart.Properties);
   });
   test('can use an ecr image', () => {
     // WHEN
