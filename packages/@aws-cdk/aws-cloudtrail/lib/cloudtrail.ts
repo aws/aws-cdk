@@ -222,29 +222,63 @@ export class Trail extends Resource {
    * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
    * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
    *
+   * This method adds an Event Selector for filtering events that match either S3 or Lambda function operations.
+   *
+   * Data events: These events provide insight into the resource operations performed on or within a resource.
+   * These are also known as data plane operations.
+   *
+   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
+   */
+  public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+    if (dataResourceValues.length > 250) {
+      throw new Error('A maximum of 250 data elements can be in one event selector');
+    }
+
+    if (this.eventSelectors.length > 5) {
+      throw new Error('A maximum of 5 event selectors are supported per trail.');
+    }
+
+    this.eventSelectors.push({
+      dataResources: [{
+        type: dataResourceType,
+        values: dataResourceValues,
+      }],
+      includeManagementEvents: options.includeManagementEvents,
+      readWriteType: options.readWriteType,
+    });
+  }
+
+  /**
+   * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
+   * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
+   *
+   * This method adds a Lambda Data Event Selector for filtering events that match Lambda function operations.
+   *
+   * Data events: These events provide insight into the resource operations performed on or within a resource.
+   * These are also known as data plane operations.
+   *
+   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
+   */
+  public addLambdaEventSelector(dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, dataResourceValues, options);
+  }
+
+  /**
+   * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
+   * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
+   *
    * This method adds an S3 Data Event Selector for filtering events that match S3 operations.
    *
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
    *
-   * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
+   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
-    if (prefixes.length > 250) {
-      throw new Error('A maximum of 250 data elements can be in one event selector');
-    }
-    if (this.eventSelectors.length > 5) {
-      throw new Error('A maximum of 5 event selectors are supported per trail.');
-    }
-    this.eventSelectors.push({
-      includeManagementEvents: options.includeManagementEvents,
-      readWriteType: options.readWriteType,
-      dataResources: [{
-        type: 'AWS::S3::Object',
-        values: prefixes,
-      }],
-    });
+  public addS3EventSelector(dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
   }
 
   /**
@@ -266,9 +300,9 @@ export class Trail extends Resource {
 }
 
 /**
- * Options for adding an S3 event selector.
+ * Options for adding an event selector.
  */
-export interface AddS3EventSelectorOptions {
+export interface AddEventSelectorOptions {
   /**
    * Specifies whether to log read-only events, write-only events, or all events.
    *
@@ -282,6 +316,21 @@ export interface AddS3EventSelectorOptions {
    * @default true
    */
   readonly includeManagementEvents?: boolean;
+}
+
+/**
+ * Resource type for a data event
+ */
+export enum DataResourceType {
+  /**
+   * Data resource type for Lambda function
+   */
+  LAMBDA_FUNCTION = 'AWS::Lambda::Function',
+
+  /**
+   * Data resource type for S3 objects
+   */
+  S3_OBJECT = 'AWS::S3::Object',
 }
 
 interface EventSelector {

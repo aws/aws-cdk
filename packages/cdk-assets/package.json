@@ -32,7 +32,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^25.2.1",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^10.17.18",
+    "@types/node": "^10.17.21",
     "@types/yargs": "^15.0.4",
     "@types/jszip": "^3.1.7",
     "jszip": "^3.4.0",
@@ -44,7 +44,7 @@
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.659.0",
+    "aws-sdk": "^2.662.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
@@ -60,6 +60,9 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.12.0"
+  },
+  "cdk-package": {
+    "shrinkWrap": true
   },
   "stability": "experimental",
   "maturity": "experimental",
