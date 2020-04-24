@@ -70,13 +70,13 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     this.node.defaultChild = resource;
   }
 
-  private buildResponseParamters(responseHeaders?: { [key: string] : string }) : { [key: string] : string } | undefined {
+  private buildResponseParamters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {
     if (!responseHeaders) {
       return undefined;
     }
 
-    var responseParameters: { [key: string] : string } = {};
-    for (let [header, value] of Object.entries(responseHeaders)) {
+    const responseParameters: { [key: string]: string } = {};
+    for (const [header, value] of Object.entries(responseHeaders)) {
       responseParameters[`gatewayresponse.header.${header}`] = value;
     }
     return responseHeaders;
