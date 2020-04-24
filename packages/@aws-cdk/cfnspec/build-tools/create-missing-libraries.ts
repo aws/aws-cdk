@@ -55,7 +55,7 @@ async function main() {
         const indexTs = [
           (await fs.readFile(indexTsPath, { encoding: 'utf8' })).trimRight(),
           `// ${namespace} CloudFormation Resources:`,
-          `export * from './${lowcaseModuleName}.generated';`
+          `export * from './${lowcaseModuleName}.generated';`,
         ].join('\n');
         await fs.writeFile(indexTsPath, indexTs, { encoding: 'utf8' });
         continue;
@@ -113,20 +113,20 @@ async function main() {
             packageId: dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
-            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png'
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
             maven: {
               groupId: javaGroupId,
-              artifactId: javaArtifactId
-            }
+              artifactId: javaArtifactId,
+            },
           },
           python: {
             distName: pythonDistName,
-            module: pythonModuleName
-          }
-        }
+            module: pythonModuleName,
+          },
+        },
       },
       repository: {
         type: 'git',
@@ -146,22 +146,22 @@ async function main() {
         cfn2ts: 'cfn2ts',
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
-        compat: 'cdk-compat'
+        compat: 'cdk-compat',
       },
       'cdk-build': {
-        cloudformation: namespace
+        cloudformation: namespace,
       },
       keywords: [
         'aws',
         'cdk',
         'constructs',
         namespace,
-        moduleName
+        moduleName,
       ],
       author: {
         name: 'Amazon Web Services',
         url: 'https://aws.amazon.com',
-        organization: true
+        organization: true,
       },
       jest: {},
       license: 'Apache-2.0',
@@ -178,13 +178,13 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.12.0'
+        node: '>= 10.12.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
       awscdkio: {
-        announce: false
-      }
+        announce: false,
+      },
     });
 
     await write('.gitignore', [
@@ -204,7 +204,8 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
-      'nyc.config.js'
+      'nyc.config.js',
+      '!.eslintrc.js',
     ]);
 
     await write('.npmignore', [
@@ -232,7 +233,7 @@ async function main() {
 
     await write('lib/index.ts', [
       `// ${namespace} CloudFormation Resources:`,
-      `export * from './${lowcaseModuleName}.generated';`
+      `export * from './${lowcaseModuleName}.generated';`,
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
@@ -247,7 +248,6 @@ async function main() {
     await write('README.md', [
       `## ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
-      '',
       '---',
       '',
       '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
@@ -264,6 +264,11 @@ async function main() {
       '```',
     ]);
 
+    await write('.eslintrc.json', [
+      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+      'module.exports = baseConfig;',
+    ]);
+
     const templateDir = path.join(__dirname, 'template');
     for (const file of await fs.readdir(templateDir)) {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
@@ -274,7 +279,7 @@ async function main() {
     const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
     const unorderedDeps = {
       ...decdkPkg.dependencies,
-      [packageName]: version
+      [packageName]: version,
     };
     decdkPkg.dependencies = {};
     Object.keys(unorderedDeps).sort().forEach(k => {

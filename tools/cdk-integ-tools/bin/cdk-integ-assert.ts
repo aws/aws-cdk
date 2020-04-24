@@ -25,7 +25,7 @@ async function main() {
     args.push('--no-staging');
     const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], {
       json: true,
-      ...DEFAULT_SYNTH_OPTIONS
+      ...DEFAULT_SYNTH_OPTIONS,
     });
 
     const diff = diffTemplate(expected, actual);

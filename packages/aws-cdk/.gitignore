@@ -22,3 +22,4 @@ npm-shrinkwrap.json
 # Might be created when running regression tests.
 # But normally should be deleted after execution.
 test/integ/cli-backwards-tests-*
+!.eslintrc.js

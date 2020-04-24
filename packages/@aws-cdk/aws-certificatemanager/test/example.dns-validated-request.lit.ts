@@ -8,7 +8,7 @@ class CertStack extends Stack {
     /// !show
     const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
       domainName: 'example.com',
-      privateZone: false
+      privateZone: false,
     });
 
     const certificate = new certmgr.DnsValidatedCertificate(this, 'TestCertificate', {

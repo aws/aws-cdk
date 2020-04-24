@@ -41,12 +41,12 @@ export interface Type {
 export class Schema {
   public static readonly BOOLEAN: Type = {
     isPrimitive: true,
-    inputString: 'boolean'
+    inputString: 'boolean',
   };
 
   public static readonly BINARY: Type = {
     isPrimitive: true,
-    inputString: 'binary'
+    inputString: 'binary',
   };
 
   /**
@@ -54,17 +54,17 @@ export class Schema {
    */
   public static readonly BIG_INT: Type = {
     isPrimitive: true,
-    inputString: 'bigint'
+    inputString: 'bigint',
   };
 
   public static readonly DOUBLE: Type = {
     isPrimitive: true,
-    inputString: 'double'
+    inputString: 'double',
   };
 
   public static readonly FLOAT: Type = {
     isPrimitive: true,
-    inputString: 'float'
+    inputString: 'float',
   };
 
   /**
@@ -72,7 +72,7 @@ export class Schema {
    */
   public static readonly INTEGER: Type = {
     isPrimitive: true,
-    inputString: 'int'
+    inputString: 'int',
   };
 
   /**
@@ -80,7 +80,7 @@ export class Schema {
    */
   public static readonly SMALL_INT: Type = {
     isPrimitive: true,
-    inputString: 'smallint'
+    inputString: 'smallint',
   };
 
   /**
@@ -88,7 +88,7 @@ export class Schema {
    */
   public static readonly TINY_INT: Type = {
     isPrimitive: true,
-    inputString: 'tinyint'
+    inputString: 'tinyint',
   };
 
   /**
@@ -96,7 +96,7 @@ export class Schema {
    */
   public static readonly DATE: Type = {
     isPrimitive: true,
-    inputString: 'date'
+    inputString: 'date',
   };
 
   /**
@@ -104,7 +104,7 @@ export class Schema {
    */
   public static readonly TIMESTAMP: Type = {
     isPrimitive: true,
-    inputString: 'timestamp'
+    inputString: 'timestamp',
   };
 
   /**
@@ -112,7 +112,7 @@ export class Schema {
    */
   public static readonly STRING: Type = {
     isPrimitive: true,
-    inputString: 'string'
+    inputString: 'string',
   };
 
   /**
@@ -126,7 +126,7 @@ export class Schema {
   public static decimal(precision: number, scale?: number): Type {
     return {
       isPrimitive: true,
-      inputString: scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`
+      inputString: scale !== undefined ? `decimal(${precision},${scale})` : `decimal(${precision})`,
     };
   }
 
@@ -144,7 +144,7 @@ export class Schema {
     }
     return {
       isPrimitive: true,
-      inputString: `char(${length})`
+      inputString: `char(${length})`,
     };
   }
 
@@ -162,7 +162,7 @@ export class Schema {
     }
     return {
       isPrimitive: true,
-      inputString: `varchar(${length})`
+      inputString: `varchar(${length})`,
     };
   }
 
@@ -174,7 +174,7 @@ export class Schema {
   public static array(itemType: Type): Type {
     return {
       isPrimitive: false,
-      inputString: `array<${itemType.inputString}>`
+      inputString: `array<${itemType.inputString}>`,
     };
   }
 
@@ -190,7 +190,7 @@ export class Schema {
     }
     return {
       isPrimitive: false,
-      inputString: `map<${keyType.inputString},${valueType.inputString}>`
+      inputString: `map<${keyType.inputString},${valueType.inputString}>`,
     };
   }
 
@@ -208,7 +208,7 @@ export class Schema {
         } else {
           return `${column.name}:${column.type.inputString} COMMENT '${column.comment}'`;
         }
-      }).join(',')}>`
+      }).join(',')}>`,
     };
   }
 }

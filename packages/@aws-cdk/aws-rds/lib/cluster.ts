@@ -250,7 +250,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER
+      targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
 }
@@ -269,7 +269,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
-        defaultPort: this.defaultPort
+        defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
@@ -332,6 +332,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   /**
    * The subnets used by the DB subnet group.
+   *
+   * @default - the Vpc default strategy if not specified.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -356,7 +358,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
       props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'RDS security group',
-        vpc: props.instanceProps.vpc
+        vpc: props.instanceProps.vpc,
       });
     this.securityGroupId = securityGroup.securityGroupId;
 
@@ -364,7 +366,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
-        encryptionKey: props.masterUser.kmsKey
+        encryptionKey: props.masterUser.kmsKey,
       });
     }
 
@@ -378,7 +380,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       }
 
       s3ImportRole = new Role(this, 'S3ImportRole', {
-        assumedBy: new ServicePrincipal('rds.amazonaws.com')
+        assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
       for (const bucket of props.s3ImportBuckets) {
         bucket.grantRead(s3ImportRole);
@@ -456,11 +458,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
       databaseName: props.defaultDatabaseName,
       // Encryption
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -487,8 +489,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       monitoringRole = props.monitoringRole || new Role(this, 'MonitoringRole', {
         assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')
-        ]
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
       });
     }
 
@@ -514,11 +516,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
         dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-        monitoringRoleArn: monitoringRole && monitoringRole.roleArn
+        monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       });
 
       instance.applyRemovalPolicy(props.removalPolicy, {
-        applyToUpdateReplacePolicy: true
+        applyToUpdateReplacePolicy: true,
       });
 
       // We must have a dependency on the NAT gateway provider here to create

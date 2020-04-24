@@ -14,8 +14,8 @@ test('Terminate cluster with static ClusterId', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrTerminateCluster({
       clusterId: 'ClusterId',
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-    })
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    }),
   });
 
   // THEN
@@ -35,7 +35,7 @@ test('Terminate cluster with static ClusterId', () => {
     },
     End: true,
     Parameters: {
-      ClusterId: 'ClusterId'
+      ClusterId: 'ClusterId',
     },
   });
 });
@@ -45,8 +45,8 @@ test('Terminate cluster with ClusterId from payload', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrTerminateCluster({
       clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-    })
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    }),
   });
 
   // THEN
@@ -66,7 +66,7 @@ test('Terminate cluster with ClusterId from payload', () => {
     },
     End: true,
     Parameters: {
-      'ClusterId.$': '$.ClusterId'
+      'ClusterId.$': '$.ClusterId',
     },
   });
 });
@@ -76,8 +76,8 @@ test('Terminate cluster with static ClusterId and SYNC integrationPattern', () =
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.EmrTerminateCluster({
       clusterId: 'ClusterId',
-      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET
-    })
+      integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
+    }),
   });
 
   // THEN
@@ -97,7 +97,7 @@ test('Terminate cluster with static ClusterId and SYNC integrationPattern', () =
     },
     End: true,
     Parameters: {
-      ClusterId: 'ClusterId'
+      ClusterId: 'ClusterId',
     },
   });
 });
@@ -107,8 +107,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     new sfn.Task(stack, 'Task', {
       task: new tasks.EmrTerminateCluster({
         clusterId: 'ClusterId',
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      })
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      }),
     });
   }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call TerminateCluster./i);
 });

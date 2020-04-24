@@ -32,7 +32,7 @@ export class ImmutableRole extends Construct implements IRole {
 
     // implement IDependable privately
     DependableTrait.implement(this, {
-      dependencyRoots: [ role ]
+      dependencyRoots: [ role ],
     });
   }
 

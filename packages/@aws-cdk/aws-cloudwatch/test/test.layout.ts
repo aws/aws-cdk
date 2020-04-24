@@ -91,5 +91,5 @@ export = {
     }
 
     test.done();
-  }
+  },
 };

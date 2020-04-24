@@ -16,7 +16,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "pkglint": "pkglint -f",
-    "test": "jest",
+    "test": "ln -sf ../../package2 test/test-fixture/package1/node_modules/ && jest",
     "build+test+package": "npm run build+test",
     "build+test": "npm run build && npm test"
   },

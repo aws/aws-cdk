@@ -136,13 +136,15 @@ async function fileExists(fullPath: string): Promise<boolean> {
   }
 }
 
-export function printPackageLock(entry: PackageLockEntry) {
+export function formatPackageLock(entry: PackageLockEntry) {
+  const lines = new Array<string>();
   recurse([], entry);
+  return lines.join('\n');
 
   function recurse(names: string[], thisEntry: PackageLockEntry) {
     if (names.length > 0) {
       // tslint:disable-next-line:no-console
-      console.error(names.join(' -> '), '@', thisEntry.version);
+      lines.push(`${names.join(' -> ')} @ ${thisEntry.version}`);
     }
     for (const [depName, depEntry] of Object.entries(thisEntry.dependencies || {})) {
       recurse([...names, depName], depEntry);

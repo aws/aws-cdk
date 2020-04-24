@@ -96,3 +96,43 @@ test('conflicting versions get left in place', () => {
     isodd: { version: '4.0.0' },
   });
 });
+
+test('dependencies of deduped packages are not hoisted into useless positions', () => {
+  // GIVEN
+
+  const tree: Tree = {
+    stringutil: {
+      version: '1.0.0',
+      dependencies: {
+        leftpad: {
+          version: '2.0.0',
+          dependencies: {
+            spacemaker: { version: '3.0.0' },
+          }
+        }
+      },
+    },
+    leftpad: {
+      version: '2.0.0',
+      dependencies: {
+        spacemaker: { version: '3.0.0' },
+      }
+    },
+    spacemaker: { version: '4.0.0' }
+  };
+
+  // WHEN
+  hoistDependencies(tree);
+
+  // THEN
+  expect(tree).toEqual({
+    stringutil: { version: '1.0.0' },
+    leftpad: {
+      version: '2.0.0',
+      dependencies: {
+        spacemaker: { version: '3.0.0' }
+      }
+    },
+    spacemaker: { version: '4.0.0' },
+  });
+});
