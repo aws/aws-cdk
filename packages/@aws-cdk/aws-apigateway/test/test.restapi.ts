@@ -899,7 +899,7 @@ export = {
       StatusCode: '500',
       ResponseParameters: ABSENT,
       ResponseTemplates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488' }",
+        'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
       },
     }));
 
