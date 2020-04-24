@@ -19,7 +19,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     print(`Searching for AMI in ${account}:${region}`);
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
-    const ec2 = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
     const response = await ec2.describeImages({
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({

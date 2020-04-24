@@ -39,6 +39,16 @@ export class EnvironmentUtils {
     return { account, region, name: environment };
   }
 
+  /**
+   * Build an environment object from an account and region
+   */
+  public static make(account: string, region: string): Environment {
+    return { account, region, name: this.format(account, region) };
+  }
+
+  /**
+   * Format an environment string from an account and region
+   */
   public static format(account: string, region: string): string {
     return `aws://${account}/${region}`;
   }
