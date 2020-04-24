@@ -340,7 +340,7 @@ export class CdkToolkit {
     // Partition into globs and non-globs (this will mutate environmentSpecs).
     const globSpecs = partition(environmentSpecs, looksLikeGlob);
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
-      throw new Error(`Don't know how to bootstrap environment '${globSpecs}'. Run in app directory or specify an environment name like \'aws://123456789012/us-east-1\'.`);
+      throw new Error(`'${globSpecs}' is not an environment name. Run in app directory to glob or specify an environment name like \'aws://123456789012/us-east-1\'.`);
     }
 
     const environments: cxapi.Environment[] = [

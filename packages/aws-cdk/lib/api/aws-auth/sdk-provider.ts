@@ -110,8 +110,7 @@ export class SdkProvider {
   /**
    * Return an SDK which can do operations in the given environment
    *
-   * The `region` and `accountId` parameters are interpreted as in `resolveEnvironment()` (which is to
-   * say, `undefined` doesn't do what you expect).
+   * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
   public async forEnvironment(environment: cxapi.Environment, mode: Mode): Promise<ISDK> {
     const env = await this.resolveEnvironment(environment);
@@ -150,8 +149,12 @@ export class SdkProvider {
   /**
    * Resolve the environment for a stack
    *
-   * `undefined` actually means `undefined`, and is NOT changed to default values! Only the magic values UNKNOWN_REGION
-   * and UNKNOWN_ACCOUNT will be replaced with looked-up values!
+   * Replaces the magic values `UNKNOWN_REGION` and `UNKNOWN_ACCOUNT`
+   * with the defaults for the current SDK configuration (`~/.aws/config` or
+   * otherwise).
+   *
+   * It is an error if `UNKNOWN_ACCOUNT` is used but the user hasn't configured
+   * any SDK credentials.
    */
   public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
     const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
