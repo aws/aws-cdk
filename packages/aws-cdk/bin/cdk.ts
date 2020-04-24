@@ -56,7 +56,8 @@ async function parseCommandLineArguments() {
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
       .option('trust', { type: 'array', desc: 'The (space-separated) list of AWS account IDs that should be trusted to perform deployments into this environment', default: [], hidden: true })
-      .option('cloudformation-execution-policies', { type: 'array', desc: 'The (space-separated) list of Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed', default: [], hidden: true }),
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The (space-separated) list of Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed', default: [], hidden: true })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -209,14 +210,18 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, !!process.env.CDK_NEW_BOOTSTRAP, {
-          bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
-          kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
-          tags: configuration.settings.get(['tags']),
-          execute: args.execute,
-          trustedAccounts: args.trust,
-          cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
-        });
+        return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName,
+          args.roleArn,
+          !!process.env.CDK_NEW_BOOTSTRAP,
+          argv.force,
+          {
+            bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
+            kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            tags: configuration.settings.get(['tags']),
+            execute: args.execute,
+            trustedAccounts: args.trust,
+            cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
+          });
 
       case 'deploy':
         const parameterMap: { [name: string]: string | undefined } = {};
