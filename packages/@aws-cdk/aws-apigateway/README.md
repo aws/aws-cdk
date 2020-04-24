@@ -888,7 +888,7 @@ api.addGatewayResponse('test-response', {
         'test-key': 'test-value'
       },
       templates: {
-        'application/json': "{ \"message\": $context.error.messageString, \"statusCode\": '488', \"type\": \"$context.error.responseType\" }"
+        'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'
       }
 });
 ```
