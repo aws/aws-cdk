@@ -18,7 +18,7 @@ export = {
     app = new App({
       context: {
         [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
-      }
+      },
     });
     stack = new Stack(app, 'Stack');
     cb();
