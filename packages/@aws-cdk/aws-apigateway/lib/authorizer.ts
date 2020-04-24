@@ -18,7 +18,7 @@ export abstract class Authorizer extends Resource implements IAuthorizer {
   public readonly abstract authorizerId: string;
   public readonly authorizationType?: AuthorizationType = AuthorizationType.CUSTOM;
 
-  constructor(scope: Construct, id: string) {
+  public constructor(scope: Construct, id: string) {
     super(scope, id);
 
     Object.defineProperty(this, AUTHORIZER_SYMBOL, { value: true });
