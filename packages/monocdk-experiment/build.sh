@@ -15,24 +15,33 @@ echo "installing dependencies for bundling..."
 npm install
 
 echo "compiling..."
-tsc
+${CDK_BUILD_JSII:-jsii}
 
 echo "packaging..."
-npm pack
-tarball=$PWD/monocdk-experiment-*.tgz
+${CDK_PACKAGE_JSII_PACMAK:-jsii-pacmak}
+tarball=$PWD/dist/js/monocdk-experiment@*.tgz
 
 echo "verifying package..."
-cd $(mktemp -d)
+checkdir=$(mktemp -d)
+
+cd ${checkdir}
+
 npm init -y
 npm install ${tarball} constructs@${constructs_version}
 node -e "require('monocdk-experiment')"
 unpacked=$(node -p 'path.dirname(require.resolve("monocdk-experiment/package.json"))')
 
-# saving tarball
-cd ${scriptdir}
-mkdir -p dist/js
-cp ${tarball} dist/js
+# saving publishable artifact
+rm -fr ${scriptdir}/dist
+mv ${outdir}/dist ${scriptdir}/dist
 
 # so this module will also work as a local dependency (e.g. for modules under @monocdk-experiment/*).
-rm -fr staging
-mv ${unpacked} staging
+rm -fr ${scriptdir}/staging
+mv ${unpacked} ${scriptdir}/staging
+
+# move .jsii to package root, where our build tools, etc... will look for it.
+# this is needed because the generated code is hosted under staging/, but during
+# it's creation, it was directly in the package root.
+mv ${scriptdir}/staging/.jsii ${scriptdir}
+
+rm -fr ${outdir} ${checkdir}

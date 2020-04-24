@@ -95,14 +95,17 @@ async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwners
 }
 
 async function objectExists(s3: AWS.S3, bucket: string, key: string) {
-  try {
-    await s3.headObject({ Bucket: bucket, Key: key }).promise();
-    return true;
-  } catch (e) {
-    if (e.code === 'NotFound') {
-      return false;
-    }
-
-    throw e;
-  }
+  /*
+   * The object existence check here refrains from using the `headObject` operation because this
+   * would create a negative cache entry, making GET-after-PUT eventually consistent. This has been
+   * observed to result in CloudFormation issuing "ValidationError: S3 error: Access Denied", for
+   * example in https://github.com/aws/aws-cdk/issues/6430.
+   *
+   * To prevent this, we are instead using the listObjectsV2 call, using the looked up key as the
+   * prefix, and limiting results to 1. Since the list operation returns keys ordered by binary
+   * UTF-8 representation, the key we are looking for is guaranteed to always be the first match
+   * returned if it exists.
+   */
+  const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
+  return response.Contents != null && response.Contents.some(object => object.Key === key);
 }

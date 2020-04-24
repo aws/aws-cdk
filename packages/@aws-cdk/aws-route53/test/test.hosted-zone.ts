@@ -1,3 +1,4 @@
+import { expect } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { HostedZone } from '../lib';
@@ -28,5 +29,36 @@ export = {
 
       test.done();
     },
+  },
+
+  'Supports tags'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const hostedZone = new HostedZone(stack, 'HostedZone', {
+      zoneName: 'test.zone',
+    });
+    cdk.Tag.add(hostedZone, 'zoneTag', 'inMyZone');
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        HostedZoneDB99F866: {
+          Type: 'AWS::Route53::HostedZone',
+          Properties: {
+            Name: 'test.zone.',
+            HostedZoneTags: [
+              {
+                Key: 'zoneTag',
+                Value: 'inMyZone',
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
   },
 };

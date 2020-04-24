@@ -71,6 +71,7 @@ success=true
 for dir in $jsii_package_dirs; do
     name=$(package_name "$dir")
     if [[ ! -d $tmpdir/node_modules/$name ]]; then continue; fi
+    if [[ ! -f $tmpdir/node_modules/$name/.jsii ]]; then continue; fi
     echo -n "$name... "
     if npx jsii-diff \
         --keys \

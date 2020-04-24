@@ -728,6 +728,10 @@ new stepfunctions.Parallel(this, 'All jobs')
     .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 ```
 
+A few utility functions are available to parse state machine fragments.
+* `State.findReachableStates`: Retrieve the list of states reachable from a given state.
+* `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
+
 ## Activity
 
 **Activities** represent work that is done on some non-Lambda worker pool. The

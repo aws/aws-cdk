@@ -5,18 +5,5 @@ coverage
 .nyc_output
 *.tgz
 
-dist
-.LAST_PACKAGE
 .LAST_BUILD
-!*.js
-
-# Include .jsii
-!.jsii
-
 *.snk
-
-*.tsbuildinfo
-
-tsconfig.json
-
-.eslintrc.js

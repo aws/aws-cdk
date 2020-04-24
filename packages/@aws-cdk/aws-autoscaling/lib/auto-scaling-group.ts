@@ -347,7 +347,8 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * It allows adding arbitrary commands to the startup scripts of the instances
  * in the fleet.
  *
- * The ASG spans all availability zones.
+ * The ASG spans the availability zones specified by vpcSubnets, falling back to
+ * the Vpc default strategy if not specified.
  */
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,

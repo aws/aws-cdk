@@ -614,6 +614,78 @@ describe('States Language', () => {
     expect(() => new stepfunctions.Parallel(stack, 'Parallel')
       .branch(state1.next(state2))
       .branch(state2)).toThrow();
+  }),
+
+  describe('findReachableStates', () => {
+
+    test('Can retrieve possible states from initial state', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Pass(stack, 'State1');
+      const state2 = new stepfunctions.Pass(stack, 'State2');
+      const state3 = new stepfunctions.Pass(stack, 'State3');
+
+      const definition = state1
+        .next(state2)
+        .next(state3);
+
+      // WHEN
+      const states = stepfunctions.State.findReachableStates(definition.startState);
+
+      // THEN
+      expect(state1.id).toStrictEqual(states[0].id);
+      expect(state2.id).toStrictEqual(states[1].id);
+      expect(state3.id).toStrictEqual(states[2].id);
+    });
+
+    test('Does not retrieve unreachable states', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Pass(stack, 'State1');
+      const state2 = new stepfunctions.Pass(stack, 'State2');
+      const state3 = new stepfunctions.Pass(stack, 'State3');
+
+      state1.next(state2).next(state3);
+
+      // WHEN
+      const states = stepfunctions.State.findReachableStates(state2);
+
+      // THEN
+      expect(state2.id).toStrictEqual(states[0].id);
+      expect(state3.id).toStrictEqual(states[1].id);
+      expect(states.length).toStrictEqual(2);
+    });
+
+    test('Works with Choice and Parallel states', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Choice(stack, 'MainChoice');
+      const stateCA = new stepfunctions.Pass(stack, 'StateA');
+      const stateCB = new stepfunctions.Pass(stack, 'StateB');
+      const statePA = new stepfunctions.Pass(stack, 'ParallelA');
+      const statePB = new stepfunctions.Pass(stack, 'ParallelB');
+      const state2 = new stepfunctions.Parallel(stack, 'RunParallel');
+      const state3 = new stepfunctions.Pass(stack, 'FinalState');
+      state2.branch(statePA);
+      state2.branch(statePB);
+      state1.when(stepfunctions.Condition.stringEquals('$.myInput', 'A' ), stateCA);
+      state1.when(stepfunctions.Condition.stringEquals('$.myInput', 'B'), stateCB);
+      stateCA.next(state2);
+      state2.next(state3);
+
+      const definition = state1.otherwise(stateCA);
+
+      // WHEN
+      const statesFromStateCB = stepfunctions.State.findReachableStates(stateCB);
+      const statesFromState1 = stepfunctions.State.findReachableStates(definition);
+
+      // THEN
+      const expectedFromState1 = [state1, stateCA, stateCB, state2, state3];
+      for (let i = 0; i < expectedFromState1.length; i++) {
+        expect(statesFromState1[i].id).toStrictEqual(expectedFromState1[i].id);
+      }
+      expect(statesFromStateCB[0].id).toStrictEqual(stateCB.id);
+    });
   });
 });
 

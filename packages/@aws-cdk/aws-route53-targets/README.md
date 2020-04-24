@@ -48,7 +48,7 @@ This library contains Route53 Alias Record targets for:
     target: route53.RecordTarget.fromAlias(new alias.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
   });
   ```
-* S3 Bucket WebSite:
+* S3 Bucket Website:
 
 **Important:** The Bucket name must strictly match the full DNS name. 
 See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/getting-started.html) for more info. 
@@ -67,6 +67,13 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
     zone,
     recordName, // www
     target: route53.RecordTarget.fromAlias(new alias.BucketWebsiteTarget(bucket)),
+  });
+  ```
+* User pool domain
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.UserPoolDomainTarget(domain)),
   });
   ```
 

@@ -1,3 +1,36 @@
+# CloudFormation Resource Specification v13.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBCluster DeletionProtection (__added__)
+* AWS::MediaConvert::JobTemplate HopDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::LakeFormation::Permissions.ColumnWildcard (__added__)
+* AWS::LakeFormation::Permissions.DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.TableWithColumnsResource (__added__)
+* AWS::MediaConvert::JobTemplate.HopDestination (__added__)
+* AWS::SSM::PatchBaseline.PatchStringDate (__added__)
+* AWS::LakeFormation::Permissions.Resource DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.Resource TableWithColumnsResource (__added__)
+* AWS::SSM::PatchBaseline.Rule ApproveUntilDate (__added__)
+
+
 # CloudFormation Resource Specification v12.3.0
 
 ## New Resource Types
