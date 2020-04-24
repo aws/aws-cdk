@@ -12,6 +12,11 @@ export class AssetManifestArtifact extends CloudArtifact {
    */
   public readonly file: string;
 
+  /**
+   * Version of bootstrap stack required to deploy this stack
+   */
+  public readonly requiresBootstrapStackVersion: number;
+
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
@@ -20,5 +25,6 @@ export class AssetManifestArtifact extends CloudArtifact {
       throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
+    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion ?? 1;
   }
 }

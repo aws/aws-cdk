@@ -78,7 +78,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * Version of bootstrap stack required to deploy this stack
    *
-   * @default - Version 0 (legacy bootstrap stack)
+   * @default - No bootstrap stack required
    */
   public readonly requiresBootstrapStackVersion?: number;
 

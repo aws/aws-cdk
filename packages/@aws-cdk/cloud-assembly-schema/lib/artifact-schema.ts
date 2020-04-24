@@ -45,7 +45,7 @@ export interface AwsCloudFormationStackProperties {
   /**
    * Version of bootstrap stack required to deploy this stack
    *
-   * @default - Version 0 (legacy bootstrap stack)
+   * @default - No bootstrap stack required
    */
   readonly requiresBootstrapStackVersion?: number;
 }
@@ -58,6 +58,13 @@ export interface AssetManifestProperties {
    * Filename of the asset manifest
    */
   readonly file: string;
+
+  /**
+   * Version of bootstrap stack required to deploy this stack
+   *
+   * @default - Version 1 (basic modern bootstrap stack)
+   */
+  readonly requiresBootstrapStackVersion?: number;
 }
 
 /**

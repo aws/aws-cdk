@@ -1,6 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifest } from 'cdk-assets';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -18,7 +17,6 @@ import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration } from './settings';
 import { partition } from './util';
-import { publishAssets } from './util/asset-publishing';
 
 export interface CdkToolkitProps {
 
@@ -180,9 +178,6 @@ export class CdkToolkit {
       }
 
       try {
-        // Publish assets here
-        await this.publishStackAssets(stack);
-
         const result = await this.props.cloudFormation.deployStack({
           stack,
           deployName: stack.stackName,
@@ -452,18 +447,6 @@ export class CdkToolkit {
     return this.props.cloudExecutable.synthesize();
   }
 
-  /**
-   * Publish all asset manifests that are referenced by the given stack
-   */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact) {
-    const stackEnv = await this.props.sdkProvider.resolveEnvironment(stack.environment);
-    const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
-
-    for (const assetArtifact of assetArtifacts) {
-      const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.props.sdkProvider, stackEnv);
-    }
-  }
 }
 
 export interface DiffOptions {
@@ -639,8 +622,4 @@ function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
-}
-
-function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
-  return art instanceof cxapi.AssetManifestArtifact;
 }

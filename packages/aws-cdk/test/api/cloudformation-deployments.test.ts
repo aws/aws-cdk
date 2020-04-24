@@ -1,5 +1,10 @@
+const mockToolkitInfoLookup = jest.fn();
 jest.mock('../../lib/api/deploy-stack');
-jest.mock('../../lib/api/toolkit-info');
+jest.mock('../../lib/api/toolkit-info', () => ({
+  ToolkitInfo: {
+    lookup: mockToolkitInfoLookup,
+  }
+}));
 
 import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
@@ -43,4 +48,32 @@ test('role with placeholders is assumed if assumerole is given', async () => {
   });
 
   expect(mockWithAssumedRole).toHaveBeenCalledWith('bloop:here:12345', undefined, expect.anything());
+});
+
+test('deployment fails if bootstrap stack is missing', async () => {
+  await expect(deployments.deployStack({
+    stack: testStack({
+      stackName: 'boop',
+      properties: {
+        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+        requiresBootstrapStackVersion: 99,
+      },
+    }),
+  })).rejects.toThrow(/no bootstrap stack found/);
+});
+
+test('deployment fails if bootstrap stack is too old', async () => {
+  mockToolkitInfoLookup.mockResolvedValue({
+    version: 5
+  });
+
+  await expect(deployments.deployStack({
+    stack: testStack({
+      stackName: 'boop',
+      properties: {
+        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+        requiresBootstrapStackVersion: 99,
+      },
+    }),
+  })).rejects.toThrow(/requires bootstrap stack version '99', found '5'/);
 });

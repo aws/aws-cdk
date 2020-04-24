@@ -1,5 +1,5 @@
 import { deployStack } from '../../lib';
-import { testStack } from '../util';
+import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const FAKE_STACK = testStack({
@@ -30,7 +30,7 @@ beforeEach(() => {
       Changes: [],
     })),
     executeChangeSet: jest.fn((_o) => ({})),
-    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify({}) })),
+    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(DEFAULT_FAKE_TEMPLATE) })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
 });

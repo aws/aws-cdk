@@ -6,6 +6,8 @@ import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
 import { MockSdkProvider } from './util/mock-sdk';
 
+export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
+
 export interface TestStackArtifact {
   stackName: string;
   template?: any;
@@ -49,7 +51,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    const template = stack.template ?? { No: 'Resources' };
+    const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
     // we call patchStackTags here to simulate the tags formatter

@@ -299,6 +299,7 @@ export class DefaultStackSynthesis implements IStackSynthesis {
       type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
         file: manifestFile,
+        requiresBootstrapStackVersion: 1,
       },
     });
 
