@@ -47,6 +47,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
   - [SNS](#sns)
+  - [Step Functions](#step-functions)
   - [SQS](#sqs)
 
 ### Task
@@ -604,6 +605,36 @@ const task2 = new sfn.Task(this, 'Publish2', {
             field2: Data.stringAt('$.field2'),
         })
     })
+});
+```
+
+#### Step Functions
+
+You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
+
+AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
+
+```ts
+// Define a state machine with one Pass state
+const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+});
+
+// Include the state machine in a Task state with callback pattern
+const task = new sfn.Task(stack, 'ChildTask', {
+  task: new tasks.ExecuteStateMachine(child, {
+    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    input: {
+      token: sfn.Context.taskToken,
+      foo: 'bar'
+    },
+    name: 'MyExecutionName'
+  })
+});
+
+// Define a second state machine with the Task state above
+new sfn.StateMachine(stack, 'ParentStateMachine', {
+  definition: task
 });
 ```
 
