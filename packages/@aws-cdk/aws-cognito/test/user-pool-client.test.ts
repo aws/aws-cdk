@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient } from '../lib';
+import { OAuthScope, StandardAttribute, UserPool, UserPoolClient } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -281,6 +281,104 @@ describe('User Pool Client', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client4',
       AllowedOAuthScopes: [ 'aws.cognito.signin.user.admin' ],
+    });
+  });
+
+  test('read/write attributes defaults are set as expected', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+    });
+    pool.addClient('Client2', {
+      userPoolClientName: 'Client2',
+      readAttributes: undefined,
+    });
+    pool.addClient('Client3', {
+      userPoolClientName: 'Client3',
+      writeAttributes: undefined,
+    });
+    pool.addClient('Client4', {
+      userPoolClientName: 'Client4',
+      readAttributes: undefined,
+      writeAttributes: undefined,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client2',
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client3',
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client4',
+    });
+  });
+
+  test('read/write attributes are set as expected', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('None', {
+      userPoolClientName: 'None',
+    });
+    pool.addClient('CustomOnly', {
+      userPoolClientName: 'CustomOnly',
+      readAttributes: {
+        custom: ['read1', 'custom:read2'],
+      },
+      writeAttributes: {
+        custom: ['write1'],
+      },
+    });
+    pool.addClient('StandardOnly', {
+      userPoolClientName: 'StandardOnly',
+      readAttributes: {
+        standard: [StandardAttribute.ADDRESS, StandardAttribute.EMAIL],
+      },
+      writeAttributes: {
+        standard: [StandardAttribute.EMAIL],
+      },
+    });
+    pool.addClient('AllAttributes', {
+      userPoolClientName: 'AllAttributes',
+      readAttributes: {
+        custom: ['read1'],
+        standard: [StandardAttribute.EMAIL],
+      },
+      writeAttributes: {
+        custom: ['write1', 'custom:write2'],
+        standard: [StandardAttribute.ADDRESS, StandardAttribute.EMAIL],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'None',
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'CustomOnly',
+      WriteAttributes: ['custom:write1'],
+      ReadAttributes: ['custom:read1', 'custom:read2'],
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'StandardOnly',
+      WriteAttributes: ['email'],
+      ReadAttributes: ['address', 'email'],
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'AllAttributes',
+      WriteAttributes: ['address', 'email', 'custom:write1', 'custom:write2'],
+      ReadAttributes: ['email', 'custom:read1'],
     });
   });
 });

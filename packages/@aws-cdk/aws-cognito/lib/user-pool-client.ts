@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnUserPoolClient } from './cognito.generated';
-import { IUserPool } from './user-pool';
+import { IUserPool, StandardAttribute } from './user-pool';
 
 /**
  * Types of authentication flow
@@ -173,6 +173,50 @@ export interface UserPoolClientOptions {
    * @default - see defaults in `OAuthSettings`
    */
   readonly oAuth?: OAuthSettings;
+
+  /**
+   * The attributes this client will be able to read.
+   *
+   * This should be used to restrict the attributes the client will be
+   * able to read.
+   *
+   * @default undefined all attributes are readable
+   */
+  readonly readAttributes?: UserPoolClientAttributes;
+
+  /**
+   * The attributes this client will be able to write.
+   *
+   * This should be used to restrict the attributes the client will be able to write,
+   * e.g. the client used by a webapp should not be able to set the `customerPlan` attribute,
+   * while the client used by the billing backend should.
+   *
+   * @default undefined all attributes are writable
+   */
+  readonly writeAttributes?: UserPoolClientAttributes;
+}
+
+/**
+ * Represent a list of attributes (standard and custom)
+ */
+export interface UserPoolClientAttributes {
+  /**
+   * A list of standard attributes
+   *
+   * @default []
+   */
+  readonly standard?: StandardAttribute[]
+
+  /**
+   * A list of custom attributes.
+   *
+   * @note You don't need to prepend them with `custom:`
+   *
+   * @example customerPlan
+   *
+   * @default []
+   */
+  readonly custom?: string[]
 }
 
 /**
@@ -234,6 +278,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
       callbackUrLs: (props.oAuth?.callbackUrls && props.oAuth?.callbackUrls.length > 0) ? props.oAuth?.callbackUrls : undefined,
       allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
+      readAttributes: this.configureAttributes(props.readAttributes),
+      writeAttributes: this.configureAttributes(props.writeAttributes),
     });
 
     this.userPoolClientId = resource.ref;
@@ -249,6 +295,26 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
     }
     return this._userPoolClientName;
+  }
+
+  private configureAttributes(conf: UserPoolClientAttributes | undefined): string[] | undefined {
+    let aux: string[] | undefined;
+    // if the configuration in missing (undefined)
+    // the default behavior is to allow all attributes to be read/written
+    // so undefined is returned.
+    if (conf === undefined) {
+      aux = undefined;
+    } else {
+      // get the standard attributes, if any is specified
+      const standard: string[] = conf.standard ?? [];
+      // get all custom attributes and prepend the `custom:` prefix
+      const custom: string[] = conf.custom?.map(attr => {
+        // if the attribute does not start with `custom:` it should be added
+        return attr.startsWith('custom:') ? attr : `custom:${attr}`;
+      }) ?? [];
+      aux = standard.concat(custom);
+    }
+    return aux;
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
