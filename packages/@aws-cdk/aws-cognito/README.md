@@ -400,6 +400,22 @@ pool.addClient('app-client', {
 });
 ```
 
+For each client you should specify wich user attributes it will be able to read or write.
+The default behavior is to allow read and write of all attribute, but it is often not the best option.
+For example, in a webapp there might be a `customerPlan` custom attribute to store the user's plan (`free`, `silver` 
+or `gold`) but only some clients (i.e. those used by the invoice system) should be allowed to change its value.
+
+```ts
+const pool = new UserPool(this, 'Pool');
+pool.addClient('webapp-client', {
+  readAttributes: undefined, // by default all attributes are readable/writable
+  writeAttributes: {
+    standard: [StandardAttribute.NICKNAME],
+    custom: ['bio'],
+  }, // only the nickname and the bio are writable
+});
+```
+
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
