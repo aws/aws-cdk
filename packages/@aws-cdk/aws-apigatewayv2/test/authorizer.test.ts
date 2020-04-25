@@ -13,22 +13,22 @@ test('minimal setup', () => {
   const api = new apigw.Api(stack, 'my-api', {
     protocolType: apigw.ProtocolType.WEBSOCKET,
     routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
-    deploy: false
+    deploy: false,
   });
   const functionArn = stack.formatArn({ service: 'lambda', resource: 'function', resourceName: 'my-function', sep: ':'});
   new apigw.Authorizer(stack, 'authorizer', {
     authorizerName: 'my-authorizer',
     authorizerType: apigw.AuthorizerType.JWT,
     authorizerUri: `arn:${stack.partition}:apigateway:${stack.region}:lambda:path/2015-03-31/functions/${functionArn}/invocations`,
-    api
+    api,
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Authorizer", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    Name: "my-authorizer",
-    AuthorizerType: "JWT",
-    AuthorizerUri: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":apigateway:", { Ref: "AWS::Region" }, ":lambda:path/2015-03-31/functions/arn:", { Ref: "AWS::Partition" }, ":lambda:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":function:my-function/invocations"]] },
-    IdentitySource: []
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Authorizer', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    Name: 'my-authorizer',
+    AuthorizerType: 'JWT',
+    AuthorizerUri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':lambda:path/2015-03-31/functions/arn:', { Ref: 'AWS::Partition' }, ':lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:my-function/invocations']] },
+    IdentitySource: [],
   }));
 });

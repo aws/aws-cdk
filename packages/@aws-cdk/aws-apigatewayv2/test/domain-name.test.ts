@@ -14,14 +14,14 @@ test('minimal setup', () => {
     domainName: 'test.example.com',
     domainNameConfigurations: [
       {
-        endpointType: apigw.EndpointType.EDGE
-      }
-    ]
+        endpointType: apigw.EndpointType.EDGE,
+      },
+    ],
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::DomainName", {
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::DomainName', {
     DomainName: 'test.example.com',
-    DomainNameConfigurations: [ { EndpointType: "EDGE" } ]
+    DomainNameConfigurations: [ { EndpointType: 'EDGE' } ],
   }));
 });

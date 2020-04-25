@@ -9,12 +9,12 @@ export enum EndpointType {
   /**
    * Regional endpoint
    */
-  REGIONAL = "REGIONAL",
+  REGIONAL = 'REGIONAL',
 
   /**
    * Edge endpoint
    */
-  EDGE = "EDGE"
+  EDGE = 'EDGE'
 }
 
 /**
@@ -133,7 +133,7 @@ export class DomainName extends Resource implements IDomainName {
     super(scope, id);
 
     this.resource = new CfnDomainName(this, 'Resource', {
-      ...props
+      ...props,
     });
     this.domainName = this.resource.ref;
     this.regionalDomainName = this.resource.attrRegionalDomainName;

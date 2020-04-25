@@ -110,7 +110,7 @@ export class Deployment extends Resource implements IDeployment {
     this.resource = new CfnDeployment(this, 'Resource', {
       apiId: props.api.apiId,
       description: props.description,
-      stageName: props.stageName
+      stageName: props.stageName,
     });
 
     if ((props.retainDeployments === undefined) || (props.retainDeployments === true)) {
@@ -161,7 +161,7 @@ export class Deployment extends Resource implements IDeployment {
     if (this.hashComponents.length > 0) {
       const md5 = createHash('md5');
       this.hashComponents.map(c => stack.resolve(c)).forEach(c => md5.update(JSON.stringify(c)));
-      this.resource.overrideLogicalId(this.originalLogicalId + md5.digest("hex").substr(0, 8).toUpperCase());
+      this.resource.overrideLogicalId(this.originalLogicalId + md5.digest('hex').substr(0, 8).toUpperCase());
     }
     super.prepare();
   }

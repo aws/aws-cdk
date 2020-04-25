@@ -12,12 +12,12 @@ export enum ConnectionType {
   /**
    * Internet connectivity through the public routable internet
    */
-  INTERNET = "INTERNET",
+  INTERNET = 'INTERNET',
 
   /**
    * Private connections between API Gateway and resources in a VPC
    */
-  VPC_LINK = " VPC_LINK"
+  VPC_LINK = 'VPC_LINK'
 }
 
 /**
@@ -29,30 +29,30 @@ export enum IntegrationType {
    * With the Lambda function-invoking action, this is referred to as the Lambda custom integration.
    * With any other AWS service action, this is known as AWS integration.
    */
-  AWS = "AWS",
+  AWS = 'AWS',
 
   /**
    * Integration of the route or method request with the Lambda function-invoking action with the client request passed through as-is.
    * This integration is also referred to as Lambda proxy integration.
    */
-  AWS_PROXY = "AWS_PROXY",
+  AWS_PROXY = 'AWS_PROXY',
 
   /**
    * Integration of the route or method request with an HTTP endpoint.
    * This integration is also referred to as HTTP custom integration.
    */
-  HTTP = "HTTP",
+  HTTP = 'HTTP',
 
   /**
    * Integration of the route or method request with an HTTP endpoint, with the client request passed through as-is.
    * This is also referred to as HTTP proxy integration.
    */
-  HTTP_PROXY = "HTTP_PROXY",
+  HTTP_PROXY = 'HTTP_PROXY',
 
   /**
    * Integration of the route or method request with API Gateway as a "loopback" endpoint without invoking any backend.
    */
-  MOCK = "MOCK"
+  MOCK = 'MOCK'
 }
 
 /**
@@ -65,12 +65,12 @@ export enum ContentHandlingStrategy {
   /**
    * Converts a response payload from a Base64-encoded string to the corresponding binary blob
    */
-  CONVERT_TO_BINARY = "CONVERT_TO_BINARY",
+  CONVERT_TO_BINARY = 'CONVERT_TO_BINARY',
 
   /**
    * Converts a response payload from a binary blob to a Base64-encoded string
    */
-  CONVERT_TO_TEXT = "CONVERT_TO_TEXT"
+  CONVERT_TO_TEXT = 'CONVERT_TO_TEXT'
 }
 
 /**
@@ -83,17 +83,17 @@ export enum PassthroughBehavior {
    * Passes the request body for unmapped content types through to the
    * integration backend without transformation
    */
-  WHEN_NO_MATCH = "WHEN_NO_MATCH",
+  WHEN_NO_MATCH = 'WHEN_NO_MATCH',
   /**
    * Allows pass-through when the integration has no content types mapped
    * to templates. However, if there is at least one content type defined,
    * unmapped content types will be rejected with an HTTP 415 Unsupported Media Type response
    */
-  WHEN_NO_TEMPLATES = "WHEN_NO_TEMPLATES",
+  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES',
   /**
    * Rejects unmapped content types with an HTTP 415 Unsupported Media Type response
    */
-  NEVER = "NEVER"
+  NEVER = 'NEVER'
 }
 
 /**
@@ -103,7 +103,7 @@ export enum KnownTemplateKey {
   /**
    * Default template, when no other pattern matches
    */
-  DEFAULT = "$default"
+  DEFAULT = '$default'
 }
 
 /**
@@ -115,49 +115,49 @@ export enum IntegrationMethod {
    *
    * Only method supported for WebSocket
    */
-  GET = "GET",
+  GET = 'GET',
 
   /**
    * POST HTTP Method
    *
    * Not supported for WebSocket
    */
-  POST = "POST",
+  POST = 'POST',
 
   /**
    * PUT HTTP Method
    *
    * Not supported for WebSocket
    */
-  PUT = "PUT",
+  PUT = 'PUT',
 
   /**
    * DELETE HTTP Method
    *
    * Not supported for WebSocket
    */
-  DELETE = "DELETE",
+  DELETE = 'DELETE',
 
   /**
    * OPTIONS HTTP Method
    *
    * Not supported for WebSocket
    */
-  OPTIONS = "OPTIONS",
+  OPTIONS = 'OPTIONS',
 
   /**
    * HEAD HTTP Method
    *
    * Not supported for WebSocket
    */
-  HEAD = "HEAD",
+  HEAD = 'HEAD',
 
   /**
    * PATCH HTTP Method
    *
    * Not supported for WebSocket
    */
-  PATCH = "PATCH"
+  PATCH = 'PATCH'
 }
 
 /**
@@ -319,7 +319,7 @@ export abstract class Integration extends Resource implements IIntegration {
       timeoutInMillis: (props.timeout ? props.timeout.toMilliseconds() : undefined),
       apiId: props.api.apiId,
       integrationType: props.type,
-      integrationUri: props.uri
+      integrationUri: props.uri,
     });
 
     this.integrationId = this.resource.ref;
@@ -331,7 +331,7 @@ export abstract class Integration extends Resource implements IIntegration {
           api: props.api.apiId,
           id,
           integrationType: props.type,
-          integrationUri: props.uri
+          integrationUri: props.uri,
         });
         props.api.latestDeployment.registerDependency(this.resource);
       }
@@ -360,7 +360,7 @@ export abstract class Integration extends Resource implements IIntegration {
       ...props,
       api: this.api,
       integration: this,
-      key
+      key,
     });
   }
 
@@ -375,7 +375,7 @@ export abstract class Integration extends Resource implements IIntegration {
       ...props,
       api: this.api,
       integration: this,
-      key
+      key,
     });
 
     this.addPermissionsForRoute(route);

@@ -49,7 +49,7 @@ export class LambdaIntegration extends Integration {
     super(scope, id, {
       ...props,
       type: props.proxy ? IntegrationType.AWS_PROXY : IntegrationType.AWS,
-      uri
+      uri,
     });
     this.handler = props.handler;
   }
@@ -59,10 +59,10 @@ export class LambdaIntegration extends Integration {
       const sourceArn = this.api.executeApiArn(route);
       this.handler.addPermission(`ApiPermission.${route.node.uniqueId}`, {
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn
+        sourceArn,
       });
     } else {
-      throw new Error("This function is only supported on non-imported APIs");
+      throw new Error('This function is only supported on non-imported APIs');
     }
   }
 }

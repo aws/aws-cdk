@@ -12,17 +12,17 @@ export enum KnownRouteResponseKey {
   /**
    * Default response, when no other pattern matches
    */
-  DEFAULT = "$default",
+  DEFAULT = '$default',
 
   /**
    * Empty response
    */
-  EMPTY = "empty",
+  EMPTY = 'empty',
 
   /**
    * Error response
    */
-  ERROR = "error"
+  ERROR = 'error'
 }
 
 /**
@@ -97,7 +97,7 @@ export class RouteResponse extends Resource implements IRouteResponse {
     let responseModels: { [key: string]: string } | undefined;
     if (props.responseModels !== undefined) {
       responseModels = Object.assign({}, ...Object.entries(props.responseModels).map((e) => {
-        return ({ [e[0]]: (typeof(e[1]) === "string" ? e[1] : e[1].modelName) });
+        return ({ [e[0]]: (typeof(e[1]) === 'string' ? e[1] : e[1].modelName) });
       }));
     }
     this.resource = new CfnRouteResponse(this, 'Resource', {
@@ -105,7 +105,7 @@ export class RouteResponse extends Resource implements IRouteResponse {
       apiId: props.api.apiId,
       routeId: props.route.routeId,
       routeResponseKey: props.key,
-      responseModels
+      responseModels,
     });
 
     if (props.api instanceof Api) {
@@ -116,7 +116,7 @@ export class RouteResponse extends Resource implements IRouteResponse {
           api: props.api.apiId,
           route: props.route.routeId,
           routeResponseKey: props.key,
-          responseModels
+          responseModels,
         });
         props.api.latestDeployment.registerDependency(this.resource);
       }

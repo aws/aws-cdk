@@ -16,12 +16,12 @@ export enum ProtocolType {
   /**
    * WebSocket API
    */
-  WEBSOCKET = "WEBSOCKET",
+  WEBSOCKET = 'WEBSOCKET',
 
   /**
    * HTTP API
    */
-  HTTP = "HTTP"
+  HTTP = 'HTTP'
 }
 
 /**
@@ -31,17 +31,17 @@ export enum BasePath {
   /**
    * Ignores the base path
    */
-  IGNORE = "ignore",
+  IGNORE = 'ignore',
 
   /**
    * Prepends the base path to the API path
    */
-  PREPEND = "prepend",
+  PREPEND = 'prepend',
 
   /**
    * Splits the base path from the API path
    */
-  SPLIT = "split"
+  SPLIT = 'split'
 }
 
 /**
@@ -52,12 +52,12 @@ export enum KnownApiKeySelectionExpression {
   /**
    * Uses the `x-api-key` header to get the API Key
    */
-  HEADER_X_API_KEY = "$request.header.x-api-key",
+  HEADER_X_API_KEY = '$request.header.x-api-key',
 
   /**
    * Uses the `usageIdentifier` property of the current authorizer to get the API Key
    */
-  AUTHORIZER_USAGE_IDENTIFIER = " $context.authorizer.usageIdentifierKey"
+  AUTHORIZER_USAGE_IDENTIFIER = '$context.authorizer.usageIdentifierKey'
 }
 
 /**
@@ -336,7 +336,7 @@ export class Api extends Resource implements IApi {
     });
 
     if (props.protocolType === undefined && props.body === null && props.bodyS3Location === null) {
-      throw new Error("You must specify a protocol type, or import an Open API definition (directly or from S3)");
+      throw new Error('You must specify a protocol type, or import an Open API definition (directly or from S3)');
     }
 
     switch (props.protocolType) {
@@ -375,7 +375,7 @@ export class Api extends Resource implements IApi {
 
     this.resource = new CfnApi(this, 'Resource', {
       ...props,
-      name: this.physicalName
+      name: this.physicalName,
     });
     this.apiId = this.resource.ref;
 
@@ -390,7 +390,7 @@ export class Api extends Resource implements IApi {
         description: 'Automatically created by the Api construct',
 
         // No stageName specified, this will be defined by the stage directly, as it will reference the deployment
-        retainDeployments: props.retainDeployments
+        retainDeployments: props.retainDeployments,
       });
 
       this.deploymentStage = new Stage(this, `Stage.${stageName}`, {
@@ -398,11 +398,11 @@ export class Api extends Resource implements IApi {
         deployment: this.deployment,
         api: this,
         stageName,
-        description: 'Automatically created by the Api construct'
+        description: 'Automatically created by the Api construct',
       });
     } else {
       if (props.deployOptions) {
-        throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
+        throw new Error('Cannot set "deployOptions" if "deploy" is disabled');
       }
     }
   }
@@ -435,7 +435,7 @@ export class Api extends Resource implements IApi {
       ...props,
       modelName: schema.title,
       api: this,
-      schema
+      schema,
     });
   }
 
@@ -456,7 +456,7 @@ export class Api extends Resource implements IApi {
       service: 'execute-api',
       resource: apiId,
       sep: '/',
-      resourceName: `${stageName}/${routeKey}`
+      resourceName: `${stageName}/${routeKey}`,
     });
   }
 
@@ -466,7 +466,7 @@ export class Api extends Resource implements IApi {
    * @param connectionId The identifier of this connection ('*' if not defined)
    * @param stage The stage for this ARN (if not defined, defaults to the deployment stage if defined, or to '*')
    */
-  public connectionsApiArn(connectionId: string = "*", stage?: IStage) {
+  public connectionsApiArn(connectionId: string = '*', stage?: IStage) {
     const stack = Stack.of(this);
     const apiId = this.apiId;
     const stageName = ((stage === undefined) ?
@@ -476,7 +476,7 @@ export class Api extends Resource implements IApi {
       service: 'execute-api',
       resource: apiId,
       sep: '/',
-      resourceName: `${stageName}/POST/${connectionId}`
+      resourceName: `${stageName}/POST/${connectionId}`,
     });
   }
 
@@ -491,7 +491,7 @@ export class Api extends Resource implements IApi {
     let stageName: string | undefined;
     if (stage === undefined) {
       if (this.deploymentStage === undefined) {
-        throw Error("No stage defined for this Api");
+        throw Error('No stage defined for this Api');
       }
       stageName = this.deploymentStage.stageName;
     } else {
@@ -511,7 +511,7 @@ export class Api extends Resource implements IApi {
     let stageName: string | undefined;
     if (stage === undefined) {
       if (this.deploymentStage === undefined) {
-        throw Error("No stage defined for this Api");
+        throw Error('No stage defined for this Api');
       }
       stageName = this.deploymentStage.stageName;
     } else {

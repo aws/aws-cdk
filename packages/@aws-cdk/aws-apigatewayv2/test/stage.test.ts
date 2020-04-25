@@ -13,21 +13,21 @@ test('minimal setup', () => {
   const api = new apigw.Api(stack, 'my-api', {
     protocolType: apigw.ProtocolType.WEBSOCKET,
     routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
-    deploy: false
+    deploy: false,
   });
   const deployment = new apigw.Deployment(stack, 'deployment', {
-    api
+    api,
   });
   new apigw.Stage(stack, 'stage', {
     api,
     deployment,
-    stageName: 'dev'
+    stageName: 'dev',
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Stage", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    StageName: "dev",
-    DeploymentId: { Ref: "deployment33381975F8795BE8" },
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Stage', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    StageName: 'dev',
+    DeploymentId: { Ref: 'deployment33381975F8795BE8' },
   }));
 });

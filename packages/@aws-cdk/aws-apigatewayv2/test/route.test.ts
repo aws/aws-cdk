@@ -14,7 +14,7 @@ test('route', () => {
   const api = new apigw.Api(stack, 'my-api', {
     protocolType: apigw.ProtocolType.WEBSOCKET,
     routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
-    deploy: false
+    deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
     handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
@@ -22,26 +22,26 @@ test('route', () => {
   integration.addRoute(apigw.KnownRouteKey.CONNECT, {
     modelSelectionExpression: apigw.KnownModelKey.DEFAULT,
     requestModels: {
-      [apigw.KnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: "statusInputModel", type: apigw.JsonSchemaType.OBJECT, properties: { action: { type: apigw.JsonSchemaType.STRING } } })
+      [apigw.KnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusInputModel', type: apigw.JsonSchemaType.OBJECT, properties: { action: { type: apigw.JsonSchemaType.STRING } } }),
     },
-    routeResponseSelectionExpression: apigw.KnownRouteResponseKey.DEFAULT
+    routeResponseSelectionExpression: apigw.KnownRouteResponseKey.DEFAULT,
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Route", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    RouteKey: "$connect",
-    Target: { "Fn::Join": ["", [ "integrations/", { Ref: "myapimyFunction27BC3796" } ] ] },
-    ModelSelectionExpression: "$default",
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Route', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    RouteKey: '$connect',
+    Target: { 'Fn::Join': ['', [ 'integrations/', { Ref: 'myapimyFunction27BC3796' } ] ] },
+    ModelSelectionExpression: '$default',
     RequestModels: {
-      $default: "statusInputModel"
-    }
+      $default: 'statusInputModel',
+    },
   }));
 
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Model", {
-    ApiId: { Ref: "myapi4C7BF186" },
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Model', {
+    ApiId: { Ref: 'myapi4C7BF186' },
     ContentType: apigw.KnownContentTypes.JSON,
-    Name: "statusInputModel"
+    Name: 'statusInputModel',
   }));
 });
 
@@ -52,7 +52,7 @@ test('route (no model)', () => {
   // WHEN
   const api = new apigw.Api(stack, 'my-api', {
     protocolType: apigw.ProtocolType.HTTP,
-    deploy: false
+    deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
     handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
@@ -60,10 +60,10 @@ test('route (no model)', () => {
   integration.addRoute('POST /');
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Route", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    RouteKey: "POST /",
-    Target: { "Fn::Join": ["", [ "integrations/", { Ref: "myapimyFunction27BC3796" } ] ] }
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Route', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    RouteKey: 'POST /',
+    Target: { 'Fn::Join': ['', [ 'integrations/', { Ref: 'myapimyFunction27BC3796' } ] ] },
   }));
 });
 
@@ -75,33 +75,33 @@ test('route response', () => {
   const api = new apigw.Api(stack, 'my-api', {
     protocolType: apigw.ProtocolType.WEBSOCKET,
     routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
-    deploy: false
+    deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
-    handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`)
+    handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
   });
   const route = integration.addRoute(apigw.KnownRouteKey.CONNECT, {});
   route.addResponse(apigw.KnownRouteKey.CONNECT, {
     modelSelectionExpression: apigw.KnownModelKey.DEFAULT,
     responseModels: {
-      [apigw.KnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: "statusResponse", type: apigw.JsonSchemaType.NUMBER, properties: { status: { type: apigw.JsonSchemaType.STRING }, message: { type: apigw.JsonSchemaType.STRING } } })
-    }
+      [apigw.KnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusResponse', type: apigw.JsonSchemaType.NUMBER, properties: { status: { type: apigw.JsonSchemaType.STRING }, message: { type: apigw.JsonSchemaType.STRING } } }),
+    },
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::RouteResponse", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    RouteId: { Ref: "myapimyFunctionRouteconnectA2AF3242" },
-    RouteResponseKey: "$connect",
-    ModelSelectionExpression: "$default",
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::RouteResponse', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    RouteId: { Ref: 'myapimyFunctionRouteconnectA2AF3242' },
+    RouteResponseKey: '$connect',
+    ModelSelectionExpression: '$default',
     ResponseModels: {
-      $default: "statusResponse"
-    }
+      $default: 'statusResponse',
+    },
   }));
 
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::Model", {
-    ApiId: { Ref: "myapi4C7BF186" },
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Model', {
+    ApiId: { Ref: 'myapi4C7BF186' },
     ContentType: apigw.KnownContentTypes.JSON,
-    Name: "statusResponse"
+    Name: 'statusResponse',
   }));
 });

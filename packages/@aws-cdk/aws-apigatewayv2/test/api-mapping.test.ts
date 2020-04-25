@@ -15,13 +15,13 @@ test('minimal setup', () => {
   new apigw.ApiMapping(stack, 'mapping', {
     stage: api.deploymentStage!,
     domainName,
-    api
+    api,
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource("AWS::ApiGatewayV2::ApiMapping", {
-    ApiId: { Ref: "myapi4C7BF186" },
-    Stage: { Ref: "myapiStageprod07E02E1F" },
-    DomainName: { Ref: "domainname1131E743" }
+  cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::ApiMapping', {
+    ApiId: { Ref: 'myapi4C7BF186' },
+    Stage: { Ref: 'myapiStageprod07E02E1F' },
+    DomainName: { Ref: 'domainname1131E743' },
   }));
 });

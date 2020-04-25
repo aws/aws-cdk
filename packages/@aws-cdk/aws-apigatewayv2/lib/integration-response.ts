@@ -11,17 +11,17 @@ export enum KnownIntegrationResponseKey {
   /**
    * Default response, when no other pattern matches
    */
-  DEFAULT = "$default",
+  DEFAULT = '$default',
 
   /**
    * Empty response
    */
-  EMPTY = "empty",
+  EMPTY = 'empty',
 
   /**
    * Error response
    */
-  ERROR = "error"
+  ERROR = 'error'
 }
 
 /**
@@ -112,7 +112,7 @@ export class IntegrationResponse extends Resource implements IIntegrationRespons
       ...props,
       apiId: props.api.apiId,
       integrationId: props.integration.integrationId,
-      integrationResponseKey: props.key
+      integrationResponseKey: props.key,
     });
 
     if (props.api instanceof Api) {
@@ -122,7 +122,7 @@ export class IntegrationResponse extends Resource implements IIntegrationRespons
           api: props.api.apiId,
           integration: props.integration.integrationId,
           id,
-          integrationResponseKey: props.key
+          integrationResponseKey: props.key,
         });
         props.api.latestDeployment.registerDependency(this.resource);
       }

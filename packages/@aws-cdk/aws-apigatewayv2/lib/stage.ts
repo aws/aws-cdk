@@ -11,17 +11,17 @@ export enum LoggingLevel {
   /**
    * Displays all log information
    */
-  INFO = "INFO",
+  INFO = 'INFO',
 
   /**
    * Only displays errors
    */
-  ERROR = "ERROR",
+  ERROR = 'ERROR',
 
   /**
    * Logging is turned off
    */
-  OFF = "OFF"
+  OFF = 'OFF'
 }
 
 /**
@@ -213,7 +213,7 @@ export class Stage extends Resource implements IStage {
     this.resource = new CfnStage(this, 'Resource', {
       ...props,
       apiId: props.api.apiId,
-      deploymentId: props.deployment.deploymentId
+      deploymentId: props.deployment.deploymentId,
     });
     this.stageName = this.resource.ref;
 
@@ -222,7 +222,7 @@ export class Stage extends Resource implements IStage {
         ...props,
         api: props.api.apiId,
         deployment: props.deployment.deploymentId,
-        id
+        id,
       });
     }
   }

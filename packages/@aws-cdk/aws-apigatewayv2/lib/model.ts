@@ -11,12 +11,12 @@ export enum KnownModelKey {
   /**
    * Default model, when no other pattern matches
    */
-  DEFAULT = "$default",
+  DEFAULT = '$default',
 
   /**
    * Default model, when no other pattern matches
    */
-  EMPTY = ""
+  EMPTY = ''
 }
 
 /**
@@ -26,23 +26,23 @@ export enum KnownContentTypes {
   /**
    * JSON request or response (default)
    */
-  JSON = "application/json",
+  JSON = 'application/json',
   /**
    * XML request or response
    */
-  XML = "application/xml",
+  XML = 'application/xml',
   /**
    * Pnain text request or response
    */
-  TEXT = "text/plain",
+  TEXT = 'text/plain',
   /**
    * URL encoded web form
    */
-  FORM_URL_ENCODED = "application/x-www-form-urlencoded",
+  FORM_URL_ENCODED = 'application/x-www-form-urlencoded',
   /**
    * Data from a web form
    */
-  FORM_DATA = "multipart/form-data"
+  FORM_DATA = 'multipart/form-data'
 }
 
 /**
@@ -155,7 +155,7 @@ export class Model extends Resource implements IModel {
       contentType: props.contentType || KnownContentTypes.JSON,
       apiId: props.api.apiId,
       name: this.modelName,
-      schema: JsonSchemaMapper.toCfnJsonSchema(props.schema)
+      schema: JsonSchemaMapper.toCfnJsonSchema(props.schema),
     });
     this.modelId = this.resource.ref;
 
@@ -167,7 +167,7 @@ export class Model extends Resource implements IModel {
           api: props.api.apiId,
           contentType: props.contentType,
           name: this.modelName,
-          schema: props.schema
+          schema: props.schema,
         });
         props.api.latestDeployment.registerDependency(this.resource);
       }

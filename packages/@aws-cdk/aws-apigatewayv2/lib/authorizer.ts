@@ -10,12 +10,12 @@ export enum AuthorizerType {
   /**
    * For WebSocket APIs, specify REQUEST for a Lambda function using incoming request parameters
    */
-  REQUEST = "REQUEST",
+  REQUEST = 'REQUEST',
 
   /**
    * For HTTP APIs, specify JWT to use JSON Web Tokens
    */
-  JWT = "JWT"
+  JWT = 'JWT'
 }
 
 /**
@@ -180,7 +180,7 @@ export class Authorizer extends Resource implements IAuthorizer {
       ...props,
       identitySource: (props.identitySource ? props.identitySource : []),
       apiId: props.api.apiId,
-      name: props.authorizerName
+      name: props.authorizerName,
     });
     this.authorizerId = this.resource.ref;
   }

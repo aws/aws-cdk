@@ -14,23 +14,23 @@ export enum AuthorizationType {
   /**
    * Open access (Web Socket, HTTP APIs).
    */
-  NONE = "NONE",
+  NONE = 'NONE',
   /**
    * Use AWS IAM permissions (Web Socket APIs).
    */
-  IAM = "AWS_IAM",
+  IAM = 'AWS_IAM',
   /**
    * Use a custom authorizer (Web Socket APIs).
    */
-  CUSTOM = "CUSTOM",
+  CUSTOM = 'CUSTOM',
   /**
    * Use an AWS Cognito user pool (Web Socket APIs).
    */
-  COGNITO = "COGNITO_USER_POOLS",
+  COGNITO = 'COGNITO_USER_POOLS',
   /**
    * Use JSON Web Tokens (HTTP APIs).
    */
-  JWT = "JWT"
+  JWT = 'JWT'
 }
 
 /**
@@ -40,15 +40,15 @@ export enum KnownRouteKey {
   /**
    * Default route, when no other pattern matches
    */
-  DEFAULT = "$default",
+  DEFAULT = '$default',
   /**
    * This route is a reserved route, used when a client establishes a connection to the WebSocket API
    */
-  CONNECT = "$connect",
+  CONNECT = '$connect',
   /**
    * This route is a reserved route, used when a client disconnects from the WebSocket API
    */
-  DISCONNECT = "$disconnect"
+  DISCONNECT = '$disconnect'
 }
 
 /**
@@ -251,7 +251,7 @@ export class Route extends Resource implements IRoute {
     let requestModels: { [key: string]: string } | undefined;
     if (props.requestModels !== undefined) {
       requestModels = Object.assign({}, ...Object.entries(props.requestModels).map((e) => {
-        return ({ [e[0]]: (typeof(e[1]) === "string" ? e[1] : e[1].modelName) });
+        return ({ [e[0]]: (typeof(e[1]) === 'string' ? e[1] : e[1].modelName) });
       }));
     }
 
@@ -262,7 +262,7 @@ export class Route extends Resource implements IRoute {
       routeKey: props.key,
       target: `integrations/${props.integration.integrationId}`,
       requestModels,
-      authorizerId
+      authorizerId,
     });
     this.routeId = this.resource.ref;
 
@@ -274,7 +274,7 @@ export class Route extends Resource implements IRoute {
           routeKey: this.key,
           target: `integrations/${props.integration.integrationId}`,
           requestModels,
-          authorizerId
+          authorizerId,
         });
         props.api.latestDeployment.registerDependency(this.resource);
       }
@@ -292,7 +292,7 @@ export class Route extends Resource implements IRoute {
       ...props,
       route: this,
       api: this.api,
-      key
+      key,
     });
   }
 }

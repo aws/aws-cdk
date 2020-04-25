@@ -24,37 +24,37 @@ export enum JsonSchemaType {
   /**
    * This type only allows null values
    */
-  NULL = "null",
+  NULL = 'null',
 
   /**
    * Boolean property
    */
-  BOOLEAN = "boolean",
+  BOOLEAN = 'boolean',
 
   /**
    * Object property, will have properties defined
    */
-  OBJECT = "object",
+  OBJECT = 'object',
 
   /**
    * Array object, will have an item type defined
    */
-  ARRAY = "array",
+  ARRAY = 'array',
 
   /**
    * Number property
    */
-  NUMBER = "number",
+  NUMBER = 'number',
 
   /**
    * Integer property (inherited from Number with extra constraints)
    */
-  INTEGER = "integer",
+  INTEGER = 'integer',
 
   /**
    * String property
    */
-  STRING = "string"
+  STRING = 'string'
 }
 
 /**
@@ -315,7 +315,7 @@ export class JsonSchemaMapper {
    */
   public static toCfnJsonSchema(schema: JsonSchema): any {
     const result = JsonSchemaMapper._toCfnJsonSchema(schema);
-    if (! ("$schema" in result)) {
+    if (! ('$schema' in result)) {
       result.$schema = JsonSchemaVersion.DRAFT4;
     }
     return result;
@@ -324,7 +324,7 @@ export class JsonSchemaMapper {
   private static readonly SchemaPropsWithPrefix: { [key: string]: string } = {
     schema: '$schema',
     ref: '$ref',
-    id: '$id'
+    id: '$id',
   };
   // The value indicates whether direct children should be key-mapped.
   private static readonly SchemaPropsWithUserDefinedChildren: { [key: string]: boolean } = {
