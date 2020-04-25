@@ -15,7 +15,7 @@ export class PipelineProject extends Project {
     super(scope, id, {
       source: new CodePipelineSource(),
       artifacts: new CodePipelineArtifacts(),
-      ...props
+      ...props,
     });
   }
 }

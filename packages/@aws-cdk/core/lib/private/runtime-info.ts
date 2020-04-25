@@ -59,7 +59,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     const packagePath = require.resolve(
       // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths }
+      { paths },
     );
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);

@@ -9,14 +9,14 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });
 
     // WHEN
     new CrossAccountDestination(stack, 'Dest', {
       destinationName: 'MyDestination',
       role,
-      targetArn: 'arn:bogus'
+      targetArn: 'arn:bogus',
     });
 
     // THEN
@@ -33,18 +33,18 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });
 
     const dest = new CrossAccountDestination(stack, 'Dest', {
       destinationName: 'MyDestination',
       role,
-      targetArn: 'arn:bogus'
+      targetArn: 'arn:bogus',
     });
 
     // WHEN
     dest.addToPolicy(new iam.PolicyStatement({
-      actions: ['logs:TalkToMe']
+      actions: ['logs:TalkToMe'],
     }));
 
     // THEN
@@ -55,5 +55,5 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };

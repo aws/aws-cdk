@@ -20,7 +20,7 @@ const READ_DATA_ACTIONS = [
   'dynamodb:GetShardIterator',
   'dynamodb:Query',
   'dynamodb:GetItem',
-  'dynamodb:Scan'
+  'dynamodb:Scan',
 ];
 
 const READ_STREAM_DATA_ACTIONS = [
@@ -33,7 +33,7 @@ const WRITE_DATA_ACTIONS = [
   'dynamodb:BatchWriteItem',
   'dynamodb:PutItem',
   'dynamodb:UpdateItem',
-  'dynamodb:DeleteItem'
+  'dynamodb:DeleteItem',
 ];
 
 export interface Attribute {
@@ -348,6 +348,8 @@ abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly tableStreamArn?: string;
 
+  protected readonly regionalArns = new Array<string>();
+
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
@@ -360,7 +362,11 @@ abstract class TableBase extends Resource implements ITable {
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.stringValue({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
       ],
       scope: this,
     });
@@ -403,11 +409,13 @@ abstract class TableBase extends Resource implements ITable {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
+
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
       resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` })
+        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
+        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
       ],
     });
   }
@@ -460,7 +468,7 @@ abstract class TableBase extends Resource implements ITable {
       dimensions: {
         TableName: this.tableName,
       },
-      ...props
+      ...props,
     });
   }
 
@@ -676,11 +684,11 @@ export class Table extends TableBase {
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
-        writeCapacityUnits: props.writeCapacity || 5
+        writeCapacityUnits: props.writeCapacity || 5,
       },
       sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption } : undefined,
       streamSpecification,
-      timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
+      timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -730,8 +738,8 @@ export class Table extends TableBase {
       projection: gsiProjection,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
-        writeCapacityUnits: props.writeCapacity || 5
-      }
+        writeCapacityUnits: props.writeCapacity || 5,
+      },
     });
 
     this.indexScaling.set(props.indexName, {});
@@ -758,7 +766,7 @@ export class Table extends TableBase {
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
-      projection: lsiProjection
+      projection: lsiProjection,
     });
   }
 
@@ -780,7 +788,7 @@ export class Table extends TableBase {
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:ReadCapacityUnits',
       role: this.scalingRole,
-      ...props
+      ...props,
     });
   }
 
@@ -828,7 +836,7 @@ export class Table extends TableBase {
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:ReadCapacityUnits',
       role: this.scalingRole,
-      ...props
+      ...props,
     });
   }
 
@@ -854,7 +862,7 @@ export class Table extends TableBase {
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:WriteCapacityUnits',
       role: this.scalingRole,
-      ...props
+      ...props,
     });
   }
 
@@ -920,7 +928,7 @@ export class Table extends TableBase {
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
     const indexKeySchema: CfnTable.KeySchemaProperty[] = [
-      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE }
+      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
     ];
 
     if (sortKey) {
@@ -948,7 +956,7 @@ export class Table extends TableBase {
 
     return {
       projectionType: props.projectionType ? props.projectionType : ProjectionType.ALL,
-      nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined
+      nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined,
     };
   }
 
@@ -964,7 +972,7 @@ export class Table extends TableBase {
     this.registerAttribute(attribute);
     this.keySchema.push({
       attributeName: attribute.name,
-      keyType
+      keyType,
     });
     return this;
   }
@@ -983,7 +991,7 @@ export class Table extends TableBase {
     if (!existingDef) {
       this.attributeDefinitions.push({
         attributeName: name,
-        attributeType: type
+        attributeType: type,
       });
     }
   }
@@ -998,7 +1006,7 @@ export class Table extends TableBase {
       service: 'iam',
       region: '',
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable',
     }));
   }
 
@@ -1023,17 +1031,6 @@ export class Table extends TableBase {
     this.grant(provider.onEventHandler, 'dynamodb:*');
     this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
 
-    // Permissions in the destination regions
-    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['dynamodb:*'],
-      resources: regions.map(region => stack.formatArn({
-        region,
-        service: 'dynamodb',
-        resource: 'table',
-        resourceName: this.tableName
-      }))
-    }));
-
     let previousRegion;
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
@@ -1044,7 +1041,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-        }
+        },
       });
 
       // Deploy time check to prevent from creating a replica in the region
@@ -1052,20 +1049,35 @@ export class Table extends TableBase {
       // stacks.
       if (Token.isUnresolved(stack.region)) {
         const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
-          expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION))
+          expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION)),
         });
         const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
         cfnCustomResource.cfnOptions.condition = createReplica;
       }
 
+      // Save regional arns for grantXxx() methods
+      this.regionalArns.push(stack.formatArn({
+        region,
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: this.tableName,
+      }));
+
       // We need to create/delete regions sequentially because we cannot
       // have multiple table updates at the same time. The `isCompleteHandler`
-      // of the provider waits until the replica is an ACTIVE state.
+      // of the provider waits until the replica is in an ACTIVE state.
       if (previousRegion) {
         currentRegion.node.addDependency(previousRegion);
       }
       previousRegion = currentRegion;
     }
+
+    // Permissions in the destination regions (outside of the loop to
+    // minimize statements in the policy)
+    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: this.regionalArns,
+    }));
   }
 
   /**

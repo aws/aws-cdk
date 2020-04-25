@@ -16,7 +16,7 @@ async function main() {
 
   const ignore = [
     '**/*.d.ts',
-    'node_modules/**'
+    'node_modules/**',
   ];
 
   const files = await glob(process.argv[2], { ignore, matchBase: true });

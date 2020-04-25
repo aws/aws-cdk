@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
-import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
+import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap';
 import { waitForStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -29,6 +29,7 @@ export class ToolkitInfo {
       sdk, environment,
       bucketName: requireOutput(BUCKET_NAME_OUTPUT),
       bucketEndpoint: requireOutput(BUCKET_DOMAIN_NAME_OUTPUT),
+      version: parseInt(outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10),
     });
 
     function requireOutput(output: string): string {
@@ -45,7 +46,8 @@ export class ToolkitInfo {
     readonly sdk: ISDK,
     bucketName: string,
     bucketEndpoint: string,
-    environment: cxapi.Environment
+    environment: cxapi.Environment,
+    version: number,
   }) {
     this.sdk = props.sdk;
   }
@@ -56,6 +58,10 @@ export class ToolkitInfo {
 
   public get bucketName() {
     return this.props.bucketName;
+  }
+
+  public get version() {
+    return this.props.version;
   }
 
   /**

@@ -169,7 +169,8 @@ export function mockToolkitInfo() {
     sdk: new MockSdk(),
     bucketName: 'BUCKET_NAME',
     bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' }
+    environment: { name: 'env', account: '1234', region: 'abc' },
+    version: 1,
   });
 }
 

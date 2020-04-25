@@ -56,9 +56,9 @@ export class SqsQueue implements events.IRuleTarget {
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
       {
         conditions: {
-          ArnEquals: { 'aws:SourceArn': rule.ruleArn }
-        }
-      })
+          ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+        },
+      }),
     );
 
     return {

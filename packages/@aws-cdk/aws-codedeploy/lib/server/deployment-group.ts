@@ -394,7 +394,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         return {
           targetGroupInfoList: [
             { name: loadBalancer.name },
-          ]
+          ],
         };
     }
   }

@@ -113,7 +113,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         logging: logDriver,
       });
       container.addPortMappings({
-        containerPort: taskImageOptions.containerPort || 80
+        containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
