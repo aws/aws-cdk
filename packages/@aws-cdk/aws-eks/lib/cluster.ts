@@ -392,8 +392,8 @@ export class Cluster extends Resource implements ICluster {
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
-        subnetIds
-      }
+        subnetIds,
+      },
     };
 
     let resource;
@@ -490,7 +490,7 @@ export class Cluster extends Resource implements ICluster {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
-      machineImageType: options.machineImageType
+      machineImageType: options.machineImageType,
     });
 
     return asg;
@@ -568,7 +568,7 @@ export class Cluster extends Resource implements ICluster {
 
     // EKS Required Tags
     Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
-      applyToLaunchedInstances: true
+      applyToLaunchedInstances: true,
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
@@ -584,14 +584,14 @@ export class Cluster extends Resource implements ICluster {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
-          'system:nodes'
-        ]
+          'system:nodes',
+        ],
       });
     } else {
       // since we are not mapping the instance role to RBAC, synthesize an
       // output so it can be pasted into `aws-auth-cm.yaml`
       new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-        value: autoScalingGroup.role.roleArn
+        value: autoScalingGroup.role.roleArn,
       });
     }
 
@@ -603,8 +603,8 @@ export class Cluster extends Resource implements ICluster {
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT
-        }
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
       });
     }
   }
@@ -746,11 +746,11 @@ export class Cluster extends Resource implements ICluster {
         template: {
           metadata: {
             annotations: {
-              'eks.amazonaws.com/compute-type': computeType
-            }
-          }
-        }
-      }
+              'eks.amazonaws.com/compute-type': computeType,
+            },
+          },
+        },
+      },
     });
 
     new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
@@ -758,7 +758,7 @@ export class Cluster extends Resource implements ICluster {
       resourceName: 'deployment/coredns',
       resourceNamespace: 'kube-system',
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
-      restorePatch: renderPatch(CoreDnsComputeType.EC2)
+      restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
   }
 }
@@ -1078,6 +1078,6 @@ export enum MachineImageType {
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
 
-export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
+function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }

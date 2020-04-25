@@ -14,4 +14,9 @@ update_configs:
           dependency_name: "@jsii/*"
       - match:
           dependency_name: "codemaker"
+      - match:
+          dependency_name: "semver"
+      - match:
+          dependency_name: "@types/node"
+          version_requirement: ">=11.0.0-0"
         

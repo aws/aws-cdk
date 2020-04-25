@@ -21,8 +21,8 @@ export = {
         testapiD6451F70: {
           Type: 'AWS::ApiGateway::RestApi',
           Properties: {
-            Name: 'test-api'
-          }
+            Name: 'test-api',
+          },
         },
         testapiGETD8DE4ED1: {
           Type: 'AWS::ApiGateway::Method',
@@ -31,42 +31,42 @@ export = {
             ResourceId: {
               'Fn::GetAtt': [
                 'testapiD6451F70',
-                'RootResourceId'
-              ]
+                'RootResourceId',
+              ],
             },
             RestApiId: {
-              Ref: 'testapiD6451F70'
+              Ref: 'testapiD6451F70',
             },
             AuthorizationType: 'NONE',
             Integration: {
-              Type: 'MOCK'
-            }
-          }
+              Type: 'MOCK',
+            },
+          },
         },
-        mydeployment71ED3B4B: {
+        mydeployment71ED3B4B5ce82e617e0729f75657ddcca51e3b91: {
           Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: {
-              Ref: 'testapiD6451F70'
-            }
+              Ref: 'testapiD6451F70',
+            },
           },
           DependsOn: [
-            'testapiGETD8DE4ED1'
-          ]
+            'testapiGETD8DE4ED1',
+          ],
         },
         mystage7483BE9A: {
           Type: 'AWS::ApiGateway::Stage',
           Properties: {
             RestApiId: {
-              Ref: 'testapiD6451F70'
+              Ref: 'testapiD6451F70',
             },
             DeploymentId: {
-              Ref: 'mydeployment71ED3B4B'
+              Ref: 'mydeployment71ED3B4B5ce82e617e0729f75657ddcca51e3b91',
             },
-            StageName: 'prod'
-          }
-        }
-      }
+            StageName: 'prod',
+          },
+        },
+      },
     });
 
     test.done();
@@ -83,7 +83,7 @@ export = {
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
       loggingLevel: apigateway.MethodLoggingLevel.INFO,
-      throttlingRateLimit: 12
+      throttlingRateLimit: 12,
     });
 
     // THEN
@@ -94,8 +94,8 @@ export = {
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
           ThrottlingRateLimit: 12,
-        }
-      ]
+        },
+      ],
     }));
 
     test.done();
@@ -116,8 +116,8 @@ export = {
       methodOptions: {
         '/goo/bar/GET': {
           loggingLevel: apigateway.MethodLoggingLevel.ERROR,
-        }
-      }
+        },
+      },
     });
 
     // THEN
@@ -127,14 +127,14 @@ export = {
           HttpMethod: '*',
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
-          ThrottlingRateLimit: 12
+          ThrottlingRateLimit: 12,
         },
         {
           HttpMethod: 'GET',
           LoggingLevel: 'ERROR',
-          ResourcePath: '/~1goo~1bar'
-        }
-      ]
+          ResourcePath: '/~1goo~1bar',
+        },
+      ],
     }));
 
     test.done();
@@ -150,13 +150,13 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      cacheClusterEnabled: true
+      cacheClusterEnabled: true,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: '0.5'
+      CacheClusterSize: '0.5',
     }));
 
     test.done();
@@ -172,13 +172,13 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      cacheClusterSize: '0.5'
+      cacheClusterSize: '0.5',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
-      CacheClusterSize: '0.5'
+      CacheClusterSize: '0.5',
     }));
 
     test.done();
@@ -195,7 +195,7 @@ export = {
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       cacheClusterSize: '0.5',
-      cacheClusterEnabled: false
+      cacheClusterEnabled: false,
     }), /Cannot set "cacheClusterSize" to 0.5 and "cacheClusterEnabled" to "false"/);
 
     test.done();
@@ -211,7 +211,7 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      cachingEnabled: true
+      cachingEnabled: true,
     });
 
     // THEN
@@ -222,10 +222,10 @@ export = {
         {
           CachingEnabled: true,
           HttpMethod: '*',
-          ResourcePath: '/*'
-        }
+          ResourcePath: '/*',
+        },
       ],
-      StageName: 'prod'
+      StageName: 'prod',
     }));
 
     test.done();
@@ -242,7 +242,7 @@ export = {
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       cacheClusterEnabled: false,
       deployment,
-      cachingEnabled: true
+      cachingEnabled: true,
     }), /Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
 
     test.done();
@@ -268,12 +268,12 @@ export = {
         DestinationArn: {
           'Fn::GetAtt': [
             'LogGroupF5B46931',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId'
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
       },
-      StageName: 'prod'
+      StageName: 'prod',
     }));
 
     test.done();
@@ -292,7 +292,7 @@ export = {
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-      accessLogFormat: testFormat
+      accessLogFormat: testFormat,
     });
 
     // THEN
@@ -301,12 +301,12 @@ export = {
         DestinationArn: {
           'Fn::GetAtt': [
             'LogGroupF5B46931',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
-        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}'
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
       },
-      StageName: 'prod'
+      StageName: 'prod',
     }));
 
     test.done();
@@ -327,7 +327,7 @@ export = {
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-      accessLogFormat: testFormat
+      accessLogFormat: testFormat,
     }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
 
     test.done();
@@ -346,7 +346,7 @@ export = {
     // THEN
     test.throws(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      accessLogFormat: testFormat
+      accessLogFormat: testFormat,
     }), /Access log format is specified without a destination/);
 
     test.done();

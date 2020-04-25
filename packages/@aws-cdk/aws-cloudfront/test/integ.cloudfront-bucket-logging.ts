@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
 const loggingBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -22,15 +22,15 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       behaviors: [
         {
           isDefaultBehavior: true,
-        }
-      ]
-    }
+        },
+      ],
+    },
   ],
   loggingConfig: {
     bucket: loggingBucket,
     includeCookies: true,
-    prefix: 'test-prefix'
-  }
+    prefix: 'test-prefix',
+  },
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
@@ -45,11 +45,11 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
       behaviors: [
         {
           isDefaultBehavior: true,
-        }
-      ]
-    }
+        },
+      ],
+    },
   ],
-  loggingConfig: {}
+  loggingConfig: {},
 });
 
 app.synth();

@@ -18,7 +18,7 @@ export = {
     test.deepEqual(userData, [
       'set -o xtrace',
       '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true',
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33'
+      '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
     ]);
 
     test.done();
@@ -30,7 +30,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      useMaxPods: true
+      useMaxPods: true,
     }));
 
     // THEN
@@ -44,7 +44,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      useMaxPods: false
+      useMaxPods: false,
     }));
 
     // THEN
@@ -58,7 +58,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      awsApiRetryAttempts: 123
+      awsApiRetryAttempts: 123,
     }));
 
     // THEN
@@ -72,7 +72,7 @@ export = {
 
     // WHEN
     const userData = renderAmazonLinuxUserData('my-cluster-name', asg, {
-      dockerConfigJson: '{"docker":123}'
+      dockerConfigJson: '{"docker":123}',
     });
 
     // THEN
@@ -86,7 +86,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      enableDockerBridge: true
+      enableDockerBridge: true,
     }));
 
     // THEN
@@ -100,7 +100,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      enableDockerBridge: false
+      enableDockerBridge: false,
     }));
 
     // THEN
@@ -114,7 +114,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      kubeletExtraArgs: '--extra-args-for --kubelet'
+      kubeletExtraArgs: '--extra-args-for --kubelet',
     }));
 
     // THEN
@@ -128,7 +128,7 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      additionalArgs: '--apiserver-endpoint 1111 --foo-bar'
+      additionalArgs: '--apiserver-endpoint 1111 --foo-bar',
     }));
 
     // THEN
@@ -142,13 +142,13 @@ export = {
 
     // WHEN
     const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
-      kubeletExtraArgs: '--node-labels X=y'
+      kubeletExtraArgs: '--node-labels X=y',
     }));
 
     // THEN
     test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --use-max-pods true');
     test.done();
-  }
+  },
 };
 
 function newFixtures(spot = false) {
@@ -159,7 +159,7 @@ function newFixtures(spot = false) {
     instanceType: new ec2.InstanceType('m4.xlarge'),
     machineImage: new ec2.AmazonLinuxImage(),
     spotPrice: spot ? '0.01' : undefined,
-    vpc
+    vpc,
   });
 
   return { stack, vpc, asg };

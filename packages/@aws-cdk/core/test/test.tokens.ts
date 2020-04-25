@@ -16,12 +16,12 @@ export = {
   'if a value is an object with a token value, it will be evaluated'(test: Test) {
     const obj = {
       RegularValue: 'hello',
-      LazyValue: new Intrinsic('World')
+      LazyValue: new Intrinsic('World'),
     };
 
     test.deepEqual(resolve(obj), {
       RegularValue: 'hello',
-      LazyValue: 'World'
+      LazyValue: 'World',
     });
 
     test.done();
@@ -36,18 +36,18 @@ export = {
         {
           Data: {
             stringProp: 'hello',
-            numberProp: 1234
+            numberProp: 1234,
           },
-          Recurse: 42
+          Recurse: 42,
         },
         {
           Data: {
             stringProp: 'hello',
-            numberProp: 1234
+            numberProp: 1234,
           },
-          Recurse: 42
-        }
-      ]
+          Recurse: 42,
+        },
+      ],
     });
 
     test.done();
@@ -62,18 +62,18 @@ export = {
         {
           Data: {
             stringProp: 'hello',
-            numberProp: 1234
+            numberProp: 1234,
           },
-          Recurse: 42
+          Recurse: 42,
         },
         {
           Data: {
             stringProp: 'hello',
-            numberProp: 1234
+            numberProp: 1234,
           },
-          Recurse: 42
-        }
-      ]
+          Recurse: 42,
+        },
+      ],
     });
 
     test.done();
@@ -92,9 +92,9 @@ export = {
         PropA: { },
         PropB: {
           PropC: [ undefined, undefined ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropD: 'Yoohoo',
+        },
+      },
     };
 
     test.deepEqual(resolve(obj), {
@@ -106,9 +106,9 @@ export = {
         PropA: { },
         PropB: {
           PropC: [ ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropD: 'Yoohoo',
+        },
+      },
     });
 
     test.done();
@@ -180,7 +180,7 @@ export = {
 
     // THEN
     test.deepEqual(resolved, {
-      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]]
+      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]],
     });
     test.done();
   },
@@ -262,7 +262,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -276,7 +276,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -291,7 +291,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: 'boom chicago'
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -306,7 +306,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: 'boom chicago'
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -322,7 +322,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -337,12 +337,12 @@ export = {
 
       // WHEN
       const struct = {
-        XYZ: Token.asList(token)
+        XYZ: Token.asList(token),
       };
 
       // THEN
       test.deepEqual(resolve(struct), {
-        XYZ: { Ref: 'Other'}
+        XYZ: { Ref: 'Other'},
       });
 
       test.done();
@@ -389,7 +389,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Select': [1, { Ref: 'Other'}]
+        'Fn::Select': [1, { Ref: 'Other'}],
       });
 
       test.done();
@@ -404,7 +404,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other'}],
       });
 
       test.done();
@@ -419,7 +419,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other'}],
       });
 
       test.done();
@@ -522,7 +522,7 @@ export = {
       1234,
       { an_object: 1234 },
       [ 1, 2, 3 ],
-      false
+      false,
     ];
 
     for (const input of inputs) {
@@ -608,7 +608,7 @@ export = {
 
     'converts tokenized number to string'(test: Test) {
       test.equal(resolve(Tokenization.stringifyNumber({
-        resolve: () => 100
+        resolve: () => 100,
       } as any)), '100');
       test.done();
     },
@@ -627,7 +627,7 @@ export = {
     'lazy Ref remains the same'(test: Test) {
       const resolvedVal = { Ref: 'SomeLogicalId' };
       const tokenizedVal = Lazy.anyValue({
-        produce: () => resolvedVal
+        produce: () => resolvedVal,
       });
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
       test.notDeepEqual(res, resolvedVal);
@@ -643,7 +643,7 @@ export = {
       test.deepEqual(resolve(res), resolvedVal);
       test.done();
     },
-  }
+  },
 };
 
 class Promise2 implements IResolvable {
@@ -655,7 +655,7 @@ class Promise2 implements IResolvable {
         stringProp: 'hello',
         numberProp: 1234,
       },
-      Recurse: new Intrinsic( 42)
+      Recurse: new Intrinsic( 42),
     };
   }
 }
@@ -688,7 +688,7 @@ class DataType extends BaseDataType {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value })
+    Lazy.anyValue({ produce: () => value }),
   ];
 }
 

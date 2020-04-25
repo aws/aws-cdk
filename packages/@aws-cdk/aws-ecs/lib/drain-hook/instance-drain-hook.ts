@@ -57,8 +57,8 @@ export class InstanceDrainHook extends cdk.Construct {
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),
       environment: {
-        CLUSTER: props.cluster.clusterName
-      }
+        CLUSTER: props.cluster.clusterName,
+      },
     });
 
     // Hook everything up: ASG -> Topic, Topic -> Lambda
@@ -76,9 +76,9 @@ export class InstanceDrainHook extends cdk.Construct {
         'ec2:DescribeInstances',
         'ec2:DescribeInstanceAttribute',
         'ec2:DescribeInstanceStatus',
-        'ec2:DescribeHosts'
+        'ec2:DescribeHosts',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // Restrict to the ASG
@@ -97,21 +97,21 @@ export class InstanceDrainHook extends cdk.Construct {
       actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
-        'ecs:SubmitTaskStateChange'
+        'ecs:SubmitTaskStateChange',
       ],
-      resources: [props.cluster.clusterArn]
+      resources: [props.cluster.clusterArn],
     }));
 
     // Restrict the container-instance operations to the ECS Cluster
     fn.addToRolePolicy(new iam.PolicyStatement({
       actions: [
         'ecs:UpdateContainerInstancesState',
-        'ecs:ListTasks'
+        'ecs:ListTasks',
       ],
       conditions: {
-        ArnEquals: {'ecs:cluster': props.cluster.clusterArn}
+        ArnEquals: {'ecs:cluster': props.cluster.clusterArn},
       },
-      resources: ['*']
+      resources: ['*'],
     }));
   }
 }

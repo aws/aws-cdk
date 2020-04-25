@@ -85,7 +85,7 @@ export class PolicyDocument implements cdk.IResolvable {
    */
   public toString() {
     return cdk.Token.asString(this, {
-      displayHint: 'PolicyDocument'
+      displayHint: 'PolicyDocument',
     });
   }
 
@@ -105,7 +105,7 @@ export class PolicyDocument implements cdk.IResolvable {
 
     const doc = {
       Statement: this.statements.map(s => s.toStatementJson()),
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     };
 
     return doc;
@@ -146,7 +146,7 @@ class RemoveDuplicateStatements implements cdk.IPostProcessor {
 
     return {
       ...input,
-      Statement: statements
+      Statement: statements,
     };
   }
 }

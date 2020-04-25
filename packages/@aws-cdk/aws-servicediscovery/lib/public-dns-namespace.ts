@@ -86,7 +86,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
-      ...props
+      ...props,
     });
   }
 }

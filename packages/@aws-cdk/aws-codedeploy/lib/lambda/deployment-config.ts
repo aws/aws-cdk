@@ -68,6 +68,6 @@ export class LambdaDeploymentConfig {
 function deploymentConfig(name: string): ILambdaDeploymentConfig {
   return {
     deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name)
+    deploymentConfigArn: arnForDeploymentConfig(name),
   };
 }

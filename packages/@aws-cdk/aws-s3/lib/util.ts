@@ -15,7 +15,7 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttribute
       region: '',
       account: '',
       service: 's3',
-      resource: props.bucketName
+      resource: props.bucketName,
     });
   }
 

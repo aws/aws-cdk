@@ -1,5 +1,6 @@
 import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
@@ -13,25 +14,25 @@ const ExpectedBucketPolicyProperties = {
         Action: 's3:GetBucketAcl',
         Effect: 'Allow',
         Principal: {
-          Service: 'cloudtrail.amazonaws.com'
+          Service: 'cloudtrail.amazonaws.com',
         },
         Resource: {
           'Fn::GetAtt': [
             'MyAmazingCloudTrailS3A580FE27',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       },
       {
         Action: 's3:PutObject',
         Condition: {
           StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control'
-          }
+            's3:x-amz-acl': 'bucket-owner-full-control',
+          },
         },
         Effect: 'Allow',
         Principal: {
-          Service: 'cloudtrail.amazonaws.com'
+          Service: 'cloudtrail.amazonaws.com',
         },
         Resource: {
           'Fn::Join': [
@@ -40,17 +41,17 @@ const ExpectedBucketPolicyProperties = {
               {
                 'Fn::GetAtt': [
                   'MyAmazingCloudTrailS3A580FE27',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
               '/AWSLogs/123456789012/*',
-            ]
-          ]
-        }
-      }
+            ],
+          ],
+        },
+      },
     ],
-    Version: '2012-10-17'
-  }
+    Version: '2012-10-17',
+  },
 };
 
 const logsRolePolicyName = 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7';
@@ -84,8 +85,8 @@ export = {
         actions: ['s3:PutObject'],
         principals: [cloudTrailPrincipal],
         conditions: {
-          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
-        }
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
       }));
 
       new Trail(stack, 'Trail', { bucket: Trailbucket });
@@ -106,7 +107,7 @@ export = {
       new Trail(stack, 'Trail', { bucket });
 
       expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
-        S3BucketName: 'SomeBucket'
+        S3BucketName: 'SomeBucket',
       }));
 
       test.done();
@@ -129,12 +130,12 @@ export = {
               Action: 's3:GetBucketAcl',
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
-              Resource: { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] }
+              Resource: { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
             },
             {
               Action: 's3:PutObject',
               Condition: {
-                StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
+                StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
               },
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
@@ -143,14 +144,14 @@ export = {
                   '',
                   [
                     { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
-                    '/someprefix/AWSLogs/123456789012/*'
-                  ]
-                ]
-              }
-            }
+                    '/someprefix/AWSLogs/123456789012/*',
+                  ],
+                ],
+              },
+            },
           ],
-          Version: '2012-10-17'
-        }
+          Version: '2012-10-17',
+        },
       }));
 
       test.done();
@@ -160,7 +161,7 @@ export = {
       'enabled'(test: Test) {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
-          sendToCloudWatchLogs: true
+          sendToCloudWatchLogs: true,
         });
 
         expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
@@ -177,8 +178,8 @@ export = {
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
                 'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
-              }
-            }]
+              },
+            }],
           },
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
@@ -191,7 +192,7 @@ export = {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
-          cloudWatchLogsRetention: RetentionDays.ONE_WEEK
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
 
         expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
@@ -200,7 +201,7 @@ export = {
         expect(stack).to(haveResource('AWS::Logs::LogGroup'));
         expect(stack).to(haveResource('AWS::IAM::Role'));
         expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-          RetentionInDays: 7
+          RetentionInDays: 7,
         }));
         const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
@@ -273,7 +274,60 @@ export = {
         test.equals(selector.DataResources, undefined, 'Expected there to be no data resources');
         test.done();
       },
-    }
+
+      'for Lambda function data event'(test: Test) {
+        const stack = getTestStack();
+        const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
+          runtime: lambda.Runtime.NODEJS_10_X,
+          handler: 'hello.handler',
+          code: lambda.Code.fromInline('exports.handler = {}'),
+        });
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addLambdaEventSelector([lambdaFunction.functionArn]);
+
+        expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
+        expect(stack).to(haveResource('AWS::Lambda::Function'));
+        expect(stack).to(not(haveResource('AWS::Logs::LogGroup')));
+
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        test.equals(trail.Properties.EventSelectors.length, 1);
+        const selector = trail.Properties.EventSelectors[0];
+        test.equals(selector.ReadWriteType, null, 'Expected selector read write type to be undefined');
+        test.equals(selector.IncludeManagementEvents, null, 'Expected management events to be undefined');
+        test.equals(selector.DataResources.length, 1, 'Expected there to be one data resource');
+        const dataResource = selector.DataResources[0];
+        test.equals(dataResource.Type, 'AWS::Lambda::Function', 'Expected the data resrouce type to be AWS::Lambda::Function');
+        test.equals(dataResource.Values.length, 1, 'Expected there to be one value');
+        test.deepEqual(dataResource.Values[0], { 'Fn::GetAtt': [ 'LambdaFunctionBF21E41F', 'Arn' ] }, 'Expected the first type value to be the Lambda type');
+        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.done();
+      },
+
+      'for all Lambda function data events'(test: Test) {
+        const stack = getTestStack();
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addLambdaEventSelector(['arn:aws:lambda']);
+
+        expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
+        expect(stack).to(not(haveResource('AWS::Logs::LogGroup')));
+        expect(stack).to(not(haveResource('AWS::IAM::Role')));
+
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        test.equals(trail.Properties.EventSelectors.length, 1);
+        const selector = trail.Properties.EventSelectors[0];
+        test.equals(selector.ReadWriteType, null, 'Expected selector read write type to be undefined');
+        test.equals(selector.IncludeManagementEvents, null, 'Expected management events to be undefined');
+        test.equals(selector.DataResources.length, 1, 'Expected there to be one data resource');
+        const dataResource = selector.DataResources[0];
+        test.equals(dataResource.Type, 'AWS::Lambda::Function', 'Expected the data resource type to be AWS::Lambda::Function');
+        test.equals(dataResource.Values.length, 1, 'Expected there to be one value');
+        test.equals(dataResource.Values[0], 'arn:aws:lambda', 'Expected the first type value to be the Lambda type');
+        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.done();
+      },
+    },
   },
 
   'add an event rule'(test: Test) {
@@ -287,24 +341,24 @@ export = {
         bind: () => ({
           id: '',
           arn: 'arn',
-        })
-      }
+        }),
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventPattern: {
         'detail-type': [
-          'AWS API Call via CloudTrail'
-        ]
+          'AWS API Call via CloudTrail',
+        ],
       },
       State: 'ENABLED',
       Targets: [
         {
           Arn: 'arn',
-          Id: 'Target0'
-        }
-      ]
+          Id: 'Target0',
+        },
+      ],
     }));
 
     test.done();

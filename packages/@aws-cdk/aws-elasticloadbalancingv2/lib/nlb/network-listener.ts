@@ -107,7 +107,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       protocol: proto,
       port: props.port,
       sslPolicy: props.sslPolicy,
-      certificates: props.certificates
+      certificates: props.certificates,
     });
 
     this.loadBalancer = props.loadBalancer;

@@ -11,7 +11,7 @@ class ConsumerNestedStack extends cfn.NestedStack {
     super(scope, id);
 
     new sns.Topic(this, 'ConsumerTopic', {
-      displayName: `Consumer of ${topic.topicName}`
+      displayName: `Consumer of ${topic.topicName}`,
     });
   }
 }
