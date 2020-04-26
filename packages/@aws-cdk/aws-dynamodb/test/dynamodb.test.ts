@@ -352,28 +352,28 @@ test('when specifying sse with customer managed CMK', () => {
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     encryption: TableEncryption.CUSTOMER_MANAGED,
-    partitionKey: TABLE_PARTITION_KEY
+    partitionKey: TABLE_PARTITION_KEY,
   });
   table.node.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
-    "SSESpecification": {
-      "KMSMasterKeyId": {
-        "Fn::GetAtt": [
-          "MyTableKey8597C7A6",
-          "Arn"
-        ]
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'MyTableKey8597C7A6',
+          'Arn',
+        ],
       },
-      "SSEEnabled": true,
-      "SSEType": "KMS"
-    }
-  })
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
 });
 
 test('when specifying sse with customer managed CMK with encryptionKey provided by user', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true
+    enableKeyRotation: true,
   });
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
@@ -384,55 +384,55 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
   table.node.applyAspect(new Tag('Environment', 'Production'));
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
-    "SSESpecification": {
-      "KMSMasterKeyId": {
-        "Fn::GetAtt": [
-          "Key961B73FD",
-          "Arn"
-        ]
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
       },
-      "SSEEnabled": true,
-      "SSEType": "KMS"
-    }
-  })
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
 });
 
 test('fails if encryption key is used with customer managed encryption', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true
+    enableKeyRotation: true,
   });
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.AWS_MANAGED,
-    encryptionKey
-  })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
+    encryptionKey,
+  })).toThrow(/encryptionKey is specified, so encryption must be set to Customer_Managed/);
 });
 
 test('fails if encryption key is used with default encryption', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true
+    enableKeyRotation: true,
   });
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
-    encryptionKey
-  })).toThrow(/encryptionKey is specified, so 'encryption' must be set to Customer_Managed/);
+    encryptionKey,
+  })).toThrow(/encryptionKey is specified, so encryption must be set to Customer_Managed/);
 });
 
 test('fails if encryption key is used with serverSideEncryption', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true
+    enableKeyRotation: true,
   });
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     serverSideEncryption: true,
-    encryptionKey
+    encryptionKey,
   })).toThrow(/encryptionKey cannot be specified for serverSideEncryption, use encryption instead/);
 });
 
@@ -442,7 +442,7 @@ test('fails if both encryption and serverSideEncryption is specified', () => {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
-    serverSideEncryption: true
+    serverSideEncryption: true,
   })).toThrow(/Both encryption and serverSideEncryption is specified, only either field can be set, not both/);
 });
 
@@ -1275,7 +1275,7 @@ describe('grants', () => {
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
     });
     const user = new iam.User(stack, 'user');
@@ -1286,34 +1286,34 @@ describe('grants', () => {
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
-        "Statement": [
+        'Statement': [
           {
-            "Action": [
-              "dynamodb:action1",
-              "dynamodb:action2"
+            'Action': [
+              'dynamodb:action1',
+              'dynamodb:action2',
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               {
-                "Fn::GetAtt": [
-                  "mytable0324D45C",
-                  "Arn"
-                ]
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
               },
               {
-                "Ref": "AWS::NoValue"
+                'Ref': 'AWS::NoValue',
               },
-            ]
-          }
+            ],
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "userDefaultPolicy083DF682",
-      "Users": [
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
         {
-          "Ref": "user2C2B57AE"
-        }
-      ]
+          'Ref': 'user2C2B57AE',
+        },
+      ],
     });
   });
 
@@ -1458,38 +1458,38 @@ describe('grants', () => {
               'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
-            "Resource": [
+            'Resource': [
               {
-                "Fn::GetAtt": [
-                  "mytable0324D45C",
-                  "StreamArn"
-                ]
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'StreamArn',
+                ],
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "mytable0324D45C",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
                     },
-                    "/*"
-                  ]
-                ]
-              }
-            ]
-          }
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "userDefaultPolicy083DF682",
-      "Users": [
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
         {
-          "Ref": "user2C2B57AE"
-        }
-      ]
+          'Ref': 'user2C2B57AE',
+        },
+      ],
     });
   });
 
@@ -1507,63 +1507,63 @@ describe('grants', () => {
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
-        "Statement": [
+        'Statement': [
           {
-            "Action": [
-              "dynamodb:BatchGetItem",
-              "dynamodb:GetRecords",
-              "dynamodb:GetShardIterator",
-              "dynamodb:Query",
-              "dynamodb:GetItem",
-              "dynamodb:Scan"
+            'Action': [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
             ],
-            "Effect": "Allow",
-            "Resource": [
+            'Effect': 'Allow',
+            'Resource': [
               {
-                "Fn::GetAtt": [
-                  "mytable0324D45C",
-                  "Arn"
-                ]
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "mytable0324D45C",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
                     },
-                    "/index/*"
-                  ]
-                ]
+                    '/index/*',
+                  ],
+                ],
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "mytable0324D45C",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
                     },
-                    "/*"
-                  ]
-                ]
-              }
-            ]
-          }
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "userDefaultPolicy083DF682",
-      "Users": [
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
         {
-          "Ref": "user2C2B57AE"
-        }
-      ]
+          'Ref': 'user2C2B57AE',
+        },
+      ],
     });
   });
 });
@@ -1633,9 +1633,9 @@ describe('import', () => {
             'Resource': [
               tableArn,
               { 'Ref': 'AWS::NoValue' },
-              "arn:aws:dynamodb:us-east-1:11111111:table/MyTable/*"
-            ]
-          }
+              'arn:aws:dynamodb:us-east-1:11111111:table/MyTable/*',
+            ],
+          },
         ],
         'Version': '2012-10-17',
       },
@@ -1658,8 +1658,7 @@ describe('import', () => {
     });
     table.grantReadWriteData(role);
 
-
-    //it is possible to obtain a permission statement for a ref
+    // it is possible to obtain a permission statement for a ref
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
@@ -1699,30 +1698,30 @@ describe('import', () => {
                 ],
               },
               {
-                'Ref': 'AWS::NoValue'
+                'Ref': 'AWS::NoValue',
               },
               {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      "Ref": "AWS::Partition"
+                      'Ref': 'AWS::Partition',
                     },
-                    ":dynamodb:",
+                    ':dynamodb:',
                     {
-                      "Ref": "AWS::Region"
+                      'Ref': 'AWS::Region',
                     },
-                    ":",
+                    ':',
                     {
-                      "Ref": "AWS::AccountId"
+                      'Ref': 'AWS::AccountId',
                     },
-                    ":table/MyTable/*"
-                  ]
-                ]
-              }
-            ]
-          }
+                    ':table/MyTable/*',
+                  ],
+                ],
+              },
+            ],
+          },
         ],
         'Version': '2012-10-17',
       },
@@ -1802,26 +1801,26 @@ describe('import', () => {
               Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
               Effect: 'Allow',
               Resource: [tableStreamArn, {
-                "Fn::Join": [
-                  "",
+                'Fn::Join': [
+                  '',
                   [
-                    "arn:",
+                    'arn:',
                     {
-                      "Ref": "AWS::Partition"
+                      'Ref': 'AWS::Partition',
                     },
-                    ":dynamodb:",
+                    ':dynamodb:',
                     {
-                      "Ref": "AWS::Region"
+                      'Ref': 'AWS::Region',
                     },
-                    ":",
+                    ':',
                     {
-                      "Ref": "AWS::AccountId"
+                      'Ref': 'AWS::AccountId',
                     },
-                    ":table/MyTable/*"
-                  ]
-                ]
-              }]
-              }
+                    ':table/MyTable/*',
+                  ],
+                ],
+              }],
+            },
           ],
           Version: '2012-10-17',
         },
@@ -2032,6 +2031,20 @@ describe('global', () => {
                   ],
                 ],
               },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
             ],
           },
         ],
@@ -2180,6 +2193,22 @@ describe('global', () => {
                       Ref: 'AWS::AccountId',
                     },
                     ':table/my-table/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      'Ref': 'AWS::AccountId',
+                    },
+                    ':table/my-table/*',
                   ],
                 ],
               },
@@ -2378,40 +2407,40 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
         {
           'Action': action,
           'Effect': 'Allow',
-          "Resource": [
+          'Resource': [
             {
-              "Fn::GetAtt": [
-                "mytable0324D45C",
-                "Arn"
-              ]
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'Arn',
+              ],
             },
             {
-              "Ref": "AWS::NoValue"
+              'Ref': 'AWS::NoValue',
             },
             {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
                   {
-                    "Fn::GetAtt": [
-                      "mytable0324D45C",
-                      "Arn"
-                    ]
+                    'Fn::GetAtt': [
+                      'mytable0324D45C',
+                      'Arn',
+                    ],
                   },
-                  "/*"
-                ]
-              ]
-            }
-          ]
-        }
+                  '/*',
+                ],
+              ],
+            },
+          ],
+        },
       ],
-      "Version": "2012-10-17"
+      'Version': '2012-10-17',
     },
-    "PolicyName": "userDefaultPolicy083DF682",
-    "Users": [
+    'PolicyName': 'userDefaultPolicy083DF682',
+    'Users': [
       {
-        "Ref": "user2C2B57AE"
-      }
-    ]
+        'Ref': 'user2C2B57AE',
+      },
+    ],
   });
 }

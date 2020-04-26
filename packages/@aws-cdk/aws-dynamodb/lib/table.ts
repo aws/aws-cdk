@@ -3,9 +3,9 @@ import { CfnCustomResource, CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as perms from './perms';
 import { Aws, CfnCondition, Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
+import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -92,7 +92,7 @@ export interface TableOptions {
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    * @default - server-side encryption is enabled with an AWS owned customer master key
-   * 
+   *
    * @deprecated - This property is deprecated, use encryption instead
    */
   readonly serverSideEncryption?: boolean;
@@ -100,7 +100,7 @@ export interface TableOptions {
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    * @default - server-side encryption is enabled with an AWS owned customer master key
-   * 
+   *
    */
   readonly encryption?: TableEncryption;
 
@@ -233,7 +233,7 @@ export interface ITable extends IResource {
   readonly tableStreamArn?: string;
 
   /**
-   * 
+   *
    * Optional KMS encryption key associated with this table.
    */
   readonly encryptionKey?: kms.IKey;
@@ -247,10 +247,10 @@ export interface ITable extends IResource {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -267,10 +267,10 @@ export interface ITable extends IResource {
    * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -279,10 +279,10 @@ export interface ITable extends IResource {
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -292,10 +292,10 @@ export interface ITable extends IResource {
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -398,12 +398,12 @@ abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly tableStreamArn?: string;
 
-  protected readonly regionalArns = new Array<string>();
-
   /**
    * Optional KMS encryption key associated with this table.
    */
   public abstract readonly encryptionKey?: kms.IKey;
+
+  protected readonly regionalArns = new Array<string>();
 
   /**
    * Returns an ARN that represents all objects within the table that match
@@ -424,15 +424,21 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal (no-op if undefined)
    * @param tableActions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
-   * @param otherResourceArns 
+   * @param otherResourceArns
    */
   public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], ...otherResourceArns: string[]) {
-    const resources = [this.tableArn, Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }), ...otherResourceArns];
+    const resources = [this.tableArn,
+      Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+      ...this.regionalArns,
+      ...this.regionalArns.map(arn => Lazy.stringValue({
+        produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+      })),
+      ...otherResourceArns];
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: tableActions,
       resourceArns: resources,
-      scope: this
+      scope: this,
     });
     if (this.encryptionKey && keyActions) {
       this.encryptionKey.grant(grantee, ...keyActions);
@@ -457,7 +463,7 @@ abstract class TableBase extends Resource implements ITable {
       grantee,
       actions: streamActions,
       resourceArns: resources,
-      scope: this
+      scope: this,
     });
     if (this.encryptionKey && keyActions) {
       this.encryptionKey.grant(grantee, ...keyActions);
@@ -468,7 +474,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    * @param grantee The principal to grant access to
@@ -502,10 +508,10 @@ abstract class TableBase extends Resource implements ITable {
    * Permits an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -517,10 +523,10 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -532,10 +538,10 @@ abstract class TableBase extends Resource implements ITable {
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
-   * 
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -547,11 +553,11 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   * 
+   *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
-   * 
-   * 
+   *
+   *
    * @param grantee The principal to grant access to
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -635,7 +641,13 @@ abstract class TableBase extends Resource implements ITable {
  * Provides a DynamoDB table.
  */
 export class Table extends TableBase {
-  public encryptionKey?: kms.IKey | undefined;
+
+  /**
+   * Whether this table has indexes
+   */
+  protected get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
+  }
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use {@link #grantTableListStreams} for more granular permission
@@ -685,14 +697,14 @@ export class Table extends TableBase {
       public readonly tableName: string;
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
-      public readonly encryptionKey: kms.IKey | undefined;
+      public readonly encryptionKey?: kms.IKey;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
         this.tableArn = _tableArn;
         this.tableName = tableName;
         this.tableStreamArn = tableStreamArn;
-        this.encryptionKey = attrs.keyArn ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn): undefined
+        this.encryptionKey = attrs.keyArn ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn) : undefined;
       }
 
       protected get hasIndex(): boolean {
@@ -722,6 +734,7 @@ export class Table extends TableBase {
 
     return new Import(arn, name, attrs.tableStreamArn);
   }
+  public readonly encryptionKey?: kms.IKey;
 
   /**
    * @attribute
@@ -755,13 +768,11 @@ export class Table extends TableBase {
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
-  
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });
-
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
@@ -1194,29 +1205,29 @@ export class Table extends TableBase {
    * Set up key properties and return the Table encryption property from the
    * user's configuration.
    */
-  private parseEncryption(props:TableProps): {sseSpecification: CfnTable.SSESpecificationProperty, encryptionKey?: kms.IKey} {
+  private parseEncryption(props: TableProps): {sseSpecification: CfnTable.SSESpecificationProperty, encryptionKey?: kms.IKey} {
     let encryptionType = props.encryption;
 
     if (encryptionType !== undefined && props.serverSideEncryption) {
-      throw new Error(`Both encryption and serverSideEncryption is specified, only either field can be set, not both`);
+      throw new Error('Both encryption and serverSideEncryption is specified, only either field can be set, not both');
     }
-    
+
     if (encryptionType === undefined) {
       encryptionType = props.encryptionKey ? TableEncryption.CUSTOMER_MANAGED : TableEncryption.DEFAULT;
     }
 
     if (props.serverSideEncryption && props.encryptionKey) {
-      throw new Error(`encryptionKey cannot be specified for serverSideEncryption, use encryption instead`);
+      throw new Error('encryptionKey cannot be specified for serverSideEncryption, use encryption instead');
     }
-    
+
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to Customer_Managed`);
+      throw new Error('encryptionKey is specified, so encryption must be set to Customer_Managed');
     }
 
     if (encryptionType === TableEncryption.CUSTOMER_MANAGED) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.node.path}`,
-          enableKeyRotation: true
+        description: `Created by ${this.node.path}`,
+        enableKeyRotation: true,
       });
 
       return { sseSpecification: {sseEnabled: true, kmsMasterKeyId: encryptionKey.keyArn, sseType: 'KMS'}, encryptionKey };
@@ -1229,13 +1240,6 @@ export class Table extends TableBase {
       return { sseSpecification: {sseEnabled: false} };
     }
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
-  }
-
-  /**
-   * Whether this table has indexes
-   */
-  protected get hasIndex(): boolean {
-    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 
