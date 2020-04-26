@@ -343,9 +343,7 @@ test('when specifying every property', () => {
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
       SSESpecification: {
         SSEEnabled: true,
-        KMSMasterKey: {
-          keyArn: 'kmsMasterKeyArn',
-        },
+        KMSMasterKeyId: 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab',
       },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
