@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
 const app = new cdk.App();
