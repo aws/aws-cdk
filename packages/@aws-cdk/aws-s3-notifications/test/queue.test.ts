@@ -109,6 +109,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
             'kms:Encrypt',
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
+            'kms:Decrypt',
           ],
           Condition: {
             ArnLike: {
