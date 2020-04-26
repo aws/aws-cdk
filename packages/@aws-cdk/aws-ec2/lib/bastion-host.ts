@@ -7,8 +7,8 @@ import { IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
-import { IVpc, SubnetSelection } from './vpc';
 import { BlockDeviceVolume } from './volume';
+import { IVpc, SubnetSelection } from './vpc';
 
 /**
  * Properties of the bastion host
@@ -69,8 +69,8 @@ export interface BastionHostLinuxProps {
   /**
    * Encryption for EBS volume
    * If true, encrypted volume will be created with a default voulme size of 10 GiB.
-   * 
-   * @default false 
+   *
+   * @default false
    */
   readonly ebsVolumeEncryption?: boolean;
 }
@@ -151,9 +151,9 @@ export class BastionHostLinux extends Construct implements IInstance {
         blockDevices: [{
           deviceName: 'EBSBastionHost',
           volume: BlockDeviceVolume.ebs(10, {
-            encrypted: props.ebsVolumeEncryption ?? false
-          })
-        }]
+            encrypted: props.ebsVolumeEncryption ?? false,
+          }),
+        }],
       });
     } else {
       this.instance = new Instance(this, 'Resource', {
@@ -163,7 +163,7 @@ export class BastionHostLinux extends Construct implements IInstance {
         instanceName: props.instanceName ?? 'BastionHost',
         instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
         machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-        vpcSubnets: props.subnetSelection ?? {}
+        vpcSubnets: props.subnetSelection ?? {},
       });
     }
     this.instance.addToRolePolicy(new PolicyStatement({
