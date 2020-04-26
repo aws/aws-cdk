@@ -80,37 +80,4 @@ export = {
 
     test.done();
   },
-  'ebs volume is encrypted'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC', {
-      subnetConfiguration: [
-        {
-          subnetType: SubnetType.ISOLATED,
-          name: 'Isolated',
-        }
-      ]
-    });
-
-    // WHEN
-    new BastionHostLinux(stack, 'Bastion', {
-      vpc,
-      ebsVolumeEncryption: true
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::EC2::Instance', {
-      'BlockDeviceMappings': [
-        {
-          'DeviceName': 'EBSBastionHost',
-          'Ebs': {
-            'Encrypted': true,
-            'VolumeSize': 10
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
 };
