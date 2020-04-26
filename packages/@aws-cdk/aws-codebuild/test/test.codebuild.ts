@@ -1148,7 +1148,7 @@ export = {
             name: 'name',
             identifier: 'artifact1',
             useBuildspecName: true,
-          })
+          }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -1175,14 +1175,14 @@ export = {
             name: 'name',
             identifier: 'artifact1',
             useBuildspecName: false,
-          })
+          }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           'Artifacts':
             {
               'ArtifactIdentifier': 'artifact1',
-              'OverrideArtifactName': ABSENT
+              'OverrideArtifactName': ABSENT,
             },
         }));
 

@@ -154,7 +154,7 @@ class S3Artifacts extends Artifacts {
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
         encryptionDisabled: this.props.encryption === false ? true : undefined,
         overrideArtifactName: this.props.useBuildspecName === true ? true : undefined,
-      }
+      },
     };
   }
 }
