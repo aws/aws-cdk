@@ -55,7 +55,7 @@ afterEach(() => {
 test('check that placeholders are replaced', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
   aws.mockS3.getBucketLocation = mockedApiResult({});
-  aws.mockS3.headObject = mockedApiResult({ /* No error == file exists */ });
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key-current_account-current_region' }] });
   aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
 
   await pub.publish();
@@ -69,9 +69,10 @@ test('check that placeholders are replaced', async () => {
     assumeRoleArn: 'arn:aws:role-current_account',
   }));
 
-  expect(aws.mockS3.headObject).toHaveBeenCalledWith(expect.objectContaining({
+  expect(aws.mockS3.listObjectsV2).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket-current_account-current_region',
-    Key: 'some_key-current_account-current_region',
+    Prefix: 'some_key-current_account-current_region',
+    MaxKeys: 1,
   }));
 
   expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
