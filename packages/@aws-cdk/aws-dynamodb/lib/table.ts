@@ -16,6 +16,9 @@ const RANGE_KEY_TYPE = 'RANGE';
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
+/**
+ * What kind of server-side encryption to apply to this table.
+ */
 export enum TableEncryption {
   /**
    * Server-side KMS encryption with a customer master key managed by customer.
@@ -378,6 +381,8 @@ export interface TableAttributes {
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
+   *
+   * @default - no key arn
    */
   readonly keyArn?: string;
 }
