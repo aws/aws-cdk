@@ -194,13 +194,13 @@ export abstract class QueueBase extends Resource implements IQueue {
       'sqs:GetQueueUrl');
 
     if (this.encryptionMasterKey) {
-        // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
-        this.encryptionMasterKey.grant(grantee,
-          'kms:Encrypt',
-          'kms:ReEncrypt*',
-          'kms:GenerateDataKey*',
-          'kms:Decrypt'
-          )
+      // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
+      this.encryptionMasterKey.grant(grantee,
+        'kms:Encrypt',
+        'kms:ReEncrypt*',
+        'kms:GenerateDataKey*',
+        'kms:Decrypt',
+      );
     }
     return ret;
   }
@@ -239,9 +239,6 @@ export abstract class QueueBase extends Resource implements IQueue {
     });
   }
 }
-
-
-
 /**
  * Reference to a queue
  */
