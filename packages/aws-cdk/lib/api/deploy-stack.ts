@@ -149,13 +149,17 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
+  const terminationProtection = stackArtifact.terminationProtection ?? false;
+
   if (!options.force && cloudFormationStack.exists) {
     // bail out if the current template is exactly the same as the one we are about to deploy
     // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
-    debug('checking if we can skip this stack based on the currently deployed template and tags (use --force to override)');
+    debug('checking if we can skip this stack based on the currently deployed template, tags and termination protection (use --force to override)');
     const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
-    if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template()) && tagsIdentical) {
-      debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
+    if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template())
+        && tagsIdentical
+        && cloudFormationStack.terminationProtection === terminationProtection) {
+      debug(`${deployName}: no change in template, tags or termination protection, skipping (use --force to override)`);
       return {
         noOp: true,
         outputs: cloudFormationStack.outputs,
@@ -239,6 +243,17 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
   }
+
+  // Update termination protection only if it has changed.
+  if (cloudFormationStack.terminationProtection !== terminationProtection) {
+    debug('Updating termination protection for stack %s', deployName);
+    await cfn.updateTerminationProtection({
+      StackName: deployName,
+      EnableTerminationProtection: terminationProtection,
+    }).promise();
+    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
+  }
+
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
 }
 
