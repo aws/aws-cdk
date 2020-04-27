@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
@@ -14,7 +15,7 @@ export class EndpointServiceAZContextProviderPlugin implements ContextProviderPl
     const account = args.account;
     const serviceName = args.serviceName;
     debug(`Reading AZs for ${account}:${region}:${serviceName}`);
-    const ec2 = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
     const response = await ec2.describeVpcEndpointServices({ServiceNames: [serviceName]}).promise();
 
     // expect a service in the response
