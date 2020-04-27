@@ -305,6 +305,13 @@ export interface ITable extends IResource {
   grantReadWriteData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param grantee The principal to grant access to
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantFullAccess(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+
+  /**
    * Metric for the number of Errors executing all Lambdas
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;

@@ -1566,6 +1566,59 @@ describe('grants', () => {
       ],
     });
   });
+
+  test('grant for an imported table', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = Table.fromTableName(stack, 'MyTable', 'my-table');
+    const user = new iam.User(stack, 'user');
+
+    // WHEN
+    table.grant(user, 'dynamodb:*');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:*',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Users: [
+        {
+          Ref: 'user2C2B57AE',
+        },
+      ],
+    });
+  });
 });
 
 describe('secondary indexes', () => {
