@@ -33,8 +33,8 @@ running on AWS Lambda, or any web application.
 - [Access Logging](#access-logging)
 - [Cross Origin Resource Sharing (CORS)](cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
-- [APIGateway v2](#apigateway-v2)
 - [Gateway Response](#gateway-response)
+- [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
 
