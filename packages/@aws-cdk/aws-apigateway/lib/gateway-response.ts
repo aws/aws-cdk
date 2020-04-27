@@ -49,9 +49,7 @@ export interface GatewayResponseOptions {
 }
 
 /**
- * This resource creates a gateway response which will be applied to response from api gateway
- * as per the configuration based on the response type.
- * You will probably want to use `RestApi.addGatewayResponse` for adding new gateway response.
+ * Configure the response received by clients, produced from the API Gateway backend.
  *
  * @resource AWS::ApiGateway::GatewayResponse
  */
