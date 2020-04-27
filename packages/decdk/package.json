@@ -102,7 +102,6 @@
     "@aws-cdk/aws-greengrass": "0.0.0",
     "@aws-cdk/aws-guardduty": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-imagebuilder": "0.0.0",
     "@aws-cdk/aws-inspector": "0.0.0",
     "@aws-cdk/aws-iot": "0.0.0",
     "@aws-cdk/aws-iot1click": "0.0.0",
@@ -174,7 +173,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^1.3.2",
+    "jsii-reflect": "^1.4.1",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
     "yargs": "^15.3.1"
@@ -182,10 +181,10 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^25.2.1",
-    "@types/yaml": "1.2.0",
+    "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.4",
     "jest": "^25.4.0",
-    "jsii": "^1.3.2"
+    "jsii": "^1.4.1"
   },
   "keywords": [
     "aws",

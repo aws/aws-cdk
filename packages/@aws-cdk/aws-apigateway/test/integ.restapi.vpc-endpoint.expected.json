@@ -631,7 +631,7 @@
         }
       }
     },
-    "MyApiDeploymentECB0D05E4316cb89aa1d468052daa78055609f5a": {
+    "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -650,7 +650,7 @@
           "Ref": "MyApi49610EDF"
         },
         "DeploymentId": {
-          "Ref": "MyApiDeploymentECB0D05E4316cb89aa1d468052daa78055609f5a"
+          "Ref": "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc"
         },
         "StageName": "prod"
       }

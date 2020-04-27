@@ -81,6 +81,7 @@ export class ClusterResource extends Construct {
       actions: [
         'eks:CreateCluster',
         'eks:DescribeCluster',
+        'eks:DescribeUpdate',
         'eks:DeleteCluster',
         'eks:UpdateClusterVersion',
         'eks:UpdateClusterConfig',
