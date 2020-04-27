@@ -327,12 +327,11 @@ export = {
     });
     vpc.publicSubnets.push(subnet);
     vpc.addVpnConnection('VPNConnection', {
-      ip: '192.0.2.1'
+      ip: '1.2.3.4'
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
-      IpAddress: '192.0.2.1',
+    expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1'
     }));
     test.done();

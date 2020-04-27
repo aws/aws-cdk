@@ -1724,7 +1724,7 @@ class LookedUpVpc extends VpcBase {
 
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
-    this.vpnGatewayId = props.vpnGatewayId;
+    this.mutableVpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     const subnetGroups = props.subnetGroups || [];
