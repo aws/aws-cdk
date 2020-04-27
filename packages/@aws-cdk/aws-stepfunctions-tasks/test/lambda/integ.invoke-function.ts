@@ -26,9 +26,9 @@ const callbackHandler = new Function(stack, 'CallbackHandler', {
 const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
   task: new tasks.RunLambdaTask(callbackHandler, {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    payload: {
+    payload: sfn.TaskInput.fromObject({
       token: sfn.Context.taskToken,
-    },
+    }),
   }),
   inputPath: '$.guid',
   resultPath: '$.status',
