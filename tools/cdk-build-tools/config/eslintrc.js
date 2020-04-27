@@ -29,13 +29,40 @@ module.exports = {
   },
   ignorePatterns: [ '*.js', '*.d.ts', 'node_modules/', '*.generated.ts' ],
   rules: {
-    // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
-    '@typescript-eslint/no-require-imports': [ 'error' ],
+    '@typescript-eslint/adjacent-overload-signatures': 'error',
+
+    '@typescript-eslint/array-type': [ 'error', { default: 'array-simple' } ],
+
+    '@typescript-eslint/ban-types': [ 'error', {
+      types: {
+        Object: {
+          message: 'Avoid using the `Object` type. Did you mean `object`?'
+        },
+        Function: {
+          message: 'Avoid using the `Function` type. Prefer a specific function type, like `() => void`.'
+        },
+        Boolean: {
+          message: 'Avoid using the `Boolean` type. Did you mean `boolean`?'
+        },
+        Number: {
+          message: 'Avoid using the `Number` type. Did you mean `number`?'
+        },
+        String: {
+          message: 'Avoid using the `String` type. Did you mean `string`?'
+        },
+        Symbol: {
+          message: 'Avoid using the `Symbol` type. Did you mean `symbol`?'
+        }
+      }
+    }],
+
     '@typescript-eslint/indent': [ 'error', 2 ],
 
-    // Style
-    'quotes': [ 'error', 'single', { avoidEscape: true } ],
-    'comma-dangle': [ 'error', 'always-multiline' ], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
+    '@typescript-eslint/no-require-imports': [ 'error' ],
+
+     // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    'comma-dangle': [ 'error', 'always-multiline' ],
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -51,6 +78,9 @@ module.exports = {
     ],
 
     // Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
-    'import/no-unresolved': [ 'error' ]
+    'import/no-unresolved': [ 'error' ],
+
+    // Style
+    quotes: [ 'error', 'single', { avoidEscape: true } ],
   }
 }
