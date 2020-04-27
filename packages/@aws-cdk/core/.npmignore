@@ -22,5 +22,3 @@ dist
 
 tsconfig.json
 .eslintrc.js
-
-test/runtime-info-konstruk-fixture/node_modules

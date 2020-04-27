@@ -1,10 +1,21 @@
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
+import * as os from 'os';
+import * as path from 'path';
 import { collectRuntimeInformation } from '../lib/private/runtime-info';
 
 export = {
   'version reporting includes @aws-solutions-konstruk libraries'(test: Test) {
+    const pkgdir = fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-info-konstruk-fixture'));
+
+    fs.writeFileSync(path.join(pkgdir, 'index.js'), 'module.exports = \'this is foo\';');
+    fs.writeFileSync(path.join(pkgdir, 'package.json'), JSON.stringify({
+      name: '@aws-solutions-konstruk/foo',
+      version: '0.0.0',
+    }));
+
     // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    require('./runtime-info-konstruk-fixture');
+    require(pkgdir);
 
     const runtimeInfo = collectRuntimeInformation();
 
