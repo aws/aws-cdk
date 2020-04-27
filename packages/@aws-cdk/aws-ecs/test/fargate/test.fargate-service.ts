@@ -30,14 +30,14 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', {
         TaskDefinition: {
-          Ref: 'FargateTaskDefC6FB60B4'
+          Ref: 'FargateTaskDefC6FB60B4',
         },
         Cluster: {
-          Ref: 'EcsCluster97242B84'
+          Ref: 'EcsCluster97242B84',
         },
         DeploymentConfiguration: {
           MaximumPercent: 200,
-          MinimumHealthyPercent: 50
+          MinimumHealthyPercent: 50,
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
@@ -49,20 +49,20 @@ export = {
               {
                 'Fn::GetAtt': [
                   'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId'
-                ]
-              }
+                  'GroupId',
+                ],
+              },
             ],
             Subnets: [
               {
-                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E'
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
               },
               {
-                Ref: 'MyVpcPrivateSubnet2Subnet0040C983'
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
               },
-            ]
-          }
-        }
+            ],
+          },
+        },
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -71,12 +71,12 @@ export = {
           {
             CidrIp: '0.0.0.0/0',
             Description: 'Allow all outbound traffic by default',
-            IpProtocol: '-1'
-          }
+            IpProtocol: '-1',
+          },
         ],
         VpcId: {
-          Ref: 'MyVpcF9F0CA6F'
-        }
+          Ref: 'MyVpcF9F0CA6F',
+        },
       }));
 
       test.done();
@@ -90,9 +90,9 @@ export = {
           {
             cidrMask: 28,
             name: 'public-only',
-            subnetType: ec2.SubnetType.PUBLIC
-          }
-        ]
+            subnetType: ec2.SubnetType.PUBLIC,
+          },
+        ],
       });
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -119,7 +119,7 @@ export = {
 
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -144,34 +144,34 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
-              Type: 'A'
-            }
+              Type: 'A',
+            },
           ],
           NamespaceId: {
             'Fn::GetAtt': [
               'TestCloudMapNamespace1FB9B446',
-              'Id'
-            ]
+              'Id',
+            ],
           },
-          RoutingPolicy: 'MULTIVALUE'
+          RoutingPolicy: 'MULTIVALUE',
         },
         HealthCheckCustomConfig: {
-          FailureThreshold: 20
+          FailureThreshold: 20,
         },
         Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'TestCloudMapNamespace1FB9B446',
-            'Id'
-          ]
-        }
+            'Id',
+          ],
+        },
       }));
 
       expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
-          Ref: 'MyVpcF9F0CA6F'
-        }
+          Ref: 'MyVpcF9F0CA6F',
+        },
       }));
 
       test.done();
@@ -185,7 +185,7 @@ export = {
 
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
       });
 
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -203,13 +203,13 @@ export = {
           name: 'myapp',
           dnsRecordType: cloudmap.DnsRecordType.A,
           dnsTtl: cdk.Duration.seconds(50),
-          failureThreshold: 20
+          failureThreshold: 20,
         },
         healthCheckGracePeriod: cdk.Duration.seconds(60),
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: ecs.DeploymentControllerType.CODE_DEPLOY
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
@@ -218,7 +218,7 @@ export = {
           vpc,
         }),
         serviceName: 'bonjour',
-        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
 
       // THEN
@@ -226,17 +226,17 @@ export = {
 
       expect(stack).to(haveResource('AWS::ECS::Service', {
         TaskDefinition: {
-          Ref: 'FargateTaskDefC6FB60B4'
+          Ref: 'FargateTaskDefC6FB60B4',
         },
         Cluster: {
-          Ref: 'EcsCluster97242B84'
+          Ref: 'EcsCluster97242B84',
         },
         DeploymentConfiguration: {
           MaximumPercent: 150,
-          MinimumHealthyPercent: 55
+          MinimumHealthyPercent: 55,
         },
         DeploymentController: {
-          Type: ecs.DeploymentControllerType.CODE_DEPLOY
+          Type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
@@ -248,19 +248,19 @@ export = {
               {
                 'Fn::GetAtt': [
                   'SecurityGroup1F554B36F',
-                  'GroupId'
-                ]
-              }
+                  'GroupId',
+                ],
+              },
             ],
             Subnets: [
               {
-                Ref: 'MyVpcPublicSubnet1SubnetF6608456'
+                Ref: 'MyVpcPublicSubnet1SubnetF6608456',
               },
               {
-                Ref: 'MyVpcPublicSubnet2Subnet492B6BFB'
-              }
-            ]
-          }
+                Ref: 'MyVpcPublicSubnet2Subnet492B6BFB',
+              },
+            ],
+          },
         },
         ServiceName: 'bonjour',
         ServiceRegistries: [
@@ -268,11 +268,11 @@ export = {
             RegistryArn: {
               'Fn::GetAtt': [
                 'FargateServiceCloudmapService9544B753',
-                'Arn'
-              ]
-            }
-          }
-        ]
+                'Arn',
+              ],
+            },
+          },
+        ],
       }));
 
       test.done();
@@ -333,7 +333,7 @@ export = {
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
-        assignPublicIp: true
+        assignPublicIp: true,
       });
 
       // THEN
@@ -341,8 +341,8 @@ export = {
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: 'ENABLED',
-          }
-        }
+          },
+        },
       }));
 
       test.done();
@@ -369,7 +369,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MinimumHealthyPercent: 0,
-        }
+        },
       }));
 
       test.done();
@@ -391,12 +391,12 @@ export = {
       new ecs.FargateService(stack, 'Svc', {
         cluster,
         taskDefinition,
-        healthCheckGracePeriod: cdk.Duration.seconds(10)
+        healthCheckGracePeriod: cdk.Duration.seconds(10),
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', {
-        HealthCheckGracePeriodSeconds: 10
+        HealthCheckGracePeriodSeconds: 10,
       }));
 
       test.done();
@@ -420,14 +420,14 @@ export = {
       const listener = lb.addListener('listener', { port: 80 });
       const targetGroup = listener.addTargets('target', {
         port: 80,
-        targets: [service]
+        targets: [service],
       });
 
       // WHEN
       const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
       capacity.scaleOnRequestCount('ScaleOnRequests', {
         requestsPerTarget: 1000,
-        targetGroup
+        targetGroup,
       });
 
       // THEN
@@ -440,17 +440,17 @@ export = {
             [
               'service/',
               {
-                Ref: 'EcsCluster97242B84'
+                Ref: 'EcsCluster97242B84',
               },
               '/',
               {
                 'Fn::GetAtt': [
                   'ServiceD69D759B',
-                  'Name'
-                ]
-              }
-            ]
-          ]
+                  'Name',
+                ],
+              },
+            ],
+          ],
         },
       }));
 
@@ -463,18 +463,18 @@ export = {
                 { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
                 { 'Fn::Select': [2, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
                 { 'Fn::Select': [3, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
-                { 'Fn::GetAtt': ['lblistenertargetGroupC7489D1E', 'TargetGroupFullName'] }
-              ]]
-            }
+                { 'Fn::GetAtt': ['lblistenertargetGroupC7489D1E', 'TargetGroupFullName'] },
+              ]],
+            },
           },
-          TargetValue: 1000
-        }
+          TargetValue: 1000,
+        },
       }));
 
       expect(stack).to(haveResource('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
-        HealthCheckGracePeriodSeconds: 60
+        HealthCheckGracePeriodSeconds: 60,
       }));
 
       test.done();
@@ -493,21 +493,21 @@ export = {
 
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
       const listener = lb.addListener('listener', { port: 80 });
       const targetGroup = listener.addTargets('target', {
         port: 80,
-        targets: [service]
+        targets: [service],
       });
 
       // WHEN
       const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
       capacity.scaleOnRequestCount('ScaleOnRequests', {
         requestsPerTarget: 1000,
-        targetGroup
+        targetGroup,
       });
 
       // THEN
@@ -520,17 +520,17 @@ export = {
             [
               'service/',
               {
-                Ref: 'EcsCluster97242B84'
+                Ref: 'EcsCluster97242B84',
               },
               '/',
               {
                 'Fn::GetAtt': [
                   'ServiceD69D759B',
-                  'Name'
-                ]
-              }
-            ]
-          ]
+                  'Name',
+                ],
+              },
+            ],
+          ],
         },
       }));
 
@@ -552,7 +552,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -561,8 +561,8 @@ export = {
         listener.addTargets('target', {
           port: 80,
           targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer'
-          })]
+            containerName: 'MainContainer',
+          })],
         });
 
         // THEN
@@ -572,9 +572,9 @@ export = {
               ContainerName: 'MainContainer',
               ContainerPort: 8000,
               TargetGroupArn: {
-                Ref: 'lblistenertargetGroupC7489D1E'
-              }
-            }
+                Ref: 'lblistenertargetGroupC7489D1E',
+              },
+            },
           ],
         }));
 
@@ -587,7 +587,7 @@ export = {
         expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8000,
-          ToPort: 8000
+          ToPort: 8000,
         }));
 
         test.done();
@@ -607,7 +607,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -620,8 +620,8 @@ export = {
           targets: [service.loadBalancerTarget({
             containerName: 'MainContainer',
             containerPort: 8001,
-            protocol: ecs.Protocol.TCP
-          })]
+            protocol: ecs.Protocol.TCP,
+          })],
         });
 
         test.done();
@@ -641,7 +641,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -654,8 +654,8 @@ export = {
           targets: [service.loadBalancerTarget({
             containerName: 'MainContainer',
             containerPort: 8001,
-            protocol: ecs.Protocol.UDP
-          })]
+            protocol: ecs.Protocol.UDP,
+          })],
         });
 
         test.done();
@@ -675,7 +675,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -689,8 +689,8 @@ export = {
             targets: [service.loadBalancerTarget({
               containerName: 'MainContainer',
               containerPort: 8001,
-              protocol: ecs.Protocol.TCP
-            })]
+              protocol: ecs.Protocol.TCP,
+            })],
           });
         }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
@@ -711,7 +711,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -725,7 +725,7 @@ export = {
             targets: [service.loadBalancerTarget({
               containerName: 'MainContainer',
               containerPort: 8002,
-            })]
+            })],
           });
         }, /Container 'FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
@@ -746,7 +746,7 @@ export = {
 
         const service = new ecs.FargateService(stack, 'Service', {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // WHEN
@@ -760,12 +760,12 @@ export = {
             targets: [service.loadBalancerTarget({
               containerName: 'SideContainer',
               containerPort: 8001,
-            })]
+            })],
           });
         }, /No container named 'SideContainer'. Did you call "addContainer()"?/);
 
         test.done();
-      }
+      },
     },
 
     'allows load balancing to any container and port of service': {
@@ -783,7 +783,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -796,7 +796,7 @@ export = {
               containerPort: 8000,
               listener: ecs.ListenerConfig.applicationListener(listener),
               newTargetGroupId: 'target1',
-            }
+            },
           );
 
           // THEN
@@ -806,9 +806,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -833,7 +833,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -845,10 +845,10 @@ export = {
               containerName: 'MainContainer',
               containerPort: 8000,
               listener: ecs.ListenerConfig.applicationListener(listener, {
-                protocol: elbv2.ApplicationProtocol.HTTP
+                protocol: elbv2.ApplicationProtocol.HTTP,
               }),
               newTargetGroupId: 'target1',
-            }
+            },
           );
 
           // THEN
@@ -858,9 +858,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -885,7 +885,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -897,10 +897,10 @@ export = {
               containerName: 'MainContainer',
               containerPort: 8000,
               listener: ecs.ListenerConfig.applicationListener(listener, {
-                protocol: elbv2.ApplicationProtocol.HTTPS
+                protocol: elbv2.ApplicationProtocol.HTTPS,
               }),
               newTargetGroupId: 'target1',
-            }
+            },
           );
 
           // THEN
@@ -910,9 +910,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -937,7 +937,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -950,10 +950,10 @@ export = {
               containerPort: 8000,
               listener: ecs.ListenerConfig.applicationListener(listener, {
                 port: 83,
-                protocol: elbv2.ApplicationProtocol.HTTP
+                protocol: elbv2.ApplicationProtocol.HTTP,
               }),
-              newTargetGroupId: 'target1'
-            }
+              newTargetGroupId: 'target1',
+            },
           );
 
           // THEN
@@ -963,9 +963,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -992,7 +992,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -1005,7 +1005,7 @@ export = {
               containerPort: 8000,
               listener: ecs.ListenerConfig.networkListener(listener),
               newTargetGroupId: 'target1',
-            }
+            },
           );
 
           // THEN
@@ -1015,9 +1015,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -1042,7 +1042,7 @@ export = {
 
           const service = new ecs.FargateService(stack, 'Service', {
             cluster,
-            taskDefinition
+            taskDefinition,
           });
 
           // WHEN
@@ -1054,10 +1054,10 @@ export = {
               containerName: 'MainContainer',
               containerPort: 8000,
               listener: ecs.ListenerConfig.networkListener(listener, {
-                port: 81
+                port: 81,
               }),
-              newTargetGroupId: 'target1'
-            }
+              newTargetGroupId: 'target1',
+            },
           );
 
           // THEN
@@ -1067,9 +1067,9 @@ export = {
                 ContainerName: 'MainContainer',
                 ContainerPort: 8000,
                 TargetGroupArn: {
-                  Ref: 'lblistenertarget1Group1A1A5C9E'
-                }
-              }
+                  Ref: 'lblistenertarget1Group1A1A5C9E',
+                },
+              },
             ],
           }));
 
@@ -1080,8 +1080,8 @@ export = {
 
           test.done();
         },
-      }
-    }
+      },
+    },
   },
 
   'allows scaling on a specified scheduled time'(test: Test) {
@@ -1097,7 +1097,7 @@ export = {
 
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // WHEN
@@ -1112,12 +1112,12 @@ export = {
       ScheduledActions: [
         {
           ScalableTargetAction: {
-            MinCapacity: 10
+            MinCapacity: 10,
           },
           Schedule: 'cron(0 8 * * ? *)',
-          ScheduledActionName: 'ScaleOnSchedule'
-        }
-      ]
+          ScheduledActionName: 'ScaleOnSchedule',
+        },
+      ],
     }));
 
     test.done();
@@ -1136,7 +1136,7 @@ export = {
 
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // WHEN
@@ -1146,15 +1146,15 @@ export = {
       scalingSteps: [
         { upper: 0, change: -1 },
         { lower: 100, change: +1 },
-        { lower: 500, change: +5 }
-      ]
+        { lower: 500, change: +5 },
+      ],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
-        Ref: 'ServiceTaskCountTarget23E25614'
+        Ref: 'ServiceTaskCountTarget23E25614',
       },
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
@@ -1162,10 +1162,10 @@ export = {
         StepAdjustments: [
           {
             MetricIntervalUpperBound: 0,
-            ScalingAdjustment: -1
-          }
-        ]
-      }
+            ScalingAdjustment: -1,
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -1184,13 +1184,13 @@ export = {
 
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // WHEN
     const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
     capacity.scaleOnCpuUtilization('ScaleOnCpu', {
-      targetUtilizationPercent: 30
+      targetUtilizationPercent: 30,
     });
 
     // THEN
@@ -1198,8 +1198,8 @@ export = {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageCPUUtilization' },
-        TargetValue: 30
-      }
+        TargetValue: 30,
+      },
     }));
 
     test.done();
@@ -1218,13 +1218,13 @@ export = {
 
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // WHEN
     const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
     capacity.scaleOnMemoryUtilization('ScaleOnMemory', {
-      targetUtilizationPercent: 30
+      targetUtilizationPercent: 30,
     });
 
     // THEN
@@ -1232,8 +1232,8 @@ export = {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageMemoryUtilization' },
-        TargetValue: 30
-      }
+        TargetValue: 30,
+      },
     }));
 
     test.done();
@@ -1252,14 +1252,14 @@ export = {
 
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // WHEN
     const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
     capacity.scaleToTrackCustomMetric('ScaleOnCustomMetric', {
       metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
-      targetValue: 5
+      targetValue: 5,
     });
 
     // THEN
@@ -1269,10 +1269,10 @@ export = {
         CustomizedMetricSpecification: {
           MetricName: 'Metric',
           Namespace: 'Test',
-          Statistic: 'Average'
+          Statistic: 'Average',
         },
-        TargetValue: 5
-      }
+        TargetValue: 5,
+      },
     }));
 
     test.done();
@@ -1287,7 +1287,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
       container.addPortMappings({ containerPort: 8000 });
 
@@ -1298,7 +1298,7 @@ export = {
           taskDefinition,
           cloudMapOptions: {
             name: 'myApp',
-          }
+          },
         });
       }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
 
@@ -1319,15 +1319,15 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
       });
 
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
         cloudMapOptions: {
-          name: 'myApp'
-        }
+          name: 'myApp',
+        },
       });
 
       // THEN
@@ -1336,27 +1336,27 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
-              Type: 'A'
-            }
+              Type: 'A',
+            },
           ],
           NamespaceId: {
             'Fn::GetAtt': [
               'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id'
-            ]
+              'Id',
+            ],
           },
-          RoutingPolicy: 'MULTIVALUE'
+          RoutingPolicy: 'MULTIVALUE',
         },
         HealthCheckCustomConfig: {
-          FailureThreshold: 1
+          FailureThreshold: 1,
         },
         Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id'
-          ]
-        }
+            'Id',
+          ],
+        },
       }));
 
       test.done();
@@ -1372,14 +1372,14 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -1388,7 +1388,7 @@ export = {
         cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV,
-        }
+        },
       });
 
       // THEN
@@ -1397,27 +1397,27 @@ export = {
           DnsRecords: [
             {
               TTL: 60,
-              Type: 'SRV'
-            }
+              Type: 'SRV',
+            },
           ],
           NamespaceId: {
             'Fn::GetAtt': [
               'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id'
-            ]
+              'Id',
+            ],
           },
-          RoutingPolicy: 'MULTIVALUE'
+          RoutingPolicy: 'MULTIVALUE',
         },
         HealthCheckCustomConfig: {
-          FailureThreshold: 1
+          FailureThreshold: 1,
         },
         Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id'
-          ]
-        }
+            'Id',
+          ],
+        },
       }));
 
       test.done();
@@ -1433,14 +1433,14 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512
+        memoryLimitMiB: 512,
       });
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -1450,7 +1450,7 @@ export = {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV,
           dnsTtl: cdk.Duration.seconds(10),
-        }
+        },
       });
 
       // THEN
@@ -1459,27 +1459,27 @@ export = {
           DnsRecords: [
             {
               TTL: 10,
-              Type: 'SRV'
-            }
+              Type: 'SRV',
+            },
           ],
           NamespaceId: {
             'Fn::GetAtt': [
               'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id'
-            ]
+              'Id',
+            ],
           },
-          RoutingPolicy: 'MULTIVALUE'
+          RoutingPolicy: 'MULTIVALUE',
         },
         HealthCheckCustomConfig: {
-          FailureThreshold: 1
+          FailureThreshold: 1,
         },
         Name: 'myApp',
         NamespaceId: {
           'Fn::GetAtt': [
             'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id'
-          ]
-        }
+            'Id',
+          ],
+        },
       }));
 
       test.done();
@@ -1493,7 +1493,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
     taskDefinition.addContainer('Container', {
-      image: ecs.ContainerImage.fromRegistry('hello')
+      image: ecs.ContainerImage.fromRegistry('hello'),
     });
 
     // WHEN
@@ -1506,12 +1506,12 @@ export = {
     test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
-        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] },
       },
       namespace: 'AWS/ECS',
       metricName: 'CPUUtilization',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     test.done();

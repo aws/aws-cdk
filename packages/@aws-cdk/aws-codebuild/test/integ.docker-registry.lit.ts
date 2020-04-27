@@ -14,9 +14,9 @@ class TestStack extends cdk.Stack {
         version: '0.2',
         phases: {
           build: {
-            commands: [ 'ls' ]
-          }
-        }
+            commands: [ 'ls' ],
+          },
+        },
       }),
       /// !show
       environment: {

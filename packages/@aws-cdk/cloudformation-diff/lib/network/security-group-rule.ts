@@ -85,7 +85,7 @@ export class SecurityGroupRule {
       ipProtocol: this.ipProtocol,
       fromPort: this.fromPort,
       toPort: this.toPort,
-      peer: this.peer
+      peer: this.peer,
     };
   }
 }

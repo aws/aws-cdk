@@ -1,18 +1,14 @@
 ## AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -163,16 +159,79 @@ similar to (for example) `inputPath`.
 
 #### Lambda example
 
+[Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
+
+You can specify the input to your Lambda function through the `payload` attribute.
+By default, Step Functions invokes Lambda function with the state input (JSON path '$')
+as the input.
+
+The following snippet invokes a Lambda Function with the state input as the payload
+by referencing the `$` path.
+
 ```ts
-  const task = new sfn.Task(stack, 'Invoke2', {
+new sfn.Task(this, 'Invoke with state input');
+```
+
+When a function is invoked, the Lambda service sends  [these response
+elements](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseElements)
+back.
+
+⚠️ The response from the Lambda function is in an attribute called `Payload`
+
+The following snippet invokes a Lambda Function by referencing the `$.Payload` path
+to reference the output of a Lambda executed before it.
+
+```ts
+new sfn.Task(this, 'Invoke with empty object as payload', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromObject({})
+  }),
+});
+
+new sfn.Task(this, 'Invoke with payload field in the state input', {
+  task: new tasks.RunLambdaTask(myOtherLambda, {
+    payload: sfn.TaskInput.fromDataAt('$.Payload'),
+  }),
+});
+```
+
+The following snippet invokes a Lambda and sets the task output to only include
+the Lambda function response.
+
+```ts
+new sfn.Task(this, 'Invoke and set function response as task output', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromDataAt('$'),
+  }),
+  outputPath: '$.Payload',
+});
+```
+
+You can have Step Functions pause a task, and wait for an external process to
+return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
+
+To use the callback pattern, set the `token` property on the task. Call the Step
+Functions `SendTaskSuccess` or `SendTaskFailure` APIs with the token to
+indicate that the task has completed and the state machine should resume execution.
+
+The following snippet invokes a Lambda with the task token as part of the input
+to the Lambda.
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke with callback', {
     task: new tasks.RunLambdaTask(myLambda, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: {
-        token: sfn.Context.taskToken
+        token: sfn.Context.taskToken,
+        input: sfn.TaskInput.fromDataAt('$.someField'),
       }
     })
   });
 ```
+
+⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
+call. Learn more about [Callback with the Task
+Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
 #### Glue Job example
 
@@ -731,6 +790,10 @@ new stepfunctions.Parallel(this, 'All jobs')
     .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
     .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 ```
+
+A few utility functions are available to parse state machine fragments.
+* `State.findReachableStates`: Retrieve the list of states reachable from a given state.
+* `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
 
 ## Activity
 

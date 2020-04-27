@@ -82,7 +82,7 @@ export class ApiKey extends Resource implements IApiKey {
       enabled: props.enabled || true,
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
-      stageKeys: this.renderStageKeys(props.resources)
+      stageKeys: this.renderStageKeys(props.resources),
     });
 
     this.keyId = resource.ref;

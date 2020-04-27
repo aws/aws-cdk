@@ -177,7 +177,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
     return new cloudwatch.Metric({
       namespace: 'AWS/VPN',
       metricName,
-      ...props
+      ...props,
     });
   }
 
@@ -232,7 +232,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
     const customerGateway = new CfnCustomerGateway(this, 'CustomerGateway', {
       bgpAsn,
       ipAddress: props.ip,
-      type
+      type,
     });
 
     this.customerGatewayId = customerGateway.ref;
@@ -275,7 +275,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       customerGatewayId: customerGateway.ref,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
-      vpnTunnelOptionsSpecifications: props.tunnelOptions
+      vpnTunnelOptionsSpecifications: props.tunnelOptions,
     });
 
     this.vpnId = vpnConnection.ref;
@@ -284,7 +284,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       props.staticRoutes.forEach(route => {
         new CfnVPNConnectionRoute(this, `Route${route.replace(/[^\d]/g, '')}`, {
           destinationCidrBlock: route,
-          vpnConnectionId: this.vpnId
+          vpnConnectionId: this.vpnId,
         });
       });
     }
@@ -298,5 +298,5 @@ export const RESERVED_TUNNEL_INSIDE_CIDR = [
   '169.254.3.0/30',
   '169.254.4.0/30',
   '169.254.5.0/30',
-  '169.254.169.252/30'
+  '169.254.169.252/30',
 ];

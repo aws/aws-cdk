@@ -3,7 +3,7 @@ import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConst
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
@@ -11,7 +11,7 @@ import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupName
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
-import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
+import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -189,6 +189,13 @@ export interface SubnetSelection {
   readonly subnetType?: SubnetType;
 
   /**
+   * Select subnets only in the given AZs.
+   *
+   * @default no filtering on AZs is done
+   */
+  readonly availabilityZones?: string[];
+
+  /**
    * Select the subnet group with the given name
    *
    * Select the subnet group with the given name. This only needs
@@ -304,6 +311,11 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public abstract readonly vpnGatewayId?: string;
+
+  /**
    * Dependencies for internet connectivity
    */
   public abstract readonly internetConnectivityEstablished: IDependable;
@@ -339,7 +351,7 @@ abstract class VpcBase extends Resource implements IVpc {
       availabilityZones: subnets.map(s => s.availabilityZone),
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
-      hasPublic: subnets.some(s => pubs.has(s))
+      hasPublic: subnets.some(s => pubs.has(s)),
     };
   }
 
@@ -353,7 +365,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     const vpnGateway = new VpnGateway(this, 'VpnGateway', {
       amazonSideAsn: options.amazonSideAsn,
-      type: VpnConnectionType.IPSEC_1
+      type: VpnConnectionType.IPSEC_1,
     });
 
     this.mutableVpnGatewayId = vpnGateway.gatewayId;
@@ -368,7 +380,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
       routeTableIds,
-      vpnGatewayId: this.mutableVpnGatewayId
+      vpnGatewayId: this.mutableVpnGatewayId,
     });
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
@@ -382,7 +394,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
     return new VpnConnection(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -392,7 +404,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
     return new InterfaceVpcEndpoint(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -402,7 +414,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
-      ...options
+      ...options,
     });
   }
 
@@ -412,7 +424,7 @@ abstract class VpcBase extends Resource implements IVpc {
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
-      ...options
+      ...options,
     });
   }
 
@@ -431,14 +443,27 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (selection.subnets !== undefined) {
       return selection.subnets;
-
-    } else if (selection.subnetGroupName !== undefined) { // Select by name
-      return this.selectSubnetObjectsByName(selection.subnetGroupName);
-
-    } else {
-      const type = selection.subnetType || SubnetType.PRIVATE;
-      return this.selectSubnetObjectsByType(type, !!selection.onePerAz);
     }
+
+    let subnets;
+
+    if (selection.subnetGroupName !== undefined) { // Select by name
+      subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
+
+    } else { // Or specify by type
+      const type = selection.subnetType || SubnetType.PRIVATE;
+      subnets = this.selectSubnetObjectsByType(type);
+    }
+
+    if (selection.availabilityZones !== undefined) { // Filter by AZs, if specified
+      subnets = retainByAZ(subnets, selection.availabilityZones);
+    }
+
+    if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
+      subnets = retainOnePerAz(subnets);
+    }
+
+    return subnets;
   }
 
   private selectSubnetObjectsByName(groupName: string) {
@@ -453,18 +478,14 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
-  private selectSubnetObjectsByType(subnetType: SubnetType, onePerAz: boolean) {
+  private selectSubnetObjectsByType(subnetType: SubnetType) {
     const allSubnets = {
       [SubnetType.ISOLATED]: this.isolatedSubnets,
       [SubnetType.PRIVATE]: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
-    let subnets = allSubnets[subnetType];
-
-    if (onePerAz && subnets.length > 0) {
-      subnets = retainOnePerAz(subnets);
-    }
+    const subnets = allSubnets[subnetType];
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
@@ -499,13 +520,30 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {
       // Return default subnet type based on subnets that actually exist
-      if (this.privateSubnets.length > 0) { return { subnetType: SubnetType.PRIVATE, onePerAz: placement.onePerAz }; }
-      if (this.isolatedSubnets.length > 0) { return { subnetType: SubnetType.ISOLATED, onePerAz: placement.onePerAz }; }
-      return { subnetType: SubnetType.PUBLIC, onePerAz: placement.onePerAz };
+      if (this.privateSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.PRIVATE,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones};
+      }
+      if (this.isolatedSubnets.length > 0) {
+        return {
+          subnetType: SubnetType.ISOLATED,
+          onePerAz: placement.onePerAz,
+          availabilityZones: placement.availabilityZones };
+      }
+      return {
+        subnetType: SubnetType.PUBLIC,
+        onePerAz: placement.onePerAz,
+        availabilityZones: placement.availabilityZones };
     }
 
     return placement;
   }
+}
+
+function retainByAZ(subnets: ISubnet[], azs: string[]): ISubnet[] {
+  return subnets.filter(s => azs.includes(s.availabilityZone));
 }
 
 function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
@@ -926,7 +964,7 @@ export class Vpc extends VpcBase {
     {
       subnetType: SubnetType.PRIVATE,
       name: defaultSubnetName(SubnetType.PRIVATE),
-    }
+    },
   ];
 
   /**
@@ -1043,6 +1081,11 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
+  /**
+   * Identifier for the VPN gateway
+   */
+  public readonly vpnGatewayId?: string;
+
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1131,7 +1174,7 @@ export class Vpc extends VpcBase {
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
-        vpcId: this.resource.ref
+        vpcId: this.resource.ref,
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
@@ -1157,7 +1200,7 @@ export class Vpc extends VpcBase {
       this.enableVpnGateway({
         amazonSideAsn: props.vpnGatewayAsn,
         type: VpnConnectionType.IPSEC_1,
-        vpnRoutePropagation: props.vpnRoutePropagation
+        vpnRoutePropagation: props.vpnRoutePropagation,
       });
 
       const vpnConnections = props.vpnConnections || {};
@@ -1194,7 +1237,7 @@ export class Vpc extends VpcBase {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.S3,
       vpc: this,
-      subnets
+      subnets,
     });
   }
 
@@ -1207,7 +1250,7 @@ export class Vpc extends VpcBase {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.DYNAMODB,
       vpc: this,
-      subnets
+      subnets,
     });
   }
 
@@ -1222,7 +1265,7 @@ export class Vpc extends VpcBase {
     provider.configureNat({
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
-      privateSubnets: this.privateSubnets as PrivateSubnet[]
+      privateSubnets: this.privateSubnets as PrivateSubnet[],
     });
   }
 
@@ -1435,7 +1478,7 @@ export class Subnet extends Resource implements ISubnet {
     // Associate the public route table for this subnet, to this subnet
     new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.ref
+      routeTableId: table.ref,
     });
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
@@ -1452,7 +1495,7 @@ export class Subnet extends Resource implements ISubnet {
     const route = new CfnRoute(this, 'DefaultRoute', {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+      gatewayId,
     });
     route.node.addDependency(gatewayAttachment);
 
@@ -1638,7 +1681,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: new CfnEIP(this, 'EIP', {
-        domain: 'vpc'
+        domain: 'vpc',
       }).attrAllocationId,
     });
     return ngw;
@@ -1678,6 +1721,7 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
+  public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
@@ -1787,7 +1831,7 @@ class CompositeDependable implements IDependable {
           ret.push(...DependableTrait.get(dep).dependencyRoots);
         }
         return ret;
-      }
+      },
     });
   }
 
@@ -1828,7 +1872,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     this.subnetId = attrs.subnetId;
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
-      routeTableId: attrs.routeTableId!
+      routeTableId: attrs.routeTableId!,
     };
   }
 

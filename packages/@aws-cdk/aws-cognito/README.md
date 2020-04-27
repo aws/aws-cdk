@@ -1,18 +1,14 @@
 ## Amazon Cognito Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -41,6 +37,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
   - [App Clients](#app-clients)
+  - [Domains](#domains)
 
 ## User Pools
 
@@ -172,9 +169,9 @@ new UserPool(this, 'myuserpool', {
     address: true,
   },
   customAttributes: {
-    'myappid': new StringAttribute({ minLen: 5, maxLen: 15 }),
-    'callingcode': new NumberAttribute({ min: 1, max: 3 }),
-    'isEmployee': new BooleanAttribute(),
+    'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
+    'callingcode': new NumberAttribute({ min: 1, max: 3, mutable: true }),
+    'isEmployee': new BooleanAttribute({ mutable: true }),
     'joinedOn': new DateTimeAttribute(),
   },
 });
@@ -184,6 +181,9 @@ As shown in the code snippet, there are data types that are available for custom
 data types allow for further constraints on their length and values, respectively.
 
 Custom attributes cannot be marked as required.
+
+All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
+The default value is `false`.
 
 ### Security
 
@@ -399,3 +399,34 @@ pool.addClient('app-client', {
   }
 });
 ```
+
+### Domains
+
+After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
+configured using domains. There are two ways to set up a domain - either the Amazon Cognito hosted domain can be chosen
+with an available domain prefix, or a custom domain name can be chosen. The custom domain must be one that is already
+owned, and whose certificate is registered in AWS Certificate Manager.
+
+The following code sets up a user pool domain in Amazon Cognito hosted domain with the prefix 'my-awesome-app', and another domain with the custom domain 'user.myapp.com' -
+
+```ts
+const pool = new UserPool(this, 'Pool');
+
+pool.addDomain('CognitoDomain', {
+  cognitoDomain: {
+    domainPrefix: 'my-awesome-app',
+  },
+});
+
+const domainCert = new acm.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
+pool.addDomain('CustomDomain', {
+  customDomain: {
+    domainName: 'user.myapp.com',
+    certificate: domainCert,
+  },
+});
+```
+
+Read more about [Using the Amazon Cognito
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).

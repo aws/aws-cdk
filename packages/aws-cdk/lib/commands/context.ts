@@ -13,7 +13,7 @@ export const builder = {
     alias: 'e',
     desc: 'The context key (or its index) to reset',
     type: 'string',
-    requiresArg: true
+    requiresArg: true,
   },
   clear: {
     desc: 'Clear all context',

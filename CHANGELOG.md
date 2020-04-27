@@ -2,6 +2,106 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.35.0](https://github.com/aws/aws-cdk/compare/v1.34.1...v1.35.0) (2020-04-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **assets:** `cdk deploy` now needs `s3:ListBucket` instead of `s3:HeadObject`.
+* **efs:** Exported types no longer have the `Efs` prefix.
+* **efs:** `provisionedThroughputInMibps` property is renamed to `provisionedThroughputPerSecond` and has the type `Size`.
+* **efs:** The property `fileSystemID` is now renamed to `fileSystemId` in the now named `FileSystemAttributes` (previously, `EfsFileSystemAttributes`).
+* **efs:** `LifecyclePolicyProperty` is now renamed to `LifecyclePolicy`.
+
+### Features
+
+* **cfnspec:** cloudformation spec v13.0.0 ([#7504](https://github.com/aws/aws-cdk/issues/7504)) ([6903869](https://github.com/aws/aws-cdk/commit/6903869def944f8100c8eef51dd7145c181984e2))
+* **cloudtrail:** Lambda Function data events ([4a70138](https://github.com/aws/aws-cdk/commit/4a70138faf2e863be37a66bec23ed29a784b486a))
+* **cognito:** user pool domain ([#7224](https://github.com/aws/aws-cdk/issues/7224)) ([feadd6c](https://github.com/aws/aws-cdk/commit/feadd6cb643b415ae002191ba2cb4622221a5af6)), closes [#6787](https://github.com/aws/aws-cdk/issues/6787)
+* **stepfunctions:** retrieve all reachable states from a given state in a state machine definition ([#7324](https://github.com/aws/aws-cdk/issues/7324)) ([ac3b330](https://github.com/aws/aws-cdk/commit/ac3b330c71ef258afd145b86fd90a06db5d1c990)), closes [#7256](https://github.com/aws/aws-cdk/issues/7256)
+
+
+### Bug Fixes
+
+* **assets:** infrequent "ValidationError: S3 error: Access Denied" ([#7556](https://github.com/aws/aws-cdk/issues/7556)) ([00c9deb](https://github.com/aws/aws-cdk/commit/00c9deb975fe794eef9003cd26a6453abc514928)), closes [#6430](https://github.com/aws/aws-cdk/issues/6430) [#7553](https://github.com/aws/aws-cdk/issues/7553)
+* **route53:** cannot add tags to `HostedZone` ([#7531](https://github.com/aws/aws-cdk/issues/7531)) ([2729804](https://github.com/aws/aws-cdk/commit/272980492dc6b98d71ce9c3b23cab38f656dc632)), closes [#7445](https://github.com/aws/aws-cdk/issues/7445)
+
+
+* **efs:** drop Efs prefix from all exported types ([#7481](https://github.com/aws/aws-cdk/issues/7481)) ([ddd47cd](https://github.com/aws/aws-cdk/commit/ddd47cd7e0735424d2e47891c32e4b7813035067))
+
+## [1.34.1](https://github.com/aws/aws-cdk/compare/v1.34.0...v1.34.1) (2020-04-22)
+
+
+### Bug Fixes
+
+* **cli:** Javascript init-templates cannot be synthesized ([ce4b8dd](https://github.com/aws/aws-cdk/commit/ce4b8dde205ca03891e0aee21b473b974d674154)), closes [#7356](https://github.com/aws/aws-cdk/issues/7356)
+
+## [1.34.0](https://github.com/aws/aws-cdk/compare/v1.33.1...v1.34.0) (2020-04-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue:** `DateFormat` constant names are now **UPPERCASE** (`JSON, AVRO, LOGSTASH, ...`)
+
+### Features
+
+* **cognito:** add mutable property in cognito user pool custom attribute ([#7190](https://github.com/aws/aws-cdk/issues/7190)) ([16e85df](https://github.com/aws/aws-cdk/commit/16e85df5c3077496d3ebe7c4fa8230514756c027)), closes [#7011](https://github.com/aws/aws-cdk/issues/7011) [#7011](https://github.com/aws/aws-cdk/issues/7011) [#7011](https://github.com/aws/aws-cdk/issues/7011) [#7011](https://github.com/aws/aws-cdk/issues/7011)
+* **ecs:** add Fargate 1.4.0 support ([#7267](https://github.com/aws/aws-cdk/issues/7267)) ([5c83a46](https://github.com/aws/aws-cdk/commit/5c83a46920525d9e3891794d1f4c41f0e8e7982c))
+
+
+### Bug Fixes
+
+* **cloudwatch:** can't override Alarm statistic with percentile ([d5918c3](https://github.com/aws/aws-cdk/commit/d5918c330b6770b84efc5417ce1109a68c22119b)), closes [#7341](https://github.com/aws/aws-cdk/issues/7341)
+* **glue:** DataFormat constants are not visible in non-JS languages ([#7458](https://github.com/aws/aws-cdk/issues/7458)) ([e5d4c31](https://github.com/aws/aws-cdk/commit/e5d4c31f4580218d39473258342dafda8d64338a))
+* **monocdk:** assert package has incorrect imports ([#7404](https://github.com/aws/aws-cdk/issues/7404)) ([825c9e1](https://github.com/aws/aws-cdk/commit/825c9e1b443568c5d898b3fa0c543d5a7747396c))
+* **stepfunctions-tasks:** encryptionKey is Key instead of IKey ([#7429](https://github.com/aws/aws-cdk/issues/7429)) ([f1e2c67](https://github.com/aws/aws-cdk/commit/f1e2c675b1234a4806ce88f7416b1b9753a347fa))
+
+## [1.33.1](https://github.com/aws/aws-cdk/compare/v1.33.0...v1.33.1) (2020-04-19)
+
+
+### Bug Fixes
+
+* jsii version conflict due to upgrade from v1.1.0 to v1.3.0 ([f2fdfe5](https://github.com/aws/aws-cdk/commit/f2fdfe57759248eec23d6e8579b367058a619a97)), closes [#7426](https://github.com/aws/aws-cdk/issues/7426)
+
+## [1.33.0](https://github.com/aws/aws-cdk/compare/v1.32.2...v1.33.0) (2020-04-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **kinesis:** `grantRead()` API  no longer provides permissions to `kinesis:DescribeStream` as it provides permissions to `kinesis:DescribeStreamSummary` and `kinesis:SubscribeToShard` in it's place. If it's still desired, it can be added through the `grant()` API on the stream.
+* **kinesis:** `grantWrite()` API no longer has `DescribeStream` permissions as it has been replaced by `ListShards` for shard discovery
+
+### Features
+
+* **cfnspec:** cloudformation spec v12.2.0 ([#7248](https://github.com/aws/aws-cdk/issues/7248)) ([1475d5a](https://github.com/aws/aws-cdk/commit/1475d5a0d6a7b317f4cc1603ca17b030c4b2c987))
+* Support AppSync DataSource type: NONE ([f35a4db](https://github.com/aws/aws-cdk/commit/f35a4db7fd6a5794f5c5449f226610915c03c053))
+* **cfnspec:** cloudformation spec v12.3.0 ([#7359](https://github.com/aws/aws-cdk/issues/7359)) ([a80918f](https://github.com/aws/aws-cdk/commit/a80918f3403f2388a1baeb383f42a3f3f8974436))
+* **ec2:** expose blockDevices in CommonAutoScalingGroupProps ([#7291](https://github.com/aws/aws-cdk/issues/7291)) ([5fe4480](https://github.com/aws/aws-cdk/commit/5fe4480c75aa9ab7ce95780731ae7bf3ae17815a))
+* **ec2:** filtering selected subnets by availability zone ([2d3e612](https://github.com/aws/aws-cdk/commit/2d3e61225c7e9d4964e57212c1f6b7e0116717ed))
+* **eks:** support a new option to create `bottlerocket` capacity. ([e9f691f](https://github.com/aws/aws-cdk/commit/e9f691f9615a5b150ddc0462e70965d5379881a5)), closes [#7268](https://github.com/aws/aws-cdk/issues/7268)
+* **kinesis:** `grantRead` now allows the `ListShards` action and `grant` is now public ([#6141](https://github.com/aws/aws-cdk/issues/6141)) ([563fba4](https://github.com/aws/aws-cdk/commit/563fba4e067269662f4f922ace1679ac467d5043)), closes [#3357](https://github.com/aws/aws-cdk/issues/3357)
+* **kinesis:** add `grant` API to IStream to add permissions to a Stream ([#7354](https://github.com/aws/aws-cdk/issues/7354)) ([c223406](https://github.com/aws/aws-cdk/commit/c2234066c437c8dee547e70a2b2bf2ddd298852c))
+* **kinesis:** the `aws-kinesis` module is now stable ([#7349](https://github.com/aws/aws-cdk/issues/7349)) ([4ab3ffa](https://github.com/aws/aws-cdk/commit/4ab3ffad23b18f71bc119efbf631fa697e904aa7)), closes [#5874](https://github.com/aws/aws-cdk/issues/5874)
+* update "constructs" to 3.x ([#7408](https://github.com/aws/aws-cdk/issues/7408)) ([8f8d20f](https://github.com/aws/aws-cdk/commit/8f8d20f88d4bceb629dc37600b6f5b13ad8d04d1)), closes [#6978](https://github.com/aws/aws-cdk/issues/6978)
+
+
+### Bug Fixes
+
+* **appsync:** Don't create serviceRole for datasource type NONE ([6d1cb11](https://github.com/aws/aws-cdk/commit/6d1cb11b1a4481667fbb044f280df1edbe729401)), closes [#7360](https://github.com/aws/aws-cdk/issues/7360)
+* **cli:** --app command does not work when executing a command without arguments ([#7249](https://github.com/aws/aws-cdk/issues/7249)) ([994414c](https://github.com/aws/aws-cdk/commit/994414ce36483659cede0b66ad91d897a2415c8d)), closes [#6930](https://github.com/aws/aws-cdk/issues/6930)
+* **cli:** parameter values with multiple `=` symbols get truncated ([#7226](https://github.com/aws/aws-cdk/issues/7226)) ([b7ddf5b](https://github.com/aws/aws-cdk/commit/b7ddf5badeadb27e59f987aafa8c2a30660b828e)), closes [#7246](https://github.com/aws/aws-cdk/issues/7246)
+* **cloudwatch:** Alarm annotation ignores datapointsToAlarm  ([#7202](https://github.com/aws/aws-cdk/issues/7202)) ([92fb853](https://github.com/aws/aws-cdk/commit/92fb853ea7d31e7bf3d60bd50ce18b95c4189da6)), closes [#7152](https://github.com/aws/aws-cdk/issues/7152)
+* **cloudwatch:** Dashboard Spacer doesn't require empty props object ([ca2f923](https://github.com/aws/aws-cdk/commit/ca2f923e0e3e8bc7643ba148546b7d66f4c5d174))
+* new IAM Condition type is unusable in Java ([#7270](https://github.com/aws/aws-cdk/issues/7270)) ([ffb2e1e](https://github.com/aws/aws-cdk/commit/ffb2e1e8830d8345171552b4f420e65c47dae7b8))
+* **core:** unable to reference resources across multiple nested stacks ([#7187](https://github.com/aws/aws-cdk/issues/7187))  ([000f0c2](https://github.com/aws/aws-cdk/commit/000f0c2286b9d1b2fd2cf6760dc32d7ecfc7a0b9)), closes [#6473](https://github.com/aws/aws-cdk/issues/6473) [#7059](https://github.com/aws/aws-cdk/issues/7059) [#7059](https://github.com/aws/aws-cdk/issues/7059) [#5888](https://github.com/aws/aws-cdk/issues/5888)
+* **ec2:** can reference VpcEndpointService id and service name ([1007a22](https://github.com/aws/aws-cdk/commit/1007a2237006f10dab16e3c9998cec1299eaf952))
+* **efs:** support tagging + filesystem naming ([3dd8058](https://github.com/aws/aws-cdk/commit/3dd805825d30d23f0a9718a2cb542a986e81b26d))
+* **eks:**  missing permissions to add and remove tags when creating EKS cluster resource ([#7302](https://github.com/aws/aws-cdk/issues/7302)) ([b14172d](https://github.com/aws/aws-cdk/commit/b14172d2ac86da55a0ebf7efdbe25b6ef35f832c)), closes [#7163](https://github.com/aws/aws-cdk/issues/7163)
+* **eks:** unable to create KubernetesResources in another stack ([#7322](https://github.com/aws/aws-cdk/issues/7322)) ([54129c8](https://github.com/aws/aws-cdk/commit/54129c88de0ac53ae29b1bc456d8e73e3b81a564)), closes [#7231](https://github.com/aws/aws-cdk/issues/7231)
+* **elbv2:** imported LoadBalancer ignores pathPatterns prop ([8ed2e0c](https://github.com/aws/aws-cdk/commit/8ed2e0cb47e084a7dbd32329de472c519ab3ac6d)), closes [#7303](https://github.com/aws/aws-cdk/issues/7303)
+* **route53-patterns:** HttpsRedirect redirects to index.html ([278fe29](https://github.com/aws/aws-cdk/commit/278fe2918990b7a64fcc24a49d5944c14ed9c5fa)), closes [/github.com/aws/aws-cdk/issues/5700#issuecomment-614112813](https://github.com/aws//github.com/aws/aws-cdk/issues/5700/issues/issuecomment-614112813) [/github.com/aws/aws-cdk/issues/5700#issuecomment-614816819](https://github.com/aws//github.com/aws/aws-cdk/issues/5700/issues/issuecomment-614816819)
+* **s3:** allow accessLogsPrefix without accessLogsBucket ([#6709](https://github.com/aws/aws-cdk/issues/6709)) ([4c199f6](https://github.com/aws/aws-cdk/commit/4c199f6578ee36d7a8841b640d015f360331ec51)), closes [#6599](https://github.com/aws/aws-cdk/issues/6599)
+
 ## [1.32.2](https://github.com/aws/aws-cdk/compare/v1.32.1...v1.32.2) (2020-04-10)
 
 ### Bug Fixes
@@ -538,6 +638,7 @@ capaciety).
 
 * **route53:** the value of `hostedZoneId` will no longer include `/hostedzone/` prefix and only includes the hostedZoneId when using  `HostedZone.fromLookup` or `fromHostedZoneAttributes`
 * **cloudfront:** (experimental module) `S3OriginConfig.originAccessIdentityId` or type `string` has been removed in favor of `S3OriginConfig.originAccessIdentity` of type `IOriginAccessIdentity`.
+* **cli:** `cdk diff` now exits with 0 even when there's a diff, use `--fail` to exit with 1. To enable this feature for old projects, add the context key `"aws-cdk:diffNoFail": "true"` in your `cdk.json` file.
 
 ### Features
 
