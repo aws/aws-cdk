@@ -14,7 +14,7 @@ export = {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
       '@aws-cdk/cloud-assembly-schema': version,
-      '@aws-solutions-konstruk/foo': version,
+      '@aws-solutions-konstruk/foo': '0.0.0',
       'jsii-runtime': `node.js/${process.version}`,
     });
     test.done();
