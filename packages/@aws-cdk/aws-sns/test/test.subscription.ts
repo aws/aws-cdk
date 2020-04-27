@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import { Queue } from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sns from '../lib';
@@ -22,6 +23,74 @@ export = {
       Protocol: 'lambda',
       TopicArn: {
         Ref: 'TopicBFC7AF6E',
+      },
+    }));
+    test.done();
+  },
+
+  'create a subscription with DLQ when client provides DLQ'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const dlQueue = new Queue(stack, 'DeadLetterQueue', {
+      queueName: 'MySubscription_DLQ',
+      retentionPeriod: cdk.Duration.days(14),
+    });
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+      deadLetterQueue: dlQueue,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      Endpoint: 'endpoint',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TopicBFC7AF6E',
+      },
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          'Fn::GetAtt': [
+            'DeadLetterQueue9F481546',
+            'Arn',
+          ],
+        },
+      },
+    }));
+    test.done();
+  },
+
+  'create a subscription with DLQ when cdk creates DLQ'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+      deadLetterQueueEnabled: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      Endpoint: 'endpoint',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TopicBFC7AF6E',
+      },
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          'Fn::GetAtt': [
+            'SubscriptionDeadLetterQueue021BAF18',
+            'Arn',
+          ],
+        },
       },
     }));
     test.done();

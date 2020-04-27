@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { IQueue, Queue } from '@aws-cdk/aws-sqs';
+import { Construct, Duration, Resource } from '@aws-cdk/core';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
@@ -41,6 +42,21 @@ export interface SubscriptionOptions {
    * @default - the region where the CloudFormation stack is being deployed.
    */
   readonly region?: string;
+
+  /**
+   * Enabled DLQ. If `deadLetterQueue` is undefined,
+   * an SQS queue with default options will be defined for your Function.
+   *
+   * @default - false unless `deadLetterQueue` is set, which implies DLQ is enabled.
+   */
+  readonly deadLetterQueueEnabled?: boolean;
+
+  /**
+   * The SQS queue to use if DLQ is enabled.
+   *
+   * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+   */
+  readonly deadLetterQueue?: IQueue;
 }
 /**
  * Properties for creating a new subscription
@@ -59,6 +75,12 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
+
+  /**
+   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterQueue?: IQueue;
+
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
@@ -86,6 +108,8 @@ export class Subscription extends Resource {
       }
     }
 
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
@@ -93,8 +117,35 @@ export class Subscription extends Resource {
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy: this.filterPolicy,
       region: props.region,
+      redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
     });
 
+  }
+
+  private buildDeadLetterQueue(props: SubscriptionProps) {
+    if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
+      throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+    }
+
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+      return undefined;
+    }
+
+    const deadLetterQueue = props.deadLetterQueue || new Queue(this, 'DeadLetterQueue', {
+      retentionPeriod: Duration.days(14),
+    });
+
+    return deadLetterQueue;
+  }
+
+  private buildDeadLetterConfig(deadLetterQueue?: IQueue) {
+    if (deadLetterQueue) {
+      return {
+        deadLetterTargetArn: deadLetterQueue.queueArn,
+      };
+    } else {
+      return undefined;
+    }
   }
 }
 

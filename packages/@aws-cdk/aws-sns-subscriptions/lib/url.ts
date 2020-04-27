@@ -58,6 +58,8 @@ export class UrlSubscription implements sns.ITopicSubscription {
       protocol: this.protocol,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
+      deadLetterQueue: this.props.deadLetterQueue,
+      deadLetterQueueEnabled: this.props.deadLetterQueueEnabled,
     };
   }
 }

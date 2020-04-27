@@ -15,7 +15,9 @@ class SnsToLambda extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fction));
+    topic.addSubscription(new subs.LambdaSubscription(fction, {
+      deadLetterQueueEnabled: true,
+    }));
 
     const fctionFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',

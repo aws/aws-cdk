@@ -51,6 +51,8 @@ export class SqsSubscription implements sns.ITopicSubscription {
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
+      deadLetterQueueEnabled: this.props.deadLetterQueueEnabled,
     };
   }
 
