@@ -20,8 +20,8 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
   // include only libraries that are in the whitelistLibraries list
   for (const name of Object.keys(libraries)) {
     let foundMatch = false;
-    for (const lib of WHITELIST_SCOPES) {
-      if (name.startsWith(lib)) {
+    for (const scope of WHITELIST_SCOPES) {
+      if (name.startsWith(`${scope}/`)) {
         foundMatch = true;
       }
     }
