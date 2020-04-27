@@ -20,7 +20,8 @@ marker=$(node -p "require('./scripts/get-version-marker').replace(/\./g, '\\\.')
 package_jsons=$(find . -name package.json |\
     grep -v node_modules |\
     grep -v packages/decdk/test/fixture/package.json |\
-    grep -v .github/actions/prlinter/package.json)
+    grep -v .github/actions/prlinter/package.json |\
+    grep -v packages/@aws-cdk/core/test/runtime-info-konstruk-fixture/package.json)
 
 if grep -l "[^0-9]${marker}" $package_jsons; then
   echo "ERROR: unexpected version marker ${marker} in a package.json file"
