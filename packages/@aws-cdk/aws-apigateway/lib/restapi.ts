@@ -6,6 +6,7 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
+import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { Model, ModelOptions } from './model';
@@ -388,6 +389,16 @@ export class RestApi extends Resource implements IRestApi {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+  }
+
+  /**
+   * Adds a new gateway response.
+   */
+  public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
+    return new GatewayResponse(this, id, {
+      restApi: this,
+      ...options,
+    });
   }
 
   /**
