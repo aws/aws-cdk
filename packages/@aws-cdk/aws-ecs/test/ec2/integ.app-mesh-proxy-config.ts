@@ -23,7 +23,12 @@ const prox = ecs.ProxyConfigurations.appMeshProxyConfiguration({
     egressIgnoredIPs: ['169.254.170.2', '169.254.169.254'],
   },
 });
-const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.AWS_VPC, proxyConfiguration: prox });
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  proxyConfiguration: prox,
+  ipcMode: ecs.IpcMode.HOST,
+  pidMode: ecs.PidMode.TASK,
+});
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
