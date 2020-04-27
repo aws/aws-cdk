@@ -1,7 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
-import { IIntegration, Integration } from './integration';
+import { Integration } from './integration';
 
 /**
  * the interface of the Route of API Gateway HTTP API
@@ -249,17 +249,17 @@ export class Route extends Resource implements IRouteBase {
     if (props.integration) {
       this.integId = props.integration.integrationId;
     } else if (props.targetUrl) {
-        // create a HTTP Proxy integration
+      // create a HTTP Proxy integration
       const integ = new apigatewayv2.HttpProxyIntegration(scope, `${id}/HttpProxyIntegration`, {
         api: this.api,
-        targetUrl: props.targetUrl
+        targetUrl: props.targetUrl,
       });
       this.integId = integ.integrationId;
     } else if (props.targetHandler) {
       // create a Lambda Proxy integration
       const integ = new apigatewayv2.LambdaProxyIntegration(scope, `${id}/LambdaProxyIntegration`, {
         api: this.api,
-        targetHandler: props.targetHandler
+        targetHandler: props.targetHandler,
       });
       this.integId = integ.integrationId;
     } else {
@@ -287,7 +287,7 @@ export class Route extends Resource implements IRouteBase {
         api: this.api,
         integration: options.integration,
         httpMethod: m,
-        httpPath: pathPart
+        httpPath: pathPart,
       }));
     }
     return routes;
@@ -297,7 +297,7 @@ export class Route extends Resource implements IRouteBase {
    * create a child route with Lambda proxy integration
    */
   public addLambdaRoute(pathPart: string, id: string, options: LambdaRouteOptions): Route {
-    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
+    const httpPath = `${this.httpPath.replace(/\/+$/, '')}/${pathPart}`;
     const httpMethod = options.method;
 
     return new Route(this, id, {
@@ -314,7 +314,7 @@ export class Route extends Resource implements IRouteBase {
    * create a child route with HTTP proxy integration
    */
   public addHttpRoute(pathPart: string, id: string, options: HttpRouteOptions): Route {
-    const httpPath = `${this.httpPath.replace(/\/+$/, "")}/${pathPart}`;
+    const httpPath = `${this.httpPath.replace(/\/+$/, '')}/${pathPart}`;
     const httpMethod = options.method;
 
     return new Route(this, id, {

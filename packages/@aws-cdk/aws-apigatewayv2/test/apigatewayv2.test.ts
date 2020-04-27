@@ -37,7 +37,7 @@ def handler(event, context):
       }`),
     environment: {
       WHOAMI: 'root',
-      HTTP_PATH: '/'
+      HTTP_PATH: '/',
     },
   });
   checkIpUrl = 'https://checkip.amazonaws.com';
@@ -51,7 +51,7 @@ test('create a HTTP API with no props correctly', () => {
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
   expectCDK(stack).to(haveOutput({
-    outputName: 'URL'
+    outputName: 'URL',
   }));
 });
 
@@ -83,7 +83,7 @@ test('create a basic HTTP API correctly with targetUrl and protocol', () => {
 test('create a basic HTTP API correctly with target handler', () => {
   // WHEN
   new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
@@ -93,18 +93,18 @@ test('import HTTP API from API ID correctly', () => {
   // WHEN
   // THEN
   expect(() =>
-    apigatewayv2.HttpApi.fromApiId(stack, 'HttpApi', 'foo')
+    apigatewayv2.HttpApi.fromApiId(stack, 'HttpApi', 'foo'),
   ).not.toThrowError();
 });
 
 test('create lambda proxy integration correctly', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
     api: httpApi,
-    targetHandler: rootHandler
+    targetHandler: rootHandler,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Integration', 1));
@@ -113,12 +113,12 @@ test('create lambda proxy integration correctly', () => {
 test('create HTTP proxy integration correctly with targetUrl', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   new apigatewayv2.HttpProxyIntegration(stack, 'IntegRootHandler', {
     api: httpApi,
     targetUrl: 'https://aws.amazon.com',
-    integrationMethod: apigatewayv2.HttpMethod.GET
+    integrationMethod: apigatewayv2.HttpMethod.GET,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Integration', 1));
@@ -127,13 +127,13 @@ test('create HTTP proxy integration correctly with targetUrl', () => {
 test('create HTTP proxy integration correctly with Integration', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   new apigatewayv2.Integration(stack, 'IntegRootHandler', {
     apiId: httpApi.httpApiId,
     integrationMethod: apigatewayv2.HttpMethod.ANY,
     integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
-    integrationUri: awsUrl
+    integrationUri: awsUrl,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
@@ -144,23 +144,23 @@ test('import integration from integration ID correctly', () => {
   // WHEN
   // THEN
   expect(() =>
-    apigatewayv2.Integration.fromIntegrationId(stack, 'Integ', 'foo')
+    apigatewayv2.Integration.fromIntegrationId(stack, 'Integ', 'foo'),
   ).not.toThrowError();
 });
 
 test('create the root route correctly', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
     api: httpApi,
-    targetHandler: rootHandler
+    targetHandler: rootHandler,
   });
   httpApi.root = new apigatewayv2.Route(stack, 'RootRoute', {
     api: httpApi,
     httpPath: '/',
-    integration: integRootHandler
+    integration: integRootHandler,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
@@ -172,27 +172,27 @@ test('import route from route ID correctly', () => {
   // WHEN
   // THEN
   expect(() =>
-    apigatewayv2.Route.fromRouteId(stack, 'Integ', 'foo')
+    apigatewayv2.Route.fromRouteId(stack, 'Integ', 'foo'),
   ).not.toThrowError();
 });
 
 test('addLambdaRoute correctly from a Route', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
     api: httpApi,
-    targetHandler: rootHandler
+    targetHandler: rootHandler,
   });
   httpApi.root = new apigatewayv2.Route(stack, 'RootRoute', {
     api: httpApi,
     httpPath: '/',
-    integration: integRootHandler
+    integration: integRootHandler,
   });
   httpApi.root.addLambdaRoute('foo', 'Foo', {
     target: handler,
-    method: apigatewayv2.HttpMethod.GET
+    method: apigatewayv2.HttpMethod.GET,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
@@ -203,20 +203,20 @@ test('addLambdaRoute correctly from a Route', () => {
 test('addHttpRoute correctly from a Route', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   const integRootHandler = new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
     api: httpApi,
-    targetHandler: rootHandler
+    targetHandler: rootHandler,
   });
   httpApi.root = new apigatewayv2.Route(stack, 'RootRoute', {
     api: httpApi,
     httpPath: '/',
-    integration: integRootHandler
+    integration: integRootHandler,
   });
   httpApi.root.addHttpRoute('aws', 'AwsPage', {
     targetUrl: awsUrl,
-    method: apigatewayv2.HttpMethod.ANY
+    method: apigatewayv2.HttpMethod.ANY,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
@@ -227,60 +227,60 @@ test('addHttpRoute correctly from a Route', () => {
 test('addLambdaRoute correctly from a HttpApi', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   httpApi.addLambdaRoute('/foo/bar', 'FooBar', {
     target: handler,
-    method: apigatewayv2.HttpMethod.GET
+    method: apigatewayv2.HttpMethod.GET,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
   expectCDK(stack).to(haveResourceLike('AWS::ApiGatewayV2::Route', {
     ApiId: {
-      Ref: "HttpApiF5A9A8A7"
+      Ref: 'HttpApiF5A9A8A7',
     },
-    RouteKey: "GET /foo/bar",
+    RouteKey: 'GET /foo/bar',
     Target: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "integrations/",
+          'integrations/',
           {
-            Ref: "HttpApiFooBarLambdaProxyIntegration2FFCA7FC"
-          }
-        ]
-      ]
-    }
+            Ref: 'HttpApiFooBarLambdaProxyIntegration2FFCA7FC',
+          },
+        ],
+      ],
+    },
   }));
 });
 
 test('addHttpRoute correctly from a HttpApi', () => {
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
   });
   httpApi.addHttpRoute('/foo/bar', 'FooBar', {
     targetUrl: awsUrl,
-    method: apigatewayv2.HttpMethod.ANY
+    method: apigatewayv2.HttpMethod.ANY,
   });
   // THEN
   expectCDK(stack).to(countResources('AWS::ApiGatewayV2::Api', 1));
   expectCDK(stack).to(haveResourceLike('AWS::ApiGatewayV2::Route', {
     ApiId: {
-      Ref: "HttpApiF5A9A8A7"
+      Ref: 'HttpApiF5A9A8A7',
     },
-    RouteKey: "ANY /foo/bar",
+    RouteKey: 'ANY /foo/bar',
     Target: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "integrations/",
+          'integrations/',
           {
-            Ref: "HttpApiFooBarHttpProxyIntegration80C34C6B"
-          }
-        ]
-      ]
-    }
+            Ref: 'HttpApiFooBarHttpProxyIntegration80C34C6B',
+          },
+        ],
+      ],
+    },
   }));
 });
 
@@ -288,39 +288,17 @@ test('throws when both targetHandler and targetUrl are specified', () => {
   // WHEN
   // THEN
   expect(() =>
-  new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler,
-    targetUrl: awsUrl
-  })
+    new apigatewayv2.HttpApi(stack, 'HttpApi', {
+      targetHandler: handler,
+      targetUrl: awsUrl,
+    }),
   ).toThrowError(/You must specify either a targetHandler or targetUrl, use at most one/);
 });
 
 test('throws when both targetHandler and targetUrl are specified for Route', () => {
   // WHEN
   const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
-  });
-  // THEN
-  expect(() =>
-    new apigatewayv2.Route(stack, 'Route', {
-      api,
-      httpPath: '/',
-      targetUrl: awsUrl,
-      targetHandler: handler
-    })
-  ).toThrowError(/You must specify targetHandler, targetUrl or integration, use at most one/);
-});
-
-test('throws when targetHandler, targetUrl and integration all specified for Route', () => {
-  // WHEN
-  const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
-  });
-  const integ = new apigatewayv2.Integration(stack, 'IntegRootHandler', {
-    apiId: api.httpApiId,
-    integrationMethod: apigatewayv2.HttpMethod.ANY,
-    integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
-    integrationUri: awsUrl
+    targetHandler: handler,
   });
   // THEN
   expect(() =>
@@ -329,22 +307,44 @@ test('throws when targetHandler, targetUrl and integration all specified for Rou
       httpPath: '/',
       targetUrl: awsUrl,
       targetHandler: handler,
-      integration: integ
-    })
+    }),
   ).toThrowError(/You must specify targetHandler, targetUrl or integration, use at most one/);
 });
 
-test('throws when targetHandler, targetUrl and integration all unspecified for Route', () => {
+test('throws when targetHandler, targetUrl and integration all specified for Route', () => {
   // WHEN
   const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-    targetHandler: handler
+    targetHandler: handler,
+  });
+  const integ = new apigatewayv2.Integration(stack, 'IntegRootHandler', {
+    apiId: api.httpApiId,
+    integrationMethod: apigatewayv2.HttpMethod.ANY,
+    integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
+    integrationUri: awsUrl,
   });
   // THEN
   expect(() =>
     new apigatewayv2.Route(stack, 'Route', {
       api,
       httpPath: '/',
-    })
+      targetUrl: awsUrl,
+      targetHandler: handler,
+      integration: integ,
+    }),
+  ).toThrowError(/You must specify targetHandler, targetUrl or integration, use at most one/);
+});
+
+test('throws when targetHandler, targetUrl and integration all unspecified for Route', () => {
+  // WHEN
+  const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+    targetHandler: handler,
+  });
+  // THEN
+  expect(() =>
+    new apigatewayv2.Route(stack, 'Route', {
+      api,
+      httpPath: '/',
+    }),
   ).toThrowError(/You must specify either a integration, targetHandler or targetUrl/);
 });
 
@@ -366,12 +366,12 @@ def handler(event, context):
   });
   // WHEN
   const httpApi = new apigatewayv2.HttpApi(stackcn, 'HttpApi', {
-    targetUrl: awsUrl
+    targetUrl: awsUrl,
   });
   // THEN
   new apigatewayv2.LambdaProxyIntegration(stackcn, 'IntegRootHandler', {
     api: httpApi,
-    targetHandler: handlercn
+    targetHandler: handlercn,
   });
   // THEN
   expectCDK(stackcn).to(countResources('AWS::ApiGatewayV2::Integration', 1));

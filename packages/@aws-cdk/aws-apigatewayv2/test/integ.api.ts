@@ -1,7 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as apigatewayv2 from '../lib';
-import { HttpMethod, HttpProxyIntegration, LambdaProxyIntegration } from '../lib';
+import { HttpApi, HttpMethod, HttpProxyIntegration, LambdaProxyIntegration } from '../lib';
 
 const app = new cdk.App();
 
@@ -33,7 +32,7 @@ def handler(event, context):
       }`),
   environment: {
     WHOAMI: 'root',
-    HTTP_PATH: '/'
+    HTTP_PATH: '/',
   },
 });
 
@@ -41,7 +40,7 @@ const rootUrl = 'https://checkip.amazonaws.com';
 const defaultUrl = 'https://aws.amazon.com';
 
 // create a basic HTTP API with http proxy integration as the $default route
-const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+const api = new HttpApi(stack, 'HttpApi', {
   targetUrl: defaultUrl,
 });
 
@@ -49,8 +48,8 @@ api.addRoutes('/', 'RootRoute', {
   methods: [HttpMethod.GET, HttpMethod.POST],
   integration: new HttpProxyIntegration(stack, 'RootInteg', {
     api,
-    targetUrl: rootUrl
-  })
+    targetUrl: rootUrl,
+  }),
 });
 
 api.addRoutes('/books', 'GetBooksRoute', {
@@ -65,8 +64,8 @@ api.addRoutes('/books/reviews', 'GetBookReviewRoute', {
   methods: [HttpMethod.GET],
   integration: new LambdaProxyIntegration(stack, 'getBookReviewInteg', {
     api,
-    targetHandler: getbookReviewsHandler
-  })
+    targetHandler: getbookReviewsHandler,
+  }),
 });
 
 // // pass the rootIntegration to addRootRoute() to initialize the root route

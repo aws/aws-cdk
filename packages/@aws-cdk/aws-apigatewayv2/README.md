@@ -11,40 +11,28 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-
 ## Introduction
 
-Amazon API Gateway is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket 
-APIs at any scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. 
-As an API Gateway API developer, you can create APIs for use in your own client applications. Read the 
+Amazon API Gateway is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket
+APIs at any scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud.
+As an API Gateway API developer, you can create APIs for use in your own client applications. Read the
 [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
 
-This module supports features under [API Gateway v2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApiGatewayV2.html) 
+This module supports features under [API Gateway v2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApiGatewayV2.html)
 that lets users set up Websocket and HTTP APIs.
+REST APIs can be created using the `@aws-cdk/aws-apigateway` module.
 
-## API
+## HTTP API
 
-Amazon API Gateway supports `HTTP APIs`, `WebSocket APIs` and `REST APIs`. For more information about `WebSocket APIs` and `HTTP APIs`, 
-see [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html) 
-and [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html). 
+HTTP APIs enable creation of RESTful APIs that integrate with AWS Lambda functions, known as Lambda proxy integration,
+or to any routable HTTP endpoint, known as HTTP proxy integration.
 
-For more information about `REST APIs`, see [Working with REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html). 
-To create [REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html) with AWS CDK, use `@aws-cdk/aws-apigateway` instead.
+Read more about [Working with AWS Lambda Proxy Integrations for HTTP
+APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+and [Working with HTTP Proxy Integrations for HTTP
+APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html).
 
-
-### HTTP API
-
-HTTP APIs enable you to create RESTful APIs that integrate with AWS Lambda functions or to any routable HTTP endpoint.
-
-HTTP API supports both Lambda proxy integration and HTTP proxy integration. 
-See [Working with AWS Lambda Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) 
-and [Working with HTTP Proxy Integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html) 
-for more information.
-
-
-
-Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration. The $default route will be created as well that acts as a catch-all for requests that don’t match any other routes. 
-
+Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration. The $default route will be created as well that acts as a catch-all for requests that don’t match any other routes.
 
 ```ts
 // Create a vanilla HTTP API with no integration targets
@@ -63,13 +51,12 @@ const httpApi3 = new apigatewayv2.HttpApi(stack, 'HttpApi3', {
 
 ## Route
 
-Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path—for example, 
-`GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource. 
-You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See 
+Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path—for example,
+`GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource.
+You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See
 [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
 
 When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
-
 
 ## Defining APIs
 
@@ -144,9 +131,9 @@ httpApi.addHttpRoute('/foo/bar', 'FooBar', {
 
 ## Integration
 
-Integrations connect a route to backend resources. HTTP APIs support Lambda proxy and HTTP proxy integrations. 
-For example, you can configure a POST request to the /signup route of your API to integrate with a Lambda function 
-that handles signing up customers. 
+Integrations connect a route to backend resources. HTTP APIs support Lambda proxy and HTTP proxy integrations.
+For example, you can configure a POST request to the /signup route of your API to integrate with a Lambda function
+that handles signing up customers.
 
 Use `Integration` to create the integration resources
 
@@ -189,20 +176,19 @@ new apigatewayv2.HttpProxyIntegration(stack, 'IntegRootHandler', {
 
 ## Samples
 
-
 ```ts
 // create a HTTP API with HTTP proxy integration as the $default route
 const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
   targetUrl: checkIpUrl
 });
-// print the API URL 
+// print the API URL
 new cdk.CfnOutput(stack, 'URL', { value: httpApi.url} );
 
 // create another HTTP API with Lambda proxy integration as the $default route
 const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
   targetHandler: handler
 });
-// print the API URL 
+// print the API URL
 new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
 
 // create a root route for the API with the integration we created above and assign the route resource

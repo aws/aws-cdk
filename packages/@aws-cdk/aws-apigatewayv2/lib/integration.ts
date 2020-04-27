@@ -1,6 +1,6 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Resource, Stack, } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import * as apigatewayv2 from '../lib';
 
 /**
@@ -142,7 +142,7 @@ export class Integration extends Resource implements IIntegration {
       integrationType: props.integrationType,
       integrationMethod: props.integrationMethod,
       integrationUri: props.integrationUri,
-      payloadFormatVersion: '1.0'
+      payloadFormatVersion: '1.0',
     });
     this.integrationId = integ.ref;
   }
@@ -195,7 +195,7 @@ export class HttpProxyIntegration extends Resource implements IIntegration {
       integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
       integrationMethod: props.integrationMethod ?? apigatewayv2.HttpMethod.ANY,
       integrationUri: props.targetUrl,
-      payloadFormatVersion: '1.0'
+      payloadFormatVersion: '1.0',
     });
     this.integrationId = integ.ref;
   }

@@ -1,12 +1,12 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Resource, Stack,  } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack  } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps,  HttpRouteOptions, IRouteBase, LambdaRouteOptions, Route  } from '../lib';
-import { IIntegration, Integration, IntegrationProps } from './integration';
+import { IIntegration } from './integration';
 import { HttpMethod, RouteOptions } from './route';
 
 /**
- * the HTTP API interface
+ * Represents an HTTP API
  */
 export interface IHttpApi extends IResource {
   /**
@@ -17,13 +17,13 @@ export interface IHttpApi extends IResource {
 }
 
 /**
- * API properties
+ * Properties to initialize an instance of `HttpApi`.
  */
 export interface HttpApiProps {
   /**
-   * A name for the HTTP API resoruce
+   * Name for the HTTP API resoruce
    *
-   * @default - ID of the HttpApi construct.
+   * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
   /**
@@ -48,7 +48,7 @@ export interface HttpApiProps {
  */
 export class HttpApi extends Resource implements IHttpApi {
   /**
-   * import from ApiId
+   * Import an existing HTTP API into this CDK app.
    */
   public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
     class Import extends Resource implements IHttpApi {
@@ -66,20 +66,20 @@ export class HttpApi extends Resource implements IHttpApi {
   public root?: IRouteBase;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
-    super(scope, id, {
-      physicalName: props?.apiName || id,
-    });
+    super(scope, id);
 
-    if (props?.targetHandler && props.targetUrl) {
-      throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
-    }
+    const apiName = props?.apiName ?? id;
+
+    // if (props?.targetHandler && props.targetUrl) {
+    //   throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
+    // }
 
     const apiProps: CfnApiProps = {
-      name: this.physicalName,
+      name: apiName,
       protocolType: 'HTTP',
-      target: props?.targetHandler ? props.targetHandler.functionArn : props?.targetUrl ?? undefined
+      target: props?.targetHandler ? props.targetHandler.functionArn : props?.targetUrl ?? undefined,
     };
-    const api = new CfnApi(this, 'Resource', apiProps );
+    const api = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = api.ref;
 
     if (props?.targetHandler) {
@@ -112,7 +112,7 @@ export class HttpApi extends Resource implements IHttpApi {
       api: this,
       httpPath: '/',
       integration,
-      httpMethod
+      httpMethod,
     });
     return this.root;
   }
@@ -128,7 +128,7 @@ export class HttpApi extends Resource implements IHttpApi {
         api: this,
         integration: options.integration,
         httpMethod: m,
-        httpPath: pathPart
+        httpPath: pathPart,
       }));
     }
     return routes;
@@ -143,7 +143,7 @@ export class HttpApi extends Resource implements IHttpApi {
       api: this,
       targetHandler: options.target,
       httpPath,
-      httpMethod
+      httpMethod,
     });
   }
 
@@ -156,7 +156,7 @@ export class HttpApi extends Resource implements IHttpApi {
       api: this,
       targetUrl: options.targetUrl,
       httpPath,
-      httpMethod
+      httpMethod,
     });
   }
 }
