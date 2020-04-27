@@ -36,7 +36,7 @@ export interface GatewayResponseOptions {
 
   /**
    * Custom headers parameters for response.
-   * @default - No custom paramter will be added to response.
+   * @default - no headers
    */
   readonly responseHeaders?: { [key: string]: string };
 
