@@ -1,5 +1,5 @@
 ### Commit Message
-COMMIT TITLE HERE (copy from PR title, keep in sync)
+COMMIT/PR TITLE HERE (must follow conventionalcommits.org)
 
 COMMIT MESSAGE HERE
 ### End Commit Message
