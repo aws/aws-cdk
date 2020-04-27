@@ -18,7 +18,7 @@ test('check that instantiation works', () => {
       masterUsername: 'admin',
       masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
-    vpc
+    vpc,
   });
 
   // THEN
@@ -34,10 +34,10 @@ test('check that instantiation works', () => {
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
-      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }]
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
     },
     DeletionPolicy: 'Retain',
-    UpdateReplacePolicy: 'Retain'
+    UpdateReplacePolicy: 'Retain',
   }, ResourcePart.CompleteDefinition));
 
   cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterSubnetGroup', {
@@ -46,11 +46,11 @@ test('check that instantiation works', () => {
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' }
-      ]
+        { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
+      ],
     },
     DeletionPolicy: 'Retain',
-    UpdateReplacePolicy: 'Retain'
+    UpdateReplacePolicy: 'Retain',
   }, ResourcePart.CompleteDefinition));
 });
 
@@ -58,7 +58,7 @@ test('can create a cluster with imported vpc and security group', () => {
   // GIVEN
   const stack = testStack();
   const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
-    vpcId: 'VPC12345'
+    vpcId: 'VPC12345',
   });
   const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
@@ -69,7 +69,7 @@ test('can create a cluster with imported vpc and security group', () => {
       masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
     vpc,
-    securityGroup: sg
+    securityGroup: sg,
   });
 
   // THEN
@@ -77,7 +77,7 @@ test('can create a cluster with imported vpc and security group', () => {
     ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
     MasterUsername: 'admin',
     MasterUserPassword: 'tooshort',
-    VpcSecurityGroupIds: ['SecurityGroupId12345']
+    VpcSecurityGroupIds: ['SecurityGroupId12345'],
   }));
 });
 
@@ -91,7 +91,7 @@ test('creates a secret when master credentials are not specified', () => {
     masterUser: {
       masterUsername: 'admin',
     },
-    vpc
+    vpc,
   });
 
   // THEN
@@ -102,11 +102,11 @@ test('creates a secret when master credentials are not specified', () => {
         [
           '{{resolve:secretsmanager:',
           {
-            Ref: 'RedshiftSecretA08D42D6'
+            Ref: 'RedshiftSecretA08D42D6',
           },
-          ':SecretString:username::}}'
-        ]
-      ]
+          ':SecretString:username::}}',
+        ],
+      ],
     },
     MasterUserPassword: {
       'Fn::Join': [
@@ -114,11 +114,11 @@ test('creates a secret when master credentials are not specified', () => {
         [
           '{{resolve:secretsmanager:',
           {
-            Ref: 'RedshiftSecretA08D42D6'
+            Ref: 'RedshiftSecretA08D42D6',
           },
-          ':SecretString:password::}}'
-        ]
-      ]
+          ':SecretString:password::}}',
+        ],
+      ],
     },
   }));
 
@@ -127,8 +127,8 @@ test('creates a secret when master credentials are not specified', () => {
       ExcludeCharacters: '"@/\\\ \'',
       GenerateStringKey: 'password',
       PasswordLength: 30,
-      SecretStringTemplate: '{"username":"admin"}'
-    }
+      SecretStringTemplate: '{"username":"admin"}',
+    },
   }));
 });
 
@@ -144,7 +144,7 @@ test('SIngle Node CLusters spawn only single node', () => {
     },
     vpc,
     nodeType: NodeType.DC1_8XLARGE,
-    clusterType: ClusterType.SINGLE_NODE
+    clusterType: ClusterType.SINGLE_NODE,
   });
 
   // THEN
@@ -166,7 +166,7 @@ test('create an encrypted cluster with custom KMS key', () => {
       masterUsername: 'admin',
     },
     encryptionKey: new kms.Key(stack, 'Key'),
-    vpc
+    vpc,
   });
 
   // THEN
@@ -174,9 +174,9 @@ test('create an encrypted cluster with custom KMS key', () => {
     KmsKeyId: {
       'Fn::GetAtt': [
         'Key961B73FD',
-        'Arn'
-      ]
-    }
+        'Arn',
+      ],
+    },
   }));
 });
 
@@ -189,8 +189,8 @@ test('cluster with parameter group', () => {
   const group = new ClusterParameterGroup(stack, 'Params', {
     description: 'bye',
     parameters: {
-      param: 'value'
-    }
+      param: 'value',
+    },
   });
 
   new Cluster(stack, 'Redshift', {
@@ -198,7 +198,7 @@ test('cluster with parameter group', () => {
       masterUsername: 'admin',
     },
     vpc,
-    parameterGroup: group
+    parameterGroup: group,
   });
 
   // THEN
@@ -218,9 +218,9 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
     clusterEndpointPort: 3306,
     securityGroups: [
       ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-        allowAllOutbound: false
-      })
-    ]
+        allowAllOutbound: false,
+      }),
+    ],
   });
 
   // WHEN
@@ -245,14 +245,14 @@ test('can create a cluster with logging enabled', () => {
     },
     vpc,
     loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix'
+    loggingKeyPrefix: 'prefix',
   });
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
     LoggingProperties: {
       BucketName: 'logging-bucket',
-      S3KeyPrefix: 'prefix'
+      S3KeyPrefix: 'prefix',
     },
   }));
 });
@@ -266,7 +266,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
-      masterPassword: cdk.SecretValue.plainText('tooshort')
+      masterPassword: cdk.SecretValue.plainText('tooshort'),
     },
     vpc,
   });

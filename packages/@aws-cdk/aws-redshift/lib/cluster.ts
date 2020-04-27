@@ -380,14 +380,14 @@ export class Cluster extends ClusterBase {
     });
 
     subnetGroup.applyRemovalPolicy(removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     const securityGroups = props.securityGroup !== undefined ?
       [props.securityGroup] : [new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'Redshift security group',
         vpc: this.vpc,
-        securityGroupName: 'redshift SG'
+        securityGroupName: 'redshift SG',
       })];
 
     const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
@@ -396,7 +396,7 @@ export class Cluster extends ClusterBase {
     if (!props.masterUser.masterPassword) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.masterUsername,
-        encryptionKey: props.masterUser.encryptionKey
+        encryptionKey: props.masterUser.encryptionKey,
       });
     }
 
@@ -414,7 +414,7 @@ export class Cluster extends ClusterBase {
     if (props.loggingBucket) {
       loggingProperties = {
         bucketName: props.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingKeyPrefix
+        s3KeyPrefix: props.loggingKeyPrefix,
       };
     }
 
@@ -448,7 +448,7 @@ export class Cluster extends ClusterBase {
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
-      applyToUpdateReplacePolicy: true
+      applyToUpdateReplacePolicy: true,
     });
 
     this.clusterName = cluster.ref;

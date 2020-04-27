@@ -32,8 +32,8 @@ export class DatabaseSecret extends secretsmanager.Secret {
         passwordLength: 30, // Redshift password could be up to 64 characters
         secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\\ \''
-      }
+        excludeCharacters: '"@/\\\ \'',
+      },
     });
   }
 }

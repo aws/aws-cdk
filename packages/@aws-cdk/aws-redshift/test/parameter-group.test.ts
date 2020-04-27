@@ -10,8 +10,8 @@ test('create a cluster parameter group', () => {
   new ClusterParameterGroup(stack, 'Params', {
     description: 'desc',
     parameters: {
-      param: 'value'
-    }
+      param: 'value',
+    },
   });
 
   // THEN
@@ -21,9 +21,9 @@ test('create a cluster parameter group', () => {
     Parameters: [
       {
         ParameterName: 'param',
-        ParameterValue: 'value'
-      }
-    ]
+        ParameterValue: 'value',
+      },
+    ],
   }));
 
 });
