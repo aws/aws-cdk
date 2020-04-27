@@ -2897,10 +2897,10 @@ aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.662.0:
-  version "2.662.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.662.0.tgz#c41c809648104b8aba6276e12eb7ad43a6fca40d"
-  integrity sha512-emZOIKHCV2EHByRNAm7d++1ugzRpLx4WhMm+T9ydy/OyKcOGVAAMPVW0Mib5GXuWpC6A6aE7ACi3pZTjK9LMQA==
+aws-sdk@^2.637.0, aws-sdk@^2.663.0:
+  version "2.663.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.663.0.tgz#003d8cc318635d1bf67deda586f5e5d583b7e384"
+  integrity sha512-xPOszNOaSXTRs8VGXaMbhTKXdlq2TlDRfFRVEGxkZrtow87hEIVZGAUSUme2e3GHqHUDnySwcufrUpUPUizOKQ==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -5453,10 +5453,10 @@ falafel@^2.1.0:
     isarray "^2.0.1"
     object-keys "^1.0.6"
 
-fast-check@^1.24.1:
-  version "1.24.1"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.24.1.tgz#42a153e664122b1a2defdaea4e9b8311635fa7e7"
-  integrity sha512-ECF5LDbt4F8sJyTDI62fRLn0BdHDAdBacxlEsxaYbtqwbsdWofoYZUSaUp9tJrLsqCQ8jG28SkNvPZpDfNo3tw==
+fast-check@^1.24.2:
+  version "1.24.2"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.24.2.tgz#1f5e4a3c20530c3a85a861e60f680c32229d4fcb"
+  integrity sha512-ZL48cyZZLJnVsUj127Zi1mfFLM98yzw0LlSSH8CMeVmpL5RCfSRcZSZZ0kJWrRK4eOgNFnXXKNDbzuRb3Vsdhg==
   dependencies:
     pure-rand "^2.0.0"
     tslib "^1.10.0"
@@ -8776,10 +8776,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-mock-fs@^4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.11.0.tgz#0828107e4b843a6ba855ecebfe3c6e073b69db92"
-  integrity sha512-Yp4o3/ZA15wsXqJTT+R+9w2AYIkD1i80Lds47wDbuUhOvQvm+O2EfjFZSz0pMgZZSPHRhGxgcd2+GL4+jZMtdw==
+mock-fs@^4.12.0:
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.12.0.tgz#a5d50b12d2d75e5bec9dac3b67ffe3c41d31ade4"
+  integrity sha512-/P/HtrlvBxY4o/PzXY9cCNBrdylDNxg7gnrv2sMNxj+UJ2m8jSpl0/A6fuJeNAWr99ZvGWH8XCbE0vmnM5KupQ==
 
 mockery@^2.1.0:
   version "2.1.0"
@@ -11433,10 +11433,10 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@^0.5.10, source-map-support@^0.5.18, source-map-support@^0.5.6, source-map-support@~0.5.10, source-map-support@~0.5.12:
-  version "0.5.18"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.18.tgz#f5f33489e270bd7f7d7e7b8debf283f3a4066960"
-  integrity sha512-9luZr/BZ2QeU6tO2uG8N2aZpVSli4TSAOAqFOyTO51AJcD9P99c0K1h6dD6r6qo5dyT44BR5exweOaLLeldTkQ==
+source-map-support@^0.5.10, source-map-support@^0.5.19, source-map-support@^0.5.6, source-map-support@~0.5.10, source-map-support@~0.5.12:
+  version "0.5.19"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
+  integrity sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
   dependencies:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
