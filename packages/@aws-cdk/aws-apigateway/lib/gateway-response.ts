@@ -60,7 +60,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     const resource = new CfnGatewayResponse(this, 'Resource', {
       restApiId: props.restApi.restApiId,
       responseType: props.type.responseType,
-      responseParameters: this.buildResponseParamters(props.responseHeaders),
+      responseParameters: this.buildResponseParameters(props.responseHeaders),
       responseTemplates: props.templates,
       statusCode: props.statusCode,
     });
@@ -68,7 +68,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     this.node.defaultChild = resource;
   }
 
-  private buildResponseParamters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {
+  private buildResponseParameters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {
     if (!responseHeaders) {
       return undefined;
     }
@@ -83,6 +83,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
 
 /**
  * Supported types of gateway responses.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html
  */
 export class ResponseType {
   /**
