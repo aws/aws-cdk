@@ -27,6 +27,8 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The IPC resource namespace to use for the containers in the task.
    *
+   * Not supported in Fargate and Windows containers.
+   *
    * @default - IpcMode used by the task is not specified
    */
   readonly ipcMode?: IpcMode;
@@ -34,7 +36,9 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The process namespace to use for the containers in the task.
    *
-   * @default - IpcMode used by the task is not specified
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
 }
