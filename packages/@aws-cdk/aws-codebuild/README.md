@@ -259,7 +259,9 @@ project as a AWS CloudWatch event rule target:
 // start build when a commit is pushed
 const targets = require('@aws-cdk/aws-events-targets');
 
-codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
+codeCommitRepository.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+});
 ```
 
 ### Using Project as an event source
