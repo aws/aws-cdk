@@ -457,7 +457,7 @@ export class Repository extends RepositoryBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE }),
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [ this.repositoryArn ] }),
       });
     }
   }
