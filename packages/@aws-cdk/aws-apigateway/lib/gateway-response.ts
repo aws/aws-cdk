@@ -42,7 +42,7 @@ export interface GatewayResponseOptions {
 
   /**
    * Custom templates to get mapped as response.
-   * @default - Default reponse will be mapped
+   * @default - Response from api will be returned without applying any transformation.
    */
   readonly templates?: { [key: string]: string };
 
