@@ -220,6 +220,22 @@ export interface ITable extends IResource {
   readonly tableStreamArn?: string;
 
   /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
    * @param grantee The principal to grant access to
@@ -255,6 +271,12 @@ export interface ITable extends IResource {
    * @param grantee The principal to grant access to
    */
   grantReadWriteData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param grantee The principal to grant access to
+   */
+  grantFullAccess(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Metric for the number of Errors executing all Lambdas
@@ -348,6 +370,8 @@ abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly tableStreamArn?: string;
 
+  protected readonly regionalArns = new Array<string>();
+
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
@@ -361,6 +385,10 @@ abstract class TableBase extends Resource implements ITable {
       resourceArns: [
         this.tableArn,
         Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.stringValue({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
       ],
       scope: this,
     });
@@ -403,11 +431,13 @@ abstract class TableBase extends Resource implements ITable {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
+
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
       resourceArns: [
         Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
+        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
       ],
     });
   }
@@ -1023,17 +1053,6 @@ export class Table extends TableBase {
     this.grant(provider.onEventHandler, 'dynamodb:*');
     this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
 
-    // Permissions in the destination regions
-    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['dynamodb:*'],
-      resources: regions.map(region => stack.formatArn({
-        region,
-        service: 'dynamodb',
-        resource: 'table',
-        resourceName: this.tableName,
-      })),
-    }));
-
     let previousRegion;
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
@@ -1058,14 +1077,29 @@ export class Table extends TableBase {
         cfnCustomResource.cfnOptions.condition = createReplica;
       }
 
+      // Save regional arns for grantXxx() methods
+      this.regionalArns.push(stack.formatArn({
+        region,
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: this.tableName,
+      }));
+
       // We need to create/delete regions sequentially because we cannot
       // have multiple table updates at the same time. The `isCompleteHandler`
-      // of the provider waits until the replica is an ACTIVE state.
+      // of the provider waits until the replica is in an ACTIVE state.
       if (previousRegion) {
         currentRegion.node.addDependency(previousRegion);
       }
       previousRegion = currentRegion;
     }
+
+    // Permissions in the destination regions (outside of the loop to
+    // minimize statements in the policy)
+    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: this.regionalArns,
+    }));
   }
 
   /**
