@@ -10,17 +10,17 @@ class TestStack extends cdk.Stack {
 
     new codebuild.Project(this, 'MyProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
+        version: '0.2',
         phases: {
           build: {
-            commands: [ 'ls' ]
-          }
-        }
+            commands: [ 'ls' ],
+          },
+        },
       }),
       /// !show
       environment: {
-        buildImage: codebuild.LinuxBuildImage.fromEcrRepository(ecrRepository, "v1.0")
-      }
+        buildImage: codebuild.LinuxBuildImage.fromEcrRepository(ecrRepository, 'v1.0'),
+      },
       /// !hide
     });
   }

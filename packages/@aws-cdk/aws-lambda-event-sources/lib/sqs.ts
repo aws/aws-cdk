@@ -41,7 +41,7 @@ export class SqsEventSource implements lambda.IEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error("SqsEventSource is not yet bound to an event source mapping");
+      throw new Error('SqsEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }

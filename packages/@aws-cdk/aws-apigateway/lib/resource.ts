@@ -207,7 +207,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // the "Vary" header is required if we allow a specific origin
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#CORS_and_caching
     if (initialOrigin !== '*') {
-      headers.Vary = `'Origin'`;
+      headers.Vary = '\'Origin\'';
     }
 
     //
@@ -229,7 +229,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
-      headers['Access-Control-Allow-Credentials'] = `'true'`;
+      headers['Access-Control-Allow-Credentials'] = '\'true\'';
     }
 
     //
@@ -238,7 +238,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new Error(`The options "maxAge" and "disableCache" are mutually exclusive`);
+      throw new Error('The options "maxAge" and "disableCache" are mutually exclusive');
     }
 
     if (options.maxAge) {
@@ -281,12 +281,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return this.addMethod('OPTIONS', new MockIntegration({
       requestTemplates: { 'application/json': '{ statusCode: 200 }' },
       integrationResponses: [
-        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() }
+        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams }
-      ]
+        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+      ],
     });
 
     // renders the response template to match all possible origins (if we have more than one)
@@ -299,17 +299,17 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push(`#set($origin = $input.params("Origin"))`);
-      template.push(`#if($origin == "") #set($origin = $input.params("origin")) #end`);
+      template.push('#set($origin = $input.params("Origin"))');
+      template.push('#if($origin == "") #set($origin = $input.params("origin")) #end');
 
       const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
 
       template.push(`#if(${condition})`);
-      template.push(`  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)`);
+      template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');
       template.push('#end');
 
       return {
-        'application/json': template.join('\n')
+        'application/json': template.join('\n'),
       };
     }
   }
@@ -342,7 +342,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new Error(`resourceForPath cannot be called with an empty path`);
+      throw new Error('resourceForPath cannot be called with an empty path');
     }
 
     let resource = this.getResource(next);
@@ -382,7 +382,7 @@ export class Resource extends ResourceBase {
     const resourceProps: CfnResourceProps = {
       restApiId: props.parent.restApi.restApiId,
       parentId: props.parent.resourceId,
-      pathPart: props.pathPart
+      pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
@@ -405,7 +405,7 @@ export class Resource extends ResourceBase {
     this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
     this.defaultMethodOptions = {
       ...props.parent.defaultMethodOptions,
-      ...props.defaultMethodOptions
+      ...props.defaultMethodOptions,
     };
     this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
 

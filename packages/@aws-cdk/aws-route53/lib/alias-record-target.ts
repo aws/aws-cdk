@@ -1,4 +1,4 @@
-import { IRecordSet } from "./record-set";
+import { IRecordSet } from './record-set';
 
 /**
  * Classes that are valid alias record targets, like CloudFront distributions and load

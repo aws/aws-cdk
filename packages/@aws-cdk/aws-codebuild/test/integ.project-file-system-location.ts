@@ -21,16 +21,16 @@ new codebuild.Project(stack, 'MyProject', {
     version: '0.2',
   }),
   environment: {
-    privileged: true
+    privileged: true,
   },
   vpc,
   securityGroups: [securityGroup],
   fileSystemLocations: [codebuild.FileSystemLocation.efs({
-    identifier: "myidentifier",
-    location: "fs-c8d04839.efs.eu-west-2.amazonaws.com:/mnt",
-    mountOptions: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2",
-    mountPoint: "/media"
-  })]
+    identifier: 'myidentifier',
+    location: 'fs-c8d04839.efs.eu-west-2.amazonaws.com:/mnt',
+    mountOptions: 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
+    mountPoint: '/media',
+  })],
 });
 
 app.synth();

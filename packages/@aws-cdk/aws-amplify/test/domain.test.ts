@@ -6,8 +6,11 @@ test('create a domain', () => {
   // GIVEN
   const stack = new Stack();
   const app = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
   });
   const prodBranch = app.addBranch('master');
   const devBranch = app.addBranch('dev');
@@ -17,9 +20,9 @@ test('create a domain', () => {
     subDomains: [
       {
         branch: prodBranch,
-        prefix: 'prod'
-      }
-    ]
+        prefix: 'prod',
+      },
+    ],
   });
   domain.mapSubDomain(devBranch);
 
@@ -28,8 +31,8 @@ test('create a domain', () => {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
-        'AppId'
-      ]
+        'AppId',
+      ],
     },
     DomainName: 'amazon.com',
     SubDomainSettings: [
@@ -37,26 +40,26 @@ test('create a domain', () => {
         BranchName: {
           'Fn::GetAtt': [
             'Appmaster71597E87',
-            'BranchName'
-          ]
+            'BranchName',
+          ],
         },
-        Prefix: 'prod'
+        Prefix: 'prod',
       },
       {
         BranchName: {
           'Fn::GetAtt': [
             'AppdevB328DAFC',
-            'BranchName'
-          ]
+            'BranchName',
+          ],
         },
         Prefix: {
           'Fn::GetAtt': [
             'AppdevB328DAFC',
-            'BranchName'
-          ]
-        }
-      }
-    ]
+            'BranchName',
+          ],
+        },
+      },
+    ],
   });
 });
 
@@ -65,8 +68,11 @@ test('throws at synthesis without subdomains', () => {
   const app = new App();
   const stack = new Stack(app, 'test-stack');
   const amplifyApp = new amplify.App(stack, 'App', {
-    repository: 'https://github.com/aws/aws-cdk',
-    oauthToken: SecretValue.plainText('secret'),
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
   });
 
   // WHEN

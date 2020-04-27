@@ -153,14 +153,14 @@ export = {
       test.deepEqual(original, afterChange);
       test.deepEqual(afterRevert, original);
       test.done();
-    }
+    },
   },
   exclude: {
     'encodes exclude patterns'(test: Test) {
       // GIVEN
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      const options1 = {path: dir, exclude: ["**", "!file.py"], sourcePath: dir};
-      const options2 = {path: dir, exclude: ["**", "!otherfile.py"], sourcePath: dir};
+      const options1 = {path: dir, exclude: ['**', '!file.py'], sourcePath: dir};
+      const options2 = {path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir};
 
       // WHEN
       const f1 = libfs.fingerprint(dir, options1);
@@ -170,5 +170,5 @@ export = {
       test.notDeepEqual(f1, f2);
       test.done();
     },
-  }
+  },
 };

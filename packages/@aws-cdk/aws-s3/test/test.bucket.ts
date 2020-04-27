@@ -16,13 +16,13 @@ export = {
     new s3.Bucket(stack, 'MyBucket');
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
 
     test.done();
@@ -31,7 +31,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Token.asString(5)  // Oh no
+      bucketName: cdk.Token.asString(5),  // Oh no
     });
 
     test.throws(() => {
@@ -44,17 +44,17 @@ export = {
   'bucket without encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.UNENCRYPTED
+      encryption: s3.BucketEncryption.UNENCRYPTED,
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
 
     test.done();
@@ -63,28 +63,28 @@ export = {
   'bucket with managed encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.KMS_MANAGED
+      encryption: s3.BucketEncryption.KMS_MANAGED,
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketEncryption": {
-              "ServerSideEncryptionConfiguration": [
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
                 {
-                  "ServerSideEncryptionByDefault": {
-                    "SSEAlgorithm": "aws:kms"
-                  }
-                }
-              ]
-            }
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'aws:kms',
+                  },
+                },
+              ],
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -231,7 +231,7 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
-      encryptionKey: myKey
+      encryptionKey: myKey,
     }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
     test.done();
@@ -243,7 +243,7 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
-      encryptionKey: myKey
+      encryptionKey: myKey,
     }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
     test.done();
@@ -257,82 +257,82 @@ export = {
     new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.KMS });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyKey6AB29FA6": {
-          "Type": "AWS::KMS::Key",
-          "Properties": {
-            "Description": "hello, world",
-            "KeyPolicy": {
-              "Statement": [
+      'Resources': {
+        'MyKey6AB29FA6': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'Description': 'hello, world',
+            'KeyPolicy': {
+              'Statement': [
                 {
-                  "Action": [
-                    "kms:Create*",
-                    "kms:Describe*",
-                    "kms:Enable*",
-                    "kms:List*",
-                    "kms:Put*",
-                    "kms:Update*",
-                    "kms:Revoke*",
-                    "kms:Disable*",
-                    "kms:Get*",
-                    "kms:Delete*",
-                    "kms:ScheduleKeyDeletion",
-                    "kms:CancelKeyDeletion",
-                    "kms:GenerateDataKey",
-                    "kms:TagResource",
-                    "kms:UntagResource"
+                  'Action': [
+                    'kms:Create*',
+                    'kms:Describe*',
+                    'kms:Enable*',
+                    'kms:List*',
+                    'kms:Put*',
+                    'kms:Update*',
+                    'kms:Revoke*',
+                    'kms:Disable*',
+                    'kms:Get*',
+                    'kms:Delete*',
+                    'kms:ScheduleKeyDeletion',
+                    'kms:CancelKeyDeletion',
+                    'kms:GenerateDataKey',
+                    'kms:TagResource',
+                    'kms:UntagResource',
                   ],
-                  "Effect": "Allow",
-                  "Principal": {
-                    "AWS": {
-                      "Fn::Join": [
-                        "",
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
                         [
-                          "arn:",
+                          'arn:',
                           {
-                            "Ref": "AWS::Partition"
+                            'Ref': 'AWS::Partition',
                           },
-                          ":iam::",
+                          ':iam::',
                           {
-                            "Ref": "AWS::AccountId"
+                            'Ref': 'AWS::AccountId',
                           },
-                          ":root"
-                        ]
-                      ]
-                    }
-                  },
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            }
-          },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain"
-        },
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketEncryption": {
-              "ServerSideEncryptionConfiguration": [
-                {
-                  "ServerSideEncryptionByDefault": {
-                    "KMSMasterKeyID": {
-                      "Fn::GetAtt": [
-                        "MyKey6AB29FA6",
-                        "Arn"
-                      ]
+                          ':root',
+                        ],
+                      ],
                     },
-                    "SSEAlgorithm": "aws:kms"
-                  }
-                }
-              ]
-            }
+                  },
+                  'Resource': '*',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'KMSMasterKeyID': {
+                      'Fn::GetAtt': [
+                        'MyKey6AB29FA6',
+                        'Arn',
+                      ],
+                    },
+                    'SSEAlgorithm': 'aws:kms',
+                  },
+                },
+              ],
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -340,22 +340,22 @@ export = {
   'bucket with versioning turned on'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      versioned: true
+      versioned: true,
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "VersioningConfiguration": {
-              "Status": "Enabled"
-            }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'VersioningConfiguration': {
+              'Status': 'Enabled',
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -367,21 +367,21 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "PublicAccessBlockConfiguration": {
-              "BlockPublicAcls": true,
-              "BlockPublicPolicy": true,
-              "IgnorePublicAcls": true,
-              "RestrictPublicBuckets": true,
-            }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'PublicAccessBlockConfiguration': {
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': true,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': true,
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -393,19 +393,19 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "PublicAccessBlockConfiguration": {
-              "BlockPublicAcls": true,
-              "IgnorePublicAcls": true,
-            }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'PublicAccessBlockConfiguration': {
+              'BlockPublicAcls': true,
+              'IgnorePublicAcls': true,
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -413,22 +413,22 @@ export = {
   'bucket with custom block public access setting'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true })
+      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "PublicAccessBlockConfiguration": {
-              "RestrictPublicBuckets": true,
-            }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'PublicAccessBlockConfiguration': {
+              'RestrictPublicBuckets': true,
+            },
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -436,20 +436,20 @@ export = {
   'bucket with custom canned access control'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "AccessControl": "LogDeliveryWrite"
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'AccessControl': 'LogDeliveryWrite',
           },
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
-        }
-      }
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
     });
     test.done();
   },
@@ -463,31 +463,31 @@ export = {
       bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar:baz' ]}));
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyBucketF68F3FF0": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain",
-            "UpdateReplacePolicy": "Retain",
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          "MyBucketPolicyE7FBAC7B": {
-            "Type": "AWS::S3::BucketPolicy",
-            "Properties": {
-              "Bucket": {
-                "Ref": "MyBucketF68F3FF0"
+          'MyBucketPolicyE7FBAC7B': {
+            'Type': 'AWS::S3::BucketPolicy',
+            'Properties': {
+              'Bucket': {
+                'Ref': 'MyBucketF68F3FF0',
               },
-              "PolicyDocument": {
-                "Statement": [
+              'PolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "bar:baz",
-                    "Effect": "Allow",
-                    "Resource": "foo"
-                  }
+                    'Action': 'bar:baz',
+                    'Effect': 'Allow',
+                    'Resource': 'foo',
+                  },
                 ],
-                "Version": "2012-10-17"
-              }
+                'Version': '2012-10-17',
+              },
             },
-          }
-        }
+          },
+        },
       });
 
       test.done();
@@ -503,7 +503,7 @@ export = {
       test.deepEqual(stack.resolve(x.toStatementJson()), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }
+        Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
       });
 
       test.done();
@@ -522,9 +522,9 @@ export = {
         Resource: {
           'Fn::Join': [
             '',
-            [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world']
-          ]
-        }
+            [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world'],
+          ],
+        },
       });
 
       test.done();
@@ -554,21 +554,21 @@ export = {
               { Ref: 'MyTeam01DD6685' },
               '/',
               { Ref: 'MyUserDC45028B' },
-              '/*'
-            ]
-          ]
-        }
+              '/*',
+            ],
+          ],
+        },
       });
 
       test.done();
-    }
+    },
   },
 
   'removal policy can be used to specify behavior upon delete'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      encryption: s3.BucketEncryption.UNENCRYPTED
+      encryption: s3.BucketEncryption.UNENCRYPTED,
     });
 
     expect(stack).toMatch({
@@ -576,9 +576,9 @@ export = {
         MyBucketF68F3FF0: {
           Type: 'AWS::S3::Bucket',
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain'
-        }
-      }
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     });
 
     test.done();
@@ -601,7 +601,7 @@ export = {
       test.deepEqual(p.toStatementJson(), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Resource: 'arn:aws:s3:::my-bucket'
+        Resource: 'arn:aws:s3:::my-bucket',
       });
 
       test.deepEqual(bucket.bucketArn, bucketArn);
@@ -627,32 +627,32 @@ export = {
         actions: ['s3:*'] }));
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyUserDC45028B": {
-            "Type": "AWS::IAM::User"
+        'Resources': {
+          'MyUserDC45028B': {
+            'Type': 'AWS::IAM::User',
           },
-          "MyUserDefaultPolicy7B897426": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
+          'MyUserDefaultPolicy7B897426': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "s3:*",
-                    "Effect": "Allow",
-                    "Resource": "arn:aws:s3:::my-bucket/my/folder/my-bucket"
-                  }
+                    'Action': 's3:*',
+                    'Effect': 'Allow',
+                    'Resource': 'arn:aws:s3:::my-bucket/my/folder/my-bucket',
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "PolicyName": "MyUserDefaultPolicy7B897426",
-              "Users": [
+              'PolicyName': 'MyUserDefaultPolicy7B897426',
+              'Users': [
                 {
-                  "Ref": "MyUserDC45028B"
-                }
-              ]
+                  'Ref': 'MyUserDC45028B',
+                },
+              ],
             },
-          }
-        }
+          },
+        },
       });
 
       test.done();
@@ -665,62 +665,62 @@ export = {
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(reader);
     expect(stack).toMatch({
-      "Resources": {
-        "ReaderF7BF189D": {
-          "Type": "AWS::IAM::User"
+      'Resources': {
+        'ReaderF7BF189D': {
+          'Type': 'AWS::IAM::User',
         },
-        "ReaderDefaultPolicy151F3818": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-            "PolicyDocument": {
-              "Statement": [
+        'ReaderDefaultPolicy151F3818': {
+          'Type': 'AWS::IAM::Policy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
                 {
-                  "Action": [
-                    "s3:GetObject*",
-                    "s3:GetBucket*",
-                    "s3:List*"
+                  'Action': [
+                    's3:GetObject*',
+                    's3:GetBucket*',
+                    's3:List*',
                   ],
-                  "Effect": "Allow",
-                  "Resource": [
+                  'Effect': 'Allow',
+                  'Resource': [
                     {
-                      "Fn::GetAtt": [
-                        "MyBucketF68F3FF0",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
                     },
                     {
-                      "Fn::Join": [
-                        "",
+                      'Fn::Join': [
+                        '',
                         [
                           {
-                            "Fn::GetAtt": [
-                              "MyBucketF68F3FF0",
-                              "Arn"
-                            ]
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
                           },
-                          "/*"
-                        ]
-                      ]
-                    }
-                  ]
-                }
+                          '/*',
+                        ],
+                      ],
+                    },
+                  ],
+                },
               ],
-              "Version": "2012-10-17"
+              'Version': '2012-10-17',
             },
-            "PolicyName": "ReaderDefaultPolicy151F3818",
-            "Users": [
+            'PolicyName': 'ReaderDefaultPolicy151F3818',
+            'Users': [
               {
-                "Ref": "ReaderF7BF189D"
-              }
-            ]
-          }
+                'Ref': 'ReaderF7BF189D',
+              },
+            ],
+          },
         },
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain"
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
         },
-      }
+      },
     });
     test.done();
   },
@@ -733,65 +733,65 @@ export = {
       bucket.grantReadWrite(user);
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyBucketF68F3FF0": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain",
-            "UpdateReplacePolicy": "Retain",
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          "MyUserDC45028B": {
-            "Type": "AWS::IAM::User"
+          'MyUserDC45028B': {
+            'Type': 'AWS::IAM::User',
           },
-          "MyUserDefaultPolicy7B897426": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
+          'MyUserDefaultPolicy7B897426': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
                   {
-                    "Action": [
-                      "s3:GetObject*",
-                      "s3:GetBucket*",
-                      "s3:List*",
-                      "s3:DeleteObject*",
-                      "s3:PutObject*",
-                      "s3:Abort*"
+                    'Action': [
+                      's3:GetObject*',
+                      's3:GetBucket*',
+                      's3:List*',
+                      's3:DeleteObject*',
+                      's3:PutObject*',
+                      's3:Abort*',
                     ],
-                    "Effect": "Allow",
-                    "Resource": [
+                    'Effect': 'Allow',
+                    'Resource': [
                       {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
+                        'Fn::GetAtt': [
+                          'MyBucketF68F3FF0',
+                          'Arn',
+                        ],
                       },
                       {
-                        "Fn::Join": [
-                          "",
+                        'Fn::Join': [
+                          '',
                           [
                             {
-                              "Fn::GetAtt": [
-                                "MyBucketF68F3FF0",
-                                "Arn"
-                              ]
+                              'Fn::GetAtt': [
+                                'MyBucketF68F3FF0',
+                                'Arn',
+                              ],
                             },
-                            "/*"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
+                            '/*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "PolicyName": "MyUserDefaultPolicy7B897426",
-              "Users": [
+              'PolicyName': 'MyUserDefaultPolicy7B897426',
+              'Users': [
                 {
-                  "Ref": "MyUserDC45028B"
-                }
-              ]
-            }
-          }
-        }
+                  'Ref': 'MyUserDC45028B',
+                },
+              ],
+            },
+          },
+        },
       });
 
       test.done();
@@ -808,48 +808,48 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
         PolicyDocument: {
-          "Version": "2012-10-17",
-          "Statement": [
+          'Version': '2012-10-17',
+          'Statement': [
             {
-              "Action": ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
-              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
-              "Effect": "Allow",
-              "Principal": "*",
-              "Resource": [
-                { "Fn::GetAtt": ["MyBucketF68F3FF0", "Arn"] },
-                { "Fn::Join": ["", [{ "Fn::GetAtt": ["MyBucketF68F3FF0", "Arn"] }, "/*"]] }
-              ]
-            }
-          ]
-        }
+              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
+              'Effect': 'Allow',
+              'Principal': '*',
+              'Resource': [
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
+              ],
+            },
+          ],
+        },
       }));
 
       expect(stack).to(haveResource('AWS::KMS::Key', {
-        "KeyPolicy": {
-          "Statement": [
+        'KeyPolicy': {
+          'Statement': [
             {
-              "Action": ["kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
-                "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey", "kms:TagResource", "kms:UntagResource"],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": ["", [
-                    "arn:", { "Ref": "AWS::Partition" }, ":iam::", { "Ref": "AWS::AccountId" }, ":root"
-                  ]]
-                }
+              'Action': ['kms:Create*', 'kms:Describe*', 'kms:Enable*', 'kms:List*', 'kms:Put*', 'kms:Update*',
+                'kms:Revoke*', 'kms:Disable*', 'kms:Get*', 'kms:Delete*', 'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion',
+                'kms:GenerateDataKey', 'kms:TagResource', 'kms:UntagResource'],
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': ['', [
+                    'arn:', { 'Ref': 'AWS::Partition' }, ':iam::', { 'Ref': 'AWS::AccountId' }, ':root',
+                  ]],
+                },
               },
-              "Resource": "*"
+              'Resource': '*',
             },
             {
-              "Action": ["kms:Decrypt", "kms:DescribeKey"],
-              "Effect": "Allow",
-              "Resource": "*",
-              "Principal": "*",
-              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
-            }
+              'Action': ['kms:Decrypt', 'kms:DescribeKey'],
+              'Effect': 'Allow',
+              'Resource': '*',
+              'Principal': '*',
+              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
+            },
           ],
-          "Version": "2012-10-17"
+          'Version': '2012-10-17',
         },
 
       }));
@@ -864,169 +864,169 @@ export = {
       bucket.grantReadWrite(user);
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyBucketKeyC17130CF": {
-            "Type": "AWS::KMS::Key",
-            "Properties": {
-              "Description": "Created by MyBucket",
-              "KeyPolicy": {
-                "Statement": [
+        'Resources': {
+          'MyBucketKeyC17130CF': {
+            'Type': 'AWS::KMS::Key',
+            'Properties': {
+              'Description': 'Created by MyBucket',
+              'KeyPolicy': {
+                'Statement': [
                   {
-                    "Action": [
-                      "kms:Create*",
-                      "kms:Describe*",
-                      "kms:Enable*",
-                      "kms:List*",
-                      "kms:Put*",
-                      "kms:Update*",
-                      "kms:Revoke*",
-                      "kms:Disable*",
-                      "kms:Get*",
-                      "kms:Delete*",
-                      "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion",
-                      "kms:GenerateDataKey",
-                      "kms:TagResource",
-                      "kms:UntagResource"
+                    'Action': [
+                      'kms:Create*',
+                      'kms:Describe*',
+                      'kms:Enable*',
+                      'kms:List*',
+                      'kms:Put*',
+                      'kms:Update*',
+                      'kms:Revoke*',
+                      'kms:Disable*',
+                      'kms:Get*',
+                      'kms:Delete*',
+                      'kms:ScheduleKeyDeletion',
+                      'kms:CancelKeyDeletion',
+                      'kms:GenerateDataKey',
+                      'kms:TagResource',
+                      'kms:UntagResource',
                     ],
-                    "Effect": "Allow",
-                    "Principal": {
-                      "AWS": {
-                        "Fn::Join": [
-                          "",
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'AWS': {
+                        'Fn::Join': [
+                          '',
                           [
-                            "arn:",
+                            'arn:',
                             {
-                              "Ref": "AWS::Partition"
+                              'Ref': 'AWS::Partition',
                             },
-                            ":iam::",
+                            ':iam::',
                             {
-                              "Ref": "AWS::AccountId"
+                              'Ref': 'AWS::AccountId',
                             },
-                            ":root"
-                          ]
-                        ]
-                      }
+                            ':root',
+                          ],
+                        ],
+                      },
                     },
-                    "Resource": "*"
+                    'Resource': '*',
                   },
                   {
-                    "Action": [
-                      "kms:Decrypt",
-                      "kms:DescribeKey",
-                      "kms:Encrypt",
-                      "kms:ReEncrypt*",
-                      "kms:GenerateDataKey*",
+                    'Action': [
+                      'kms:Decrypt',
+                      'kms:DescribeKey',
+                      'kms:Encrypt',
+                      'kms:ReEncrypt*',
+                      'kms:GenerateDataKey*',
                     ],
-                    "Effect": "Allow",
-                    "Principal": {
-                      "AWS": {
-                        "Fn::GetAtt": [
-                          "MyUserDC45028B",
-                          "Arn"
-                        ]
-                      }
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'AWS': {
+                        'Fn::GetAtt': [
+                          'MyUserDC45028B',
+                          'Arn',
+                        ],
+                      },
                     },
-                    "Resource": "*"
-                  }
-                ],
-                "Version": "2012-10-17"
-              }
-            },
-            "DeletionPolicy": "Retain",
-            "UpdateReplacePolicy": "Retain"
-          },
-          "MyBucketF68F3FF0": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain",
-            "UpdateReplacePolicy": "Retain",
-            "Properties": {
-              "BucketEncryption": {
-                "ServerSideEncryptionConfiguration": [
-                  {
-                    "ServerSideEncryptionByDefault": {
-                      "KMSMasterKeyID": {
-                        "Fn::GetAtt": [
-                          "MyBucketKeyC17130CF",
-                          "Arn"
-                        ]
-                      },
-                      "SSEAlgorithm": "aws:kms"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "MyUserDC45028B": {
-            "Type": "AWS::IAM::User"
-          },
-          "MyUserDefaultPolicy7B897426": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": [
-                      "s3:GetObject*",
-                      "s3:GetBucket*",
-                      "s3:List*",
-                      "s3:DeleteObject*",
-                      "s3:PutObject*",
-                      "s3:Abort*"
-                    ],
-                    "Effect": "Allow",
-                    "Resource": [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::GetAtt": [
-                                "MyBucketF68F3FF0",
-                                "Arn"
-                              ]
-                            },
-                            "/*"
-                          ]
-                        ]
-                      }
-                    ]
+                    'Resource': '*',
                   },
-                  {
-                    "Action": [
-                      "kms:Decrypt",
-                      "kms:DescribeKey",
-                      "kms:Encrypt",
-                      "kms:ReEncrypt*",
-                      "kms:GenerateDataKey*",
-                    ],
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "MyBucketKeyC17130CF",
-                        "Arn"
-                      ]
-                    }
-                  }
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "PolicyName": "MyUserDefaultPolicy7B897426",
-              "Users": [
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+            'Properties': {
+              'BucketEncryption': {
+                'ServerSideEncryptionConfiguration': [
+                  {
+                    'ServerSideEncryptionByDefault': {
+                      'KMSMasterKeyID': {
+                        'Fn::GetAtt': [
+                          'MyBucketKeyC17130CF',
+                          'Arn',
+                        ],
+                      },
+                      'SSEAlgorithm': 'aws:kms',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          'MyUserDC45028B': {
+            'Type': 'AWS::IAM::User',
+          },
+          'MyUserDefaultPolicy7B897426': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': [
+                      's3:GetObject*',
+                      's3:GetBucket*',
+                      's3:List*',
+                      's3:DeleteObject*',
+                      's3:PutObject*',
+                      's3:Abort*',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': [
+                      {
+                        'Fn::GetAtt': [
+                          'MyBucketF68F3FF0',
+                          'Arn',
+                        ],
+                      },
+                      {
+                        'Fn::Join': [
+                          '',
+                          [
+                            {
+                              'Fn::GetAtt': [
+                                'MyBucketF68F3FF0',
+                                'Arn',
+                              ],
+                            },
+                            '/*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    'Action': [
+                      'kms:Decrypt',
+                      'kms:DescribeKey',
+                      'kms:Encrypt',
+                      'kms:ReEncrypt*',
+                      'kms:GenerateDataKey*',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::GetAtt': [
+                        'MyBucketKeyC17130CF',
+                        'Arn',
+                      ],
+                    },
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'PolicyName': 'MyUserDefaultPolicy7B897426',
+              'Users': [
                 {
-                  "Ref": "MyUserDC45028B"
-                }
-              ]
-            }
-          }
-        }
+                  'Ref': 'MyUserDC45028B',
+                },
+              ],
+            },
+          },
+        },
       });
 
       test.done();
@@ -1064,74 +1064,74 @@ export = {
       bucketFromStackA.grantRead(user);
 
       expect(stackA).toMatch({
-        "Resources": {
-          "MyBucketF68F3FF0": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain",
-            "UpdateReplacePolicy": "Retain"
-          }
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
         },
-        "Outputs": {
-          "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyBucketF68F3FF0",
-                "Arn"
-              ]
+        'Outputs': {
+          'ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58': {
+            'Value': {
+              'Fn::GetAtt': [
+                'MyBucketF68F3FF0',
+                'Arn',
+              ],
             },
-            "Export": {
-              "Name": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
-            }
-          }
-        }
+            'Export': {
+              'Name': 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
+            },
+          },
+        },
       });
 
       expect(stackB).toMatch({
-        "Resources": {
-          "UserWhoNeedsAccessF8959C3D": {
-            "Type": "AWS::IAM::User"
+        'Resources': {
+          'UserWhoNeedsAccessF8959C3D': {
+            'Type': 'AWS::IAM::User',
           },
-          "UserWhoNeedsAccessDefaultPolicy6A9EB530": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
+          'UserWhoNeedsAccessDefaultPolicy6A9EB530': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
                   {
-                    "Action": [
-                      "s3:GetObject*",
-                      "s3:GetBucket*",
-                      "s3:List*"
+                    'Action': [
+                      's3:GetObject*',
+                      's3:GetBucket*',
+                      's3:List*',
                     ],
-                    "Effect": "Allow",
-                    "Resource": [
+                    'Effect': 'Allow',
+                    'Resource': [
                       {
-                        "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                        'Fn::ImportValue': 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
                       },
                       {
-                        "Fn::Join": [
-                          "",
+                        'Fn::Join': [
+                          '',
                           [
                             {
-                              "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                              'Fn::ImportValue': 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
                             },
-                            "/*"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
+                            '/*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "PolicyName": "UserWhoNeedsAccessDefaultPolicy6A9EB530",
-              "Users": [
+              'PolicyName': 'UserWhoNeedsAccessDefaultPolicy6A9EB530',
+              'Users': [
                 {
-                  "Ref": "UserWhoNeedsAccessF8959C3D"
-                }
-              ]
-            }
-          }
-        }
+                  'Ref': 'UserWhoNeedsAccessF8959C3D',
+                },
+              ],
+            },
+          },
+        },
       });
 
       test.done();
@@ -1155,25 +1155,25 @@ export = {
 
       // then
       expect(stackA).to(haveResourceLike('AWS::S3::BucketPolicy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
               ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition",
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::234567890123:role/MyRolePhysicalName",
+                      ':iam::234567890123:role/MyRolePhysicalName',
                     ],
                   ],
                 },
@@ -1184,37 +1184,37 @@ export = {
       }));
 
       expect(stackB).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
               ],
-              "Effect": "Allow",
-              "Resource": [
+              'Effect': 'Allow',
+              'Resource': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition",
+                        'Ref': 'AWS::Partition',
                       },
-                      ":s3:::my-bucket-physical-name",
+                      ':s3:::my-bucket-physical-name',
                     ],
                   ],
                 },
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition",
+                        'Ref': 'AWS::Partition',
                       },
-                      ":s3:::my-bucket-physical-name/*",
+                      ':s3:::my-bucket-physical-name/*',
                     ],
                   ],
                 },
@@ -1248,27 +1248,27 @@ export = {
 
       // then
       expect(stackA).to(haveResourceLike('AWS::KMS::Key', {
-        "KeyPolicy": {
-          "Statement": [
+        'KeyPolicy': {
+          'Statement': [
             {
               // grant to the root of the owning account
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
               ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
+              'Effect': 'Allow',
+              'Principal': {
+                'AWS': {
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition",
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::234567890123:role/MyRolePhysicalName",
+                      ':iam::234567890123:role/MyRolePhysicalName',
                     ],
                   ],
                 },
@@ -1279,18 +1279,18 @@ export = {
       }));
 
       expect(stackB).to(haveResourceLike('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
               // Bucket grant
             },
             {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
               ],
-              "Effect": "Allow",
-              "Resource": "*",
+              'Effect': 'Allow',
+              'Resource': '*',
             },
           ],
         },
@@ -1309,80 +1309,80 @@ export = {
     new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain"
-        }
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
       },
-      "Outputs": {
-        "BucketURL": {
-          "Value": {
-            "Fn::Join": [
-              "",
+      'Outputs': {
+        'BucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
               [
-                "https://s3.",
+                'https://s3.',
                 {
-                  "Ref": "AWS::Region"
+                  'Ref': 'AWS::Region',
                 },
-                ".",
+                '.',
                 {
-                  "Ref": "AWS::URLSuffix"
+                  'Ref': 'AWS::URLSuffix',
                 },
-                "/",
+                '/',
                 {
-                  "Ref": "MyBucketF68F3FF0"
-                }
-              ]
-            ]
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+              ],
+            ],
           },
         },
-        "MyFileURL": {
-          "Value": {
-            "Fn::Join": [
-              "",
+        'MyFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
               [
-                "https://s3.",
+                'https://s3.',
                 {
-                  "Ref": "AWS::Region"
+                  'Ref': 'AWS::Region',
                 },
-                ".",
+                '.',
                 {
-                  "Ref": "AWS::URLSuffix"
+                  'Ref': 'AWS::URLSuffix',
                 },
-                "/",
+                '/',
                 {
-                  "Ref": "MyBucketF68F3FF0"
+                  'Ref': 'MyBucketF68F3FF0',
                 },
-                "/my/file.txt"
-              ]
-            ]
-          }
-        },
-        "YourFileURL": {
-          "Value": {
-            "Fn::Join": [
-              "",
-              [
-                "https://s3.",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ".",
-                {
-                  "Ref": "AWS::URLSuffix"
-                },
-                "/",
-                {
-                  "Ref": "MyBucketF68F3FF0"
-                },
-                "/your/file.txt"
-              ]
-            ]
+                '/my/file.txt',
+              ],
+            ],
           },
-        }
-      }
+        },
+        'YourFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://s3.',
+                {
+                  'Ref': 'AWS::Region',
+                },
+                '.',
+                {
+                  'Ref': 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/your/file.txt',
+              ],
+            ],
+          },
+        },
+      },
     });
 
     test.done();
@@ -1399,17 +1399,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Principal": "*",
-              "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["bC3BBCC65", "Arn"] }, "/*"]] }
-            }
+              'Action': 's3:GetObject',
+              'Effect': 'Allow',
+              'Principal': '*',
+              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+            },
           ],
-          "Version": "2012-10-17"
-        }
+          'Version': '2012-10-17',
+        },
       }));
       test.done();
     },
@@ -1424,17 +1424,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Principal": "*",
-              "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["bC3BBCC65", "Arn"] }, "/only/access/these/*"]] }
-            }
+              'Action': 's3:GetObject',
+              'Effect': 'Allow',
+              'Principal': '*',
+              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/only/access/these/*']] },
+            },
           ],
-          "Version": "2012-10-17"
-        }
+          'Version': '2012-10-17',
+        },
       }));
       test.done();
     },
@@ -1449,17 +1449,17 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": ["s3:GetObject", "s3:PutObject"],
-              "Effect": "Allow",
-              "Principal": "*",
-              "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["bC3BBCC65", "Arn"] }, "/*"]] }
-            }
+              'Action': ['s3:GetObject', 's3:PutObject'],
+              'Effect': 'Allow',
+              'Principal': '*',
+              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+            },
           ],
-          "Version": "2012-10-17"
-        }
+          'Version': '2012-10-17',
+        },
       }));
       test.done();
     },
@@ -1471,24 +1471,24 @@ export = {
 
       // WHEN
       const result = bucket.grantPublicAccess();
-      result.resourceStatement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+      result.resourceStatement!.addCondition('IpAddress', { 'aws:SourceIp': '54.240.143.0/24' });
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
-        "PolicyDocument": {
-          "Statement": [
+        'PolicyDocument': {
+          'Statement': [
             {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Principal": "*",
-              "Resource": { "Fn::Join": ["", [{ "Fn::GetAtt": ["bC3BBCC65", "Arn"] }, "/*"]] },
-              "Condition": {
-                "IpAddress": { "aws:SourceIp": "54.240.143.0/24" }
-              }
-            }
+              'Action': 's3:GetObject',
+              'Effect': 'Allow',
+              'Principal': '*',
+              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+              'Condition': {
+                'IpAddress': { 'aws:SourceIp': '54.240.143.0/24' },
+              },
+            },
           ],
-          "Version": "2012-10-17"
-        }
+          'Version': '2012-10-17',
+        },
       }));
       test.done();
     },
@@ -1497,26 +1497,26 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', {
-        blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true })
+        blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
       });
 
       // THEN
       test.throws(() => bucket.grantPublicAccess(), /blockPublicPolicy/);
 
       test.done();
-    }
+    },
   },
 
   'website configuration': {
     'only index doc'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
-        websiteIndexDocument: 'index2.html'
+        websiteIndexDocument: 'index2.html',
       });
       expect(stack).to(haveResource('AWS::S3::Bucket', {
         WebsiteConfiguration: {
-          IndexDocument: "index2.html"
-        }
+          IndexDocument: 'index2.html',
+        },
       }));
       test.done();
     },
@@ -1524,7 +1524,7 @@ export = {
       const stack = new cdk.Stack();
       test.throws(() => {
         new s3.Bucket(stack, 'Website', {
-          websiteErrorDocument: 'error.html'
+          websiteErrorDocument: 'error.html',
         });
       }, /"websiteIndexDocument" is required if "websiteErrorDocument" is set/);
       test.done();
@@ -1537,16 +1537,16 @@ export = {
       });
       expect(stack).to(haveResource('AWS::S3::Bucket', {
         WebsiteConfiguration: {
-          IndexDocument: "index2.html",
-          ErrorDocument: "error.html"
-        }
+          IndexDocument: 'index2.html',
+          ErrorDocument: 'error.html',
+        },
       }));
       test.done();
     },
     'exports the WebsiteURL'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'Website', {
-        websiteIndexDocument: 'index.html'
+        websiteIndexDocument: 'index.html',
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
@@ -1554,15 +1554,15 @@ export = {
     'exports the WebsiteDomain'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'Website', {
-        websiteIndexDocument: 'index.html'
+        websiteIndexDocument: 'index.html',
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ]
-          }
-        ]
+            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ],
+          },
+        ],
       });
       test.done();
     },
@@ -1576,9 +1576,9 @@ export = {
             'http://my-test-bucket.s3-website-',
             { Ref: 'AWS::Region' },
             '.',
-            { Ref: 'AWS::URLSuffix' }
-          ]
-        ]
+            { Ref: 'AWS::URLSuffix' },
+          ],
+        ],
       });
       test.deepEqual(stack.resolve(bucket.bucketWebsiteDomainName), {
         'Fn::Join': [
@@ -1587,9 +1587,9 @@ export = {
             'my-test-bucket.s3-website-',
             { Ref: 'AWS::Region' },
             '.',
-            { Ref: 'AWS::URLSuffix' }
-          ]
-        ]
+            { Ref: 'AWS::URLSuffix' },
+          ],
+        ],
       });
       test.done();
     },
@@ -1608,16 +1608,16 @@ export = {
       new s3.Bucket(stack, 'Website', {
         websiteRedirect: {
           hostName: 'www.example.com',
-          protocol: s3.RedirectProtocol.HTTPS
-        }
+          protocol: s3.RedirectProtocol.HTTPS,
+        },
       });
       expect(stack).to(haveResource('AWS::S3::Bucket', {
         WebsiteConfiguration: {
           RedirectAllRequestsTo: {
             HostName: 'www.example.com',
-            Protocol: 'https'
-          }
-        }
+            Protocol: 'https',
+          },
+        },
       }));
       test.done();
     },
@@ -1628,8 +1628,8 @@ export = {
           websiteIndexDocument: 'index.html',
           websiteErrorDocument: 'error.html',
           websiteRedirect: {
-            hostName: 'www.example.com'
-          }
+            hostName: 'www.example.com',
+          },
         });
       }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
       test.done();
@@ -1640,8 +1640,8 @@ export = {
         new s3.Bucket(stack, 'Website', {
           websiteRoutingRules: [],
           websiteRedirect: {
-            hostName: 'www.example.com'
-          }
+            hostName: 'www.example.com',
+          },
         });
       }, /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
       test.done();
@@ -1657,8 +1657,8 @@ export = {
           condition: {
             httpErrorCodeReturnedEquals: '200',
             keyPrefixEquals: 'prefix',
-          }
-        }]
+          },
+        }],
       });
       expect(stack).to(haveResource('AWS::S3::Bucket', {
         WebsiteConfiguration: {
@@ -1667,14 +1667,14 @@ export = {
               HostName: 'www.example.com',
               HttpRedirectCode: '302',
               Protocol: 'https',
-              ReplaceKeyPrefixWith: 'test/'
+              ReplaceKeyPrefixWith: 'test/',
             },
             RoutingRuleCondition: {
               HttpErrorCodeReturnedEquals: '200',
-              KeyPrefixEquals: 'prefix'
-            }
-          }]
-        }
+              KeyPrefixEquals: 'prefix',
+            },
+          }],
+        },
       }));
       test.done();
     },
@@ -1684,8 +1684,8 @@ export = {
         new s3.Bucket(stack, 'Website', {
           websiteRoutingRules: [{
             httpRedirectCode: '303',
-            condition: {}
-          }]
+            condition: {},
+          }],
         });
       }, /The condition property cannot be an empty object/);
       test.done();
@@ -1715,7 +1715,7 @@ export = {
     // THEN
     test.deepEqual(bucket.bucketName, 'my-bucket-name');
     test.deepEqual(stack.resolve(bucket.bucketArn), {
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket-name']]
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket-name']],
     });
     test.done();
   },
@@ -1746,7 +1746,7 @@ export = {
         DestinationBucketName: {
           Ref: 'AccessLogs8B620ECA',
         },
-      }
+      },
     }));
 
     test.done();
@@ -1769,26 +1769,31 @@ export = {
         DestinationBucketName: {
           Ref: 'AccessLogs8B620ECA',
         },
-        LogFilePrefix: 'hello'
-      }
+        LogFilePrefix: 'hello',
+      },
     }));
 
     test.done();
   },
 
- 'Access log prefix given without bucket'(test: Test) {
+  'Access log prefix given without bucket'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsPrefix: 'hello',
+    });
+
     // THEN
-    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      serverAccessLogsPrefix: 'hello'
-    }), /"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set/);
-
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        LogFilePrefix: 'hello',
+      },
+    }));
     test.done();
- },
+  },
 
- 'Bucket Allow Log delivery changes bucket Access Control should fail'(test: Test) {
+  'Bucket Allow Log delivery changes bucket Access Control should fail'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1802,8 +1807,8 @@ export = {
         serverAccessLogsPrefix: 'hello',
         accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
       })
-      , /Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+    , /Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
 
     test.done();
- },
+  },
 };

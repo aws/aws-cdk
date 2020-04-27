@@ -18,11 +18,11 @@ export = {
     expect(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
-          Type: "AWS::ECR::Repository",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain",
-        }
-      }
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     });
 
     test.done();
@@ -40,8 +40,8 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // tslint:disable-next-line:max-line-length
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":1},\"action\":{\"type\":\"expire\"}}]}"
-      }
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+      },
     }));
 
     test.done();
@@ -61,8 +61,8 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // tslint:disable-next-line:max-line-length
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"sinceImagePushed\",\"countNumber\":5,\"countUnit\":\"days\"},\"action\":{\"type\":\"expire\"}}]}",
-      }
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
+      },
     }));
 
     test.done();
@@ -82,8 +82,8 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // tslint:disable-next-line:max-line-length
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}",
-      }
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
+      },
     }));
 
     test.done();
@@ -102,8 +102,8 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // tslint:disable-next-line:max-line-length
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"b\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":11,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"a\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
-      }
+        LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
+      },
     }));
 
     test.done();
@@ -122,8 +122,8 @@ export = {
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // tslint:disable-next-line:max-line-length
-        LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"important\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":999},\"action\":{\"type\":\"expire\"}},{\"rulePriority\":2,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
-      }
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
+      },
     }));
 
     test.done();
@@ -136,16 +136,16 @@ export = {
     // WHEN
     new ecr.Repository(stack, 'Repo', {
       lifecycleRules: [
-        { maxImageCount: 3 }
-      ]
+        { maxImageCount: 3 },
+      ],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
-      "LifecyclePolicy": {
+      'LifecyclePolicy': {
         // tslint:disable-next-line:max-line-length
-        "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
-      }
+        'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
+      },
     }));
     test.done();
   },
@@ -168,8 +168,8 @@ export = {
         '.',
         { Ref: 'AWS::URLSuffix' },
         '/',
-        { Ref: 'Repo02AC86CF' }
-      ]]
+        { Ref: 'Repo02AC86CF' },
+      ]],
     });
 
     test.done();
@@ -207,7 +207,7 @@ export = {
     // WHEN
     const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
       repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
-      repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString()
+      repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString(),
     });
 
     // THEN
@@ -232,8 +232,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':repository/my-repo']
-      ]
+        ':repository/my-repo'],
+      ],
     });
     test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
@@ -247,7 +247,7 @@ export = {
     // WHEN
     const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
       repositoryArn: ecr.Repository.arnForLocalRepository(repoName, stack),
-      repositoryName: repoName
+      repositoryName: repoName,
     });
 
     // THEN
@@ -261,7 +261,7 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':repository/',
-        { 'Fn::GetAtt': ['Boom', 'Name'] }]]
+        { 'Fn::GetAtt': ['Boom', 'Name'] }]],
     });
     test.done();
   },
@@ -279,11 +279,11 @@ export = {
       RepositoryPolicyText: {
         Statement: [
           {
-            Action: "*",
-            Effect: "Allow"
-          }
+            Action: '*',
+            Effect: 'Allow',
+          },
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17',
       },
     }));
 
@@ -297,29 +297,29 @@ export = {
 
       repo.onCloudTrailImagePushed('EventRule', {
         target: {
-          bind: () => ({ arn: 'ARN', id: '' })
-        }
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "eventName": [
-              "PutImage",
+          'detail': {
+            'eventName': [
+              'PutImage',
             ],
-            "requestParameters": {
-              "repositoryName": [
+            'requestParameters': {
+              'repositoryName': [
                 {
-                  "Ref": "Repo02AC86CF"
-                }
+                  'Ref': 'Repo02AC86CF',
+                },
               ],
             },
           },
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -330,27 +330,27 @@ export = {
 
       repo.onImageScanCompleted('EventRule', {
         target: {
-          bind: () => ({ arn: 'ARN', id: '' })
-        }
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
-              }
+                'Ref': 'Repo02AC86CF',
+              },
             ],
-            "scan-status": [
-              "COMPLETE"
-            ]
-          }
+            'scan-status': [
+              'COMPLETE',
+            ],
+          },
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -363,30 +363,30 @@ export = {
       repo.onImageScanCompleted('EventRule', {
         imageTags: ['some-tag'],
         target: {
-          bind: () => ({ arn: 'ARN', id: '' })
-        }
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
-              }
+                'Ref': 'Repo02AC86CF',
+              },
             ],
-            "image-tags": [
-              "some-tag"
+            'image-tags': [
+              'some-tag',
             ],
-            "scan-status": [
-              "COMPLETE"
-            ]
-          }
+            'scan-status': [
+              'COMPLETE',
+            ],
+          },
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -399,32 +399,32 @@ export = {
       repo.onImageScanCompleted('EventRule', {
         imageTags: ['tag1', 'tag2', 'tag3'],
         target: {
-          bind: () => ({ arn: 'ARN', id: '' })
-        }
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "aws.ecr",
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
           ],
-          "detail": {
-            "repository-name": [
+          'detail': {
+            'repository-name': [
               {
-                "Ref": "Repo02AC86CF"
-              }
+                'Ref': 'Repo02AC86CF',
+              },
             ],
-            "image-tags": [
-              "tag1",
-              "tag2",
-              "tag3"
+            'image-tags': [
+              'tag1',
+              'tag2',
+              'tag3',
             ],
-            "scan-status": [
-              "COMPLETE"
-            ]
-          }
+            'scan-status': [
+              'COMPLETE',
+            ],
+          },
         },
-        "State": "ENABLED",
+        'State': 'ENABLED',
       }));
 
       test.done();
@@ -440,8 +440,8 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "Type": "AWS::ECR::Repository",
-        "DeletionPolicy": "Retain"
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Retain',
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -452,13 +452,13 @@ export = {
 
       // WHEN
       new ecr.Repository(stack, 'Repo', {
-        removalPolicy: cdk.RemovalPolicy.DESTROY
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "Type": "AWS::ECR::Repository",
-        "DeletionPolicy": "Delete"
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Delete',
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -473,20 +473,20 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
-        "RepositoryPolicyText": {
-          "Statement": [
+        'RepositoryPolicyText': {
+          'Statement': [
             {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
               ],
-              "Effect": "Allow",
-              "Principal": "*",
-            }
+              'Effect': 'Allow',
+              'Principal': '*',
+            },
           ],
-          "Version": "2012-10-17"
-        }
+          'Version': '2012-10-17',
+        },
       }));
 
       test.done();

@@ -110,7 +110,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
   /**
    * VPC ID
    */
-   public readonly vpc: ec2.IVpc;
+  public readonly vpc: ec2.IVpc;
 
   constructor(scope: cdk.Construct, id: string, props: Ec2EnvironmentProps) {
     super(scope, id);

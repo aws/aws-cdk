@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IConstruct } from "@aws-cdk/core";
+import { Construct, IConstruct } from '@aws-cdk/core';
 
 /**
  * Obtain the Role for the CloudWatch event
@@ -15,7 +15,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
   if (existing) { return existing; }
 
   const role = new iam.Role(scope as Construct, id, {
-    assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 
   policyStatements.forEach(role.addToPolicy.bind(role));
@@ -32,7 +32,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
     handler.addPermission(permissionId, {
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('events.amazonaws.com'),
-      sourceArn: rule.ruleArn
+      sourceArn: rule.ruleArn,
     });
   }
 }

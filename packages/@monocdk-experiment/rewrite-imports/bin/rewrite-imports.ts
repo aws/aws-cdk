@@ -10,13 +10,13 @@ const writeFile = promisify(fs.writeFile);
 
 async function main() {
   if (!process.argv[2]) {
-    console.error(`usage: rewrite-imports **/*.ts`);
+    console.error('usage: rewrite-imports **/*.ts');
     return;
   }
 
   const ignore = [
     '**/*.d.ts',
-    'node_modules/**'
+    'node_modules/**',
   ];
 
   const files = await glob(process.argv[2], { ignore, matchBase: true });

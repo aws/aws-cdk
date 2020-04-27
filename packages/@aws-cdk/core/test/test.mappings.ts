@@ -8,19 +8,19 @@ export = {
     const mapping = new CfnMapping(stack, 'MyMapping', { mapping: {
       TopLevelKey1: {
         SecondLevelKey1: [ 1, 2, 3 ],
-        SecondLevelKey2: { Hello: 'World' }
+        SecondLevelKey2: { Hello: 'World' },
       },
       TopLevelKey2: {
-        SecondLevelKey1: [ 99, 99, 99 ]
-      }
+        SecondLevelKey1: [ 99, 99, 99 ],
+      },
     } });
 
     // findInMap can be used to take a reference
     new CfnResource(stack, 'MyResource', {
       type: 'R',
       properties: {
-        RefToValueInMap: mapping.findInMap('TopLevelKey1', 'SecondLevelKey1')
-      }
+        RefToValueInMap: mapping.findInMap('TopLevelKey1', 'SecondLevelKey1'),
+      },
     });
     test.throws(() => mapping.findInMap('NotFoundTopLevel', 'NotFound'), 'cant take a reference on a non existing key');
     test.throws(() => mapping.findInMap('TopLevelKey1', 'NotFound'), 'cant take a reference on a non existing key');
@@ -33,12 +33,12 @@ export = {
       { MyMapping:
          { TopLevelKey1:
           { SecondLevelKey1: [ 1, 2, 3, 4 ],
-          SecondLevelKey2: { Hello: 'World' } },
+            SecondLevelKey2: { Hello: 'World' } },
          TopLevelKey2: { SecondLevelKey1: [ 99, 99, 99 ], SecondLevelKey2: 'Hi' } } },
-       Resources:
+    Resources:
       { MyResource:
          { Type: 'R',
-         Properties:
+           Properties:
           { RefToValueInMap:
            { 'Fn::FindInMap': [ 'MyMapping', 'TopLevelKey1', 'SecondLevelKey1' ] } } } } });
 
@@ -51,9 +51,9 @@ export = {
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
         instanceCount: {
-          'us-east-1': 12
-        }
-      }
+          'us-east-1': 12,
+        },
+      },
     });
 
     const v1 = mapping.findInMap('instanceCount', Aws.REGION);
@@ -71,9 +71,9 @@ export = {
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
         'us-east-1': {
-          size: 12
-        }
-      }
+          size: 12,
+        },
+      },
     });
 
     // WHEN
@@ -81,7 +81,7 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(v), {
-      "Fn::FindInMap": [ 'mapping', { Ref: "AWS::Region" }, "size" ]
+      'Fn::FindInMap': [ 'mapping', { Ref: 'AWS::Region' }, 'size' ],
     });
     test.done();
   },
@@ -92,9 +92,9 @@ export = {
     const mapping = new CfnMapping(stack, 'mapping', {
       mapping: {
         size: {
-          'us-east-1': 12
-        }
-      }
+          'us-east-1': 12,
+        },
+      },
     });
 
     // WHEN

@@ -179,7 +179,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (!props.hostHeader && !hasPathPatterns) {
-      throw new Error(`At least one of 'hostHeader', 'pathPattern' or 'pathPatterns' is required when defining a load balancing rule.`);
+      throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
@@ -237,7 +237,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
     this.actions.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      type: 'forward'
+      type: 'forward',
     });
     targetGroup.registerListener(this.listener, this);
   }
@@ -250,7 +250,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     this.actions.push({
       fixedResponseConfig: fixedResponse,
-      type: 'fixed-response'
+      type: 'fixed-response',
     });
   }
 
@@ -262,7 +262,7 @@ export class ApplicationListenerRule extends cdk.Construct {
 
     this.actions.push({
       redirectConfig: redirectResponse,
-      type: 'redirect'
+      type: 'redirect',
     });
   }
 

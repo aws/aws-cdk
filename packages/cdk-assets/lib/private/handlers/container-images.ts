@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
-import { Docker } from "../docker";
-import { replaceAwsPlaceholders } from "../placeholders";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
+import { Docker } from '../docker';
+import { replaceAwsPlaceholders } from '../placeholders';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;

@@ -1,3 +1,252 @@
+# CloudFormation Resource Specification v13.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBCluster DeletionProtection (__added__)
+* AWS::MediaConvert::JobTemplate HopDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::LakeFormation::Permissions.ColumnWildcard (__added__)
+* AWS::LakeFormation::Permissions.DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.TableWithColumnsResource (__added__)
+* AWS::MediaConvert::JobTemplate.HopDestination (__added__)
+* AWS::SSM::PatchBaseline.PatchStringDate (__added__)
+* AWS::LakeFormation::Permissions.Resource DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.Resource TableWithColumnsResource (__added__)
+* AWS::SSM::PatchBaseline.Rule ApproveUntilDate (__added__)
+
+
+# CloudFormation Resource Specification v12.3.0
+
+## New Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Glue::DevEndpoint PublicKeys (__added__)
+* AWS::Glue::MLTransform Tags (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v12.2.0
+
+## New Resource Types
+
+* AWS::Detective::Graph
+* AWS::Detective::MemberInvitation
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CloudWatch::InsightRule Tags (__added__)
+* AWS::CodeBuild::ReportGroup Tags (__added__)
+* AWS::FSx::FileSystem StorageType (__added__)
+* AWS::KinesisAnalyticsV2::Application Tags (__added__)
+* AWS::StepFunctions::StateMachine TracingConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::EC2Fleet.TagRequest (__removed__)
+* AWS::CloudWatch::InsightRule.Tags (__added__)
+* AWS::EC2::EC2Fleet.CapacityReservationOptionsRequest (__added__)
+* AWS::EC2::EC2Fleet.Placement (__added__)
+* AWS::StepFunctions::StateMachine.TracingConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties Memory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::JobDefinition.ContainerProperties Vcpus.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateConfigRequest LaunchTemplateSpecification.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateConfigRequest Overrides.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest Placement (__added__)
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest AvailabilityZone.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest InstanceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest MaxPrice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest Priority.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest SubnetId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateOverridesRequest WeightedCapacity.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest LaunchTemplateId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest LaunchTemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.FleetLaunchTemplateSpecificationRequest Version.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest CapacityReservationOptions (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest MaxTotalPrice (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest MinTargetCapacity (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest SingleAvailabilityZone (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest SingleInstanceType (__added__)
+* AWS::EC2::EC2Fleet.OnDemandOptionsRequest AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest MaxTotalPrice (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest MinTargetCapacity (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest SingleAvailabilityZone (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest SingleInstanceType (__added__)
+* AWS::EC2::EC2Fleet.SpotOptionsRequest AllocationStrategy.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest InstanceInterruptionBehavior.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.SpotOptionsRequest InstancePoolsToUseCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.TagSpecification ResourceType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::EC2Fleet.TagSpecification Tags.ItemType (__changed__)
+  * Old: TagRequest
+  * New: Tag
+* AWS::EC2::EC2Fleet.TagSpecification Tags.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::IoTEvents::DetectorModel.SetTimer DurationExpression (__added__)
+
+
+# CloudFormation Resource Specification v12.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Integration ConnectionId (__added__)
+* AWS::AutoScaling::AutoScalingGroup MaxInstanceLifetime (__added__)
+* AWS::EC2::Volume MultiAttachEnabled (__added__)
+
+## Property Type Changes
+
+* AWS::IoT::TopicRule.AssetPropertyTimestamp (__added__)
+* AWS::IoT::TopicRule.AssetPropertyValue (__added__)
+* AWS::IoT::TopicRule.AssetPropertyVariant (__added__)
+* AWS::IoT::TopicRule.HttpAction (__added__)
+* AWS::IoT::TopicRule.HttpActionHeader (__added__)
+* AWS::IoT::TopicRule.HttpAuthorization (__added__)
+* AWS::IoT::TopicRule.IotEventsAction (__added__)
+* AWS::IoT::TopicRule.IotSiteWiseAction (__added__)
+* AWS::IoT::TopicRule.PutAssetPropertyValueEntry (__added__)
+* AWS::IoT::TopicRule.SigV4Authorization (__added__)
+* AWS::IoT::TopicRule.Action Http (__added__)
+* AWS::IoT::TopicRule.Action IotEvents (__added__)
+* AWS::IoT::TopicRule.Action IotSiteWise (__added__)
+* AWS::IoT::TopicRule.RepublishAction Qos (__added__)
+
+
+# CloudFormation Resource Specification v11.6.0
+
+## New Resource Types
+
+* AWS::Cassandra::Keyspace
+* AWS::Cassandra::Table
+* AWS::CodeGuruProfiler::ProfilingGroup
+* AWS::NetworkManager::CustomerGatewayAssociation
+* AWS::NetworkManager::Device
+* AWS::NetworkManager::GlobalNetwork
+* AWS::NetworkManager::Link
+* AWS::NetworkManager::LinkAssociation
+* AWS::NetworkManager::Site
+* AWS::NetworkManager::TransitGatewayRegistration
+* AWS::ResourceGroups::Group
+
+## Attribute Changes
+
+* AWS::AppMesh::Mesh MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Mesh ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Route MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::Route ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualNode MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualNode ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualRouter MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualRouter ResourceOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualService MeshOwner.PrimitiveType (__added__)
+* AWS::AppMesh::VirtualService ResourceOwner.PrimitiveType (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Integration TlsConfig (__added__)
+* AWS::AppMesh::Route MeshOwner (__added__)
+* AWS::AppMesh::VirtualNode MeshOwner (__added__)
+* AWS::AppMesh::VirtualRouter MeshOwner (__added__)
+* AWS::AppMesh::VirtualService MeshOwner (__added__)
+* AWS::DMS::Endpoint KafkaSettings (__added__)
+* AWS::EC2::ClientVpnEndpoint SecurityGroupIds (__added__)
+* AWS::EC2::ClientVpnEndpoint VpcId (__added__)
+* AWS::MSK::Cluster LoggingInfo (__added__)
+* AWS::ServiceCatalog::LaunchRoleConstraint LocalRoleName (__added__)
+* AWS::ServiceCatalog::LaunchRoleConstraint RoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::ApiGatewayV2::Integration.TlsConfig (__added__)
+* AWS::CloudFront::Distribution.OriginGroup (__added__)
+* AWS::CloudFront::Distribution.OriginGroupFailoverCriteria (__added__)
+* AWS::CloudFront::Distribution.OriginGroupMember (__added__)
+* AWS::CloudFront::Distribution.OriginGroupMembers (__added__)
+* AWS::CloudFront::Distribution.OriginGroups (__added__)
+* AWS::CloudFront::Distribution.StatusCodes (__added__)
+* AWS::DMS::Endpoint.KafkaSettings (__added__)
+* AWS::MSK::Cluster.BrokerLogs (__added__)
+* AWS::MSK::Cluster.CloudWatchLogs (__added__)
+* AWS::MSK::Cluster.Firehose (__added__)
+* AWS::MSK::Cluster.LoggingInfo (__added__)
+* AWS::MSK::Cluster.S3 (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig OriginGroups (__added__)
+* AWS::CloudFront::Distribution.LambdaFunctionAssociation IncludeBody (__added__)
+
+
 # CloudFormation Resource Specification v11.4.0
 
 ## New Resource Types

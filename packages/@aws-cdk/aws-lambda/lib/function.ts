@@ -23,16 +23,16 @@ export enum Tracing {
    * Lambda will respect any tracing header it receives from an upstream service.
    * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
    */
-  ACTIVE = "Active",
+  ACTIVE = 'Active',
   /**
    * Lambda will only trace the request from an upstream service
    * if it contains a tracing header with "sampled=1"
    */
-  PASS_THROUGH = "PassThrough",
+  PASS_THROUGH = 'PassThrough',
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = "Disabled"
+  DISABLED = 'Disabled'
 }
 
 /**
@@ -119,7 +119,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -288,9 +288,9 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
-    this._currentVersion = new Version(this, `CurrentVersion`, {
+    this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
-      ...this.currentVersionOptions
+      ...this.currentVersionOptions,
     });
 
     return this._currentVersion;
@@ -329,11 +329,11 @@ export class Function extends FunctionBase {
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [attrs.securityGroup]
+            securityGroups: [attrs.securityGroup],
           });
         } else if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)],
           });
         }
       }
@@ -349,7 +349,7 @@ export class Function extends FunctionBase {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
-      ...props
+      ...props,
     });
   }
   /**
@@ -468,16 +468,16 @@ export class Function extends FunctionBase {
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies
+      managedPolicies,
     });
     this.grantPrincipal = this.role;
 
@@ -497,7 +497,7 @@ export class Function extends FunctionBase {
         s3Bucket: code.s3Location && code.s3Location.bucketName,
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
-        zipFile: code.inlineCode
+        zipFile: code.inlineCode,
       },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
@@ -509,7 +509,7 @@ export class Function extends FunctionBase {
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
-      reservedConcurrentExecutions: props.reservedConcurrentExecutions
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
     resource.node.addDependency(this.role);
@@ -537,7 +537,7 @@ export class Function extends FunctionBase {
       const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
-        role: props.logRetentionRole
+        role: props.logRetentionRole,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
@@ -679,7 +679,7 @@ export class Function extends FunctionBase {
     // stacks.
     if (!this._currentVersion) {
       return {
-        variables: this.environment
+        variables: this.environment,
       };
     }
 
@@ -702,13 +702,13 @@ export class Function extends FunctionBase {
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -723,7 +723,7 @@ export class Function extends FunctionBase {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-        allowAllOutbound: props.allowAllOutbound
+        allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
     }
@@ -748,7 +748,7 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: securityGroups.map(sg => sg.securityGroupId)
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
 
@@ -762,12 +762,12 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14)
+      retentionPeriod: Duration.days(14),
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn]
+      resources: [deadLetterQueue.queueArn],
     }));
 
     return deadLetterQueue;
@@ -776,7 +776,7 @@ export class Function extends FunctionBase {
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn
+        targetArn: deadLetterQueue.queueArn,
       };
     } else {
       return undefined;
@@ -790,11 +790,11 @@ export class Function extends FunctionBase {
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     return {
-      mode: props.tracing
+      mode: props.tracing,
     };
   }
 }
@@ -819,7 +819,7 @@ function extractNameFromArn(arn: string) {
 export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   // mutually exclusive
   if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-    throw new Error(`lambda.Code must specify one of "inlineCode" or "s3Location" but not both`);
+    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
   }
 
   // if this is inline code, check that the runtime supports

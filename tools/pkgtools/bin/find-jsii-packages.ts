@@ -13,10 +13,10 @@ const argv = yargs
     alias: 'k',
     type: 'string',
     desc: 'Return only packages that have a truthy value in package.json for the given (dot-recursive) key.',
-    requiresArg: true
+    requiresArg: true,
   })
   .epilogue([
-    'Outputs the JSII directories for all JSII packages that are found.'
+    'Outputs the JSII directories for all JSII packages that are found.',
   ].join('\n'))
   .argv;
 
@@ -68,7 +68,7 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
     debug(`Checking directory: ${directory}`);
 
     if (pred(packageJson)) {
-      debug(`Matches predicate.`);
+      debug('Matches predicate.');
       ret.push({ directory, packageJson });
     }
 

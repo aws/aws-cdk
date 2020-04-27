@@ -53,18 +53,18 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Approve",
-            "Actions": [
+            'Name': 'Approve',
+            'Actions': [
               {
-                "Name": "Approval",
-                "Configuration": {
-                  "CustomData": "extra info",
-                  "ExternalEntityLink": "external link",
+                'Name': 'Approval',
+                'Configuration': {
+                  'CustomData': 'extra info',
+                  'ExternalEntityLink': 'external link',
                 },
               },
             ],

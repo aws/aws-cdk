@@ -86,7 +86,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -104,7 +104,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -167,11 +167,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  *   ╚═══════════════════════════════════╝
  */
 function determineRuleScope(
-      group: SecurityGroupBase,
-      peer: IPeer,
-      connection: Port,
-      fromTo: 'from' | 'to',
-      remoteRule?: boolean): [SecurityGroupBase, string] {
+  group: SecurityGroupBase,
+  peer: IPeer,
+  connection: Port,
+  fromTo: 'from' | 'to',
+  remoteRule?: boolean): [SecurityGroupBase, string] {
 
   if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
     // Reversed
@@ -184,7 +184,7 @@ function determineRuleScope(
 }
 
 function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
+  return Token.isUnresolved(peer.uniqueId) ? '{IndirectPeer}' : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -324,8 +324,8 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     return options.mutable !== false
-    ? new MutableImport(scope, id)
-    : new ImmutableImport(scope, id);
+      ? new MutableImport(scope, id)
+      : new ImmutableImport(scope, id);
   }
 
   /**
@@ -360,7 +360,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.securityGroupName
+      physicalName: props.securityGroupName,
     });
 
     const groupDescription = props.description || this.node.path;
@@ -395,7 +395,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     });
   }
 
@@ -424,7 +424,7 @@ export class SecurityGroup extends SecurityGroupBase {
     const rule = {
       ...peer.toEgressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     };
 
     if (isAllTrafficRule(rule)) {
@@ -518,7 +518,7 @@ const MATCH_NO_TRAFFIC = {
   description: 'Disallow all traffic',
   ipProtocol: 'icmp',
   fromPort: 252,
-  toPort: 86
+  toPort: 86,
 };
 
 /**

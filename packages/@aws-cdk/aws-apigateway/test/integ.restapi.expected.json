@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
+    "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -38,7 +38,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
+          "Ref": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -649,7 +649,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event)\n            });\n        }"
+          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
         },
         "Handler": "index.handler",
         "Role": {

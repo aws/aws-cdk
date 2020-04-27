@@ -223,7 +223,7 @@ export class AmazonLinuxImage implements IMachineImage {
       this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
       'x86_64', // No 32-bits images vended through this
-      this.storage
+      this.storage,
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
@@ -336,7 +336,7 @@ export class GenericLinuxImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -364,7 +364,7 @@ export class GenericWindowsImage implements IMachineImage  {
   public getImage(scope: Construct): MachineImageConfig {
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
+      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -420,7 +420,7 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
-       } as cxapi.AmiContextQuery,
+      } as cxapi.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 

@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.GelfLogDriver({
-        address: 'my-gelf-address'
+        address: 'my-gelf-address',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,24 +32,24 @@ export = {
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
-              'gelf-address': 'my-gelf-address'
-            }
-          }
-        }
-      ]
+              'gelf-address': 'my-gelf-address',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
   },
 
-  "create a gelf log driver using gelf with minimum options"(test: Test) {
+  'create a gelf log driver using gelf with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.gelf({
-        address: 'my-gelf-address'
+        address: 'my-gelf-address',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -59,11 +59,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
-              'gelf-address': 'my-gelf-address'
-            }
-          }
-        }
-      ]
+              'gelf-address': 'my-gelf-address',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();

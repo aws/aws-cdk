@@ -10,6 +10,9 @@ import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals'
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
+/**
+ * Properties for defining an IAM Role
+ */
 export interface RoleProps {
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
@@ -153,15 +156,16 @@ export interface FromRoleArnOptions {
  */
 export class Role extends Resource implements IRole {
   /**
-   * Imports an external role by ARN.
+   * Import an external role by ARN.
    *
    * If the imported Role ARN is a Token (such as a
    * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
    * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
-   * `role.roleName` property will not resolve to the correct value. Instead it
+   * `roleName` property will not resolve to the correct value. Instead it
    * will resolve to the first path component. We unfortunately cannot express
    * the correct calculation of the full path name as a CloudFormation
-   * expression.
+   * expression. In this scenario the Role ARN should be supplied without the
+   * `path` in order to resolve the correct role resource.
    *
    * @param scope construct scope
    * @param id construct id
@@ -237,8 +241,9 @@ export class Role extends Resource implements IRole {
       ? new Import(scope, id)
       : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
 
-    function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
-                                               account2: string | undefined): boolean {
+    function accountsAreEqualOrOneIsUnresolved(
+      account1: string | undefined,
+      account2: string | undefined): boolean {
       return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
         account1 === account2;
     }
@@ -315,7 +320,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
-      description
+      description,
     });
 
     this.roleId = role.attrRoleId;
@@ -381,7 +386,7 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this
+      scope: this,
     });
   }
 

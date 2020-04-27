@@ -243,11 +243,11 @@ export class Queue extends QueueBase {
     validateProps(props);
 
     const redrivePolicy = props.deadLetterQueue
-              ? {
-                deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
-                maxReceiveCount: props.deadLetterQueue.maxReceiveCount
-                }
-              : undefined;
+      ? {
+        deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
+        maxReceiveCount: props.deadLetterQueue.maxReceiveCount,
+      }
+      : undefined;
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
@@ -289,22 +289,22 @@ export class Queue extends QueueBase {
         return {
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
-          }
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
+          },
         };
       }
 
       if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.node.path}`
+          description: `Created by ${this.node.path}`,
         });
 
         return {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
-          }
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
+          },
         };
       }
 

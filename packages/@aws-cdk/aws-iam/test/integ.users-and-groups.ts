@@ -1,5 +1,5 @@
-import { App, Stack } from "@aws-cdk/core";
-import { Group, Policy, PolicyStatement, User } from "../lib";
+import { App, Stack } from '@aws-cdk/core';
+import { Group, Policy, PolicyStatement, User } from '../lib';
 
 const app = new App();
 
@@ -18,7 +18,7 @@ const policy = new Policy(stack, 'MyPolicy');
 policy.attachToGroup(g1);
 policy.addStatements(new PolicyStatement({
   resources: [g2.groupArn],
-  actions: ['iam:*']
+  actions: ['iam:*'],
 }));
 
 app.synth();

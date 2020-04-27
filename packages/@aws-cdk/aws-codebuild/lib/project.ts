@@ -211,8 +211,8 @@ abstract class ProjectBase extends Resource implements IProject {
     rule.addEventPattern({
       source: ['aws.codebuild'],
       detail: {
-        'project-name': [this.projectName]
-      }
+        'project-name': [this.projectName],
+      },
     });
     return rule;
   }
@@ -274,8 +274,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['IN_PROGRESS']
-      }
+        'build-status': ['IN_PROGRESS'],
+      },
     });
     return rule;
   }
@@ -290,8 +290,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['FAILED']
-      }
+        'build-status': ['FAILED'],
+      },
     });
     return rule;
   }
@@ -306,8 +306,8 @@ abstract class ProjectBase extends Resource implements IProject {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
-        'build-status': ['SUCCEEDED']
-      }
+        'build-status': ['SUCCEEDED'],
+      },
     });
     return rule;
   }
@@ -322,7 +322,7 @@ abstract class ProjectBase extends Resource implements IProject {
       namespace: 'AWS/CodeBuild',
       metricName,
       dimensions: { ProjectName: this.projectName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -354,7 +354,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public metricDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('Duration', {
       statistic: 'avg',
-      ...props
+      ...props,
     });
   }
 
@@ -637,7 +637,7 @@ export class Project extends ProjectBase {
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-      CfnProject.EnvironmentVariableProperty[] {
+  CfnProject.EnvironmentVariableProperty[] {
     return Object.keys(environmentVariables).map(name => ({
       name,
       type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
@@ -677,7 +677,7 @@ export class Project extends ProjectBase {
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
@@ -732,7 +732,7 @@ export class Project extends ProjectBase {
       description: props.description,
       source: {
         ...sourceConfig.sourceProperty,
-        buildSpec: buildSpec && buildSpec.toBuildSpec()
+        buildSpec: buildSpec && buildSpec.toBuildSpec(),
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
@@ -806,7 +806,7 @@ export class Project extends ProjectBase {
    */
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new Error("The identifier attribute is mandatory for secondary artifacts");
+      throw new Error('The identifier attribute is mandatory for secondary artifacts');
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -872,8 +872,9 @@ export class Project extends ProjectBase {
     });
   }
 
-  private renderEnvironment(env: BuildEnvironment = {},
-                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
+  private renderEnvironment(
+    env: BuildEnvironment = {},
+    projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -891,7 +892,7 @@ export class Project extends ProjectBase {
 
     const errors = this.buildImage.validate(env);
     if (errors.length > 0) {
-      throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
+      throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
     const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
@@ -958,13 +959,13 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -974,7 +975,7 @@ export class Project extends ProjectBase {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
-        allowAllOutbound: props.allowAllOutbound
+        allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
     }
@@ -983,7 +984,7 @@ export class Project extends ProjectBase {
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
-      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
+      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
     };
   }
 
@@ -1000,7 +1001,7 @@ export class Project extends ProjectBase {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
             .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com',
         },
       },
     }));
@@ -1345,6 +1346,20 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
+  /**
+   * Uses a Docker image provided by CodeBuild.
+   *
+   * @returns A Docker image provided by CodeBuild.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+   *
+   * @param id The image identifier
+   * @example 'aws/codebuild/standard:4.0'
+   */
+  public static fromCodeBuildImageId(id: string): IBuildImage {
+    return LinuxBuildImage.codeBuildImage(id);
+  }
+
   private static codeBuildImage(name: string): IBuildImage {
     return new LinuxBuildImage({
       imageId: name,
@@ -1387,9 +1402,9 @@ function runScriptLinuxBuildSpec(entrypoint: string) {
           // to only allow downloading the very latest version.
           `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
           `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-          `mkdir -p /tmp/scriptdir`,
+          'mkdir -p /tmp/scriptdir',
           `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-        ]
+        ],
       },
       build: {
         commands: [
@@ -1397,9 +1412,9 @@ function runScriptLinuxBuildSpec(entrypoint: string) {
           `echo "Running ${entrypoint}"`,
           `chmod +x /tmp/scriptdir/${entrypoint}`,
           `/tmp/scriptdir/${entrypoint}`,
-        ]
-      }
-    }
+        ],
+      },
+    },
   });
 }
 
@@ -1506,7 +1521,7 @@ export class WindowsBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
     if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push("Windows images do not support the Small ComputeType");
+      ret.push('Windows images do not support the Small ComputeType');
     }
     return ret;
   }
@@ -1520,19 +1535,19 @@ export class WindowsBuildImage implements IBuildImage {
           // but I don't know how to propagate the value of $TEMPDIR.
           //
           // Punting for someone who knows PowerShell well enough.
-          commands: []
+          commands: [],
         },
         build: {
           commands: [
-            `Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName`,
+            'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
             `aws s3 cp s3://$env:${S3_BUCKET_ENV}/$env:${S3_KEY_ENV} $TEMPDIR\\scripts.zip`,
             'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
             'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',
             '$env:SCRIPT_DIR = "$TEMPDIR\\scriptdir"',
-            `& $TEMPDIR\\scriptdir\\${entrypoint}`
-          ]
-        }
-      }
+            `& $TEMPDIR\\scriptdir\\${entrypoint}`,
+          ],
+        },
+      },
     });
   }
 }

@@ -3,6 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
+import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -445,7 +447,7 @@ export interface UserPoolProps {
    * Attributes which Cognito will look to verify automatically upon user sign up.
    * EMAIL and PHONE are the only available options.
    *
-   * @default - If `signIn` include email and/or phone, they will be included in `autoVerifiedAttributes` by default.
+   * @default - If `signInAlias` includes email and/or phone, they will be included in `autoVerifiedAttributes` by default.
    * If absent, no attributes will be auto-verified.
    */
   readonly autoVerify?: AutoVerifiedAttrs;
@@ -515,6 +517,11 @@ export interface IUserPool extends IResource {
    * @attribute
    */
   readonly userPoolArn: string;
+
+  /**
+   * Create a user pool client.
+   */
+  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
 }
 
 /**
@@ -532,6 +539,13 @@ export class UserPool extends Resource implements IUserPool {
         resource: 'userpool',
         resourceName: userPoolId,
       });
+
+      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
+        return new UserPoolClient(this, clientId, {
+          userPool: this,
+          ...options,
+        });
+      }
     }
     return new Import(scope, id);
   }
@@ -540,11 +554,7 @@ export class UserPool extends Resource implements IUserPool {
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    class Import extends Resource implements IUserPool {
-      public readonly userPoolArn = userPoolArn;
-      public readonly userPoolId = Stack.of(this).parseArn(userPoolArn).resourceName!;
-    }
-    return new Import(scope, id);
+    return UserPool.fromUserPoolId(scope, id, Stack.of(scope).parseArn(userPoolArn).resourceName!);
   }
 
   /**
@@ -649,11 +659,33 @@ export class UserPool extends Resource implements IUserPool {
     (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
+  /**
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+   */
+  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
-      sourceArn: this.userPoolArn
+      sourceArn: this.userPoolArn,
     });
   }
 
@@ -735,15 +767,15 @@ export class UserPool extends Resource implements IUserPool {
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
-        externalId: props.smsRoleExternalId
+        externalId: props.smsRoleExternalId,
       };
     } else {
       const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
       const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
         assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
           conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId }
-          }
+            StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+          },
         }),
         inlinePolicies: {
           /*
@@ -756,14 +788,14 @@ export class UserPool extends Resource implements IUserPool {
               new PolicyStatement({
                 actions: [ 'sns:Publish' ],
                 resources: [ '*' ],
-              })
-            ]
-          })
-        }
+              }),
+            ],
+          }),
+        },
       });
       return {
         externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn
+        snsCallerArn: smsRole.roleArn,
       };
     }
   }
@@ -774,7 +806,7 @@ export class UserPool extends Resource implements IUserPool {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-        return [ 'SMS_MFA' ];
+      return [ 'SMS_MFA' ];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {
@@ -852,6 +884,7 @@ export class UserPool extends Resource implements IUserPool {
           attributeDataType: attrConfig.dataType,
           numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
           stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
+          mutable: attrConfig.mutable,
         };
       });
       schema.push(...customAttrs);
