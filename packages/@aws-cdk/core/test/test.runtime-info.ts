@@ -8,7 +8,7 @@ export = {
   'version reporting includes @aws-solutions-konstruk libraries'(test: Test) {
     const pkgdir = fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-info-konstruk-fixture'));
     const mockVersion = '1.2.3';
-    
+
     fs.writeFileSync(path.join(pkgdir, 'index.js'), 'module.exports = \'this is foo\';');
     fs.writeFileSync(path.join(pkgdir, 'package.json'), JSON.stringify({
       name: '@aws-solutions-konstruk/foo',
