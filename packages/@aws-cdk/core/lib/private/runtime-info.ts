@@ -1,6 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
+// list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk'];
+
 /**
  * Returns a list of loaded modules and their versions.
  */
@@ -14,9 +17,16 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the @aws-cdk npm scope
+  // include only libraries that are in the whitelistLibraries list
   for (const name of Object.keys(libraries)) {
-    if (!name.startsWith('@aws-cdk/')) {
+    let foundMatch = false;
+    for (const scope of WHITELIST_SCOPES) {
+      if (name.startsWith(`${scope}/`)) {
+        foundMatch = true;
+      }
+    }
+
+    if (!foundMatch) {
       delete libraries[name];
     }
   }
