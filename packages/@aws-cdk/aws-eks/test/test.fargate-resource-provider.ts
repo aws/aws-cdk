@@ -287,6 +287,7 @@ function newEksClientMock() {
     createCluster: sinon.fake.throws('not implemented'),
     deleteCluster: sinon.fake.throws('not implemented'),
     describeCluster: sinon.fake.throws('not implemented'),
+    describeUpdate: sinon.fake.throws('not implemented'),
     updateClusterConfig: sinon.fake.throws('not implemented'),
     updateClusterVersion: sinon.fake.throws('not implemented'),
     configureAssumeRole: sinon.fake(),

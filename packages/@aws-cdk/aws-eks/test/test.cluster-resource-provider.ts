@@ -353,7 +353,74 @@ export = {
       },
     },
 
+    'isUpdateComplete with EKS update ID': {
+
+      async 'with "Failed" status'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'Failed';
+        mocks.simulateResponse.describeUpdateResponseMockErrors = [
+          {
+            errorMessage: 'errorMessageMock',
+            errorCode: 'errorCodeMock',
+            resourceIds: [
+              'foo', 'bar',
+            ],
+          },
+        ];
+
+        let error;
+        try {
+          await isCompleteHandler.isComplete();
+        } catch (e) {
+          error = e;
+        }
+        test.ok(error);
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(error.message, 'cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]');
+        test.done();
+      },
+
+      async 'with "InProgress" status, returns IsComplete=false'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'InProgress';
+
+        const response = await isCompleteHandler.isComplete();
+
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(response.IsComplete, false);
+        test.done();
+      },
+
+      async 'with "Successful" status, returns IsComplete=true'(test: Test) {
+        const event = mocks.newRequest('Update');
+        const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
+          ...event,
+          EksUpdateId: 'foobar',
+        });
+
+        mocks.simulateResponse.describeUpdateResponseMockStatus = 'Successful';
+
+        const response = await isCompleteHandler.isComplete();
+
+        test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
+        test.equal(response.IsComplete, true);
+        test.done();
+      },
+
+    },
+
     'in-place': {
+
       'version change': {
         async 'from undefined to a specific value'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -362,7 +429,7 @@ export = {
             version: undefined,
           }));
           const resp = await handler.onEvent();
-          test.equal(resp, undefined);
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
             version: '12.34',
@@ -377,8 +444,9 @@ export = {
           }, {
             version: '1.1',
           }));
+
           const resp = await handler.onEvent();
-          test.equal(resp, undefined);
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
             name: 'physical-resource-id',
             version: '2.0',

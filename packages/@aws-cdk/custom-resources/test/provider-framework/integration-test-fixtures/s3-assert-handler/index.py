@@ -4,9 +4,16 @@ s3 = boto3.client('s3')
 
 def on_event(event, ctx):
   print(event)
+  return {
+    'ArbitraryField': 12345
+  }
 
 def is_complete(event, ctx):
   print(event)
+
+  # verify result from on_event is passed through
+  if event.get('ArbitraryField', None) != 12345:
+    raise 'Error: expecting "event" to include "ArbitraryField" with value 12345'
 
   # nothing to assert if this resource is being deleted
   if event['RequestType'] == 'Delete':

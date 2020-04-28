@@ -16,6 +16,7 @@ const defaultEksClient: EksClient = {
   createCluster: req => getEksClient().createCluster(req).promise(),
   deleteCluster: req => getEksClient().deleteCluster(req).promise(),
   describeCluster: req => getEksClient().describeCluster(req).promise(),
+  describeUpdate: req => getEksClient().describeUpdate(req).promise(),
   updateClusterConfig: req => getEksClient().updateClusterConfig(req).promise(),
   updateClusterVersion: req => getEksClient().updateClusterVersion(req).promise(),
   createFargateProfile: req => getEksClient().createFargateProfile(req).promise(),

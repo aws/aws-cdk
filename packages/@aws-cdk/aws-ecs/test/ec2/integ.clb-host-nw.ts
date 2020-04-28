@@ -15,6 +15,8 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
   networkMode: ecs.NetworkMode.HOST,
+  ipcMode: ecs.IpcMode.HOST,
+  pidMode: ecs.PidMode.TASK,
 });
 
 const container = taskDefinition.addContainer('web', {

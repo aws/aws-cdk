@@ -1,3 +1,10 @@
+const mockBootstrapEnvironment = jest.fn();
+jest.mock('../lib/api/bootstrap', () => {
+  return {
+    bootstrapEnvironment: mockBootstrapEnvironment,
+  };
+});
+
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormationDeployments, DeployStackOptions } from '../lib/api/cloudformation-deployments';
@@ -14,21 +21,27 @@ beforeEach(() => {
       MockStack.MOCK_STACK_B,
     ],
   });
+
+  mockBootstrapEnvironment.mockReset().mockResolvedValue({ noOp: false, outputs: {} });
 });
+
+function defaultToolkitSetup() {
+  return new CdkToolkit({
+    cloudExecutable,
+    configuration: cloudExecutable.configuration,
+    sdkProvider: cloudExecutable.sdkProvider,
+    cloudFormation: new FakeCloudFormation({
+      'Test-Stack-A': { Foo: 'Bar' },
+      'Test-Stack-B': { Baz: 'Zinga!' },
+    }),
+  });
+}
 
 describe('deploy', () => {
   describe('makes correct CloudFormation calls', () => {
     test('without options', async () => {
       // GIVEN
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        cloudFormation: new FakeCloudFormation({
-          'Test-Stack-A': { Foo: 'Bar' },
-          'Test-Stack-B': { Baz: 'Zinga!' },
-        }),
-      });
+      const toolkit = defaultToolkitSetup();
 
       // WHEN
       await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
@@ -52,6 +65,39 @@ describe('deploy', () => {
         stackNames: ['Test-Stack-A', 'Test-Stack-B'],
         notificationArns,
       });
+    });
+
+    test('globless bootstrap uses environment without question', async () => {
+      // GIVEN
+      const toolkit = defaultToolkitSetup();
+
+      // WHEN
+      await toolkit.bootstrap(['aws://56789/south-pole'], undefined, undefined, false, false, {});
+
+      // THEN
+      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+        account: '56789',
+        region: 'south-pole',
+        name: 'aws://56789/south-pole',
+      }, expect.anything(), expect.anything());
+      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
+    });
+
+    test('globby bootstrap uses whats in the stacks', async () => {
+      // GIVEN
+      const toolkit = defaultToolkitSetup();
+      cloudExecutable.configuration.settings.set(['app'], 'something');
+
+      // WHEN
+      await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], undefined, undefined, false, false, {});
+
+      // THEN
+      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      }, expect.anything(), expect.anything());
+      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
     });
   });
 });

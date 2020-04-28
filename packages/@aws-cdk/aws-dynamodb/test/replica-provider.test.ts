@@ -20,15 +20,8 @@ const createEvent: OnEventRequest = {
   ResourceType: 'resource-type',
 };
 
-beforeEach(done => {
-  process.env.USE_NORMAL_SDK = 'true';
-  done();
-});
-
-afterEach(done => {
-  delete process.env.USE_NORMAL_SDK;
+afterEach(() => {
   AWS.restore();
-  done();
 });
 
 test('on event', async () => {

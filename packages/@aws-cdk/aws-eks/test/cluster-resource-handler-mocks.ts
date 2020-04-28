@@ -9,6 +9,7 @@ export let actualRequest: {
   configureAssumeRoleRequest?: sdk.STS.AssumeRoleRequest;
   createClusterRequest?: sdk.EKS.CreateClusterRequest;
   describeClusterRequest?: sdk.EKS.DescribeClusterRequest;
+  describeUpdateRequest?: sdk.EKS.DescribeUpdateRequest;
   deleteClusterRequest?: sdk.EKS.DeleteClusterRequest;
   updateClusterConfigRequest?: sdk.EKS.UpdateClusterConfigRequest;
   updateClusterVersionRequest?: sdk.EKS.UpdateClusterVersionRequest;
@@ -22,6 +23,8 @@ export let actualRequest: {
  */
 export let simulateResponse: {
   describeClusterResponseMockStatus?: string;
+  describeUpdateResponseMockStatus?: string;
+  describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
   deleteClusterErrorCode?: string;
   describeClusterExceptionCode?: string;
 } = { };
@@ -30,6 +33,8 @@ export function reset() {
   actualRequest = { };
   simulateResponse = { };
 }
+
+export const MOCK_UPDATE_STATUS_ID = 'MockEksUpdateStatusId';
 
 export const client: EksClient = {
 
@@ -87,14 +92,34 @@ export const client: EksClient = {
     };
   },
 
+  describeUpdate: async req => {
+    actualRequest.describeUpdateRequest = req;
+
+    return {
+      update: {
+        id: req.updateId,
+        errors: simulateResponse.describeUpdateResponseMockErrors,
+        status: simulateResponse.describeUpdateResponseMockStatus,
+      },
+    };
+  },
+
   updateClusterConfig: async req => {
     actualRequest.updateClusterConfigRequest = req;
-    return { };
+    return {
+      update: {
+        id: MOCK_UPDATE_STATUS_ID,
+      },
+    };
   },
 
   updateClusterVersion: async req => {
     actualRequest.updateClusterVersionRequest = req;
-    return { };
+    return {
+      update: {
+        id: MOCK_UPDATE_STATUS_ID,
+      },
+    };
   },
 
   createFargateProfile: async req => {
