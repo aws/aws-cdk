@@ -126,12 +126,12 @@ describe('Batch Job Definition', () => {
                       {
                         'Fn::GetAtt': [
                           'imagerepoD116FAF0',
-                          'Arn'
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                          'Arn',
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
               '.dkr.ecr.',
               {
@@ -143,30 +143,30 @@ describe('Batch Job Definition', () => {
                       {
                         'Fn::GetAtt': [
                           'imagerepoD116FAF0',
-                          'Arn'
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                          'Arn',
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
               '.',
               {
-                Ref: 'AWS::URLSuffix'
+                Ref: 'AWS::URLSuffix',
               },
               '/',
               {
-                Ref: 'imagerepoD116FAF0'
+                Ref: 'imagerepoD116FAF0',
               },
-              ':latest'
-            ]
-          ]
+              ':latest',
+            ],
+          ],
         },
         Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1
-      }
+        Vcpus: 1,
+      },
     }, ResourcePart.Properties);
   });
 
@@ -193,7 +193,7 @@ describe('Batch Job Definition', () => {
   test('can be imported from an ARN', () => {
     // WHEN
     const importedJob = batch.JobDefinition.fromJobDefinitionArn(stack, 'job-def-clone',
-    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+      'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');

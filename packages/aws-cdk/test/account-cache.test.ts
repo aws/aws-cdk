@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
+import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');
@@ -30,18 +30,18 @@ test('put(k,v) and then get(k)', async () => {
   const { cacheDir, cacheFile, cache } = await makeCache();
 
   try {
-    await cache.put('key', 'value');
-    await cache.put('boo', 'bar');
-    expect(await cache.get('key')).toBe('value');
+    await cache.put('key', { accountId: 'value', partition: 'aws' });
+    await cache.put('boo', { accountId: 'bar', partition: 'aws' });
+    expect(await cache.get('key')).toEqual({ accountId: 'value', partition: 'aws' });
 
     // create another cache instance on the same file, should still work
     const cache2 = new AccountAccessKeyCache(cacheFile);
-    expect(await cache2.get('boo')).toBe('bar');
+    expect(await cache2.get('boo')).toEqual({ accountId: 'bar', partition: 'aws' });
 
     // whitebox: read the file
     expect(await fs.readJson(cacheFile)).toEqual({
-      key: 'value',
-      boo: 'bar'
+      key: { accountId: 'value', partition: 'aws' },
+      boo: { accountId: 'bar', partition: 'aws' },
     });
   } finally {
     await nukeCache(cacheDir);
@@ -53,8 +53,8 @@ test('fetch(k, resolver) can be used to "atomically" get + resolve + put', async
 
   try {
     expect(await cache.get('foo')).toBeUndefined();
-    expect(await cache.fetch('foo', async () => 'bar')).toBe('bar');
-    expect(await cache.get('foo')).toBe('bar');
+    expect(await cache.fetch('foo', async () => ({ accountId: 'bar', partition: 'aws' }))).toEqual({ accountId: 'bar', partition: 'aws' });
+    expect(await cache.get('foo')).toEqual({ accountId: 'bar', partition: 'aws' });
   } finally {
     await nukeCache(cacheDir);
   }
@@ -68,20 +68,20 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
 
   try {
     for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
-      await cache.put(`key${i}`, `value${i}`);
+      await cache.put(`key${i}`, { accountId: `value${i}`, partition: 'aws' });
     }
 
     // verify all values are on disk
     const otherCache = new AccountAccessKeyCache(cacheFile);
     for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
-      expect(await otherCache.get(`key${i}`)).toBe(`value${i}`);
+      expect(await otherCache.get(`key${i}`)).toEqual({ accountId: `value${i}`, partition: 'aws' });
     }
 
     // add another value
-    await cache.put('nuke-me', 'genesis');
+    await cache.put('nuke-me', { accountId: 'genesis', partition: 'aws' });
 
     // now, we expect only `nuke-me` to exist on disk
-    expect(await otherCache.get('nuke-me')).toBe('genesis');
+    expect(await otherCache.get('nuke-me')).toEqual({ accountId: 'genesis', partition: 'aws' });
     for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
       expect(await otherCache.get(`key${i}`)).toBeUndefined();
     }

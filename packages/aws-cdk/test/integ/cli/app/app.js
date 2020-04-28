@@ -61,6 +61,47 @@ class OtherParameterStack extends cdk.Stack {
   }
 }
 
+class MultiParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam')
+    });
+    new sns.Topic(this, 'OtherTopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam')
+    });
+  }
+}
+
+class OutputsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const topic =  new sns.Topic(this, 'MyOutput', {
+      topicName: 'MyTopic'
+    });
+
+    new cdk.CfnOutput(this, 'TopicName', {
+      value: topic.topicName
+    })
+  }
+}
+
+class AnotherOutputsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const topic = new sns.Topic(this, 'MyOtherOutput', {
+      topicName: 'MyOtherTopic'
+    });
+
+    new cdk.CfnOutput(this, 'TopicName', {
+      value: topic.topicName
+    });
+  }
+}
+
 class IamStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -123,6 +164,12 @@ class DockerStack extends cdk.Stack {
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
     });
+
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
   }
 }
 
@@ -134,8 +181,13 @@ class DockerStackWithCustomFile extends cdk.Stack {
       directory: path.join(__dirname, 'docker'),
       file: 'Dockerfile.Custom'
     });
-  }
 
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+  }
 }
 
 class FailedStack extends cdk.Stack {
@@ -197,6 +249,11 @@ new YourStack(app, `${stackPrefix}-test-2`);
 // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
 new ParameterStack(app, `${stackPrefix}-param-test-1`);
 new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+// Deploy stack with multiple parameters
+new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
+// Deploy stack with outputs does ${stackPrefix}-outputs-test-*
+new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
+new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
 // Not included in wildcard
 new IamStack(app, `${stackPrefix}-iam-test`);
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);

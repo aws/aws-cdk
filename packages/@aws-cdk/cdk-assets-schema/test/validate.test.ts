@@ -14,7 +14,6 @@ test('Correctly validate Docker image asset', () => {
               region: 'us-north-20',
               repositoryName: 'REPO',
               imageTag: 'TAG',
-              imageUri: 'URI',
             },
           },
         },
@@ -51,7 +50,7 @@ test('Correctly validate File asset', () => {
               region: 'us-north-20',
               bucketName: 'Bouquet',
               objectKey: 'key',
-            }
+            },
           },
         },
       },
@@ -73,7 +72,7 @@ test('Throw on invalid file asset', () => {
               region: 'us-north-20',
               bucketName: 'Bouquet',
               objectKey: 'key',
-            }
+            },
           },
         },
       },

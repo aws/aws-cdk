@@ -1,4 +1,5 @@
 import { Construct, Stack, StackProps } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export declare enum ExampleAsset {
     ASSET_1 = "asset1.txt",
@@ -7,6 +8,8 @@ export declare enum ExampleAsset {
 
 export interface MyTestCdkStackProps extends StackProps {
     readonly assetType: ExampleAsset;
+
+    readonly env: cxapi.Environment;
 }
 
 export declare class MyTestCdkStack extends Stack {

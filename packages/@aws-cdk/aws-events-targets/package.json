@@ -86,11 +86,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "aws-sdk": "^2.634.0",
-    "aws-sdk-mock": "^5.0.0",
+    "aws-sdk": "^2.664.0",
+    "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^25.4.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -106,7 +106,9 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -122,10 +124,12 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "stable",
   "awslint": {
@@ -138,5 +142,9 @@
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
     ]
-  }
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

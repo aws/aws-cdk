@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
@@ -94,7 +94,7 @@ export class CfnResource extends CfnRefElement {
     // back to the actual construct path.
     if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.cfnOptions.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.node.path
+        [cxapi.PATH_METADATA_KEY]: this.node.path,
       };
     }
   }
@@ -274,13 +274,13 @@ export class CfnResource extends CfnRefElement {
             UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
-            Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId
+            Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
           }, props => {
             const renderedProps = this.renderProperties(props.Properties || {});
             props.Properties = renderedProps && (Object.values(renderedProps).find(v => !!v) ? renderedProps : undefined);
             return deepMerge(props, this.rawOverrides);
-          })
-        }
+          }),
+        },
       };
       return ret;
     } catch (e) {

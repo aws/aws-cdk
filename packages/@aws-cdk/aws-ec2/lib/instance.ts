@@ -262,7 +262,7 @@ export class Instance extends Resource implements IInstance {
     } else {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
-        allowAllOutbound: props.allowAllOutbound !== false
+        allowAllOutbound: props.allowAllOutbound !== false,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
@@ -270,17 +270,17 @@ export class Instance extends Resource implements IInstance {
     Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName]
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
@@ -291,7 +291,7 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+        throw new Error('When specifying AZ there has to be exactly one subnet of the given type in this az');
       }
     } else {
       subnet = subnets[0];
@@ -308,7 +308,7 @@ export class Instance extends Resource implements IInstance {
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
-      privateIpAddress: props.privateIpAddress
+      privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
 
@@ -358,7 +358,7 @@ export class Instance extends Resource implements IInstance {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
-        }
+        },
       };
     }
   }

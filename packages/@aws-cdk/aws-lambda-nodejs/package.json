@@ -46,14 +46,6 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "test/function.test.handler2.js",
-        "test/integ-handlers/js-handler.js"
-      ]
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -93,15 +85,21 @@
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
 }

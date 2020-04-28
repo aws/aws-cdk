@@ -72,24 +72,26 @@
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kms.KeyProps",
-      "docs-public-apis:@aws-cdk/aws-kms.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasName",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasTargetKey"
+      "props-physical-name:@aws-cdk/aws-kms.KeyProps"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

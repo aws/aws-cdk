@@ -1,6 +1,7 @@
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -235,6 +236,14 @@ export interface AwsCustomResourceProps {
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
+
+  /**
+   * The number of days log events of the Lambda function implementing
+   * this custom resource are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -278,7 +287,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
       if (call?.physicalResourceId?.responsePath) {
-        AwsCustomResource.breakIgnoreErrorsCircuit([call], "PhysicalResourceId.fromResponse");
+        AwsCustomResource.breakIgnoreErrorsCircuit([call], 'PhysicalResourceId.fromResponse');
       }
     }
 
@@ -292,6 +301,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
+      logRetention: props.logRetention,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
@@ -306,7 +316,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources
+            resources: props.policy.resources,
           }));
         }
       }
@@ -320,8 +330,8 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete)
-      }
+        delete: props.onDelete && encodeBooleans(props.onDelete),
+      },
     });
   }
 
@@ -340,7 +350,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseFieldReference(dataPath: string) {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getData");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getData');
     return this.customResource.getAtt(dataPath);
   }
 
@@ -356,7 +366,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseField(dataPath: string): string {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], "getDataString");
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
   }
 

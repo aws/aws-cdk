@@ -22,7 +22,7 @@ test('can parse cidr-ip', () => {
 
 test('can parse cidr-ip 6', () => {
   const rule = new SecurityGroupRule({
-    CidrIpv6: '::/0'
+    CidrIpv6: '::/0',
   });
 
   const peer = rule.peer!;
@@ -58,7 +58,7 @@ test('equality is reflexive', () => {
   fc.assert(fc.property(
     arbitraryRule, (statement) => {
       return new SecurityGroupRule(statement).equal(new SecurityGroupRule(statement));
-    }
+    },
   ));
 });
 
@@ -70,7 +70,7 @@ test('equality is symmetric', () => {
 
       fc.pre(a.equal(b));
       return b.equal(a);
-    }
+    },
   ));
 });
 

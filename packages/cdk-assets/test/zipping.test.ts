@@ -2,7 +2,7 @@
 import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
 import { AssetManifest, AssetPublishing } from '../lib';
 import * as bockfs from './bockfs';
-import { mockAws, mockedApiFailure, mockPutObject } from './mock-aws';
+import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
@@ -13,7 +13,7 @@ beforeEach(() => {
         theAsset: {
           source: {
             path: 'some_dir',
-            packaging: 'zip'
+            packaging: 'zip',
           },
           destinations: {
             theDestination: {
@@ -32,8 +32,8 @@ beforeEach(() => {
   aws = mockAws();
 
   // Accept all S3 uploads as new
-  aws.mockS3.headObject = mockedApiFailure('NotFound', 'File does not exist');
-  aws.mockS3.putObject = mockPutObject();
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
+  aws.mockS3.upload = mockUpload();
 });
 
 afterEach(() => {
@@ -45,7 +45,7 @@ test('Take a zipped upload', async () => {
 
   await pub.publish();
 
-  expect(aws.mockS3.putObject).toHaveBeenCalledWith(expect.objectContaining({
+  expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
     Bucket: 'some_bucket',
     Key: 'some_key',
     ContentType: 'application/zip',

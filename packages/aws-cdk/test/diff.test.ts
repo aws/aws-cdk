@@ -1,62 +1,66 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
-import { DeployStackOptions, DeployStackResult } from '../lib';
-import { AppStacks } from '../lib/api/cxapp/stacks';
-import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
-import { SDK } from '../lib/api/util/sdk';
+import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { Configuration } from '../lib/settings';
-import { testAssembly } from './util';
+import { classMockOf, MockCloudExecutable } from './util';
 
-const FIXED_RESULT = testAssembly({
-  stacks: [{
-    stackName: 'A',
-    template: { resource: 'A' },
-  },
-  {
-    stackName: 'B',
-    depends: ['A'],
-    template: { resource: 'B' },
-  },
-  {
-    stackName: 'C',
-    depends: ['A'],
-    template: { resource: 'C'},
-    metadata: {
-      '/resource': [
-        {
-          type: cxapi.ERROR_METADATA_KEY,
-          data: 'this is an error'
-        }
-      ]
-    }
-  }]
-});
+let cloudExecutable: MockCloudExecutable;
+let cloudFormation: jest.Mocked<CloudFormationDeployments>;
+let toolkit: CdkToolkit;
+beforeEach(() => {
+  cloudExecutable = new MockCloudExecutable({
+    stacks: [{
+      stackName: 'A',
+      template: { resource: 'A' },
+    },
+    {
+      stackName: 'B',
+      depends: ['A'],
+      template: { resource: 'B' },
+    },
+    {
+      stackName: 'C',
+      depends: ['A'],
+      template: { resource: 'C'},
+      metadata: {
+        '/resource': [
+          {
+            type: cxschema.ArtifactMetadataEntryType.ERROR,
+            data: 'this is an error',
+          },
+        ],
+      },
+    }],
+  });
 
-const appStacks = new AppStacks({
-  configuration: new Configuration(),
-  aws: new SDK(),
-  synthesizer: async () => FIXED_RESULT,
+  cloudFormation = classMockOf(CloudFormationDeployments);
+
+  toolkit = new CdkToolkit({
+    cloudExecutable,
+    cloudFormation,
+    configuration: cloudExecutable.configuration,
+    sdkProvider: cloudExecutable.sdkProvider,
+  });
+
+  // Default implementations
+  cloudFormation.readCurrentTemplate.mockResolvedValue({});
+  cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+    noOp: true,
+    outputs: {},
+    stackArn: '',
+    stackArtifact: options.stack,
+  }));
 });
 
 test('diff can diff multiple stacks', async () => {
   // GIVEN
-  const provisioner: IDeploymentTarget = {
-    async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
-      return {};
-    },
-    async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-      return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
-    }
-  };
-  const toolkit = new CdkToolkit({ appStacks, provisioner });
   const buffer = new StringWritable();
 
   // WHEN
   const exitCode = await toolkit.diff({
     stackNames: ['B'],
-    stream: buffer
+    stream: buffer,
   });
 
   // THEN
@@ -69,22 +73,13 @@ test('diff can diff multiple stacks', async () => {
 
 test('exits with 1 with diffs and fail set to true', async () => {
   // GIVEN
-  const provisioner: IDeploymentTarget = {
-    async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
-      return {};
-    },
-    async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-      return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
-    }
-  };
-  const toolkit = new CdkToolkit({ appStacks, provisioner });
   const buffer = new StringWritable();
 
   // WHEN
   const exitCode = await toolkit.diff({
     stackNames: ['A'],
     stream: buffer,
-    fail: true
+    fail: true,
   });
 
   // THEN
@@ -92,23 +87,13 @@ test('exits with 1 with diffs and fail set to true', async () => {
 });
 
 test('throws an error during diffs on stack with error metadata', async () => {
-  // GIVEN
-  const provisioner: IDeploymentTarget = {
-    async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
-      return {};
-    },
-    async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-      return { noOp: true, outputs: {}, stackArn: '', stackArtifact: options.stack };
-    }
-  };
-  const toolkit = new CdkToolkit({ appStacks, provisioner });
   const buffer = new StringWritable();
 
   // WHEN
   try {
     const exitCode = await toolkit.diff({
       stackNames: ['C'],
-      stream: buffer
+      stream: buffer,
     });
 
     // THEN

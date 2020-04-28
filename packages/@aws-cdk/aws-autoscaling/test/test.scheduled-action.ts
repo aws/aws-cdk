@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -19,7 +19,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
       Recurrence: '0 8 * * *',
-      MinSize: 10
+      MinSize: 10,
     }));
 
     test.done();
@@ -39,7 +39,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
-      StartTime: '2033-09-10T12:00:00Z'
+      StartTime: '2033-09-10T12:00:00Z',
     }));
 
     test.done();
@@ -60,47 +60,47 @@ export = {
     expect(stack).toMatch({
       Resources: {
         ASG46ED3070: {
-          Type: "AWS::AutoScaling::AutoScalingGroup",
+          Type: 'AWS::AutoScaling::AutoScalingGroup',
           Properties: {
-            MaxSize: "1",
-            MinSize: "1",
-            LaunchConfigurationName: { Ref: "ASGLaunchConfigC00AF12B" },
+            MaxSize: '1',
+            MinSize: '1',
+            LaunchConfigurationName: { Ref: 'ASGLaunchConfigC00AF12B' },
             Tags: [
               {
-                Key: "Name",
+                Key: 'Name',
                 PropagateAtLaunch: true,
-                Value: "ASG"
-              }
+                Value: 'ASG',
+              },
             ],
             VPCZoneIdentifier: [
-              { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
-              { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-            ]
+              { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+              { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+            ],
           },
           UpdatePolicy: {
             AutoScalingRollingUpdate: {
               WaitOnResourceSignals: false,
-              PauseTime: "PT0S",
+              PauseTime: 'PT0S',
               SuspendProcesses: [
-                "HealthCheck",
-                "ReplaceUnhealthy",
-                "AZRebalance",
-                "AlarmNotification",
-                "ScheduledActions"
-              ]
+                'HealthCheck',
+                'ReplaceUnhealthy',
+                'AZRebalance',
+                'AlarmNotification',
+                'ScheduledActions',
+              ],
             },
             AutoScalingScheduledAction: {
-              IgnoreUnmodifiedGroupSizeProperties: true
-            }
+              IgnoreUnmodifiedGroupSizeProperties: true,
+            },
           },
-        }
+        },
       },
       Parameters: {
         SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-          Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-          Default: "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
-        }
-      }
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        },
+      },
     }, MatchStyle.SUPERSET);
 
     test.done();

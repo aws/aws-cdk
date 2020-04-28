@@ -1,7 +1,7 @@
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from "@aws-cdk/core";
+import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { SubnetType, Vpc } from "../lib";
+import { SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -11,7 +11,7 @@ export = {
 
       test.throws(() => {
         Vpc.fromLookup(stack, 'Vpc', {
-          vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+          vpcId: Lazy.stringValue({ produce: () => 'some-id' }),
         });
 
       }, 'All arguments to Vpc.fromLookup() must be concrete');
@@ -23,7 +23,7 @@ export = {
       // GIVEN
       const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
       const vpc = Vpc.fromLookup(stack, 'VPC', {
-        vpcId: 'vpc-1234'
+        vpcId: 'vpc-1234',
       });
 
       // WHEN
@@ -180,8 +180,9 @@ interface MockVcpContextResponse {
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
 }
 
-function mockVpcContextProviderWith(test: Test, response: MockVcpContextResponse,
-                                    paramValidator?: (options: cxapi.VpcContextQuery) => void) {
+function mockVpcContextProviderWith(
+  test: Test, response: MockVcpContextResponse,
+  paramValidator?: (options: cxapi.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

@@ -25,17 +25,17 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
-      LifecycleTransition: "autoscaling:EC2_INSTANCE_LAUNCHING",
-      DefaultResult: "ABANDON",
-      NotificationTargetARN: "target:arn",
+      LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
+      DefaultResult: 'ABANDON',
+      NotificationTargetARN: 'target:arn',
     }));
 
     // Lifecycle Hook has a dependency on the policy object
     expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
       DependsOn: [
-        "ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB",
-        "ASGLifecycleHookTransitionRole3AAA6BB7",
-      ]
+        'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
+        'ASGLifecycleHookTransitionRole3AAA6BB7',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -43,14 +43,14 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
             Principal: {
-              Service: "autoscaling.amazonaws.com"
-            }
-          }
+              Service: 'autoscaling.amazonaws.com',
+            },
+          },
         ],
-      }
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -58,24 +58,24 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: "action:Work",
-            Effect: "Allow",
-            Resource: "*"
-          }
+            Action: 'action:Work',
+            Effect: 'Allow',
+            Resource: '*',
+          },
         ],
-      }
+      },
     }));
 
     test.done();
-  }
+  },
 };
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: cdk.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
     lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
-      resources: ['*']
+      resources: ['*'],
     }));
-    return { notificationTargetArn: 'target:arn', };
+    return { notificationTargetArn: 'target:arn' };
   }
 }

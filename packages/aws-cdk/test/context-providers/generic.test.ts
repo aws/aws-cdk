@@ -1,17 +1,8 @@
-import { ISDK } from '../../lib/api/util/sdk';
 import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
+import { MockSdkProvider } from '../util/mock-sdk';
 
-const mockSDK: ISDK = {
-  defaultAccount: () => Promise.resolve('123456789012'),
-  defaultRegion: () => Promise.resolve('bermuda-triangle-1337'),
-  cloudFormation: () => { throw new Error('Not Mocked'); },
-  ec2: () => { throw new Error('Not Mocked'); },
-  ecr: () => { throw new Error('Not Mocked'); },
-  route53: () => { throw new Error('Not Mocked'); },
-  s3: () => { throw new Error('Not Mocked'); },
-  ssm: () => { throw new Error('Not Mocked'); },
-};
+const mockSDK = new MockSdkProvider();
 
 test('errors are reported into the context value', async () => {
   // GIVEN
@@ -24,7 +15,7 @@ test('errors are reported into the context value', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: {}, provider: 'testprovider' }
+    { key: 'asdf', props: {}, provider: 'testprovider' },
   ], context, mockSDK);
 
   // THEN - error is now in context
@@ -45,7 +36,7 @@ test('errors are marked transient', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: {}, provider: 'testprovider' }
+    { key: 'asdf', props: {}, provider: 'testprovider' },
   ], context, mockSDK);
 
   // THEN - error is marked transient

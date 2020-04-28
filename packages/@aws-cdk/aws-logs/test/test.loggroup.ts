@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -11,12 +11,12 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retention: RetentionDays.ONE_WEEK
+      retention: RetentionDays.ONE_WEEK,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 7
+      RetentionInDays: 7,
     }));
 
     test.done();
@@ -31,7 +31,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 731
+      RetentionInDays: 731,
     }));
 
     test.done();
@@ -50,11 +50,11 @@ export = {
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
-        }
-      }
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     }));
 
     test.done();
@@ -69,18 +69,38 @@ export = {
       // Don't know why TypeScript doesn't complain about passing Infinity to
       // something where an enum is expected, but better keep this behavior for
       // existing clients.
-      retention: Infinity
+      retention: Infinity,
     });
 
     // THEN
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
-        }
-      }
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'unresolved retention'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'RetentionInDays', { default: 30, type: 'Number' });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retention: parameter.valueAsNumber,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: {
+        Ref: 'RetentionInDays',
+      },
     }));
 
     test.done();
@@ -93,18 +113,18 @@ export = {
     // WHEN
     new LogGroup(stack, 'LogGroup', {
       retention: Infinity,
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // THEN
     expect(stack).to(matchTemplate({
       Resources: {
         LogGroupF5B46931: {
-          Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Delete",
-          UpdateReplacePolicy: "Delete"
-        }
-      }
+          Type: 'AWS::Logs::LogGroup',
+          DeletionPolicy: 'Delete',
+          UpdateReplacePolicy: 'Delete',
+        },
+      },
     }));
 
     test.done();
@@ -122,7 +142,7 @@ export = {
     test.deepEqual(imported.logGroupName, 'my-log-group');
     test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
-      LogGroupName: "my-log-group"
+      LogGroupName: 'my-log-group',
     }));
     test.done();
   },
@@ -140,7 +160,7 @@ export = {
     test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group$/.test(imported.logGroupArn),
       `LogGroup ARN ${imported.logGroupArn} does not match the expected pattern`);
     expect(stack).to(haveResource('AWS::Logs::LogStream', {
-      LogGroupName: 'my-log-group'
+      LogGroupName: 'my-log-group',
     }));
     test.done();
   },
@@ -155,15 +175,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
-      FilterPattern: "{ $.myField = \"*\" }",
-      LogGroupName: { Ref: "LogGroupF5B46931" },
+      FilterPattern: '{ $.myField = "*" }',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
       MetricTransformations: [
         {
-        MetricName: "Field",
-        MetricNamespace: "MyService",
-        MetricValue: "$.myField"
-        }
-      ]
+          MetricName: 'Field',
+          MetricNamespace: 'MyService',
+          MetricValue: '$.myField',
+        },
+      ],
     }));
     test.equal(metric.namespace, 'MyService');
     test.equal(metric.metricName, 'Field');
@@ -181,14 +201,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
-      FilterPattern: "{ $.myField = \"*\" }",
+      FilterPattern: '{ $.myField = "*" }',
       MetricTransformations: [
         {
-          MetricName: "Field",
-          MetricNamespace: "MyNamespace/MyService",
-          MetricValue: "$.myField"
-        }
-      ]
+          MetricName: 'Field',
+          MetricNamespace: 'MyNamespace/MyService',
+          MetricValue: '$.myField',
+        },
+      ],
     }));
     test.equal(metric.namespace, 'MyNamespace/MyService');
     test.equal(metric.metricName, 'Field');
@@ -210,13 +230,13 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
-            Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "LogGroupF5B46931", "Arn" ] }
-          }
+            Action: [ 'logs:CreateLogStream', 'logs:PutLogEvents' ],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [ 'LogGroupF5B46931', 'Arn' ] },
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     test.done();

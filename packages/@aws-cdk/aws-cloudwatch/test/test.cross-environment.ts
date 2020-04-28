@@ -19,7 +19,7 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.attachTo(stack1)
+          a.attachTo(stack1),
         ],
       });
 
@@ -35,7 +35,7 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.attachTo(stack1)
+          a.attachTo(stack1),
         ],
       });
 
@@ -51,7 +51,7 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.with({ account: '1234', region: 'us-north-5' })
+          a.with({ account: '1234', region: 'us-north-5' }),
         ],
       });
 
@@ -90,8 +90,8 @@ export = {
 
       // THEN
       expect(stack1).to(haveResourceLike('AWS::CloudWatch::Alarm', {
-        MetricName: "ACount",
-        Namespace: "Test",
+        MetricName: 'ACount',
+        Namespace: 'Test',
         Period: 300,
       }));
 
@@ -111,7 +111,7 @@ export = {
 
       test.done();
     },
-  }
+  },
 };
 
 function graphMetricsAre(test: Test, stack: Stack, w: IWidget, metrics: any[]) {

@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -64,6 +64,17 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -106,8 +117,8 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
       const logDriver = taskImageOptions.logDriver !== undefined
-                          ? taskImageOptions.logDriver : enableLogging
-                            ? this.createAWSLogDriver(this.node.id) : undefined;
+        ? taskImageOptions.logDriver : enableLogging
+          ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -123,7 +134,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    this.service = new FargateService(this, "Service", {
+    this.service = new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
@@ -135,6 +146,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      platformVersion: props.platformVersion,
     });
     this.addServiceAsTarget(this.service);
   }

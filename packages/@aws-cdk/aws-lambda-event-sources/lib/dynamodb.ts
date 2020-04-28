@@ -11,7 +11,7 @@ export interface DynamoEventSourceProps extends StreamEventSourceProps {
 export class DynamoEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
 
-  constructor(private readonly table: dynamodb.Table, props: DynamoEventSourceProps) {
+  constructor(private readonly table: dynamodb.ITable, props: DynamoEventSourceProps) {
     super(props);
 
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 1000)) {
@@ -25,7 +25,7 @@ export class DynamoEventSource extends StreamEventSource {
     }
 
     const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`,
-      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn})
+      this.enrichMappingOptions({eventSourceArn: this.table.tableStreamArn}),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
@@ -37,7 +37,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error("DynamoEventSource is not yet bound to an event source mapping");
+      throw new Error('DynamoEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }

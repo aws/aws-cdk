@@ -1,10 +1,13 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
+
+// list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk'];
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxapi.RuntimeInfo {
+export function collectRuntimeInformation(): cxschema.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {
@@ -14,9 +17,16 @@ export function collectRuntimeInformation(): cxapi.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the @aws-cdk npm scope
+  // include only libraries that are in the whitelistLibraries list
   for (const name of Object.keys(libraries)) {
-    if (!name.startsWith('@aws-cdk/')) {
+    let foundMatch = false;
+    for (const scope of WHITELIST_SCOPES) {
+      if (name.startsWith(`${scope}/`)) {
+        foundMatch = true;
+      }
+    }
+
+    if (!foundMatch) {
       delete libraries[name];
     }
   }
@@ -59,7 +69,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     const packagePath = require.resolve(
       // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths }
+      { paths },
     );
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);

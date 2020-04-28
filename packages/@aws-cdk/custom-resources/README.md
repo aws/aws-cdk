@@ -1,10 +1,8 @@
 # AWS CDK Custom Resources
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
-
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -139,6 +137,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 |-----|----|--------|-----------
 |`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
+|*any*|*any*|No|Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
 
@@ -160,10 +159,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to
-[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
-that `PhysicalResourceId` is defines and contains the value returned from
-`onEvent` or the described default. At any case, it is guaranteed to exist.
+The input event to `isComplete` includes all request fields, combined with all
+fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
+returned from `onEvent`, it's value will be calculated based on the heuristics
+described above.
 
 The return value must be a JSON object with the following fields:
 
@@ -379,6 +378,19 @@ Since a successful resource provisioning might or might not produce outputs, thi
 - `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
+
+### Customizing the Lambda function implementing the custom resource
+Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
+resource:
+
+```ts
+new AwsCustomResource(this, 'Customized', {
+  // other props here
+  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
+  timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
+  logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
+})
+```
 
 ### Examples
 

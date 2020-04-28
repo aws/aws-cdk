@@ -4,7 +4,6 @@ import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { RestApi } from '../restapi';
-import { IdentitySource } from './identity-source';
 
 /**
  * Base properties for all lambda authorizers
@@ -76,7 +75,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new Error(`Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)`);
+      throw new Error('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)');
     }
   }
 
@@ -86,7 +85,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: RestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new Error(`Cannot attach authorizer to two different rest APIs`);
+      throw new Error('Cannot attach authorizer to two different rest APIs');
     }
 
     this.restApiId = restApi.restApiId;
@@ -99,7 +98,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     if (!this.role) {
       this.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
         principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn
+        sourceArn: this.authorizerArn,
       });
     } else if (this.role instanceof iam.Role) { // i.e. not imported
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
@@ -107,10 +106,25 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
           new iam.PolicyStatement({
             resources: [ this.handler.functionArn ],
             actions: [ 'lambda:InvokeFunction' ],
-          })
-        ]
+          }),
+        ],
       }));
     }
+  }
+
+  /**
+   * Returns a token that resolves to the Rest Api Id at the time of synthesis.
+   * Throws an error, during token resolution, if no RestApi is attached to this authorizer.
+   */
+  protected lazyRestApiId() {
+    return Lazy.stringValue({
+      produce: () => {
+        if (!this.restApiId) {
+          throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
+        }
+        return this.restApiId;
+      },
+    });
   }
 }
 
@@ -151,7 +165,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
@@ -167,7 +181,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
       resource: restApiId,
-      resourceName: `authorizers/${this.authorizerId}`
+      resourceName: `authorizers/${this.authorizerId}`,
     });
 
     this.setupPermissions();
@@ -190,7 +204,7 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
    *
    * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
    */
-  readonly identitySources: IdentitySource[];
+  readonly identitySources: string[];
 }
 
 /**
@@ -210,10 +224,10 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     super(scope, id, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new Error(`At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.`);
+      throw new Error('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
     }
 
-    const restApiId = Lazy.stringValue({ produce: () => this.restApiId });
+    const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
@@ -228,7 +242,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     this.authorizerArn = Stack.of(this).formatArn({
       service: 'execute-api',
       resource: restApiId,
-      resourceName: `authorizers/${this.authorizerId}`
+      resourceName: `authorizers/${this.authorizerId}`,
     });
 
     this.setupPermissions();

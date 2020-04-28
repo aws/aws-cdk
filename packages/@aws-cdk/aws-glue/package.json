@@ -74,19 +74,22 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.12.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-glue.Schema.BOOLEAN",
@@ -120,5 +123,8 @@
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className"
     ]
+  },
+  "awscdkio": {
+    "announce": false
   }
 }

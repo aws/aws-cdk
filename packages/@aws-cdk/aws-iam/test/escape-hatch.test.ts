@@ -18,14 +18,14 @@ describe('IAM escape hatches', () => {
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "OverriddenUserName"
-          }
-        }
-      }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'OverriddenUserName',
+          },
+        },
+      },
     });
   });
 
@@ -40,17 +40,17 @@ describe('IAM escape hatches', () => {
 
     // THEN
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "MyUserName",
-            "Hello": {
-              "World": "Boom"
-            }
-          }
-        }
-      }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'MyUserName',
+            'Hello': {
+              'World': 'Boom',
+            },
+          },
+        },
+      },
     });
   });
 
@@ -70,25 +70,25 @@ describe('IAM escape hatches', () => {
 
     // THEN
     expect(stack).toMatchTemplate({
-      "Resources": {
-        "user2C2B57AE": {
-          "Type": "AWS::IAM::User",
-          "Properties": {
-            "UserName": "HA!",
-            "Hello": {
-              "World": "Bam"
-            }
+      'Resources': {
+        'user2C2B57AE': {
+          'Type': 'AWS::IAM::User',
+          'Properties': {
+            'UserName': 'HA!',
+            'Hello': {
+              'World': 'Bam',
+            },
           },
-          "Joob": {
-            "Jab": "Jib"
+          'Joob': {
+            'Jab': 'Jib',
           },
-          "UpdatePolicy": {
-            "UseOnlineResharding": {
-              "Type": "None"
-            }
-          }
-        }
-      }
+          'UpdatePolicy': {
+            'UseOnlineResharding': {
+              'Type': 'None',
+            },
+          },
+        },
+      },
     });
   });
 });

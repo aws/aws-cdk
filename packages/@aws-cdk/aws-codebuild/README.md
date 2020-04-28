@@ -1,10 +1,10 @@
 ## AWS CodeBuild Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -156,9 +156,9 @@ With local caching, the cache is stored on the codebuild instance itself. This i
 cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
 guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
 
-* `LocalCacheMode.Source` caches Git metadata for primary and secondary sources.
-* `LocalCacheMode.DockerLayer` caches existing Docker layers.
-* `LocalCacheMode.Custom` caches directories you specify in the buildspec file.
+* `LocalCacheMode.SOURCE` caches Git metadata for primary and secondary sources.
+* `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
+* `LocalCacheMode.CUSTOM` caches directories you specify in the buildspec file.
 
 ```typescript
 new codebuild.Project(this, 'Project', {
@@ -167,7 +167,7 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
+  cache: codebuild.Cache.local(LocalCacheMode.DOCKER_LAYER, LocalCacheMode.CUSTOM)
 });
 ```
 
@@ -188,9 +188,9 @@ can use the `environment` property to customize the build environment:
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
-You can either specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
-`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+You can specify one of the predefined Windows/Linux images by using one
+of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
@@ -200,6 +200,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
   local asset.
+* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
 
 The following example shows how to define an image from a Docker asset:
 
@@ -212,6 +213,37 @@ The following example shows how to define an image from an ECR repository:
 The following example shows how to define an image from a private docker registry:
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
+
+## Credentials
+
+CodeBuild allows you to store credentials used when communicating with various sources,
+like GitHub:
+
+```typescript
+new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+  accessToken: cdk.SecretValue.secretsManager('my-token'),
+});
+// GitHub Enterprise is almost the same,
+// except the class is called GitHubEnterpriseSourceCredentials
+```
+
+and BitBucket:
+
+```typescript
+new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
+  username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
+  password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
+});
+```
+
+**Note**: the credentials are global to a given account in a given region -
+they are not defined per CodeBuild project.
+CodeBuild only allows storing a single credential of a given type
+(GitHub, GitHub Enterprise or BitBucket)
+in a given account in a given region -
+any attempt to save more than one will result in an error.
+You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
+to inspect what credentials are stored in your account.
 
 ## Events
 
@@ -227,7 +259,9 @@ project as a AWS CloudWatch event rule target:
 // start build when a commit is pushed
 const targets = require('@aws-cdk/aws-events-targets');
 
-codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
+codeCommitRepository.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+});
 ```
 
 ### Using Project as an event source
@@ -340,11 +374,41 @@ For example:
 ```ts
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
-    vpc: vpc,
-    buildSpec: codebuild.BuildSpec.fromObject({
-      // ...
-    }),
+  vpc: vpc,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
 });
 
 project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ```
+
+## Project File System Location EFS
+
+Add support for CodeBuild to build on AWS EFS file system mounts using
+the new ProjectFileSystemLocation.
+The `fileSystemLocations` property which accepts a list `ProjectFileSystemLocation`
+as represented by the interface `IFileSystemLocations`.
+The only supported file system type is `EFS`.
+
+For example:
+
+```ts
+new codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ]
+});
+```
+
+Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
+
+[Minimal Example](./test/integ.project-file-system-location.ts)

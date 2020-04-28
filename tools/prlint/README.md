@@ -1,6 +1,6 @@
 # prlint (beta)
 
-A linter that can run various checks to validate a PR adheres to our standards. 
+A linter that can run various checks to validate a PR adheres to our standards.
 
 ### Disclaimer
 

@@ -1,18 +1,14 @@
 ## AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -35,17 +31,21 @@ const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.InvokeFunction(submitLambda),
+    task: new tasks.RunLambdaTask(submitLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    duration: sfn.WaitTime.secondsPath('$.waitSeconds'),
+    time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -58,7 +58,9 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.InvokeFunction(getStatusLambda),
+    task: new tasks.RunLambdaTask(getStatusLambda, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    }),
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -105,13 +107,14 @@ This library comes with a set of classes that model the [Amazon States
 Language](https://states-language.net/spec.html). The following State classes
 are supported:
 
-* `Task`
-* `Pass`
-* `Wait`
-* `Choice`
-* `Parallel`
-* `Succeed`
-* `Fail`
+* [`Task`](#task)
+* [`Pass`](#pass)
+* [`Wait`](#wait)
+* [`Choice`](#choice)
+* [`Parallel`](#parallel)
+* [`Succeed`](#succeed)
+* [`Fail`](#fail)
+* [`Map`](#map)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -126,7 +129,7 @@ couple of the tasks available are:
 
 * `tasks.InvokeActivity` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
-* `tasks.InvokeFunction` -- invoke a Lambda function with function ARN
+* `tasks.RunBatchJob` -- run a Batch job
 * `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
 * `tasks.RunGlueJobTask` -- call Glue Job as integrated service
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
@@ -137,10 +140,11 @@ couple of the tasks available are:
 * `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 * `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
 * `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
+* `tasks.CallDynamoDB` -- call GetItem, PutItem, DeleteItem and UpdateItem APIs of DynamoDB
 
-Except `tasks.InvokeActivity` and `tasks.InvokeFunction`, the [service integration
+Except `tasks.InvokeActivity`, the [service integration
 pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
-(`integrationPattern`) are supposed to be given as parameter when customers want
+(`integrationPattern`) is supposed to be provided as a parameter when customers want
 to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
 
 #### Task parameters from the state json
@@ -153,40 +157,81 @@ such as `Data.stringAt()`.
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Lambda example - InvokeFunction
+#### Lambda example
+
+[Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
+
+You can specify the input to your Lambda function through the `payload` attribute.
+By default, Step Functions invokes Lambda function with the state input (JSON path '$')
+as the input.
+
+The following snippet invokes a Lambda Function with the state input as the payload
+by referencing the `$` path.
 
 ```ts
-const task = new sfn.Task(this, 'Invoke1', {
-    task: new tasks.InvokeFunction(myLambda),
-    inputPath: '$.input',
-    timeout: Duration.minutes(5),
-});
-
-// Add a retry policy
-task.addRetry({
-    interval: Duration.seconds(5),
-    maxAttempts: 10
-});
-
-// Add an error handler
-task.addCatch(errorHandlerState);
-
-// Set the next state
-task.next(nextState);
+new sfn.Task(this, 'Invoke with state input');
 ```
 
-#### Lambda example - RunLambdaTask
+When a function is invoked, the Lambda service sends  [these response
+elements](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseElements)
+back.
+
+⚠️ The response from the Lambda function is in an attribute called `Payload`
+
+The following snippet invokes a Lambda Function by referencing the `$.Payload` path
+to reference the output of a Lambda executed before it.
 
 ```ts
-  const task = new sfn.Task(stack, 'Invoke2', {
+new sfn.Task(this, 'Invoke with empty object as payload', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromObject({})
+  }),
+});
+
+new sfn.Task(this, 'Invoke with payload field in the state input', {
+  task: new tasks.RunLambdaTask(myOtherLambda, {
+    payload: sfn.TaskInput.fromDataAt('$.Payload'),
+  }),
+});
+```
+
+The following snippet invokes a Lambda and sets the task output to only include
+the Lambda function response.
+
+```ts
+new sfn.Task(this, 'Invoke and set function response as task output', {
+  task: new tasks.RunLambdaTask(myLambda, {
+    payload: sfn.TaskInput.fromDataAt('$'),
+  }),
+  outputPath: '$.Payload',
+});
+```
+
+You can have Step Functions pause a task, and wait for an external process to
+return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
+
+To use the callback pattern, set the `token` property on the task. Call the Step
+Functions `SendTaskSuccess` or `SendTaskFailure` APIs with the token to
+indicate that the task has completed and the state machine should resume execution.
+
+The following snippet invokes a Lambda with the task token as part of the input
+to the Lambda.
+
+```ts
+  const task = new sfn.Task(stack, 'Invoke with callback', {
     task: new tasks.RunLambdaTask(myLambda, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: {
-        token: sfn.Context.taskToken
+        token: sfn.Context.taskToken,
+        input: sfn.TaskInput.fromDataAt('$.someField'),
       }
     })
   });
 ```
+
+⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
+call. Learn more about [Callback with the Task
+Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
 #### Glue Job example
 
@@ -202,6 +247,39 @@ task.next(nextState);
 ```
 
 [Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
+
+#### Batch example
+
+```ts
+import batch = require('@aws-cdk/aws-batch');
+
+const batchQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [
+    {
+      order: 1,
+      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
+        computeResources: { vpc }
+      })
+    }
+  ]
+});
+
+const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
+  container: {
+    image: ecs.ContainerImage.fromAsset(
+      path.resolve(__dirname, 'batchjob-image')
+    )
+  }
+});
+
+const task = new sfn.Task(this, 'Submit Job', {
+  task: new tasks.RunBatchJob({
+    jobDefinition: batchJobDefinition,
+    jobName: 'MyJob',
+    jobQueue: batchQueue
+  })
+});
+```
 
 #### SNS example
 
@@ -391,6 +469,115 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
 
+#### DynamoDB example
+
+##### PutItem
+
+```ts
+const TABLE_NAME = 'Messages';
+const MESSAGE_ID = `1234`;
+const firstNumber = 18;
+const secondNumber = 24;
+
+const putItemTask = new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.putItem({
+    item: {
+      MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+      Text: new tasks.DynamoAttributeValue().withS(
+        sfn.Data.stringAt('$.bar')
+      ),
+      TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(putItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### GetItem
+
+```ts
+const getItemTask = new sfn.Task(this, 'GetItem', {
+  task: tasks.CallDynamoDB.getItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(getItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### UpdateItem
+
+```ts
+const updateItemTask = new sfn.Task(this, 'UpdateItem', {
+  task: tasks.CallDynamoDB.updateItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME,
+    expressionAttributeValues: {
+      ':val': new tasks.DynamoAttributeValue().withN(
+        sfn.Data.stringAt('$.Item.TotalCount.N')
+      ),
+      ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
+    },
+    updateExpression: 'SET TotalCount = :val + :rand'
+  })
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(updateItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
+
+##### DeleteItem
+
+```ts
+const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
+  task: tasks.CallDynamoDB.deleteItem({
+    partitionKey: {
+      name: 'MessageId',
+      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
+    },
+    tableName: TABLE_NAME
+  }),
+  resultPath: 'DISCARD'
+});
+
+const definition = new sfn.Pass(this, 'Start', {
+  result: sfn.Result.fromObject({ bar: 'SomeValue' })
+})
+  .next(deleteItemTask);
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  definition
+});
+```
 
 ### Pass
 
@@ -427,7 +614,7 @@ wait.next(startTheWork);
 
 ### Choice
 
-A `Choice` state can take a differen path through the workflow based on the
+A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
@@ -502,6 +689,22 @@ const success = new stepfunctions.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
+```
+
+### Map
+
+A `Map` state can be used to run a set of steps for each element of an input array.
+A `Map` state will execute the same steps for multiple entries of an array in the state input.
+
+While the `Parallel` state executes multiple branches of steps using the same input, a `Map` state will
+execute the same steps for multiple entries of an array in the state input.
+
+```ts
+const map = new stepfunctions.Map(this, 'Map State', {
+    maxConcurrency: 1,
+    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+});
+map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
 ## Task Chaining
@@ -588,6 +791,10 @@ new stepfunctions.Parallel(this, 'All jobs')
     .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 ```
 
+A few utility functions are available to parse state machine fragments.
+* `State.findReachableStates`: Retrieve the list of states reachable from a given state.
+* `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
+
 ## Activity
 
 **Activities** represent work that is done on some non-Lambda worker pool. The
@@ -639,6 +846,22 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 });
 ```
 
+## Logging
+
+Enable logging to CloudWatch by passing a logging configuration with a
+destination LogGroup:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    logs: {
+      destinations: logGroup,
+      level: stepfunctions.LogLevel.ALL,
+    }
+});
+```
 
 ## Future work
 

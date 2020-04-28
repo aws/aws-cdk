@@ -107,7 +107,7 @@ export class S3DeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // pipeline needs permissions to write to the S3 bucket
     this.props.bucket.grantWrite(options.role);
 

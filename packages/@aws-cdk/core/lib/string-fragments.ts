@@ -1,5 +1,5 @@
-import { IFragmentConcatenator, IResolvable } from "./resolvable";
-import { isResolvableObject } from "./token";
+import { IFragmentConcatenator, IResolvable } from './resolvable';
+import { isResolvableObject } from './token';
 
 /**
  * Result of the split of a string with Tokens

@@ -22,6 +22,13 @@ export interface IService extends IResource {
    * @attribute
    */
   readonly serviceArn: string;
+
+  /**
+   * The name of the service.
+   *
+   * @attribute
+   */
+  readonly serviceName: string;
 }
 
 /**
@@ -212,10 +219,10 @@ class ApplicationListenerConfig extends ListenerConfig {
       ... props,
       targets: [
         service.loadBalancerTarget({
-          ...target
-        })
+          ...target,
+        }),
       ],
-      port
+      port,
     });
   }
 }
@@ -237,19 +244,29 @@ class NetworkListenerConfig extends ListenerConfig {
       ... this.props,
       targets: [
         service.loadBalancerTarget({
-          ...target
-        })
+          ...target,
+        }),
       ],
-      port
+      port,
     });
   }
+}
+
+/**
+ * The interface for BaseService.
+ */
+export interface IBaseService extends IService {
+  /**
+   * The cluster that hosts the service.
+   */
+  readonly cluster: ICluster;
 }
 
 /**
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
-  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+  implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -307,24 +324,25 @@ export abstract class BaseService extends Resource
   /**
    * Constructs a new instance of the BaseService class.
    */
-  constructor(scope: Construct,
-              id: string,
-              props: BaseServiceProps,
-              additionalProps: any,
-              taskDefinition: TaskDefinition) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: BaseServiceProps,
+    additionalProps: any,
+    taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
 
     this.taskDefinition = taskDefinition;
 
-    this.resource = new CfnService(this, "Service", {
+    this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
-        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
+        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
@@ -334,7 +352,7 @@ export abstract class BaseService extends Resource
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
-      ...additionalProps
+      ...additionalProps,
     });
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
@@ -409,7 +427,7 @@ export abstract class BaseService extends Resource
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
         return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort);
-      }
+      },
     };
   }
 
@@ -437,7 +455,7 @@ export abstract class BaseService extends Resource
       target.listener.addTargets(target.newTargetGroupId, {
         containerName: target.containerName,
         containerPort: target.containerPort,
-        protocol: target.protocol
+        protocol: target.protocol,
       }, this);
     }
   }
@@ -465,7 +483,7 @@ export abstract class BaseService extends Resource
       resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
-      ...props
+      ...props,
     });
   }
 
@@ -477,13 +495,13 @@ export abstract class BaseService extends Resource
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace !== undefined ? options.cloudMapNamespace : this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
+      throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
     }
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
+      throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
 
     // Bridge or host network mode requires SRV records
@@ -494,7 +512,7 @@ export abstract class BaseService extends Resource
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
-        throw new Error("SRV records must be used when network mode is Bridge or Host.");
+        throw new Error('SRV records must be used when network mode is Bridge or Host.');
       }
     }
 
@@ -524,7 +542,7 @@ export abstract class BaseService extends Resource
     this.addServiceRegistry({
       arn: serviceArn,
       containerName,
-      containerPort
+      containerPort,
     });
 
     this.cloudmapService = cloudmapService;
@@ -540,7 +558,7 @@ export abstract class BaseService extends Resource
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -568,7 +586,7 @@ export abstract class BaseService extends Resource
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
-      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
+      vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
@@ -580,7 +598,7 @@ export abstract class BaseService extends Resource
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
-      }
+      },
     };
   }
 
@@ -597,16 +615,16 @@ export abstract class BaseService extends Resource
    */
   private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.");
+      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.");
+      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
     }
 
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
-      containerPort
+      containerPort,
     });
   }
 
@@ -615,7 +633,7 @@ export abstract class BaseService extends Resource
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
+      throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
 
     this.loadBalancers.push({
@@ -634,7 +652,7 @@ export abstract class BaseService extends Resource
 
   private get defaultLoadBalancerTarget() {
     return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName
+      containerName: this.taskDefinition.defaultContainer!.containerName,
     });
   }
 
@@ -666,8 +684,8 @@ export abstract class BaseService extends Resource
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.anyValue({
       produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
-                     this.loadBalancers.length > 0 ? 60 :
-                     undefined
+        this.loadBalancers.length > 0 ? 60 :
+          undefined,
     });
   }
 }
@@ -764,17 +782,17 @@ export enum DeploymentControllerType {
    * The rolling update (ECS) deployment type involves replacing the current
    * running version of the container with the latest version.
    */
-  ECS = "ECS",
+  ECS = 'ECS',
 
   /**
    * The blue/green (CODE_DEPLOY) deployment type uses the blue/green deployment model powered by AWS CodeDeploy
    */
-  CODE_DEPLOY = "CODE_DEPLOY",
+  CODE_DEPLOY = 'CODE_DEPLOY',
 
   /**
    * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
    */
-  EXTERNAL = "EXTERNAL"
+  EXTERNAL = 'EXTERNAL'
 }
 
 /**

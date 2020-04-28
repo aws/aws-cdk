@@ -9,7 +9,9 @@ describe('Batch Job Queue', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env');
+    computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
+      managed: false,
+    });
   });
 
   it('can be imported from an ARN', () => {
@@ -21,7 +23,7 @@ describe('Batch Job Queue', () => {
         {
           computeEnvironment,
           order: 1,
-        }
+        },
       ],
     });
     const jobQFromArn = batch.JobQueue.fromJobQueueArn(stack, 'test-job-queue-from-arn', existingJobQ.jobQueueArn);
@@ -30,7 +32,7 @@ describe('Batch Job Queue', () => {
     expect(jobQFromArn.jobQueueArn).toEqual(existingJobQ.jobQueueArn);
   });
 
-  it('renders the correct cloudformation properties', () => {
+  it('renders the correct CloudFormation properties', () => {
     // WHEN
     const props: batch.JobQueueProps = {
       priority: 1,
@@ -41,7 +43,7 @@ describe('Batch Job Queue', () => {
           order: 1,
         },
       ],
-      jobQueueName: 'test-job-queue-name'
+      jobQueueName: 'test-job-queue-name',
     };
     new batch.JobQueue(stack, 'test-job-queue', props);
 
@@ -53,10 +55,10 @@ describe('Batch Job Queue', () => {
       ComputeEnvironmentOrder: [
         {
           ComputeEnvironment: {
-            Ref: 'testcomputeenv547FFD1A'
+            Ref: 'testcomputeenv547FFD1A',
           },
           Order: 1,
-        }
+        },
       ],
     }, ResourcePart.Properties);
   });
@@ -69,7 +71,7 @@ describe('Batch Job Queue', () => {
         {
           computeEnvironment,
           order: 1,
-        }
+        },
       ],
     });
 

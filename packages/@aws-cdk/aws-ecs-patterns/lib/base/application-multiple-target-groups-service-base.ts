@@ -380,7 +380,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
             domainZone: lbProps.domainZone,
             listenerName: listenerProps.name,
             loadBalancer: lb,
-            port: listenerProps.port
+            port: listenerProps.port,
           });
           this.listeners.push(listener);
         }
@@ -397,7 +397,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       this.loadBalancer = this.createLoadBalancer('LB');
       const protocol = this.createListenerProtocol();
       this.listener = this.configListener(protocol, {
-        listenerName: "PublicListener",
+        listenerName: 'PublicListener',
         loadBalancer: this.loadBalancer,
       });
       const domainName = this.createDomainName(this.loadBalancer);
@@ -441,12 +441,12 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
           service.loadBalancerTarget({
             containerName: container.containerName,
             containerPort: targetProps.containerPort,
-            protocol: targetProps.protocol
-          })
+            protocol: targetProps.protocol,
+          }),
         ],
         hostHeader: targetProps.hostHeader,
         pathPattern: targetProps.pathPattern,
-        priority: targetProps.priority
+        priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);
     }
@@ -461,7 +461,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       if (!container.findPortMapping(target.containerPort, target.protocol || Protocol.TCP)) {
         container.addPortMappings({
           containerPort: target.containerPort,
-          protocol: target.protocol
+          protocol: target.protocol,
         });
       }
     }
@@ -473,8 +473,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
-                        ? logDriverProp : enableLogging
-                          ? this.createAWSLogDriver(this.node.id) : undefined;
+      ? logDriverProp : enableLogging
+        ? this.createAWSLogDriver(this.node.id) : undefined;
     return logDriver;
   }
 
@@ -518,7 +518,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);
@@ -538,7 +538,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     } else {
       return new DnsValidatedCertificate(this, `Certificate${listenerName}`, {
         domainName,
-        hostedZone: domainZone
+        hostedZone: domainZone,
       });
     }
   }

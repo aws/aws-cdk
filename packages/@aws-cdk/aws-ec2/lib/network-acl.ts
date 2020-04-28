@@ -35,7 +35,7 @@ abstract class NetworkAclBase extends Resource implements INetworkAcl {
   public addEntry(id: string, options: CommonNetworkAclEntryOptions): NetworkAclEntry {
     return new NetworkAclEntry(this, id, {
       networkAcl: this,
-      ...options
+      ...options,
     });
   }
 
@@ -112,7 +112,7 @@ export class NetworkAcl extends NetworkAclBase {
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id, {
-      physicalName: props.networkAclName
+      physicalName: props.networkAclName,
     });
 
     this.vpc = props.vpc;
@@ -149,12 +149,12 @@ export enum Action {
   /**
    * Allow the traffic
    */
-  ALLOW = "allow",
+  ALLOW = 'allow',
 
   /**
    * Deny the traffic
    */
-  DENY = "deny",
+  DENY = 'deny',
 }
 
 /**
@@ -268,7 +268,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
-      physicalName: props.networkAclEntryName
+      physicalName: props.networkAclEntryName,
     });
 
     this.networkAcl = props.networkAcl;
@@ -290,10 +290,10 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  * @experimental
  */
 export interface ISubnetNetworkAclAssociation extends IResource {
- /**
-  * ID for the current SubnetNetworkAclAssociation
-  * @attribute
-  */
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
   readonly subnetNetworkAclAssociationAssociationId: string;
 }
 
@@ -336,8 +336,9 @@ abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubn
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
-  public static fromSubnetNetworkAclAssociationAssociationId(scope: Construct, id: string,
-                                                             subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
+  public static fromSubnetNetworkAclAssociationAssociationId(
+    scope: Construct, id: string,
+    subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
       public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
     }
@@ -366,12 +367,12 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
 
   constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
     super(scope, id, {
-      physicalName: props.subnetNetworkAclAssociationName
+      physicalName: props.subnetNetworkAclAssociationName,
     });
 
     this.association = new CfnSubnetNetworkAclAssociation(this, 'Resource', {
       networkAclId: props.networkAcl.networkAclId,
-      subnetId: props.subnet.subnetId
+      subnetId: props.subnet.subnetId,
     });
 
     this.networkAcl = props.networkAcl;

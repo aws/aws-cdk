@@ -7,6 +7,7 @@ import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
 let aws: ReturnType<typeof mockAws>;
+const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
@@ -14,7 +15,7 @@ beforeEach(() => {
       dockerImages: {
         theAsset: {
           source: {
-            directory: 'dockerdir'
+            directory: 'dockerdir',
           },
           destinations: {
             theDestination: {
@@ -22,13 +23,30 @@ beforeEach(() => {
               assumeRoleArn: 'arn:aws:role',
               repositoryName: 'repo',
               imageTag: 'abcdef',
-              imageUri: '12345.amazonaws.com/repo:abcdef',
             },
           },
         },
       },
     }),
     '/simple/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
+    '/abs/cdk.out/assets.json': JSON.stringify({
+      version: AssetManifestSchema.currentVersion(),
+      dockerImages: {
+        theAsset: {
+          source: {
+            directory: absoluteDockerPath,
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'abcdef',
+            },
+          },
+        },
+      },
+    }),
   });
 
   aws = mockAws();
@@ -62,7 +80,7 @@ describe('with a complete manifest', () => {
 
     expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
       imageIds: [{imageTag: 'abcdef'}],
-      repositoryName: 'repo'
+      repositoryName: 'repo',
     }));
   });
 
@@ -70,16 +88,16 @@ describe('with a complete manifest', () => {
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
-      ]
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
     });
 
     mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'] },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
-      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
-      );
+    );
 
     await pub.publish();
   });
@@ -88,18 +106,40 @@ describe('with a complete manifest', () => {
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' }
-      ]
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
     });
 
     mockSpawn(
-      { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
-      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '/simple/cdk.out/dockerdir'] },
-      { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+      { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
+      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
+      { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
     );
 
     await pub.publish();
   });
+});
+
+test('correctly identify Docker directory if path is absolute', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/abs/cdk.out'), { aws });
+
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
+  });
+
+  mockSpawn(
+    // Only care about the 'build' command line
+    { commandLine: ['docker', 'login'], prefix: true },
+    { commandLine: ['docker', 'inspect'], exitCode: 1, prefix: true },
+    { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
+    { commandLine: ['docker', 'tag'], prefix: true },
+    { commandLine: ['docker', 'push'], prefix: true },
+  );
+
+  await pub.publish();
 });

@@ -21,3 +21,4 @@ dist
 !.jsii
 
 tsconfig.json
+.eslintrc.js

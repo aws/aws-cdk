@@ -113,7 +113,7 @@ export class GitHubSourceAction extends Action {
   }
 
   protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
       new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
@@ -137,7 +137,7 @@ export class GitHubSourceAction extends Action {
       configuration: {
         Owner: this.props.owner,
         Repo: this.props.repo,
-        Branch: this.props.branch || "master",
+        Branch: this.props.branch || 'master',
         OAuthToken: this.props.oauthToken.toString(),
         PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
       },
