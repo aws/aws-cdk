@@ -38,13 +38,13 @@
     "jszip": "^3.4.0",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.4.0",
-    "mock-fs": "^4.11.0",
+    "mock-fs": "^4.12.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.660.0",
+    "aws-sdk": "^2.664.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
