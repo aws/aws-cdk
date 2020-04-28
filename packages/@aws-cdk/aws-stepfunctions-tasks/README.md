@@ -61,7 +61,7 @@ actions, and coordinate executions directly from the Amazon States Language in
 Step Functions. You can directly call and pass parameters to the APIs of those
 services.
 
-### Task parameters from the state JSON
+## Task parameters from the state JSON
 
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
