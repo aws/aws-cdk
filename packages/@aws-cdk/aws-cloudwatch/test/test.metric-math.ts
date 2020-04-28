@@ -507,6 +507,28 @@ export = {
       test.done();
     },
 
+    'MathExpression without inner metrics emits its own period'(test: Test) {
+      // WHEN
+      new Alarm(stack, 'Alarm', {
+        threshold: 1, evaluationPeriods: 1,
+        metric: new MathExpression({
+          expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
+          usingMetrics: {},
+        }),
+      });
+
+      // THEN
+      alarmMetricsAre([
+        {
+          Expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
+          Id: 'expr_1',
+          Period: 300
+        },
+      ]);
+
+      test.done();
+    },
+
     'annotation for a mathexpression alarm is calculated based upon constituent metrics'(test: Test) {
       // GIVEN
       const alarm = new Alarm(stack, 'Alarm', {
