@@ -3,14 +3,25 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 
+export interface EksUpdateId {
+  /**
+   * If this field is included in an event passed to "IsComplete", it means we
+   * initiated an EKS update that should be monitored using eks:DescribeUpdate
+   * instead of just looking at the cluster status.
+   */
+  EksUpdateId?: string
+}
+
+export type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
+
 export abstract class ResourceHandler {
   protected readonly requestId: string;
   protected readonly logicalResourceId: string;
   protected readonly requestType: 'Create' | 'Update' | 'Delete';
   protected readonly physicalResourceId?: string;
-  protected readonly event: AWSLambda.CloudFormationCustomResourceEvent;
+  protected readonly event: ResourceEvent;
 
-  constructor(protected readonly eks: EksClient, event: AWSLambda.CloudFormationCustomResourceEvent) {
+  constructor(protected readonly eks: EksClient, event: ResourceEvent) {
     this.requestType = event.RequestType;
     this.requestId = event.RequestId;
     this.logicalResourceId = event.LogicalResourceId;
@@ -55,7 +66,7 @@ export abstract class ResourceHandler {
 
   protected abstract async onCreate(): Promise<OnEventResponse>;
   protected abstract async onDelete(): Promise<OnEventResponse | void>;
-  protected abstract async onUpdate(): Promise<OnEventResponse | void>;
+  protected abstract async onUpdate(): Promise<(OnEventResponse & EksUpdateId) | void>;
   protected abstract async isCreateComplete(): Promise<IsCompleteResponse>;
   protected abstract async isDeleteComplete(): Promise<IsCompleteResponse>;
   protected abstract async isUpdateComplete(): Promise<IsCompleteResponse>;
@@ -68,6 +79,7 @@ export interface EksClient {
   describeCluster(request: aws.EKS.DescribeClusterRequest): Promise<aws.EKS.DescribeClusterResponse>;
   updateClusterConfig(request: aws.EKS.UpdateClusterConfigRequest): Promise<aws.EKS.UpdateClusterConfigResponse>;
   updateClusterVersion(request: aws.EKS.UpdateClusterVersionRequest): Promise<aws.EKS.UpdateClusterVersionResponse>;
+  describeUpdate(req: aws.EKS.DescribeUpdateRequest): Promise<aws.EKS.DescribeUpdateResponse>;
   createFargateProfile(request: aws.EKS.CreateFargateProfileRequest): Promise<aws.EKS.CreateFargateProfileResponse>;
   describeFargateProfile(request: aws.EKS.DescribeFargateProfileRequest): Promise<aws.EKS.DescribeFargateProfileResponse>;
   deleteFargateProfile(request: aws.EKS.DeleteFargateProfileRequest): Promise<aws.EKS.DeleteFargateProfileResponse>;
