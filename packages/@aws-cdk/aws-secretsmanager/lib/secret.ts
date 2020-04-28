@@ -53,7 +53,7 @@ export interface ISecret extends IResource {
    * automatically created upon the first call to `addToResourcePolicy`. If
    * the secret is imported, then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Denies the `DeleteSecret` action to all principals within the current
