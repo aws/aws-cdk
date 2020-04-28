@@ -34,8 +34,11 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The list of additional input Artifacts for this action.
    *
-   * Artifacts reside in subfolders [01, 02, ...] where primary input artifact
-   * resides in "00“. Shell home is always on primary input folder.
+   * Artifacts of this property reside in  CODEBUILD_SRC_DIR_sourceIdentifer
+   * in contrast to the input property artifacts which reside in CODEBUILD_SRC_DIR. The 
+   * shell on the build system always starts in CODEBUILD_SRC_DIR, _NOT_ in 
+   * CODEBUILD_SRC_DIR_sourceIdentifer. For more information see
+   * https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly extraInputs?: codepipeline.Artifact[];
 
