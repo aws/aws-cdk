@@ -22,7 +22,7 @@ new codebuild.Project(stack, 'MyProject', {
       packageZip: true,
       path: 'another/path',
       identifier: 'AddArtifact1',
-      useBuildspecName: true,
+      useNameFromBuildSpec: true,
     }),
 });
 

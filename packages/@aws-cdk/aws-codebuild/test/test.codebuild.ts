@@ -1134,7 +1134,7 @@ export = {
       },
     },
     'S3': {
-      'useBuildspecName is set to true'(test: Test) {
+      'useNameFromBuildSpec is set to true'(test: Test) {
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'MyBucket');
         new codebuild.Project(stack, 'MyProject', {
@@ -1147,7 +1147,7 @@ export = {
             path: 'another/path',
             name: 'name',
             identifier: 'artifact1',
-            useBuildspecName: true,
+            useNameFromBuildSpec: true,
           }),
         });
 
@@ -1161,7 +1161,7 @@ export = {
 
         test.done();
       },
-      'useBuildspecName is set to false'(test: Test) {
+      'useNameFromBuildSpec is set to false'(test: Test) {
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'MyBucket');
         new codebuild.Project(stack, 'MyProject', {
@@ -1174,7 +1174,7 @@ export = {
             path: 'another/path',
             name: 'name',
             identifier: 'artifact1',
-            useBuildspecName: false,
+            useNameFromBuildSpec: false,
           }),
         });
 

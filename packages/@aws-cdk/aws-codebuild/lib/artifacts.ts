@@ -128,7 +128,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default false - ignore buildspec artifact name
    */
-  readonly useBuildspecName?: boolean;
+  readonly useNameFromBuildSpec?: boolean;
 }
 
 /**
@@ -153,7 +153,7 @@ class S3Artifacts extends Artifacts {
         name: this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
         encryptionDisabled: this.props.encryption === false ? true : undefined,
-        overrideArtifactName: this.props.useBuildspecName === true ? true : undefined,
+        overrideArtifactName: this.props.useNameFromBuildSpec === true ? true : undefined,
       },
     };
   }
