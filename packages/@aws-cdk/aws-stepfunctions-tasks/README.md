@@ -22,38 +22,39 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Table Of Contents
 
 - [Task](#task)
-  - [Parameters](#task-parameters-from-the-state-json)
-  - [Batch](#batch)
-    - [SubmitJob](#submitjob)
-  - [DynamoDB](#dynamodb)
-    - [GetItem](#getitem)
-    - [PutItem](#putitem)
-    - [DeleteItem](#deleteitem)
-    - [UpdateItem](#updateitem)
-  - [ECS](#ecs)
-    - [RunTask](#runtask)
-  - [EMR](#emr)
-    - [Create Cluster](#create-cluster)
-    - [Termination Protection](#termination-protection)
-    - [Terminate Cluster](#terminate-cluster)
-    - [Add Step](#add-step)
-    - [Cancel Step](#cancel-step)
-    - [Modify Instance Fleet](#modify-instance-fleet)
-    - [Modify Instance Group](#modify-instance-group)
-  - [Evaluate Expression](#evaluate-expression)
-  - [Glue](#glue)
-  - [Lambda](#lambda)
-  - [SageMaker](#sagemaker)
-    - [Create Training Job](#create-training-job)
-    - [Create Transform Job](#create-transform-job)
-  - [SNS](#sns)
-  - [Step Functions](#step-functions)
-  - [SQS](#sqs)
+- [Parameters](#task-parameters-from-the-state-json)
+- [Evaluate Expression](#evaluate-expression)
+- [Batch](#batch)
+  - [SubmitJob](#submitjob)
+- [DynamoDB](#dynamodb)
+  - [GetItem](#getitem)
+  - [PutItem](#putitem)
+  - [DeleteItem](#deleteitem)
+  - [UpdateItem](#updateitem)
+- [ECS](#ecs)
+  - [RunTask](#runtask)
+- [EMR](#emr)
+  - [Create Cluster](#create-cluster)
+  - [Termination Protection](#termination-protection)
+  - [Terminate Cluster](#terminate-cluster)
+  - [Add Step](#add-step)
+  - [Cancel Step](#cancel-step)
+  - [Modify Instance Fleet](#modify-instance-fleet)
+  - [Modify Instance Group](#modify-instance-group)
+- [Glue](#glue)
+- [Lambda](#lambda)
+- [SageMaker](#sagemaker)
+  - [Create Training Job](#create-training-job)
+  - [Create Transform Job](#create-transform-job)
+- [SNS](#sns)
+- [Step Functions](#step-functions)
+- [SQS](#sqs)
 
 ### Task
 
-A `Task` represents some work that needs to be done. In the CDK, the exact work to
-be done is determine by a class that implements `IStepFunctionsTask`.
+A Task state represents a single unit of work performed by a state machine. In the
+CDK, the exact work to be In the CDK, the exact work to be done is determined by
+a class that implements `IStepFunctionsTask`.
 
 AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
 actions, and coordinate executions directly from the Amazon States Language in
@@ -62,18 +63,66 @@ services.
 
 #### Task parameters from the state JSON
 
-Many tasks take parameters. Parameter values can either be supplied directly in
-the workflow definition (by specifying their values), or at runtime by passing a
-value obtained from the static functions on `Data`, such as `Data.stringAt()`.
+Most tasks take parameters. Parameter values can either be static, supplied directly
+in the workflow definition (by specifying their values), or a value available at runtime
+in the state machine's execution (either as its input or an output of a prior state).
+Parameter values available at runtime can be specified via the `Data` class,
+using methods such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
 
-#### Batch
+## Evaluate Expression
+
+Use the `EvaluateExpression` to perform simple operations referencing state paths. The
+`expression` referenced in the task will be evaluated in a Lambda function
+(`eval()`). This allows you to not have to write Lambda code for simple operations.
+
+Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
+
+```ts
+const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
+  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
+  resultPath: '$.waitSeconds'
+});
+
+const createMessage = new sfn.Task(this, 'Create message', {
+  // Note: this is a string inside a string.
+  task: new tasks.EvaluateExpression({
+    expression: '`Now waiting ${$.waitSeconds} seconds...`',
+    runtime: lambda.Runtime.NODEJS_10_X,
+  }),
+  resultPath: '$.message'
+});
+
+const publishMessage = new sfn.Task(this, 'Publish message', {
+  task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromDataAt('$.message'),
+  }),
+  resultPath: '$.sns'
+});
+
+const wait = new sfn.Wait(this, 'Wait', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+});
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definition: convertToSeconds
+    .next(createMessage)
+    .next(publishMessage)
+    .next(wait)
+});
+```
+
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
+runtime to use to evaluate the expression. Currently, the only runtime
+supported is `lambda.Runtime.NODEJS_10_X`.
+
+## Batch
 
 Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html) through the service integration pattern.
 
-#### SubmitJob
+### SubmitJob
 
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
@@ -106,12 +155,12 @@ const task = new sfn.Task(this, 'Submit Job', {
 });
 ```
 
-#### DynamoDB
+## DynamoDB
 
 You can call DynamoDB APIs from a `Task` state.
 Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ddb.html)
 
-##### GetItem
+### GetItem
 
 The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
 
@@ -127,7 +176,7 @@ new sfn.Task(this, 'Get Item', {
 });
 ```
 
-##### PutItem
+### PutItem
 
 The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
 
@@ -144,7 +193,7 @@ new sfn.Task(this, 'PutItem', {
 });
 ```
 
-##### DeleteItem
+### DeleteItem
 
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
@@ -161,7 +210,7 @@ new sfn.Task(this, 'DeleteItem', {
 });
 ```
 
-##### UpdateItem
+### UpdateItem
 
 The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html) operation edits an existing item's attributes, or adds a new item
 to the table if it does not already exist.
@@ -183,11 +232,11 @@ const updateItemTask = new sfn.Task(this, 'UpdateItem', {
 });
 ```
 
-#### ECS
+## ECS
 
 Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) through the service integration pattern.
 
-##### RunTask
+### RunTask
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
@@ -219,7 +268,7 @@ new sfn.Task(this, 'CallFargate', {
 });
 ```
 
-#### EMR
+## EMR
 
 Step Functions supports Amazon EMR through the service integration pattern.
 The service integration APIs correspond to Amazon EMR APIs but differ in the
@@ -227,7 +276,7 @@ parameters that are used.
 
 [Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr.html) about the differences when using these service integrations.
 
-##### Create Cluster
+### Create Cluster
 
 Creates and starts running a cluster (job flow).
 Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html) API in EMR.
@@ -270,7 +319,7 @@ new sfn.Task(stack, 'Create Cluster', {
 });
 ```
 
-##### Termination Protection
+### Termination Protection
 
 Locks a cluster (job flow) so the EC2 instances in the cluster cannot be
 terminated by user intervention, an API call, or a job-flow error.
@@ -286,7 +335,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-##### Terminate Cluster
+### Terminate Cluster
 
 Shuts down a cluster (job flow).
 Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/APIReference/API_TerminateJobFlows.html) API in EMR.
@@ -299,7 +348,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-##### Add Step
+### Add Step
 
 Adds a new step to a running cluster.
 Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html) API in EMR.
@@ -315,7 +364,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-##### Cancel Step
+### Cancel Step
 
 Cancels a pending step in a running cluster.
 Corresponds to the [`cancelSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_CancelSteps.html) API in EMR.
@@ -329,7 +378,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-##### Modify Instance Fleet
+### Modify Instance Fleet
 
 Modifies the target On-Demand and target Spot capacities for the instance
 fleet with the specified InstanceFleetName.
@@ -347,7 +396,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-##### Modify Instance Group
+### Modify Instance Group
 
 Modifies the number of nodes and configuration settings of an instance group.
 
@@ -365,50 +414,8 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-#### Evaluate Expression
+## Glue
 
-Use the `EvaluateExpression` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
-(`eval()`). This allows you to not have to write Lambda code for simple operations.
-
-Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
-
-```ts
-const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
-  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
-  resultPath: '$.waitSeconds'
-});
-
-const createMessage = new sfn.Task(this, 'Create message', {
-  // Note: this is a string inside a string.
-  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
-  resultPath: '$.message'
-});
-
-const publishMessage = new sfn.Task(this, 'Publish message', {
-  task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromDataAt('$.message'),
-  }),
-  resultPath: '$.sns'
-});
-
-const wait = new sfn.Wait(this, 'Wait', {
-  time: sfn.WaitTime.secondsPath('$.waitSeconds')
-});
-
-new sfn.StateMachine(this, 'StateMachine', {
-  definition: convertToSeconds
-    .next(createMessage)
-    .next(publishMessage)
-    .next(wait)
-});
-```
-
-The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
-runtime to use to evaluate the expression. Currently, the only runtime
-supported is `lambda.Runtime.NODEJS_10_X`.
-
-#### Glue
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
 
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
@@ -425,7 +432,7 @@ new sfn.Task(stack, 'Task', {
 });
 ```
 
-#### Lambda
+## Lambda
 
 [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
 
@@ -501,11 +508,11 @@ to the Lambda.
 call. Learn more about [Callback with the Task
 Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
-#### SageMaker
+## SageMaker
 
 Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
 
-##### Create Training Job
+### Create Training Job
 
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
 
@@ -544,7 +551,7 @@ new sfn.Task(stack, 'TrainSagemaker', {
 });
 ```
 
-##### Create Transform Job
+### Create Transform Job
 
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
 
@@ -574,7 +581,7 @@ const task = new sfn.Task(this, 'Batch Inference', {
 });
 ```
 
-#### SNS
+## SNS
 
 Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
 
@@ -607,7 +614,7 @@ const task2 = new sfn.Task(this, 'Publish2', {
 });
 ```
 
-#### Step Functions
+## Step Functions
 
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
@@ -637,7 +644,7 @@ new sfn.StateMachine(stack, 'ParentStateMachine', {
 });
 ```
 
-#### SQS
+## SQS
 
 Step Functions supports [Amazon SQS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sqs.html)
 
