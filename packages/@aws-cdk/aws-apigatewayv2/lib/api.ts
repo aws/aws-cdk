@@ -1,7 +1,6 @@
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Resource, Stack  } from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
+import { Stage, StageName } from './stage';
 // import { AddRoutesOptions, HttpMethod, Route } from './route';
 
 /**
@@ -9,7 +8,7 @@ import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
  */
 export interface IHttpApi extends IResource {
   /**
-   * The ID of this API Gateway HTTP Api.
+   * The identifier of this API Gateway HTTP API.
    * @attribute
    */
   readonly httpApiId: string;
@@ -21,24 +20,22 @@ export interface IHttpApi extends IResource {
 export interface HttpApiProps {
   /**
    * Name for the HTTP API resoruce
-   *
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
 
-  /**
-   * target lambda function of lambda proxy integration for the $default route
-   *
-   * @default - None. Specify either `targetHandler` or `targetUrl`
-   */
-  readonly targetHandler?: lambda.IFunction;
+  // /**
+  //  * target lambda function of lambda proxy integration for the $default route
+  //  *
+  //  * @default - None. Specify either `targetHandler` or `targetUrl`
+  //  */
+  // readonly targetHandler?: lambda.IFunction;
 
   /**
-   * target URL of the HTTP proxy integration for the $default route
-   *
-   * @default - None. Specify either `targetHandler` or `targetUrl`
+   * Whether a default stage and deployment should be automatically created.
+   * @default true
    */
-  readonly targetUrl?: string;
+  readonly createDefaultStage?: boolean;
 }
 
 /**
@@ -56,44 +53,45 @@ export class HttpApi extends Resource implements IHttpApi {
     }
     return new Import(scope, id);
   }
-  /**
-   * the API identifer
-   */
+
   public readonly httpApiId: string;
+  private readonly defaultStage: Stage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
     const apiName = props?.apiName ?? id;
 
-    // if (props?.targetHandler && props.targetUrl) {
-    //   throw new Error('You must specify either a targetHandler or targetUrl, use at most one');
-    // }
-
     const apiProps: CfnApiProps = {
       name: apiName,
       protocolType: 'HTTP',
-      target: props?.targetHandler ? props.targetHandler.functionArn : props?.targetUrl ?? undefined,
     };
-    const api = new CfnApi(this, 'Resource', apiProps);
-    this.httpApiId = api.ref;
+    const resource = new CfnApi(this, 'Resource', apiProps);
+    this.httpApiId = resource.ref;
 
-    if (props?.targetHandler) {
-      const desc = `${this.node.uniqueId}.'ANY'`;
-      props.targetHandler.addPermission(`ApiPermission.${desc}`, {
-        scope,
-        principal: new ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: `arn:${Stack.of(this).partition}:execute-api:${Stack.of(this).region}:${Stack.of(this).account}:${this.httpApiId}/*/*`,
-      } );
+    if (props?.createDefaultStage === undefined || props.createDefaultStage === true) {
+      this.defaultStage = new Stage(this, 'DefaultStage', {
+        httpApi: this,
+        stageName: StageName.DEFAULT,
+      });
     }
+
+    // if (props?.targetHandler) {
+    //   const desc = `${this.node.uniqueId}.'ANY'`;
+    //   props.targetHandler.addPermission(`ApiPermission.${desc}`, {
+    //     scope,
+    //     principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    //     sourceArn: `arn:${Stack.of(this).partition}:execute-api:${Stack.of(this).region}:${Stack.of(this).account}:${this.httpApiId}/*/*`,
+    //   } );
+    // }
   }
 
   /**
-   * The HTTP URL of this API.
-   * HTTP API auto deploys the default stage and this just returns the URL from the default stage.
+   * Get the URL to the default stage of this API.
+   * Returns `undefined` if `createDefaultStage` is unset.
    */
-  public get url() {
-    return `https://${this.httpApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/`;
+  public get url(): string | undefined {
+    return this.defaultStage ? this.defaultStage.url : undefined;
   }
 
   /**

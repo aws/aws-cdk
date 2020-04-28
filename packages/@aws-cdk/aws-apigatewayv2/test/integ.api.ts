@@ -1,6 +1,7 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpMethod, LambdaProxyIntegration, Route } from '../lib';
+// import { HttpApi, HttpMethod, LambdaProxyIntegration, Route, Stage } from '../lib';
+import { HttpApi } from '../lib';
 
 const app = new App();
 
@@ -22,16 +23,22 @@ def handler(event, context):
 // const defaultUrl = 'https://aws.amazon.com';
 
 // create a basic HTTP API with http proxy integration as the $default route
-const api = new HttpApi(stack, 'HttpApi');
-
-new Route(api, 'allroutes', {
-  httpApi: api,
-  path: '/',
-  method: HttpMethod.ANY,
-  integration: new LambdaProxyIntegration({
-    handler,
-  }),
+new HttpApi(stack, 'HttpApi', {
+  targetHandler: handler,
 });
+
+// new Route(api, 'allroutes', {
+//   httpApi: api,
+//   path: '/',
+//   method: HttpMethod.ANY,
+//   integration: new LambdaProxyIntegration({
+//     handler,
+//   }),
+// });
+
+// new Stage(api, 'mystage', {
+//   api,
+// });
 
 // api.addRoutes('/books/reviews', 'GetBookReviewRoute', {
 //   methods: [HttpMethod.GET],
