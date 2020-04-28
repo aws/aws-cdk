@@ -1,7 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-// import { HttpApi, HttpMethod, LambdaProxyIntegration, Route, Stage } from '../lib';
-import { HttpApi } from '../lib';
+import { HttpApi, LambdaProxyIntegration } from '../lib';
 
 const app = new App();
 
@@ -24,7 +23,9 @@ def handler(event, context):
 
 // create a basic HTTP API with http proxy integration as the $default route
 new HttpApi(stack, 'HttpApi', {
-  targetHandler: handler,
+  defaultIntegration: new LambdaProxyIntegration({
+    handler,
+  }),
 });
 
 // new Route(api, 'allroutes', {

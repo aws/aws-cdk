@@ -23,7 +23,6 @@ export interface LambdaProxyIntegrationProps {
 
 /**
  * The Lambda Proxy integration resource for HTTP API
- * @resource AWS::ApiGatewayV2::Integration
  */
 export class LambdaProxyIntegration implements IRouteIntegration {
 
@@ -31,13 +30,12 @@ export class LambdaProxyIntegration implements IRouteIntegration {
   }
 
   public bind(route: Route): RouteIntegrationConfig {
-    // create permission
     this.props.handler.addPermission(`${route.node.uniqueId}-Permission`, {
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({
         service: 'execute-api',
         resource: route.httpApi.httpApiId,
-        resourceName: `*/*${route.path}`,
+        resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
       }),
     });
 

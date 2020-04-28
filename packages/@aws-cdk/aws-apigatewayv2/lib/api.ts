@@ -1,7 +1,8 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
+import { IRouteIntegration } from './integration';
+import { Route, RouteKey } from './route';
 import { Stage, StageName } from './stage';
-// import { AddRoutesOptions, HttpMethod, Route } from './route';
 
 /**
  * Represents an HTTP API
@@ -24,12 +25,11 @@ export interface HttpApiProps {
    */
   readonly apiName?: string;
 
-  // /**
-  //  * target lambda function of lambda proxy integration for the $default route
-  //  *
-  //  * @default - None. Specify either `targetHandler` or `targetUrl`
-  //  */
-  // readonly targetHandler?: lambda.IFunction;
+  /**
+   * An integration that will be configured on the catch-all route ($default).
+   * @default - none
+   */
+  readonly defaultIntegration?: IRouteIntegration;
 
   /**
    * Whether a default stage and deployment should be automatically created.
@@ -69,21 +69,20 @@ export class HttpApi extends Resource implements IHttpApi {
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
 
+    if (props?.defaultIntegration) {
+      new Route(this, 'DefaultRoute', {
+        httpApi: this,
+        routeKey: RouteKey.DEFAULT,
+        integration: props.defaultIntegration,
+      });
+    }
+
     if (props?.createDefaultStage === undefined || props.createDefaultStage === true) {
       this.defaultStage = new Stage(this, 'DefaultStage', {
         httpApi: this,
         stageName: StageName.DEFAULT,
       });
     }
-
-    // if (props?.targetHandler) {
-    //   const desc = `${this.node.uniqueId}.'ANY'`;
-    //   props.targetHandler.addPermission(`ApiPermission.${desc}`, {
-    //     scope,
-    //     principal: new ServicePrincipal('apigateway.amazonaws.com'),
-    //     sourceArn: `arn:${Stack.of(this).partition}:execute-api:${Stack.of(this).region}:${Stack.of(this).account}:${this.httpApiId}/*/*`,
-    //   } );
-    // }
   }
 
   /**

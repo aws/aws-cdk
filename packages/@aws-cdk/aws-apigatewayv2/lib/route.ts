@@ -37,6 +37,28 @@ export enum HttpMethod {
 }
 
 /**
+ * The key
+ */
+export class RouteKey {
+  public static readonly DEFAULT = new RouteKey('$default');
+
+  public static with(path: string, method?: HttpMethod) {
+    if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
+      throw new Error('path must always start with a "/" and not end with a "/"');
+    }
+    return new RouteKey(`${method ?? 'ANY'} ${path}`, path);
+  }
+
+  public readonly key: string;
+  public readonly path?: string;
+
+  private constructor(key: string, path?: string) {
+    this.key = key;
+    this.path = path;
+  }
+}
+
+/**
  * Route properties
  */
 export interface RouteProps {
@@ -46,15 +68,9 @@ export interface RouteProps {
   readonly httpApi: IHttpApi;
 
   /**
-   * HTTP method of this route
-   * @default HttpMethod.ANY
+   * The key to this route. This is a combination of an HTTP method and an HTTP path.
    */
-  readonly method?: HttpMethod;
-
-  /**
-   * full http path of this route
-   */
-  readonly path: string;
+  readonly routeKey: RouteKey;
 
   /**
    * Integration
@@ -94,26 +110,19 @@ export class Route extends Resource implements IRoute {
 
   public readonly routeId: string;
   public readonly httpApi: IHttpApi;
-  public readonly method: HttpMethod;
-  public readonly path: string;
+  public readonly path: string | undefined;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
 
-    if (props.path !== '/' && (!props.path.startsWith('/') || props.path.endsWith('/'))) {
-      throw new Error('path must always start with a "/" and not end with a "/"');
-    }
-
     this.httpApi = props.httpApi;
-    this.method = props.method ?? HttpMethod.ANY;
-    this.path = props.path;
+    this.path = props.routeKey.path;
 
     let integration: Integration | undefined;
     if (props.integration) {
       const config = props.integration.bind(this);
       integration = new Integration(this, `${this.node.id}-Integration`, {
         httpApi: props.httpApi,
-        integrationMethod: this.method,
         integrationType: config.type,
         integrationUri: config.uri,
       });
@@ -121,7 +130,7 @@ export class Route extends Resource implements IRoute {
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
-      routeKey: `${this.method} ${this.path}`,
+      routeKey: props.routeKey.key,
       target: integration ? `integrations/${integration.integrationId}` : undefined,
     };
 

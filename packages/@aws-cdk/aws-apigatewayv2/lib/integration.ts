@@ -1,7 +1,7 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { IHttpApi } from './api';
 import { CfnIntegration } from './apigatewayv2.generated';
-import { HttpMethod, Route } from './route';
+import { Route } from './route';
 
 /**
  * Represents an integration to a HTTP API Route.
@@ -38,10 +38,6 @@ export interface IntegrationProps {
    * integration URI
    */
   readonly integrationUri: string;
-  /**
-   * integration method
-   */
-  readonly integrationMethod: HttpMethod;
 }
 
 /**
@@ -66,7 +62,6 @@ export class Integration extends Resource implements IResource {
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.httpApi.httpApiId,
       integrationType: props.integrationType,
-      integrationMethod: props.integrationMethod,
       integrationUri: props.integrationUri,
       payloadFormatVersion: '1.0',
     });
