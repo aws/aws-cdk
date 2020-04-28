@@ -71,7 +71,7 @@
     "@types/lodash": "^4.14.150",
     "@types/nodeunit": "^0.0.30",
     "@types/sinon": "^9.0.0",
-    "aws-sdk": "^2.663.0",
+    "aws-sdk": "^2.664.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
