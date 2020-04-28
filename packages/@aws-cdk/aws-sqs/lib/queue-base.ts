@@ -39,7 +39,7 @@ export interface IQueue extends IResource {
    * will be automatically created upon the first call to `addToPolicy`. If
    * the queue is improted (`Queue.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant permissions to consume messages from a queue

@@ -6,7 +6,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToIdentityPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
@@ -192,12 +192,16 @@ export class Role extends Resource implements IRole {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToIdentityPolicy(statement).statementAdded;
+      }
+
+      public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
       public attachInlinePolicy(policy: Policy): void {
@@ -351,13 +355,17 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToIdentityPolicy(statement).statementAdded;
   }
 
   /**

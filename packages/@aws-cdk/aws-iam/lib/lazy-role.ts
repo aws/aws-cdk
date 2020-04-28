@@ -3,7 +3,7 @@ import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToIdentityPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
 /**
@@ -43,13 +43,17 @@ export class LazyRole extends cdk.Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
     if (this.role) {
-      return this.role.addToPolicy(statement);
+      return this.role.addToIdentityPolicy(statement);
     } else {
       this.statements.push(statement);
-      return true;
+      return { statementAdded: true, policyDependable: this };
     }
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToIdentityPolicy(statement).statementAdded;
   }
 
   /**

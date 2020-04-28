@@ -34,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
