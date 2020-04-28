@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -48,6 +48,17 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -92,6 +103,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       serviceName: props.serviceName,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      platformVersion: props.platformVersion,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

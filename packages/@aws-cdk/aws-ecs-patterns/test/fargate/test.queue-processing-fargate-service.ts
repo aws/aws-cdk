@@ -225,6 +225,7 @@ export = {
       maxScalingCapacity: 5,
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
@@ -232,6 +233,7 @@ export = {
       DesiredCount: 2,
       LaunchType: 'FARGATE',
       ServiceName: 'fargate-test-service',
+      PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' }));

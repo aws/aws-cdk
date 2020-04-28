@@ -1,6 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, FargateTaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
+import * as ecs from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -12,13 +12,13 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -86,13 +86,13 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
           containerName: 'hello',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -100,7 +100,7 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
             TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
-          logDriver: new AwsLogDriver({
+          logDriver: new ecs.AwsLogDriver({
             streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
@@ -121,7 +121,8 @@ export = {
         desiredCount: 3,
         enableECSManagedTags: true,
         healthCheckGracePeriod: Duration.millis(2000),
-        propagateTags: PropagatedTagSource.SERVICE,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+        propagateTags: ecs.PropagatedTagSource.SERVICE,
         serviceName: 'myService',
         targetGroups: [
           {
@@ -131,7 +132,7 @@ export = {
             containerPort: 90,
             pathPattern: 'a/b/c',
             priority: 10,
-            protocol: Protocol.TCP,
+            protocol: ecs.Protocol.TCP,
           },
         ],
       });
@@ -179,6 +180,7 @@ export = {
             ],
           },
         },
+        PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
         PropagateTags: 'SERVICE',
         ServiceName: 'myService',
       }));
@@ -251,9 +253,9 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-      const taskDefinition = new FargateTaskDefinition(stack, 'FargateTaskDef');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
       test.throws(() => {
@@ -270,15 +272,15 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
-      const taskDefinition = new FargateTaskDefinition(stack, 'Ec2TaskDef');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           taskDefinition,
         });
@@ -291,7 +293,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
@@ -309,13 +311,13 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -383,13 +385,13 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
           containerName: 'hello',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -397,7 +399,7 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
             TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
-          logDriver: new AwsLogDriver({
+          logDriver: new ecs.AwsLogDriver({
             streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
@@ -418,7 +420,7 @@ export = {
         desiredCount: 3,
         enableECSManagedTags: true,
         healthCheckGracePeriod: Duration.millis(2000),
-        propagateTags: PropagatedTagSource.SERVICE,
+        propagateTags: ecs.PropagatedTagSource.SERVICE,
         serviceName: 'myService',
         targetGroups: [
           {
@@ -545,9 +547,9 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-      const taskDefinition = new FargateTaskDefinition(stack, 'FargateTaskDef');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
       test.throws(() => {
@@ -564,15 +566,15 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
-      const taskDefinition = new FargateTaskDefinition(stack, 'Ec2TaskDef');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           taskDefinition,
         });
@@ -585,7 +587,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
