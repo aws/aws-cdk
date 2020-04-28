@@ -33,6 +33,7 @@ running on AWS Lambda, or any web application.
 - [Access Logging](#access-logging)
 - [Cross Origin Resource Sharing (CORS)](cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
+- [Gateway Response](#gateway-response)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -865,6 +866,32 @@ By performing this association, we can invoke the API gateway using the followin
 
 ```
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
+```
+
+## Gateway response
+
+If the Rest API fails to process an incoming request, it returns to the client an error response without forwarding the
+request to the integration backend. API Gateway has a set of standard response messages that are sent to the client for
+each type of error. These error responses can be configured on the Rest API. The list of Gateway responses that can be
+configured can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html).
+Learn more about [Gateway
+Responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-gatewayResponse-definition.html).
+
+The following code configures a Gateway Response when the response is 'access denied':
+
+```ts
+const api = new apigateway.RestApi(this, 'books-api');
+api.addGatewayResponse('test-response', {
+  type: ResponseType.ACCESS_DENIED,
+  statusCode: '500',
+  responseHeaders: {
+    'Access-Control-Allow-Origin': "test.com",
+    'test-key': 'test-value'
+  },
+  templates: {
+    'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'
+  }
+});
 ```
 
 ## APIGateway v2
