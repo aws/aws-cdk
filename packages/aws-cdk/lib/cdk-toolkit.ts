@@ -5,10 +5,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as promptly from 'promptly';
 import { format } from 'util';
-import { bootstrapEnvironment, BootstrapEnvironmentProps } from '../lib';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { bootstrapEnvironment } from './api';
 import { SdkProvider } from './api/aws-auth';
-import { bootstrapEnvironment2 } from './api/bootstrap/bootstrap-environment2';
+import { bootstrapEnvironment2, BootstrappingParameters } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
@@ -16,6 +16,7 @@ import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration } from './settings';
+import { partition } from './util';
 
 export interface CdkToolkitProps {
 
@@ -322,32 +323,40 @@ export class CdkToolkit {
   /**
    * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
    *
-   * @param environmentGlobs environment names that need to have toolkit support
+   * @param environmentSpecs environment names that need to have toolkit support
    *             provisioned, as a glob filter. If none is provided,
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
   public async bootstrap(
-    environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined,
-    useNewBootstrapping: boolean, props: BootstrapEnvironmentProps): Promise<void> {
-    // Two modes of operation.
-    //
-    // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
-    // at their word that they know the name of the environment.
-    let environments: cxapi.Environment[];
-    if (this.props.cloudExecutable.hasApp) {
-      const stacks = await this.selectStacksForList([]);
-      environments = await globEnvironmentsFromStacks(stacks, environmentGlobs, this.props.sdkProvider);
-    } else {
-      environments = environmentsFromDescriptors(environmentGlobs);
+    environmentSpecs: string[], toolkitStackName: string | undefined, roleArn: string | undefined,
+    useNewBootstrapping: boolean, force: boolean | undefined, props: BootstrappingParameters): Promise<void> {
+    // If there is an '--app' argument and an environment looks like a glob, we
+    // select the environments from the app. Otherwise use what the user said.
+
+    // By default glob for everything
+    environmentSpecs = environmentSpecs.length > 0 ? environmentSpecs : ['**'];
+
+    // Partition into globs and non-globs (this will mutate environmentSpecs).
+    const globSpecs = partition(environmentSpecs, looksLikeGlob);
+    if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
+      throw new Error(`'${globSpecs}' is not an environment name. Run in app directory to glob or specify an environment name like \'aws://123456789012/us-east-1\'.`);
     }
+
+    const environments: cxapi.Environment[] = [
+      ...environmentsFromDescriptors(environmentSpecs),
+      ...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider),
+    ];
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = useNewBootstrapping
-          ? await bootstrapEnvironment2(environment, this.props.sdkProvider, toolkitStackName, roleArn, props)
-          : await bootstrapEnvironment(environment, this.props.sdkProvider, toolkitStackName, roleArn, props);
+        const result = await (useNewBootstrapping ? bootstrapEnvironment2 : bootstrapEnvironment)(environment, this.props.sdkProvider, {
+          toolkitStackName,
+          roleArn,
+          force,
+          parameters: props,
+        });
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
