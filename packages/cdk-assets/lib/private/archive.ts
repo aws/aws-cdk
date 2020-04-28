@@ -21,6 +21,12 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
     const archive = archiver('zip');
     archive.on('warning', fail);
     archive.on('error', fail);
+
+    // archive has been finalized and the output file descriptor has closed, resolve promise
+    // this has to be done before calling `finalize` since the events may fire immediately after.
+    // see https://www.npmjs.com/package/archiver
+    output.once('close', ok);
+
     archive.pipe(output);
 
     // Append files serially to ensure file order
@@ -36,7 +42,5 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
 
     archive.finalize();
 
-    // archive has been finalized and the output file descriptor has closed, resolve promise
-    output.once('close', ok);
   });
 }
