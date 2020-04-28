@@ -5,7 +5,6 @@ import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } fro
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import * as ecsPatterns from '../../lib';
 
 export = {
@@ -238,11 +237,11 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
-      platformVersion: FargatePlatformVersion.VERSION1_4,
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     });
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      PlatformVersion: FargatePlatformVersion.VERSION1_4,
+      PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }));
     test.done();
   },

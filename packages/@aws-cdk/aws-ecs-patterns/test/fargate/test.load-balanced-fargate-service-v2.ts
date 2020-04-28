@@ -1,10 +1,9 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, FargateTaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, Cluster, ContainerImage, FargatePlatformVersion, FargateTaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import {FargatePlatformVersion} from '../../../aws-ecs/lib/fargate/fargate-service';
 import { ApplicationMultipleTargetGroupsFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 export = {
