@@ -3,7 +3,7 @@ import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConst
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
@@ -11,7 +11,7 @@ import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupName
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
-import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
+import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -309,11 +309,6 @@ abstract class VpcBase extends Resource implements IVpc {
    * AZs for this VPC
    */
   public abstract readonly availabilityZones: string[];
-
-  /**
-   * Identifier for the VPN gateway
-   */
-  public abstract readonly vpnGatewayId?: string;
 
   /**
    * Dependencies for internet connectivity
@@ -1081,11 +1076,6 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
-  /**
-   * Identifier for the VPN gateway
-   */
-  public readonly vpnGatewayId?: string;
-
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1721,7 +1711,6 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 

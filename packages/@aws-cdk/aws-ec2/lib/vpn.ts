@@ -5,7 +5,7 @@ import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
-  CfnVPNGateway
+  CfnVPNGateway,
 } from './ec2.generated';
 import {IVpc, SubnetSelection} from './vpc';
 
@@ -218,7 +218,8 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
 
     if (!props.vpc.vpnGatewayId) {
       props.vpc.enableVpnGateway({
-        type: 'ipsec.1'
+        type: 'ipsec.1',
+        amazonSideAsn: props.asn,
       });
     }
 
