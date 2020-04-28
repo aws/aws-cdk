@@ -34,7 +34,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The list of additional input Artifacts for this action.
    *
-   * Artifacts of this property reside in  CODEBUILD_SRC_DIR_sourceIdentifer
+   * Artifacts of this property reside in  CODEBUILD_SRC_DIR_sourceIdentifier
    * in contrast to the input property artifacts which reside in CODEBUILD_SRC_DIR. The 
    * shell on the build system always starts in CODEBUILD_SRC_DIR, _NOT_ in 
    * CODEBUILD_SRC_DIR_sourceIdentifer. For more information see
