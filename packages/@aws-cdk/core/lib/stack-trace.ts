@@ -1,4 +1,5 @@
-// tslint:disable-next-line:ban-types
+// tslint:disable:ban-types
+/* eslint-disable @typescript-eslint/ban-types */
 export function captureStackTrace(below?: Function): string[] {
   below = below || captureStackTrace; // hide myself if nothing else
   const object = { stack: '' };
