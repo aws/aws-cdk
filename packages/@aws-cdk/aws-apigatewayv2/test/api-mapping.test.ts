@@ -10,18 +10,17 @@ test('minimal setup', () => {
   const stack = new Stack();
 
   // WHEN
-  const api = new apigw.Api(stack, 'my-api', { protocolType: apigw.ProtocolType.WEBSOCKET, routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY });
+  const api = new apigw.HttpApi(stack, 'my-api');
   const domainName = new apigw.DomainName(stack, 'domain-name', { domainName: 'test.example.com' });
-  new apigw.ApiMapping(stack, 'mapping', {
+  api.addApiMapping({
     stage: api.deploymentStage!,
     domainName,
-    api,
   });
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::ApiMapping', {
     ApiId: { Ref: 'myapi4C7BF186' },
-    Stage: { Ref: 'myapiStageprod07E02E1F' },
+    Stage: { Ref: 'myapiDefaultStage51F6D7C3' },
     DomainName: { Ref: 'domainname1131E743' },
   }));
 });

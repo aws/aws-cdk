@@ -85,10 +85,10 @@ export class ApiMapping extends Resource implements IApiMapping {
     super(scope, id);
 
     this.resource = new CfnApiMapping(this, 'Resource', {
-      ...props,
       apiId: props.api.apiId,
       domainName: ((typeof(props.domainName) === 'string') ? props.domainName : props.domainName.domainName),
       stage: props.stage.stageName,
+      apiMappingKey: props.apiMappingKey,
     });
     this.apiMappingId = this.resource.ref;
   }

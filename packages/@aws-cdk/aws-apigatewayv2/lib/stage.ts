@@ -2,7 +2,7 @@ import { Construct, IResource, Resource } from '@aws-cdk/core';
 
 import { IApi } from './api';
 import { CfnStage } from './apigatewayv2.generated';
-import { Deployment, IDeployment } from './deployment';
+import { IDeployment } from './deployment';
 
 /**
  * Specifies the logging level for this route. This property affects the log entries pushed to Amazon CloudWatch Logs.
@@ -211,19 +211,19 @@ export class Stage extends Resource implements IStage {
     super(scope, id);
 
     this.resource = new CfnStage(this, 'Resource', {
-      ...props,
       apiId: props.api.apiId,
       deploymentId: props.deployment.deploymentId,
+      stageName: props.stageName,
+      accessLogSettings: props.accessLogSettings,
+      autoDeploy: props.autoDeploy,
+      clientCertificateId: props.clientCertificateId,
+      defaultRouteSettings: props.defaultRouteSettings,
+      description: props.description,
+      routeSettings: props.routeSettings,
+      stageVariables: props.stageVariables,
+      // TODO: tags: props.tags,
     });
-    this.stageName = this.resource.ref;
 
-    if (props.deployment instanceof Deployment) {
-      props.deployment.addToLogicalId({
-        ...props,
-        api: props.api.apiId,
-        deployment: props.deployment.deploymentId,
-        id,
-      });
-    }
+    this.stageName = this.resource.ref;
   }
 }

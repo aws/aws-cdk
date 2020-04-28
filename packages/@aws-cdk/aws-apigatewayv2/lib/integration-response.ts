@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 
-import { Api, IApi } from './api';
+import { IApi } from './api';
 import { CfnIntegrationResponse } from './apigatewayv2.generated';
 import { ContentHandlingStrategy, IIntegration, KnownTemplateKey } from './integration';
 
@@ -107,25 +107,14 @@ export class IntegrationResponse extends Resource implements IIntegrationRespons
 
   constructor(scope: Construct, id: string, props: IntegrationResponseProps) {
     super(scope, id);
-
     this.resource = new CfnIntegrationResponse(this, 'Resource', {
-      ...props,
       apiId: props.api.apiId,
       integrationId: props.integration.integrationId,
       integrationResponseKey: props.key,
+      contentHandlingStrategy: props.contentHandlingStrategy,
+      responseParameters: props.responseParameters,
+      responseTemplates: props.responseTemplates,
+      templateSelectionExpression: props.templateSelectionExpression,
     });
-
-    if (props.api instanceof Api) {
-      if (props.api.latestDeployment) {
-        props.api.latestDeployment.addToLogicalId({
-          ...props,
-          api: props.api.apiId,
-          integration: props.integration.integrationId,
-          id,
-          integrationResponseKey: props.key,
-        });
-        props.api.latestDeployment.registerDependency(this.resource);
-      }
-    }
   }
 }

@@ -1,9 +1,8 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 
-import { Api, IApi } from './api';
+import { IApi } from './api';
 import { CfnIntegration } from './apigatewayv2.generated';
 import { IntegrationResponse, IntegrationResponseOptions, KnownIntegrationResponseKey } from './integration-response';
-import { IRoute, KnownRouteKey, Route, RouteOptions } from './route';
 
 /**
  * The type of the network connection to the integration endpoint.
@@ -109,55 +108,61 @@ export enum KnownTemplateKey {
 /**
  * Specifies the integration's HTTP method type (only GET is supported for WebSocket)
  */
-export enum IntegrationMethod {
+export enum HttpApiIntegrationMethod {
+  /**
+   * All HTTP Methods are supported
+   */
+  ANY = 'ANY',
+
   /**
    * GET HTTP Method
-   *
-   * Only method supported for WebSocket
    */
   GET = 'GET',
 
   /**
    * POST HTTP Method
-   *
-   * Not supported for WebSocket
    */
   POST = 'POST',
 
   /**
    * PUT HTTP Method
-   *
-   * Not supported for WebSocket
    */
   PUT = 'PUT',
 
   /**
    * DELETE HTTP Method
-   *
-   * Not supported for WebSocket
    */
   DELETE = 'DELETE',
 
   /**
    * OPTIONS HTTP Method
-   *
-   * Not supported for WebSocket
    */
   OPTIONS = 'OPTIONS',
 
   /**
    * HEAD HTTP Method
-   *
-   * Not supported for WebSocket
    */
   HEAD = 'HEAD',
 
   /**
    * PATCH HTTP Method
-   *
-   * Not supported for WebSocket
    */
   PATCH = 'PATCH'
+}
+
+/**
+ * The TLS configuration for a private integration. If you specify a TLS configuration,
+ * private integration traffic uses the HTTPS protocol.
+ */
+export interface TlsConfig {
+  /**
+   * If you specify a server name, API Gateway uses it to verify the hostname on
+   * the integration's certificate.
+   *
+   * The server name is also included in the TLS handshake to support
+   * Server Name Indication (SNI) or virtual hosting.
+   */
+  readonly serverNameToVerify: string;
 }
 
 /**
@@ -176,20 +181,13 @@ export interface IIntegration extends IResource {
  *
  * This interface is used by the helper methods in `Api` and the sub-classes
  */
-export interface IntegrationOptions {
+export interface BaseIntegrationOptions {
   /**
    * The type of the network connection to the integration endpoint.
    *
    * @default 'INTERNET'
    */
-  readonly connectionType?: ConnectionType | string;
-
-  /**
-   * The integration type of an integration.
-   *
-   * @default - Pass through unmodified
-   */
-  readonly contentHandlingStrategy?: ContentHandlingStrategy | string;
+  readonly connectionType?: ConnectionType;
 
   /**
    * Specifies the credentials required for the integration, if any.
@@ -211,6 +209,106 @@ export interface IntegrationOptions {
   readonly description?: string;
 
   /**
+   * Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+   *
+   * @default - timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+   */
+  readonly timeout?: Duration;
+}
+
+/**
+ * Defines the properties required for defining an Api Gateway V2 Integration.
+ *
+ * This interface is used by the helper methods in `Api` and the sub-classes
+ */
+export interface IntegrationOptions extends BaseIntegrationOptions {
+  /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - Pass through unmodified
+   */
+  readonly contentHandlingStrategy?: string;
+
+  /**
+   * Specifies the pass-through behavior for incoming requests based on the `Content-Type` header in the request,
+   * and the available mapping templates specified as the `requestTemplates` property on the `Integration` resource.
+   *
+   * @default - the response payload will be passed through from the integration response to the route response or method response unmodified
+   */
+  readonly passthroughBehavior?: string;
+
+  /**
+   * A key-value map specifying request parameters that are passed from the method request to the backend.
+   * The key is an integration request parameter name and the associated value is a method request parameter value or static value
+   * that must be enclosed within single quotes and pre-encoded as required by the backend.
+   *
+   * The method request parameter value must match the pattern of `method.request.{location}.{name}`, where `{location}` is
+   * `querystring`, `path`, or `header`; and `{name}` must be a valid and unique method request parameter name.
+   *
+   * @default - no parameter used
+   */
+  readonly requestParameters?: { [key: string]: string };
+
+  /**
+   * Represents a map of Velocity templates that are applied on the request payload based on the value of
+   * the `Content-Type` header sent by the client. The content type value is the key in this map, and the
+   * template is the value.
+   *
+   * @default - no templates used
+   */
+  readonly requestTemplates?: { [key: string]: string };
+
+  /**
+   * The template selection expression for the integration.
+   *
+   * @default - no template selected
+   */
+  readonly templateSelectionExpression?: string;
+
+  /**
+   * The ID of the VPC link for a private integration.
+   *
+   * @default - don't use a VPC link
+   */
+  // TODO: readonly connectionId?: string;
+
+  /**
+   * Specifies the format of the payload sent to an integration..
+   *
+   * @default '1.0'
+   */
+  readonly payloadFormatVersion?: string;
+
+  /**
+   * The TlsConfig property specifies the TLS configuration for a private integration.
+   * If you specify a TLS configuration, private integration traffic uses the HTTPS protocol.
+   *
+   * @default - no private TLS configuration
+   */
+  readonly tlsConfig?: TlsConfig;
+
+  /**
+   * Specifies the integration's HTTP method type.
+   *
+   * @default - 'ANY'
+   */
+  readonly integrationMethod?: string;
+}
+
+/**
+ * Defines the properties required for defining an Api Gateway V2 Integration.
+ *
+ * This interface is used by the helper methods in `Api` and the sub-classes
+ */
+export interface WebSocketApiIntegrationOptions extends BaseIntegrationOptions {
+  /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - Pass through unmodified
+   */
+  readonly contentHandlingStrategy?: ContentHandlingStrategy | string;
+
+  /**
    * Specifies the pass-through behavior for incoming requests based on the `Content-Type` header in the request,
    * and the available mapping templates specified as the `requestTemplates` property on the `Integration` resource.
    *
@@ -226,8 +324,6 @@ export interface IntegrationOptions {
    * The method request parameter value must match the pattern of `method.request.{location}.{name}`, where `{location}` is
    * `querystring`, `path`, or `header`; and `{name}` must be a valid and unique method request parameter name.
    *
-   * Supported only for WebSocket APIs
-   *
    * @default - no parameter used
    */
   readonly requestParameters?: { [key: string]: string };
@@ -237,8 +333,6 @@ export interface IntegrationOptions {
    * the `Content-Type` header sent by the client. The content type value is the key in this map, and the
    * template is the value.
    *
-   * Supported only for WebSocket APIs.
-   *
    * @default - no templates used
    */
   readonly requestTemplates?: { [key: string]: string };
@@ -246,25 +340,38 @@ export interface IntegrationOptions {
   /**
    * The template selection expression for the integration.
    *
-   * Supported only for WebSocket APIs.
-   *
    * @default - no template selected
    */
   readonly templateSelectionExpression?: KnownTemplateKey | string;
+}
+
+/**
+ * Defines the properties required for defining an Api Gateway V2 Integration.
+ *
+ * This interface is used by the helper methods in `Api` and the sub-classes
+ */
+export interface HttpApiIntegrationOptions extends BaseIntegrationOptions {
+  /**
+   * The ID of the VPC link for a private integration.
+   *
+   * @default - don't use a VPC link
+   */
+  // TODO: readonly connectionId?: string;
 
   /**
-   * Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+   * Specifies the format of the payload sent to an integration..
    *
-   * @default - timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+   * @default '1.0'
    */
-  readonly timeout?: Duration;
+  readonly payloadFormatVersion?: string;
 
   /**
-   * Specifies the integration's HTTP method type.
+   * The TlsConfig property specifies the TLS configuration for a private integration.
+   * If you specify a TLS configuration, private integration traffic uses the HTTPS protocol.
    *
-   * @default - 'GET'
+   * @default - no private TLS configuration
    */
-  readonly integrationMethod?: IntegrationMethod | string;
+  readonly tlsConfig?: TlsConfig;
 }
 
 /**
@@ -302,7 +409,22 @@ export interface IntegrationProps extends IntegrationOptions {
  *
  * Use `addResponse` and `addRoute` to configure integration.
  */
-export abstract class Integration extends Resource implements IIntegration {
+export class Integration extends Resource implements IIntegration {
+  /**
+   * Creates a new imported API Integration
+   *
+   * @param scope scope of this imported resource
+   * @param id identifier of the resource
+   * @param integrationId Identifier of the API
+   */
+  public static fromIntegrationId(scope: Construct, id: string, integrationId: string): IIntegration {
+    class Import extends Resource implements IIntegration {
+      public readonly integrationId = integrationId;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The ID of this API Gateway Integration.
    */
@@ -315,38 +437,25 @@ export abstract class Integration extends Resource implements IIntegration {
     super(scope, id);
     this.api = props.api;
     this.resource = new CfnIntegration(this, 'Resource', {
-      ...props,
-      timeoutInMillis: (props.timeout ? props.timeout.toMilliseconds() : undefined),
-      apiId: props.api.apiId,
       integrationType: props.type,
       integrationUri: props.uri,
+      // TODO: connectionId : props.connectionId,
+      connectionType: props.connectionType,
+      contentHandlingStrategy: props.contentHandlingStrategy,
+      credentialsArn: props.credentialsArn,
+      description: props.description,
+      integrationMethod: props.integrationMethod,
+      passthroughBehavior: props.passthroughBehavior,
+      payloadFormatVersion: props.payloadFormatVersion,
+      requestParameters: props.requestParameters,
+      requestTemplates: props.requestTemplates,
+      templateSelectionExpression: props.templateSelectionExpression,
+      tlsConfig: props.tlsConfig,
+      timeoutInMillis: (props.timeout ? props.timeout.toMilliseconds() : undefined),
+      apiId: props.api.apiId,
     });
 
     this.integrationId = this.resource.ref;
-
-    if (props.api instanceof Api) {
-      if (props.api.latestDeployment) {
-        props.api.latestDeployment.addToLogicalId({
-          ...props,
-          api: props.api.apiId,
-          id,
-          integrationType: props.type,
-          integrationUri: props.uri,
-        });
-        props.api.latestDeployment.registerDependency(this.resource);
-      }
-    }
-  }
-
-  /**
-   * Adds a set of permission for a defined route.
-   *
-   * This is done automatically for routes created with the helper methods
-   *
-   * @param _route the route to define for the permissions
-   */
-  public addPermissionsForRoute(_route: IRoute) {
-    // Override to define permissions for this integration
   }
 
   /**
@@ -362,24 +471,5 @@ export abstract class Integration extends Resource implements IIntegration {
       integration: this,
       key,
     });
-  }
-
-  /**
-   * Creates a new route for this integration.
-   *
-   * @param key the route key (predefined or not) that will select this integration
-   * @param props the properties for this response
-   */
-  public addRoute(key: KnownRouteKey | string, props?: RouteOptions): Route {
-    const route = new Route(this, `Route.${key}`, {
-      ...props,
-      api: this.api,
-      integration: this,
-      key,
-    });
-
-    this.addPermissionsForRoute(route);
-
-    return route;
   }
 }

@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 
-import { Api, IApi } from './api';
+import { IApi } from './api';
 import { CfnModel } from './apigatewayv2.generated';
 import { JsonSchema, JsonSchemaMapper } from './json-schema';
 
@@ -151,26 +151,11 @@ export class Model extends Resource implements IModel {
 
     this.modelName = this.physicalName;
     this.resource = new CfnModel(this, 'Resource', {
-      ...props,
       contentType: props.contentType || KnownContentTypes.JSON,
       apiId: props.api.apiId,
       name: this.modelName,
       schema: JsonSchemaMapper.toCfnJsonSchema(props.schema),
     });
     this.modelId = this.resource.ref;
-
-    if (props.api instanceof Api) {
-      if (props.api.latestDeployment) {
-        props.api.latestDeployment.addToLogicalId({
-          ...props,
-          id,
-          api: props.api.apiId,
-          contentType: props.contentType,
-          name: this.modelName,
-          schema: props.schema,
-        });
-        props.api.latestDeployment.registerDependency(this.resource);
-      }
-    }
   }
 }

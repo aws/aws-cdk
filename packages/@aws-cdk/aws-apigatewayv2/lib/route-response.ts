@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 
-import { Api, IApi } from './api';
+import { IApi } from './api';
 import { CfnRouteResponse } from './apigatewayv2.generated';
 import { IModel, KnownModelKey } from './model';
 import { IRoute } from './route';
@@ -100,26 +100,14 @@ export class RouteResponse extends Resource implements IRouteResponse {
         return ({ [e[0]]: (typeof(e[1]) === 'string' ? e[1] : e[1].modelName) });
       }));
     }
+
     this.resource = new CfnRouteResponse(this, 'Resource', {
-      ...props,
       apiId: props.api.apiId,
       routeId: props.route.routeId,
       routeResponseKey: props.key,
       responseModels,
+      modelSelectionExpression: props.modelSelectionExpression,
+      responseParameters: props.responseParameters,
     });
-
-    if (props.api instanceof Api) {
-      if (props.api.latestDeployment) {
-        props.api.latestDeployment.addToLogicalId({
-          ...props,
-          id,
-          api: props.api.apiId,
-          route: props.route.routeId,
-          routeResponseKey: props.key,
-          responseModels,
-        });
-        props.api.latestDeployment.registerDependency(this.resource);
-      }
-    }
   }
 }

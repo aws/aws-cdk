@@ -177,10 +177,15 @@ export class Authorizer extends Resource implements IAuthorizer {
     super(scope, id);
 
     this.resource = new CfnAuthorizer(this, 'Resource', {
-      ...props,
       identitySource: (props.identitySource ? props.identitySource : []),
       apiId: props.api.apiId,
       name: props.authorizerName,
+      authorizerType: props.authorizerType,
+      authorizerCredentialsArn: props.authorizerCredentialsArn,
+      // TODO: authorizerResultTtlInSeconds: props.authorizerResultTtl.toSeconds(),
+      authorizerUri: props.authorizerUri,
+      // TODO: identityValidationExpression: props.identityValidationExpression
+      jwtConfiguration: props.jwtConfiguration,
     });
     this.authorizerId = this.resource.ref;
   }

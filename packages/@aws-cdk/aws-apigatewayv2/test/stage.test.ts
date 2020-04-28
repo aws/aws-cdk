@@ -28,6 +28,6 @@ test('minimal setup', () => {
   cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Stage', {
     ApiId: { Ref: 'myapi4C7BF186' },
     StageName: 'dev',
-    DeploymentId: { Ref: 'deployment33381975F8795BE8' },
+    DeploymentId: { Ref: 'deployment33381975' },
   }));
 });

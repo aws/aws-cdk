@@ -1,9 +1,7 @@
-import { CfnResource, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 
 import { IApi } from './api';
 import { CfnDeployment } from './apigatewayv2.generated';
-
-import { createHash } from 'crypto';
 
 /**
  * Defines the contract for an Api Gateway V2 Deployment.
@@ -38,15 +36,6 @@ export interface DeploymentProps {
    * @default - All stages.
    */
   readonly stageName?: string;
-
-  /**
-   * Retains old deployment resources when the API changes. This allows
-   * manually reverting stages to point to old deployments via the AWS
-   * Console.
-   *
-   * @default false
-   */
-  readonly retainDeployments?: boolean;
 }
 
 /**
@@ -101,8 +90,6 @@ export class Deployment extends Resource implements IDeployment {
   public readonly deploymentId: string;
 
   protected resource: CfnDeployment;
-  private hashComponents = new Array<any>();
-  private originalLogicalId: string;
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
@@ -113,29 +100,7 @@ export class Deployment extends Resource implements IDeployment {
       stageName: props.stageName,
     });
 
-    if ((props.retainDeployments === undefined) || (props.retainDeployments === true)) {
-      this.resource.applyRemovalPolicy(RemovalPolicy.RETAIN);
-    }
     this.deploymentId = Lazy.stringValue({ produce: () => this.resource.ref });
-    this.originalLogicalId = Stack.of(this).getLogicalId(this.resource);
-  }
-
-  /**
-   * Adds a component to the hash that determines this Deployment resource's
-   * logical ID.
-   *
-   * This should be called by constructs of the API Gateway model that want to
-   * invalidate the deployment when their settings change. The component will
-   * be resolved during synthesis so tokens are welcome.
-   *
-   * @param data The data to add to this hash
-   */
-  public addToLogicalId(data: any) {
-    if (this.node.locked) {
-      throw new Error('Cannot modify the logical ID when the construct is locked');
-    }
-
-    this.hashComponents.push(data);
   }
 
   /**
@@ -147,22 +112,5 @@ export class Deployment extends Resource implements IDeployment {
    */
   public registerDependency(dependency: CfnResource) {
     this.resource.addDependsOn(dependency);
-  }
-
-  /**
-   * Hooks into synthesis to calculate a logical ID that hashes all the components
-   * add via `addToLogicalId`.
-   */
-  protected prepare() {
-    const stack = Stack.of(this);
-
-    // if hash components were added to the deployment, we use them to calculate
-    // a logical ID for the deployment resource.
-    if (this.hashComponents.length > 0) {
-      const md5 = createHash('md5');
-      this.hashComponents.map(c => stack.resolve(c)).forEach(c => md5.update(JSON.stringify(c)));
-      this.resource.overrideLogicalId(this.originalLogicalId + md5.digest('hex').substr(0, 8).toUpperCase());
-    }
-    super.prepare();
   }
 }

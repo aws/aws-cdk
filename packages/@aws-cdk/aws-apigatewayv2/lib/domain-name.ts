@@ -133,7 +133,9 @@ export class DomainName extends Resource implements IDomainName {
     super(scope, id);
 
     this.resource = new CfnDomainName(this, 'Resource', {
-      ...props,
+      domainName: props.domainName,
+      domainNameConfigurations: props.domainNameConfigurations,
+      // TODO: tags: props.tags
     });
     this.domainName = this.resource.ref;
     this.regionalDomainName = this.resource.attrRegionalDomainName;

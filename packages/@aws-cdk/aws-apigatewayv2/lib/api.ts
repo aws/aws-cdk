@@ -2,10 +2,6 @@ import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 
 import { CfnApi } from './apigatewayv2.generated';
 import { Deployment } from './deployment';
-import { Integration } from './integration';
-import { LambdaIntegration, LambdaIntegrationOptions } from './integrations/lambda-integration';
-import { JsonSchema } from './json-schema';
-import { Model, ModelOptions } from './model';
 import { IRoute, KnownRouteSelectionExpression } from './route';
 import { IStage, Stage, StageOptions } from './stage';
 
@@ -324,8 +320,12 @@ export class Api extends Resource implements IApi {
    */
   public deploymentStage?: Stage;
 
+  /**
+   * API Gateway deployment (if defined).
+   */
+  public deployment?: Deployment;
+
   protected resource: CfnApi;
-  protected deployment?: Deployment;
 
   constructor(scope: Construct, id: string, props?: ApiProps) {
     if (props === undefined) {
@@ -366,7 +366,7 @@ export class Api extends Resource implements IApi {
         if (props.disableSchemaValidation !== undefined) {
           throw new Error('"disableSchemaValidation" is only supported with Web Socket APIs');
         }
-        if (props.routeSelectionExpression !== undefined && props.apiKeySelectionExpression !== KnownRouteSelectionExpression.METHOD_PATH) {
+        if (props.routeSelectionExpression !== undefined && props.routeSelectionExpression !== KnownRouteSelectionExpression.METHOD_PATH) {
           throw new Error('"routeSelectionExpression" has a single supported value for HTTP APIs: "${request.method} ${request.path}"');
         }
         break;
@@ -374,69 +374,48 @@ export class Api extends Resource implements IApi {
     }
 
     this.resource = new CfnApi(this, 'Resource', {
-      ...props,
       name: this.physicalName,
+      apiKeySelectionExpression: props.apiKeySelectionExpression,
+      basePath: props.basePath,
+      body: props.body,
+      bodyS3Location: props.bodyS3Location,
+      corsConfiguration: props.corsConfiguration,
+      description: props.description,
+      disableSchemaValidation: props.disableSchemaValidation,
+      failOnWarnings: props.failOnWarnings,
+      protocolType: props.protocolType,
+      routeSelectionExpression: props.routeSelectionExpression,
+      // TODO: tags: props.tags,
+      version: props.version,
     });
     this.apiId = this.resource.ref;
 
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
-      // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
-      // stage name is part of the endpoint, so that makes sense.
       const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
 
       this.deployment = new Deployment(this, 'Deployment', {
         api: this,
         description: 'Automatically created by the Api construct',
-
-        // No stageName specified, this will be defined by the stage directly, as it will reference the deployment
-        retainDeployments: props.retainDeployments,
       });
 
-      this.deploymentStage = new Stage(this, `Stage.${stageName}`, {
-        ...props.deployOptions,
+      this.deploymentStage = new Stage(this, 'DefaultStage', {
         deployment: this.deployment,
         api: this,
         stageName,
         description: 'Automatically created by the Api construct',
+        accessLogSettings: props.deployOptions?.accessLogSettings,
+        autoDeploy: props.deployOptions?.autoDeploy,
+        clientCertificateId: props.deployOptions?.clientCertificateId,
+        defaultRouteSettings: props.deployOptions?.defaultRouteSettings,
+        routeSettings: props.deployOptions?.routeSettings,
+        stageVariables: props.deployOptions?.stageVariables,
       });
     } else {
       if (props.deployOptions) {
         throw new Error('Cannot set "deployOptions" if "deploy" is disabled');
       }
     }
-  }
-
-  /**
-   * API Gateway deployment that represents the latest changes of the API.
-   * This resource will be automatically updated every time the REST API model changes.
-   * This will be undefined if `deploy` is false.
-   */
-  public get latestDeployment() {
-    return this.deployment;
-  }
-
-  /**
-   * Defines an API Gateway Lambda integration.
-   * @param id The construct id
-   * @param props Lambda integration options
-   */
-  public addLambdaIntegration(id: string, props: LambdaIntegrationOptions): Integration {
-    return new LambdaIntegration(this, id, { ...props, api: this });
-  }
-
-  /**
-   * Defines a model for this Api Gateway.
-   * @param schema The model schema
-   * @param props The model integration options
-   */
-  public addModel(schema: JsonSchema, props?: ModelOptions): Model {
-    return new Model(this, `Model.${schema.title}`, {
-      ...props,
-      modelName: schema.title,
-      api: this,
-      schema,
-    });
   }
 
   /**
@@ -466,7 +445,7 @@ export class Api extends Resource implements IApi {
    * @param connectionId The identifier of this connection ('*' if not defined)
    * @param stage The stage for this ARN (if not defined, defaults to the deployment stage if defined, or to '*')
    */
-  public connectionsApiArn(connectionId: string = '*', stage?: IStage) {
+  public webSocketConnectionsApiArn(connectionId: string = '*', stage?: IStage) {
     const stack = Stack.of(this);
     const apiId = this.apiId;
     const stageName = ((stage === undefined) ?
@@ -486,7 +465,27 @@ export class Api extends Resource implements IApi {
    * Fails if `stage` is not defined, and `deploymentStage` is not set either by `deploy` or explicitly.
    * @param stage The stage for this URL (if not defined, defaults to the deployment stage)
    */
-  public clientUrl(stage?: IStage): string {
+  public httpsClientUrl(stage?: IStage): string {
+    const stack = Stack.of(this);
+    let stageName: string | undefined;
+    if (stage === undefined) {
+      if (this.deploymentStage === undefined) {
+        throw Error('No stage defined for this Api');
+      }
+      stageName = this.deploymentStage.stageName;
+    } else {
+      stageName = stage.stageName;
+    }
+    return `https://${this.apiId}.execute-api.${stack.region}.amazonaws.com/${stageName}`;
+  }
+
+  /**
+   * Returns the client URL for this Api, for a specific stage.
+   *
+   * Fails if `stage` is not defined, and `deploymentStage` is not set either by `deploy` or explicitly.
+   * @param stage The stage for this URL (if not defined, defaults to the deployment stage)
+   */
+  public webSocketClientUrl(stage?: IStage): string {
     const stack = Stack.of(this);
     let stageName: string | undefined;
     if (stage === undefined) {
@@ -506,7 +505,7 @@ export class Api extends Resource implements IApi {
    * Fails if `stage` is not defined, and `deploymentStage` is not set either by `deploy` or explicitly.
    * @param stage The stage for this URL (if not defined, defaults to the deployment stage)
    */
-  public connectionsUrl(stage?: IStage): string {
+  public webSocketConnectionsUrl(stage?: IStage): string {
     const stack = Stack.of(this);
     let stageName: string | undefined;
     if (stage === undefined) {
