@@ -3,7 +3,7 @@ import { IAlarmAction } from './alarm-action';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric, MetricStatConfig, MetricExpressionConfig } from './metric-types';
+import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';

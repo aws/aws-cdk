@@ -522,7 +522,7 @@ export = {
         {
           Expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
           Id: 'expr_1',
-          Period: 300
+          Period: 300,
         },
       ]);
 
