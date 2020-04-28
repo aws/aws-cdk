@@ -14,8 +14,8 @@ components of distributed applications and microservices using visual workflows.
 You build applications from individual components that each perform a discrete
 function, or task, allowing you to scale and change applications quickly.
 
-A [Task](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-task-state.html) state represents a single unit of work performed by a state machine. All work in your state
-machine is performed by tasks.
+A [Task](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-task-state.html) state represents a single unit of work performed by a state machine.
+All work in your state machine is performed by tasks.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -50,7 +50,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Step Functions](#step-functions)
 - [SQS](#sqs)
 
-### Task
+## Task
 
 A Task state represents a single unit of work performed by a state machine. In the
 CDK, the exact work to be In the CDK, the exact work to be done is determined by
@@ -61,7 +61,7 @@ actions, and coordinate executions directly from the Amazon States Language in
 Step Functions. You can directly call and pass parameters to the APIs of those
 services.
 
-#### Task parameters from the state JSON
+### Task parameters from the state JSON
 
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
