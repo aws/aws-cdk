@@ -1574,7 +1574,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    table.grant(user, 'dynamodb:*');
+    table.grant(user, ['dynamodb:*']);
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {

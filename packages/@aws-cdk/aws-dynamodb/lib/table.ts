@@ -248,6 +248,26 @@ export interface ITable extends IResource {
   arnForObjects(keyPattern: string): string;
 
   /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param tableActions The set of actions to allow (i.e. ["dynamodb:PutItem", "dynamodb:GetItem", ...])
+   * @param keyAction The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   * @param keyAction The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
+
+  /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
    *
@@ -438,14 +458,14 @@ abstract class TableBase extends Resource implements ITable {
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
    * @param otherResourceArns
    */
-  public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], ...otherResourceArns: string[]) {
+  public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
     const resources = [this.tableArn,
       Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
       ...this.regionalArns,
       ...this.regionalArns.map(arn => Lazy.stringValue({
         produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
       })),
-      ...otherResourceArns];
+      objectsKeyPattern];
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: tableActions,
@@ -466,11 +486,11 @@ abstract class TableBase extends Resource implements ITable {
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
    * @param otherResourceArns
    */
-  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], ...otherResourceArns: string[]) {
+  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
-    const resources = [ this.tableStreamArn, ...otherResourceArns];
+    const resources = [ this.tableStreamArn, objectsKeyPattern];
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: streamActions,
@@ -653,13 +673,6 @@ abstract class TableBase extends Resource implements ITable {
  * Provides a DynamoDB table.
  */
 export class Table extends TableBase {
-
-  /**
-   * Whether this table has indexes
-   */
-  protected get hasIndex(): boolean {
-    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
-  }
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use {@link #grantTableListStreams} for more granular permission
@@ -1213,6 +1226,14 @@ export class Table extends TableBase {
       resources: this.regionalArns,
     }));
   }
+
+  /**
+   * Whether this table has indexes
+   */
+  protected get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
+  }
+
   /**
    * Set up key properties and return the Table encryption property from the
    * user's configuration.
