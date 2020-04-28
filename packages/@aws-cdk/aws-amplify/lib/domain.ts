@@ -108,8 +108,7 @@ export class Domain extends Resource {
    * Maps a branch to the domain root
    */
   public mapRoot(branch: IBranch) {
-    this.subDomains.push({ branch, prefix: '' });
-    return this;
+    return this.mapSubDomain(branch, '');
   }
 
   protected validate() {
