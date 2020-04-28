@@ -44,7 +44,7 @@
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.663.0",
+    "aws-sdk": "^2.664.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
