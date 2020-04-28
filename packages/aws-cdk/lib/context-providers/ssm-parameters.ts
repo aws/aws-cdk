@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
@@ -37,7 +38,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    * @throws Error if a service error (other than ``ParameterNotFound``) occurs.
    */
   private async getSsmParameterValue(account: string, region: string, parameterName: string): Promise<AWS.SSM.GetParameterResult> {
-    const ssm = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ssm();
+    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ssm();
     try {
       return await ssm.getParameter({ Name: parameterName }).promise();
     } catch (e) {

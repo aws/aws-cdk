@@ -36,7 +36,8 @@ export interface IChainable {
 
 /**
  * Predefined error strings
- * Error names in Amazon States Language - https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
+ * Error names in Amazon States Language - https://states-language.net/spec.html#appendix-a
+ * Error handling in Step Functions - https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
  */
 export class Errors {
   /**
@@ -65,6 +66,12 @@ export class Errors {
    * A Task State’s “ResultPath” field cannot be applied to the input the state received.
    */
   public static readonly RESULT_PATH_MATCH_FAILURE = 'States.ResultPathMatchFailure';
+
+  /**
+   * Within a state’s “Parameters” field, the attempt to replace a field whose
+   * name ends in “.$” using a Path failed.
+   */
+  public static readonly PARAMETER_PATH_FAILURE = 'States.ParameterPathFailure';
 
   /**
    * A branch of a Parallel state failed.
