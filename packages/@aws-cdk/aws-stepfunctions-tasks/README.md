@@ -52,8 +52,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ### Task
 
-A `Task` represents some work that needs to be done. In the CDK, the exact work to be
-done is determine by a class that implements `IStepFunctionsTask`.
+A `Task` represents some work that needs to be done. In the CDK, the exact work to
+be done is determine by a class that implements `IStepFunctionsTask`.
 
 AWS Step Functions [integrates](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) with some AWS services so that you can call API
 actions, and coordinate executions directly from the Amazon States Language in
@@ -62,10 +62,9 @@ services.
 
 #### Task parameters from the state JSON
 
-Many tasks take parameters. Parameter values can either be supplied
-directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `Data`,
-such as `Data.stringAt()`.
+Many tasks take parameters. Parameter values can either be supplied directly in
+the workflow definition (by specifying their values), or at runtime by passing a
+value obtained from the static functions on `Data`, such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
