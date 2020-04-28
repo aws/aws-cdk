@@ -180,6 +180,7 @@ export = {
             ],
           },
         },
+        PlatformVersion: FargatePlatformVersion.VERSION1_4,
         PropagateTags: 'SERVICE',
         ServiceName: 'myService',
       }));
