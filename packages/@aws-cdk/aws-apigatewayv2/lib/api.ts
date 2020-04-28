@@ -1,9 +1,8 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Resource, Stack  } from '@aws-cdk/core';
-import { CfnApi, CfnApiProps,  HttpRouteOptions, IRouteBase, LambdaRouteOptions, Route  } from '../lib';
-import { IIntegration } from './integration';
-import { HttpMethod, RouteOptions } from './route';
+import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
+// import { AddRoutesOptions, HttpMethod, Route } from './route';
 
 /**
  * Represents an HTTP API
@@ -26,6 +25,7 @@ export interface HttpApiProps {
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
+
   /**
    * target lambda function of lambda proxy integration for the $default route
    *
@@ -42,7 +42,7 @@ export interface HttpApiProps {
 }
 
 /**
- * HTTPApi Resource Class
+ * Create a new API Gateway HTTP API endpoint.
  *
  * @resource AWS::ApiGatewayV2::Api
  */
@@ -60,10 +60,6 @@ export class HttpApi extends Resource implements IHttpApi {
    * the API identifer
    */
   public readonly httpApiId: string;
-  /**
-   * root route
-   */
-  public root?: IRouteBase;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -97,66 +93,23 @@ export class HttpApi extends Resource implements IHttpApi {
    * HTTP API auto deploys the default stage and this just returns the URL from the default stage.
    */
   public get url() {
-    return `https://${this.httpApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`;
-  }
-
-  // public get root(): IRouteBase {
-  //   return new Route(this, `RootRoute${this.httpApiId}`, {
-  //     api: this,
-  //     httpPath: '/',
-  //   });
-  // }
-
-  public addRootRoute(integration?: IIntegration, httpMethod?: HttpMethod): IRouteBase {
-    this.root = new Route(this, `RootRoute${this.httpApiId}`, {
-      api: this,
-      httpPath: '/',
-      integration,
-      httpMethod,
-    });
-    return this.root;
+    return `https://${this.httpApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/`;
   }
 
   /**
    * add routes on this API
    */
-  public addRoutes(pathPart: string, id: string, options: RouteOptions): Route[] {
-    const routes: Route[] = [];
-    const methods = options.methods ?? [ HttpMethod.ANY ];
-    for (const m of methods) {
-      routes.push(new Route(this, `${id}${m}`, {
-        api: this,
-        integration: options.integration,
-        httpMethod: m,
-        httpPath: pathPart,
-      }));
-    }
-    return routes;
-  }
-
-  /**
-   * create a child route with Lambda proxy integration
-   */
-  public addLambdaRoute(httpPath: string, id: string, options: LambdaRouteOptions): Route {
-    const httpMethod = options.method;
-    return new Route(this, id, {
-      api: this,
-      targetHandler: options.target,
-      httpPath,
-      httpMethod,
-    });
-  }
-
-  /**
-   * create a child route with HTTP proxy integration
-   */
-  public addHttpRoute(httpPath: string, id: string, options: HttpRouteOptions): Route {
-    const httpMethod = options.method;
-    return new Route(this, id, {
-      api: this,
-      targetUrl: options.targetUrl,
-      httpPath,
-      httpMethod,
-    });
-  }
+  // public addRoutes(pathPart: string, id: string, options: AddRoutesOptions): Route[] {
+  //   const routes: Route[] = [];
+  //   const methods = options.methods ?? [ HttpMethod.ANY ];
+  //   for (const m of methods) {
+  //     routes.push(new Route(this, `${id}${m}`, {
+  //       api: this,
+  //       integration: options.integration,
+  //       httpMethod: m,
+  //       httpPath: pathPart,
+  //     }));
+  //   }
+  //   return routes;
+  // }
 }

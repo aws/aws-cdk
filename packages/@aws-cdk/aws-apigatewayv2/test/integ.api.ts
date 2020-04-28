@@ -1,12 +1,12 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import { HttpApi, HttpMethod, HttpProxyIntegration, LambdaProxyIntegration } from '../lib';
+import { App, Stack } from '@aws-cdk/core';
+import { HttpApi, HttpMethod, LambdaProxyIntegration, Route } from '../lib';
 
-const app = new cdk.App();
+const app = new App();
 
-const stack = new cdk.Stack(app, 'ApiagtewayV2HttpApi');
+const stack = new Stack(app, 'ApiagtewayV2HttpApi');
 
-const getbooksHandler = new lambda.Function(stack, 'MyFunc', {
+const handler = new lambda.Function(stack, 'MyFunc', {
   runtime: lambda.Runtime.PYTHON_3_7,
   handler: 'index.handler',
   code: new lambda.InlineCode(`
@@ -18,55 +18,28 @@ def handler(event, context):
       }`),
 });
 
-const getbookReviewsHandler = new lambda.Function(stack, 'RootFunc', {
-  runtime: lambda.Runtime.PYTHON_3_7,
-  handler: 'index.handler',
-  code: new lambda.InlineCode(`
-import json, os
-def handler(event, context):
-      whoami = os.environ['WHOAMI']
-      http_path = os.environ['HTTP_PATH']
-      return {
-        'statusCode': 200,
-        'body': json.dumps({ 'whoami': whoami, 'http_path': http_path })
-      }`),
-  environment: {
-    WHOAMI: 'root',
-    HTTP_PATH: '/',
-  },
-});
-
-const rootUrl = 'https://checkip.amazonaws.com';
-const defaultUrl = 'https://aws.amazon.com';
+// const rootUrl = 'https://checkip.amazonaws.com';
+// const defaultUrl = 'https://aws.amazon.com';
 
 // create a basic HTTP API with http proxy integration as the $default route
-const api = new HttpApi(stack, 'HttpApi', {
-  targetUrl: defaultUrl,
-});
+const api = new HttpApi(stack, 'HttpApi');
 
-api.addRoutes('/', 'RootRoute', {
-  methods: [HttpMethod.GET, HttpMethod.POST],
-  integration: new HttpProxyIntegration(stack, 'RootInteg', {
-    api,
-    targetUrl: rootUrl,
+new Route(api, 'allroutes', {
+  httpApi: api,
+  path: '/',
+  method: HttpMethod.ANY,
+  integration: new LambdaProxyIntegration({
+    handler,
   }),
 });
 
-api.addRoutes('/books', 'GetBooksRoute', {
-  methods: [HttpMethod.GET],
-  integration: new LambdaProxyIntegration(stack, 'getbooksInteg', {
-    api,
-    targetHandler: getbooksHandler,
-  }),
-});
-
-api.addRoutes('/books/reviews', 'GetBookReviewRoute', {
-  methods: [HttpMethod.GET],
-  integration: new LambdaProxyIntegration(stack, 'getBookReviewInteg', {
-    api,
-    targetHandler: getbookReviewsHandler,
-  }),
-});
+// api.addRoutes('/books/reviews', 'GetBookReviewRoute', {
+//   methods: [HttpMethod.GET],
+//   integration: new LambdaProxyIntegration(stack, 'getBookReviewInteg', {
+//     api,
+//     targetHandler: getbookReviewsHandler,
+//   }),
+// });
 
 // // pass the rootIntegration to addRootRoute() to initialize the root route
 // // HTTP GET /
