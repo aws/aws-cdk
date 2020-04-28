@@ -4,7 +4,7 @@ import * as codebuild from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-codebuild-secondary-sources-artifacts');
+const stack = new cdk.Stack(app, 'aws-cdk-codebuild-buildspec-artifact-name');
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -17,12 +17,10 @@ new codebuild.Project(stack, 'MyProject', {
   artifacts:
     codebuild.Artifacts.s3({
       bucket,
-      name: 'name',
       includeBuildId: false,
       packageZip: true,
       path: 'another/path',
       identifier: 'AddArtifact1',
-      useNameFromBuildSpec: true,
     }),
 });
 

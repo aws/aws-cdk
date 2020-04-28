@@ -126,21 +126,18 @@ const project = codebuild.Project(stack, 'MyProject', {
   }),
   artifacts: codebuild.Artifacts.s3({
       bucket,
-      name: 'name',
       includeBuildId: false,
       packageZip: true,
       path: 'another/path',
       identifier: 'AddArtifact1',
-      useBuildspecName: true,
     }),
 });
 ```
 
-This example will produce an artifact named as defined in the Buildspec file, 
-uploaded to an S3 bucket (`bucket`). The path will be `another/path` and the 
-artifact will be a zipfile. In this case, the `name` parameter will be ignored 
-by CodeBuild in favour of that specified in the `buildspec.yml`.
-
+Because we've not set the `name` property, this example will set the
+`overrideArtifactName` parameter, and produce an artifact named as defined in
+the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
+`another/path` and the artifact will be a zipfile.
 
 ## CodePipeline
 
