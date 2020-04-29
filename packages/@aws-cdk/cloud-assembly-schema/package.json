@@ -78,7 +78,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "stable",
   "awslint": {
