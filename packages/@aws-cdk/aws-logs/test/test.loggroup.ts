@@ -169,7 +169,7 @@ export = {
     // Regardless of whether the user put :* there already because of this bug, we
     // don't want to append it twice.
     [''],
-    [':*']
+    [':*'],
   ], (test: Test, suffix: string) => {
     // GIVEN
     const stack = new Stack();
@@ -211,7 +211,7 @@ export = {
     // Regardless of whether the user put :* there already because of this bug, we
     // don't want to append it twice.
     [''],
-    [':*']
+    [':*'],
   ], (test: Test, suffix: string) => {
     // GIVEN
     const stack = new Stack();
