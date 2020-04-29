@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
+import { cdkCacheDir } from '../../util/directories';
 import { Account } from './sdk-provider';
 
 /**
@@ -22,7 +22,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts_partitions.json');
+    this.cacheFile = filePath || path.join(cdkCacheDir(), 'accounts_partitions.json');
   }
 
   /**
@@ -77,18 +77,25 @@ export class AccountAccessKeyCache {
   }
 
   private async loadMap(): Promise<{ [accessKeyId: string]: Account }> {
-    if (!(await fs.pathExists(this.cacheFile))) {
-      return { };
+    try {
+      return await fs.readJson(this.cacheFile);
+    } catch (e) {
+      if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      throw e;
     }
-
-    return await fs.readJson(this.cacheFile);
   }
 
   private async saveMap(map: { [accessKeyId: string]: Account }) {
-    if (!(await fs.pathExists(this.cacheFile))) {
-      await fs.mkdirs(path.dirname(this.cacheFile));
-    }
+    try {
+      const dir = path.dirname(this.cacheFile);
+      if (!(await fs.pathExists(dir))) {
+        await fs.mkdirs(dir);
+      }
 
-    await fs.writeJson(this.cacheFile, map, { spaces: 2 });
+      await fs.writeJson(this.cacheFile, map, { spaces: 2 });
+    } catch (e) {
+      if (e.code === 'ENOENT' || e.code === 'EACCES') { return; }
+      throw e;
+    }
   }
 }
