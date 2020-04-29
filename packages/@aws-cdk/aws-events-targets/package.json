@@ -90,7 +90,7 @@
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.5.0",
+    "jest": "^25.5.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
