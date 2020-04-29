@@ -40,13 +40,6 @@
     "compat": "cdk-compat",
     "update-schema": "bash scripts/update-schema.sh"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "scripts/*"
-      ]
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",

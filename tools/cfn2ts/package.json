@@ -43,13 +43,6 @@
     "jest": "^25.5.0",
     "pkglint": "0.0.0"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "test/enrichments/*.ts"
-      ]
-    }
-  },
   "keywords": [
     "aws",
     "cdk"
