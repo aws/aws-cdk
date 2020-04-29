@@ -130,21 +130,19 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.path = props.routeKey.path;
 
     let integration: HttpIntegration | undefined;
-    if (props.integration) {
-      const config = props.integration.bind(this);
-      integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
-        httpApi: props.httpApi,
-        integrationType: config.type,
-        integrationUri: config.uri,
-        method: config.method,
-        payloadFormatVersion: config.payloadFormatVersion,
-      });
-    }
+    const config = props.integration.bind(this);
+    integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
+      httpApi: props.httpApi,
+      integrationType: config.type,
+      integrationUri: config.uri,
+      method: config.method,
+      payloadFormatVersion: config.payloadFormatVersion,
+    });
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
       routeKey: props.routeKey.key,
-      target: integration ? `integrations/${integration.integrationId}` : undefined,
+      target: `integrations/${integration.integrationId}`,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);
