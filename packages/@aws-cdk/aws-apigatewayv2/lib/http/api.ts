@@ -1,8 +1,9 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
-import { IRouteIntegration } from './integration';
-import { Route, RouteKey } from './route';
-import { Stage, StageName, StageOptions } from './stage';
+import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { StageName } from '../common';
+import { IHttpRouteIntegration } from './integration';
+import { HttpRoute, HttpRouteKey } from './route';
+import { HttpStage, HttpStageOptions } from './stage';
 
 /**
  * Represents an HTTP API
@@ -29,7 +30,7 @@ export interface HttpApiProps {
    * An integration that will be configured on the catch-all route ($default).
    * @default - none
    */
-  readonly defaultIntegration?: IRouteIntegration;
+  readonly defaultIntegration?: IHttpRouteIntegration;
 
   /**
    * Whether a default stage and deployment should be automatically created.
@@ -54,7 +55,7 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   public readonly httpApiId: string;
-  private readonly defaultStage: Stage | undefined;
+  private readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -69,15 +70,15 @@ export class HttpApi extends Resource implements IHttpApi {
     this.httpApiId = resource.ref;
 
     if (props?.defaultIntegration) {
-      new Route(this, 'DefaultRoute', {
+      new HttpRoute(this, 'DefaultRoute', {
         httpApi: this,
-        routeKey: RouteKey.DEFAULT,
+        routeKey: HttpRouteKey.DEFAULT,
         integration: props.defaultIntegration,
       });
     }
 
     if (props?.createDefaultStage === undefined || props.createDefaultStage === true) {
-      this.defaultStage = new Stage(this, 'DefaultStage', {
+      this.defaultStage = new HttpStage(this, 'DefaultStage', {
         httpApi: this,
         stageName: StageName.DEFAULT,
         autoDeploy: true,
@@ -96,8 +97,8 @@ export class HttpApi extends Resource implements IHttpApi {
   /**
    * Add a new stage.
    */
-  public addStage(id: string, options: StageOptions): Stage {
-    return new Stage(this, id, {
+  public addStage(id: string, options: HttpStageOptions): HttpStage {
+    return new HttpStage(this, id, {
       httpApi: this,
       ...options,
     });

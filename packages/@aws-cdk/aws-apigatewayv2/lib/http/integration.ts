@@ -1,31 +1,35 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
+import { CfnIntegration } from '../apigatewayv2.generated';
+import { IIntegration } from '../common';
 import { IHttpApi } from './api';
-import { CfnIntegration } from './apigatewayv2.generated';
-import { Route } from './route';
-
-/**
- * Represents an integration to a HTTP API Route.
- */
-export interface IIntegration extends IResource {
-  /**
-   * The resource ID of the integration
-   * @attribute
-   */
-  readonly integrationId: string;
-}
+import { HttpRoute } from './route';
 
 /**
  * Supported integration types
  */
-export enum IntegrationType {
-  AWS_PROXY = 'AWS_PROXY',
+export enum HttpIntegrationType {
+  /**
+   * Integration type is a Lambda proxy
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+   */
+  LAMBDA_PROXY = 'AWS_PROXY',
+  /**
+   * Integration type is an HTTP proxy
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+   */
   HTTP_PROXY = 'HTTP_PROXY',
+
+  /**
+   * Private integrations.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-private.html
+   */
+  PRIVATE = 'HTTP_PROXY',
 }
 
 /**
  * The integration properties
  */
-export interface IntegrationProps {
+export interface HttpIntegrationProps {
   /**
    * API ID
    */
@@ -33,7 +37,7 @@ export interface IntegrationProps {
   /**
    * integration type
    */
-  readonly integrationType: IntegrationType;
+  readonly integrationType: HttpIntegrationType;
   /**
    * integration URI
    */
@@ -44,7 +48,7 @@ export interface IntegrationProps {
  * The integration for an API route.
  * @resource AWS::ApiGatewayV2::Integration
  */
-export class Integration extends Resource implements IResource {
+export class HttpIntegration extends Resource implements IIntegration {
   /**
    * Import an existing integration using integration id
    */
@@ -58,7 +62,7 @@ export class Integration extends Resource implements IResource {
 
   public readonly integrationId: string;
 
-  constructor(scope: Construct, id: string, props: IntegrationProps) {
+  constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.httpApi.httpApiId,
@@ -73,21 +77,21 @@ export class Integration extends Resource implements IResource {
 /**
  * The interface that various route integration classes will inherit.
  */
-export interface IRouteIntegration {
+export interface IHttpRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  bind(route: Route): RouteIntegrationConfig;
+  bind(route: HttpRoute): HttpRouteIntegrationConfig;
 }
 
 /**
  * Config returned back as a result of the bind.
  */
-export interface RouteIntegrationConfig {
+export interface HttpRouteIntegrationConfig {
   /**
    * Integration type.
    */
-  readonly type: IntegrationType;
+  readonly type: HttpIntegrationType;
 
   /**
    * Integration URI

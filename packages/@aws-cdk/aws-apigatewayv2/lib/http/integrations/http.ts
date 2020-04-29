@@ -1,7 +1,7 @@
 import { Construct, Resource } from '@aws-cdk/core';
+import { CfnIntegration } from '../../apigatewayv2.generated';
+import { IIntegration } from '../../common';
 import { IHttpApi } from '../api';
-import { CfnIntegration } from '../apigatewayv2.generated';
-import { IIntegration } from '../integration';
 import { HttpMethod } from '../route';
 
 /**

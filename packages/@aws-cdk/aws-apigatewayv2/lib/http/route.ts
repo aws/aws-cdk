@@ -1,21 +1,11 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
+import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
+import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { CfnRoute, CfnRouteProps } from './apigatewayv2.generated';
-import { Integration, IRouteIntegration } from './integration';
+import { HttpIntegration, IHttpRouteIntegration } from './integration';
 
 /**
- * the interface of the Route of API Gateway HTTP API
- */
-export interface IRoute extends IResource {
-  /**
-   * ID of the Route
-   * @attribute
-   */
-  readonly routeId: string;
-}
-
-/**
- * all HTTP methods
+ * Supported HTTP methods
  */
 export enum HttpMethod {
   /** HTTP ANY */
@@ -40,11 +30,11 @@ export enum HttpMethod {
  * HTTP route in APIGateway is a combination of the HTTP method and the path component.
  * This class models that combination.
  */
-export class RouteKey {
+export class HttpRouteKey {
   /**
    * The catch-all route of the API, i.e., when no other routes match
    */
-  public static readonly DEFAULT = new RouteKey('$default');
+  public static readonly DEFAULT = new HttpRouteKey('$default');
 
   /**
    * Create a route key with the combination of the path and the method.
@@ -54,10 +44,12 @@ export class RouteKey {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
       throw new Error('path must always start with a "/" and not end with a "/"');
     }
-    return new RouteKey(`${method ?? 'ANY'} ${path}`, path);
+    return new HttpRouteKey(`${method ?? 'ANY'} ${path}`, path);
   }
 
-  /** The key to the RouteKey as recognized by APIGateway */
+  /**
+   * The key to the RouteKey as recognized by APIGateway
+   */
   public readonly key: string;
   /**
    * The path part of this RouteKey.
@@ -74,7 +66,7 @@ export class RouteKey {
 /**
  * Properties to initialize a new Route
  */
-export interface RouteProps {
+export interface HttpRouteProps {
   /**
    * the API the route is associated with
    */
@@ -83,12 +75,12 @@ export interface RouteProps {
   /**
    * The key to this route. This is a combination of an HTTP method and an HTTP path.
    */
-  readonly routeKey: RouteKey;
+  readonly routeKey: HttpRouteKey;
 
   /**
    * The integration to be configured on this route.
    */
-  readonly integration?: IRouteIntegration;
+  readonly integration: IHttpRouteIntegration;
 }
 
 // /**
@@ -109,10 +101,11 @@ export interface RouteProps {
 
 /**
  * Route class that creates the Route for API Gateway HTTP API
+ * @resource AWS::ApiGatewayV2::Route
  */
-export class Route extends Resource implements IRoute {
+export class HttpRoute extends Resource implements IRoute {
   /**
-   * import from route id
+   * Import from route id
    */
   public static fromRouteId(scope: Construct, id: string, routeId: string): IRoute {
     class Import extends Resource implements IRoute {
@@ -130,16 +123,16 @@ export class Route extends Resource implements IRoute {
    */
   public readonly path: string | undefined;
 
-  constructor(scope: Construct, id: string, props: RouteProps) {
+  constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
 
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
 
-    let integration: Integration | undefined;
+    let integration: HttpIntegration | undefined;
     if (props.integration) {
       const config = props.integration.bind(this);
-      integration = new Integration(this, `${this.node.id}-Integration`, {
+      integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
         httpApi: props.httpApi,
         integrationType: config.type,
         integrationUri: config.uri,
