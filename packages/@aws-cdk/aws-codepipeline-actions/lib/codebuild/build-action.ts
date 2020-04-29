@@ -33,6 +33,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * The list of additional input Artifacts for this action.
+   *
+   * The directories the additional inputs will be available at are available
+   * during the project's build in the CODEBUILD_SRC_DIR_<artifact-name> environment variables.
+   * The project's build always starts in the directory with the primary input artifact checked out,
+   * the one pointed to by the {@link input} property.
+   * For more information,
+   * see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html .
    */
   readonly extraInputs?: codepipeline.Artifact[];
 
