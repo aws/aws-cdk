@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -385,7 +385,7 @@ export = {
     test.done();
   },
 
-  'test Fargate loadbalanced construct with TLS'(test: Test) {
+  'test Fargate application loadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -417,6 +417,64 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 80,
       Protocol: 'HTTP',
+      TargetType: 'ip',
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: 1,
+      LaunchType: 'FARGATE',
+    }));
+
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] },
+      },
+    }));
+
+    test.done();
+  },
+
+  'test Fargate network loadbalanced construct with TLS'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      certificates: [ListenerCertificate.fromArn('arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678')],
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'TLS',
+      Certificates: [{
+        CertificateArn: 'arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678',
+      }],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'TCP',
       TargetType: 'ip',
       VpcId: {
         Ref: 'VPCB9E5F0B4',

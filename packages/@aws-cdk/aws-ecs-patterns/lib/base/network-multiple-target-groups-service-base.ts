@@ -1,7 +1,6 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
-  PropagatedTagSource, Protocol as ecsProtocol, Secret } from '@aws-cdk/aws-ecs';
-import { IListenerCertificate, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup, Protocol as elbv2Protocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -17,7 +16,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
    * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster?: ICluster;
+  readonly cluster?: ecs.ICluster;
 
   /**
    * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
@@ -70,7 +69,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    *
    * @default - none
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: ecs.PropagatedTagSource;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -85,7 +84,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly cloudMapOptions?: CloudMapOptions;
+  readonly cloudMapOptions?: ecs.CloudMapOptions;
 
   /**
    * Properties to specify NLB target groups.
@@ -104,7 +103,7 @@ export interface NetworkLoadBalancedTaskImageProps {
    *
    * @default - none
    */
-  readonly image: ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * The environment variables to pass to the container.
@@ -118,7 +117,7 @@ export interface NetworkLoadBalancedTaskImageProps {
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: Secret };
+  readonly secrets?: { [key: string]: ecs.Secret };
 
   /**
    * Flag to indicate whether to enable logging.
@@ -132,7 +131,7 @@ export interface NetworkLoadBalancedTaskImageProps {
    *
    * @default - AwsLogDriver if enableLogging is true
    */
-  readonly logDriver?: LogDriver;
+  readonly logDriver?: ecs.LogDriver;
 
   /**
    * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
@@ -238,14 +237,14 @@ export interface NetworkListenerProps {
    *
    * @default - TLS if certificates are provided. TCP otherwise.
    */
-  readonly protocol?: elbv2Protocol;
+  readonly protocol?: elbv2.Protocol;
 
   /**
    * Certificate list of ACM cert ARNs
    *
    * @default - No certificates.
    */
-  readonly certificates?: IListenerCertificate[];
+  readonly certificates?: elbv2.IListenerCertificate[];
 }
 
 /**
@@ -277,23 +276,23 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * The Network Load Balancer for the service.
    */
-  public readonly loadBalancer: NetworkLoadBalancer;
+  public readonly loadBalancer: elbv2.NetworkLoadBalancer;
 
   /**
    * The listener for the service.
    */
-  public readonly listener: NetworkListener;
+  public readonly listener: elbv2.NetworkListener;
 
   /**
    * The cluster that hosts the service.
    */
-  public readonly cluster: ICluster;
+  public readonly cluster: ecs.ICluster;
 
-  protected logDriver?: LogDriver;
-  protected listeners = new Array<NetworkListener>();
-  protected targetGroups = new Array<NetworkTargetGroup>();
+  protected logDriver?: ecs.LogDriver;
+  protected listeners = new Array<elbv2.NetworkListener>();
+  protected targetGroups = new Array<elbv2.NetworkTargetGroup>();
 
-  private loadBalancers = new Array<NetworkLoadBalancer>();
+  private loadBalancers = new Array<elbv2.NetworkLoadBalancer>();
 
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.
@@ -317,7 +316,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
           const listener = lb.addListener(listenerProps.name, {
             port: listenerProps.port || 80,
             certificates: listenerProps.certificates,
-            protocol: listenerProps.protocol
+            protocol: listenerProps.protocol,
           });
           this.listeners.push(listener);
         }
@@ -328,8 +327,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       this.loadBalancer = this.loadBalancers[0];
       this.listener = this.listeners[0];
     } else {
-      this.loadBalancer = this.createLoadBalancer('LB', true);
-      this.listener = this.loadBalancer.addListener("PublicListener", {port: 80});
+      this.loadBalancer = this.createLoadBalancer('LB');
+      this.listener = this.loadBalancer.addListener('PublicListener', {port: 80});
       this.createDomainName(this.loadBalancer);
 
       new CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
@@ -339,18 +338,18 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): ecs.Cluster {
     // magic string to avoid collision with user-defined constructs.
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as ecs.Cluster || new ecs.Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
-  protected createAWSLogDriver(prefix: string): AwsLogDriver {
-    return new AwsLogDriver({ streamPrefix: prefix });
+  protected createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
+    return new ecs.AwsLogDriver({ streamPrefix: prefix });
   }
 
-  protected findListener(name?: string): NetworkListener {
+  protected findListener(name?: string): elbv2.NetworkListener {
     if (!name) {
       return this.listener;
     }
@@ -362,7 +361,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     throw new Error(`Listener ${name} is not defined. Did you define listener with name ${name}?`);
   }
 
-  protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
+  protected registerECSTargets(service: ecs.BaseService, container: ecs.ContainerDefinition, targets: NetworkTargetProps[]):
+  elbv2.NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
         port: 80,
@@ -381,9 +381,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     return this.targetGroups[0];
   }
 
-  protected addPortMappingForTargets(container: ContainerDefinition, targets: NetworkTargetProps[]) {
+  protected addPortMappingForTargets(container: ecs.ContainerDefinition, targets: NetworkTargetProps[]) {
     for (const target of targets) {
-      if (!container.findPortMapping(target.containerPort, ecsProtocol.TCP)) {
+      if (!container.findPortMapping(target.containerPort, ecs.Protocol.TCP)) {
         container.addPortMappings({
           containerPort: target.containerPort,
         });
@@ -394,7 +394,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * Create log driver if logging is enabled.
    */
-  private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
+  private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: ecs.LogDriver): ecs.LogDriver | undefined {
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
       ? logDriverProp : enableLogging
@@ -423,23 +423,17 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     }
   }
 
-  private createLoadBalancer(name: string, publicLoadBalancer?: boolean): NetworkLoadBalancer {
+  private createLoadBalancer(name: string, publicLoadBalancer?: boolean): elbv2.NetworkLoadBalancer {
     const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
     };
 
-    return new NetworkLoadBalancer(this, name, lbProps);
+    return new elbv2.NetworkLoadBalancer(this, name, lbProps);
   }
 
-  private createListener(name: string, lb: NetworkLoadBalancer, port: number): NetworkListener {
-    return lb.addListener(name, {
-      port,
-    });
-  }
-
-  private createDomainName(loadBalancer: NetworkLoadBalancer, name?: string, zone?: IHostedZone) {
+  private createDomainName(loadBalancer: elbv2.NetworkLoadBalancer, name?: string, zone?: IHostedZone) {
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');

@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, Ec2TaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';
-import { ApplicationProtocol, ListenerCertificate, Protocol as elbv2Protocol } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
@@ -16,7 +16,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
@@ -24,7 +24,7 @@ export = {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -76,7 +76,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -85,7 +85,7 @@ export = {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
           containerName: 'myContainer',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -93,7 +93,7 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
             TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
-          logDriver: new AwsLogDriver({
+          logDriver: new ecs.AwsLogDriver({
             streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
@@ -121,13 +121,13 @@ export = {
             listeners: [
               {
                 name: 'listener',
-                protocol: ApplicationProtocol.HTTPS,
+                protocol: elbv2.ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
               },
             ],
           },
         ],
-        propagateTags: PropagatedTagSource.SERVICE,
+        propagateTags: ecs.PropagatedTagSource.SERVICE,
         memoryReservationMiB: 1024,
         serviceName: 'myService',
         targetGroups: [
@@ -140,7 +140,7 @@ export = {
             listener: 'listener',
             pathPattern: 'a/b/c',
             priority: 10,
-            protocol: Protocol.TCP,
+            protocol: ecs.Protocol.TCP,
           },
         ],
       });
@@ -248,7 +248,7 @@ export = {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -264,12 +264,12 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('web', {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
       container.addPortMappings({
@@ -313,7 +313,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -322,7 +322,7 @@ export = {
         cluster,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
         loadBalancers: [
           {
@@ -332,12 +332,12 @@ export = {
             listeners: [
               {
                 name: 'listener1',
-                protocol: ApplicationProtocol.HTTPS,
+                protocol: elbv2.ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
               },
               {
                 name: 'listener2',
-                protocol: ApplicationProtocol.HTTP,
+                protocol: elbv2.ApplicationProtocol.HTTP,
               },
             ],
           },
@@ -346,7 +346,7 @@ export = {
             listeners: [
               {
                 name: 'listener3',
-                protocol: ApplicationProtocol.HTTP,
+                protocol: elbv2.ApplicationProtocol.HTTP,
               },
             ],
           },
@@ -437,10 +437,10 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
@@ -464,7 +464,7 @@ export = {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
         loadBalancers: [
           {
@@ -485,7 +485,7 @@ export = {
               },
               {
                 name: 'listener3',
-                protocol: ApplicationProtocol.HTTPS,
+                protocol: elbv2.ApplicationProtocol.HTTPS,
                 certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
               },
             ],
@@ -513,14 +513,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       test.throws(() => new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('/aws/aws-example-app'),
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         },
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -531,7 +531,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'MyVpc', {});
-      const cluster = new Cluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
@@ -543,7 +543,7 @@ export = {
       new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         },
         cloudMapOptions: {
           name: 'myApp',
@@ -602,12 +602,12 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('test', {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
 
@@ -616,7 +616,7 @@ export = {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           taskDefinition,
         });
@@ -629,7 +629,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -646,7 +646,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -654,7 +654,7 @@ export = {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -677,14 +677,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [],
         });
@@ -697,14 +697,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           targetGroups: [],
         });
@@ -717,14 +717,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -742,14 +742,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -757,7 +757,7 @@ export = {
               listeners: [
                 {
                   name: 'listener',
-                  protocol: ApplicationProtocol.HTTP,
+                  protocol: elbv2.ApplicationProtocol.HTTP,
                   certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
                 },
               ],
@@ -773,14 +773,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -788,7 +788,7 @@ export = {
               listeners: [
                 {
                   name: 'listener',
-                  protocol: ApplicationProtocol.HTTPS,
+                  protocol: elbv2.ApplicationProtocol.HTTPS,
                 },
               ],
             },
@@ -803,14 +803,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -838,7 +838,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -847,7 +847,7 @@ export = {
           cluster,
           memoryLimitMiB: 1024,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           desiredCount: 0,
         })
@@ -862,7 +862,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
@@ -870,7 +870,7 @@ export = {
         cluster,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -936,7 +936,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
       const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -945,7 +945,7 @@ export = {
         cluster,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
           containerName: 'myContainer',
           containerPorts: [80, 90],
           enableLogging: false,
@@ -953,7 +953,7 @@ export = {
             TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
             TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
           },
-          logDriver: new AwsLogDriver({
+          logDriver: new ecs.AwsLogDriver({
             streamPrefix: 'TestStream',
           }),
           family: 'Ec2TaskDef',
@@ -994,7 +994,7 @@ export = {
             ],
           },
         ],
-        propagateTags: PropagatedTagSource.SERVICE,
+        propagateTags: ecs.PropagatedTagSource.SERVICE,
         memoryReservationMiB: 256,
         serviceName: 'myService',
         targetGroups: [
@@ -1107,7 +1107,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
@@ -1115,48 +1115,48 @@ export = {
         cluster,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
         loadBalancers: [
           {
-            name: "lb",
+            name: 'lb',
             listeners: [
               {
-                name: "listener",
-                certificates: [ListenerCertificate.fromArn("arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678")],
-                protocol: elbv2Protocol.TLS
-              }
-            ]
-          }
+                name: 'listener',
+                certificates: [elbv2.ListenerCertificate.fromArn('arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678')],
+                protocol: elbv2.Protocol.TLS,
+              },
+            ],
+          },
         ],
         targetGroups: [
           {
             containerPort: 80,
-            listener: "listener"
+            listener: 'listener',
           },
-        ]
+        ],
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ElasticLoadBalancingV2::Listener", {
+      expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
         DefaultActions: [
           {
             TargetGroupArn: {
-              Ref: "ServicelblistenerECSTargetGroupweb80Group1E0F6DCA"
+              Ref: 'ServicelblistenerECSTargetGroupweb80Group1E0F6DCA',
             },
-            Type: "forward"
-          }
+            Type: 'forward',
+          },
         ],
         LoadBalancerArn: {
-          Ref: "ServicelbF1E7AAC9"
+          Ref: 'ServicelbF1E7AAC9',
         },
         Port: 80,
-        Protocol: "TLS",
+        Protocol: 'TLS',
         Certificates: [
           {
-            CertificateArn: "arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678"
-          }
-        ]
+            CertificateArn: 'arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678',
+          },
+        ],
       }));
 
       test.done();
@@ -1172,7 +1172,7 @@ export = {
         vpc,
         memoryLimitMiB: 256,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
       });
 
@@ -1188,12 +1188,12 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       const container = taskDefinition.addContainer('web', {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
       container.addPortMappings({
@@ -1237,10 +1237,10 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
@@ -1264,7 +1264,7 @@ export = {
         vpc,
         memoryLimitMiB: 1024,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
+          image: ecs.ContainerImage.fromRegistry('test'),
         },
         loadBalancers: [
           {
@@ -1311,14 +1311,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // WHEN
       test.throws(() => new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         vpc,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('/aws/aws-example-app'),
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         },
       }), /You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
 
@@ -1329,7 +1329,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'MyVpc', {});
-      const cluster = new Cluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // WHEN
@@ -1341,7 +1341,7 @@ export = {
       new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
         cluster,
         taskImageOptions: {
-          image: ContainerImage.fromRegistry('hello'),
+          image: ecs.ContainerImage.fromRegistry('hello'),
         },
         cloudMapOptions: {
           name: 'myApp',
@@ -1400,12 +1400,12 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
-      const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('test', {
-        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
 
@@ -1414,7 +1414,7 @@ export = {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           taskDefinition,
         });
@@ -1427,7 +1427,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -1444,7 +1444,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -1452,7 +1452,7 @@ export = {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1473,14 +1473,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [],
         });
@@ -1493,14 +1493,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           targetGroups: [],
         });
@@ -1513,14 +1513,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1538,14 +1538,14 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
       // THEN
       test.throws(() => {
         new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
           cluster,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           loadBalancers: [
             {
@@ -1573,7 +1573,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const vpc = new Vpc(stack, 'VPC');
-      const cluster = new Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
       // THEN
@@ -1582,7 +1582,7 @@ export = {
           cluster,
           memoryLimitMiB: 1024,
           taskImageOptions: {
-            image: ContainerImage.fromRegistry('test'),
+            image: ecs.ContainerImage.fromRegistry('test'),
           },
           desiredCount: 0,
         })

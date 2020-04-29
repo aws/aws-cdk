@@ -1,6 +1,6 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { IListenerCertificate, INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup, Protocol } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -112,6 +112,20 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default 80
    */
   readonly listenerPort?: number;
+
+  /**
+   * Protocol for listener, expects TCP or TLS
+   *
+   * @default - TLS if certificates are provided. TCP otherwise.
+   */
+  readonly protocol?: Protocol;
+
+  /**
+   * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
+   */
+  readonly certificates?: IListenerCertificate[];
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -285,7 +299,11 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       port: 80,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
+    this.listener = loadBalancer.addListener('PublicListener', {
+      port: listenerPort,
+      certificates: props.certificates,
+      protocol: props.protocol,
+    });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
