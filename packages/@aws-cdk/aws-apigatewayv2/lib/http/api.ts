@@ -1,6 +1,5 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { StageName } from '../common';
 import { IHttpRouteIntegration } from './integration';
 import { HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -80,7 +79,6 @@ export class HttpApi extends Resource implements IHttpApi {
     if (props?.createDefaultStage === undefined || props.createDefaultStage === true) {
       this.defaultStage = new HttpStage(this, 'DefaultStage', {
         httpApi: this,
-        stageName: StageName.DEFAULT,
         autoDeploy: true,
       });
     }

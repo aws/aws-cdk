@@ -1,7 +1,9 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage, StageName } from '../common';
+import { CommonStageOptions, IStage } from '../common';
 import { IHttpApi } from './api';
+
+const DEFAULT_STAGE_NAME = '$default';
 
 /**
  * Options to create a new stage for an HTTP API.
@@ -39,25 +41,25 @@ export class HttpStage extends Resource implements IStage {
 
   constructor(scope: Construct, id: string, props: HttpStageProps) {
     super(scope, id, {
-      physicalName: props.stageName ? props.stageName.stageName : StageName.DEFAULT.stageName,
+      physicalName: props.stageName ? props.stageName : DEFAULT_STAGE_NAME,
     });
 
-    const resource = new CfnStage(this, 'Resource', {
+    new CfnStage(this, 'Resource', {
       apiId: props.httpApi.httpApiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
     });
 
-    this.stageName = resource.ref;
+    this.stageName = this.physicalName;
     this.httpApi = props.httpApi;
   }
 
   /**
    * The URL to this stage.
    */
-  public get url() {
+  public get url(): string {
     const s = Stack.of(this);
-    const urlPath = this.stageName === StageName.DEFAULT.stageName ? '' : this.stageName;
+    const urlPath = this.stageName === DEFAULT_STAGE_NAME ? '' : this.stageName;
     return `https://${this.httpApi.httpApiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
   }
 }
