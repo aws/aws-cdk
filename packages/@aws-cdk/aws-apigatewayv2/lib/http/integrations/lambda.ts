@@ -2,7 +2,7 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration } from '../integration';
-import { HttpRoute } from '../route';
+import { IHttpRoute } from '../route';
 
 /**
  * Lambda Proxy integration properties
@@ -29,7 +29,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
   constructor(private readonly props: LambdaProxyIntegrationProps) {
   }
 
-  public bind(route: HttpRoute): HttpRouteIntegrationConfig {
+  public bind(route: IHttpRoute): HttpRouteIntegrationConfig {
     this.props.handler.addPermission(`${route.node.uniqueId}-Permission`, {
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({

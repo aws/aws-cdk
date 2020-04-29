@@ -5,6 +5,21 @@ import { IHttpApi } from './api';
 import { HttpIntegration, IHttpRouteIntegration } from './integration';
 
 /**
+ * Represents a Route for an HTTP API.
+ */
+export interface IHttpRoute extends IRoute {
+  /**
+   * The HTTP API associated with this route.
+   */
+  readonly httpApi: IHttpApi;
+
+  /**
+   * Returns the path component of this HTTP route, `undefined` if the path is the catch-all route.
+   */
+  readonly path?: string;
+}
+
+/**
  * Supported HTTP methods
  */
 export enum HttpMethod {
@@ -103,25 +118,10 @@ export interface HttpRouteProps {
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
-export class HttpRoute extends Resource implements IRoute {
-  /**
-   * Import from route id
-   */
-  public static fromRouteId(scope: Construct, id: string, routeId: string): IRoute {
-    class Import extends Resource implements IRoute {
-      public routeId = routeId;
-    }
-    return new Import(scope, id);
-  }
-
+export class HttpRoute extends Resource implements IHttpRoute {
   public readonly routeId: string;
-  /** The HTTP API on which this route is configured. */
   public readonly httpApi: IHttpApi;
-  /**
-   * The path to which this Route is configured.
-   * This is `undefined` when using the catch-all route
-   */
-  public readonly path: string | undefined;
+  public readonly path?: string;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);

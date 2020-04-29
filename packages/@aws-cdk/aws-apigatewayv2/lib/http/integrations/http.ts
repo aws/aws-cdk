@@ -1,57 +1,27 @@
-import { Construct, Resource } from '@aws-cdk/core';
-import { CfnIntegration } from '../../apigatewayv2.generated';
-import { IIntegration } from '../../common';
-import { IHttpApi } from '../api';
-import { HttpMethod } from '../route';
+import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration } from '../integration';
+import { IHttpRoute } from '../route';
 
 /**
- * HTTP Proxy integration properties
+ * Properties to initialize a new `HttpProxyIntegration`.
  */
-export interface HttpProxyIntegrationOptions {
-  /**
-   * integration name
-   * @default - the resource id
-   */
-  readonly integrationName?: string
-
+export interface HttpProxyIntegrationProps {
   /**
    * The full-qualified HTTP URL for the HTTP integration
    */
-  readonly targetUrl: string
-  /**
-   * Specifies the integration's HTTP method type.
-   * @default - ANY
-   */
-  readonly integrationMethod?: HttpMethod
-}
-
-export interface HttpProxyIntegrationProps extends HttpProxyIntegrationOptions {
-  /**
-   * The API identifier
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-integration.html#cfn-apigatewayv2-integration-apiid
-   */
-  readonly api: IHttpApi;
+  readonly url: string
 }
 
 /**
  * The HTTP Proxy integration resource for HTTP API
- *
- * @resource AWS::ApiGatewayV2::Integration
  */
-export class HttpProxyIntegration extends Resource implements IIntegration {
-  public readonly integrationId: string;
+export class HttpProxyIntegration implements IHttpRouteIntegration {
+  constructor(private readonly props: HttpProxyIntegrationProps) {
+  }
 
-  constructor(scope: Construct, id: string, props: HttpProxyIntegrationProps) {
-    super(scope, id);
-
-    // create integration
-    const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.api.httpApiId,
-      integrationType: 'HTTP_PROXY',
-      integrationMethod: props.integrationMethod ?? HttpMethod.ANY,
-      integrationUri: props.targetUrl,
-      payloadFormatVersion: '1.0',
-    });
-    this.integrationId = integ.ref;
+  public bind(_: IHttpRoute): HttpRouteIntegrationConfig {
+    return {
+      type: HttpIntegrationType.HTTP_PROXY,
+      uri: this.props.url,
+    };
   }
 }
