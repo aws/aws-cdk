@@ -361,6 +361,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -382,6 +384,20 @@ export class ContainerDefinition extends cdk.Construct {
       this.logDriverConfig = props.logging.bind(this, this);
     }
     props.taskDefinition._linkContainer(this);
+
+    if (props.secrets) {
+      this.secrets = [];
+      for (const [name, secret] of Object.entries(props.secrets)) {
+        if (this.taskDefinition.isFargateCompatible && secret.hasField) {
+          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
+        }
+        secret.grantRead(this.taskDefinition.obtainExecutionRole());
+        this.secrets.push({
+          name,
+          valueFrom: secret.arn,
+        });
+      }
+    }
   }
 
   /**
@@ -564,34 +580,13 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: this.renderSecrets(),
+      secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
-  }
-
-  private renderSecrets(): CfnTaskDefinition.SecretProperty[] | undefined {
-    if (!this.props.secrets) {
-      return undefined;
-    }
-
-    const secrets: CfnTaskDefinition.SecretProperty[] = [];
-
-    for (const [k, v] of Object.entries(this.props.secrets)) {
-      if (this.taskDefinition.isFargateCompatible && v.hasField) {
-        throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${k}' in container '${this.node.id}'`);
-      }
-      v.grantRead(this.taskDefinition.obtainExecutionRole());
-      secrets.push({
-        name: k,
-        valueFrom: v.arn,
-      });
-    }
-
-    return secrets;
   }
 }
 

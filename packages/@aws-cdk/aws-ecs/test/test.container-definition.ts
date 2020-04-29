@@ -795,9 +795,6 @@ export = {
       },
     }));
 
-    test.equal(ecs.Secret.fromSecretsManager(secret).hasField, false);
-    test.equal(ecs.Secret.fromSsmParameter(parameter).hasField, undefined);
-
     test.done();
 
   },
@@ -848,23 +845,19 @@ export = {
 
   'throws when using a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
+    const stack = new cdk.Stack();
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
-    // WHEN
-    taskDefinition.addContainer('cont', {
+    // THEN
+    test.throws(() => taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
       },
-    });
-
-    // THEN
-    test.throws(() => app.synth(), /Cannot specify secret JSON field for a task using the FARGATE launch type/);
+    }), /Cannot specify secret JSON field for a task using the FARGATE launch type/);
 
     test.done();
   },
