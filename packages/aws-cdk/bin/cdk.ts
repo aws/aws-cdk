@@ -111,17 +111,17 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
+  const configuration = new Configuration(argv);
+  await configuration.load();
+
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-    profile: argv.profile,
+    profile: configuration.settings.get(['profile']),
     ec2creds: argv.ec2creds,
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
   });
-
-  const configuration = new Configuration(argv);
-  await configuration.load();
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
 
