@@ -2,7 +2,7 @@ import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from './apigatewayv2.generated';
 import { IRouteIntegration } from './integration';
 import { Route, RouteKey } from './route';
-import { Stage, StageName } from './stage';
+import { Stage, StageName, StageOptions } from './stage';
 
 /**
  * Represents an HTTP API
@@ -40,7 +40,6 @@ export interface HttpApiProps {
 
 /**
  * Create a new API Gateway HTTP API endpoint.
- *
  * @resource AWS::ApiGatewayV2::Api
  */
 export class HttpApi extends Resource implements IHttpApi {
@@ -81,6 +80,7 @@ export class HttpApi extends Resource implements IHttpApi {
       this.defaultStage = new Stage(this, 'DefaultStage', {
         httpApi: this,
         stageName: StageName.DEFAULT,
+        autoDeploy: true,
       });
     }
   }
@@ -91,6 +91,16 @@ export class HttpApi extends Resource implements IHttpApi {
    */
   public get url(): string | undefined {
     return this.defaultStage ? this.defaultStage.url : undefined;
+  }
+
+  /**
+   * Add a new stage.
+   */
+  public addStage(id: string, options: StageOptions): Stage {
+    return new Stage(this, id, {
+      httpApi: this,
+      ...options,
+    });
   }
 
   /**

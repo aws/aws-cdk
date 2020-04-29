@@ -41,11 +41,12 @@ export interface IntegrationProps {
 }
 
 /**
- * The integration resource for HTTP API
+ * The integration for an API route.
+ * @resource AWS::ApiGatewayV2::Integration
  */
 export class Integration extends Resource implements IResource {
   /**
-   * import from integration ID
+   * Import an existing integration using integration id
    */
   public static fromIntegrationId(scope: Construct, id: string, integrationId: string): IIntegration {
     class Import extends Resource implements IIntegration {
@@ -69,12 +70,27 @@ export class Integration extends Resource implements IResource {
   }
 }
 
+/**
+ * The interface that various route integration classes will inherit.
+ */
 export interface IRouteIntegration {
+  /**
+   * Bind this integration to the route.
+   */
   bind(route: Route): RouteIntegrationConfig;
 }
 
+/**
+ * Config returned back as a result of the bind.
+ */
 export interface RouteIntegrationConfig {
+  /**
+   * Integration type.
+   */
   readonly type: IntegrationType;
 
+  /**
+   * Integration URI
+   */
   readonly uri: string;
 }

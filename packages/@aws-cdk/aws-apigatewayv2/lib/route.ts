@@ -37,11 +37,19 @@ export enum HttpMethod {
 }
 
 /**
- * The key
+ * HTTP route in APIGateway is a combination of the HTTP method and the path component.
+ * This class models that combination.
  */
 export class RouteKey {
+  /**
+   * The catch-all route of the API, i.e., when no other routes match
+   */
   public static readonly DEFAULT = new RouteKey('$default');
 
+  /**
+   * Create a route key with the combination of the path and the method.
+   * @param method default is 'ANY'
+   */
   public static with(path: string, method?: HttpMethod) {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
       throw new Error('path must always start with a "/" and not end with a "/"');
@@ -49,7 +57,12 @@ export class RouteKey {
     return new RouteKey(`${method ?? 'ANY'} ${path}`, path);
   }
 
+  /** The key to the RouteKey as recognized by APIGateway */
   public readonly key: string;
+  /**
+   * The path part of this RouteKey.
+   * Returns `undefined` when `RouteKey.DEFAULT` is used.
+   */
   public readonly path?: string;
 
   private constructor(key: string, path?: string) {
@@ -59,7 +72,7 @@ export class RouteKey {
 }
 
 /**
- * Route properties
+ * Properties to initialize a new Route
  */
 export interface RouteProps {
   /**
@@ -73,26 +86,26 @@ export interface RouteProps {
   readonly routeKey: RouteKey;
 
   /**
-   * Integration
+   * The integration to be configured on this route.
    */
   readonly integration?: IRouteIntegration;
 }
 
-/**
- * Options for the Route with Integration resoruce
- */
-export interface AddRoutesOptions {
-  /**
-   * HTTP methods
-   * @default HttpMethod.ANY
-   */
-  readonly methods?: HttpMethod[];
+// /**
+//  * Options for the Route with Integration resoruce
+//  */
+// export interface AddRoutesOptions {
+//   /**
+//    * HTTP methods
+//    * @default HttpMethod.ANY
+//    */
+//   readonly methods?: HttpMethod[];
 
-  /**
-   * The integration for this path
-   */
-  readonly integration: Integration;
-}
+//   /**
+//    * The integration for this path
+//    */
+//   readonly integration: Integration;
+// }
 
 /**
  * Route class that creates the Route for API Gateway HTTP API
@@ -109,7 +122,12 @@ export class Route extends Resource implements IRoute {
   }
 
   public readonly routeId: string;
+  /** The HTTP API on which this route is configured. */
   public readonly httpApi: IHttpApi;
+  /**
+   * The path to which this Route is configured.
+   * This is `undefined` when using the catch-all route
+   */
   public readonly path: string | undefined;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
@@ -138,9 +156,6 @@ export class Route extends Resource implements IRoute {
     this.routeId = route.ref;
   }
 
-  /**
-   * create child routes
-   */
   // public addRoutes(pathPart: string, id: string, options: AddRoutesOptions): Route[] {
   //   const routes: Route[] = [];
   //   const methods = options.methods ?? [ HttpMethod.ANY ];

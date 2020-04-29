@@ -9,7 +9,7 @@ import { Route } from '../route';
  */
 export interface LambdaProxyIntegrationProps {
   /**
-   * The Lambda function for this integration.
+   * The handler for this integration.
    */
   readonly handler: IFunction
 
