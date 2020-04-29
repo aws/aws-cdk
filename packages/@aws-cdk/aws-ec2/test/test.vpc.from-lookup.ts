@@ -175,12 +175,12 @@ export = {
 
     'AZ in dummy lookup VPC matches AZ in Stack'(test: Test) {
       // GIVEN
-      const stack = new Stack(undefined, 'MyTestStack', { env: { account: "1234567890", region: "dummy" } });
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
 
       // WHEN
       const subnets = vpc.selectSubnets({
-        availabilityZones: stack.availabilityZones
+        availabilityZones: stack.availabilityZones,
       });
 
       // THEN
