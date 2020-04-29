@@ -117,7 +117,7 @@ const bbSource = codebuild.Source.bitBucket({
 
 ## Artifacts
 
-CodeBuild Projects can produce Artifacts and upload the to S3. For example:
+CodeBuild Projects can produce Artifacts and upload them to S3. For example:
 
 ```ts
 const project = codebuild.Project(stack, 'MyProject', {
