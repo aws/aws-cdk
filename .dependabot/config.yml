@@ -17,3 +17,7 @@ update_configs:
       - match:
           dependency_name: "@types/node"
           version_requirement: ">=11.0.0-0"
+      - match:
+          dependency_name: "@types/jest"
+      - match:
+          dependency_name: "jest*"
