@@ -7,9 +7,16 @@ test('path.resolve is sane', async () => {
 
   const targetDir = path.join(__dirname, 'fixture');
 
-  process.chdir(targetDir);
-  expect(process.cwd()).toEqual(targetDir);
+  const cwd = process.cwd();
 
-  const resolved = path.resolve('.');
-  expect(resolved).toEqual(targetDir);
+  try {
+    process.chdir(targetDir);
+    expect(process.cwd()).toEqual(targetDir);
+
+    const resolved = path.resolve('.');
+    expect(resolved).toEqual(targetDir);
+
+  } finally {
+    process.chdir(cwd);
+  }
 });
