@@ -1152,6 +1152,7 @@ export = {
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           'Artifacts':
             {
+              'Name': ABSENT,
               'ArtifactIdentifier': 'artifact1',
               'OverrideArtifactName': true,
             },
@@ -1170,7 +1171,7 @@ export = {
           artifacts: codebuild.Artifacts.s3({
             bucket,
             path: 'another/path',
-            name: 'name',
+            name: 'specificname',
             identifier: 'artifact1',
           }),
         });
@@ -1179,6 +1180,7 @@ export = {
           'Artifacts':
             {
               'ArtifactIdentifier': 'artifact1',
+              'Name': 'specificname',
               'OverrideArtifactName': ABSENT,
             },
         }));

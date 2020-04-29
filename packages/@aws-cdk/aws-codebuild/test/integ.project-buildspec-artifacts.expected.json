@@ -134,7 +134,6 @@
         "Artifacts": {
           "ArtifactIdentifier": "AddArtifact1",
           "Location": { "Ref": "MyBucketF68F3FF0" },
-          "Name": "awscdkcodebuildbuildspecartifactnameMyProjectACDB7F8B",
           "NamespaceType": "NONE",
           "OverrideArtifactName": true,
           "Packaging": "ZIP",

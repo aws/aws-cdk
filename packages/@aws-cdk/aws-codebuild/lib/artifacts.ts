@@ -101,7 +101,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    * If not set, `overrideArtifactName` will be set and the name from the
    * buildspec will be used instead.
    *
-   * @default the unique ID of the project node
+   * @default undefined, and use the name from the buildspec
    */
   readonly name?: string;
 
@@ -149,7 +149,7 @@ class S3Artifacts extends Artifacts {
         location: this.props.bucket.bucketName,
         path: this.props.path,
         namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
-        name: this.props.name == null ? project.node.uniqueId : this.props.name,
+        name: this.props.name == null ? undefined : this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
         encryptionDisabled: this.props.encryption === false ? true : undefined,
         overrideArtifactName: this.props.name == null ? true : undefined,
