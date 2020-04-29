@@ -83,7 +83,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
