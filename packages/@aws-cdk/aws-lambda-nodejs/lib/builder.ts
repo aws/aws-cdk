@@ -70,18 +70,18 @@ export class Builder {
       }
 
       const dockerBuildArgs = [
-        "build", "--build-arg", `NODE_TAG=${this.options.nodeDockerTag}`, "-t", "parcel-bundler", path.join(__dirname, "../parcel-bundler")
+        'build', '--build-arg', `NODE_TAG=${this.options.nodeDockerTag}`, '-t', 'parcel-bundler', path.join(__dirname, '../parcel-bundler'),
       ];
       const dockerRunArgs = [
-        "run", "--rm",
-        "-v", `${path.dirname(path.resolve(this.options.entry))}:/entry`,
-        "-v", `${path.resolve(this.options.outDir)}:/out`,
-        ...(this.options.cacheDir ? ["-v", `${path.resolve(this.options.cacheDir)}:/cache`] : []),
-        "parcel-bundler"
+        'run', '--rm',
+        '-v', `${path.dirname(path.resolve(this.options.entry))}:/entry`,
+        '-v', `${path.resolve(this.options.outDir)}:/out`,
+        ...(this.options.cacheDir ? ['-v', `${path.resolve(this.options.cacheDir)}:/cache`] : []),
+        'parcel-bundler',
       ];
       const parcelArgs = [
         'parcel', 'build', `/entry/${path.basename(this.options.entry)}`,
-        '--out-dir', "/out",
+        '--out-dir', '/out',
         '--out-file', 'index.js',
         '--global', this.options.global,
         '--target', 'node',
@@ -89,10 +89,10 @@ export class Builder {
         '--log-level', '2',
         !this.options.minify && '--no-minify',
         !this.options.sourceMaps && '--no-source-maps',
-        ...(this.options.cacheDir ? ['--cache-dir', "/cache"] : []),
+        ...(this.options.cacheDir ? ['--cache-dir', '/cache'] : []),
       ].filter(Boolean) as string[];
 
-      const build = spawnSync("docker", dockerBuildArgs);
+      const build = spawnSync('docker', dockerBuildArgs);
       if (build.error) {
         throw build.error;
       }
@@ -100,7 +100,7 @@ export class Builder {
         throw new Error(`[Status ${build.status}] stdout: ${build.stdout?.toString().trim()}\n\n\nstderr: ${build.stderr?.toString().trim()}`);
       }
 
-      const parcel = spawnSync("docker", [...dockerRunArgs, ...parcelArgs]);
+      const parcel = spawnSync('docker', [...dockerRunArgs, ...parcelArgs]);
       if (parcel.error) {
         throw parcel.error;
       }

@@ -93,7 +93,7 @@ export class NodejsFunction extends lambda.Function {
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime || defaultRunTime;
-    const nodeDockerTag = props.nodeDockerTag || "13.8.0-alpine3.11";
+    const nodeDockerTag = props.nodeDockerTag || '13.8.0-alpine3.11';
 
     // Build with Parcel
     const builder = new Builder({
@@ -104,7 +104,7 @@ export class NodejsFunction extends lambda.Function {
       sourceMaps: props.sourceMaps,
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
-      nodeDockerTag
+      nodeDockerTag,
     });
     builder.build();
 
