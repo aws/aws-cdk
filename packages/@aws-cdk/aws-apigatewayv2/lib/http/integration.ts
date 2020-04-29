@@ -2,7 +2,7 @@ import { Construct, Resource } from '@aws-cdk/core';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
 import { IHttpApi } from './api';
-import { IHttpRoute } from './route';
+import { HttpMethod, IHttpRoute } from './route';
 
 /**
  * Supported integration types
@@ -18,12 +18,32 @@ export enum HttpIntegrationType {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    */
   HTTP_PROXY = 'HTTP_PROXY',
+}
+
+/**
+ * Payload format version for lambda proxy integration
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+ */
+export class PayloadFormatVersion {
+  /** Version 1.0 */
+  public static readonly VERSION_1_0 = new PayloadFormatVersion('1.0');
+  /** Version 2.0 */
+  public static readonly VERSION_2_0 = new PayloadFormatVersion('2.0');
 
   /**
-   * Private integrations.
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-private.html
+   * A custom payload version.
+   * Typically used if there is a version number that the CDK doesn't support yet
    */
-  PRIVATE = 'HTTP_PROXY',
+  public static custom(version: string) {
+    return new PayloadFormatVersion(version);
+  }
+
+  /** version as a string */
+  public readonly version: string;
+
+  private constructor(version: string) {
+    this.version = version;
+  }
 }
 
 /**
@@ -31,17 +51,34 @@ export enum HttpIntegrationType {
  */
 export interface HttpIntegrationProps {
   /**
-   * API ID
+   * The HTTP API to which this integration should be bound.
    */
   readonly httpApi: IHttpApi;
+
   /**
-   * integration type
+   * Integration type
    */
   readonly integrationType: HttpIntegrationType;
+
   /**
-   * integration URI
+   * Integration URI.
+   * This will be the function ARN in the case of `HttpIntegrationType.LAMBDA_PROXY`,
+   * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`.
    */
   readonly integrationUri: string;
+
+  /**
+   * The HTTP method to use when calling the underlying HTTP proxy
+   * @default - none. required if the integration type is `HttpIntegrationType.HTTP_PROXY`.
+   */
+  readonly method?: HttpMethod;
+
+  /**
+   * The version of the payload format
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+   * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
+   */
+  readonly payloadFormatVersion?: PayloadFormatVersion;
 }
 
 /**
@@ -68,7 +105,8 @@ export class HttpIntegration extends Resource implements IIntegration {
       apiId: props.httpApi.httpApiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
-      payloadFormatVersion: '1.0',
+      integrationMethod: props.method,
+      payloadFormatVersion: props.payloadFormatVersion?.version,
     });
     this.integrationId = integ.ref;
   }
@@ -97,4 +135,18 @@ export interface HttpRouteIntegrationConfig {
    * Integration URI
    */
   readonly uri: string;
+
+  /**
+   * The HTTP method that must be used to invoke the underlying proxy.
+   * Required for `HttpIntegrationType.HTTP_PROXY`
+   * @default - undefined
+   */
+  readonly method?: HttpMethod;
+
+  /**
+   * Payload format version in the case of lambda proxy integration
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+   * @default - undefined
+   */
+  readonly payloadFormatVersion: PayloadFormatVersion;
 }

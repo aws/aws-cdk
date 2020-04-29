@@ -1,7 +1,7 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration } from '../integration';
+import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../integration';
 import { IHttpRoute } from '../route';
 
 /**
@@ -16,9 +16,9 @@ export interface LambdaProxyIntegrationProps {
   /**
    * Version of the payload sent to the lambda handler.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-   * @default '2.0'
+   * @default PayloadFormatVersion.VERSION_2_0
    */
-  readonly payloadFormatVersion?: string;
+  readonly payloadFormatVersion?: PayloadFormatVersion;
 }
 
 /**
@@ -42,6 +42,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
       uri: this.props.handler.functionArn,
+      payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
     };
   }
 }

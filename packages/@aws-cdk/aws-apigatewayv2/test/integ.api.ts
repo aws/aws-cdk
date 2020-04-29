@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
-import { HttpApi, LambdaProxyIntegration } from '../lib';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { HttpApi, HttpProxyIntegration, LambdaProxyIntegration } from '../lib';
 
 const app = new App();
 
@@ -22,12 +22,25 @@ def handler(event, context):
 // const defaultUrl = 'https://aws.amazon.com';
 
 // create a basic HTTP API with http proxy integration as the $default route
-new HttpApi(stack, 'HttpApi', {
+const firstone = new HttpApi(stack, 'HttpApi', {
   defaultIntegration: new LambdaProxyIntegration({
     handler,
   }),
 });
 
+const secondone = new HttpApi(stack, 'AnotherHttpApi', {
+  defaultIntegration: new HttpProxyIntegration({
+    url: firstone.url!,
+  }),
+});
+
+new CfnOutput(stack, 'firsturl', {
+  value: firstone.url!,
+});
+
+new CfnOutput(stack, 'secondurl', {
+  value: secondone.url!,
+});
 // new Route(api, 'allroutes', {
 //   httpApi: api,
 //   path: '/',

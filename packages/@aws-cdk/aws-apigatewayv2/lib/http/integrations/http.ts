@@ -1,5 +1,5 @@
-import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration } from '../integration';
-import { IHttpRoute } from '../route';
+import { HttpIntegrationType, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../integration';
+import { HttpMethod, IHttpRoute } from '../route';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.
@@ -9,6 +9,12 @@ export interface HttpProxyIntegrationProps {
    * The full-qualified HTTP URL for the HTTP integration
    */
   readonly url: string
+
+  /**
+   * The HTTP method that must be used to invoke the underlying HTTP proxy.
+   * @default HttpMethod.ANY
+   */
+  readonly method?: HttpMethod;
 }
 
 /**
@@ -20,6 +26,8 @@ export class HttpProxyIntegration implements IHttpRouteIntegration {
 
   public bind(_: IHttpRoute): HttpRouteIntegrationConfig {
     return {
+      method: this.props.method ?? HttpMethod.ANY,
+      payloadFormatVersion: PayloadFormatVersion.VERSION_1_0, // 1.0 is required and is the only supported format
       type: HttpIntegrationType.HTTP_PROXY,
       uri: this.props.url,
     };

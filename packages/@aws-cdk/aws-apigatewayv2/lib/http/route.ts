@@ -136,6 +136,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
         httpApi: props.httpApi,
         integrationType: config.type,
         integrationUri: config.uri,
+        method: config.method,
+        payloadFormatVersion: config.payloadFormatVersion,
       });
     }
 
