@@ -736,7 +736,7 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
