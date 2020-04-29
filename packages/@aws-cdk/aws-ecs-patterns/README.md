@@ -60,6 +60,8 @@ You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and cr
 
 You can customize the health check for your target group; otherwise it defaults to `HTTP` over port `80` hitting path `/`.
 
+Fargate services will use the `LATEST` platform version by default, but you can override by providing a value for the `platformVersion` property in the constructor.
+
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
 * `ApplicationMultipleTargetGroupsEc2Service`
