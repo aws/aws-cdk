@@ -32,7 +32,7 @@ test('calls docker with the correct args', () => {
 
   // docker build
   expect(spawnSync).toHaveBeenNthCalledWith(1, 'docker', [
-    'build', '--build-arg', `NODE_TAG=13.8.0-alpine3.11`, '-t', 'parcel-bundler', path.join(__dirname, '../parcel-bundler'),
+    'build', '--build-arg', 'NODE_TAG=13.8.0-alpine3.11', '-t', 'parcel-bundler', path.join(__dirname, '../parcel-bundler'),
   ]);
 
   // docker run
