@@ -966,7 +966,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
-      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + 'recommended/image_id';
   }
 
