@@ -291,7 +291,7 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly one subnet of the given type in this az');
+        throw new Error(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       subnet = subnets[0];

@@ -1910,13 +1910,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
       type: cxapi.VpcSubnetGroupType.PUBLIC,
       subnets: [
         {
-          availabilityZone: 'dummy-1a',
+          availabilityZone: 'dummy1a',
           subnetId: 's-12345',
           routeTableId: 'rtb-12345s',
           cidr: '1.2.3.4/5',
         },
         {
-          availabilityZone: 'dummy-1b',
+          availabilityZone: 'dummy1b',
           subnetId: 's-67890',
           routeTableId: 'rtb-67890s',
           cidr: '1.2.3.4/5',
@@ -1928,13 +1928,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
       type: cxapi.VpcSubnetGroupType.PRIVATE,
       subnets: [
         {
-          availabilityZone: 'dummy-1a',
+          availabilityZone: 'dummy1a',
           subnetId: 'p-12345',
           routeTableId: 'rtb-12345p',
           cidr: '1.2.3.4/5',
         },
         {
-          availabilityZone: 'dummy-1b',
+          availabilityZone: 'dummy1b',
           subnetId: 'p-67890',
           routeTableId: 'rtb-57890p',
           cidr: '1.2.3.4/5',
