@@ -54,7 +54,7 @@
     "@types/yargs": "^15.0.4",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.1",
+    "jest": "^25.5.2",
     "mockery": "^2.1.0",
     "pkglint": "0.0.0",
     "sinon": "^9.0.2",
@@ -82,7 +82,7 @@
     "semver": "^7.2.2",
     "source-map-support": "^0.5.19",
     "table": "^5.4.6",
-    "uuid": "^7.0.3",
+    "uuid": "^8.0.0",
     "yaml": "^1.9.2",
     "yargs": "^15.3.1"
   },
