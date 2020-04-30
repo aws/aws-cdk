@@ -823,7 +823,7 @@ export = {
               },
             },
             {
-              Action: [ 
+              Action: [
                 'ec2:DescribeSubnets',
                 'ec2:DescribeRouteTables',
               ],
@@ -937,7 +937,7 @@ export = {
               },
             },
             {
-             Action: [ 
+              Action: [
                 'ec2:DescribeSubnets',
                 'ec2:DescribeRouteTables',
               ],

@@ -73,10 +73,10 @@ export class ClusterResource extends Construct {
     });
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 
+      actions: [
         'ec2:DescribeSubnets',
-        'ec2:DescribeRouteTables'
-        ],
+        'ec2:DescribeRouteTables',
+      ],
       resources: [ '*' ],
     }));
 
