@@ -2,7 +2,7 @@ import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values, TypeName } from '../lib';
+import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, TypeName, UserPoolDefaultAction, Values } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
