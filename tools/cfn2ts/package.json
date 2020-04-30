@@ -40,15 +40,8 @@
     "@types/jest": "^25.2.1",
     "@types/yargs": "^15.0.4",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.1",
     "pkglint": "0.0.0"
-  },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "test/enrichments/*.ts"
-      ]
-    }
   },
   "keywords": [
     "aws",
