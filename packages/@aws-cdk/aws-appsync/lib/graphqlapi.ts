@@ -169,6 +169,16 @@ export interface GraphQLApiProps {
 }
 
 /**
+ * enum with values for GraphQL regular object type name
+ */
+
+export enum TypeName {
+  Query = 'Query',
+  Mutation = 'Mutation',
+  Subscription = 'Subscription',
+}
+
+/**
  * An AppSync GraphQL API
  */
 export class GraphQLApi extends Construct {
