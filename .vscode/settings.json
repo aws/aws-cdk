@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+    { "pattern": "./packages/@aws-cdk/*" },
+    { "pattern": "./packages/@monocdk-experiment/*" },
+    { "pattern": "./packages/*" },
+    { "pattern": "./tools/*" }
+  ]
+}
