@@ -1,5 +1,5 @@
 import { Construct, Resource } from '@aws-cdk/core';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { CommonTaskDefinitionProps, Compatibility, IpcMode, ITaskDefinition, NetworkMode, PidMode, TaskDefinition } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -23,6 +23,24 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The IPC resource namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - IpcMode used by the task is not specified
+   */
+  readonly ipcMode?: IpcMode;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - PidMode used by the task is not specified
+   */
+  readonly pidMode?: PidMode;
 }
 
 /**
@@ -60,6 +78,8 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       ...props,
       compatibility: Compatibility.EC2,
       placementConstraints: props.placementConstraints,
+      ipcMode: props.ipcMode,
+      pidMode: props.pidMode,
     });
   }
 }

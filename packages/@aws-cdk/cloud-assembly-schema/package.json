@@ -40,13 +40,6 @@
     "compat": "cdk-compat",
     "update-schema": "bash scripts/update-schema.sh"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "scripts/*"
-      ]
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -58,7 +51,7 @@
     "@types/jest": "^25.2.1",
     "@types/mock-fs": "^4.10.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.2",
     "mock-fs": "^4.12.0",
     "pkglint": "0.0.0",
     "typescript-json-schema": "^0.42.0"
