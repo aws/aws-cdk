@@ -90,7 +90,7 @@ export class ApiStack extends Stack {
     const noneDS = api.addNoneDataSource('None', 'Dummy data source');
 
     noneDS.createResolver({
-      typeName: 'Query',
+      typeName: TypeName.QUERY,
       fieldName: 'getServiceVersion',
       requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
         version: '2017-02-28',
@@ -109,19 +109,19 @@ export class ApiStack extends Stack {
     });
     const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
     customerDS.createResolver({
-      typeName: 'Query',
+      typeName: TypeName.QUERY,
       fieldName: 'getCustomers',
       requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
       responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
     });
     customerDS.createResolver({
-      typeName: 'Query',
+      typeName: TypeName.QUERY,
       fieldName: 'getCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({
-      typeName: 'Mutation',
+      typeName: TypeName.MUTATION,
       fieldName: 'addCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
           PrimaryKey.partition('id').auto(),
@@ -129,7 +129,7 @@ export class ApiStack extends Stack {
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({
-      typeName: 'Mutation',
+      typeName: TypeName.MUTATION,
       fieldName: 'saveCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
           PrimaryKey.partition('id').is('id'),
@@ -137,7 +137,7 @@ export class ApiStack extends Stack {
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({
-      typeName: 'Mutation',
+      typeName: TypeName.MUTATION,
       fieldName: 'saveCustomerWithFirstOrder',
       requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
           PrimaryKey
@@ -149,7 +149,7 @@ export class ApiStack extends Stack {
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
     });
     customerDS.createResolver({
-      typeName: 'Mutation',
+      typeName: TypeName.MUTATION,
       fieldName: 'removeCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
