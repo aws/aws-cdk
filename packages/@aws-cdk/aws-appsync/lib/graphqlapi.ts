@@ -173,8 +173,17 @@ export interface GraphQLApiProps {
  */
 
 export enum TypeName {
+  /**
+   * GraphQL type name of Query
+   */
   QUERY = 'Query',
+  /**
+   * GraphQL type name of Mutation
+   */
   MUTATION = 'Mutation',
+  /**
+   * GraphQL type name of Subscription
+   */
   SUBSCRIPTION = 'Subscription',
 }
 
@@ -1054,7 +1063,7 @@ export interface BaseResolverProps {
   /**
    * name of the GraphQL type this resolver is attached to
    */
-  readonly typeName: string;
+  readonly typeName: string | TypeName;
   /**
    * name of the GraphQL fiel din the given type this resolver is attached to
    */
