@@ -593,6 +593,32 @@ export interface VpcAttributes {
   readonly vpnGatewayId?: string;
 }
 
+/**
+ * A custom subnet configuration to be used instead of SubnetConfiguration
+ */
+export interface CustomSubnet {
+
+  /**
+   * availability zone
+   */
+  readonly availabilityZone: string;
+
+  /**
+   * cidr
+   */
+  readonly cidr: string;
+
+  /**
+   * subnetType
+   */
+  readonly subnetType: SubnetType;
+
+  /**
+   * name
+   */
+  readonly name: string;
+}
+
 export interface SubnetAttributes {
   /**
    * The Availability Zone the subnet is located in
@@ -760,6 +786,31 @@ export interface VpcProps {
    * private subnet per AZ.
    */
   readonly subnetConfiguration?: SubnetConfiguration[];
+
+  /**
+   * Here you have the possibility to exactly describe the az and
+   * cidr of the subnets
+   *
+   * ```ts
+   * new ec2.Vpc(this, 'VPC', {
+   *   customSubnets: [
+   *       {
+   *           name: 'PublicSubnet1',
+   *           subnetType:  ec2.SubnetType.PUBLIC,
+   *           cidr: 10.0.0.0/28,
+   *           availabilityZone: "eu-central-1a"
+   *       },
+   *       {
+   *           name: 'PrivateSubnet1',
+   *           subnetType:  ec2.SubnetType.Private,
+   *           cidr: 10.0.2.0/28,
+   *           availabilityZone: "eu-central-1a"
+   *       }
+   *   ]
+   * ```
+   * @default -
+   */
+  readonly customSubnets?: CustomSubnet[];
 
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
@@ -1051,6 +1102,8 @@ export class Vpc extends VpcBase {
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
 
+  private customSubnets: CustomSubnet[] = [];
+
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   /**
@@ -1104,16 +1157,29 @@ export class Vpc extends VpcBase {
 
     this.vpcId = this.resource.ref;
 
-    this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
+    if (props.customSubnets && props.customSubnets) {
+      throw new Error('Can not provide both subnetConfiguration and customSubnets. Please choose only one');
+    }
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+    let natGatewayCount;
+    let allowOutbound;
 
-    // subnetConfiguration must be set before calling createSubnets
-    this.createSubnets();
-
-    const allowOutbound = this.subnetConfiguration.filter(
-      subnet => (subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
+    // Create custom subnets as described in props.customSubnets
+    if (props.customSubnets) {
+      natGatewayCount = determineNatGatewayCountFromCustomSubnet(props.natGateways, this.customSubnets);
+      this.createCustomSubnets(this.customSubnets);
+      allowOutbound = this.customSubnets.filter(
+        subnet => (subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
+    } else {
+      // Else use the given subnetConfiguration or use the default ones
+      this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
+      natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+      // subnetConfiguration must be set before calling createSubnetsFromSubnetConfiguration
+      this.createSubnetsFromSubnetConfiguration(this.subnetConfiguration);
+      allowOutbound = this.subnetConfiguration.filter(
+        subnet => (subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
+    }
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
@@ -1232,14 +1298,51 @@ export class Vpc extends VpcBase {
     });
   }
 
+  private createCustomSubnets(customSubnets: CustomSubnet[]) {
+    for (const customSubnet of customSubnets) {
+      const subnetProps: SubnetProps = {
+        availabilityZone: customSubnet.availabilityZone,
+        vpcId: this.vpcId,
+        cidrBlock: customSubnet.cidr,
+        mapPublicIpOnLaunch: (customSubnet.subnetType === SubnetType.PUBLIC),
+      };
+
+      let subnet: Subnet;
+      switch (customSubnet.subnetType) {
+        case SubnetType.PUBLIC:
+          const publicSubnet = new PublicSubnet(this, customSubnet.name, subnetProps);
+          this.publicSubnets.push(publicSubnet);
+          subnet = publicSubnet;
+          break;
+        case SubnetType.PRIVATE:
+          const privateSubnet = new PrivateSubnet(this, customSubnet.name, subnetProps);
+          this.privateSubnets.push(privateSubnet);
+          subnet = privateSubnet;
+          break;
+        case SubnetType.ISOLATED:
+          const isolatedSubnet = new PrivateSubnet(this, customSubnet.name, subnetProps);
+          this.isolatedSubnets.push(isolatedSubnet);
+          subnet = isolatedSubnet;
+          break;
+        default:
+          throw new Error(`Unrecognized subnet type: ${customSubnet.subnetType}`);
+      }
+
+      // These values will be used to recover the config upon provider import
+      const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
+      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, customSubnet.name, {includeResourceTypes}));
+      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(customSubnet.subnetType), {includeResourceTypes}));
+    }
+  }
+
   /**
-   * createSubnets creates the subnets specified by the subnet configuration
+   * createSubnetsFromSubnetConfiguration creates the subnets specified by the subnet configuration
    * array or creates the `DEFAULT_SUBNETS` configuration
    */
-  private createSubnets() {
+  private createSubnetsFromSubnetConfiguration(subnetConfiguration: SubnetConfiguration[]) {
     const remainingSpaceSubnets: SubnetConfiguration[] = [];
 
-    for (const subnet of this.subnetConfiguration) {
+    for (const subnet of subnetConfiguration) {
       if (subnet.cidrMask === undefined) {
         remainingSpaceSubnets.push(subnet);
         continue;
@@ -1855,6 +1958,37 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       subnet: this,
     });
   }
+}
+
+/**
+ * Determine (and validate) the NAT gateway count w.r.t. the rest of the custom subnet
+ *
+ * We have the following requirements:
+ *
+ * - NatGatewayCount = 0 ==> there are no private subnets
+ * - NatGatewayCount > 0 ==> there must be public subnets
+ *
+ * Do we want to require that there are private subnets if there are NatGateways?
+ * They seem pointless but I see no reason to prevent it.
+ */
+function determineNatGatewayCountFromCustomSubnet(requestedCount: number | undefined, customSubnet: CustomSubnet[]) {
+  const hasPrivateSubnets = customSubnet.filter(c => c.subnetType === SubnetType.PRIVATE).length > 0;
+  const hasPublicSubnets = customSubnet.filter(c => c.subnetType === SubnetType.PUBLIC).length > 0;
+  const azCount = [...new Set(customSubnet.map(c => c.availabilityZone))].length;
+
+  const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
+
+  if (count === 0 && hasPrivateSubnets) {
+    // tslint:disable-next-line:max-line-length
+    throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
+  }
+
+  if (count > 0 && !hasPublicSubnets) {
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(customSubnet)}.`);
+  }
+
+  return count;
 }
 
 /**
