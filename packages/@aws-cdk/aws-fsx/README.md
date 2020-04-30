@@ -75,10 +75,9 @@ fileSystem.connections.allowDefaultPortFrom(instance);
 
 ### Mounting
 
-To mount an FSx for Lustre file system programmatically, the mount name of the file system needs to be determined. The
-easiest way to do that is with the AWS CLI, which can be written into a User Data script to be run on start-up of your
-instance. The following example can be used for reference on how to bring up a file system and EC2 instance with the
-file system mounted on the instance at start-up:
+The LustreFileSystem Construct exposes both the DNS name of the file system as well as its mount name, which can be
+used to mount the file system on an EC2 instance. The following example shows how to bring up a file system and EC2
+instance, and then use User Data to mount the file system on the instance at start-up:
 
 ```ts
 const app = new App();
@@ -111,23 +110,18 @@ inst.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonFSxRead
 
 const mountPath = '/mnt/fsx';
 const dnsName = fs.dnsName;
+const mountName = fs.mountName;
 
 inst.userData.addCommands(
   'set -eux',
   'yum update -y',
   'amazon-linux-extras install -y lustre2.10',
-  // The version of the AWS CLI currently on AL2 doesn't surface the required MountName field, so install the latest version.
-  'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"',
-  'unzip awscliv2.zip',
-  './aws/install',
-  // Call the AWS CLI and extract the mount name.
-  `mountName=$(/usr/local/bin/aws fsx describe-file-systems --region ${stack.region} --output text --query 'FileSystems[?DNSName==\`${dnsName}\`].LustreConfiguration.MountName')`,
   // Set up the directory to mount the file system to and change the owner to the AL2 default ec2-user.
   `mkdir -p ${mountPath}`,
   `chmod 777 ${mountPath}`,
   `chown ec2-user:ec2-user ${mountPath}`,
   // Set the file system up to mount automatically on start up and mount it.
-  `echo "${dnsName}@tcp:/$mountName ${mountPath} lustre defaults,noatime,flock,_netdev 0 0" >> /etc/fstab`,
+  `echo "${dnsName}@tcp:/${mountName} ${mountPath} lustre defaults,noatime,flock,_netdev 0 0" >> /etc/fstab`,
   'mount -a');
 ```
 
