@@ -173,9 +173,9 @@ export interface GraphQLApiProps {
  */
 
 export enum TypeName {
-  Query = 'Query',
-  Mutation = 'Mutation',
-  Subscription = 'Subscription',
+  QUERY = 'Query',
+  MUTATION = 'Mutation',
+  SUBSCRIPTION = 'Subscription',
 }
 
 /**
