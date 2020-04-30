@@ -99,10 +99,10 @@ async function main(): Promise<void> {
   };
 
   for (const region of AWS_REGIONS) {
-    var partition = PARTITION_MAP['default']['partition'];
-    var domainSuffix = PARTITION_MAP['default']['domainSuffix'];
+    let partition = PARTITION_MAP['default']['partition'];
+    let domainSuffix = PARTITION_MAP['default']['domainSuffix'];
 
-    for (let key in PARTITION_MAP) {
+    for (const key in PARTITION_MAP) {
       if (region.startsWith(key)) {
         partition = PARTITION_MAP[key]['partition'];
         domainSuffix = PARTITION_MAP[key]['domainSuffix'];
