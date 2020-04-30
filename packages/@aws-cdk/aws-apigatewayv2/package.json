@@ -101,6 +101,14 @@
   "engines": {
     "node": ">= 10.12.0"
   },
+  "awslint": {
+    "exclude": [
+      "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
+      "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
+    ]
+  },
   "stability": "experimental",
   "maturity": "cfn-only",
   "awscdkio": {
