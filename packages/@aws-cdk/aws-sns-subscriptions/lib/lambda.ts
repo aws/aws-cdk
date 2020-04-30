@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -35,6 +35,15 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
+      region: this.regionFromArn(topic),
     };
+  }
+
+  private regionFromArn(topic: sns.ITopic): string | undefined {
+    // no need to specify `region` for topics defined within the same stack.
+    if (topic instanceof sns.Topic) {
+      return undefined;
+    }
+    return Stack.of(topic).parseArn(topic.topicArn).region;
   }
 }

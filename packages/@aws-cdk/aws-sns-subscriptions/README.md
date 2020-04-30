@@ -19,6 +19,8 @@ Subscriptions can be added to the following endpoints:
 * AWS Lambda
 * Email
 
+Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions.
+
 Create an Amazon SNS Topic to add subscriptions.
 
 ```ts
