@@ -115,6 +115,30 @@ const bbSource = codebuild.Source.bitBucket({
 });
 ```
 
+## Artifacts
+
+CodeBuild Projects can produce Artifacts and upload them to S3. For example:
+
+```ts
+const project = codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  artifacts: codebuild.Artifacts.s3({
+      bucket,
+      includeBuildId: false,
+      packageZip: true,
+      path: 'another/path',
+      identifier: 'AddArtifact1',
+    }),
+});
+```
+
+Because we've not set the `name` property, this example will set the
+`overrideArtifactName` parameter, and produce an artifact named as defined in
+the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
+`another/path` and the artifact will be a zipfile.
+
 ## CodePipeline
 
 To add a CodeBuild Project as an Action to CodePipeline,
