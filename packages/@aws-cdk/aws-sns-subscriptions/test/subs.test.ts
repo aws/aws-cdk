@@ -736,7 +736,7 @@ test('with filter policy', () => {
   });
 });
 
-test('region property is present on an imported topic', () => {
+test('region property is present on an imported topic - sqs', () => {
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
   const queue = new sqs.Queue(stack, 'myqueue');
   imported.addSubscription(new subs.SqsSubscription(queue));
@@ -746,11 +746,42 @@ test('region property is present on an imported topic', () => {
   });
 });
 
-test('region property on an imported topic as a parameter', () => {
+test('region property on an imported topic as a parameter - sqs', () => {
   const topicArn = new CfnParameter(stack, 'topicArn');
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
   const queue = new sqs.Queue(stack, 'myqueue');
   imported.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: {
+      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+    },
+  });
+});
+
+test('region property is present on an imported topic - lambda', () => {
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
+  const func = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  imported.addSubscription(new subs.LambdaSubscription(func));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: 'us-east-1',
+  });
+});
+
+test('region property on an imported topic as a parameter - lambda', () => {
+  const topicArn = new CfnParameter(stack, 'topicArn');
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
+  const func = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  imported.addSubscription(new subs.LambdaSubscription(func));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
