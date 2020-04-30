@@ -823,7 +823,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [ 
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -934,7 +937,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+             Action: [ 
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
