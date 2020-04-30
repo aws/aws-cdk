@@ -1,0 +1,19 @@
+{
+  "PropertyTypes": {
+    "AWS::CloudWatch::Alarm.MetricDataQuery": {
+      "patch": {
+        "description": "Add Period to AWS::CloudWatch::Alarm.MetricDataQuery (#7155)",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/Period",
+            "value": {
+              "PrimitiveType": "Integer",
+              "UpdateType": "Mutable"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

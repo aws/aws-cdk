@@ -98,7 +98,8 @@
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.unit",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.label",
-      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat"
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat",
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricExpressionConfig.period"
     ]
   },
   "engines": {

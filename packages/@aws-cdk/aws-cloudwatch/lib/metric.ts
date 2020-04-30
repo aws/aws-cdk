@@ -485,6 +485,7 @@ export class MathExpression implements IMetric {
   public toMetricConfig(): MetricConfig {
     return {
       mathExpression: {
+        period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
       },
