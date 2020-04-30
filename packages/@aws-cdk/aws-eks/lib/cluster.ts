@@ -959,7 +959,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedImageProps = { }) {
+  public constructor(props: EksOptimizedImageProps = {}) {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
