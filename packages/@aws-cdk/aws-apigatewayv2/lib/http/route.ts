@@ -79,9 +79,20 @@ export class HttpRouteKey {
 }
 
 /**
+ * Options used when configuring multiple routes, at once.
+ * The options here are the ones that would be configured for all being set up.
+ */
+export interface BatchHttpRouteOptions {
+  /**
+   * The integration to be configured on this route.
+   */
+  readonly integration: IHttpRouteIntegration;
+}
+
+/**
  * Properties to initialize a new Route
  */
-export interface HttpRouteProps {
+export interface HttpRouteProps extends BatchHttpRouteOptions {
   /**
    * the API the route is associated with
    */
@@ -91,28 +102,7 @@ export interface HttpRouteProps {
    * The key to this route. This is a combination of an HTTP method and an HTTP path.
    */
   readonly routeKey: HttpRouteKey;
-
-  /**
-   * The integration to be configured on this route.
-   */
-  readonly integration: IHttpRouteIntegration;
 }
-
-// /**
-//  * Options for the Route with Integration resoruce
-//  */
-// export interface AddRoutesOptions {
-//   /**
-//    * HTTP methods
-//    * @default HttpMethod.ANY
-//    */
-//   readonly methods?: HttpMethod[];
-
-//   /**
-//    * The integration for this path
-//    */
-//   readonly integration: Integration;
-// }
 
 /**
  * Route class that creates the Route for API Gateway HTTP API
@@ -148,18 +138,4 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
   }
-
-  // public addRoutes(pathPart: string, id: string, options: AddRoutesOptions): Route[] {
-  //   const routes: Route[] = [];
-  //   const methods = options.methods ?? [ HttpMethod.ANY ];
-  //   for (const m of methods) {
-  //     routes.push(new Route(this, `${id}${m}`, {
-  //       api: this.httpApi,
-  //       integration: options.integration,
-  //       httpMethod: m,
-  //       httpPath: pathPart,
-  //     }));
-  //   }
-  //   return routes;
-  // }
 }

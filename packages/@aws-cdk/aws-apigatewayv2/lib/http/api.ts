@@ -1,7 +1,7 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { IHttpRouteIntegration } from './integration';
-import { HttpRoute, HttpRouteKey } from './route';
+import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 
 /**
@@ -36,6 +36,22 @@ export interface HttpApiProps {
    * @default true
    */
   readonly createDefaultStage?: boolean;
+}
+
+/**
+ * Options for the Route with Integration resoruce
+ */
+export interface AddRoutesOptions extends BatchHttpRouteOptions {
+  /**
+   * The path at which all of these routes are configured.
+   */
+  readonly path: string;
+
+  /**
+   * The HTTP methods to be configured
+   * @default HttpMethod.ANY
+   */
+  readonly methods?: HttpMethod[];
 }
 
 /**
@@ -103,19 +119,15 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   /**
-   * add routes on this API
+   * Add multiple routes that uses the same configuration. The routes all go to the same path, but for different
+   * methods.
    */
-  // public addRoutes(pathPart: string, id: string, options: AddRoutesOptions): Route[] {
-  //   const routes: Route[] = [];
-  //   const methods = options.methods ?? [ HttpMethod.ANY ];
-  //   for (const m of methods) {
-  //     routes.push(new Route(this, `${id}${m}`, {
-  //       api: this,
-  //       integration: options.integration,
-  //       httpMethod: m,
-  //       httpPath: pathPart,
-  //     }));
-  //   }
-  //   return routes;
-  // }
+  public addRoutes(options: AddRoutesOptions): HttpRoute[] {
+    const methods = options.methods ?? [ HttpMethod.ANY ];
+    return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
+      httpApi: this,
+      routeKey: HttpRouteKey.with(options.path, method),
+      integration: options.integration,
+    }));
+  }
 }

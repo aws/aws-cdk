@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, LambdaProxyIntegration } from '../../lib';
+import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
@@ -54,6 +54,54 @@ describe('HttpApi', () => {
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Integration', {
       ApiId: stack.resolve(httpApi.httpApiId),
+    });
+  });
+
+  test('addRoutes() configures the correct routes', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    httpApi.addRoutes({
+      path: '/pets',
+      methods: [ HttpMethod.GET, HttpMethod.PATCH ],
+      integration: new LambdaProxyIntegration({
+        handler: new Function(stack, 'fn', {
+          code: Code.fromInline('foo'),
+          runtime: Runtime.NODEJS_12_X,
+          handler: 'index.handler',
+        }),
+      }),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.httpApiId),
+      RouteKey: 'GET /pets',
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.httpApiId),
+      RouteKey: 'PATCH /pets',
+    });
+  });
+
+  test('addRoutes() creates the default method', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    httpApi.addRoutes({
+      path: '/pets',
+      integration: new LambdaProxyIntegration({
+        handler: new Function(stack, 'fn', {
+          code: Code.fromInline('foo'),
+          runtime: Runtime.NODEJS_12_X,
+          handler: 'index.handler',
+        }),
+      }),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.httpApiId),
+      RouteKey: 'ANY /pets',
     });
   });
 });
