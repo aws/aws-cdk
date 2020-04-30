@@ -10,7 +10,7 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 ```
 
 ### Create a new Secret in a Stack

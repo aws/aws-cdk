@@ -12,7 +12,7 @@
 This module includes low-level constructs that synthesize into `AWS::Serverless` resources.
 
 ```ts
-const sam = require('@aws-cdk/aws-sam');
+import * as sam from '@aws-cdk/aws-sam';
 ```
 
 ### Related

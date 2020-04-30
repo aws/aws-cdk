@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import detective = require('@aws-cdk/aws-detective');
+import * as detective from '@aws-cdk/aws-detective';
 ```

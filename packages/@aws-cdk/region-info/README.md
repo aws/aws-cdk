@@ -41,7 +41,7 @@ a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-import regionInfo = require('@aws-cdk/region-info');
+import * as regionInfo from '@aws-cdk/region-info';
 
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com

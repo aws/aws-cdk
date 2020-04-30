@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import appconfig = require('@aws-cdk/aws-appconfig');
+import * as appconfig from '@aws-cdk/aws-appconfig';
 ```

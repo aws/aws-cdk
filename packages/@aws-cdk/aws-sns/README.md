@@ -12,7 +12,7 @@
 Add an SNS Topic to your stack:
 
 ```ts
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 
 const topic = new sns.Topic(this, 'Topic', {
     displayName: 'Customer subscription topic'
@@ -29,7 +29,7 @@ default implementations of which can be found in the
 Add an HTTPS Subscription to your topic:
 
 ```ts
-import subs = require('@aws-cdk/aws-sns-subscriptions');
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
 
 const myTopic = new sns.Topic(this, 'MyTopic');
 
@@ -83,7 +83,7 @@ SNS topics can be used as targets for CloudWatch event rules.
 Use the `@aws-cdk/aws-events-targets.SnsTopic`:
 
 ```ts
-import targets = require('@aws-cdk/aws-events-targets');
+import * as targets from '@aws-cdk/aws-events-targets';
 
 codeCommitRepository.onCommit(new targets.SnsTopic(myTopic));
 ```

@@ -127,7 +127,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import batch = require('@aws-cdk/aws-batch');
+import * as batch from '@aws-cdk/aws-batch';
 
 const batchQueue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [
@@ -241,7 +241,7 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
 ```ts
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
 
 // See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
 
@@ -588,7 +588,7 @@ Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 
 // ...
 
@@ -652,7 +652,7 @@ You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueServi
 to send a message to an SQS queue.
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
+import * as sqs from '@aws-cdk/aws-sqs';
 
 // ...
 

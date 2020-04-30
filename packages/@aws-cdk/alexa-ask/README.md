@@ -14,5 +14,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const alexaAsk = require('@aws-cdk/alexa-ask');
+import * as alexaAsk from '@aws-cdk/alexa-ask';
 ```

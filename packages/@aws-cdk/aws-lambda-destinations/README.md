@@ -22,9 +22,9 @@ The following destinations are supported
 Example with a SNS topic for sucessful invocations:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import destinations = require('@aws-cdk/aws-lambda-destinations');
-import sns = require('@aws-cdk/aws-sns');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as destinations from '@aws-cdk/aws-lambda-destinations';
+import * as sns from '@aws-cdk/aws-sns';
 
 const myTopic = new sns.Topic(this, 'Topic');
 
@@ -107,8 +107,8 @@ The `responseOnly` option of `LambdaDestination` allows to auto-extract the resp
 invocation record:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import destinations = require('@aws-cdk/aws-lambda-destinations');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as destinations from '@aws-cdk/aws-lambda-destinations';
 
 const destinationFn = new lambda.Function(this, 'Destination', {
   // props

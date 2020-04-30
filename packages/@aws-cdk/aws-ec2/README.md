@@ -13,7 +13,7 @@ The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
 
 ```ts nofixture
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
 ```
 
 ## VPC

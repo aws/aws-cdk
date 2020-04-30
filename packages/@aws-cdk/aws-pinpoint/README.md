@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import pinpoint = require('@aws-cdk/aws-pinpoint');
+import * as pinpoint from '@aws-cdk/aws-pinpoint';
 ```

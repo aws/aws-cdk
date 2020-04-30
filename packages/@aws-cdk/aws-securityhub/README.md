@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import securityhub = require('@aws-cdk/aws-securityhub');
+import * as securityhub from '@aws-cdk/aws-securityhub';
 ```

@@ -24,8 +24,8 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ### TypeScript example
 
 ```ts
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });

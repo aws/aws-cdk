@@ -122,9 +122,9 @@ It's possible to have the source of the event and a target in separate AWS accou
 
 ```typescript
 import { App, Stack } from '@aws-cdk/core';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import targets = require('@aws-cdk/aws-events-targets');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as targets from '@aws-cdk/aws-events-targets';
 
 const app = new App();
 

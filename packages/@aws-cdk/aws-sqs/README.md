@@ -21,7 +21,7 @@ without losing messages or requiring other services to be available.
 Import to your project:
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
+import * as sqs from '@aws-cdk/aws-sqs';
 ```
 
 ### Basic usage

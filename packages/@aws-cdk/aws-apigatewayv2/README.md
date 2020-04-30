@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import apigatewayv2 = require('@aws-cdk/aws-apigatewayv2');
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 ```

@@ -17,7 +17,7 @@ see the [AWS CodeCommit documentation](https://docs.aws.amazon.com/codecommit).
 To add a CodeCommit Repository to your stack:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repo = new codecommit.Repository(this, 'Repository' ,{
     repositoryName: 'MyRepositoryName',

@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import managedblockchain = require('@aws-cdk/aws-managedblockchain');
+import * as managedblockchain from '@aws-cdk/aws-managedblockchain';
 ```

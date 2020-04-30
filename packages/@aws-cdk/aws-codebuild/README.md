@@ -29,7 +29,7 @@ $ npm i @aws-cdk/aws-codebuild
 Import it into your code:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
+import * as codebuild from '@aws-cdk/aws-codebuild';
 ```
 
 The `codebuild.Project` construct represents a build project resource. See the
@@ -54,8 +54,8 @@ CodeBuild!`:
 Use an AWS CodeCommit repository as the source of this build:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repository = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
 new codebuild.Project(this, 'MyFirstCodeCommitProject', {
@@ -68,8 +68,8 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as s3 from '@aws-cdk/aws-s3';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
@@ -89,7 +89,7 @@ Example:
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  webhook: true, // optional, default: true if `webhookFilteres` were provided, false otherwise
+  webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
     codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
@@ -257,7 +257,7 @@ project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-const targets = require('@aws-cdk/aws-events-targets');
+import * as targets from '@aws-cdk/aws-events-targets';
 
 codeCommitRepository.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),

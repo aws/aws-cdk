@@ -64,8 +64,8 @@ The following example will define a single top-level stack that contains two nes
 
 ```ts
 import { Stack, Construct, StackProps } from '@aws-cdk/core';
-import cfn = require('@aws-cdk/aws-cloudformation');
-import s3 = require('@aws-cdk/aws-s3');
+import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as s3 from '@aws-cdk/aws-s3';
 
 class MyNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {

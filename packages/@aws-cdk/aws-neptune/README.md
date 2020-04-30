@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const neptune = require('@aws-cdk/aws-neptune');
+import * as neptune from '@aws-cdk/aws-neptune';
 ```
