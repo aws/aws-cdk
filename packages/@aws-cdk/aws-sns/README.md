@@ -80,12 +80,12 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 
 SNS topics can be used as targets for CloudWatch event rules.
 
-Use the `@aws-cdk/aws-events-targets.SnsTopicTarget`:
+Use the `@aws-cdk/aws-events-targets.SnsTopic`:
 
 ```ts
 import targets = require('@aws-cdk/aws-events-targets');
 
-codeCommitRepository.onCommit(new targets.SnsTopicTarget(myTopic));
+codeCommitRepository.onCommit(new targets.SnsTopic(myTopic));
 ```
 
 This will result in adding a target to the event rule and will also modify the
