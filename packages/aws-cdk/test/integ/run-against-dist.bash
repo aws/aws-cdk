@@ -80,7 +80,9 @@ function serve_npm_packages() {
 
 # Make sure that installed CLI matches the build version
 function verify_installed_cli_version() {
-  local expected_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+
+  expected_version=$1
+  
   header "Expected CDK version: ${expected_version}"
 
   log "Found CDK: $(type -p cdk)"
