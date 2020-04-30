@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.36.1](https://github.com/aws/aws-cdk/compare/v1.36.0...v1.36.1) (2020-04-29)
+
+### Bug Fixes
+
+* multiple breakages due to jest version upgrade ([#7667](https://github.com/aws/aws-cdk/pull/7667)) ([e18312](https://github.com/aws/aws-cdk/commit/e18312c4de42857d893913bd3124bd06bb16982e)), closes [#7657](https://github.com/aws/aws-cdk/issues/7657)
+
 ## [1.36.0](https://github.com/aws/aws-cdk/compare/v1.35.0...v1.36.0) (2020-04-28)
 
 
