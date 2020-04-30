@@ -1,3 +1,35 @@
+# CloudFormation Resource Specification v14.0.0
+
+## New Resource Types
+
+* AWS::CE::CostCategory
+* AWS::Synthetics::Canary
+
+## Attribute Changes
+
+* AWS::FSx::FileSystem LustreMountName (__added__)
+
+## Property Changes
+
+* AWS::ResourceGroups::Group Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::StepFunctions::StateMachine TracingConfiguration (__deleted__)
+* AWS::Transfer::Server Certificate (__added__)
+* AWS::Transfer::Server Protocols (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::StateMachine.TracingConfiguration (__removed__)
+* AWS::Transfer::Server.Protocol (__added__)
+* AWS::WAFv2::RuleGroup.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::WebACL.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v13.0.0
 
 ## New Resource Types
