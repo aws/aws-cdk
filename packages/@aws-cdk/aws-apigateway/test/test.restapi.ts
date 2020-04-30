@@ -679,6 +679,54 @@ export = {
     test.done();
   },
 
+  'addApiKey is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addApiKey('myapikey');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+      StageKeys: [
+        {
+          RestApiId: { Ref: 'myapi162F20B8' },
+          StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'addApiKey supports custom key value'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    const apiKeyValue = '01234567890ABCDEFabcdef';
+    api.addApiKey('myapikey', apiKeyValue);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+      StageKeys: [
+        {
+          RestApiId: { Ref: 'myapi162F20B8' },
+          StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+        },
+      ],
+      Value: apiKeyValue,
+    }));
+
+    test.done();
+  },
+
   'addModel is supported'(test: Test) {
     // GIVEN
     const stack = new Stack();

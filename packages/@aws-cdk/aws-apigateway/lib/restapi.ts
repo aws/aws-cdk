@@ -328,11 +328,12 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * Add an ApiKey
+   * Add an ApiKey, optionally with a supplied key value. If provided, the key value must be at least 20 characters.
    */
-  public addApiKey(id: string): IApiKey {
+  public addApiKey(id: string, value?: string): IApiKey {
     return new ApiKey(this, id, {
       resources: [this],
+      value,
     });
   }
 

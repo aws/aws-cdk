@@ -60,6 +60,13 @@ export interface ApiKeyProps extends ResourceOptions {
    * @default automically generated name
    */
   readonly apiKeyName?: string;
+
+  /**
+   * The value of the API key. Must be at least 20 characters long.
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-value
+   * @default none
+   */
+  readonly value?: string;
 }
 
 /**
@@ -83,6 +90,7 @@ export class ApiKey extends Resource implements IApiKey {
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources),
+      value: props.value,
     });
 
     this.keyId = resource.ref;
