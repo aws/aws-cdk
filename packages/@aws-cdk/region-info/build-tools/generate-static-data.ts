@@ -90,7 +90,7 @@ async function main(): Promise<void> {
     'me-south-1': 'Z1MPMWCPA7YB62',
   };
 
-  const PARTITION_MAP: { [region: string]: any } = {
+  const PARTITION_MAP: { [region: string]: { partition: string, domainSuffix: string } } = {
     'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
     'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
     'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
