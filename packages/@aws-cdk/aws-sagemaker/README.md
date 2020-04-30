@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const sagemaker = require('@aws-cdk/aws-sagemaker');
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
 ```
