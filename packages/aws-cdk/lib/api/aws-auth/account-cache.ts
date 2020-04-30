@@ -80,6 +80,8 @@ export class AccountAccessKeyCache {
     try {
       return await fs.readJson(this.cacheFile);
     } catch (e) {
+      // File doesn't exist or is not readable. This is a cache,
+      // pretend we successfully loaded an empty map.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
       throw e;
     }
@@ -87,13 +89,11 @@ export class AccountAccessKeyCache {
 
   private async saveMap(map: { [accessKeyId: string]: Account }) {
     try {
-      const dir = path.dirname(this.cacheFile);
-      if (!(await fs.pathExists(dir))) {
-        await fs.mkdirs(dir);
-      }
-
+      await fs.ensureFile(this.cacheFile);
       await fs.writeJson(this.cacheFile, map, { spaces: 2 });
     } catch (e) {
+      // File doesn't exist or file/dir isn't writable. This is a cache,
+      // if we can't write it then too bad.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return; }
       throw e;
     }
