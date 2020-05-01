@@ -191,7 +191,9 @@ export = {
       Conditions: [
         {
           Field: 'path-pattern',
-          Values: ['/hello'],
+          PathPatternConfig: {
+            Values: ['/hello'],
+          },
         },
       ],
       Actions: [
@@ -962,7 +964,9 @@ export = {
       Conditions: [
         {
           Field: 'path-pattern',
-          Values: ['/test/path/1', '/test/path/2'],
+          PathPatternConfig: {
+            Values: ['/test/path/1', '/test/path/2'],
+          },
         },
       ],
     }));
@@ -1017,7 +1021,9 @@ export = {
       Conditions: [
         {
           Field: 'path-pattern',
-          Values: ['/path1', '/path2'],
+          PathPatternConfig: {
+            Values: ['/path1', '/path2'],
+          },
         },
       ],
     }));
