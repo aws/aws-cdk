@@ -12,7 +12,7 @@
 Here is a minimal deployable DynamoDB table definition:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
@@ -47,7 +47,7 @@ DynamoDB supports two billing modes:
 * PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
@@ -110,7 +110,7 @@ const table = new dynamodb.Table(this, 'Table', {
 You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const globalTable = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
