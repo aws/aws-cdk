@@ -25,7 +25,7 @@ export class CfnResourceReflection {
    */
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
     for (const cls of sys.classes) {
-      if (cls.docs.customTag('cloudformationResource') === fullName) {
+      if (cls.docs.customTag('cloudformationResource')?.toLocaleLowerCase() === fullName.toLocaleLowerCase()) {
         return new CfnResourceReflection(cls);
       }
     }
