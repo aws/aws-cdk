@@ -90,7 +90,9 @@ async function main(): Promise<void> {
     'me-south-1': 'Z1MPMWCPA7YB62',
   };
 
-  const PARTITION_MAP: { [region: string]: { partition: string, domainSuffix: string } } = {
+  interface IRegion { partition: string, domainSuffix: string }
+
+  const PARTITION_MAP: { [region: string]: IRegion } = {
     'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
     'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
     'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
@@ -98,14 +100,16 @@ async function main(): Promise<void> {
     'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
   };
 
+  const defaultMap = 'default';
+
   for (const region of AWS_REGIONS) {
-    let partition = PARTITION_MAP['default']['partition'];
-    let domainSuffix = PARTITION_MAP['default']['domainSuffix'];
+    let partition = PARTITION_MAP[defaultMap].partition;
+    let domainSuffix = PARTITION_MAP[defaultMap].domainSuffix;
 
     for (const key in PARTITION_MAP) {
       if (region.startsWith(key)) {
-        partition = PARTITION_MAP[key]['partition'];
-        domainSuffix = PARTITION_MAP[key]['domainSuffix'];
+        partition = PARTITION_MAP[key].partition;
+        domainSuffix = PARTITION_MAP[key].domainSuffix;
       }
     }
 
