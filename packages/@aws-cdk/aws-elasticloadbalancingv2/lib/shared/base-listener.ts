@@ -1,6 +1,6 @@
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
-import { ITargetGroup } from './base-target-group';
+import { IListenerAction } from './listener-action';
 
 /**
  * Base class for listeners
@@ -11,14 +11,14 @@ export abstract class BaseListener extends Resource {
    */
   public readonly listenerArn: string;
 
-  private readonly defaultActions: CfnListener.ActionProperty[] = [];
+  private defaultAction?: IListenerAction;
 
   constructor(scope: Construct, id: string, additionalProps: any) {
     super(scope, id);
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: Lazy.anyValue({ produce: () => this.defaultActions }),
+      defaultActions: Lazy.anyValue({ produce: () => this.defaultAction ? this.defaultAction.renderActions() : [] }),
     });
 
     this.listenerArn = resource.ref;
@@ -28,28 +28,24 @@ export abstract class BaseListener extends Resource {
    * Validate this listener
    */
   protected validate(): string[] {
-    if (this.defaultActions.length === 0) {
-      return ['Listener needs at least one default target group (call addTargetGroups)'];
+    if (!this.defaultAction) {
+      return ['Listener needs at least one default action or target group (call addTargetGroups or addAction)'];
     }
     return [];
   }
 
   /**
-   * Add an action to the list of default actions of this listener
+   * Configure the default action
+   *
    * @internal
    */
-  protected _addDefaultAction(action: CfnListener.ActionProperty) {
-    this.defaultActions.push(action);
-  }
+  protected _setDefaultAction(action: IListenerAction) {
+    // I'd like to throw here but there might be existing programs that happen
+    // to work even though they followed an illegal call pattern. Just add a warning.
+    if (this.defaultAction) {
+      this.node.addWarning('A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
+    }
 
-  /**
-   * Add a TargetGroup to the list of default actions of this listener
-   * @internal
-   */
-  protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
-    this._addDefaultAction({
-      targetGroupArn: targetGroup.targetGroupArn,
-      type: 'forward',
-    });
+    this.defaultAction = action;
   }
 }

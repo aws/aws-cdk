@@ -61,17 +61,6 @@ listener.addTargets('ApplicationFleet', {
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
 
-Use the `addFixedResponse()` method to add fixed response rules on the listener:
-
-```ts
-listener.addFixedResponse('Fixed', {
-    pathPattern: '/ok',
-    contentType: elbv2.ContentType.TEXT_PLAIN,
-    messageBody: 'OK',
-    statusCode: '200'
-});
-```
-
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
@@ -97,6 +86,69 @@ targets with conditions. The lowest number wins.
 
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
+
+#### Convenience methods and more complex Actions
+
+Routing traffic from a Load Balancer to a Target involves the following steps:
+
+- Create a Target Group, register the Target into the Target Group
+- Add an Action to the Listener which forwards traffic to the Target Group.
+
+Various methods on the `Listener` take care of this work for you to a greater
+or lesser extent:
+
+- `addTargets()` performs both steps: automatically creates a Target Group and the
+  required Action.
+- `addTargetGroups()` gives you more control: you create the Target Group (or
+  Target Groups) yourself and the method creates Action that routes traffic to
+  the Target Groups.
+- `addAction()` gives you full control: you supply the Action and wire it up
+  to the Target Groups yourself (or access one of the other ELB routing features).
+
+Using `addAction()` gives you access to some of the features of an Elastic Load
+Balancer that the convenience methods don't:
+
+- **Routing stickiness**: use `ApplicationListenerAction.forward()` and supply a
+  `stickinessDuration` to make sure requests are routed to the same target group
+  for a given duration.
+- **Weighted Target Groups**: use `ApplicationListenerAction.weightedForward()`
+  to give different weights to different target groups.
+- **Fixed Responses**: use `ApplicationListenerAction.fixedResponse()` to serve
+  a static response (ALB only).
+- **Redirects**: use `ApplicationListenerAction.redirect()` to serve an HTTP
+  redirect response (ALB only).
+- **Authentication**: use `ApplicationListenerAction.authenticateOidc()` to
+  perform OpenID authentication before serving a request (see the
+  `@aws-cdk/aws-elasticloadbalancingv2-actions` package for direct authentication
+  integration with Cognito) (ALB only).
+
+Here's an example of serving a fixed response at the `/ok` URL:
+
+```ts
+listener.addAction('Fixed', {
+    pathPatterns: ['/ok'],
+    priority: 10,
+    action: ApplicationListenerAction.fixedResponse({
+        contentType: elbv2.ContentType.TEXT_PLAIN,
+        messageBody: 'OK',
+        statusCode: 200,
+    })
+});
+```
+Here's an example of using OIDC authentication before forwarding to a TargetGroup:
+
+```ts
+listener.addAction('DefaultAction', {
+    action: ApplicationListenerAction.authenticateOidc({
+        authorizationEndpoint: 'https://example.com/openid',
+        // Other OIDC properties here
+        // ...
+        next: ApplicationListenerAction.forward({
+            targetGroups: [myTargetGroup]
+        })
+    }),
+});
+```
 
 ### Defining a Network Load Balancer
 
