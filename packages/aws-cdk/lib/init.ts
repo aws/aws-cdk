@@ -2,9 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
 import { error, print, warning } from './logging';
+import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -16,7 +16,6 @@ const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
-const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
@@ -165,7 +164,7 @@ export class InitTemplate {
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
-      .replace(/%cdk-home%/g, CDK_HOME)
+      .replace(/%cdk-home%/g, cdkHomeDir())
       .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
       .replace(/%python-executable%/g, pythonExecutable())
       .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
