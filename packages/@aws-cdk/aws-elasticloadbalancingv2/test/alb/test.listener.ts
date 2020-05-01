@@ -997,7 +997,260 @@ export = {
     test.done();
   },
 
-  'Add path patterns to imported application listener'(test: Test) {
+  'Add additonal condition to listener rule'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81, protocol: elbv2.ApplicationProtocol.HTTP });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1'],
+      defaultTargetGroups: [group2],
+    });
+
+    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 10,
+      targetGroups: [group1],
+    });
+    listenerRule1.addCondition(
+      new elbv2.HttpHeaderListenerRuleCondition('Accept', ['application/vnd.myapp.v2+json']),
+    );
+
+    new elbv2.ApplicationListenerRule(stack, 'ListenerRule2', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 20,
+      targetGroups: [group2],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 10,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+        {
+          Field: 'http-header',
+          HttpHeaderConfig: {
+            HttpHeaderName: 'Accept',
+            Values: ['application/vnd.myapp.v2+json'],
+          },
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 20,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Add multiple additonal condition to listener rule'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81, protocol: elbv2.ApplicationProtocol.HTTP });
+    const group3 = new elbv2.ApplicationTargetGroup(stack, 'Group3', { vpc, port: 82, protocol: elbv2.ApplicationProtocol.HTTP });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1'],
+      defaultTargetGroups: [group3],
+    });
+
+    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 10,
+      targetGroups: [group1],
+    });
+    listenerRule1.addCondition(
+      new elbv2.SourceIpListenerRuleCondition(['192.0.2.0/24']),
+    );
+    listenerRule1.addCondition(
+      new elbv2.QueryStringListenerRuleCondition([{ key: 'version', value: '2' }, { value: 'foo*' }]),
+    );
+
+    const listenerRule2 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule2', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 20,
+      targetGroups: [group1],
+    });
+    listenerRule2.addCondition(
+      new elbv2.HttpHeaderListenerRuleCondition('Accept', ['application/vnd.myapp.v2+json']),
+    );
+
+    const listenerRule3 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule3', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 30,
+      targetGroups: [group2],
+    });
+    listenerRule3.addCondition(
+      new elbv2.HttpRequestMethodListenerRuleCondition(['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK']),
+    );
+
+    new elbv2.ApplicationListenerRule(stack, 'ListenerRule4', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 40,
+      targetGroups: [group3],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 10,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+        {
+          Field: 'source-ip',
+          SourceIpConfig: {
+            Values: ['192.0.2.0/24'],
+          },
+        },
+        {
+          Field: 'query-string',
+          QueryStringConfig: {
+            Values: [
+              {
+                Key: 'version',
+                Value: '2',
+              },
+              {
+                Value: 'foo*',
+              },
+            ],
+          },
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 20,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+        {
+          Field: 'http-header',
+          HttpHeaderConfig: {
+            HttpHeaderName: 'Accept',
+            Values: ['application/vnd.myapp.v2+json'],
+          },
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 30,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+        {
+          Field: 'http-request-method',
+          HttpRequestMethodConfig: {
+            Values: ['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK'],
+          },
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 40,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Add additonal condition to listener rule by old style interface'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81, protocol: elbv2.ApplicationProtocol.HTTP });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificateArns: ['cert1'],
+      defaultTargetGroups: [group2],
+    });
+
+    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
+      listener,
+      hostHeader: 'app.test',
+      priority: 10,
+      targetGroups: [group1],
+    });
+    listenerRule1.setCondition('path-pattern', ['/test']);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 10,
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['app.test'],
+          },
+        },
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/test'],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Add condition to imported application listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
