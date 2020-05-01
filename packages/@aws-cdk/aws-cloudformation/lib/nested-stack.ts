@@ -63,7 +63,7 @@ export interface NestedStackProps {
  * @experimental
  */
 export class NestedStack extends core.NestedStack {
-  constructor(scope: core.Construct, id: string, props: NestedStackProps) {
+  constructor(scope: core.Construct, id: string, props: NestedStackProps = { }) {
     super(scope, id, {
       parameters: props.parameters,
       timeout: props.timeout,

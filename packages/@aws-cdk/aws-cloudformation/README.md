@@ -2,9 +2,9 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 <!--END STABILITY BANNER-->
