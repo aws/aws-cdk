@@ -1,49 +1,44 @@
 import { spawnSync } from 'child_process';
-import * as path from 'path';
+import * as fs from 'fs';
 import { Builder } from '../lib/builder';
+
+let parcelPkgPath: string;
+let parcelPkg: Buffer;
+beforeAll(() => {
+  parcelPkgPath = require.resolve('parcel-bundler/package.json');
+  parcelPkg = fs.readFileSync(parcelPkgPath);
+});
+
+afterEach(() => {
+  fs.writeFileSync(parcelPkgPath, parcelPkg);
+});
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn((_cmd: string, args: string[]) => {
-    if (args.includes('/entry/error')) {
+    if (args[1] === 'error') {
       return { error: 'parcel-error' };
     }
 
-    if (args.includes('/entry/status')) {
+    if (args[1] === 'status') {
       return { status: 1, stdout: Buffer.from('status-error') };
-    }
-
-    if (args.includes('/entry/no-docker')) {
-      return { error: 'Error: spawnSync docker ENOENT' };
     }
 
     return { error: null, status: 0 };
   }),
 }));
 
-test('calls docker with the correct args', () => {
+test('calls parcel with the correct args', () => {
   const builder = new Builder({
     entry: 'entry',
     global: 'handler',
     outDir: 'out-dir',
     cacheDir: 'cache-dir',
-    nodeDockerTag: '13.8.0-alpine3.11',
   });
   builder.build();
 
-  // docker build
-  expect(spawnSync).toHaveBeenNthCalledWith(1, 'docker', [
-    'build', '--build-arg', 'NODE_TAG=13.8.0-alpine3.11', '-t', 'parcel-bundler', path.join(__dirname, '../parcel-bundler'),
-  ]);
-
-  // docker run
-  expect(spawnSync).toHaveBeenNthCalledWith(2, 'docker', [
-    'run', '--rm',
-    '-v', `${path.join(__dirname, '..')}:/entry`,
-    '-v', `${path.join(__dirname, '../out-dir')}:/out`,
-    '-v', `${path.join(__dirname, '../cache-dir')}:/cache`,
-    'parcel-bundler',
-    'parcel', 'build', '/entry/entry',
-    '--out-dir', '/out',
+  expect(spawnSync).toHaveBeenCalledWith(expect.stringContaining('parcel-bundler'), expect.arrayContaining([
+    'build', 'entry',
+    '--out-dir', 'out-dir',
     '--out-file', 'index.js',
     '--global', 'handler',
     '--target', 'node',
@@ -51,8 +46,8 @@ test('calls docker with the correct args', () => {
     '--log-level', '2',
     '--no-minify',
     '--no-source-maps',
-    '--cache-dir', '/cache',
-  ]);
+    '--cache-dir', 'cache-dir',
+  ]));
 });
 
 test('throws in case of error', () => {
@@ -60,7 +55,6 @@ test('throws in case of error', () => {
     entry: 'error',
     global: 'handler',
     outDir: 'out-dir',
-    nodeDockerTag: '13.8.0-alpine3.11',
   });
   expect(() => builder.build()).toThrow('parcel-error');
 });
@@ -70,17 +64,18 @@ test('throws if status is not 0', () => {
     entry: 'status',
     global: 'handler',
     outDir: 'out-dir',
-    nodeDockerTag: '13.8.0-alpine3.11',
   });
   expect(() => builder.build()).toThrow('status-error');
 });
 
-test('throws if docker is not installed', () => {
-  const builder = new Builder({
-    entry: 'no-docker',
+test('throws when parcel-bundler is not 1.x', () => {
+  fs.writeFileSync(parcelPkgPath, JSON.stringify({
+    ...JSON.parse(parcelPkg.toString()),
+    version: '2.3.4',
+  }));
+  expect(() => new Builder({
+    entry: 'entry',
     global: 'handler',
-    outDir: 'out-dir',
-    nodeDockerTag: '13.8.0-alpine3.11',
-  });
-  expect(() => builder.build()).toThrow('Error: spawnSync docker ENOENT');
+    outDir: 'out-dur',
+  })).toThrow(/This module has a peer dependency on parcel-bundler v1.x. Got v2.3.4./);
 });
