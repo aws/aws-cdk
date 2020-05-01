@@ -520,9 +520,6 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (this.actions.length === 0) {
       return ['Listener rule needs at least one action'];
     }
-    if (Object.keys(this.conditions).length === 0) {
-      throw ['Listener rule needs at least one condition'];
-    }
     return [];
   }
 
