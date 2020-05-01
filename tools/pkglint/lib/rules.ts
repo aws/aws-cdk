@@ -131,6 +131,9 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
+    if (pkg.packageName === '@aws-cdk/core') {
+      return;
+    }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
 

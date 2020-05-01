@@ -24,16 +24,13 @@ export class CfnResourceReflection {
    * @param fullName first two components are case-insensitive (e.g. `aws::s3::Bucket` is equivalent to `Aws::S3::Bucket`)
    */
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
-    const [ org, ns, resource ] = fullName.split('::');
-    if (resource === undefined) {
-        throw new Error(`Not a valid CFN resource name: ${fullName}`);
+    for (const cls of sys.classes) {
+      if (cls.docs.customTag('cloudformationResource') === fullName) {
+        return new CfnResourceReflection(cls);
+      }
     }
-    const fqn = `@aws-cdk/${org.toLocaleLowerCase()}-${ns.toLocaleLowerCase()}.Cfn${resource}`;
-    if (!sys.tryFindFqn(fqn)) {
-      return undefined;
-    }
-    const cls = sys.findClass(fqn);
-    return new CfnResourceReflection(cls);
+
+    return undefined;
   }
 
   /**

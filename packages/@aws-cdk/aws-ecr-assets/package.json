@@ -71,8 +71,6 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -84,8 +82,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
