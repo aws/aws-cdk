@@ -1,8 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FollowMode } from './follow-mode';
-import { FingerprintOptions } from './options';
+import { FingerprintOptions, SymlinkFollowMode } from './options';
 import { shouldExclude, shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
@@ -24,7 +23,7 @@ const CTRL_ETX = '\x03';
 export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
   const hash = crypto.createHash('sha256');
   _hashField(hash, 'options.extra', options.extraHash || '');
-  const follow = options.follow || FollowMode.EXTERNAL;
+  const follow = options.follow || SymlinkFollowMode.EXTERNAL;
   _hashField(hash, 'options.follow', follow);
 
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
