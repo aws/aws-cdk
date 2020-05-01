@@ -959,14 +959,14 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedImageProps) {
-    this.nodeType = props && props.nodeType;
-    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+  public constructor(props: EksOptimizedImageProps = {}) {
+    this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
-      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + 'recommended/image_id';
   }
 
