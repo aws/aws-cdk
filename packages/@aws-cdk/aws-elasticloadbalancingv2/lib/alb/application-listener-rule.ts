@@ -423,15 +423,15 @@ export class ApplicationListenerRule extends cdk.Construct {
     });
 
     if (props.hostHeader) {
-      this.setCondition('host-header', [props.hostHeader]);
+      this.addCondition(new HostHeaderListenerRuleCondition([props.hostHeader]));
     }
 
     if (hasPathPatterns) {
       if (props.pathPattern && props.pathPatterns) {
         throw new Error('Both `pathPatterns` and `pathPattern` are specified, specify only one');
       }
-      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
-      this.setCondition('path-pattern', pathPattern);
+      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns!;
+      this.addCondition(new PathPatternListenerRuleCondition(pathPattern));
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
