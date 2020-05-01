@@ -21,12 +21,14 @@ export class Default {
    * @param urlSuffix the URL suffix for the partition in which the region is located.
    */
   public static servicePrincipal(service: string, region: string, urlSuffix: string): string {
-    const matches = service.match(/^([^.]+)(?:\.amazonaws\.com(?:\.cn)?)?$/);
+    const matches = service.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
     if (!matches) {
       // Return "service" if it does not look like any of the following:
       // - s3
       // - s3.amazonaws.com
       // - s3.amazonaws.com.cn
+      // - s3.c2s.ic.gov
+      // - s3.sc2s.sgov.gov
       return service;
     }
 
