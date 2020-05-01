@@ -36,6 +36,10 @@ const WRITE_DATA_ACTIONS = [
   'dynamodb:DeleteItem',
 ];
 
+/**
+ * Represents an attribute for describing the key schema for the table
+ * and indexes.
+ */
 export interface Attribute {
   /**
    * The name of an attribute.
@@ -48,6 +52,11 @@ export interface Attribute {
   readonly type: AttributeType;
 }
 
+/**
+ * Properties of a DynamoDB Table
+ *
+ * Use {@link TableProps} for all table properties
+ */
 export interface TableOptions {
   /**
    * Partition key attribute definition.
@@ -129,6 +138,9 @@ export interface TableOptions {
   readonly replicationRegions?: string[];
 }
 
+/**
+ * Properties for a DynamoDB Table
+ */
 export interface TableProps extends TableOptions {
   /**
    * Enforces a particular physical table name.
@@ -137,6 +149,9 @@ export interface TableProps extends TableOptions {
   readonly tableName?: string;
 }
 
+/**
+ * Properties for a secondary index
+ */
 export interface SecondaryIndexProps {
   /**
    * The name of the secondary index.
@@ -156,6 +171,9 @@ export interface SecondaryIndexProps {
   readonly nonKeyAttributes?: string[];
 }
 
+/**
+ * Properties for a global secondary index
+ */
 export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a partition key for the global secondary index.
@@ -187,6 +205,9 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   readonly writeCapacity?: number;
 }
 
+/**
+ * Properties for a local secondary index
+ */
 export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a sort key for the local secondary index.
@@ -1110,6 +1131,11 @@ export class Table extends TableBase {
   }
 }
 
+/**
+ * Data types for attributes within a table
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes
+ */
 export enum AttributeType {
   /** Up to 400KiB of binary data (which must be encoded as base64 before sending to DynamoDB) */
   BINARY = 'B',
@@ -1133,6 +1159,11 @@ export enum BillingMode {
   PROVISIONED = 'PROVISIONED',
 }
 
+/**
+ * The set of attributes that are projected into the index
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Projection.html
+ */
 export enum ProjectionType {
   /** Only the index and primary keys are projected into the index. */
   KEYS_ONLY = 'KEYS_ONLY',

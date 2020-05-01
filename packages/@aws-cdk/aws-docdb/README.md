@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import docdb = require('@aws-cdk/aws-docdb');
+import * as docdb from '@aws-cdk/aws-docdb';
 ```
