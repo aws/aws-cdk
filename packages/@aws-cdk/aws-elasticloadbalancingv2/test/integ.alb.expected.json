@@ -473,9 +473,11 @@
         "Conditions": [
           {
             "Field": "host-header",
-            "Values": [
-              "example.com"
-            ]
+            "HostHeaderConfig": {
+              "Values": [
+                "example.com"
+              ]
+            }
           }
         ],
         "ListenerArn": {
