@@ -94,7 +94,7 @@ export class AccountAccessKeyCache {
     } catch (e) {
       // File doesn't exist or file/dir isn't writable. This is a cache,
       // if we can't write it then too bad.
-      if (e.code === 'ENOENT' || e.code === 'EACCES') { return; }
+      if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') { return; }
       throw e;
     }
   }
