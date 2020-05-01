@@ -48,7 +48,7 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.20.2",
     "fs-extra": "^8.1.0",
-    "jest": "^25.5.1",
+    "jest": "^25.5.3",
     "jsii": "^1.4.1",
     "jsii-pacmak": "^1.4.1",
     "nodeunit": "^0.11.3",

@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import codestarconnections = require('@aws-cdk/aws-codestarconnections');
+import * as codestarconnections from '@aws-cdk/aws-codestarconnections';
 ```
