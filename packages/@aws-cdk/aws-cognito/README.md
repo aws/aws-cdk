@@ -168,8 +168,8 @@ four optional attributes.
 new UserPool(this, 'myuserpool', {
   // ...
   requiredAttributes: {
-    fullname: true,
-    address: true,
+    fullname: new StringAttribute(),
+    address: new StringAttribute({ mutable: true }),
   },
   customAttributes: {
     'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
