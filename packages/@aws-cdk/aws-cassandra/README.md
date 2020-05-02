@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import cassandra = require('@aws-cdk/aws-cassandra');
+import * as cassandra from '@aws-cdk/aws-cassandra';
 ```

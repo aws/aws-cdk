@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import ce = require('@aws-cdk/aws-ce');
+import * as ce from '@aws-cdk/aws-ce';
 ```
