@@ -1,12 +1,12 @@
 import '@aws-cdk/assert/jest';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { AttributeConfig, BooleanAttribute, DateTimeAttribute, IAttribute, NumberAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
 
   describe('mutable', () => {
     test('default', () => {
       // GIVEN
-      const allAttributes: ICustomAttribute[] = [
+      const allAttributes: IAttribute[] = [
         new StringAttribute(),
         new NumberAttribute(),
         new BooleanAttribute(),
@@ -14,7 +14,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind() );
+      const bounds: AttributeConfig[] = allAttributes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {
@@ -27,7 +27,7 @@ describe('User Pool Attributes', () => {
       const allTrueProps = {
         mutable: true,
       };
-      const allAttributeTypes: ICustomAttribute[] = [
+      const allAttributeTypes: IAttribute[] = [
         new StringAttribute(allTrueProps),
         new NumberAttribute(allTrueProps),
         new BooleanAttribute(allTrueProps),
@@ -35,7 +35,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: AttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {
@@ -50,7 +50,7 @@ describe('User Pool Attributes', () => {
       const allFalseProps = {
         mutable: false,
       };
-      const allAttributeTypes: ICustomAttribute[] = [
+      const allAttributeTypes: IAttribute[] = [
         new StringAttribute(allFalseProps),
         new NumberAttribute(allFalseProps),
         new BooleanAttribute(allFalseProps),
@@ -58,7 +58,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: AttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {

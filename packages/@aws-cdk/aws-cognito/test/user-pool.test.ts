@@ -491,8 +491,8 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       requiredAttributes: {
-        fullname: true,
-        timezone: true,
+        fullname: new StringAttribute(),
+        timezone: new StringAttribute(),
       },
     });
 
@@ -521,9 +521,7 @@ describe('User Pool', () => {
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      requiredAttributes: {
-        familyName: false,
-      },
+      requiredAttributes: {},
     });
 
     // THEN

@@ -6,121 +6,121 @@
 export interface RequiredAttributes {
   /**
    * Whether the user's postal address is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly address?: boolean;
+  readonly address?: StringAttribute;
 
   /**
    * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly birthdate?: boolean;
+  readonly birthdate?: StringAttribute;
 
   /**
    * Whether the user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly email?: boolean;
+  readonly email?: StringAttribute;
 
   /**
    * Whether the surname or last name of the user is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly familyName?: boolean;
+  readonly familyName?: StringAttribute;
 
   /**
    * Whether the user's gender is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly gender?: boolean;
+  readonly gender?: StringAttribute;
 
   /**
    * Whether the user's first name or give name is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly givenName?: boolean;
+  readonly givenName?: StringAttribute;
 
   /**
    * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly locale?: boolean;
+  readonly locale?: StringAttribute;
 
   /**
    * Whether the user's middle name is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly middleName?: boolean;
+  readonly middleName?: StringAttribute;
 
   /**
    * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly fullname?: boolean;
+  readonly fullname?: StringAttribute;
 
   /**
    * Whether the user's nickname or casual name is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly nickname?: boolean;
+  readonly nickname?: StringAttribute;
 
   /**
    * Whether the user's telephone number is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly phoneNumber?: boolean;
+  readonly phoneNumber?: StringAttribute;
 
   /**
    * Whether the URL to the user's profile picture is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly profilePicture?: boolean;
+  readonly profilePicture?: StringAttribute;
 
   /**
    * Whether the user's preffered username, different from the immutable user name, is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly preferredUsername?: boolean;
+  readonly preferredUsername?: StringAttribute;
 
   /**
    * Whether the URL to the user's profile page is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly profilePage?: boolean;
+  readonly profilePage?: StringAttribute;
 
   /**
    * Whether the user's time zone is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly timezone?: boolean;
+  readonly timezone?: StringAttribute;
 
   /**
    * Whether the time, the user's information was last updated, is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly lastUpdateTime?: boolean;
+  readonly lastUpdateTime?: NumberAttribute;
 
   /**
    * Whether the URL to the user's web page or blog is a required attribute.
-   * @default false
+   * @default - Attribute is not required
    */
-  readonly website?: boolean;
+  readonly website?: StringAttribute;
 }
 
 /**
  * Represents a custom attribute type.
  */
-export interface ICustomAttribute {
+export interface IAttribute {
   /**
    * Bind this custom attribute type to the values as expected by CloudFormation
    */
-  bind(): CustomAttributeConfig;
+  bind(): AttributeConfig;
 }
 
 /**
  * Configuration that will be fed into CloudFormation for any custom attribute type.
  */
-export interface CustomAttributeConfig {
+export interface AttributeConfig {
   // tslint:disable:max-line-length
   /**
    * The data type of the custom attribute.
@@ -156,7 +156,7 @@ export interface CustomAttributeConfig {
 /**
  * Constraints that can be applied to a custom attribute of any type.
  */
-export interface CustomAttributeProps {
+export interface AttributeProps {
   /**
    * Specifies whether the value of the attribute can be changed.
    * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
@@ -188,13 +188,13 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {
+export interface StringAttributeProps extends StringAttributeConstraints, AttributeProps {
 }
 
 /**
- * The String custom attribute type.
+ * The String attribute type.
  */
-export class StringAttribute implements ICustomAttribute {
+export class StringAttribute implements IAttribute {
   private readonly minLen?: number;
   private readonly maxLen?: number;
   private readonly mutable?: boolean;
@@ -211,7 +211,7 @@ export class StringAttribute implements ICustomAttribute {
     this.mutable = props?.mutable;
   }
 
-  public bind(): CustomAttributeConfig {
+  public bind(): AttributeConfig {
     let stringConstraints: StringAttributeConstraints | undefined;
     if (this.minLen || this.maxLen) {
       stringConstraints = {
@@ -248,13 +248,13 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {
+export interface NumberAttributeProps extends NumberAttributeConstraints, AttributeProps {
 }
 
 /**
  * The Number custom attribute type.
  */
-export class NumberAttribute implements ICustomAttribute {
+export class NumberAttribute implements IAttribute {
   private readonly min?: number;
   private readonly max?: number;
   private readonly mutable?: boolean;
@@ -265,7 +265,7 @@ export class NumberAttribute implements ICustomAttribute {
     this.mutable = props?.mutable;
   }
 
-  public bind(): CustomAttributeConfig {
+  public bind(): AttributeConfig {
     let numberConstraints: NumberAttributeConstraints | undefined;
     if (this.min || this.max) {
       numberConstraints = {
@@ -285,14 +285,14 @@ export class NumberAttribute implements ICustomAttribute {
 /**
  * The Boolean custom attribute type.
  */
-export class BooleanAttribute implements ICustomAttribute {
+export class BooleanAttribute implements IAttribute {
   private readonly mutable?: boolean;
 
-  constructor(props: CustomAttributeProps = {}) {
+  constructor(props: AttributeProps = {}) {
     this.mutable = props?.mutable;
   }
 
-  public bind(): CustomAttributeConfig {
+  public bind(): AttributeConfig {
     return {
       dataType: 'Boolean',
       mutable: this.mutable,
@@ -303,14 +303,14 @@ export class BooleanAttribute implements ICustomAttribute {
 /**
  * The DateTime custom attribute type.
  */
-export class DateTimeAttribute implements ICustomAttribute {
+export class DateTimeAttribute implements IAttribute {
   private readonly mutable?: boolean;
 
-  constructor(props: CustomAttributeProps = {}) {
+  constructor(props: AttributeProps = {}) {
     this.mutable = props?.mutable;
   }
 
-  public bind(): CustomAttributeConfig {
+  public bind(): AttributeConfig {
     return {
       dataType: 'DateTime',
       mutable: this.mutable,

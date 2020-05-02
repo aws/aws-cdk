@@ -1,0 +1,1 @@
+{"moduleFileExtensions":["js"],"testEnvironment":"node","coverageThreshold":{"global":{"branches":80,"statements":80}},"collectCoverage":true,"coverageReporters":["lcov","html","text-summary"],"coveragePathIgnorePatterns":["<rootDir>/lib/.*\\.generated.js"]}

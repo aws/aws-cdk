@@ -27,8 +27,8 @@ const userpool = new UserPool(stack, 'myuserpool', {
     phone: true,
   },
   requiredAttributes: {
-    fullname: true,
-    email: true,
+    fullname: new StringAttribute(),
+    email: new StringAttribute(),
   },
   customAttributes: {
     'some-string-attr': new StringAttribute(),

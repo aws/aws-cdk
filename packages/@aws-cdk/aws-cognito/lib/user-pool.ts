@@ -2,8 +2,8 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { IAttribute, RequiredAttributes } from './user-pool-attr';
+import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
@@ -465,7 +465,7 @@ export interface UserPoolProps {
    *
    * @default - No custom attributes.
    */
-  readonly customAttributes?: { [key: string]: ICustomAttribute };
+  readonly customAttributes?: { [key: string]: IAttribute };
 
   /**
    * Configure whether users of this user pool can or are required use MFA to sign in.
@@ -605,7 +605,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -848,51 +848,26 @@ export class UserPool extends UserPoolBase {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
     if (props.requiredAttributes) {
-      const stdAttributes: StandardAttribute[] = [];
+      const stdAttributes = Object.keys(props.requiredAttributes)
+        .filter(
+          attrName =>
+            !!props.requiredAttributes![attrName as keyof RequiredAttributes],
+        )
+        .map(attrName =>
+          this.renderAttribute(
+            StandardAttributeMap[attrName as keyof RequiredAttributes],
+            props.requiredAttributes![attrName as keyof RequiredAttributes]!,
+          ),
+        )
+        .map(attrProp => ({ ...attrProp, required: true }));
 
-      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
-      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
-      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
-      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
-      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
-      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
-      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
-      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
-      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
-      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
-      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
-      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
-      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
-      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
-      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
-      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
-      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
-
-      schema.push(...stdAttributes.map((attr) => {
-        return { name: attr, required: true };
-      }));
+      schema.push(...stdAttributes);
     }
 
     if (props.customAttributes) {
-      const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
-        const attrConfig = props.customAttributes![attrName].bind();
-        const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
-          minValue: attrConfig.numberConstraints?.min?.toString(),
-          maxValue: attrConfig.numberConstraints?.max?.toString(),
-        };
-        const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
-          minLength: attrConfig.stringConstraints?.minLen?.toString(),
-          maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
-        };
-
-        return {
-          name: attrName,
-          attributeDataType: attrConfig.dataType,
-          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
-          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
-          mutable: attrConfig.mutable,
-        };
-      });
+      const customAttrs = Object.keys(props.customAttributes).map(attrName =>
+        this.renderAttribute(attrName, props.customAttributes![attrName]),
+      );
       schema.push(...customAttrs);
     }
 
@@ -900,6 +875,33 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
     return schema;
+  }
+
+  private renderAttribute(
+    name: string,
+    attribute: IAttribute,
+  ): CfnUserPool.SchemaAttributeProperty {
+    const attrConfig = attribute.bind();
+    const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
+      minValue: attrConfig.numberConstraints?.min?.toString(),
+      maxValue: attrConfig.numberConstraints?.max?.toString(),
+    };
+    const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
+      minLength: attrConfig.stringConstraints?.minLen?.toString(),
+      maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
+    };
+
+    return {
+      name,
+      attributeDataType: attrConfig.dataType,
+      numberAttributeConstraints: attrConfig.numberConstraints
+        ? numberConstraints
+        : undefined,
+      stringAttributeConstraints: attrConfig.stringConstraints
+        ? stringConstraints
+        : undefined,
+      mutable: attrConfig.mutable,
+    };
   }
 }
 
@@ -922,6 +924,29 @@ const enum StandardAttribute {
   LAST_UPDATE_TIME = 'updated_at',
   WEBSITE = 'website',
 }
+
+const StandardAttributeMap: Record<
+keyof RequiredAttributes,
+StandardAttribute
+> = {
+  address: StandardAttribute.ADDRESS,
+  birthdate: StandardAttribute.BIRTHDATE,
+  email: StandardAttribute.EMAIL,
+  familyName: StandardAttribute.FAMILY_NAME,
+  gender: StandardAttribute.GENDER,
+  givenName: StandardAttribute.GIVEN_NAME,
+  locale: StandardAttribute.LOCALE,
+  middleName: StandardAttribute.MIDDLE_NAME,
+  fullname: StandardAttribute.NAME,
+  nickname: StandardAttribute.NICKNAME,
+  phoneNumber: StandardAttribute.PHONE_NUMBER,
+  profilePicture: StandardAttribute.PICTURE_URL,
+  preferredUsername: StandardAttribute.PREFERRED_USERNAME,
+  profilePage: StandardAttribute.PROFILE_URL,
+  timezone: StandardAttribute.TIMEZONE,
+  lastUpdateTime: StandardAttribute.LAST_UPDATE_TIME,
+  website: StandardAttribute.WEBSITE,
+};
 
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
