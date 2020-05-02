@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/jest": "^25.2.1",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.2",
+    "jest": "^25.5.3",
     "pkglint": "0.0.0",
     "ts-jest": "^25.4.0"
   },
@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "jest": "^25.5.2",
+    "jest": "^25.5.3",
     "constructs": "^3.0.2"
   },
   "repository": {
