@@ -8,103 +8,103 @@ export interface RequiredAttributes {
    * Whether the user's postal address is a required attribute.
    * @default - Attribute is not required
    */
-  readonly address?: StringAttribute;
+  readonly address?: StandardAttribute;
 
   /**
    * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
    * @default - Attribute is not required
    */
-  readonly birthdate?: StringAttribute;
+  readonly birthdate?: StandardAttribute;
 
   /**
    * Whether the user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
    * @default - Attribute is not required
    */
-  readonly email?: StringAttribute;
+  readonly email?: StandardAttribute;
 
   /**
    * Whether the surname or last name of the user is a required attribute.
    * @default - Attribute is not required
    */
-  readonly familyName?: StringAttribute;
+  readonly familyName?: StandardAttribute;
 
   /**
    * Whether the user's gender is a required attribute.
    * @default - Attribute is not required
    */
-  readonly gender?: StringAttribute;
+  readonly gender?: StandardAttribute;
 
   /**
    * Whether the user's first name or give name is a required attribute.
    * @default - Attribute is not required
    */
-  readonly givenName?: StringAttribute;
+  readonly givenName?: StandardAttribute;
 
   /**
    * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
    * @default - Attribute is not required
    */
-  readonly locale?: StringAttribute;
+  readonly locale?: StandardAttribute;
 
   /**
    * Whether the user's middle name is a required attribute.
    * @default - Attribute is not required
    */
-  readonly middleName?: StringAttribute;
+  readonly middleName?: StandardAttribute;
 
   /**
    * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
    * @default - Attribute is not required
    */
-  readonly fullname?: StringAttribute;
+  readonly fullname?: StandardAttribute;
 
   /**
    * Whether the user's nickname or casual name is a required attribute.
    * @default - Attribute is not required
    */
-  readonly nickname?: StringAttribute;
+  readonly nickname?: StandardAttribute;
 
   /**
    * Whether the user's telephone number is a required attribute.
    * @default - Attribute is not required
    */
-  readonly phoneNumber?: StringAttribute;
+  readonly phoneNumber?: StandardAttribute;
 
   /**
    * Whether the URL to the user's profile picture is a required attribute.
    * @default - Attribute is not required
    */
-  readonly profilePicture?: StringAttribute;
+  readonly profilePicture?: StandardAttribute;
 
   /**
    * Whether the user's preffered username, different from the immutable user name, is a required attribute.
    * @default - Attribute is not required
    */
-  readonly preferredUsername?: StringAttribute;
+  readonly preferredUsername?: StandardAttribute;
 
   /**
    * Whether the URL to the user's profile page is a required attribute.
    * @default - Attribute is not required
    */
-  readonly profilePage?: StringAttribute;
+  readonly profilePage?: StandardAttribute;
 
   /**
    * Whether the user's time zone is a required attribute.
    * @default - Attribute is not required
    */
-  readonly timezone?: StringAttribute;
+  readonly timezone?: StandardAttribute;
 
   /**
    * Whether the time, the user's information was last updated, is a required attribute.
    * @default - Attribute is not required
    */
-  readonly lastUpdateTime?: NumberAttribute;
+  readonly lastUpdateTime?: StandardAttribute;
 
   /**
    * Whether the URL to the user's web page or blog is a required attribute.
    * @default - Attribute is not required
    */
-  readonly website?: StringAttribute;
+  readonly website?: StandardAttribute;
 }
 
 /**
@@ -126,8 +126,9 @@ export interface AttributeConfig {
    * The data type of the custom attribute.
    *
    * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html#CognitoUserPools-Type-SchemaAttributeType-AttributeDataType
+   * @default - None.
    */
-  readonly dataType: string;
+  readonly dataType?: string;
   // tslint:enable:max-line-length
 
   /**
@@ -154,7 +155,7 @@ export interface AttributeConfig {
 }
 
 /**
- * Constraints that can be applied to a custom attribute of any type.
+ * Constraints that can be applied to a attribute of any type.
  */
 export interface AttributeProps {
   /**
@@ -166,6 +167,29 @@ export interface AttributeProps {
    * @default false
    */
   readonly mutable?: boolean
+}
+
+/**
+ * A Standard attribute
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
+ */
+export class StandardAttribute implements IAttribute {
+  /**
+   * Returns a mutable StandardAttribute.
+   */
+  public static asMutable(): StandardAttribute {
+    return new StandardAttribute({ mutable: true });
+  }
+
+  private readonly mutable?: boolean;
+
+  constructor(props: AttributeProps = {}) {
+    this.mutable = props.mutable;
+  }
+
+  public bind(): AttributeConfig {
+    return { mutable: this.mutable };
+  }
 }
 
 /**

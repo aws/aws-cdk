@@ -780,12 +780,10 @@
         },
         "Schema": [
           {
-            "AttributeDataType": "String",
             "Name": "name",
             "Required": true
           },
           {
-            "AttributeDataType": "String",
             "Name": "email",
             "Required": true
           },

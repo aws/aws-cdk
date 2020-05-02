@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { AttributeConfig, BooleanAttribute, DateTimeAttribute, IAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { AttributeConfig, BooleanAttribute, DateTimeAttribute, IAttribute, NumberAttribute, StandardAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
 
@@ -7,6 +7,7 @@ describe('User Pool Attributes', () => {
     test('default', () => {
       // GIVEN
       const allAttributes: IAttribute[] = [
+        new StandardAttribute(),
         new StringAttribute(),
         new NumberAttribute(),
         new BooleanAttribute(),
@@ -28,6 +29,7 @@ describe('User Pool Attributes', () => {
         mutable: true,
       };
       const allAttributeTypes: IAttribute[] = [
+        new StandardAttribute(allTrueProps),
         new StringAttribute(allTrueProps),
         new NumberAttribute(allTrueProps),
         new BooleanAttribute(allTrueProps),
@@ -51,6 +53,7 @@ describe('User Pool Attributes', () => {
         mutable: false,
       };
       const allAttributeTypes: IAttribute[] = [
+        new StandardAttribute(allFalseProps),
         new StringAttribute(allFalseProps),
         new NumberAttribute(allFalseProps),
         new BooleanAttribute(allFalseProps),
@@ -133,6 +136,36 @@ describe('User Pool Attributes', () => {
         max: 600,
       });
       expect(bound.stringConstraints).toBeUndefined();
+    });
+  });
+
+  describe('StandardAttribute', () => {
+    test('default', () => {
+      // GIVE
+      const attr = new StandardAttribute();
+
+      // WHEN
+      const bound = attr.bind();
+
+      // THEN
+      expect(bound.dataType).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
+      expect(bound.mutable).toBeUndefined();
+    });
+
+    test('asMutable', () => {
+      // GIVE
+      const attr = StandardAttribute.asMutable();
+
+      // WHEN
+      const bound = attr.bind();
+
+      // THEN
+      expect(bound.dataType).toBeUndefined();
+      expect(bound.stringConstraints).toBeUndefined();
+      expect(bound.numberConstraints).toBeUndefined();
+      expect(bound.mutable).toBeTruthy();
     });
   });
 

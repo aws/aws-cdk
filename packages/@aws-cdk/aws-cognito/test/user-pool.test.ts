@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { Mfa, NumberAttribute, StandardAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -491,8 +491,8 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       requiredAttributes: {
-        fullname: new StringAttribute(),
-        timezone: new StringAttribute(),
+        fullname: new StandardAttribute(),
+        timezone: new StandardAttribute(),
       },
     });
 
@@ -504,6 +504,35 @@ describe('User Pool', () => {
           Required: true,
         },
         {
+          Name: 'zoneinfo',
+          Required: true,
+        },
+      ],
+    });
+  });
+
+  test('mutable required attributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      requiredAttributes: {
+        fullname: new StandardAttribute({ mutable: true }),
+        timezone: new StandardAttribute({ mutable: true }),
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Mutable: true,
+          Name: 'name',
+          Required: true,
+        },
+        {
+          Mutable: true,
           Name: 'zoneinfo',
           Required: true,
         },
