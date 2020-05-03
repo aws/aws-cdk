@@ -400,10 +400,11 @@ pool.addClient('app-client', {
 });
 ```
 
-For each client you should specify wich user attributes it will be able to read or write.
-The default behavior is to allow read and write of all attribute, but it is often not the best option.
-For example, in a webapp there might be a `customerPlan` custom attribute to store the user's plan (`free`, `silver` 
-or `gold`) but only some clients (i.e. those used by the invoice system) should be allowed to change its value.
+Clients can be configured so that only specific user attributes can be read or modified by it.
+The default behavior is to allow read and write all available attributes, but it is often not the best option.
+For example, consider a webapp that contains a custom attribute `customerPlan` to store the user's pricing plan
+where only some clients, such as the administrators, should be allowed to change this value. Read more about [Attribute
+Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
 
 ```ts
 const pool = new UserPool(this, 'Pool');
