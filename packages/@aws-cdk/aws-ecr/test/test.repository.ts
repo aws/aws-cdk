@@ -28,6 +28,18 @@ export = {
     test.done();
   },
 
+  'repository creation with imageScanOnPush creates custom resource'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::ECRImageScanOnPush'));
+    test.done();
+  },
+
   'tag-based lifecycle policy'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
