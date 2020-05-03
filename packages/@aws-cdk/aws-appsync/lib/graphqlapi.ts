@@ -193,8 +193,15 @@ export class GraphQLApi extends Construct {
    * underlying CFN schema resource
    */
   public readonly schema: CfnGraphQLSchema;
+  /**
+   * the configured API key, if present
+   */
+  public get apiKey(): string | undefined {
+    return this._apiKey;
+  }
 
   private api: CfnGraphQLApi;
+  private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -325,11 +332,12 @@ export class GraphQLApi extends Construct {
       }
       expires = Math.round(expires / 1000);
     }
-    new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+    const key = new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
       expires,
       description: akConfig.apiKeyDesc,
       apiId: this.apiId,
     });
+    this._apiKey = key.attrApiKey;
     return { authenticationType: 'API_KEY' };
   }
 }
