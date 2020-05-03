@@ -46,14 +46,6 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "test/function.test.handler2.js",
-        "test/integ-handlers/js-handler.js"
-      ]
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -88,6 +80,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "fs-extra": "^8.1.0",
+    "parcel-bundler": "^1.12.4",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -102,7 +95,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
