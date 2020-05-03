@@ -185,6 +185,13 @@ export interface CommonAutoScalingGroupProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * The maximum amount of time that an instance can be in service.
+   *
+   * @default none
+   */
+  readonly maxInstanceLifetime?: Duration;
 }
 
 /**
@@ -410,6 +417,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * indicates that this group uses on-demand capacity.
    */
   public readonly spotPrice?: string;
+  
+  /**
+   * The maximum amount of time that an instance can be in service.
+   */
+  public readonly maxInstanceLifetime?: Duration
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
@@ -491,6 +503,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (desiredCapacity !== undefined) {
       this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
+    
+    this.maxInstanceLifetime = props.maxInstanceLifetime ? props.maxInstanceLifetime : undefined;
+    if(this.maxInstanceLifetime && 
+      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)')
+    }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
@@ -515,6 +533,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
+      maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {

@@ -454,6 +454,7 @@
         "LaunchConfigurationName": {
           "Ref": "FleetLaunchConfig59F79D36"
         },
+        "MaxInstanceLifetime": 604800,
         "Tags": [
           {
             "Key": "Name",
