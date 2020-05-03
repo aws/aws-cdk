@@ -16,5 +16,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import fsx = require('@aws-cdk/aws-fsx');
+import * as fsx from '@aws-cdk/aws-fsx';
 ```
