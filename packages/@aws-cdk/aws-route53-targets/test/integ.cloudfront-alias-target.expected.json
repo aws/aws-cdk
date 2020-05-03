@@ -26,9 +26,9 @@
       }
     },
     "Bucket83908E77": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyDistributionCFDistributionDE147309": {
       "Type": "AWS::CloudFront::Distribution",
@@ -43,6 +43,7 @@
               "GET",
               "HEAD"
             ],
+            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -50,8 +51,7 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https",
-            "Compress": true
+            "ViewerProtocolPolicy": "redirect-to-https"
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
