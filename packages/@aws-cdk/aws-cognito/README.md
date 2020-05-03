@@ -409,11 +409,13 @@ Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguid
 ```ts
 const pool = new UserPool(this, 'Pool');
 pool.addClient('webapp-client', {
-  readAttributes: undefined, // by default all attributes are readable/writable
+  readAttributes: {
+    standard: [StandardAttribute.NICKNAME, StandardAttribute.EMAIL, StandardAttribute.NAME],
+    custom: ['customerPlan'],
+  },
   writeAttributes: {
     standard: [StandardAttribute.NICKNAME],
-    custom: ['bio'],
-  }, // only the nickname and the bio are writable
+  }, // only the nickname will be writable
 });
 ```
 
