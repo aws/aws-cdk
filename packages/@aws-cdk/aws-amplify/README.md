@@ -18,9 +18,9 @@ The AWS Amplify Console provides a Git-based workflow for deploying and hosting 
 ### Setting up an app with branches, custom rules and a domain
 To set up an Amplify Console app, define an `App`:
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import amplify = require('@aws-cdk/aws-amplify');
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as amplify from '@aws-cdk/aws-amplify';
+import * as cdk from '@aws-cdk/core';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
