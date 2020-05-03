@@ -419,6 +419,11 @@ pool.addClient('webapp-client', {
 });
 ```
 
+The default behavior of allowing read/write of all attributes is enforced at Client creation, and only those
+attributes available at that time will be included.
+If any attribute is added to the User Pool after the creation of the Client, that attribute will not be
+available unless explicitly specified.
+
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
