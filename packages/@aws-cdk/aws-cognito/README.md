@@ -258,6 +258,21 @@ new UserPool(this, 'myuserpool', {
 
 Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
 
+#### Advanced Security
+
+User ppols can be configured Advanced security. It can be turned on or used audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publishes metrics to Amazon CloudWatch. 
+See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to
+learn more.
+
+```ts
+new UserPool(this, 'myuserpool', {
+  // ...
+  UserPoolAddOns: {
+    AdvancedSecurityMode: 'ENFORCED',
+  },
+});
+```
+
 ### Emails
 
 Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
