@@ -760,7 +760,7 @@ export = {
 
     test.done();
   },
-  
+
   'can configure maxInstanceLifetime'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -774,12 +774,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      "MaxInstanceLifetime": 604800,
+      'MaxInstanceLifetime': 604800,
     }));
 
     test.done();
   },
-  
+
   'throws if maxInstanceLifetime < 7 days'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -797,7 +797,7 @@ export = {
 
     test.done();
   },
-  
+
   'throws if maxInstanceLifetime > 365 days'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
