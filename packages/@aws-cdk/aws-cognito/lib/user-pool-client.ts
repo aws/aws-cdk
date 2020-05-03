@@ -176,22 +176,20 @@ export interface UserPoolClientOptions {
 
   /**
    * The attributes this client will be able to read.
-   *
    * This should be used to restrict the attributes the client will be
    * able to read.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    *
-   * @default undefined all attributes are readable
+   * @default - all attributes are readable
    */
   readonly readAttributes?: UserPoolClientAttributes;
 
   /**
    * The attributes this client will be able to write.
-   *
    * This should be used to restrict the attributes the client will be able to write,
-   * e.g. the client used by a webapp should not be able to set the `customerPlan` attribute,
-   * while the client used by the billing backend should.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    *
-   * @default undefined all attributes are writable
+   * @default - all attributes are writable
    */
   readonly writeAttributes?: UserPoolClientAttributes;
 }
@@ -211,8 +209,6 @@ export interface UserPoolClientAttributes {
    * A list of custom attributes.
    *
    * @note You don't need to prepend them with `custom:`
-   *
-   * @example customerPlan
    *
    * @default []
    */
