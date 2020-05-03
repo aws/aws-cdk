@@ -41,11 +41,11 @@ The example below defines a *CDK App* that contains 3 stacks:
 #### `index.ts`
 
 ```typescript
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
-import cdk = require('@aws-cdk/core');
-import cicd = require('@aws-cdk/app-delivery');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as cdk from '@aws-cdk/core';
+import * as cicd from '@aws-cdk/app-delivery';
 
 const app = new cdk.App();
 
