@@ -256,34 +256,6 @@ export interface ClusterProps extends ClusterOptions {
  * The user is still required to create the worker nodes.
  */
 export class Cluster extends Resource implements ICluster {
-
-  /**
-   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
-   */
-  public get awsAuth() {
-    if (!this.kubectlEnabled) {
-      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
-    }
-
-    if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
-    }
-
-    return this._awsAuth;
-  }
-
-  /**
-   * Returns the custom resource provider for kubectl-related resources.
-   * @internal
-   */
-  public get _kubectlProvider(): KubectlProvider {
-    if (!this._clusterResource) {
-      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
-    }
-
-    const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
-  }
   /**
    * Import an existing cluster
    *
@@ -632,6 +604,21 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
+   */
+  public get awsAuth() {
+    if (!this.kubectlEnabled) {
+      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
+    }
+
+    if (!this._awsAuth) {
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
+    }
+
+    return this._awsAuth;
+  }
+
+  /**
    * Defines a Kubernetes resource in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
@@ -685,6 +672,19 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._clusterResource.getCreationRoleArn(assumedBy);
+  }
+
+  /**
+   * Returns the custom resource provider for kubectl-related resources.
+   * @internal
+   */
+  public get _kubectlProvider(): KubectlProvider {
+    if (!this._clusterResource) {
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
+    }
+
+    const uid = '@aws-cdk/aws-eks.KubectlProvider';
+    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
   }
 
   /**
