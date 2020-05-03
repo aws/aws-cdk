@@ -256,6 +256,34 @@ export interface ClusterProps extends ClusterOptions {
  * The user is still required to create the worker nodes.
  */
 export class Cluster extends Resource implements ICluster {
+
+  /**
+   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
+   */
+  public get awsAuth() {
+    if (!this.kubectlEnabled) {
+      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
+    }
+
+    if (!this._awsAuth) {
+      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
+    }
+
+    return this._awsAuth;
+  }
+
+  /**
+   * Returns the custom resource provider for kubectl-related resources.
+   * @internal
+   */
+  public get _kubectlProvider(): KubectlProvider {
+    if (!this._clusterResource) {
+      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
+    }
+
+    const uid = '@aws-cdk/aws-eks.KubectlProvider';
+    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+  }
   /**
    * Import an existing cluster
    *
@@ -341,6 +369,8 @@ export class Cluster extends Resource implements ICluster {
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
+
+  private _spotInterruptHandler?: HelmChart;
 
   private readonly version: string | undefined;
 
@@ -597,31 +627,8 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.7.3',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
-        },
-      });
+      this.addSpotInterruptHandler();
     }
-  }
-
-  /**
-   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
-   */
-  public get awsAuth() {
-    if (!this.kubectlEnabled) {
-      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
-    }
-
-    if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
-    }
-
-    return this._awsAuth;
   }
 
   /**
@@ -681,16 +688,23 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Returns the custom resource provider for kubectl-related resources.
-   * @internal
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
    */
-  public get _kubectlProvider(): KubectlProvider {
-    if (!this._clusterResource) {
-      throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
+  private addSpotInterruptHandler() {
+    if (!this._spotInterruptHandler) {
+      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
+      });
     }
 
-    const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+    return this._spotInterruptHandler;
   }
 
   /**
