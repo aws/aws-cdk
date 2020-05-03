@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import eventschemas = require('@aws-cdk/aws-eventschemas');
+import * as eventschemas from '@aws-cdk/aws-eventschemas';
 ```
