@@ -1,3 +1,90 @@
+# CloudFormation Resource Specification v14.0.0
+
+## New Resource Types
+
+* AWS::CE::CostCategory
+* AWS::Synthetics::Canary
+
+## Attribute Changes
+
+* AWS::FSx::FileSystem LustreMountName (__added__)
+
+## Property Changes
+
+* AWS::ResourceGroups::Group Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::StepFunctions::StateMachine TracingConfiguration (__deleted__)
+* AWS::Transfer::Server Certificate (__added__)
+* AWS::Transfer::Server Protocols (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::StateMachine.TracingConfiguration (__removed__)
+* AWS::Transfer::Server.Protocol (__added__)
+* AWS::WAFv2::RuleGroup.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::WebACL.ByteMatchStatement SearchString.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v13.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBCluster DeletionProtection (__added__)
+* AWS::MediaConvert::JobTemplate HopDestinations (__added__)
+
+## Property Type Changes
+
+* AWS::LakeFormation::Permissions.ColumnWildcard (__added__)
+* AWS::LakeFormation::Permissions.DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.TableWithColumnsResource (__added__)
+* AWS::MediaConvert::JobTemplate.HopDestination (__added__)
+* AWS::SSM::PatchBaseline.PatchStringDate (__added__)
+* AWS::LakeFormation::Permissions.Resource DataLocationResource (__added__)
+* AWS::LakeFormation::Permissions.Resource TableWithColumnsResource (__added__)
+* AWS::SSM::PatchBaseline.Rule ApproveUntilDate (__added__)
+
+
+# CloudFormation Resource Specification v12.3.0
+
+## New Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Glue::DevEndpoint PublicKeys (__added__)
+* AWS::Glue::MLTransform Tags (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v12.2.0
 
 ## New Resource Types

@@ -50,6 +50,9 @@
   "cdk-build": {
     "cloudformation": "AWS::AppMesh"
   },
+  "nyc": {
+    "statements": 75
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -77,17 +80,17 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "awslint": {
     "exclude": [

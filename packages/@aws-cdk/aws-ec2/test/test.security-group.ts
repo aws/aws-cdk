@@ -18,8 +18,8 @@ export = {
         {
           CidrIp: '0.0.0.0/0',
           Description: 'Allow all outbound traffic by default',
-          IpProtocol: '-1'
-        }
+          IpProtocol: '-1',
+        },
       ],
     }));
 
@@ -41,7 +41,7 @@ export = {
         {
           CidrIp: '0.0.0.0/0',
           Description: 'Allow all outbound traffic by default',
-          IpProtocol: '-1'
+          IpProtocol: '-1',
         },
       ],
     }));
@@ -65,8 +65,8 @@ export = {
           Description: 'Disallow all traffic',
           FromPort: 252,
           IpProtocol: 'icmp',
-          ToPort: 86
-        }
+          ToPort: 86,
+        },
       ],
     }));
 
@@ -90,8 +90,8 @@ export = {
           Description: 'This replaces the other one',
           FromPort: 86,
           IpProtocol: 'tcp',
-          ToPort: 86
-        }
+          ToPort: 86,
+        },
       ],
     }));
 
@@ -128,8 +128,8 @@ export = {
           Description: 'This rule was not added',
           FromPort: 86,
           IpProtocol: 'tcp',
-          ToPort: 86
-        }
+          ToPort: 86,
+        },
       ],
     })));
 
@@ -140,8 +140,8 @@ export = {
           Description: 'This rule was not added',
           FromPort: 86,
           IpProtocol: 'tcp',
-          ToPort: 86
-        }
+          ToPort: 86,
+        },
       ],
     })));
 
@@ -174,7 +174,7 @@ export = {
       Port.icmpType(8),
       Port.allIcmp(),
       Port.icmpPing(),
-      Port.allTraffic()
+      Port.allTraffic(),
     ];
 
     // WHEN
@@ -291,6 +291,6 @@ export = {
       }, /IDR mask is missing in IPv6/);
 
       test.done();
-    }
-  }
+    },
+  },
 };

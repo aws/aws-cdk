@@ -837,6 +837,8 @@
           }
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
+        "IpcMode": "host",
+        "PidMode": "task",
         "NetworkMode": "awsvpc",
         "ProxyConfiguration": {
           "ContainerName": "envoy",

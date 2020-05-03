@@ -70,7 +70,7 @@ export = testCase({
       test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [ ] }})), { xoo: [] });
       test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [ undefined, undefined ] }})), { xoo: [] });
       test.done();
-    }
+    },
   },
 
   'filterUnderined': {
@@ -82,7 +82,7 @@ export = testCase({
     'removes undefined, but leaves the rest'(test: Test) {
       test.deepEqual(filterUndefined({ 'an undefined': undefined, 'yes': true }), { yes: true });
       test.done();
-    }
+    },
   },
 
   'pathToTopLevelStack returns the array of stacks that lead to a stack'(test: Test) {
@@ -134,7 +134,7 @@ export = testCase({
       if (!res) { return undefined; }
       return res.node.id;
     }
-  }
+  },
 });
 
 class SomeToken {

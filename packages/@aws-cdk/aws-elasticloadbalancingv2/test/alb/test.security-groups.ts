@@ -14,7 +14,7 @@ export = {
     // WHEN
     fixture.listener.addTargets('TargetGroup', {
       port: 8008,
-      targets: [target]
+      targets: [target],
     });
 
     // THEN
@@ -32,7 +32,7 @@ export = {
     // WHEN
     fixture.listener.addTargets('TargetGroup1', {
       port: 80,
-      targets: [target1]
+      targets: [target1],
     });
 
     fixture.listener.addTargetGroups('Rule', {
@@ -41,8 +41,8 @@ export = {
       targetGroups: [new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup2', {
         vpc: fixture.vpc,
         port: 8008,
-        targets: [target2]
-      })]
+        targets: [target2],
+      })],
     });
 
     // THEN
@@ -60,16 +60,16 @@ export = {
     const group = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
       vpc: fixture.vpc,
       port: 8008,
-      targets: [target]
+      targets: [target],
     });
 
     fixture.listener.addTargetGroups('Default', {
-      targetGroups: [group]
+      targetGroups: [group],
     });
     fixture.listener.addTargetGroups('WithPath', {
       priority: 10,
       pathPattern: '/hello',
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // THEN
@@ -83,10 +83,10 @@ export = {
     const fixture = new TestFixture();
     const group = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
       vpc: fixture.vpc,
-      port: 8008
+      port: 8008,
     });
     fixture.listener.addTargetGroups('Default', {
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // WHEN
@@ -126,7 +126,7 @@ export = {
       listener: fixture.listener,
       targetGroups: [childGroup],
       priority: 100,
-      hostHeader: 'www.foo.com'
+      hostHeader: 'www.foo.com',
     });
 
     // THEN
@@ -187,7 +187,7 @@ export = {
       // Must be a non-default target
       priority: 10,
       hostHeader: 'example.com',
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // THEN
@@ -212,8 +212,8 @@ export = {
           Description: 'Open to the world',
           FromPort: 80,
           IpProtocol: 'tcp',
-          ToPort: 80
-        }
+          ToPort: 80,
+        },
       ],
     }));
 
@@ -228,7 +228,7 @@ export = {
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       listenerArn: 'listener-arn',
       securityGroupId: 'imported-security-group-id',
-      defaultPort: 8080
+      defaultPort: 8080,
     });
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
@@ -239,7 +239,7 @@ export = {
       IpProtocol: 'tcp',
       FromPort: 8080,
       ToPort: 8080,
-      GroupId: 'imported-security-group-id'
+      GroupId: 'imported-security-group-id',
     }));
 
     test.done();
@@ -264,7 +264,7 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
     Description: 'Load balancer to target',
     DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     FromPort: 8008,
-    ToPort: 8008
+    ToPort: 8008,
   }));
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
     IpProtocol: 'tcp',
@@ -272,7 +272,7 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
     FromPort: 8008,
     GroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     SourceSecurityGroupId: lbGroup,
-    ToPort: 8008
+    ToPort: 8008,
   }));
 }
 
@@ -287,7 +287,7 @@ class TestFixture {
     this.app = new cdk.App();
     this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
-      maxAzs: 2
+      maxAzs: 2,
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 

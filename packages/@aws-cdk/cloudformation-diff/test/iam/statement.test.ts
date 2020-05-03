@@ -8,7 +8,7 @@ test('can parse all positive fields', () => {
     Resource: ['resource'],
     Action: ['action'],
     Principal: [{AWS: 'arn'}],
-    Condition: { StringEquals: { 'Amzn-This': 'That' } }
+    Condition: { StringEquals: { 'Amzn-This': 'That' } },
   });
 
   expect(statement.sid).toEqual('Sid');
@@ -25,7 +25,7 @@ test('can parse all positive fields', () => {
 
 test('parses strings as singleton lists', () => {
   const statement = new Statement({
-    Resource: 'resource'
+    Resource: 'resource',
   });
 
   expect(statement.resources.values).toEqual(['resource']);
@@ -57,7 +57,7 @@ test('parse all LambdaPermission fields', () => {
   expect(statement.principals.values).toEqual(['*']);
   expect(statement.condition).toEqual({
     ArnLike: { 'AWS:SourceArn': 'arn' },
-    StringEquals: { 'AWS:SourceAccount': '123456789012', },
+    StringEquals: { 'AWS:SourceAccount': '123456789012' },
   });
 });
 
@@ -78,7 +78,7 @@ test('stringify complex condition', () => {
   // WHEN
   const stringified = renderCondition({
     StringEquals: { 'AWS:SourceAccount': '${AWS::AccountId}' },
-    ArnLike: { 'AWS:SourceArn': '${MyBucket.Arn}' }
+    ArnLike: { 'AWS:SourceArn': '${MyBucket.Arn}' },
   }).split('\n');
 
   // THEN
@@ -123,7 +123,7 @@ test('equality is reflexive', () => {
   fc.assert(fc.property(
     arbitraryStatement, (statement) => {
       return new Statement(statement).equal(new Statement(statement));
-    }
+    },
   ));
 });
 
@@ -135,7 +135,7 @@ test('equality is symmetric', () => {
 
       fc.pre(a.equal(b));
       return b.equal(a);
-    }
+    },
   ));
 });
 
@@ -149,7 +149,7 @@ const arbitraryPrincipal = fc.oneof<any>(
   fc.constant('*'),
   fc.record({ AWS: fc.oneof(fc.string(), fc.constant('*')) }),
   fc.record({ Service: fc.string() }),
-  fc.record({ Federated: fc.string() })
+  fc.record({ Federated: fc.string() }),
 );
 const arbitraryCondition = fc.oneof(
   fc.constant(undefined),
@@ -166,7 +166,7 @@ const arbitraryStatement = fc.record({
   NotAction: fc.boolean(),
   Principal: fc.array(arbitraryPrincipal, 0, 2),
   NotPrincipal: fc.boolean(),
-  Condition: arbitraryCondition
+  Condition: arbitraryCondition,
 }).map(record => {
   // This map() that shuffles keys is the easiest way to create variation between Action/NotAction etc.
   makeNot(record, 'Resource', 'NotResource');

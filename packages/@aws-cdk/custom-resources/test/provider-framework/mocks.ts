@@ -84,7 +84,7 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
     }
 
     return {
-      Payload: stringifyPayload ? JSON.stringify(ret) : ret
+      Payload: stringifyPayload ? JSON.stringify(ret) : ret,
     };
   } catch (e) {
     return {
@@ -103,9 +103,9 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
           '    at /var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10',
           '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:38:9)',
           '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:685:12)',
-          '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)'
-        ]
-      })
+          '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)',
+        ],
+      }),
     };
   }
 }

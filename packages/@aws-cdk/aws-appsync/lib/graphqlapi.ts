@@ -221,7 +221,7 @@ export class GraphQLApi extends Construct {
           excludeVerboseContent: props.logConfig.excludeVerboseContent,
           fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
         },
-      }
+      },
     });
 
     this.apiId = this.api.attrApiId;
@@ -271,7 +271,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      table
+      table,
     });
   }
 
@@ -286,7 +286,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      lambdaFunction
+      lambdaFunction,
     });
   }
 
@@ -317,7 +317,7 @@ export class GraphQLApi extends Construct {
         userPoolId: upConfig.userPool.userPoolId,
         awsRegion: upConfig.userPool.stack.region,
         defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
-      }
+      },
     };
   }
 
@@ -417,12 +417,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct implements IGrantable {
-
-  /**
-   * the principal of the data source to be IGrantable
-   */
-  public readonly grantPrincipal: IPrincipal;
+export abstract class BaseDataSource extends Construct {
   /**
    * the name of the data source
    */
@@ -433,19 +428,20 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
   public readonly ds: CfnDataSource;
 
   protected api: GraphQLApi;
-  protected serviceRole: IRole;
+  protected serviceRole?: IRole;
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
 
-    this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
-    this.grantPrincipal = this.serviceRole;
+    if (extended.type !== 'NONE') {
+      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
+    }
 
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
       name: props.name,
       description: props.description,
-      serviceRoleArn: this.serviceRole.roleArn,
+      serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
     this.name = props.name;
@@ -462,7 +458,22 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
       ...props,
     });
   }
+}
 
+/**
+ * Abstract AppSync datasource implementation. Do not use directly but use subclasses for resource backed datasources
+ */
+export abstract class BackedDataSource extends BaseDataSource implements IGrantable {
+  /**
+   * the principal of the data source to be IGrantable
+   */
+  public readonly grantPrincipal: IPrincipal;
+
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
+    super(scope, id, props, extended);
+
+    this.grantPrincipal = this.serviceRole!;
+  }
 }
 
 /**
@@ -508,7 +519,7 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a DynamoDB table
  */
-export class DynamoDbDataSource extends BaseDataSource {
+export class DynamoDbDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
     super(scope, id, props, {
       type: 'AMAZON_DYNAMODB',
@@ -519,9 +530,9 @@ export class DynamoDbDataSource extends BaseDataSource {
       },
     });
     if (props.readOnlyAccess) {
-      props.table.grantReadData(this.serviceRole);
+      props.table.grantReadData(this);
     } else {
-      props.table.grantReadWriteData(this.serviceRole);
+      props.table.grantReadWriteData(this);
     }
   }
 }
@@ -539,7 +550,7 @@ export interface LambdaDataSourceProps extends BackedDataSourceProps {
 /**
  * An AppSync datasource backed by a Lambda function
  */
-export class LambdaDataSource extends BaseDataSource {
+export class LambdaDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
     super(scope, id, props, {
       type: 'AWS_LAMBDA',
@@ -547,7 +558,7 @@ export class LambdaDataSource extends BaseDataSource {
         lambdaFunctionArn: props.lambdaFunction.functionArn,
       },
     });
-    props.lambdaFunction.grantInvoke(this.serviceRole);
+    props.lambdaFunction.grantInvoke(this);
   }
 }
 

@@ -64,15 +64,15 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/jest": "^25.2.1",
-    "aws-sdk": "^2.656.0",
+    "aws-sdk": "^2.668.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.3.0",
+    "jest": "^25.5.4",
     "pkglint": "0.0.0",
     "sinon": "^9.0.2",
-    "ts-jest": "^25.3.1"
+    "ts-jest": "^25.4.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -82,7 +82,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -93,27 +93,12 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "stable",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-dynamodb.TableProps",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableName",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableStreamArn",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.Attribute",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.GlobalSecondaryIndexProps",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.LocalSecondaryIndexProps",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.SecondaryIndexProps",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.TableOptions",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.Table.tableArn",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.AttributeType",
-      "docs-public-apis:@aws-cdk/aws-dynamodb.ProjectionType"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
