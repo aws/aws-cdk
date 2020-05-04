@@ -216,74 +216,113 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   * `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
-
 ## Custom Resources
 
-Custom Resources are CloudFormation resources that are implemented by
-arbitrary user code. They can do arbitrary lookups or modifications
-during a CloudFormation synthesis run.
+Custom Resources are CloudFormation resources that are implemented by arbitrary
+user code. They can do arbitrary lookups or modifications during a
+CloudFormation deployment.
 
-You will typically use Lambda to implement a Construct implemented as a
-Custom Resource (though SNS topics can be used as well). Your Lambda function
-will be sent a `CREATE`, `UPDATE` or `DELETE` message, depending on the
-CloudFormation life cycle. It will perform whatever actions it needs to, and
-then return any number of output values which will be available as attributes
-of your Construct. In turn, those can be used as input to other Constructs in
-your model.
-
-In general, consumers of your Construct will not need to care whether
-it is implemented in term of other CloudFormation resources or as a
-custom resource.
-
-Note: when implementing your Custom Resource using a Lambda, use
-a `SingletonLambda` so that even if your custom resource is instantiated
-multiple times, the Lambda will only get uploaded once.
-
-### Example
-
-The following shows an example of a declaring Custom Resource that copies
-files into an S3 bucket during deployment (the implementation of the actual
-Lambda handler is elided for brevity).
+To define a custom resource, use the `CustomResource` construct:
 
 ```ts
-interface CopyOperationProps {
-  readonly sourceBucket: IBucket;
-  readonly targetBucket: IBucket;
-}
+import { CustomResource } from '@aws-cdk/core';
 
-class CopyOperation extends Construct {
-  constructor(parent: Construct, name: string, props: CopyOperationProps) {
-    super(parent, name);
+new CustomResource(this, 'MyMagicalResource', {
+  resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
 
-    const provider = new lambda.SingletonFunction(this, 'Provider', {
-      uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
-      runtime: lambda.Runtime.PYTHON_3_7,
-      code: lambda.Code.fromAsset('../copy-handler'),
-      handler: 'index.handler',
-      timeout: Duration.seconds(60),
-    });
+  // the resource properties
+  properties: {
+    Property1: 'foo',
+    Property2: 'bar'
+  },
 
-    new CustomResource(this, 'Resource', {
-      providerArn: provider.functionArn,
-      properties: {
-        sourceBucketArn: props.sourceBucket.bucketArn,
-        targetBucketArn: props.targetBucket.bucketArn,
-      },
-    });
-  }
-}
+  // the ARN of the provider (SNS/Lambda) which handles 
+  // CREATE, UPDATE or DELETE events for this resource type
+  // see next section for details
+  serviceToken: 'ARN'
+});
 ```
 
-The [aws-cdk-examples repository](https://github.com/aws-samples/aws-cdk-examples) has
-examples for adding custom resources.
+### Custom Resource Providers
 
-### References
+Custom resources are backed by a **custom resource provider** which can be
+implemented in one of the following ways (ordered from low-level to high-level):
 
-See the following section of the docs on details to write Custom Resources:
+* `@aws-cdk/aws-sns.Topic`
+* `@aws-cdk/aws-lambda.Function`
+* `@aws-cdk/custom-resources.Provider`
 
-* [Introduction](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html)
-* [Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref.html)
-* [Code Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
+#### Amazon SNS Topic
+
+Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
+is sent to the SNS topic. Users must process these notifications (e.g. through a
+fleet of worker hosts) and submit success/failure responses to the
+CloudFormation service. 
+
+Set `serviceToken` to `topic.topicArn`  in order to use this provider:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import { CustomResource } from '@aws-cdk/core';
+
+const topic = new sns.Topic(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: topic.topicArn
+});
+```
+
+#### AWS Lambda Function
+
+An AWS lambda function is called *directly* by CloudFormation for all resource
+events. The handler must take care of explicitly submitting a success/failure
+response to the CloudFormation service and handle various error cases. 
+
+Set `serviceToken` to `lambda.functionArn` to use this provider:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { CustomResource } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: lambda.functionArn
+});
+```
+
+#### The Custom Resource Provider Framework
+
+The [`@aws-cdk/custom-resource`] module includes an advanced framework for
+implementing custom resource providers.
+
+[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
+
+Handlers are implemented as AWS Lambda functions, which means that they can be
+implemented in any Lambda-supported runtime. Furthermore, this provider has an
+asynchronous mode, which means that users can provide an `isComplete` lambda
+function which is called periodically until the operation is complete. This
+allows implementing providers that can take up to two hours to stabilize. 
+
+Set `serviceToken` to `provider.serviceToken` to use this provider:
+
+```ts
+import { Provider } from 'custom-resources';
+
+const provider = new Provider(this, 'MyProvider', {
+  onEventHandler: onEventLambdaFunction,
+  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
+});
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: provider.serviceToken
+});
+```
+
+**NOTE**: when defining a custom resource provider, you will likely want to define
+it as a *stack singleton* so that only a single instance of the provider is
+created in your stack and which is used by all custom resources of that type.
+The following example shows a pattern for defining a stack singleton in the CDK.
 
 ## AWS CloudFormation features
 
