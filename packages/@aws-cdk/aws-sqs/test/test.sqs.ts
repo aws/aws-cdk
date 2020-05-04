@@ -272,6 +272,7 @@ export = {
             },
             {
               'Action': [
+                'kms:Decrypt',
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
                 'kms:GenerateDataKey*',
