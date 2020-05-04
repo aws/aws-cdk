@@ -14,5 +14,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const route53resolver = require('@aws-cdk/aws-route53resolver');
+import * as route53resolver from '@aws-cdk/aws-route53resolver';
 ```

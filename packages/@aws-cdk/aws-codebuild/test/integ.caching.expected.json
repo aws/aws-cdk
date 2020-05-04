@@ -1,9 +1,9 @@
 {
   "Resources": {
     "CacheBucket41D9D0B0": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
