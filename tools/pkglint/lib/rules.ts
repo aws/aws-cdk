@@ -822,7 +822,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0');
   }
 }
 
