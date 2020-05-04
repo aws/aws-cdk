@@ -24,6 +24,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
 
     new cdk.CustomResource(this, 'CfnCustomResource', {
       serviceToken: lambdaFunction.functionArn,
+      pascalCaseProperties: true,
       properties: {
         regions: props.regions,
         resourceType: 'Custom::DynamoGlobalTableCoordinator',
