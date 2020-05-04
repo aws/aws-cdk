@@ -69,11 +69,11 @@ export class LogQueryWidget extends ConcreteWidget {
     this.props = props;
 
     if (props.logGroupNames.length === 0) {
-      throw new Error(`Specify at least one log group name.`);
+      throw new Error('Specify at least one log group name.');
     }
 
     if (!!props.queryString === !!props.queryLines) {
-      throw new Error(`Specify exactly one of 'queryString' and 'queryLines'`);
+      throw new Error('Specify exactly one of \'queryString\' and \'queryLines\'`);
     }
   }
 
@@ -93,7 +93,7 @@ export class LogQueryWidget extends ConcreteWidget {
         view: 'table',
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
-        query: `${sources} | ${query}`
+        query: `${sources} | ${query}`,
       },
     }];
   }
