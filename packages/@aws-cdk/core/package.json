@@ -114,7 +114,6 @@
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
-    "integ": "cdk-integ",
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
@@ -155,7 +154,6 @@
     "@types/node": "^10.17.21",
     "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "fast-check": "^1.24.2",
     "lodash": "^4.17.15",

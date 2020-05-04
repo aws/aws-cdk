@@ -1,11 +1,11 @@
-import { App, CfnOutput, Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '../lib';
+import { App, CfnOutput, Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const provider = new CustomResourceProvider(this, 'MyResourceProvider', {
-      codeDirectory: `${__dirname}/custom-resource-provider-fixture`,
+      codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
