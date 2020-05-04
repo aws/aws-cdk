@@ -292,10 +292,10 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-                "kms:Decrypt"
+                "kms:GenerateDataKey*"
               ],
               "Condition": {
                 "ArnLike": {
