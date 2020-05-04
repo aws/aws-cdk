@@ -62,17 +62,7 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable {
   readonly instancePublicIp: string;
 }
 
-/**
- * Properties of an EC2 Instance
- */
-export interface InstanceProps {
-
-  /**
-   * Name of SSH keypair to grant access to instance
-   *
-   * @default - No SSH access will be possible.
-   */
-  readonly keyName?: string;
+interface InstanceProps extends InstanceBaseProps {
 
   /**
    * Where to place the instance within the VPC
@@ -87,6 +77,44 @@ export interface InstanceProps {
    * @default - Random zone.
    */
   readonly availabilityZone?: string;
+
+  /**
+   * The name of the instance
+   *
+   * @default - CDK generated name
+   */
+  readonly instanceName?: string;
+
+  /**
+   * Specifies whether to enable an instance launched in a VPC to perform NAT.
+   * This controls whether source/destination checking is enabled on the instance.
+   * A value of true means that checking is enabled, and false means that checking is disabled.
+   * The value must be false for the instance to perform NAT.
+   *
+   * @default - true
+   */
+  readonly sourceDestCheck?: boolean;
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string
+}
+/**
+ * Properties of an EC2 Instance
+ */
+export interface InstanceBaseProps {
+
+  /**
+   * Name of SSH keypair to grant access to instance
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyName?: string;
 
   /**
    * Whether the instance could initiate connections to anywhere by default.
@@ -152,23 +180,6 @@ export interface InstanceProps {
   readonly role?: iam.IRole;
 
   /**
-   * The name of the instance
-   *
-   * @default - CDK generated name
-   */
-  readonly instanceName?: string;
-
-  /**
-   * Specifies whether to enable an instance launched in a VPC to perform NAT.
-   * This controls whether source/destination checking is enabled on the instance.
-   * A value of true means that checking is enabled, and false means that checking is disabled.
-   * The value must be false for the instance to perform NAT.
-   *
-   * @default true
-   */
-  readonly sourceDestCheck?: boolean;
-
-  /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
    *
    * Each instance that is launched has an associated root device volume,
@@ -181,17 +192,68 @@ export interface InstanceProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
-
-  /**
-   * Defines a private IP address to associate with an instance.
-   *
-   * Private IP should be available within the VPC that the instance is build within.
-   *
-   * @default - no association
-   */
-  readonly privateIpAddress?: string
 }
 
+export interface LaunchTemplateProps extends InstanceBaseProps {
+
+  /**
+   * The market (purchasing) option for the instances.
+   */
+  readonly instanceMarketOptions?: string; // TODO: create type
+
+  /**
+   * The metadata options for the instance.
+   * Instance metadata is data about your instance that you can use to configure or manage the running instance.
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
+   */
+  readonly metadataOptions?: string; // TODO: create type
+
+  /**
+   * Instance's Capacity Reservation targeting option.
+   * @default - `open`, the instance will run in any open capacity reservation that has matching attributes
+   */
+  readonly capacityReservationSpecification?: string; // TODO: create type
+
+  /**
+   * The placement for the instance.
+   */
+  readonly placement?: string; // TODO: create type
+
+  /**
+   * The tags to apply to the resources during launch. You can only tag instances and volumes on launch.
+   * The specified tags are applied to all instances or volumes that are created during launch.
+   */
+  readonly tagSpecifications?: string; // TODO: create type?
+
+}
+
+export interface ILaunchTemplate {
+
+  readonly version: string;
+  readonly id: string;
+}
+export class LaunchTemplate extends Resource implements ILaunchTemplate {
+  
+  // public static fromLaunchTemplateId(version: string): ILaunchTemplate {
+  //   return new LaunchTemplate();
+  // }
+
+  // public static fromLaunchTemplateName(version: string): ILaunchTemplate {
+  //   return new LaunchTemplate();
+  // }
+
+  public readonly version: string;
+  public readonly id: string;
+
+  constructor(scope: Construct, id: string, props: LaunchTemplateProps) {
+    super(scope, id);
+    this.version = '';
+    this.id = '';
+    // const resource = new CfnLaunchTemplate(this, 'Resource', {
+
+    // });
+  }
+}
 /**
  * This represents a single EC2 instance
  */
