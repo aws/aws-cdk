@@ -181,6 +181,13 @@ export enum QueueEncryption {
  */
 export class Queue extends QueueBase {
 
+  /**
+   * Import an existing SQS queue provided an ARN
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param queueArn queue ARN (i.e. arn:aws:sqs:us-east-2:444455556666:queue1)
+   */
   public static fromQueueArn(scope: Construct, id: string, queueArn: string): IQueue {
     return Queue.fromQueueAttributes(scope, id, { queueArn });
   }
