@@ -193,7 +193,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
-  const update = cloudFormationStack.exists;
+  const update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
 
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
   print('%s: creating CloudFormation changeset...', colors.bold(deployName));
