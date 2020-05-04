@@ -70,13 +70,19 @@ function serve_npm_packages() {
   # Start a mock npm repository from the given tarballs
   #------------------------------------------------------------------------------
   header "Starting local NPM Repository"
+
+  # When using '--daemon', 'npm install' first so the files are permanent, or
+  # 'npx' will remove them too soon.
+  npm install serve-npm-tarballs
   eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
   trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
 }
 
 # Make sure that installed CLI matches the build version
 function verify_installed_cli_version() {
-  local expected_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+
+  expected_version=$1
+  
   header "Expected CDK version: ${expected_version}"
 
   log "Found CDK: $(type -p cdk)"

@@ -721,6 +721,49 @@ export = {
       test.done();
     },
 
+    'EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+      const LATEST_KUBERNETES_VERSION = '1.14';
+
+      // WHEN
+      new eks.EksOptimizedImage().getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+        (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
+      ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
+      test.done();
+    },
+
+    'EksOptimizedImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.15' }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/1.15/'),
+      ), 'kubernetesVersion should be in ssm parameters');
+      test.done();
+    },
+
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
     // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -736,7 +779,7 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
@@ -823,7 +866,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -831,6 +877,7 @@ export = {
               Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
+                'eks:DescribeUpdate',
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',
@@ -933,7 +980,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -941,6 +991,7 @@ export = {
               Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
+                'eks:DescribeUpdate',
                 'eks:DeleteCluster',
                 'eks:UpdateClusterVersion',
                 'eks:UpdateClusterConfig',

@@ -9,7 +9,8 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 
 export interface ILogGroup extends IResource {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
+   *
    * @attribute
    */
   readonly logGroupArn: string;
@@ -76,7 +77,7 @@ export interface ILogGroup extends IResource {
  */
 abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
    */
   public abstract readonly logGroupArn: string;
 
@@ -308,9 +309,11 @@ export class LogGroup extends LogGroupBase {
    * Import an existing LogGroup given its ARN
    */
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
+    const baseLogGroupArn = logGroupArn.replace(/:\*$/, '');
+
     class Import extends LogGroupBase {
-      public readonly logGroupArn = logGroupArn;
-      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+      public readonly logGroupArn = `${baseLogGroupArn}:*`;
+      public readonly logGroupName = Stack.of(scope).parseArn(baseLogGroupArn, ':').resourceName!;
     }
 
     return new Import(scope, id);
@@ -320,13 +323,15 @@ export class LogGroup extends LogGroupBase {
    * Import an existing LogGroup given its name
    */
   public static fromLogGroupName(scope: Construct, id: string, logGroupName: string): ILogGroup {
+    const baseLogGroupName = logGroupName.replace(/:\*$/, '');
+
     class Import extends LogGroupBase {
-      public readonly logGroupName = logGroupName;
+      public readonly logGroupName = baseLogGroupName;
       public readonly logGroupArn = Stack.of(scope).formatArn({
         service: 'logs',
         resource: 'log-group',
         sep: ':',
-        resourceName: logGroupName,
+        resourceName: baseLogGroupName + ':*',
       });
     }
 

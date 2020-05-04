@@ -86,11 +86,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "aws-sdk": "^2.660.0",
+    "aws-sdk": "^2.668.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.4",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -129,7 +129,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "stable",
   "awslint": {
