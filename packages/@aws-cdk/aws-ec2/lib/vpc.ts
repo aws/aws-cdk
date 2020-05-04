@@ -329,10 +329,10 @@ abstract class VpcBase extends Resource implements IVpc {
 
   /**
    * Mutable private field for the vpnGatewayId
+   *
+   * @internal
    */
-  protected mutableVpnGatewayId?: string;
-  // NOTE: Would have preferred to name this _mutableVpnGatewayId but jsii requires that
-  // to be marked @internal and I don't want that.
+  protected _vpnGatewayId?: string;
 
   /**
    * Returns IDs of selected subnets
@@ -363,19 +363,24 @@ abstract class VpcBase extends Resource implements IVpc {
       type: VpnConnectionType.IPSEC_1,
     });
 
-    this.mutableVpnGatewayId = vpnGateway.gatewayId;
+    this._vpnGatewayId = vpnGateway.gatewayId;
 
     const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
-      vpnGatewayId: this.mutableVpnGatewayId,
+      vpnGatewayId: this._vpnGatewayId,
     });
 
     // Propagate routes on route tables associated with the right subnets
     const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
     const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
+
+    if (routeTableIds.length === 0) {
+      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+    }
+
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
       routeTableIds,
-      vpnGatewayId: this.mutableVpnGatewayId,
+      vpnGatewayId: this._vpnGatewayId,
     });
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
@@ -427,7 +432,7 @@ abstract class VpcBase extends Resource implements IVpc {
    * Returns the id of the VPN Gateway (if enabled)
    */
   public get vpnGatewayId(): string | undefined {
-    return this.mutableVpnGatewayId;
+    return this._vpnGatewayId;
   }
 
   /**
@@ -1720,7 +1725,7 @@ class ImportedVpc extends VpcBase {
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
-    this.mutableVpnGatewayId = props.vpnGatewayId;
+    this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     // tslint:disable:max-line-length
@@ -1757,7 +1762,7 @@ class LookedUpVpc extends VpcBase {
 
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
-    this.mutableVpnGatewayId = props.vpnGatewayId;
+    this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     const subnetGroups = props.subnetGroups || [];

@@ -123,20 +123,6 @@ export = {
     test.done();
   },
 
-  'fails when vpc has no vpn gateway'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    const vpc = new Vpc(stack, 'VpcNetwork');
-
-    test.throws(() => vpc.addVpnConnection('VpnConnection', {
-      asn: 65000,
-      ip: '192.0.2.1',
-    }), /VPN gateway/);
-
-    test.done();
-  },
-
   'fails when ip is invalid'(test: Test) {
     // GIVEN
     const stack = new Stack();
