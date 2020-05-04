@@ -77,6 +77,12 @@ export interface DeployStackOptions {
    * @default - no additional parameters will be passed to the template
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * If set to true, it enables stack protection. If set to false, it disables stack protection.
+   * If not set, nothing happens.
+   */
+  terminationProtection?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -138,6 +144,7 @@ export class CloudFormationDeployments {
       execute: options.execute,
       force: options.force,
       parameters: options.parameters,
+      terminationProtection: options.terminationProtection,
     });
   }
 

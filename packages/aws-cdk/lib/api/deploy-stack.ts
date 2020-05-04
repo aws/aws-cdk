@@ -10,7 +10,13 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStack  } from './util/cloudformation';
+import {
+  changeSetHasNoChanges,
+  CloudFormationStack, updateEnableTerminationProtection,
+  TemplateParameters,
+  waitForChangeSet,
+  waitForStack
+} from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 type TemplateBodyParameter = {
@@ -135,6 +141,12 @@ export interface DeployStackOptions {
    * @default false
    */
   force?: boolean;
+
+  /**
+   * If set to true, it enables stack protection. If set to false, it disables stack protection.
+   * If not set, nothing happens.
+   */
+  terminationProtection?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -232,6 +244,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!finalStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       cloudFormationStack = finalStack;
+      if (options.terminationProtection !== undefined) {
+        await updateEnableTerminationProtection(cfn, deployName, options.terminationProtection)
+      }
     } finally {
       await monitor?.stop();
     }

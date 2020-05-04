@@ -124,6 +124,19 @@ export class CloudFormationStack {
 }
 
 /**
+ * Describe a CloudFormation stack, regardless of its current state.
+ *
+ * @param cfn       a CloudFormation client
+ * @param stackName   the name of the Stack the ChangeSet belongs to
+ *
+ * @returns       CloudFormation information about the ChangeSet
+ */
+async function describeStack(cfn: CloudFormation, stackName: string): Promise<CloudFormation.DescribeStacksOutput> {
+  const response = await cfn.describeStacks({ StackName: stackName }).promise();
+  return response;
+}
+
+/**
  * Describe a changeset in CloudFormation, regardless of its current state.
  *
  * @param cfn       a CloudFormation client
@@ -193,6 +206,47 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
     throw new Error('Change set took too long to be created; aborting');
   }
 
+  return ret;
+}
+
+/**
+ * Updates the termination protection of a stack.
+ *
+ * @param cfn       a CloudFormation client
+ * @param stackName   the name of the Stack that the ChangeSet belongs to
+ *
+ * @returns       the CloudFormation description of the ChangeSet
+ */
+// tslint:disable-next-line:max-line-length
+export async function updateEnableTerminationProtection(cfn: CloudFormation, stackName: string, enableTerminationProtection: boolean): Promise<CloudFormation.Types.UpdateTerminationProtectionOutput> {
+  const ret = await waitFor(async () => {
+  const stacks = await describeStack(cfn, stackName);
+  if (!stacks || !stacks.Stacks) {
+    throw new Error("No Stacks found. Exiting");
+  }
+  if (stacks.Stacks.length < 1) {
+    throw new Error(`A stack with the name ${stackName} was not found`);
+  }
+
+  if (stacks.Stacks.length > 1) {
+    throw new Error(`Multiple stacks with the name ${stackName} were found. This should not happen..`);
+  }
+  const stack = stacks.Stacks[0];
+  if (stack.EnableTerminationProtection === enableTerminationProtection) {
+    debug("Not going to change the termination protection");
+  } else {
+    const result = await cfn.updateTerminationProtection({EnableTerminationProtection: enableTerminationProtection, StackName: stackName}).promise();
+    if (result.$response.error) {
+      throw result.$response.error;
+    } else {
+      return result.$response.data;
+    }
+  }
+  });
+
+  if (!ret) {
+    throw new Error('DescribeStacks call took too long. Exiting...');
+  }
   return ret;
 }
 

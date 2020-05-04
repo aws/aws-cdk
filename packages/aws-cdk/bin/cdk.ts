@@ -69,7 +69,8 @@ async function parseCommandLineArguments() {
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
-      .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true }),
+      .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
+      .option('termination-protection', {type: 'boolean', desc: "when set to true, enables stack termination protection"}),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -231,7 +232,8 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
-        return await cli.deploy({
+
+        const deployOptions: any = {
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           toolkitStackName,
@@ -244,7 +246,11 @@ async function initCommandLine() {
           force: args.force,
           parameters: parameterMap,
           outputsFile: args.outputsFile,
-        });
+        }
+        if (args['termination-protection']) {
+          deployOptions.terminationProtection = true;
+        }
+        return await cli.deploy(deployOptions);
 
       case 'destroy':
         return await cli.destroy({

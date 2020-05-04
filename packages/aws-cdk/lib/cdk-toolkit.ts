@@ -568,6 +568,12 @@ export interface DeployOptions {
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * If set to true, it enables stack protection. If set to false, it disables stack protection.
+   * If not set, nothing happens.
+   */
+  terminationProtection?: boolean;
 }
 
 export interface DestroyOptions {
