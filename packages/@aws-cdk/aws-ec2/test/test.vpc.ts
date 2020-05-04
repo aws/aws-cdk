@@ -2,8 +2,8 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
-  InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, PrivateSubnet, PublicSubnet, RouterType, Subnet,
-  SubnetType, TrafficDirection, Vpc } from '../lib';
+  InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
+  RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
 export = {
   'When creating a VPC': {
@@ -777,6 +777,39 @@ export = {
 
       // THEN
       expect(stack).to(countResources('AWS::EC2::Instance', 1));
+
+      test.done();
+    },
+
+    'can configure Security Groups of NAT instances'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const provider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        allowAllTraffic: false,
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: provider,
+      });
+      provider.connections.allowFrom(Peer.ipv4('1.2.3.4/32'), Port.tcp(86));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: '1.2.3.4/32',
+            Description: 'from 1.2.3.4/32:86',
+            FromPort: 86,
+            IpProtocol: 'tcp',
+            ToPort: 86,
+          },
+        ],
+      }));
 
       test.done();
     },
