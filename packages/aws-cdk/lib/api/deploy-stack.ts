@@ -151,7 +151,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const terminationProtection = stackArtifact.terminationProtection ?? false;
 
-  if (await shouldSkipDeploy(options, cloudFormationStack)) {
+  if (await canSkipDeploy(options, cloudFormationStack)) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     return {
       noOp: true,
@@ -334,10 +334,11 @@ export async function destroyStack(options: DestroyStackOptions) {
 }
 
 /**
- * Checks whether we should deploy
+ * Checks whether we can skip deployment
  */
-async function shouldSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack): Promise<boolean> {
+async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack): Promise<boolean> {
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
+  debug(`${deployName}: checking if we can skip deploy`);
 
   // Forced deploy
   if (deployStackOptions.force) {
