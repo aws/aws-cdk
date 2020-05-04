@@ -1,8 +1,7 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
 import * as path from 'path';
 import * as cr from '../../../lib';
 
@@ -35,8 +34,8 @@ export class S3Assert extends Construct {
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
-    new cfn.CustomResource(this, 'Resource', {
-      provider: S3AssertProvider.getOrCreate(this),
+    new CustomResource(this, 'Resource', {
+      serviceToken: S3AssertProvider.getOrCreate(this),
       resourceType: 'Custom::S3Assert',
       properties: {
         BucketName: props.bucket.bucketName,
@@ -56,7 +55,7 @@ class S3AssertProvider extends Construct {
     const providerId = 'com.amazonaws.cdk.custom-resources.s3assert-provider';
     const stack = Stack.of(scope);
     const group = stack.node.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
-    return group.provider;
+    return group.provider.serviceToken;
   }
 
   private readonly provider: cr.Provider;
