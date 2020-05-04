@@ -1,7 +1,6 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { Construct, CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
@@ -157,7 +156,7 @@ export class FargateProfile extends Construct implements ITaggable {
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
 
     const resource = new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
       properties: {
         AssumeRoleArn: props.cluster._getKubectlCreationRoleArn(),
