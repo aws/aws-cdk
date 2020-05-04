@@ -342,6 +342,8 @@ export class Cluster extends Resource implements ICluster {
    */
   private _awsAuth?: AwsAuth;
 
+  private _spotInterruptHandler?: HelmChart;
+
   private readonly version: string | undefined;
 
   /**
@@ -596,15 +598,7 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.7.3',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
-        },
-      });
+      this.addSpotInterruptHandler();
     }
   }
 
@@ -690,6 +684,26 @@ export class Cluster extends Resource implements ICluster {
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
     return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+  }
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
+  private addSpotInterruptHandler() {
+    if (!this._spotInterruptHandler) {
+      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
+      });
+    }
+
+    return this._spotInterruptHandler;
   }
 
   /**
