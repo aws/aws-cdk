@@ -229,6 +229,63 @@ test('not executed and no error if --no-execute is given', async () => {
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
 });
 
+test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', async () => {
+  // GIVEN
+  givenStackExists({
+    StackStatus: 'REVIEW_IN_PROGRESS',
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
+    expect.objectContaining({
+      ChangeSetType: 'CREATE',
+      StackName: 'withouterrors',
+    }),
+  );
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('changeset is updated when stack exists in CREATE_COMPLETE status', async () => {
+  // GIVEN
+  givenStackExists({
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
+    expect.objectContaining({
+      ChangeSetType: 'UPDATE',
+      StackName: 'withouterrors',
+    }),
+  );
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  */

@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -665,13 +665,13 @@ export = {
         },
 
         'if kubectl is enabled, the interrupt handler is added'(test: Test) {
-        // GIVEN
+          // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
           // WHEN
           cluster.addCapacity('MyCapcity', {
-            instanceType: new ec2.InstanceType('m3.xlargs'),
+            instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
 
@@ -684,6 +684,27 @@ export = {
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',
           }));
+          test.done();
+        },
+
+        'its possible to add two capacities with spot instances and only one stop handler will be installed'(test: Test) {
+          // GIVEN
+          const { stack } = testFixtureNoVpc();
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+          // WHEN
+          cluster.addCapacity('Spot1', {
+            instanceType: new ec2.InstanceType('m3.xlarge'),
+            spotPrice: '0.01',
+          });
+
+          cluster.addCapacity('Spot2', {
+            instanceType: new ec2.InstanceType('m4.xlarge'),
+            spotPrice: '0.01',
+          });
+
+          // THEN
+          expect(stack).to(countResources(eks.HelmChart.RESOURCE_TYPE, 1));
           test.done();
         },
 
@@ -866,7 +887,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -977,7 +1001,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
