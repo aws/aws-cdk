@@ -73,7 +73,7 @@ export class LogQueryWidget extends ConcreteWidget {
     }
 
     if (!!props.queryString === !!props.queryLines) {
-      throw new Error('Specify exactly one of \'queryString\' and \'queryLines\'`);
+      throw new Error('Specify exactly one of \'queryString\' and \'queryLines\'');
     }
   }
 
