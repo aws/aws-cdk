@@ -107,7 +107,7 @@ export interface InstanceProps {
   /**
    * Where to place the instances within the VPC
    *
-   * @default private subnets
+   * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 

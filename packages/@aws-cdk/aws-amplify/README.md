@@ -18,9 +18,9 @@ The AWS Amplify Console provides a Git-based workflow for deploying and hosting 
 ### Setting up an app with branches, custom rules and a domain
 To set up an Amplify Console app, define an `App`:
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import amplify = require('@aws-cdk/aws-amplify');
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as amplify from '@aws-cdk/aws-amplify';
+import * as cdk from '@aws-cdk/core';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
@@ -96,6 +96,7 @@ mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIREC
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');
+domain.mapRoot(master); // map master branch to domain root
 domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```

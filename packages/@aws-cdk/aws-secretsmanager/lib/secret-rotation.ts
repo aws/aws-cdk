@@ -178,7 +178,7 @@ export interface SecretRotationProps {
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
