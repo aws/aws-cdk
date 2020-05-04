@@ -329,7 +329,7 @@ new CustomResource(this, 'MyResource', {
 });
 ```
 
-The directory `my-handler` must include an `index.js` file which exports an async function named `handler`. This function accepts the CloudFormation resource event object and returns an object with the following structure:
+The directory `my-handler` must include an `index.js` file. It cannot import external dependencies or files outside this directory. It must export an async function named `handler`. This function accepts the CloudFormation resource event object and returns an object with the following structure:
 
 ```js
 exports.handler = async function(event) {
