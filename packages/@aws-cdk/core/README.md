@@ -655,8 +655,9 @@ new CfnInclude(this, 'ID', {
 You can prevent a stack from being accidentally deleted by enabling termination
 protection on the stack. If a user attempts to delete a stack with termination
 protection enabled, the deletion fails and the stack--including its status--remains
-unchanged. You can enable termination protection on a stack by setting the
-`terminationProtection` prop to `true`.
+unchanged. Enabling or disabling termination protection on a stack sets it for any
+nested stacks belonging to that stack as well. You can enable termination protection
+on a stack by setting the `terminationProtection` prop to `true`.
 
 ```ts
 const stack = new Stack(app, 'StackName', {
