@@ -5,6 +5,14 @@ import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
 /**
+ * Represents an Integration for an HTTP API.
+ */
+export interface IHttpIntegration extends IIntegration {
+  /** The HTTP API associated with this integration */
+  readonly httpApi: IHttpApi;
+}
+
+/**
  * Supported integration types
  */
 export enum HttpIntegrationType {
@@ -85,19 +93,10 @@ export interface HttpIntegrationProps {
  * The integration for an API route.
  * @resource AWS::ApiGatewayV2::Integration
  */
-export class HttpIntegration extends Resource implements IIntegration {
-  /**
-   * Import an existing integration using integration id
-   */
-  public static fromIntegrationId(scope: Construct, id: string, integrationId: string): IIntegration {
-    class Import extends Resource implements IIntegration {
-      public readonly integrationId = integrationId;
-    }
-
-    return new Import(scope, id);
-  }
-
+export class HttpIntegration extends Resource implements IHttpIntegration {
   public readonly integrationId: string;
+
+  public readonly httpApi: IHttpApi;
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
@@ -109,6 +108,7 @@ export class HttpIntegration extends Resource implements IIntegration {
       payloadFormatVersion: props.payloadFormatVersion?.version,
     });
     this.integrationId = integ.ref;
+    this.httpApi = props.httpApi;
   }
 }
 

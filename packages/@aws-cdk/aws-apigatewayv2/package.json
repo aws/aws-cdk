@@ -103,6 +103,7 @@
   },
   "awslint": {
     "exclude": [
+      "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
