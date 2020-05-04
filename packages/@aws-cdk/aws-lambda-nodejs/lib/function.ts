@@ -65,15 +65,6 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - `.cache` in the root directory
    */
   readonly cacheDir?: string;
-
-  /**
-   * The docker tag of the node base image to use in the parcel-bundler docker image
-   *
-   * @see https://hub.docker.com/_/node/?tab=tags
-   *
-   * @default - 13.8.0-alpine3.11
-   */
-  readonly nodeDockerTag?: string;
 }
 
 /**
@@ -93,7 +84,6 @@ export class NodejsFunction extends lambda.Function {
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime || defaultRunTime;
-    const nodeDockerTag = props.nodeDockerTag || '13.8.0-alpine3.11';
 
     // Build with Parcel
     const builder = new Builder({
@@ -104,7 +94,6 @@ export class NodejsFunction extends lambda.Function {
       sourceMaps: props.sourceMaps,
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
-      nodeDockerTag,
     });
     builder.build();
 

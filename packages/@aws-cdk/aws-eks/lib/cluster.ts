@@ -370,7 +370,6 @@ export class Cluster extends Resource implements ICluster {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSServicePolicy'),
       ],
     });
 
