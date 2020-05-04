@@ -159,6 +159,21 @@ If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
+By default, the NAT instances will route all traffic. To control what traffic
+gets routed, pass `allowAllTraffic: false` and access the
+`NatInstanceProvider.connections` member after having passed it to the VPC:
+
+```ts
+const provider = NatProvider.instance({
+  instanceType: /* ... */,
+  allowAllTraffic: false,
+});
+new Vpc(stack, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(Peer.ipv4('1.2.3.4/8'), Port.tcp(80));
+```
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the
