@@ -326,6 +326,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
+      pascalCaseProperties: true,
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
