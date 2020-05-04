@@ -319,11 +319,6 @@ new CustomResource(this, 'MyResource', {
 });
 ```
 
-**NOTE**: when defining a custom resource provider, you will likely want to define
-it as a *stack singleton* so that only a single instance of the provider is
-created in your stack and which is used by all custom resources of that type.
-The following example shows a pattern for defining a stack singleton in the CDK.
-
 ## AWS CloudFormation features
 
 A CDK stack synthesizes to an AWS CloudFormation Template. This section
