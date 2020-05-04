@@ -1,4 +1,5 @@
 ## AWS::APIGatewayv2 Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -12,6 +13,13 @@
 
 ---
 <!--END STABILITY BANNER-->
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [HTTP API](#http-api)
+  - [Defining HTTP APIs](#defining-http-apis)
+  - [Publishing HTTP APIs](#publishing-http-apis)
 
 ## Introduction
 
@@ -29,7 +37,48 @@ REST APIs can be created using the `@aws-cdk/aws-apigateway` module.
 HTTP APIs enable creation of RESTful APIs that integrate with AWS Lambda functions, known as Lambda proxy integration,
 or to any routable HTTP endpoint, known as HTTP proxy integration.
 
-Use `HttpApi` to create HTTP APIs with HTTP proxy integration as the `defaultIntegration`
+### Defining HTTP APIs
+
+HTTP APIs have two fundamental concepts - Routes and Integrations.
+
+Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource
+path, such as, `GET /books`. Learn more at [Working with
+routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html). Use the `ANY` method
+to match any methods for a route that are not explicitly defined.
+
+Integrations define how the HTTP API responds when a client reaches a specific Route. HTTP APIs support two types of
+integrations - Lambda proxy integration and HTTP proxy integration. Learn more at [Configuring
+integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
+
+The code snippet below configures a route `GET /books` with an HTTP proxy integration and uses the `ANY` method to
+proxy all other HTTP method calls to `/books` to a lambda proxy.
+
+```ts
+const getBooksIntegration = new HttpProxyIntegration({
+  url: 'https://get-books-proxy.myproxy.internal',
+});
+
+const booksDefaultFn = new lambda.Function(stack, 'BooksDefaultFn', { ... });
+const booksDefaultIntegration = new LambdaProxyIntegration({
+  handler: booksDefaultFn,
+});
+
+const httpApi = new HttpApi(stack, 'HttpApi');
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.GET ],
+  integration: getBooksIntegration,
+});
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.ANY ],
+  integration: booksDefaultIntegration,
+});
+```
+
+The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
+matched when a client reaches a route that is not explicitly defined.
 
 ```ts
 new HttpApi(stack, 'HttpProxyApi', {
@@ -39,58 +88,14 @@ new HttpApi(stack, 'HttpProxyApi', {
 });
 ```
 
-To create HTTP APIs with Lambda proxy integration as the `defaultIntegration`
+### Publishing HTTP APIs
 
-```ts
-new HttpApi(stack, 'LambdaProxyApi', {
-    defaultIntegration: new LambdaProxyIntegration({
-      handler,
-    }),
-});
-```
+A Stage is a logical reference to a lifecycle state of your API (for example, `dev`, `prod`, `beta`, or `v2`). API
+stages are identified by their stage name. Each stage is a named reference to a deployment of the API made available for
+client applications to call.
 
-To create HTTP APIs with no default integration 
-
-```ts
-new HttpApi(stack, 'Api');
-});
-```
-
-
-
-Read more about [Working with AWS Lambda Proxy Integrations for HTTP
-APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
-and [Working with HTTP Proxy Integrations for HTTP
-APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html).
-
-
-
-## Route
-
-Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path—for example,
-`GET /books`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource.
-You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See
-[Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
-
-When you create HTTP APIs with `defaultIntegration`, the `$default route` will be created as well.
-
-Use `HttpRoute` to create a `Route` resource for HTTP APIs and `HttpRouteKey` to define your route key.
-
-
-```ts
-new HttpRoute(stack, 'HttpRoute', {
-  httpApi,
-  integration,
-  routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-});
-```
-
-
-## Stage 
-
-A stage is a named reference to a deployment, which is a snapshot of the API. You use a `Stage` to manage and optimize a particular deployment. 
-
-Use `HttpStage` to create a `Stage` resource for HTTP APIs
+Use `HttpStage` to create a Stage resource for HTTP APIs. The following code sets up a Stage, whose URL is available at
+`https://{api_id}.execute-api.{region}.amazonaws.com/beta`.
 
 ```ts
 new HttpStage(stack, 'Stage', {
@@ -99,53 +104,7 @@ new HttpStage(stack, 'Stage', {
 });
 ```
 
-If you omit the `stageName`, the `$default` stage will be created.
+If you omit the `stageName` will create a `$default` stage. A `$default` stage is one that is served from the base of
+the API's URL - `https://{api_id}.execute-api.{region}.amazonaws.com/`.
 
-Please note when you create `HttpApi` resource, the `$default` stage will be created as well unless you set `createDefaultStage` to `false`.
-
-```ts
-// create HttpApi without $default stage
-const api = new HttpApi(stack, 'Api', {
-  createDefaultStage: false,
-});
-
-// create the $default stage for it
-new HttpStage(stack, 'Stage', {
-  httpApi: api,
-});
-
-```
-
-## Defining APIs
-
-APIs are defined as a hierarchy of routes. `addRoutes` can be used to build this hierarchy.
-
-For example, the following code defines an API that includes the following HTTP endpoints: `ANY /`, `GET /books`, `POST /books`, `GET /books/{book_id}` and `DELETE /books/{book_id}`.
-
-```ts
-const httpApi = new HttpApi(this, 'HttpApi', {
-    defaultIntegration: new LambdaProxyIntegration({
-      rootHandler,
-    }),
-});
-
-// GET or POST /books
-httpApi.addRoutes({
-  path: '/books',
-  methods: [ HttpMethod.GET, HttpMethod.POST ],
-  integration: new LambdaProxyIntegration({
-    handler,
-  }),
-});
-
-
-// GET or DELETE {book_id}
-httpApi.addRoutes({
-  path: '/books/{book_id}',
-  methods: [ HttpMethod.GET, HttpMethod.DELETE ],
-  integration: new LambdaProxyIntegration({
-    handler,
-  }),
-});
-
-```
+Note that, `HttpApi` will always creates a `$default` stage, unless the `createDefaultStage` property is unset.
