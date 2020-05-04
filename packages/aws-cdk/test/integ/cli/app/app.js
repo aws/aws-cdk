@@ -279,4 +279,8 @@ new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
 new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
+new YourStack(app, `${stackPrefix}-termination-protection`, {
+  terminationProtection: true,
+});
+
 app.synth();

@@ -27,6 +27,7 @@ beforeEach(() => {
         {
           StackStatus: 'CREATE_COMPLETE',
           StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
         },
       ] })),
     createChangeSet: jest.fn((info: CreateChangeSetInput) => {
