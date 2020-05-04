@@ -151,24 +151,16 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const terminationProtection = stackArtifact.terminationProtection ?? false;
 
-  if (!options.force && cloudFormationStack.exists) {
-    // bail out if the current template is exactly the same as the one we are about to deploy
-    // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
-    debug('checking if we can skip this stack based on the currently deployed template, tags and termination protection (use --force to override)');
-    const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
-    if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template())
-        && tagsIdentical
-        && cloudFormationStack.terminationProtection === terminationProtection) {
-      debug(`${deployName}: no change in template, tags or termination protection, skipping (use --force to override)`);
-      return {
-        noOp: true,
-        outputs: cloudFormationStack.outputs,
-        stackArn: cloudFormationStack.stackId,
-        stackArtifact,
-      };
-    } else {
-      debug(`${deployName}: template changed, deploying...`);
-    }
+  if (await shouldSkipDeploy(options, cloudFormationStack)) {
+    debug(`${deployName}: skipping deployment (use --force to override)`);
+    return {
+      noOp: true,
+      outputs: cloudFormationStack.outputs,
+      stackArn: cloudFormationStack.stackId,
+      stackArtifact,
+    };
+  } else {
+    debug(`${deployName}: deploying...`);
   }
 
   // Detect "legacy" assets (which remain in the metadata) and publish them via
@@ -246,7 +238,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   // Update termination protection only if it has changed.
   if (cloudFormationStack.terminationProtection !== terminationProtection) {
-    debug('Updating termination protection for stack %s', deployName);
+    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
     await cfn.updateTerminationProtection({
       StackName: deployName,
       EnableTerminationProtection: terminationProtection,
@@ -341,6 +333,50 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 }
 
+/**
+ * Checks whether we should deploy
+ */
+async function shouldSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack): Promise<boolean> {
+  const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
+
+  // Forced deploy
+  if (deployStackOptions.force) {
+    debug(`${deployName}: forced deployment`);
+    return false;
+  }
+
+  // No existing stack
+  if (!cloudFormationStack.exists) {
+    debug(`${deployName}: no existing stack`);
+    return false;
+  }
+
+  // Template has changed (assets taken into account here)
+  if (JSON.stringify(deployStackOptions.stack.template) !== JSON.stringify(await cloudFormationStack.template())) {
+    debug(`${deployName}: template has changed`);
+    return false;
+  }
+
+  // Tags have changed
+  if (!compareTags(cloudFormationStack.tags, deployStackOptions.tags ?? [])) {
+    debug(`${deployName}: tags have changed`);
+    return false;
+  }
+
+  // Termination protection has been updated
+  const terminationProtection = deployStackOptions.stack.terminationProtection ?? false; // cast to boolean for comparison
+  if (terminationProtection !== cloudFormationStack.terminationProtection) {
+    debug(`${deployName}: termination protection has been updated`);
+    return false;
+  }
+
+  // We can skip deploy
+  return true;
+}
+
+/**
+ * Compares two list of tags, returns true if identical.
+ */
 function compareTags(a: Tag[], b: Tag[]): boolean {
   if (a.length !== b.length) {
     return false;
