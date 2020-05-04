@@ -276,13 +276,16 @@ dashboard.addWidgets(new TextWidget({
 
 ### Query results widget
 
-A query results widget shows the results of a query from Logs Insights:
+A `LogQueryWidget` shows the results of a query from Logs Insights:
 
 ```ts
-dashboard.addWidgets(new QueryWidget({
-  logGroup: LogGroup.fromLogGroupName(stack, 'MyLogGroup', 'my-log-group'),
-  queryString: `fields @message
-                | filter @message like /Error/`
+dashboard.addWidgets(new LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  // The lines will be automatically combined using '\n|'.
+  queryLines: [
+    'fields @message',
+    'filter @message like /Error/',
+  ]
 }));
 ```
 

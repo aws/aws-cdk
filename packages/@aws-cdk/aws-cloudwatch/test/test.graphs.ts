@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, Metric, QueryWidget, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, LogQueryWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -117,13 +117,14 @@ export = {
     // GIVEN
     const stack = new Stack();
     const logGroup = {logGroupName: 'my-log-group'};
-    const queryString = `fields @message
-                        | filter @message like /Error/`;
 
     // WHEN
-    const widget = new QueryWidget({
-      logGroup,
-      queryString,
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
     });
 
     // THEN
@@ -134,7 +135,7 @@ export = {
       properties: {
         view: 'table',
         region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | ${queryString}`,
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
 
