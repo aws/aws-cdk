@@ -418,12 +418,11 @@ export interface CustomRuleOptions {
  */
 export class CustomRule {
   /**
-   * Sets up a 200 rewrite for all files to `index.html` except for the
-   * following file extensions: css, gif, ico, jpg, js, png, txt, svg,
-   * woff, ttf, map, json, webmanifest.
+   * Sets up a 200 rewrite for all paths to `index.html` except for path
+   * containing a file extension.
    */
   public static readonly SINGLE_PAGE_APPLICATION_REDIRECT = new CustomRule({
-    source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json|webmanifest)$)([^.]+$)/>',
+    source: '</^[^.]+$/>',
     target: '/index.html',
     status: RedirectStatus.REWRITE,
   });

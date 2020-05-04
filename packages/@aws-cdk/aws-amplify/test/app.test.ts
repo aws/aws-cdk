@@ -276,7 +276,7 @@ test('with SPA redirect', () => {
   expect(stack).toHaveResource('AWS::Amplify::App', {
     CustomRules: [
       {
-        Source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json|webmanifest)$)([^.]+$)/>',
+        Source: '</^[^.]+$/>',
         Status: '200',
         Target: '/index.html',
       },
