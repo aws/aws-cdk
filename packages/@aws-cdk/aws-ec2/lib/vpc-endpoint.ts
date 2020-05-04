@@ -345,6 +345,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * Limit to only those availability zones where the endpoint service can be created
+   *
+   * Setting this to 'true' requires a lookup to be performed at synthesis time. Account
+   * and region must be set on the containing stack for this to work.
+   *
+   * @default false
+   */
+  readonly lookupSupportedAzs?: boolean;
 }
 
 /**
@@ -444,17 +454,22 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
+    const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
     const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
     let subnets;
 
     // If we don't have an account/region, we will not be able to do filtering on AZs since
     // they will be undefined
     // Otherwise, we filter by AZ
-    if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.stack.region)) {
-      subnets = subnetSelection.subnets;
-    } else {
+    const agnostic = (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.stack.region));
+
+    if (agnostic && lookupSupportedAzs) {
+      throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
+    } else if (!agnostic && lookupSupportedAzs) {
       const availableAZs = this.availableAvailabilityZones(props.service.name);
       subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
+    } else {
+      subnets = subnetSelection.subnets;
     }
     const subnetIds = subnets.map(s => s.subnetId);
 

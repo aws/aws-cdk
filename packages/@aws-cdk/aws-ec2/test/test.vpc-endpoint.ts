@@ -417,6 +417,7 @@ export = {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443},
+        lookupSupportedAzs: true,
       });
 
       // THEN
@@ -452,6 +453,7 @@ export = {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443},
+        lookupSupportedAzs: true,
       });
 
       // THEN
