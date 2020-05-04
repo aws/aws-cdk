@@ -272,10 +272,10 @@ export = {
             },
             {
               'Action': [
+                'kms:Decrypt',
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
                 'kms:GenerateDataKey*',
-                'kms:Decrypt',
               ],
               'Effect': 'Allow',
               'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] },

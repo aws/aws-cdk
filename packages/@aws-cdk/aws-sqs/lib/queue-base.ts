@@ -195,12 +195,7 @@ export abstract class QueueBase extends Resource implements IQueue {
 
     if (this.encryptionMasterKey) {
       // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
-      this.encryptionMasterKey.grant(grantee,
-        'kms:Encrypt',
-        'kms:ReEncrypt*',
-        'kms:GenerateDataKey*',
-        'kms:Decrypt',
-      );
+      this.encryptionMasterKey.grantEncryptDecrypt(grantee);
     }
     return ret;
   }
