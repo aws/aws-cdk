@@ -46,7 +46,7 @@ Linux operating system. It also provides read-after-write consistency and suppor
 Import to your project:
 
 ```ts
-import fsx = require('@aws-cdk/aws-fsx');
+import * as fsx from '@aws-cdk/aws-fsx';
 ```
 
 ### Basic Usage

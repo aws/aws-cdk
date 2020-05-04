@@ -2,6 +2,7 @@ import { FollowMode } from './follow-mode';
 
 /**
  * Obtains applied when copying directories into the staging location.
+ * @deprecated see `core.CopyOptions`
  */
 export interface CopyOptions {
   /**
@@ -21,6 +22,7 @@ export interface CopyOptions {
 
 /**
  * Options related to calculating source hash.
+ * @deprecated see `core.FingerprintOptions`
  */
 export interface FingerprintOptions extends CopyOptions {
   /**

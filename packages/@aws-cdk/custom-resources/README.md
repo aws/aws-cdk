@@ -29,8 +29,8 @@ with `cfn.CustomResource` and a user-provided AWS Lambda function which
 implements the actual handler.
 
 ```ts
-import cr = require('@aws-cdk/custom-resources');
-import cfn = require('@aws-cdk/aws-cloudformation');
+import * as cr from '@aws-cdk/custom-resources';
+import * as cfn from '@aws-cdk/aws-cloudformation';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 

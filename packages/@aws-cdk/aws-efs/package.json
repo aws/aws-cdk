@@ -102,7 +102,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
