@@ -522,10 +522,8 @@
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:ALL PORTS",
-            "FromPort": 0,
-            "IpProtocol": "tcp",
-            "ToPort": 65535
+            "Description": "from 0.0.0.0/0:ALL TRAFFIC",
+            "IpProtocol": "-1"
           }
         ],
         "Tags": [
