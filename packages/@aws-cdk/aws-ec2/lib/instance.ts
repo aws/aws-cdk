@@ -1,8 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance } from './ec2.generated';
+import { CfnInstance, CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -62,7 +62,7 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable {
   readonly instancePublicIp: string;
 }
 
-interface InstanceProps extends InstanceBaseProps {
+export interface InstanceProps extends InstanceBaseProps {
 
   /**
    * Where to place the instance within the VPC
@@ -102,12 +102,14 @@ interface InstanceProps extends InstanceBaseProps {
    *
    * @default - no association
    */
-  readonly privateIpAddress?: string
+  readonly privateIpAddress?: string;
+
+  readonly launchTemplate?: ILaunchTemplate;
 }
 /**
  * Properties of an EC2 Instance
  */
-export interface InstanceBaseProps {
+interface InstanceBaseProps {
 
   /**
    * Name of SSH keypair to grant access to instance
@@ -228,16 +230,21 @@ export interface LaunchTemplateProps extends InstanceBaseProps {
 }
 
 export interface ILaunchTemplate {
-
   readonly version: string;
   readonly id: string;
 }
-export class LaunchTemplate extends Resource implements ILaunchTemplate {
-  
-  // public static fromLaunchTemplateId(version: string): ILaunchTemplate {
-  //   return new LaunchTemplate();
-  // }
 
+export class LaunchTemplate extends Resource implements ILaunchTemplate {
+
+  public static fromLaunchTemplateId(id: string, version: string): ILaunchTemplate {
+    class Import implements ILaunchTemplate {
+      public readonly version = version;
+      public readonly id = id;
+    }
+    return new Import();
+  }
+
+  // TODO: implement
   // public static fromLaunchTemplateName(version: string): ILaunchTemplate {
   //   return new LaunchTemplate();
   // }
@@ -247,13 +254,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate {
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps) {
     super(scope, id);
-    this.version = '';
-    this.id = '';
-    // const resource = new CfnLaunchTemplate(this, 'Resource', {
-
-    // });
+    const resource = new CfnLaunchTemplate(this, 'Resource', {
+      launchTemplateData: {
+        keyName: props.keyName
+      }
+    });
+    this.id = resource.ref;
+    this.version = Token.asString(resource.getAtt('LatestVersionNumber'));
+    }
   }
-}
+
 /**
  * This represents a single EC2 instance
  */
@@ -371,6 +381,10 @@ export class Instance extends Resource implements IInstance {
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
+      launchTemplate: props.launchTemplate ? {
+        version: props.launchTemplate.version,
+        launchTemplateId: props.launchTemplate.id
+      } : undefined
     });
     this.instance.node.addDependency(this.role);
 
