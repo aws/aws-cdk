@@ -252,42 +252,19 @@ implemented in one of the following ways (ordered from low-level to high-level):
 * `@aws-cdk/aws-lambda.Function`
 * `@aws-cdk/custom-resources.Provider`
 
-## Custom Resources
+**NOTE**: when defining resources for a custom resource provider, you will
+likely want to define them as a *stack singleton* so that only a single instance
+of the provider is created in your stack and which is used by all custom
+resources of that type.
 
-Custom Resources are CloudFormation resources that are implemented by arbitrary
-user code. They can do arbitrary lookups or modifications during a
-CloudFormation deployment.
-
-To define a custom resource, use the `CustomResource` construct:
+The following is a pattern for defining stack singletons in the CDK:
 
 ```ts
-import { CustomResource } from '@aws-cdk/core';
-
-new CustomResource(this, 'MyMagicalResource', {
-  resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
-
-  // the resource properties
-  properties: {
-    Property1: 'foo',
-    Property2: 'bar'
-  },
-
-  // the ARN of the provider (SNS/Lambda) which handles 
-  // CREATE, UPDATE or DELETE events for this resource type
-  // see next section for details
-  serviceToken: 'ARN'
-});
+const stack = Stack.of(this);
+const uniqueid = 'GloballyUniqueIdForSingleton';
+return stack.node.tryFindChild(uniqueid) as MySingleton 
+  ?? new MySingleton(stack, uniqueid);
 ```
-
-### Custom Resource Providers
-
-Custom resources are backed by a **custom resource provider** which can be
-implemented in one of the following ways (ordered from low-level to high-level):
-
-* `@aws-cdk/aws-sns.Topic`
-* `@aws-cdk/aws-lambda.Function`
-* `@aws-cdk/core.CustomResourceProvider`
-* `@aws-cdk/custom-resources.Provider`
 
 #### Amazon SNS Topic
 
@@ -328,61 +305,6 @@ new CustomResource(this, 'MyResource', {
 });
 ```
 
-#### The `core.CustomResourceProvider` class
-
-The class [`@aws-cdk/core.CustomResourceProvider`] offers a basic low-level
-framework designed to implement simple and slim custom resource providers. It
-currently only supports Node.js-based user handlers, and it does not have
-support for asynchronous waiting (handler cannot exceed the 15min lambda
-timeout). 
-
-[`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
-
-Set `serviceToken` to `provider.serviceToken` to use this provider:
-
-```ts
-import { CustomResource, CustomResourceProvider } from '@aws-cdk/core';
-
-const provider = new CustomResourceProvider(this, 'MyProvider', {
-  codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
-});
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: provider.serviceToken
-});
-```
-
-The directory `my-handler` must include an `index.js` file which exports an async function named `handler`. This function accepts the CloudFormation resource event object and returns an object with the following structure:
-
-```js
-exports.handler = async function(event) {
-  const props = event.ResourceProperties;
-  const oldProps = event.OldResourceProperties; // in UPDATE
-
-  switch (event.RequestType) {
-    // ...
-  }
-
-  return {
-    // value of "Ref" (defaults to "event.PhysicalResourceId" or "event.RequestId")
-    PhysicalResourceId: "REF",
-
-    // values for "Fn::GetAtt" (optional)
-    Data: {
-      Att1: "BAR",
-      Att2: "BAZ"
-    },
-
-    // user-visible message (optional)
-    Reason: "User-visible message",
-
-    // hides attribute values from the console (optional)
-    NoEcho: true
-  };
-}
-```
-
 #### The Custom Resource Provider Framework
 
 The [`@aws-cdk/custom-resource`] module includes an advanced framework for
@@ -409,20 +331,6 @@ const provider = new Provider(this, 'MyProvider', {
 new CustomResource(this, 'MyResource', {
   serviceToken: provider.serviceToken
 });
-```
-
-**NOTE**: when defining resources for a custom resource provider, you will
-likely want to define them as a *stack singleton* so that only a single instance
-of the provider is created in your stack and which is used by all custom
-resources of that type.
-
-The following is a pattern for defining stack singletons in the CDK:
-
-```ts
-const stack = Stack.of(this);
-const uniqueid = 'GloballyUniqueIdForSingleton';
-return stack.node.tryFindChild(uniqueid) as MySingleton 
-  ?? new MySingleton(stack, uniqueid);
 ```
 
 #### Amazon SNS Topic
