@@ -27,196 +27,123 @@ REST APIs can be created using the `@aws-cdk/aws-apigateway` module.
 HTTP APIs enable creation of RESTful APIs that integrate with AWS Lambda functions, known as Lambda proxy integration,
 or to any routable HTTP endpoint, known as HTTP proxy integration.
 
+Use `HttpApi` to create HTTP APIs with HTTP proxy integration as the `defaultIntegration`
+
+```ts
+new HttpApi(stack, 'HttpProxyApi', {
+  defaultIntegration: new HttpProxyIntegration({
+    url:'http://example.com',
+  }),
+});
+```
+
+To create HTTP APIs with Lambda proxy integration as the `defaultIntegration`
+
+```ts
+new HttpApi(stack, 'LambdaProxyApi', {
+    defaultIntegration: new LambdaProxyIntegration({
+      handler,
+    }),
+});
+```
+
+To create HTTP APIs with no default integration 
+
+```ts
+new HttpApi(stack, 'Api');
+});
+```
+
+
+
 Read more about [Working with AWS Lambda Proxy Integrations for HTTP
 APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
 and [Working with HTTP Proxy Integrations for HTTP
 APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html).
 
-Use `HttpApi` to create HTTP APIs with Lambda or HTTP proxy integration. The $default route will be created as well that acts as a catch-all for requests that don’t match any other routes.
 
-```ts
-// Create a vanilla HTTP API with no integration targets
-new apigatewayv2.HttpApi(stack, 'HttpApi1');
-
-// Create a HTTP API with Lambda Proxy Integration as its $default route
-const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
-  targetHandler: handler
-});
-
-// Create a HTTP API with HTTP Proxy Integration as its $default route
-const httpApi3 = new apigatewayv2.HttpApi(stack, 'HttpApi3', {
-  targetUrl: checkIpUrl
-});
-```
 
 ## Route
 
 Routes direct incoming API requests to backend resources. Routes consist of two parts: an HTTP method and a resource path—for example,
-`GET /pets`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource.
+`GET /books`. You can define specific HTTP methods for your route, or use the `ANY` method to match all methods that you haven't defined for a resource.
 You can create a `$default route` that acts as a catch-all for requests that don’t match any other routes. See
 [Working with Routes for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
 
-When you create HTTP APIs with either `Lambda Proxy Integration` or `HTTP Proxy Integration`, the `$default route` will be created as well.
+When you create HTTP APIs with `defaultIntegration`, the `$default route` will be created as well.
+
+Use `HttpRoute` to create a `Route` resource for HTTP APIs and `HttpRouteKey` to define your route key.
+
+
+```ts
+new HttpRoute(stack, 'HttpRoute', {
+  httpApi,
+  integration,
+  routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+});
+```
+
+
+## Stage 
+
+A stage is a named reference to a deployment, which is a snapshot of the API. You use a `Stage` to manage and optimize a particular deployment. 
+
+Use `HttpStage` to create a `Stage` resource for HTTP APIs
+
+```ts
+new HttpStage(stack, 'Stage', {
+  httpApi: api,
+  stageName: 'beta',
+});
+```
+
+If you omit the `stageName`, the `$default` stage will be created.
+
+Please note when you create `HttpApi` resource, the `$default` stage will be created as well unless you set `createDefaultStage` to `false`.
+
+```ts
+// create HttpApi without $default stage
+const api = new HttpApi(stack, 'Api', {
+  createDefaultStage: false,
+});
+
+// create the $default stage for it
+new HttpStage(stack, 'Stage', {
+  httpApi: api,
+});
+
+```
 
 ## Defining APIs
 
-APIs are defined as a hierarchy of routes. `addLambdaRoute` and `addHttpRoute` can be used to build this hierarchy. The root resource is `api.root`.
+APIs are defined as a hierarchy of routes. `addRoutes` can be used to build this hierarchy.
 
-For example, the following code defines an API that includes the following HTTP endpoints: ANY /, GET /books, POST /books, GET /books/{book_id}, DELETE /books/{book_id}.
-
-```ts
-const checkIpUrl = 'https://checkip.amazonaws.com';
-const awsUrl = 'https://aws.amazon.com';
-
-const api = new apigatewayv2.HttpApi(this, 'HttpApi');
-api.root
-
-api.root
-  // HTTP GET /foo
-  .addLambdaRoute('foo', 'Foo', {
-    target: handler,
-    method: apigatewayv2.HttpMethod.GET
-  })
-  // HTTP ANY /foo/aws
-  .addHttpRoute('aws',  'AwsPage', {
-    targetUrl: awsUrl,
-    method: apigatewayv2.HttpMethod.ANY
-  })
-  // HTTP ANY /foo/aws/checkip
-  .addHttpRoute('checkip', 'CheckIp', {
-    targetUrl: checkIpUrl,
-    method: apigatewayv2.HttpMethod.ANY
-  });
-```
-
-To create a specific route directly rather than building it from the root, just create the `Route` resource with `targetHandler`, `targetUrl` or `integration`.
+For example, the following code defines an API that includes the following HTTP endpoints: `ANY /`, `GET /books`, `POST /books`, `GET /books/{book_id}` and `DELETE /books/{book_id}`.
 
 ```ts
-// create a specific 'GET /some/very/deep/route/path' route with Lambda proxy integration for an existing HTTP API
-const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
-  api: httpApi,
-  httpPath: '/some/very/deep/route/path',
-  targetHandler
+const httpApi = new HttpApi(this, 'HttpApi', {
+    defaultIntegration: new LambdaProxyIntegration({
+      rootHandler,
+    }),
 });
 
-// with HTTP proxy integration
-const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
-  api: httpApi,
-  httpPath: '/some/very/deep/route/path',
-  targetUrl
+// GET or POST /books
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.GET, HttpMethod.POST ],
+  integration: new LambdaProxyIntegration({
+    handler,
+  }),
 });
 
-// with existing integration resource
-const someDeepRoute = new apigatewayv2.Route(stack, 'SomeDeepRoute', {
-  api: httpApi,
-  httpPath: '/some/very/deep/route/path',
-  integration
-});
-```
 
-You may also `addLambdaRoute` or `addHttpRoute` from the `HttpAppi` resource.
-
-```ts
-// addLambdaRoute or addHttpRoute from the HttpApi resource
-httpApi.addLambdaRoute('/foo/bar', 'FooBar', {
-  target: handler,
-  method: apigatewayv2.HttpMethod.GET
+// GET or DELETE {book_id}
+httpApi.addRoutes({
+  path: '/books/{book_id}',
+  methods: [ HttpMethod.GET, HttpMethod.DELETE ],
+  integration: new LambdaProxyIntegration({
+    handler,
+  }),
 });
 
-httpApi.addHttpRoute('/foo/bar', 'FooBar', {
-  targetUrl: awsUrl,
-  method: apigatewayv2.HttpMethod.ANY
-});
-```
-
-## Integration
-
-Integrations connect a route to backend resources. HTTP APIs support Lambda proxy and HTTP proxy integrations.
-For example, you can configure a POST request to the /signup route of your API to integrate with a Lambda function
-that handles signing up customers.
-
-Use `Integration` to create the integration resources
-
-```ts
-// create API
-const api = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-  targetHandler
-});
-// create Integration
-const integ = new apigatewayv2.Integration(stack, 'IntegRootHandler', {
-  apiId: api.httpApiId,
-  integrationMethod: apigatewayv2.HttpMethod.ANY,
-  integrationType: apigatewayv2.IntegrationType.HTTP_PROXY,
-  integrationUri: awsUrl
-});
-// create a specific route with the integration above for the API
-new apigatewayv2.Route(stack, 'SomeDeepRoute', {
-  api: httpApi,
-  httpPath: '/some/very/deep/route/path',
-  integration
-});
-
-```
-
-You may use `LambdaProxyIntegraion` or `HttpProxyIntegration` to easily create the integrations.
-
-```ts
-// create a Lambda proxy integration
-new apigatewayv2.LambdaProxyIntegration(stack, 'IntegRootHandler', {
-  api
-  targetHandler
-});
-
-// or create a Http proxy integration
-new apigatewayv2.HttpProxyIntegration(stack, 'IntegRootHandler', {
-  api
-  targetUrl
-});
-```
-
-## Samples
-
-```ts
-// create a HTTP API with HTTP proxy integration as the $default route
-const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-  targetUrl: checkIpUrl
-});
-// print the API URL
-new cdk.CfnOutput(stack, 'URL', { value: httpApi.url} );
-
-// create another HTTP API with Lambda proxy integration as the $default route
-const httpApi2 = new apigatewayv2.HttpApi(stack, 'HttpApi2', {
-  targetHandler: handler
-});
-// print the API URL
-new cdk.CfnOutput(stack, 'URL2', { value: httpApi2.url });
-
-// create a root route for the API with the integration we created above and assign the route resource
-// as a 'root' property to the API
-httpApi2.root = httpApi2.addLambdaRoute('/', 'RootRoute', {
-  target: rootHandler
-})
-
-// Now, extend the route tree from the root
-httpApi2.root
-  // HTTP ANY /foo
-  .addLambdaRoute('foo', 'Foo', {
-    target: handler,
-  })
-  // HTTP ANY /foo/aws
-  .addHttpRoute('aws',  'AwsPage', {
-    targetUrl: awsUrl,
-    method: apigatewayv2.HttpMethod.ANY
-  })
-  // HTTP GET /foo/aws/checkip
-  .addHttpRoute('checkip', 'CheckIp', {
-    targetUrl: checkIpUrl,
-    method: apigatewayv2.HttpMethod.GET
-  });
-
-// And create a specific route for it as well
-// HTTP ANY /some/very/deep/route/path
-httpApi2.addLambdaRoute('/some/very/deep/route/path', 'FooBar', {
-  target: handler
-});
 ```
