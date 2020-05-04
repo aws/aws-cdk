@@ -11,7 +11,7 @@ import * as path from 'path';
  */
 export interface EvaluateExpressionProps {
   /**
-   * The expression to evaluate. It must contain state paths.
+   * The expression to evaluate. The expression may contain state paths.
    *
    * @example '$.a + $.b'
    */
@@ -56,17 +56,16 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
 
-    if (!matches) {
-      throw new Error('No paths found in expression');
+    let expressionAttributeValues: {} | undefined;
+    if (matches) {
+      expressionAttributeValues = matches.reduce(
+        (acc, m) => ({
+          ...acc,
+          [m]: sfn.Data.stringAt(m), // It's okay to always use `stringAt` here
+        }),
+        {},
+      );
     }
-
-    const expressionAttributeValues = matches.reduce(
-      (acc, m) => ({
-        ...acc,
-        [m]: sfn.Data.stringAt(m), // It's okay to always use `stringAt` here
-      }),
-      {},
-    );
 
     const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
 
