@@ -25,12 +25,12 @@ and powerful custom resources and includes the following capabilities:
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
-with `cfn.CustomResource` and a user-provided AWS Lambda function which
-implements the actual handler.
+with a `CustomResource` and a user-provided AWS Lambda function which implements
+the actual handler.
 
 ```ts
+import { CustomResource } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
@@ -39,8 +39,8 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   isCompleteHandler: isComplete // optional async "waiter"
 });
 
-new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
-new cfn.CustomResource(this, 'Resource2', { provider: myProvider });
+new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
+new CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });
 ```
 
 Providers are implemented through AWS Lambda functions that are triggered by the

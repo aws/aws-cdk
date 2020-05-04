@@ -1,8 +1,7 @@
 /**
  * Capabilities that affect whether CloudFormation is allowed to change IAM resources
- * @deprecated use `core.CfnCapabilities`
  */
-export enum CloudFormationCapabilities {
+export enum CfnCapabilities {
   /**
    * No IAM Capabilities
    *

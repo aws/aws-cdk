@@ -1,6 +1,7 @@
 *.js
 *.d.ts
 tsconfig.json
+*.generated.ts
 *.js.map
 dist
 coverage

@@ -1,6 +1,5 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
@@ -110,9 +109,9 @@ export class ClusterResource extends Construct {
       resources: [ '*' ],
     }));
 
-    const resource = new cfn.CustomResource(this, 'Resource', {
+    const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       properties: {
         Config: props,
         AssumeRoleArn: this.creationRole.roleArn,

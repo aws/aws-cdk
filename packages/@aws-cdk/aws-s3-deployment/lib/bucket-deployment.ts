@@ -1,4 +1,3 @@
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -187,8 +186,8 @@ export class BucketDeployment extends cdk.Construct {
       }));
     }
 
-    new cloudformation.CustomResource(this, 'CustomResource', {
-      provider: cloudformation.CustomResourceProvider.lambda(handler),
+    new cdk.CustomResource(this, 'CustomResource', {
+      serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
