@@ -250,6 +250,7 @@ implemented in one of the following ways (ordered from low-level to high-level):
 
 * `@aws-cdk/aws-sns.Topic`
 * `@aws-cdk/aws-lambda.Function`
+* `@aws-cdk/core.CustomResourceProvider`
 * `@aws-cdk/custom-resources.Provider`
 
 **NOTE**: when defining resources for a custom resource provider, you will
@@ -303,6 +304,54 @@ const fn = new lambda.Function(this, 'MyProvider');
 new CustomResource(this, 'MyResource', {
   serviceToken: lambda.functionArn
 });
+```
+
+#### The `core.CustomResourceProvider` class
+
+The class [`@aws-cdk/core.CustomResourceProvider`] offers a basic low-level
+framework designed to implement simple and slim custom resource providers. It
+currently only supports Node.js-based user handlers, and it does not have
+support for asynchronous waiting (handler cannot exceed the 15min lambda
+timeout).
+
+[`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
+
+Set `serviceToken` to `provider.serviceToken` to use this provider:
+
+```ts
+import { CustomResource, CustomResourceProvider } from '@aws-cdk/core';
+const provider = new CustomResourceProvider(this, 'MyProvider', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+new CustomResource(this, 'MyResource', {
+  serviceToken: provider.serviceToken
+});
+```
+
+The directory `my-handler` must include an `index.js` file which exports an async function named `handler`. This function accepts the CloudFormation resource event object and returns an object with the following structure:
+
+```js
+exports.handler = async function(event) {
+  const props = event.ResourceProperties;
+  const oldProps = event.OldResourceProperties; // in UPDATE
+  switch (event.RequestType) {
+    // ...
+  }
+  return {
+    // value of "Ref" (defaults to "event.PhysicalResourceId" or "event.RequestId")
+    PhysicalResourceId: "REF",
+    // values for "Fn::GetAtt" (optional)
+    Data: {
+      Att1: "BAR",
+      Att2: "BAZ"
+    },
+    // user-visible message (optional)
+    Reason: "User-visible message",
+    // hides attribute values from the console (optional)
+    NoEcho: true
+  };
+}
 ```
 
 #### The Custom Resource Provider Framework
