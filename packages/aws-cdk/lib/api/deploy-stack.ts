@@ -149,8 +149,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
-  const terminationProtection = stackArtifact.terminationProtection ?? false;
-
   if (await canSkipDeploy(options, cloudFormationStack)) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     return {
@@ -237,6 +235,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }
 
   // Update termination protection only if it has changed.
+  const terminationProtection = stackArtifact.terminationProtection ?? false;
   if (cloudFormationStack.terminationProtection !== terminationProtection) {
     debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
     await cfn.updateTerminationProtection({
