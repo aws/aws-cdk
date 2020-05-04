@@ -99,13 +99,14 @@ export = {
     test.done();
   },
 
-  'properties are pascal-cased by default'(test: Test) {
+  'properties can be pascal-cased'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new CustomResource(stack, 'MyCustomResource', {
       serviceToken: 'MyServiceToken',
+      pascalCaseProperties: true,
       properties: {
         prop1: 'boo',
         boom: {
@@ -134,14 +135,13 @@ export = {
     test.done();
   },
 
-  'pascal-casing of props can be disabled'(test: Test) {
+  'pascal-casing of props is disabled by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new CustomResource(stack, 'MyCustomResource', {
       serviceToken: 'MyServiceToken',
-      pascalCaseProperties: false,
       properties: {
         prop1: 'boo',
         boom: {
