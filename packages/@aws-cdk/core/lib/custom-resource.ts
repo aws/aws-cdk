@@ -109,7 +109,7 @@ export class CustomResource extends Resource {
     super(scope, id);
 
     const type = renderResourceType(props.resourceType);
-    const pascalCaseProperties = props.pascalCaseProperties ?? true;
+    const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
     this.resource = new CfnResource(this, 'Default', {
