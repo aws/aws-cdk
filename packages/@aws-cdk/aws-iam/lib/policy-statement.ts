@@ -56,7 +56,7 @@ export class PolicyStatement {
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
-  private principalConditions?: string;
+  private principalConditionsJson?: string;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -398,12 +398,12 @@ export class PolicyStatement {
   private addPrincipalConditions(conditions: Conditions) {
     // Stringifying the conditions is an easy way to do deep equality
     const theseConditions = JSON.stringify(conditions);
-    if (this.principalConditions === undefined) {
+    if (this.principalConditionsJson === undefined) {
       // First principal, anything goes
-      this.principalConditions = theseConditions;
+      this.principalConditionsJson = theseConditions;
     } else {
-      if (this.principalConditions !== theseConditions) {
-        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditions}' and '${theseConditions}'). Use multiple statements instead.`);
+      if (this.principalConditionsJson !== theseConditions) {
+        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
       }
     }
     this.addConditions(conditions);
