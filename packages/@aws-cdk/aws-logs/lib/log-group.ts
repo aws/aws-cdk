@@ -15,6 +15,12 @@ export interface ILogGroup extends IResource {
   readonly logGroupArn: string;
 
   /**
+   * The name of this log group
+   * @attribute
+   */
+  readonly logGroupName: string;
+
+  /**
    * Create a new Log Stream for this Log Group
    *
    * @param id Unique identifier for the construct in its parent
