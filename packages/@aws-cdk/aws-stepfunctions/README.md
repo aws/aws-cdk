@@ -115,7 +115,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
-* [`Custom`](#custom)
+* [`CustomState`](#customstate)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -259,7 +259,7 @@ const map = new stepfunctions.Map(this, 'Map State', {
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
-### Custom
+### CustomState
 
 It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
 the states or service integrations you are looking for. The primary reasons for this lack of
@@ -275,11 +275,7 @@ JSON-based object as the state definition.
 
 [Code Snippets](https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1) are available and can be plugged in as the state definition.
 
-All of the state properties will be embedded in the JSON that defines it. Custom states can be
-chained together and used like any other state. The `toStateJson` API returns the state JSON
-that was supplied when creating the custom state without any modification.
-
-Custom states can be chained together with any of the other states to create the state machine
+Custom states can be chained together with any of the other states to create your state machine
 definition. You will also need to provide any permissions that are required to the `role` that
 the State Machine uses.
 

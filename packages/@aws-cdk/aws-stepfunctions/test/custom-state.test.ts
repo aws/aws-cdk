@@ -26,6 +26,9 @@ describe('Custom State', () => {
     });
 
     // THEN
-    expect(customState.toStateJson()).toStrictEqual(stateJson);
+    expect(customState.toStateJson()).toStrictEqual({
+      ...stateJson,
+      End: true,
+    });
   });
 });

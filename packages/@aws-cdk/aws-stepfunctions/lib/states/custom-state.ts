@@ -24,10 +24,8 @@ export class CustomState extends State implements IChainable, INextable {
 
   /**
    * Amazon States Language (JSON-based) definition of the state
-   *
-   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html
    */
-  public readonly stateJson: { [key: string]: any};
+  private readonly stateJson: { [key: string]: any};
 
   constructor(scope: cdk.Construct, id: string, props: CustomStateProps) {
     super(scope, id, {});
@@ -48,6 +46,9 @@ export class CustomState extends State implements IChainable, INextable {
    * Returns the Amazon States Language object for this state
    */
   public toStateJson(): object {
-    return this.stateJson;
+    return {
+      ...this.renderNextEnd(),
+      ...this.stateJson,
+    };
   }
 }
