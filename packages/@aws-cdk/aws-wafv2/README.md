@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import wafv2 = require('@aws-cdk/aws-wafv2');
+import * as wafv2 from '@aws-cdk/aws-wafv2';
 ```

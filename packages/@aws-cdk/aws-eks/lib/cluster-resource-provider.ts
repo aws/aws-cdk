@@ -1,7 +1,6 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as path from 'path';
 
@@ -61,4 +60,9 @@ export class ClusterResourceProvider extends NestedStack {
 
     this.roles = [ onEvent.role!, isComplete.role! ];
   }
+
+  /**
+   * The custom resource service token for this provider.
+   */
+  public get serviceToken() { return this.provider.serviceToken; }
 }

@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { ISubnet, SelectedSubnets, Subnet, SubnetType } from './vpc';
+import { ISubnet, Subnet, SubnetType } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -120,14 +120,16 @@ export function range(n: number): number[] {
 /**
  * Return the union of table IDs from all selected subnets
  */
-export function allRouteTableIds(...ssns: SelectedSubnets[]): string[] {
+export function allRouteTableIds(subnets: ISubnet[]): string[] {
   const ret = new Set<string>();
-  for (const ssn of ssns) {
-    for (const subnet of ssn.subnets) {
-      if (subnet.routeTable && subnet.routeTable.routeTableId) {
-        ret.add(subnet.routeTable.routeTableId);
-      }
+  for (const subnet of subnets) {
+    if (subnet.routeTable && subnet.routeTable.routeTableId) {
+      ret.add(subnet.routeTable.routeTableId);
     }
   }
   return Array.from(ret);
+}
+
+export function flatten<A>(xs: A[][]): A[] {
+  return Array.prototype.concat.apply([], xs);
 }

@@ -61,6 +61,13 @@ export interface StackProps {
    * @default {}
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -182,6 +189,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
+  /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
@@ -254,6 +266,7 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+    this.terminationProtection = props.terminationProtection;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -778,6 +791,7 @@ export class Stack extends Construct implements ITaggable {
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: this.templateFile,
+      terminationProtection: this.terminationProtection,
       ...stackNameProperty,
     };
 

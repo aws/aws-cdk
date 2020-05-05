@@ -1,8 +1,13 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as net from 'net';
-import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
-import { IVpc } from './vpc';
+import {
+  CfnCustomerGateway,
+  CfnVPNConnection,
+  CfnVPNConnectionRoute,
+  CfnVPNGateway,
+} from './ec2.generated';
+import {IVpc, SubnetSelection} from './vpc';
 
 export interface IVpnConnection extends cdk.IResource {
   /**
@@ -24,6 +29,17 @@ export interface IVpnConnection extends cdk.IResource {
    * The ASN of the customer gateway.
    */
   readonly customerGatewayAsn: number;
+}
+
+/**
+ * The virtual private gateway interface
+ */
+export interface IVpnGateway extends cdk.IResource {
+
+  /**
+   * The virtual private gateway Id
+   */
+  readonly gatewayId: string
 }
 
 export interface VpnTunnelOption {
@@ -75,6 +91,34 @@ export interface VpnConnectionOptions {
   readonly tunnelOptions?: VpnTunnelOption[];
 }
 
+/**
+ * The VpnGateway Properties
+ */
+export interface VpnGatewayProps {
+
+  /**
+   * Default type ipsec.1
+   */
+  readonly type: string;
+
+  /**
+   * Explicitely specify an Asn or let aws pick an Asn for you.
+   * @default 65000
+   */
+  readonly amazonSideAsn?: number;
+}
+
+/**
+ * Options for the Vpc.enableVpnGateway() method
+ */
+export interface EnableVpnGatewayOptions extends VpnGatewayProps {
+  /**
+   * Provide an array of subnets where the route propagation shoud be added.
+   * @default noPropagation
+   */
+  readonly vpnRoutePropagation?: SubnetSelection[]
+}
+
 export interface VpnConnectionProps extends VpnConnectionOptions {
   /**
    * The VPC to connect to.
@@ -98,6 +142,28 @@ export enum VpnConnectionType {
   DUMMY = 'dummy'
 }
 
+/**
+ * The VPN Gateway that shall be added to the VPC
+ *
+ * @resource AWS::EC2::VPNGateway
+ */
+export class VpnGateway extends cdk.Resource implements IVpnGateway {
+
+  /**
+   * The virtual private gateway Id
+   */
+  public readonly gatewayId: string;
+
+  constructor(scope: cdk.Construct, id: string, props: VpnGatewayProps) {
+    super(scope, id);
+
+    // This is 'Default' instead of 'Resource', because using 'Default' will generate
+    // a logical ID for a VpnGateway which is exactly the same as the logical ID that used
+    // to be created for the CfnVPNGateway (and 'Resource' would not do that).
+    const vpnGW = new CfnVPNGateway(this, 'Default', props);
+    this.gatewayId = vpnGW.ref;
+  }
+}
 /**
  * Define a VPN Connection
  *
@@ -151,7 +217,10 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
     super(scope, id);
 
     if (!props.vpc.vpnGatewayId) {
-      throw new Error('Cannot create a VPN connection when VPC has no VPN gateway.');
+      props.vpc.enableVpnGateway({
+        type: 'ipsec.1',
+        amazonSideAsn: props.asn,
+      });
     }
 
     if (!net.isIPv4(props.ip)) {

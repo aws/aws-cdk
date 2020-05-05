@@ -86,10 +86,10 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key":"Name",
-            "Value":"aws-ecs-integ/Vpc/PublicSubnet1"
-            }
-          ]
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -183,10 +183,10 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key":"Name",
-            "Value":"aws-ecs-integ/Vpc/PublicSubnet2"
-            }
-          ]
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -409,9 +409,6 @@
     "ServiceD69D759B": {
       "Type": "AWS::ECS::Service",
       "Properties": {
-        "TaskDefinition": {
-          "Ref": "TaskDef54694570"
-        },
         "Cluster": {
           "Ref": "FargateCluster7CCD5F93"
         },
@@ -452,6 +449,9 @@
               }
             ]
           }
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
         }
       },
       "DependsOn": [

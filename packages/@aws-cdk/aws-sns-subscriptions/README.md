@@ -19,10 +19,12 @@ Subscriptions can be added to the following endpoints:
 * AWS Lambda
 * Email
 
+Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions.
+
 Create an Amazon SNS Topic to add subscriptions.
 
 ```ts
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 
 const myTopic = new sns.Topic(this, 'MyTopic');
 ```
@@ -32,7 +34,7 @@ const myTopic = new sns.Topic(this, 'MyTopic');
 Add an HTTP or HTTPS Subscription to your topic:
 
 ```ts
-import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
 myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
 ```
@@ -52,8 +54,8 @@ myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString()));
 Subscribe a queue to your topic:
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
-import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
 const myQueue = new sqs.Queue(this, 'MyQueue');
 
@@ -68,8 +70,8 @@ reading the initial message from the queue and visiting the link found in it.
 Subscribe an AWS Lambda function to your topic:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
 const myFunction = new lambda.Function(this, 'Echo', {
   handler: 'index.handler',
@@ -85,7 +87,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(myFunction));
 Subscribe an email address to your topic:
 
 ```ts
-import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
 myTopic.addSubscription(new subscriptions.EmailSubscription('foo@bar.com'));
 ```

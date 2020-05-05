@@ -95,10 +95,20 @@ export class Domain extends Resource {
 
   /**
    * Maps a branch to a sub domain
+   *
+   * @param branch The branch
+   * @param prefix The prefix. Use '' to map to the root of the domain. Defaults to branch name.
    */
   public mapSubDomain(branch: IBranch, prefix?: string) {
     this.subDomains.push({ branch, prefix });
     return this;
+  }
+
+  /**
+   * Maps a branch to the domain root
+   */
+  public mapRoot(branch: IBranch) {
+    return this.mapSubDomain(branch, '');
   }
 
   protected validate() {
@@ -112,7 +122,7 @@ export class Domain extends Resource {
   private renderSubDomainSettings() {
     return this.subDomains.map(s => ({
       branchName: s.branch.branchName,
-      prefix: s.prefix || s.branch.branchName,
+      prefix: s.prefix === undefined ? s.branch.branchName : s.prefix,
     }));
   }
 }
@@ -127,7 +137,7 @@ export interface SubDomain {
   readonly branch: IBranch;
 
   /**
-   * The prefix
+   * The prefix. Use '' to map to the root of the domain
    *
    * @default - the branch name
    */

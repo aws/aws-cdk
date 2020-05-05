@@ -24,6 +24,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - name derived from artifact ID
    */
   readonly stackName?: string;
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**

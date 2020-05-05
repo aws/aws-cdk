@@ -3,7 +3,7 @@ import { IAlarmAction } from './alarm-action';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric, MetricStatConfig } from './metric-types';
+import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
@@ -326,6 +326,7 @@ export class Alarm extends Resource implements IAlarm {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
+                period: mathExprHasSubmetrics(expr) ? undefined : expr.period,
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
@@ -386,6 +387,10 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
     return statistic.toLowerCase();
   }
   return undefined;
+}
+
+function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
+  return Object.keys(expr.usingMetrics).length > 0;
 }
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

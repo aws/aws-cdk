@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as minimatch from 'minimatch';
 import * as path from 'path';
-import { FollowMode } from './follow-mode';
+import { SymlinkFollowMode } from './options';
 
 /**
  * Determines whether a given file should be excluded or not based on given
@@ -40,15 +40,15 @@ export function shouldExclude(exclude: string[], filePath: string): boolean {
  *
  * @returns true if the link should be followed.
  */
-export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: string): boolean {
+export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPath: string): boolean {
   switch (mode) {
-    case FollowMode.ALWAYS:
+    case SymlinkFollowMode.ALWAYS:
       return fs.existsSync(realPath);
-    case FollowMode.EXTERNAL:
+    case SymlinkFollowMode.EXTERNAL:
       return !_isInternal() && fs.existsSync(realPath);
-    case FollowMode.BLOCK_EXTERNAL:
+    case SymlinkFollowMode.BLOCK_EXTERNAL:
       return _isInternal() && fs.existsSync(realPath);
-    case FollowMode.NEVER:
+    case SymlinkFollowMode.NEVER:
       return false;
     default:
       throw new Error(`Unsupported FollowMode: ${mode}`);

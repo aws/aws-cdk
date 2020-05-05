@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import opsworkscm = require('@aws-cdk/aws-opsworkscm');
+import * as opsworkscm from '@aws-cdk/aws-opsworkscm';
 ```

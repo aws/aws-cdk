@@ -16,6 +16,27 @@ async function nukeCache(cacheDir: string) {
   await fs.remove(cacheDir);
 }
 
+test('default account cache uses CDK_HOME', () => {
+  process.env.CDK_HOME = '/banana';
+  const cache = new AccountAccessKeyCache();
+  expect((cache as any).cacheFile).toContain('/banana/');
+});
+
+test('account cache does not fail when given a nonwritable directory', async () => {
+  const accessError = new Error('Oh no');
+  (accessError as any).code = 'EACCES';
+
+  return withMocked(fs, 'mkdirs', async (mkdirs) => {
+    // Have to do this because mkdirs has 2 overloads and it confuses TypeScript
+    (mkdirs as unknown as jest.Mock<Promise<void>, [any]>).mockRejectedValue(accessError);
+
+    const cache = new AccountAccessKeyCache('/abc/xyz');
+    await cache.fetch('xyz', () => Promise.resolve({ accountId: 'asdf', partition: 'swa' }));
+
+    // No exception
+  });
+});
+
 test('get(k) when cache is empty', async () => {
   const { cacheDir, cacheFile, cache } = await makeCache();
   try {
@@ -89,3 +110,28 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
     await nukeCache(cacheDir);
   }
 });
+
+function withMocked<A extends object, K extends keyof A, B>(obj: A, key: K, block: (fn: jest.Mocked<A>[K]) => B): B {
+  const original = obj[key];
+  const mockFn = jest.fn();
+  (obj as any)[key] = mockFn;
+
+  let ret;
+  try {
+    ret = block(mockFn as any);
+  } catch (e) {
+    obj[key] = original;
+    throw e;
+  }
+
+  if (!isPromise(ret)) {
+    obj[key] = original;
+    return ret;
+  }
+
+  return ret.finally(() => { obj[key] = original; }) as any;
+}
+
+function isPromise<A>(object: any): object is Promise<A> {
+  return Promise.resolve(object) === object;
+}

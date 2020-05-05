@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import medialive = require('@aws-cdk/aws-medialive');
+import * as medialive from '@aws-cdk/aws-medialive';
 ```

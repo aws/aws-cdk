@@ -2,8 +2,7 @@ import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
-import { copyDirectory } from '../../lib/fs/copy';
-import { FollowMode } from '../../lib/fs/follow-mode';
+import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
 
 export = {
   'Default: copies all files and subdirectories, with default follow mode is "External"'(test: Test) {
@@ -11,7 +10,7 @@ export = {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
     // WHEN
-    copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir);
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir);
 
     // THEN
     test.deepEqual(tree(outdir), [
@@ -34,8 +33,8 @@ export = {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
     // WHEN
-    copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.ALWAYS,
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+      follow: SymlinkFollowMode.ALWAYS,
     });
 
     // THEN
@@ -59,8 +58,8 @@ export = {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
     // WHEN
-    copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.NEVER,
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+      follow: SymlinkFollowMode.NEVER,
     });
 
     // THEN
@@ -82,8 +81,8 @@ export = {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
     // WHEN
-    copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.EXTERNAL,
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+      follow: SymlinkFollowMode.EXTERNAL,
     });
 
     // THEN
@@ -107,7 +106,7 @@ export = {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
     // WHEN
-    copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
       exclude: [
         '*',
         '!subdir2',

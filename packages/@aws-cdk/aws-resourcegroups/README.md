@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import resourcegroups = require('@aws-cdk/aws-resourcegroups');
+import * as resourcegroups from '@aws-cdk/aws-resourcegroups';
 ```

@@ -315,6 +315,11 @@ export interface MetricExpressionConfig {
    * Metrics used in the math expression
    */
   readonly usingMetrics: Record<string, IMetric>;
+
+  /**
+   * How many seconds to aggregate over
+   */
+  readonly period: number;
 }
 
 /**

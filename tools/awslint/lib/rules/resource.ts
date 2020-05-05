@@ -207,7 +207,13 @@ resourceLinter.add({
   code: 'grant-result',
   message: `"grant" method must return ${GRANT_RESULT_FQN}`,
   eval: e => {
-    const grantResultType = e.ctx.sys.findFqn(GRANT_RESULT_FQN);
+    const grantResultType = e.ctx.sys.tryFindFqn(GRANT_RESULT_FQN);
+
+    // this implies that we are at a lower layer (i.e. @aws-cdk/core)
+    if (!grantResultType) {
+      return;
+    }
+
     const grantMethods = e.ctx.construct.classType.allMethods.filter(m => m.name.startsWith('grant'));
 
     for (const grantMethod of grantMethods) {

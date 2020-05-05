@@ -1,7 +1,7 @@
 import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { SubnetType, Vpc } from '../lib';
+import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -185,6 +185,26 @@ export = {
 
       // THEN
       test.equals(subnets.subnets.length, 2);
+
+      test.done();
+    },
+
+    'don\'t crash when using subnetgroup name in lookup VPC'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
+
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        instanceType: new InstanceType('t2.large'),
+        machineImage: new GenericLinuxImage({ dummy: 'ami-1234' }),
+        vpcSubnets: {
+          subnetGroupName: 'application_layer',
+        },
+      });
+
+      // THEN -- no exception occurred
 
       test.done();
     },

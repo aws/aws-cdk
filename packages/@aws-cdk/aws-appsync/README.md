@@ -64,8 +64,8 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const userPool = new UserPool(this, 'UserPool', {
-      signInType: SignInType.USERNAME,
+    const userPool = new UserPool(this, 'UserPool'{
+      userPoolName: 'myPool',
     });
 
     const api = new GraphQLApi(this, 'Api', {

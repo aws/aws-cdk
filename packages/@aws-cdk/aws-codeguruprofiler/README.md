@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import codeguruprofiler = require('@aws-cdk/aws-codeguruprofiler');
+import * as codeguruprofiler from '@aws-cdk/aws-codeguruprofiler';
 ```

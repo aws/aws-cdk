@@ -516,7 +516,7 @@
             {
               "Action": "route53:changeResourceRecordSets",
               "Effect": "Allow",
-              "Resource":  {
+              "Resource": {
                 "Fn::Join": [
                   "",
                   [

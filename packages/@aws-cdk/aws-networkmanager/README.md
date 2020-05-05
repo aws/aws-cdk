@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import networkmanager = require('@aws-cdk/aws-networkmanager');
+import * as networkmanager from '@aws-cdk/aws-networkmanager';
 ```

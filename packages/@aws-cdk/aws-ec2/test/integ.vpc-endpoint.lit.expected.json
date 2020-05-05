@@ -541,6 +541,15 @@
           },
           {
             "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
           }
         ],
         "VpcEndpointType": "Gateway"
@@ -587,6 +596,15 @@
           },
           {
             "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
           }
         ],
         "VpcEndpointType": "Gateway"
