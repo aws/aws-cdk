@@ -13,6 +13,7 @@ export interface TestStackArtifact {
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  terminationProtection?: boolean;
 }
 
 export interface TestAssembly {
@@ -71,6 +72,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       metadata,
       properties: {
         templateFile,
+        terminationProtection: stack.terminationProtection,
       },
     });
   }
