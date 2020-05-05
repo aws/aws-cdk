@@ -88,7 +88,7 @@ export interface OpenIdConnectProviderProps {
  * @see
  * https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  */
-export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
+export class OpenIdConnectProvider extends Construct implements IOpenIdConnectProvider {
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
@@ -128,6 +128,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
   }
+
+  public get stack() { return Stack.of(this); }
 
   private getOrCreateProvider() {
     return CustomResourceProvider.getOrCreate(this, RESOURCE_TYPE, {
