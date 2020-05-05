@@ -1,13 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag, Token } from '@aws-cdk/core';
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance, CfnLaunchTemplate } from './ec2.generated';
+import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
+import { ILaunchTemplate } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { BlockDevice, EbsDeviceVolumeType } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 
 /**
@@ -104,6 +105,11 @@ export interface InstanceProps extends InstanceBaseProps {
    */
   readonly privateIpAddress?: string;
 
+  /**
+   * Launch template to use unspecified fields from
+   *
+   * @default - Don't use a Launch Template
+   */
   readonly launchTemplate?: ILaunchTemplate;
 }
 /**
@@ -114,7 +120,7 @@ interface InstanceBaseProps {
   /**
    * Name of SSH keypair to grant access to instance
    *
-   * @default - No SSH access will be possible.
+   * @default - Use key from Launch Template if available, otherwise no SSH access will be possible.
    */
   readonly keyName?: string;
 
@@ -149,21 +155,24 @@ interface InstanceBaseProps {
 
   /**
    * Type of instance to launch
+   *
+   * @default - Use instance type from Launch Template (which must be set).
    */
-  readonly instanceType: InstanceType;
+  readonly instanceType?: InstanceType;
 
   /**
    * AMI to launch
+   *
+   * @default - Use AMI from Launch Template (which must be set).
    */
-  readonly machineImage: IMachineImage;
+  readonly machineImage?: IMachineImage;
 
   /**
    * Specific UserData to use
    *
    * The UserData may still be mutated after creation.
    *
-   * @default - A UserData object appropriate for the MachineImage's
-   * Operating System is created.
+   * @default - Use the UserData from the Launch Template, or no user data.
    */
   readonly userData?: UserData;
 
@@ -177,7 +186,7 @@ interface InstanceBaseProps {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
-   * @default - A role will automatically be created, it can be accessed via the `role` property
+   * @default - Use the Role from the Launch Template, otherwise a role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
 
@@ -191,78 +200,10 @@ interface InstanceBaseProps {
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
-   * @default - Uses the block device mapping of the AMI
+   * @default - Uses the block device mapping from the Launch Template, otherwise from the AMI
    */
   readonly blockDevices?: BlockDevice[];
 }
-
-export interface LaunchTemplateProps extends InstanceBaseProps {
-
-  /**
-   * The market (purchasing) option for the instances.
-   */
-  readonly instanceMarketOptions?: string; // TODO: create type
-
-  /**
-   * The metadata options for the instance.
-   * Instance metadata is data about your instance that you can use to configure or manage the running instance.
-   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
-   */
-  readonly metadataOptions?: string; // TODO: create type
-
-  /**
-   * Instance's Capacity Reservation targeting option.
-   * @default - `open`, the instance will run in any open capacity reservation that has matching attributes
-   */
-  readonly capacityReservationSpecification?: string; // TODO: create type
-
-  /**
-   * The placement for the instance.
-   */
-  readonly placement?: string; // TODO: create type
-
-  /**
-   * The tags to apply to the resources during launch. You can only tag instances and volumes on launch.
-   * The specified tags are applied to all instances or volumes that are created during launch.
-   */
-  readonly tagSpecifications?: string; // TODO: create type?
-
-}
-
-export interface ILaunchTemplate {
-  readonly version: string;
-  readonly id: string;
-}
-
-export class LaunchTemplate extends Resource implements ILaunchTemplate {
-
-  public static fromLaunchTemplateId(id: string, version: string): ILaunchTemplate {
-    class Import implements ILaunchTemplate {
-      public readonly version = version;
-      public readonly id = id;
-    }
-    return new Import();
-  }
-
-  // TODO: implement
-  // public static fromLaunchTemplateName(version: string): ILaunchTemplate {
-  //   return new LaunchTemplate();
-  // }
-
-  public readonly version: string;
-  public readonly id: string;
-
-  constructor(scope: Construct, id: string, props: LaunchTemplateProps) {
-    super(scope, id);
-    const resource = new CfnLaunchTemplate(this, 'Resource', {
-      launchTemplateData: {
-        keyName: props.keyName
-      }
-    });
-    this.id = resource.ref;
-    this.version = Token.asString(resource.getAtt('LatestVersionNumber'));
-    }
-  }
 
 /**
  * This represents a single EC2 instance
@@ -325,6 +266,8 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
+  private readonly _role?: iam.IRole;
+  private readonly _grantPrincipal?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -341,9 +284,9 @@ export class Instance extends Resource implements IInstance {
     this.securityGroups.push(this.securityGroup);
     Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
-    this.role = props.role || new iam.Role(this, 'InstanceRole', {
+    this._role = props.role ?? (props.launchTemplate ? undefined : new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
+    }));
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
@@ -382,9 +325,10 @@ export class Instance extends Resource implements IInstance {
       blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
       launchTemplate: props.launchTemplate ? {
-        version: props.launchTemplate.version,
-        launchTemplateId: props.launchTemplate.id
-      } : undefined
+        version: props.launchTemplate.versionNumber,
+        launchTemplateId: props.launchTemplate.launchTemplateId,
+        launchTemplateName: props.launchTemplate.launchTemplateName,
+      } : undefined,
     });
     this.instance.node.addDependency(this.role);
 
@@ -438,4 +382,33 @@ export class Instance extends Resource implements IInstance {
       };
     }
   }
+}
+
+/**
+ * Synthesize an array of block device mappings from a list of block device
+ *
+ * @param construct the instance/asg construct, used to host any warning
+ * @param blockDevices list of block devices
+ */
+function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
+  return blockDevices.map<CfnInstance.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
+    const { virtualName, ebsDevice: ebs } = volume;
+
+    if (ebs) {
+      const { iops, volumeType } = ebs;
+
+      if (!iops) {
+        if (volumeType === EbsDeviceVolumeType.IO1) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        }
+      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
+        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      }
+    }
+
+    return {
+      deviceName, ebs, virtualName,
+      noDevice: mappingEnabled === false ? {} : undefined,
+    };
+  });
 }
