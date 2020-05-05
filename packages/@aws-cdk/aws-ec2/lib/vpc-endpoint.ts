@@ -5,8 +5,8 @@ import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
-import { allRouteTableIds } from './util';
-import { IVpc, SubnetSelection, SubnetType } from './vpc';
+import { allRouteTableIds, flatten } from './util';
+import { ISubnet, IVpc, SubnetSelection } from './vpc';
 
 /**
  * A VPC endpoint.
@@ -113,7 +113,21 @@ export interface GatewayVpcEndpointOptions {
   /**
    * Where to add endpoint routing.
    *
-   * @default private subnets
+   * By default, this endpoint will be routable from all subnets in the VPC.
+   * Specify a list of subnet selection objects here to be more specific.
+   *
+   * @default - All subnets in the VPC
+   * @example
+   *
+   * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
+   *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+   *   // Add only to ISOLATED subnets
+   *   subnets: [
+   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *   ]
+   * });
+   *
+   *
    */
   readonly subnets?: SubnetSelection[]
 }
@@ -166,8 +180,10 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
-    const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
+    const subnets: ISubnet[] = props.subnets
+      ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))
+      : [...props.vpc.privateSubnets, ...props.vpc.publicSubnets, ...props.vpc.isolatedSubnets];
+    const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
       throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
