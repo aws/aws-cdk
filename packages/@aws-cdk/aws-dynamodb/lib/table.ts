@@ -252,7 +252,7 @@ export interface ITable extends IResource {
    * principal's policy.
    * @param grantee The principal (no-op if undefined)
    * @param tableActions The set of actions to allow (i.e. ["dynamodb:PutItem", "dynamodb:GetItem", ...])
-   * @param keyAction The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
+   * @param keyActions The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
@@ -261,8 +261,8 @@ export interface ITable extends IResource {
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   * @param keyAction The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
+   * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   * @param keyActions The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
@@ -456,7 +456,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal (no-op if undefined)
    * @param tableActions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
-   * @param otherResourceArns
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
     const resources = [this.tableArn,
@@ -484,7 +484,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal (no-op if undefined)
    * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
-   * @param otherResourceArns
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
     if (!this.tableStreamArn) {
