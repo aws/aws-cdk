@@ -217,7 +217,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, this.securityGroups);
+      this.configureAwsVpcNetworkingWithMultipleSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, this.securityGroups);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
       // We have to be smart here -- by default future Security Group rules would be created
