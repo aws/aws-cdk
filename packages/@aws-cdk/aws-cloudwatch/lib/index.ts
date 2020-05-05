@@ -5,6 +5,7 @@ export * from './graph';
 export * from './layout';
 export * from './metric';
 export * from './metric-types';
+export * from './log-query';
 export * from './text';
 export * from './widget';
 

@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, LogQueryWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -107,6 +107,35 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = {logGroupName: 'my-log-group'};
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'table',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
 
