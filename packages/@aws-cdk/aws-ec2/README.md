@@ -545,9 +545,14 @@ with the command `aws ec2-instance-connect send-ssh-public-key` to provide your 
 
 EBS volume for the bastion host can be encrypted like:
 ```ts
-    new BastionHostLinux(stack, 'Bastion', {
+    const host = new ec2.BastionHostLinux(stack, 'BastionHost', {
       vpc,
-      ebsVolumeEncryption: true
+      blockDevices: [{
+        deviceName: 'EBSBastionHost',
+        volume: BlockDeviceVolume.ebs(10, {
+          encrypted: true,
+        }),
+      }],
     });
 ```
 

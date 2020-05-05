@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { BastionHostLinux, SubnetType, Vpc } from '../lib';
+import { BastionHostLinux, BlockDeviceVolume, SubnetType, Vpc } from '../lib';
 
 export = {
   'default instance is created in basic'(test: Test) {
@@ -62,7 +62,12 @@ export = {
     // WHEN
     new BastionHostLinux(stack, 'Bastion', {
       vpc,
-      ebsVolumeEncryption: true,
+      blockDevices: [{
+        deviceName: 'EBSBastionHost',
+        volume: BlockDeviceVolume.ebs(10, {
+          encrypted: true,
+        }),
+      }],
     });
 
     // THEN

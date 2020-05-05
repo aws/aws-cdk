@@ -7,7 +7,7 @@ import { IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
-import { BlockDeviceVolume } from './volume';
+import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 
 /**
@@ -67,12 +67,18 @@ export interface BastionHostLinuxProps {
   readonly machineImage?: IMachineImage;
 
   /**
-   * Encryption for EBS volume
-   * If true, encrypted volume will be created with a default voulme size of 10 GiB.
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
    *
-   * @default false
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
    */
-  readonly ebsVolumeEncryption?: boolean;
+  readonly blockDevices?: BlockDevice[];
 }
 
 /**
@@ -139,33 +145,16 @@ export class BastionHostLinux extends Construct implements IInstance {
     super(scope, id);
     this.stack = Stack.of(scope);
 
-    if (props.ebsVolumeEncryption) {
-      this.instance = new Instance(this, 'Resource', {
-        vpc: props.vpc,
-        availabilityZone: props.availabilityZone,
-        securityGroup: props.securityGroup,
-        instanceName: props.instanceName ?? 'BastionHost',
-        instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-        machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-        vpcSubnets: props.subnetSelection ?? {},
-        blockDevices: [{
-          deviceName: 'EBSBastionHost',
-          volume: BlockDeviceVolume.ebs(10, {
-            encrypted: props.ebsVolumeEncryption ?? false,
-          }),
-        }],
-      });
-    } else {
-      this.instance = new Instance(this, 'Resource', {
-        vpc: props.vpc,
-        availabilityZone: props.availabilityZone,
-        securityGroup: props.securityGroup,
-        instanceName: props.instanceName ?? 'BastionHost',
-        instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-        machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-        vpcSubnets: props.subnetSelection ?? {},
-      });
-    }
+    this.instance = new Instance(this, 'Resource', {
+      vpc: props.vpc,
+      availabilityZone: props.availabilityZone,
+      securityGroup: props.securityGroup,
+      instanceName: props.instanceName ?? 'BastionHost',
+      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      vpcSubnets: props.subnetSelection ?? {},
+      blockDevices: props.blockDevices ?? undefined,
+    });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
         'ssmmessages:*',
