@@ -33,6 +33,47 @@ export class Default {
     }
 
     service = matches[1]; // Simplify the service name down to something like "s3"
+
+    // Exceptions for Service Principals in us-iso-*
+    const US_ISO_EXCEPTIONS = new Set([
+      'cloudhsm',
+      'config',
+      'states',
+      'workspaces',
+    ]);
+
+    // Exceptions for Service Principals in us-isob-*
+    const US_ISOB_EXCEPTIONS = new Set([
+      'dms',
+      'states'
+    ]);
+
+    // Account for idiosyncratic Service Principles in `us-iso-*` regions
+    if (region.startsWith('us-iso-') && US_ISO_EXCEPTIONS.has(service)) {
+      switch (service) {
+        // Services with universal principal
+        case ('states'):
+          return `${service}.amazonaws.com`;
+
+        // Services with a partitional principal
+        default:
+          return `${service}.${urlSuffix}`;
+      }
+    }
+
+    // Account for idiosyncratic Service Principles in `us-isob-*` regions
+    if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
+      switch (service) {
+        // Services with universal principal
+        case ('states'):
+          return `${service}.amazonaws.com`;
+
+        // Services with a partitional principal
+        default:
+          return `${service}.${urlSuffix}`;
+      }
+    }
+
     switch (service) {
       // Services with a regional AND partitional principal
       case 'codedeploy':
