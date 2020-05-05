@@ -117,6 +117,17 @@ export interface GatewayVpcEndpointOptions {
    * Specify a list of subnet selection objects here to be more specific.
    *
    * @default - All subnets in the VPC
+   * @example
+   *
+   * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
+   *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+   *   // Add only to ISOLATED subnets
+   *   subnets: [
+   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *   ]
+   * });
+   *
+   *
    */
   readonly subnets?: SubnetSelection[]
 }
