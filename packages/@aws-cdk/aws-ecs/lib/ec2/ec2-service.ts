@@ -154,8 +154,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
-      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
+    if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
+      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
     if (!props.taskDefinition.isEc2Compatible) {
