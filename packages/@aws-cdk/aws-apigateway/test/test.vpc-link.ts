@@ -59,6 +59,24 @@ export = {
     test.done();
   },
 
+  'import/export'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const nlb0 = new elbv2.NetworkLoadBalancer(stack, 'NLB0', { vpc });
+    new apigateway.VpcLink(stack, 'VpcLink', {
+      targets: [nlb0],
+    });
+    const stack2 = new cdk.Stack();
+
+    // WHEN
+    const link = apigateway.VpcLink.fromVpcLinkId(stack2, 'ImportedVpcLink', 'vpclink-id');
+
+    // THEN
+    test.deepEqual(link.vpcLinkId, 'vpclink-id');
+    test.done();
+  },
+
   'validation error if vpc link is created and no targets are added'(test: Test) {
     // GIVEN
     const app = new cdk.App();
