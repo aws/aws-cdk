@@ -322,14 +322,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
+    let containerPort = 80;
+    if (props.taskImageOptions !== undefined && props.taskImageOptions.containerPort !== undefined) {
+      containerPort = props.taskImageOptions.containerPort;
+    }
+
+    const containerProtocol = props.containerProtocol !== undefined ? props.containerProtocol : ApplicationProtocol.HTTP;
 
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
-    const containerProtocol = props.containerProtocol !== undefined ? props.containerProtocol : ApplicationProtocol.HTTP;
-
     const targetProps = {
-      port: 80,
+      port: containerPort,
       protocol: containerProtocol,
     };
 
@@ -340,7 +344,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     });
 
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
-    if (protocol === ApplicationProtocol.HTTPS || containerProtocol === ApplicationProtocol.HTTPS) {
+    if (protocol === ApplicationProtocol.HTTPS) {
       if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
         throw new Error('A domain name and zone is required when using the HTTPS protocol');
       }
