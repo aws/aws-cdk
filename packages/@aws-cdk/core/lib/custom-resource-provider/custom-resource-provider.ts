@@ -80,7 +80,7 @@ export class CustomResourceProvider extends Construct {
    * Returns a stack-level singleton ARN (service token) for the custom resource
    * provider.
    *
-   * @param stack The stack in which this provider
+   * @param scope Construct scope
    * @param uniqueid A globally unique id that will be used for the stack-level
    * construct.
    * @param props Provider properties which will only be applied when the

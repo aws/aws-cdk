@@ -1,3 +1,11 @@
+/*
+ * Stack verification steps:
+ * - Deploy with `--no-clean`
+ * - Verify that the CloudFormation stack outputs have the following values:
+ *   - Ref: "MyPhysicalReflectBack"
+ *   - GetAtt.Attribute1: "foo"
+ *   - GetAtt.Attribute2: 1234
+ */
 import { App, CfnOutput, Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
 
 class TestStack extends Stack {

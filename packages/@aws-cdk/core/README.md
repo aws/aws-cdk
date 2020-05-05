@@ -256,6 +256,19 @@ various provider types (ordered from low-level to high-level):
 | [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | Lambda       | Auto           | Auto                     | 15min           | Node.js  | Small     |
 | [custom-resources.Provider](#the-custom-resource-provider-framework) | Lambda       | Auto           | Auto                     | Unlimited Async | Any      | Large     |
 
+Legend:
+
+- **Compute type**: which type of compute can is used to execute the handler.
+- **Error Handling**: whether errors thrown by handler code are automatically
+  trapped and a FAILED response is submitted to CloudFormation. If this is
+  "Manual", developers must take care of trapping errors. Otherwise, events
+  could cause stacks to hang.
+- **Submit to CloudFormation**: whether the framework takes care of submitting
+  SUCCESS/FAILED responses to CloudFormation through the event's response URL.
+- **Max Timeout**: maximum allows/possible timeout.
+- **Language**: which programming languages can be used to implement handlers.
+- **Footprint**: how many resources are used by the provider framework itself.
+
 **A NOTE ABOUT SINGLETONS**
 
 When defining resources for a custom resource provider, you will likely want to
