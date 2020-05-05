@@ -368,7 +368,8 @@ exports.handler = async function(event) {
     // defaults to "event.PhysicalResourceId" or "event.RequestId"
     PhysicalResourceId: "REF",
 
-    // (optional) the values resolved from `resource.getAtt("KEY")`
+    // (optional) calling `resource.getAtt("Att1")` on the custom resource in the CDK app
+    // will return the value "BAR".
     Data: {
       Att1: "BAR",
       Att2: "BAZ"
