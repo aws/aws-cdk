@@ -48,5 +48,11 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Current messages in queue',
   metrics: [metric],
 }));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group',
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+}));
 
 app.synth();
