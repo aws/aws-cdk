@@ -230,7 +230,7 @@ export interface ClusterProps {
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  *
- * @resource AWS::Eks-Legacy::Cluster
+ * @resource AWS::EKS::Cluster
  */
 export class Cluster extends Resource implements ICluster {
   /**

@@ -641,18 +641,6 @@
                 ":iam::aws:policy/AmazonEKSClusterPolicy"
               ]
             ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKSServicePolicy"
-              ]
-            ]
           }
         ]
       }
@@ -794,7 +782,10 @@
               }
             },
             {
-              "Action": "ec2:DescribeSubnets",
+              "Action": [
+                "ec2:DescribeSubnets",
+                "ec2:DescribeRouteTables"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
