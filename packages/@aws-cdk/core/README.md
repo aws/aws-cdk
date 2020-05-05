@@ -327,7 +327,7 @@ The provider has a built-in singleton method which uses the resource type as a
 stack-unique identifier and returns the service token:
 
 ```ts
-const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType';, {
+const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
   runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
 });
