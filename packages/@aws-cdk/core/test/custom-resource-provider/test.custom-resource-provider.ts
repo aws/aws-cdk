@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../lib';
-import { toCloudFormation } from './util';
+import { CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
+import { toCloudFormation } from '../util';
 
-const TEST_HANDLER = `${__dirname}/custom-resource-provider-fixture`;
+const TEST_HANDLER = `${__dirname}/mock-provider`;
 
 export = {
   'minimal configuration'(test: Test) {

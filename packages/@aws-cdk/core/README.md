@@ -256,6 +256,19 @@ various provider types (ordered from low-level to high-level):
 | [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | Lambda       | Auto           | Auto                     | 15min           | Node.js  | Small     |
 | [custom-resources.Provider](#the-custom-resource-provider-framework) | Lambda       | Auto           | Auto                     | Unlimited Async | Any      | Large     |
 
+Legend:
+
+- **Compute type**: which type of compute can is used to execute the handler.
+- **Error Handling**: whether errors thrown by handler code are automatically
+  trapped and a FAILED response is submitted to CloudFormation. If this is
+  "Manual", developers must take care of trapping errors. Otherwise, events
+  could cause stacks to hang.
+- **Submit to CloudFormation**: whether the framework takes care of submitting
+  SUCCESS/FAILED responses to CloudFormation through the event's response URL.
+- **Max Timeout**: maximum allows/possible timeout.
+- **Language**: which programming languages can be used to implement handlers.
+- **Footprint**: how many resources are used by the provider framework itself.
+
 **A NOTE ABOUT SINGLETONS**
 
 When defining resources for a custom resource provider, you will likely want to
@@ -327,7 +340,7 @@ The provider has a built-in singleton method which uses the resource type as a
 stack-unique identifier and returns the service token:
 
 ```ts
-const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType';, {
+const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
   runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
 });
@@ -368,7 +381,8 @@ exports.handler = async function(event) {
     // defaults to "event.PhysicalResourceId" or "event.RequestId"
     PhysicalResourceId: "REF",
 
-    // (optional) the values resolved from `resource.getAtt("KEY")`
+    // (optional) calling `resource.getAtt("Att1")` on the custom resource in the CDK app
+    // will return the value "BAR".
     Data: {
       Att1: "BAR",
       Att2: "BAZ"
