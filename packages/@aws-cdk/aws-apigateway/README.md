@@ -868,6 +868,19 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
+### Importing VPC Link
+
+Any VPC Link that has been created outside of this stack, can be imported into the CDK app. Importing a VPC Link
+allows for it to be used in other parts of the CDK app that reference an `IVpcLink`.
+
+VPC Link can be imported either using their id via the `VpcLink.fromVpcLinkId()`.
+
+```ts
+const stack = new Stack(app, 'my-stack');
+
+const awesomeLink = VpcLink.fromVpcLinkId(stack, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
+```
+
 ## Gateway response
 
 If the Rest API fails to process an incoming request, it returns to the client an error response without forwarding the
