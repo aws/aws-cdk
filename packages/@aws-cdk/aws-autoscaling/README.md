@@ -19,8 +19,8 @@ An `AutoScalingGroup` represents a number of instances on which you run your cod
 pick the size of the fleet, the instance type and the OS image:
 
 ```ts
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,

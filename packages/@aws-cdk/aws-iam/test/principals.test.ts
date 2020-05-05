@@ -49,3 +49,56 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
   },
   );
 });
+
+test('cannot have multiple principals with different conditions in the same statement', () => {
+  const stack = new Stack(undefined, 'First');
+  const user = new iam.User(stack, 'User');
+
+  expect(() => {
+    user.addToPolicy(new iam.PolicyStatement({
+      principals: [
+        new iam.ServicePrincipal('myService.amazon.com', {
+          conditions: {
+            StringEquals: {
+              hairColor: 'blond',
+            },
+          },
+        }),
+        new iam.ServicePrincipal('yourservice.amazon.com', {
+          conditions: {
+            StringEquals: {
+              hairColor: 'black',
+            },
+          },
+        }),
+      ],
+    }));
+  }).toThrow(/All principals in a PolicyStatement must have the same Conditions/);
+});
+
+test('can have multiple principals the same conditions in the same statement', () => {
+  const stack = new Stack(undefined, 'First');
+  const user = new iam.User(stack, 'User');
+
+  user.addToPolicy(new iam.PolicyStatement({
+    principals: [
+      new iam.ServicePrincipal('myService.amazon.com'),
+      new iam.ServicePrincipal('yourservice.amazon.com'),
+    ],
+  }));
+
+  user.addToPolicy(new iam.PolicyStatement({
+    principals: [
+      new iam.ServicePrincipal('myService.amazon.com', {
+        conditions: {
+          StringEquals: { hairColor: 'blond' },
+        },
+      }),
+      new iam.ServicePrincipal('yourservice.amazon.com', {
+        conditions: {
+          StringEquals: { hairColor: 'blond' },
+        },
+      }),
+    ],
+  }));
+});

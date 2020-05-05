@@ -21,6 +21,7 @@ const defaultCredOptions = {
 // Account cache buster
 let uid: string;
 let pluginQueried = false;
+let defaultEnv: cxapi.Environment;
 
 beforeEach(() => {
   uid = `(${uuid.v4()})`;
@@ -83,6 +84,8 @@ beforeEach(() => {
     name: 'test plugin',
   });
 
+  defaultEnv = cxapi.EnvironmentUtils.make(`${uid}the_account_#`, 'def');
+
   // Set environment variables that we want
   process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
   process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
@@ -107,7 +110,7 @@ describe('CLI compatible credentials loading', () => {
     // THEN
     expect(provider.defaultRegion).toEqual('eu-bla-5');
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-    const sdk = await provider.forEnvironment(`${uid}the_account_#`, 'rgn', Mode.ForReading);
+    const sdk = await provider.forEnvironment({ ...defaultEnv, region: 'rgn' }, Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
     expect(sdkConfig(sdk).region).toEqual('rgn');
   });
@@ -117,7 +120,7 @@ describe('CLI compatible credentials loading', () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
 
     // THEN
-    const sdk = await provider.forEnvironment(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION, Mode.ForReading);
+    const sdk = await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
     expect(sdkConfig(sdk).region).toEqual('eu-bla-5');
   });
@@ -129,7 +132,7 @@ describe('CLI compatible credentials loading', () => {
     // THEN
     expect(provider.defaultRegion).toEqual('eu-west-1');
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-    const sdk = await provider.forEnvironment(`${uid}the_account_#`, 'def', Mode.ForReading);
+    const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}fooccess`);
   });
 
@@ -140,14 +143,14 @@ describe('CLI compatible credentials loading', () => {
     // THEN
     expect(provider.defaultRegion).toEqual('eu-bla-5');  // Fall back to default config
     await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-    const sdk = await provider.forEnvironment(`${uid}the_account_#`, 'def', Mode.ForReading);
+    const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
     expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}booccess`);
   });
 
   test('different account throws', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
 
-    await expect(provider.forEnvironment(`${uid}some_account_#`, 'def', Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+    await expect(provider.forEnvironment({...defaultEnv, account: `${uid}some_account_#` }, Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
   });
 
   test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
@@ -191,13 +194,13 @@ describe('CLI compatible credentials loading', () => {
 describe('Plugins', () => {
   test('does not use plugins if current credentials are for expected account', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-    await provider.forEnvironment(`${uid}the_account_#`, 'def', Mode.ForReading);
+    await provider.forEnvironment(defaultEnv, Mode.ForReading);
     expect(pluginQueried).toEqual(false);
   });
 
   test('uses plugin for other account', async () => {
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-    await provider.forEnvironment(`${uid}plugin_account_#`, 'def', Mode.ForReading);
+    await provider.forEnvironment({...defaultEnv, account: `${uid}plugin_account_#`}, Mode.ForReading);
     expect(pluginQueried).toEqual(true);
   });
 });
