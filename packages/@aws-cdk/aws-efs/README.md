@@ -16,7 +16,7 @@
 This construct library allows you to set up AWS Elastic File System (EFS).
 
 ```ts
-import efs = require('@aws-cdk/aws-efs');
+import * as efs from '@aws-cdk/aws-efs';
 
 const myVpc = new ec2.Vpc(this, 'VPC');
 const fileSystem = new efs.EfsFileSystem(this, 'MyEfsFileSystem', {

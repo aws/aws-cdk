@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-import iotanalytics = require('@aws-cdk/aws-iotanalytics');
+import * as iotanalytics from '@aws-cdk/aws-iotanalytics';
 ```
