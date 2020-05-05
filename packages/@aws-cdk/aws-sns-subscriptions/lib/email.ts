@@ -23,6 +23,9 @@ export class EmailSubscription implements sns.ITopicSubscription {
   constructor(private readonly emailAddress: string, private readonly props: EmailSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for an email address to subscribe to an SNS topic
+   */
   public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
     return {
       subscriberId: this.emailAddress,
