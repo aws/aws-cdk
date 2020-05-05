@@ -324,21 +324,17 @@ timeout).
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
 The provider has a built-in singleton method which uses the resource type as a
-stack-unique identifier:
+stack-unique identifier and returns the service token:
 
 ```ts
-const provider = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType';, {
+const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType';, {
   codeDirectory: `${__dirname}/my-handler`,
   runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
 });
-```
 
-Set `serviceToken: provider.serviceToken` to use this provider when defining a `CustomResource` instance:
-
-```ts
 new CustomResource(this, 'MyResource', {
   resourceType: 'Custom::MyCustomResourceType',
-  serviceToken: provider.serviceToken
+  serviceToken: serviceToken
 });
 ```
 

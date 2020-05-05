@@ -4,13 +4,16 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const provider = new CustomResourceProvider(this, 'MyResourceProvider', {
+    const resourceType = 'Custom::Reflect';
+
+    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
     const cr = new CustomResource(this, 'MyResource', {
-      serviceToken: provider.serviceToken,
+      resourceType,
+      serviceToken,
       properties: {
         physicalResourceId: 'MyPhysicalReflectBack',
         attributes: {
