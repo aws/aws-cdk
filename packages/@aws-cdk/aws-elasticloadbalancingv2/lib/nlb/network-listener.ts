@@ -141,9 +141,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     if (props.defaultTargetGroups) {
-      this.setDefaultAction(NetworkListenerAction.forward({
-        targetGroups: props.defaultTargetGroups,
-      }));
+      this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
     }
   }
 
@@ -154,9 +152,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * stickiness. For a more complex configuration than that, use `addAction()`.
    */
   public addTargetGroups(_id: string, ...targetGroups: INetworkTargetGroup[]): void {
-    this.setDefaultAction(NetworkListenerAction.forward({
-      targetGroups,
-    }));
+    this.setDefaultAction(NetworkListenerAction.forward(targetGroups));
   }
 
   /**

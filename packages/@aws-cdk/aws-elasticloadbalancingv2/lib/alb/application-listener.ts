@@ -5,7 +5,7 @@ import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
-import { ApplicationListenerAction } from './application-listener-action';
+import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
@@ -67,16 +67,16 @@ export interface BaseApplicationListenerProps {
   /**
    * Default action to take for requests to this listener
    *
-   * This allows full control of the default Action of the load balancer,
+   * This allows full control of the default action of the load balancer,
    * including Action chaining, fixed responses and redirect responses.
    *
-   * See the `ApplicationListenerAction` class for all options.
+   * See the `ListenerAction` class for all options.
    *
    * Cannot be specified together with `defaultTargetGroups`.
    *
    * @default - None.
    */
-  readonly defaultAction?: ApplicationListenerAction;
+  readonly defaultAction?: ListenerAction;
 
   /**
    * Allow anyone to connect to this listener
@@ -179,9 +179,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     if (props.defaultTargetGroups) {
-      this.setDefaultAction(ApplicationListenerAction.forward({
-        targetGroups: props.defaultTargetGroups,
-      }));
+      this.setDefaultAction(ListenerAction.forward(props.defaultTargetGroups));
     }
 
     if (props.open !== false) {
@@ -226,11 +224,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Perform the given Action on incoming requests
+   * Perform the given default action on incoming requests
    *
-   * This allows full control of the default Action of the load balancer,
+   * This allows full control of the default action of the load balancer,
    * including Action chaining, fixed responses and redirect responses. See
-   * the `ApplicationListenerAction` class for all options.
+   * the `ListenerAction` class for all options.
    *
    * It's possible to add routing conditions to the Action added in this way.
    * At least one Action must be added without conditions (which becomes the
@@ -284,9 +282,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       });
     } else {
       // New default target with these targetgroups
-      this.setDefaultAction(ApplicationListenerAction.forward({
-        targetGroups: props.targetGroups,
-      }));
+      this.setDefaultAction(ListenerAction.forward(props.targetGroups));
     }
   }
 
@@ -357,8 +353,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         ...props,
       });
     } else {
-      this.setDefaultAction(ApplicationListenerAction.fixedResponse({
-        statusCode: Token.asNumber(props.statusCode),
+      this.setDefaultAction(ListenerAction.fixedResponse(Token.asNumber(props.statusCode), {
         contentType: props.contentType,
         messageBody: props.messageBody,
       }));
@@ -391,7 +386,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         ...props,
       });
     } else {
-      this.setDefaultAction(ApplicationListenerAction.redirect({
+      this.setDefaultAction(ListenerAction.redirect({
         host: props.host,
         path: props.path,
         port: props.port,
@@ -425,7 +420,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Wrapper for _setDefaultAction which does a type-safe bindToListener
    */
-  private setDefaultAction(action: ApplicationListenerAction) {
+  private setDefaultAction(action: ListenerAction) {
     action.bindToListener(this, this);
     this._setDefaultAction(action);
   }
@@ -679,7 +674,7 @@ export interface AddApplicationActionProps extends AddRuleProps {
   /**
    * Action to perform
    */
-  readonly action: ApplicationListenerAction;
+  readonly action: ListenerAction;
 }
 
 /**

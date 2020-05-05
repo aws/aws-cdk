@@ -34,27 +34,27 @@ const vpc = new ec2.Vpc(...);
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-    vpc,
-    internetFacing: true
+  vpc,
+  internetFacing: true
 });
 
 // Add a listener and open up the load balancer's security group
 // to the world.
 const listener = lb.addListener('Listener', {
-    port: 80,
+  port: 80,
 
-    // 'open: true' is the default, you can leave it out if you want. Set it
-    // to 'false' and use `listener.connections` if you want to be selective
-    // about who can access the load balancer.
-    open: true,
+  // 'open: true' is the default, you can leave it out if you want. Set it
+  // to 'false' and use `listener.connections` if you want to be selective
+  // about who can access the load balancer.
+  open: true,
 });
 
 // Create an AutoScaling group and add it as a load balancing
 // target to the listener.
 const asg = new autoscaling.AutoScalingGroup(...);
 listener.addTargets('ApplicationFleet', {
-    port: 8080,
-    targets: [asg]
+  port: 8080,
+  targets: [asg]
 });
 ```
 
@@ -71,11 +71,11 @@ requested host in the request is either for `example.com/ok` or
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
-    priority: 10,
-    pathPatterns: ['/ok', '/path'],
-    hostHeader: 'example.com',
-    port: 8080,
-    targets: [asg]
+  priority: 10,
+  pathPatterns: ['/ok', '/path'],
+  hostHeader: 'example.com',
+  port: 8080,
+  targets: [asg]
 });
 ```
 
@@ -108,16 +108,16 @@ or lesser extent:
 Using `addAction()` gives you access to some of the features of an Elastic Load
 Balancer that the convenience methods don't:
 
-- **Routing stickiness**: use `ApplicationListenerAction.forward()` and supply a
+- **Routing stickiness**: use `ListenerAction.forward()` and supply a
   `stickinessDuration` to make sure requests are routed to the same target group
   for a given duration.
-- **Weighted Target Groups**: use `ApplicationListenerAction.weightedForward()`
+- **Weighted Target Groups**: use `ListenerAction.weightedForward()`
   to give different weights to different target groups.
-- **Fixed Responses**: use `ApplicationListenerAction.fixedResponse()` to serve
+- **Fixed Responses**: use `ListenerAction.fixedResponse()` to serve
   a static response (ALB only).
-- **Redirects**: use `ApplicationListenerAction.redirect()` to serve an HTTP
+- **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
-- **Authentication**: use `ApplicationListenerAction.authenticateOidc()` to
+- **Authentication**: use `ListenerAction.authenticateOidc()` to
   perform OpenID authentication before serving a request (see the
   `@aws-cdk/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
@@ -126,27 +126,24 @@ Here's an example of serving a fixed response at the `/ok` URL:
 
 ```ts
 listener.addAction('Fixed', {
-    pathPatterns: ['/ok'],
-    priority: 10,
-    action: ApplicationListenerAction.fixedResponse({
-        contentType: elbv2.ContentType.TEXT_PLAIN,
-        messageBody: 'OK',
-        statusCode: 200,
-    })
+  pathPatterns: ['/ok'],
+  priority: 10,
+  action: ListenerAction.fixedResponse(200, {
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+  })
 });
 ```
 Here's an example of using OIDC authentication before forwarding to a TargetGroup:
 
 ```ts
 listener.addAction('DefaultAction', {
-    action: ApplicationListenerAction.authenticateOidc({
-        authorizationEndpoint: 'https://example.com/openid',
-        // Other OIDC properties here
-        // ...
-        next: ApplicationListenerAction.forward({
-            targetGroups: [myTargetGroup]
-        })
-    }),
+  action: ListenerAction.authenticateOidc({
+    authorizationEndpoint: 'https://example.com/openid',
+    // Other OIDC properties here
+    // ...
+    next: ListenerAction.forward([myTargetGroup]),
+  }),
 });
 ```
 
@@ -163,19 +160,19 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
-    vpc,
-    internetFacing: true
+  vpc,
+  internetFacing: true
 });
 
 // Add a listener on a particular port.
 const listener = lb.addListener('Listener', {
-    port: 443,
+  port: 443,
 });
 
 // Add targets on a particular port.
 listener.addTargets('AppFleet', {
-    port: 443,
-    targets: [asg]
+  port: 443,
+  targets: [asg]
 });
 ```
 
@@ -204,8 +201,8 @@ and add it to the listener by calling `addTargetGroups` instead of `addTargets`.
 
 ```ts
 const group = listener.addTargets('AppFleet', {
-    port: 443,
-    targets: [asg1],
+  port: 443,
+  targets: [asg1],
 });
 
 group.addTarget(asg2);
@@ -226,13 +223,13 @@ const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(lambdaFunction)],
+  targets: [new targets.LambdaTarget(lambdaFunction)],
 
-    // For Lambda Targets, you need to explicitly enable health checks if you
-    // want them.
-    healthCheck: {
-        enabled: true,
-    }
+  // For Lambda Targets, you need to explicitly enable health checks if you
+  // want them.
+  healthCheck: {
+    enabled: true,
+  }
 });
 ```
 
@@ -244,12 +241,12 @@ Health checks are configured upon creation of a target group:
 
 ```ts
 listener.addTargets('AppFleet', {
-    port: 8080,
-    targets: [asg],
-    healthCheck: {
-        path: '/ping',
-        interval: cdk.Duration.minutes(1),
-    }
+  port: 8080,
+  targets: [asg],
+  healthCheck: {
+    path: '/ping',
+    interval: cdk.Duration.minutes(1),
+  }
 });
 ```
 
@@ -263,11 +260,11 @@ If not, you will have to configure the security groups appropriately:
 
 ```ts
 listener.addTargets('AppFleet', {
-    port: 8080,
-    targets: [asg],
-    healthCheck: {
-        port: 8088,
-    }
+  port: 8080,
+  targets: [asg],
+  healthCheck: {
+    port: 8088,
+  }
 });
 
 listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
@@ -299,11 +296,11 @@ load balancing target:
 
 ```ts
 public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
-    targetGroup.registerConnectable(...);
-    return {
-        targetType: TargetType.Instance | TargetType.Ip
-        targetJson: { id: ..., port: ... },
-    };
+  targetGroup.registerConnectable(...);
+  return {
+    targetType: TargetType.Instance | TargetType.Ip
+    targetJson: { id: ..., port: ... },
+  };
 }
 ```
 `targetType` should be one of `Instance` or `Ip`. If the target can be

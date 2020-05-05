@@ -24,8 +24,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.ApplicationListenerAction.forward({
-        targetGroups: [group1, group2],
+      defaultAction: elbv2.ListenerAction.forward([group1, group2], {
         stickinessDuration: cdk.Duration.hours(1),
       }),
     });
@@ -60,11 +59,10 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.ApplicationListenerAction.weightedForward({
-        targetGroups: [
-          { targetGroup: group1, weight: 10 },
-          { targetGroup: group2, weight: 50 },
-        ],
+      defaultAction: elbv2.ListenerAction.weightedForward([
+        { targetGroup: group1, weight: 10 },
+        { targetGroup: group2, weight: 50 },
+      ], {
         stickinessDuration: cdk.Duration.hours(1),
       }),
     });
@@ -100,14 +98,14 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.ApplicationListenerAction.authenticateOidc({
+      defaultAction: elbv2.ListenerAction.authenticateOidc({
         authorizationEndpoint: 'A',
         clientId: 'B',
         clientSecret: cdk.SecretValue.plainText('C'),
         issuer: 'D',
         tokenEndpoint: 'E',
         userInfoEndpoint: 'F',
-        next: elbv2.ApplicationListenerAction.forward({ targetGroups: [group1] }),
+        next: elbv2.ListenerAction.forward([group1]),
       }),
     });
 
@@ -143,13 +141,13 @@ export = {
 
     // WHEN
     listener.addAction('Action1', {
-      action: elbv2.ApplicationListenerAction.forward({ targetGroups: [group1] }),
+      action: elbv2.ListenerAction.forward([group1]),
     });
 
     listener.addAction('Action2', {
       hostHeader: 'example.com',
       priority: 10,
-      action: elbv2.ApplicationListenerAction.forward({ targetGroups: [group2] }),
+      action: elbv2.ListenerAction.forward([group2]),
     });
 
     // THEN

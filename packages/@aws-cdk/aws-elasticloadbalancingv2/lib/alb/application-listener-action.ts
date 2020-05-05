@@ -16,14 +16,18 @@ import { IApplicationTargetGroup } from './application-target-group';
  * If an action supports chaining, the next action can be indicated
  * by passing it in the `next` property.
  *
+ * (Called `ListenerAction` instead of the more strictly correct
+ * `ListenerAction` because this is the class most users interact
+ * with, and we want to make it not too visually overwhelming).
+ *
  * @experimental
  */
-export class ApplicationListenerAction implements IListenerAction {
+export class ListenerAction implements IListenerAction {
   /**
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
-  public static authenticateOidc(options: AuthenticateOidcOptions): ApplicationListenerAction {
-    return new ApplicationListenerAction({
+  public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
+    return new ListenerAction({
       type: 'authenticate-oidc',
       authenticateOidcConfig: {
         authorizationEndpoint: options.authorizationEndpoint,
@@ -44,22 +48,22 @@ export class ApplicationListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups
    */
-  public static forward(options: ForwardOptions): ApplicationListenerAction {
-    if (options.targetGroups.length === 0) {
-      throw new Error('Need at least one targetGroup in a ApplicationListenerAction.forward()');
+  public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
+    if (targetGroups.length === 0) {
+      throw new Error('Need at least one targetGroup in a ListenerAction.forward()');
     }
-    if (options.targetGroups.length === 1 && options.stickinessDuration === undefined) {
+    if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
-      return new TargetGroupListenerAction(options.targetGroups, {
+      return new TargetGroupListenerAction(targetGroups, {
         type: 'forward',
-        targetGroupArn: options.targetGroups[0].targetGroupArn,
+        targetGroupArn: targetGroups[0].targetGroupArn,
       });
     }
 
-    return new TargetGroupListenerAction(options.targetGroups, {
+    return new TargetGroupListenerAction(targetGroups, {
       type: 'forward',
       forwardConfig: {
-        targetGroups: options.targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
+        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
         targetGroupStickinessConfig: options.stickinessDuration ? {
           durationSeconds: options.stickinessDuration.toSeconds(),
           enabled: true,
@@ -71,17 +75,15 @@ export class ApplicationListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups which are weighted differently
    */
-  public static weightedForward(options: WeightedForwardOptions): ApplicationListenerAction {
-    if (options.targetGroups.length === 0) {
-      throw new Error('Need at least one targetGroup in a ApplicationListenerAction.weightedForward()');
+  public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
+    if (targetGroups.length === 0) {
+      throw new Error('Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
 
-    const targetGroups = options.targetGroups.map(g => g.targetGroup);
-
-    return new TargetGroupListenerAction(targetGroups, {
+    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
       type: 'forward',
       forwardConfig: {
-        targetGroups: options.targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
+        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
         targetGroupStickinessConfig: options.stickinessDuration ? {
           durationSeconds: options.stickinessDuration.toSeconds(),
           enabled: true,
@@ -93,11 +95,11 @@ export class ApplicationListenerAction implements IListenerAction {
   /**
    * Return a fixed response
    */
-  public static fixedResponse(options: FixedResponseOptions): ApplicationListenerAction {
-    return new ApplicationListenerAction({
+  public static fixedResponse(statusCode: number, options: FixedResponseOptions = {}): ListenerAction {
+    return new ListenerAction({
       type: 'fixed-response',
       fixedResponseConfig: {
-        statusCode: Tokenization.stringifyNumber(options.statusCode),
+        statusCode: Tokenization.stringifyNumber(statusCode),
         contentType: options.contentType,
         messageBody: options.messageBody,
       },
@@ -123,12 +125,12 @@ export class ApplicationListenerAction implements IListenerAction {
    * For example, you can change the path to "/new/#{path}", the hostname to
    * "example.#{host}", or the query to "#{query}&value=xyz".
    */
-  public static redirect(options: RedirectOptions): ApplicationListenerAction {
+  public static redirect(options: RedirectOptions): ListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
       throw new Error('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
     }
 
-    return new ApplicationListenerAction({
+    return new ListenerAction({
       type: 'redirect',
       redirectConfig: {
         statusCode: options.permanent ? 'HTTP_301' : 'HTTP_302',
@@ -142,13 +144,13 @@ export class ApplicationListenerAction implements IListenerAction {
   }
 
   /**
-   * Create an instance of ApplicationListenerAction
+   * Create an instance of ListenerAction
    *
    * The default class should be good enough for most cases and
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: ApplicationListenerAction) {
+  protected constructor(private readonly actionJson: CfnListener.ActionProperty, protected readonly next?: ListenerAction) {
   }
 
   /**
@@ -174,7 +176,7 @@ export class ApplicationListenerAction implements IListenerAction {
    * We don't number for 0 or 1 elements, but otherwise number them 1...#actions
    * so ELB knows about the right order.
    *
-   * Do this in `ApplicationListenerAction` instead of in `Listener` so that we give
+   * Do this in `ListenerAction` instead of in `Listener` so that we give
    * users the opportunity to override by subclassing and overriding `renderActions`.
    */
   protected renumber(actions: CfnListener.ActionProperty[]): CfnListener.ActionProperty[] {
@@ -185,37 +187,11 @@ export class ApplicationListenerAction implements IListenerAction {
 }
 
 /**
- * Options for `ApplicationListenerAction.forward()`
+ * Options for `ListenerAction.forward()`
  *
  * @experimental
  */
 export interface ForwardOptions {
-  /**
-   * The list of target groups to forward to
-   */
-  readonly targetGroups: IApplicationTargetGroup[];
-
-  /**
-   * For how long clients should be directed to the same target group
-   *
-   * Range between 1 second and 7 days.
-   *
-   * @default - No stickiness
-   */
-  readonly stickinessDuration?: Duration;
-}
-
-/**
- * Options for `ApplicationListenerAction.weightedForward()`
- *
- * @experimental
- */
-export interface WeightedForwardOptions {
-  /**
-   * The list of target groups to forward to
-   */
-  readonly targetGroups: WeightedTargetGroup[];
-
   /**
    * For how long clients should be directed to the same target group
    *
@@ -248,7 +224,7 @@ export interface WeightedTargetGroup {
 }
 
 /**
- * Options for `ApplicationListenerAction.fixedResponse()`
+ * Options for `ListenerAction.fixedResponse()`
  *
  * @experimental
  */
@@ -268,17 +244,10 @@ export interface FixedResponseOptions {
    * @default - No body
    */
   readonly messageBody?: string;
-
-  /**
-   * The HTTP response code
-   *
-   * Must be a 2xx, 4xx or 5xx response code.
-   */
-  readonly statusCode: number;
 }
 
 /**
- * Options for `ApplicationListenerAction.redirect()`
+ * Options for `ListenerAction.redirect()`
  *
  * A URI consists of the following components:
  * protocol://hostname:port/path?query. You must modify at least one of the
@@ -355,7 +324,7 @@ export interface RedirectOptions {
 }
 
 /**
- * Options for `ApplicationListenerAction.authenciateOidc()`
+ * Options for `ListenerAction.authenciateOidc()`
  *
  * @experimental
  */
@@ -363,7 +332,7 @@ export interface AuthenticateOidcOptions {
   /**
    * What action to execute next
    */
-  readonly next: ApplicationListenerAction;
+  readonly next: ListenerAction;
 
   /**
    * The query parameters (up to 10) to include in the redirect request to the authorization endpoint.
@@ -464,7 +433,7 @@ export enum UnauthenticatedAction {
 /**
  * Listener Action that calls "registerListener" on TargetGroups
  */
-class TargetGroupListenerAction extends ApplicationListenerAction {
+class TargetGroupListenerAction extends ListenerAction {
   constructor(private readonly targetGroups: IApplicationTargetGroup[], actionJson: CfnListener.ActionProperty) {
     super(actionJson);
   }

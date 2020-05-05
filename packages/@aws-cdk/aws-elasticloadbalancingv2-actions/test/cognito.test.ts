@@ -27,8 +27,7 @@ test('Cognito Action', () => {
       userPool,
       userPoolClient,
       userPoolDomain,
-      next: elbv2.ApplicationListenerAction.fixedResponse({
-        statusCode: 200,
+      next: elbv2.ListenerAction.fixedResponse(200, {
         contentType: 'text/plain',
         messageBody: 'Authenticated',
       }),

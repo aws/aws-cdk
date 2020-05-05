@@ -24,8 +24,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.NetworkListenerAction.forward({
-        targetGroups: [group1, group2],
+      defaultAction: elbv2.NetworkListenerAction.forward([group1, group2], {
         stickinessDuration: cdk.Duration.hours(1),
       }),
     });
@@ -60,11 +59,10 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.NetworkListenerAction.weightedForward({
-        targetGroups: [
-          { targetGroup: group1, weight: 10 },
-          { targetGroup: group2, weight: 50 },
-        ],
+      defaultAction: elbv2.NetworkListenerAction.weightedForward([
+        { targetGroup: group1, weight: 10 },
+        { targetGroup: group2, weight: 50 },
+      ], {
         stickinessDuration: cdk.Duration.hours(1),
       }),
     });

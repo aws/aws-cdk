@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
-import { ApplicationListenerAction } from './application-listener-action';
+import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 
 /**
@@ -36,7 +36,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No action
    */
-  readonly action?: ApplicationListenerAction;
+  readonly action?: ListenerAction;
 
   /**
    * Fixed response to return.
@@ -256,7 +256,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   /**
    * Configure the action to perform for this rule
    */
-  public configureAction(action: ApplicationListenerAction) {
+  public configureAction(action: ListenerAction) {
     // I'd like to throw here but there might be existing programs that happen
     // to work even though they followed an illegal call pattern. Just add a warning.
     if (this.action) {
@@ -273,9 +273,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    * @deprecated Use configureAction instead
    */
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
-    this.configureAction(ApplicationListenerAction.forward({
-      targetGroups: [targetGroup],
-    }));
+    this.configureAction(ListenerAction.forward([targetGroup]));
   }
 
   /**
@@ -286,8 +284,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   public addFixedResponse(fixedResponse: FixedResponse) {
     validateFixedResponse(fixedResponse);
 
-    this.configureAction(ApplicationListenerAction.fixedResponse({
-      statusCode: cdk.Token.asNumber(fixedResponse.statusCode),
+    this.configureAction(ListenerAction.fixedResponse(cdk.Token.asNumber(fixedResponse.statusCode), {
       contentType: fixedResponse.contentType,
       messageBody: fixedResponse.messageBody,
     }));
@@ -301,7 +298,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   public addRedirectResponse(redirectResponse: RedirectResponse) {
     validateRedirectResponse(redirectResponse);
 
-    this.configureAction(ApplicationListenerAction.redirect({
+    this.configureAction(ListenerAction.redirect({
       host: redirectResponse.host,
       path: redirectResponse.path,
       permanent: redirectResponse.statusCode === 'HTTP_301',

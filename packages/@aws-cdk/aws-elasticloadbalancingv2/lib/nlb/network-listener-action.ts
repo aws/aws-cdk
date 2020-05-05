@@ -22,22 +22,22 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups
    */
-  public static forward(options: NetworkForwardOptions): NetworkListenerAction {
-    if (options.targetGroups.length === 0) {
+  public static forward(targetGroups: INetworkTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
+    if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a NetworkListenerAction.forward()');
     }
-    if (options.targetGroups.length === 1 && options.stickinessDuration === undefined) {
+    if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
-      return new TargetGroupListenerAction(options.targetGroups, {
+      return new TargetGroupListenerAction(targetGroups, {
         type: 'forward',
-        targetGroupArn: options.targetGroups[0].targetGroupArn,
+        targetGroupArn: targetGroups[0].targetGroupArn,
       });
     }
 
-    return new TargetGroupListenerAction(options.targetGroups, {
+    return new TargetGroupListenerAction(targetGroups, {
       type: 'forward',
       forwardConfig: {
-        targetGroups: options.targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
+        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
         targetGroupStickinessConfig: options.stickinessDuration ? {
           durationSeconds: options.stickinessDuration.toSeconds(),
           enabled: true,
@@ -49,17 +49,15 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups which are weighted differently
    */
-  public static weightedForward(options: NetworkWeightedForwardOptions): NetworkListenerAction {
-    if (options.targetGroups.length === 0) {
+  public static weightedForward(targetGroups: NetworkWeightedTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
+    if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
     }
 
-    const targetGroups = options.targetGroups.map(g => g.targetGroup);
-
-    return new TargetGroupListenerAction(targetGroups, {
+    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
       type: 'forward',
       forwardConfig: {
-        targetGroups: options.targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
+        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
         targetGroupStickinessConfig: options.stickinessDuration ? {
           durationSeconds: options.stickinessDuration.toSeconds(),
           enabled: true,
@@ -116,32 +114,6 @@ export class NetworkListenerAction implements IListenerAction {
  * @experimental
  */
 export interface NetworkForwardOptions {
-  /**
-   * The list of target groups to forward to
-   */
-  readonly targetGroups: INetworkTargetGroup[];
-
-  /**
-   * For how long clients should be directed to the same target group
-   *
-   * Range between 1 second and 7 days.
-   *
-   * @default - No stickiness
-   */
-  readonly stickinessDuration?: Duration;
-}
-
-/**
- * Options for `NetworkListenerAction.weightedForward()`
- *
- * @experimental
- */
-export interface NetworkWeightedForwardOptions {
-  /**
-   * The list of target groups to forward to
-   */
-  readonly targetGroups: NetworkWeightedTargetGroup[];
-
   /**
    * For how long clients should be directed to the same target group
    *

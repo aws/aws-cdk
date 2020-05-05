@@ -9,7 +9,7 @@ export interface AuthenticateCognitoActionProps {
   /**
    * What action to execute next
    */
-  readonly next: elbv2.ApplicationListenerAction;
+  readonly next: elbv2.ListenerAction;
 
   /**
    * The Amazon Cognito user pool.
@@ -67,7 +67,7 @@ export interface AuthenticateCognitoActionProps {
 /**
  * A Listener Action to authenticate with Cognito
  */
-export class AuthenticateCognitoAction extends elbv2.ApplicationListenerAction {
+export class AuthenticateCognitoAction extends elbv2.ListenerAction {
   /**
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
