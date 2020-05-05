@@ -1,4 +1,3 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -92,8 +91,8 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
     }));
 
-    const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
-      provider: cfn.CustomResourceProvider.lambda(requestorFunction),
+    const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
+      serviceToken: requestorFunction.functionArn,
       properties: {
         DomainName: props.domainName,
         SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
