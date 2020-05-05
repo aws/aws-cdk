@@ -81,14 +81,16 @@ export class CustomResourceProvider extends Construct {
    * provider.
    *
    * @param stack The stack in which this provider
-   * @param resourceType The unique resource type for this provider. Must be
-   * stack-unique.
+   * @param uniqueid A globally unique id that will be used for the stack-level
+   * construct.
    * @param props Provider properties which will only be applied when the
    * provider is first created.
-   * @returns the ARN (service token) of the custom resource provider
+   * @returns the service token of the custom resource provider, which should be
+   * used when defining a `CustomResource`.
    */
-  public static getOrCreate(stack: Stack, resourceType: string, props: CustomResourceProviderProps) {
-    const id = `${resourceType}CustomResourceProvider`;
+  public static getOrCreate(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
+    const id = `${uniqueid}CustomResourceProvider`;
+    const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
 
