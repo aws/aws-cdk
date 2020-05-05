@@ -238,6 +238,36 @@ const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
 
 ```
 
+### OpenID Connect Providers
+
+OIDC identity providers are entities in IAM that describe an external identity
+provider (IdP) service that supports the [OpenID Connect] (OIDC) standard, such as
+Google or Salesforce. You use an IAM OIDC identity provider when you want to
+establish trust between an OIDC-compatible IdP and your AWS account. This is
+useful when creating a mobile app or web application that requires access to AWS
+resources, but you don't want to create custom sign-in code or manage your own
+user identities. For more information about this scenario, see [About Web
+Identity Federation].
+
+[OpenID Connect]: http://openid.net/connect
+[About Web Identity Federation]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
+
+The following examples defines an OpenID Connect provider. Two client IDs
+(audiences) are will be able to send authentication requests to
+https://openid/connect.
+
+```ts
+new OpenIdConnectProvider(this, 'MyProvider', {
+  url: 'https://openid/connect',
+  clients: [ 'myclient1', 'myclient2' ]
+});
+```
+
+You can specify an optional list of `thumbprints`. If not specified, the
+thumbprint of the root certificate authority (CA) will automatically be obtained
+from the host as described
+[here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
+
 ### Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same

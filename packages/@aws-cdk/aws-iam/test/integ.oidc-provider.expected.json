@@ -1,0 +1,167 @@
+{
+  "Resources": {
+    "NoClientsNoThumbprint8BF1533F": {
+      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWSCDKOpenIdConnectCustomResourceProviderHandlerDB02E215",
+            "Arn"
+          ]
+        },
+        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AWSCDKOpenIdConnectCustomResourceProviderRole6566A84D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "Inline",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Action": [
+                    "iam:CreateOpenIDConnectProvider",
+                    "iam:DeleteOpenIDConnectProvider",
+                    "iam:UpdateOpenIDConnectProviderThumbprint",
+                    "iam:AddClientIDToOpenIDConnectProvider",
+                    "iam:RemoveClientIDFromOpenIDConnectProvider"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "AWSCDKOpenIdConnectCustomResourceProviderHandlerDB02E215": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622S3Bucket66DB7AE0"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622S3VersionKeyFABECBB9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622S3VersionKeyFABECBB9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWSCDKOpenIdConnectCustomResourceProviderRole6566A84D",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "AWSCDKOpenIdConnectCustomResourceProviderRole6566A84D"
+      ]
+    },
+    "Clients67031123": {
+      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWSCDKOpenIdConnectCustomResourceProviderHandlerDB02E215",
+            "Arn"
+          ]
+        },
+        "ClientIDList": [
+          "foo",
+          "bar"
+        ],
+        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Thumbprints9CD6AB02": {
+      "Type": "Custom::AWSCDKOpenIdConnectProvider",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWSCDKOpenIdConnectCustomResourceProviderHandlerDB02E215",
+            "Arn"
+          ]
+        },
+        "ThumbprintList": [
+          "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
+          "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
+        ],
+        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  },
+  "Parameters": {
+    "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622S3Bucket66DB7AE0": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622\""
+    },
+    "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622S3VersionKeyFABECBB9": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622\""
+    },
+    "AssetParameters654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622ArtifactHashEE4D1E12": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"654972946026530b48b762dd173e53f038179c1344039194ffb2535a91cd1622\""
+    }
+  }
+}
