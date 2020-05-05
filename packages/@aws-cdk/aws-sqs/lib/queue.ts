@@ -97,7 +97,7 @@ export interface QueueProps {
    * turn will be encrypted using this key, and reused for a maximum of
    * `dataKeyReuseSecs` seconds.
    *
-   * If the 'encryptionKey' property is set, 'encryption' type will be
+   * If the 'encryptionMasterKey' property is set, 'encryption' type will be
    * implicitly set to "KMS".
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
