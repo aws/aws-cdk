@@ -1,4 +1,3 @@
-// tslint:disable: no-console
 import * as https from 'https';
 import * as url from 'url';
 
@@ -135,5 +134,6 @@ async function defaultSendHttpRequest(options: https.RequestOptions, responseBod
 }
 
 function defaultLog(fmt: string, ...params: any[]) {
+  // tslint:disable-next-line:no-console
   console.log(fmt, ...params);
 }

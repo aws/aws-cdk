@@ -1,16 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetStaging } from './asset-staging';
-import { FileAssetPackaging } from './assets';
-import { CfnResource } from './cfn-resource';
-import { Construct } from './construct-compat';
-import { Duration } from './duration';
-import { Size } from './size';
-import { Stack } from './stack';
-import { Token } from './token';
+import { AssetStaging } from '../asset-staging';
+import { FileAssetPackaging } from '../assets';
+import { CfnResource } from '../cfn-resource';
+import { Construct } from '../construct-compat';
+import { Duration } from '../duration';
+import { Size } from '../size';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
-const ENTRYPOINT_HANDLER = path.join(__dirname, 'custom-resource-provider-handler.js');
+const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
 
 /**
  * Initialization properties for `CustomResourceProvider`.
@@ -34,6 +34,11 @@ export interface CustomResourceProviderProps {
    * provider's lambda function.
    *
    * @default - no additional inline policy
+   *
+   * @example
+   *
+   *   policyStatements: [ { Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' } ]
+   *
    */
   readonly policyStatements?: any[];
 
@@ -76,7 +81,10 @@ export class CustomResourceProvider extends Construct {
    * provider.
    *
    * @param stack The stack in which this provider
-   * @param props Provider properties
+   * @param resourceType The unique resource type for this provider. Must be
+   * stack-unique.
+   * @param props Provider properties which will only be applied when the
+   * provider is first created.
    * @returns the ARN (service token) of the custom resource provider
    */
   public static getOrCreate(stack: Stack, resourceType: string, props: CustomResourceProviderProps) {
@@ -88,19 +96,26 @@ export class CustomResourceProvider extends Construct {
   }
 
   /**
-   * The service token of this custom resource provider.
+   * The ARN of the provider's AWS Lambda function which should be used as the
+   * `serviceToken` when defining a custom resource.
    *
-   * This is the ARN of the provider's AWS Lambda function.
+   * @example
+   *
+   *   new CustomResource(this, 'MyCustomResource', {
+   *     // ...
+   *     serviceToken: provider.serviceToken // <--- here
+   *   })
+   *
    */
   public readonly serviceToken: string;
 
-  public constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
+  protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);
 
     const stack = Stack.of(scope);
 
     // copy the entry point to the code directory
-    fs.copyFileSync(ENTRYPOINT_HANDLER, path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`));
+    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`));
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {

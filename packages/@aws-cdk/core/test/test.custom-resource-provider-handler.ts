@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
-import * as handler from '../lib/custom-resource-provider-handler';
+import * as entrypoint from '../lib/custom-resource-provider/nodejs-entrypoint';
 
 export = {
   'handler return value is sent back to cloudformation as a success response': {
@@ -165,31 +165,31 @@ function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): A
   } as any;
 }
 
-async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, userHandler: handler.Handler) {
+async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, userHandler: entrypoint.Handler) {
   const parsedResponseUrl = url.parse(req.ResponseURL);
 
   // stage entry point and user handler.
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource-provider-handler-test-'));
-  handler.external.userHandlerIndex = path.join(workdir, 'index.js');
-  fs.writeFileSync(handler.external.userHandlerIndex, `exports.handler = ${userHandler.toString()};`);
+  entrypoint.external.userHandlerIndex = path.join(workdir, 'index.js');
+  fs.writeFileSync(entrypoint.external.userHandlerIndex, `exports.handler = ${userHandler.toString()};`);
 
   // do not include stack traces in failure responses so we can assert against them.
-  handler.external.includeStackTraces = false;
+  entrypoint.external.includeStackTraces = false;
 
   // disable logging
-  handler.external.log = () => {
+  entrypoint.external.log = () => {
     return;
   };
 
   let actualResponse;
-  handler.external.sendHttpRequest = async (options: https.RequestOptions, responseBody: string): Promise<void> => {
+  entrypoint.external.sendHttpRequest = async (options: https.RequestOptions, responseBody: string): Promise<void> => {
     assert(options.hostname === parsedResponseUrl.hostname, 'request hostname expected to be based on response URL');
     assert(options.path === parsedResponseUrl.path, 'request path expected to be based on response URL');
     assert(options.method === 'PUT', 'request method is expected to be PUT');
     actualResponse = responseBody;
   };
 
-  await handler.handler(req);
+  await entrypoint.handler(req);
   if (!actualResponse) {
     throw new Error('no response sent to cloudformation');
   }
