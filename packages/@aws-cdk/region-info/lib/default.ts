@@ -45,7 +45,7 @@ export class Default {
     // Exceptions for Service Principals in us-isob-*
     const US_ISOB_EXCEPTIONS = new Set([
       'dms',
-      'states'
+      'states',
     ]);
 
     // Account for idiosyncratic Service Principles in `us-iso-*` regions
