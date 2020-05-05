@@ -6,7 +6,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecs from '../../lib';
-import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -258,6 +258,45 @@ export = {
           taskDefinition,
         });
       }, /Supplied TaskDefinition is not configured for compatibility with EC2/);
+
+      test.done();
+    },
+
+    'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+      });
+
+      // THEN
+      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        DesiredCount: 1,
+        SchedulingStrategy: 'REPLICA',
+        EnableECSManagedTags: false,
+      }));
 
       test.done();
     },
