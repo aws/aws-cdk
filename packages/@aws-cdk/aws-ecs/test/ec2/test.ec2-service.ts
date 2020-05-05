@@ -351,7 +351,7 @@ export = {
       test.done();
     },
 
-    'errors if daemon and minimum not 0'(test: Test) {
+    'errors if minimum not less than maximum'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -369,9 +369,10 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minHealthyPercent: 50,
+          minHealthyPercent: 100,
+          maxHealthyPercent: 100,
         });
-      }, /Minimum healthy percent must be 0 for daemon mode./);
+      }, /Minimum healthy percent must be less than maximum healthy percent./);
 
       test.done();
     },
