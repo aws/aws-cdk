@@ -11,12 +11,12 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retention: RetentionDays.ONE_WEEK
+      retention: RetentionDays.ONE_WEEK,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 7
+      RetentionInDays: 7,
     }));
 
     test.done();
@@ -31,7 +31,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 731
+      RetentionInDays: 731,
     }));
 
     test.done();
@@ -52,9 +52,9 @@ export = {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain'
-        }
-      }
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     }));
 
     test.done();
@@ -69,7 +69,7 @@ export = {
       // Don't know why TypeScript doesn't complain about passing Infinity to
       // something where an enum is expected, but better keep this behavior for
       // existing clients.
-      retention: Infinity
+      retention: Infinity,
     });
 
     // THEN
@@ -78,9 +78,9 @@ export = {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
           DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain'
-        }
-      }
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
     }));
 
     test.done();
@@ -93,14 +93,14 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retention: parameter.valueAsNumber
+      retention: parameter.valueAsNumber,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
       RetentionInDays: {
-        Ref: 'RetentionInDays'
-      }
+        Ref: 'RetentionInDays',
+      },
     }));
 
     test.done();
@@ -113,7 +113,7 @@ export = {
     // WHEN
     new LogGroup(stack, 'LogGroup', {
       retention: Infinity,
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -122,9 +122,9 @@ export = {
         LogGroupF5B46931: {
           Type: 'AWS::Logs::LogGroup',
           DeletionPolicy: 'Delete',
-          UpdateReplacePolicy: 'Delete'
-        }
-      }
+          UpdateReplacePolicy: 'Delete',
+        },
+      },
     }));
 
     test.done();
@@ -140,9 +140,9 @@ export = {
 
     // THEN
     test.deepEqual(imported.logGroupName, 'my-log-group');
-    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
-      LogGroupName: 'my-log-group'
+      LogGroupName: 'my-log-group',
     }));
     test.done();
   },
@@ -157,13 +157,87 @@ export = {
 
     // THEN
     test.deepEqual(imported.logGroupName, 'my-log-group');
-    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group$/.test(imported.logGroupArn),
+    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group:\*$/.test(imported.logGroupArn),
       `LogGroup ARN ${imported.logGroupArn} does not match the expected pattern`);
     expect(stack).to(haveResource('AWS::Logs::LogStream', {
-      LogGroupName: 'my-log-group'
+      LogGroupName: 'my-log-group',
     }));
     test.done();
   },
+
+  'loggroups imported by name have stream wildcard appended to grant ARN': dataDrivenTests([
+    // Regardless of whether the user put :* there already because of this bug, we
+    // don't want to append it twice.
+    [''],
+    [':*'],
+  ], (test: Test, suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'Role');
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', `my-log-group${suffix}`);
+
+    // WHEN
+    imported.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [ '', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':logs:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':log-group:my-log-group:*',
+              ]],
+            },
+          },
+        ],
+      },
+    }));
+    test.equal(imported.logGroupName, 'my-log-group');
+
+    test.done();
+  }),
+
+  'loggroups imported by ARN have stream wildcard appended to grant ARN': dataDrivenTests([
+    // Regardless of whether the user put :* there already because of this bug, we
+    // don't want to append it twice.
+    [''],
+    [':*'],
+  ], (test: Test, suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'Role');
+    const imported = LogGroup.fromLogGroupArn(stack, 'lg', `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`);
+
+    // WHEN
+    imported.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+          },
+        ],
+      },
+    }));
+    test.equal(imported.logGroupName, 'my-log-group');
+
+    test.done();
+  }),
 
   'extractMetric'(test: Test) {
     // GIVEN
@@ -181,9 +255,9 @@ export = {
         {
           MetricName: 'Field',
           MetricNamespace: 'MyService',
-          MetricValue: '$.myField'
-        }
-      ]
+          MetricValue: '$.myField',
+        },
+      ],
     }));
     test.equal(metric.namespace, 'MyService');
     test.equal(metric.metricName, 'Field');
@@ -206,9 +280,9 @@ export = {
         {
           MetricName: 'Field',
           MetricNamespace: 'MyNamespace/MyService',
-          MetricValue: '$.myField'
-        }
-      ]
+          MetricValue: '$.myField',
+        },
+      ],
     }));
     test.equal(metric.namespace, 'MyNamespace/MyService');
     test.equal(metric.metricName, 'Field');
@@ -232,13 +306,24 @@ export = {
           {
             Action: [ 'logs:CreateLogStream', 'logs:PutLogEvents' ],
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [ 'LogGroupF5B46931', 'Arn' ] }
-          }
+            Resource: { 'Fn::GetAtt': [ 'LogGroupF5B46931', 'Arn' ] },
+          },
         ],
-        Version: '2012-10-17'
-      }
+        Version: '2012-10-17',
+      },
     }));
 
     test.done();
   },
 };
+
+function dataDrivenTests(cases: any[][], body: (test: Test, ...args: any[]) => void) {
+  const ret: any = {};
+  for (let i = 0; i < cases.length; i++) {
+    const args = cases[i]; // Need to capture inside loop for safe use inside closure.
+    ret[`case ${i + 1}`] = function(test: Test) {
+      return body.apply(this, [test, ...args]);
+    };
+  }
+  return ret;
+}

@@ -313,7 +313,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
@@ -336,7 +336,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true
+      open: true,
     });
 
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
@@ -350,7 +350,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       } else {
         this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
           domainName: props.domainName,
-          hostedZone: props.domainZone
+          hostedZone: props.domainZone,
         });
       }
     }

@@ -8,7 +8,7 @@ test('use AwsApi as an event rule target', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)')
+    schedule: events.Schedule.expression('rate(15 minutes)'),
   });
 
   // WHEN
@@ -17,7 +17,7 @@ test('use AwsApi as an event rule target', () => {
     action: 'updateService',
     parameters: {
       service: 'cool-service',
-      forceNewDeployment: true
+      forceNewDeployment: true,
     } as AWS.ECS.UpdateServiceRequest,
     catchErrorPattern: 'error',
     apiVersion: '2019-01-01',
@@ -27,7 +27,7 @@ test('use AwsApi as an event rule target', () => {
     service: 'RDS',
     action: 'createDBSnapshot',
     parameters: {
-      DBInstanceIdentifier: 'cool-instance'
+      DBInstanceIdentifier: 'cool-instance',
     } as AWS.RDS.CreateDBSnapshotMessage,
   }));
 
@@ -38,8 +38,8 @@ test('use AwsApi as an event rule target', () => {
         Arn: {
           'Fn::GetAtt': [
             'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Id: 'Target0',
         Input: JSON.stringify({
@@ -47,29 +47,29 @@ test('use AwsApi as an event rule target', () => {
           action: 'updateService',
           parameters: {
             service: 'cool-service',
-            forceNewDeployment: true
+            forceNewDeployment: true,
           },
           catchErrorPattern: 'error',
           apiVersion: '2019-01-01',
-        })
+        }),
       },
       {
         Arn: {
           'Fn::GetAtt': [
             'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Id: 'Target1',
         Input: JSON.stringify({
           service: 'RDS',
           action: 'createDBSnapshot',
           parameters: {
-            DBInstanceIdentifier: 'cool-instance'
+            DBInstanceIdentifier: 'cool-instance',
           },
-        })
-      }
-    ]
+        }),
+      },
+    ],
   }));
 
   // Uses a singleton function
@@ -81,16 +81,16 @@ test('use AwsApi as an event rule target', () => {
         {
           Action: 'ecs:UpdateService',
           Effect: 'Allow',
-          Resource: '*'
+          Resource: '*',
         },
         {
           Action: 'rds:CreateDBSnapshot',
           Effect: 'Allow',
-          Resource: '*'
-        }
+          Resource: '*',
+        },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   }));
 });
 
@@ -98,7 +98,7 @@ test('with policy statement', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)')
+    schedule: events.Schedule.expression('rate(15 minutes)'),
   });
 
   // WHEN
@@ -108,7 +108,7 @@ test('with policy statement', () => {
     policyStatement: new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['resource'],
-    })
+    }),
   }));
 
   // THEN
@@ -118,16 +118,16 @@ test('with policy statement', () => {
         Arn: {
           'Fn::GetAtt': [
             'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn'
-          ]
+            'Arn',
+          ],
         },
         Id: 'Target0',
         Input: JSON.stringify({ // No `policyStatement`
           service: 'service',
           action: 'action',
-        })
+        }),
       },
-    ]
+    ],
   }));
 
   expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -136,10 +136,10 @@ test('with policy statement', () => {
         {
           Action: 's3:GetObject',
           Effect: 'Allow',
-          Resource: 'resource'
+          Resource: 'resource',
         },
       ],
-      Version: '2012-10-17'
-    }
+      Version: '2012-10-17',
+    },
   }));
 });

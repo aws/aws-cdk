@@ -40,13 +40,6 @@
     "compat": "cdk-compat",
     "update-schema": "bash scripts/update-schema.sh"
   },
-  "cdk-build": {
-    "eslint": {
-      "ignore-pattern": [
-        "scripts/*"
-      ]
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -58,8 +51,8 @@
     "@types/jest": "^25.2.1",
     "@types/mock-fs": "^4.10.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.3.0",
-    "mock-fs": "^4.11.0",
+    "jest": "^25.5.4",
+    "mock-fs": "^4.12.0",
     "pkglint": "0.0.0",
     "typescript-json-schema": "^0.42.0"
   },
@@ -78,7 +71,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "stable",
   "awslint": {
@@ -86,7 +79,7 @@
   },
   "dependencies": {
     "jsonschema": "^1.2.5",
-    "semver": "^7.3.2"
+    "semver": "^7.2.2"
   },
   "awscdkio": {
     "announce": false

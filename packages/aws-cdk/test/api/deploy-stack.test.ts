@@ -9,6 +9,12 @@ const FAKE_STACK = testStack({
   template: FAKE_TEMPLATE,
 });
 
+const FAKE_STACK_TERMINATION_PROTECTION = testStack({
+  stackName: 'termination-protection',
+  template: FAKE_TEMPLATE,
+  terminationProtection: true,
+});
+
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
@@ -25,7 +31,8 @@ beforeEach(() => {
         {
           StackStatus: 'CREATE_COMPLETE',
           StackStatusReason: 'It is magic',
-        }
+          EnableTerminationProtection: false,
+        },
       ] })),
     createChangeSet: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
@@ -34,6 +41,7 @@ beforeEach(() => {
     })),
     executeChangeSet: jest.fn((_o) => ({})),
     getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(FAKE_TEMPLATE) })),
+    updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
 });
@@ -72,7 +80,7 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
     Parameters: [
       { ParameterKey: 'A', ParameterValue: 'A-value' },
       { ParameterKey: 'B', ParameterValue: 'B=value' },
-    ]
+    ],
   }));
 });
 
@@ -102,7 +110,7 @@ test('deploy not skipped if template did not change and --force is applied', asy
     sdk,
     sdkProvider,
     resolvedEnvironment: mockResolvedEnvironment(),
-    force: true
+    force: true,
   });
 
   // THEN
@@ -114,8 +122,8 @@ test('deploy is skipped if template and tags did not change', async () => {
   givenStackExists({
     Tags: [
       { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' }
-    ]
+      { Key: 'Key2', Value: 'Value2' },
+    ],
   });
 
   // WHEN
@@ -123,7 +131,7 @@ test('deploy is skipped if template and tags did not change', async () => {
     stack: FAKE_STACK,
     tags: [
       { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' }
+      { Key: 'Key2', Value: 'Value2' },
     ],
     sdk,
     sdkProvider,
@@ -142,7 +150,7 @@ test('deploy not skipped if template did not change but tags changed', async () 
   givenStackExists({
     Tags: [
       { Key: 'Key', Value: 'Value' },
-    ]
+    ],
   });
 
   // WHEN
@@ -154,9 +162,9 @@ test('deploy not skipped if template did not change but tags changed', async () 
     tags: [
       {
         Key: 'Key',
-        Value: 'NewValue'
-      }
-    ]
+        Value: 'NewValue',
+      },
+    ],
   });
 
   // THEN
@@ -173,7 +181,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
     Tags: [
       { Key: 'Key1', Value: 'Value1' },
       { Key: 'Key2', Value: 'Value2' },
-    ]
+    ],
   });
 
   // WHEN
@@ -183,8 +191,8 @@ test('deploy not skipped if template did not change but one tag removed', async 
     sdkProvider,
     resolvedEnvironment: mockResolvedEnvironment(),
     tags: [
-      { Key: 'Key1', Value: 'Value1' }
-    ]
+      { Key: 'Key1', Value: 'Value1' },
+    ],
   });
 
   // THEN
@@ -200,7 +208,7 @@ test('deploy not skipped if template changed', async () => {
   givenStackExists();
   cfnMocks.getTemplate!.mockReset();
   cfnMocks.getTemplate!.mockReturnValue({
-    TemplateBody: JSON.stringify({ changed: 123 })
+    TemplateBody: JSON.stringify({ changed: 123 }),
   });
 
   // WHEN
@@ -229,6 +237,111 @@ test('not executed and no error if --no-execute is given', async () => {
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
 });
 
+test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', async () => {
+  // GIVEN
+  givenStackExists({
+    StackStatus: 'REVIEW_IN_PROGRESS',
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
+    expect.objectContaining({
+      ChangeSetType: 'CREATE',
+      StackName: 'withouterrors',
+    }),
+  );
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('changeset is updated when stack exists in CREATE_COMPLETE status', async () => {
+  // GIVEN
+  givenStackExists({
+    Tags: [
+      { Key: 'Key1', Value: 'Value1' },
+      { Key: 'Key2', Value: 'Value2' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    execute: false,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
+    expect.objectContaining({
+      ChangeSetType: 'UPDATE',
+      StackName: 'withouterrors',
+    }),
+  );
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy with termination protection enabled', async () => {
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_TERMINATION_PROTECTION,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
+    EnableTerminationProtection: true,
+  }));
+});
+
+test('updateTerminationProtection not called when termination protection is undefined', async () => {
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.updateTerminationProtection).not.toHaveBeenCalled();
+});
+
+test('updateTerminationProtection called when termination protection is undefined and stack has termination protection', async () => {
+  // GIVEN
+  givenStackExists({
+    EnableTerminationProtection: true,
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
+    EnableTerminationProtection: false,
+  }));
+});
+
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  */
@@ -241,8 +354,9 @@ function givenStackExists(overrides: Partial<AWS.CloudFormation.Stack> = {}) {
         StackId: 'mock-stack-id',
         CreationTime: new Date(),
         StackStatus: 'CREATE_COMPLETE',
-        ...overrides
-      }
-    ]
+        EnableTerminationProtection: false,
+        ...overrides,
+      },
+    ],
   }));
 }

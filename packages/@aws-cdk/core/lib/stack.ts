@@ -61,6 +61,13 @@ export interface StackProps {
    * @default {}
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -94,7 +101,7 @@ export class Stack extends Construct implements ITaggable {
         enumerable: false,
         writable: false,
         configurable: false,
-        value
+        value,
       });
       return value;
     }
@@ -182,6 +189,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
+  /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
@@ -254,6 +266,7 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+    this.terminationProtection = props.terminationProtection;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -291,7 +304,7 @@ export class Stack extends Construct implements ITaggable {
       scope: this,
       prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-      preparing: false
+      preparing: false,
     });
   }
 
@@ -502,7 +515,7 @@ export class Stack extends Construct implements ITaggable {
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
         Fn.select(0, Fn.getAzs()),
-        Fn.select(1, Fn.getAzs())
+        Fn.select(1, Fn.getAzs()),
       ];
     }
 
@@ -588,7 +601,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       imageUri: `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}:${imageTag}`,
-      repositoryName
+      repositoryName,
     };
   }
 
@@ -653,7 +666,7 @@ export class Stack extends Construct implements ITaggable {
     if (!dep) {
       dep = this._stackDependencies[target.node.uniqueId] = {
         stack: target,
-        reasons: []
+        reasons: [],
       };
     }
 
@@ -734,19 +747,6 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
-    // Resource dependencies
-    for (const dependency of this.node.dependencies) {
-      for (const target of findCfnResources([ dependency.target ])) {
-        for (const source of findCfnResources([ dependency.source ])) {
-          source.addDependsOn(target);
-        }
-      }
-    }
-
-    if (this.tags.hasTags()) {
-      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
-    }
-
     // if this stack is a roort (e.g. in unit tests), call `prepareApp` so that
     // we resolve cross-references and nested stack assets.
     if (!this.node.scope) {
@@ -771,9 +771,6 @@ export class Stack extends Construct implements ITaggable {
       return;
     }
 
-    const deps = this.dependencies.map(s => s.artifactId);
-    const meta = this.collectMetadata();
-
     // backwards compatibility since originally artifact ID was always equal to
     // stack name the stackName attribute is optional and if it is not specified
     // the CLI will use the artifact ID as the stack name. we *could have*
@@ -785,10 +782,21 @@ export class Stack extends Construct implements ITaggable {
       ? { }
       : { stackName: this.stackName };
 
+    // nested stack tags are applied at the AWS::CloudFormation::Stack resource
+    // level and are not needed in the cloud assembly.
+    // TODO: move these to the cloud assembly artifact properties instead of metadata
+    if (this.tags.hasTags()) {
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
+    }
+
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: this.templateFile,
-      ...stackNameProperty
+      terminationProtection: this.terminationProtection,
+      ...stackNameProperty,
     };
+
+    const deps = this.dependencies.map(s => s.artifactId);
+    const meta = this.collectMetadata();
 
     // add an artifact that represents this stack
     builder.addArtifact(this.artifactId, {
@@ -827,7 +835,7 @@ export class Stack extends Construct implements ITaggable {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata
+      Metadata: this.templateOptions.metadata,
     };
 
     const elements = cfnElements(this);
@@ -878,7 +886,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       account, region,
-      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion)
+      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
 
@@ -1053,17 +1061,6 @@ import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
-
-/**
- * Find all resources in a set of constructs
- */
-function findCfnResources(roots: Iterable<IConstruct>): CfnResource[] {
-  const ret = new Array<CfnResource>();
-  for (const root of roots) {
-    ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
-  }
-  return ret;
-}
 
 interface StackDependency {
   stack: Stack;

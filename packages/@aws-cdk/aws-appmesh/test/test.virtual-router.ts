@@ -68,7 +68,7 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        })
+        }),
       );
 
       test.done();
@@ -186,7 +186,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::Route', {
@@ -208,7 +208,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::Route', {
@@ -230,7 +230,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
 
       test.done();
@@ -297,7 +297,7 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        })
+        }),
       );
 
       test.done();

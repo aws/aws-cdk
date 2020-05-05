@@ -15,11 +15,11 @@ test('use CloudFront as record target', () => {
     originConfigs: [
       {
         s3OriginSource: {
-          s3BucketSource: sourceBucket
+          s3BucketSource: sourceBucket,
         },
-        behaviors : [ {isDefaultBehavior: true}]
-      }
-    ]
+        behaviors : [ {isDefaultBehavior: true}],
+      },
+    ],
   });
 
   // WHEN
@@ -27,14 +27,14 @@ test('use CloudFront as record target', () => {
   new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+    target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: { 'Fn::GetAtt': [ 'MyDistributionCFDistributionDE147309', 'DomainName' ] },
-      HostedZoneId: 'Z2FDTNDATAQYW2'
+      HostedZoneId: 'Z2FDTNDATAQYW2',
     },
   });
 });

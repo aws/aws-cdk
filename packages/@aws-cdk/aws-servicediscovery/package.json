@@ -49,6 +49,9 @@
   "cdk-build": {
     "cloudformation": "AWS::ServiceDiscovery"
   },
+  "nyc": {
+    "statements": 75
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -75,7 +78,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -83,10 +86,10 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "awslint": {
     "exclude": [

@@ -1,4 +1,3 @@
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -172,7 +171,7 @@ export class BucketDeployment extends cdk.Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit
+      memorySize: props.memoryLimit,
     });
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
@@ -187,8 +186,8 @@ export class BucketDeployment extends cdk.Construct {
       }));
     }
 
-    new cloudformation.CustomResource(this, 'CustomResource', {
-      provider: cloudformation.CustomResourceProvider.lambda(handler),
+    new cdk.CustomResource(this, 'CustomResource', {
+      serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
@@ -199,8 +198,8 @@ export class BucketDeployment extends cdk.Construct {
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
-        DistributionPaths: props.distributionPaths
-      }
+        DistributionPaths: props.distributionPaths,
+      },
     });
   }
 

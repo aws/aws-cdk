@@ -23,7 +23,7 @@ describe('Batch Compute Evironment', () => {
       ServiceRole: {
         'Fn::GetAtt': [
           'testcomputeenvResourceServiceInstanceRole105069A5',
-          'Arn'
+          'Arn',
         ],
       },
     };
@@ -35,25 +35,25 @@ describe('Batch Compute Evironment', () => {
           InstanceRole: {
             'Fn::GetAtt': [
               'testcomputeenvInstanceProfileCBD87EAB',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           InstanceTypes: [
-            'optimal'
+            'optimal',
           ],
           MaxvCpus: 256,
           MinvCpus: 0,
           Subnets: [
             {
-              Ref: 'testvpcPrivateSubnet1Subnet865FB50A'
+              Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
             },
             {
-              Ref: 'testvpcPrivateSubnet2Subnet23D3396F'
-            }
+              Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
+            },
           ],
           Type: batch.ComputeResourceType.ON_DEMAND,
           ...overrides,
-        }
+        },
       };
     };
   });
@@ -66,7 +66,7 @@ describe('Batch Compute Evironment', () => {
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: false,
           computeResources: {
-            vpc
+            vpc,
           },
         });
       });
@@ -91,7 +91,7 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           type: batch.ComputeResourceType.SPOT,
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
-          vpc
+          vpc,
         },
       });
 
@@ -106,11 +106,11 @@ describe('Batch Compute Evironment', () => {
               [
                 'arn',
                 {
-                  Ref: 'AWS::Partition'
+                  Ref: 'AWS::Partition',
                 },
                 'iam::',
                 {
-                  Ref: 'AWS::AccountId'
+                  Ref: 'AWS::AccountId',
                 },
                 ':role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet',
               ],
@@ -172,9 +172,9 @@ describe('Batch Compute Evironment', () => {
             roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
-              ]
-            }).roleName]
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+              ],
+            }).roleName],
           }).attrArn,
           instanceTypes: [
             ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
@@ -206,7 +206,7 @@ describe('Batch Compute Evironment', () => {
         ServiceRole: {
           'Fn::GetAtt': [
             'testcomputeenvResourceServiceInstanceRole105069A5',
-            'Arn'
+            'Arn',
           ],
         },
         ComputeResources: {
@@ -214,13 +214,13 @@ describe('Batch Compute Evironment', () => {
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
           ImageId: {
-            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter'
+            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
           },
           InstanceRole: {
             'Fn::GetAtt': [
               props.computeResources.instanceRole ? 'InstanceProfile' : '',
-              'Arn'
-            ]
+              'Arn',
+            ],
           },
           InstanceTypes: [
             props.computeResources.instanceTypes ? props.computeResources.instanceTypes[0].toString() : '',
@@ -231,25 +231,25 @@ describe('Batch Compute Evironment', () => {
             {
               'Fn::GetAtt': [
                 'testsg872EB48A',
-                'GroupId'
-              ]
-            }
+                'GroupId',
+              ],
+            },
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`
+              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`
-            }
+              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`,
+            },
           ],
           Tags: {
             key: 'foo',
             props: {},
             defaultPriority: 100,
-            value: 'bar'
+            value: 'bar',
           },
-          Type: 'EC2'
+          Type: 'EC2',
         },
       }, ResourcePart.Properties));
     });
@@ -270,7 +270,7 @@ describe('Batch Compute Evironment', () => {
           ServiceRole: {
             'Fn::GetAtt': [
               'testcomputeenvResourceServiceInstanceRole105069A5',
-              'Arn'
+              'Arn',
             ],
           },
         }, ResourcePart.Properties));

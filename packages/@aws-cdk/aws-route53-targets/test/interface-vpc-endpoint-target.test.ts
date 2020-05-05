@@ -13,19 +13,19 @@ test('use InterfaceVpcEndpoint as record target', () => {
     vpc,
     service: {
       name: 'com.amazonaws.us-west-2.workspaces',
-      port: 80
-    }
+      port: 80,
+    },
   });
   const zone = new route53.PrivateHostedZone(stack, 'PrivateZone', {
     vpc,
-    zoneName: 'test.aws.cdk.com'
+    zoneName: 'test.aws.cdk.com',
   });
 
   // WHEN
   new route53.ARecord(stack, 'AliasEndpointRecord', {
     zone,
     recordName: 'foo',
-    target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint))
+    target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint)),
   });
 
   // THEN
@@ -43,14 +43,14 @@ test('use InterfaceVpcEndpoint as record target', () => {
                   {
                     'Fn::GetAtt': [
                       'InterfaceEndpoint12DE6E71',
-                      'DnsEntries'
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                      'DnsEntries',
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
       DNSName: {
         'Fn::Select': [
@@ -64,15 +64,15 @@ test('use InterfaceVpcEndpoint as record target', () => {
                   {
                     'Fn::GetAtt': [
                       'InterfaceEndpoint12DE6E71',
-                      'DnsEntries'
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    }
+                      'DnsEntries',
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
   });
 });

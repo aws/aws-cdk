@@ -342,6 +342,8 @@ export class Cluster extends Resource implements ICluster {
    */
   private _awsAuth?: AwsAuth;
 
+  private _spotInterruptHandler?: HelmChart;
+
   private readonly version: string | undefined;
 
   /**
@@ -368,7 +370,6 @@ export class Cluster extends Resource implements ICluster {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSServicePolicy'),
       ],
     });
 
@@ -392,8 +393,8 @@ export class Cluster extends Resource implements ICluster {
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
-        subnetIds
-      }
+        subnetIds,
+      },
     };
 
     let resource;
@@ -490,7 +491,7 @@ export class Cluster extends Resource implements ICluster {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
-      machineImageType: options.machineImageType
+      machineImageType: options.machineImageType,
     });
 
     return asg;
@@ -568,7 +569,7 @@ export class Cluster extends Resource implements ICluster {
 
     // EKS Required Tags
     Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
-      applyToLaunchedInstances: true
+      applyToLaunchedInstances: true,
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
@@ -584,28 +585,20 @@ export class Cluster extends Resource implements ICluster {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
-          'system:nodes'
-        ]
+          'system:nodes',
+        ],
       });
     } else {
       // since we are not mapping the instance role to RBAC, synthesize an
       // output so it can be pasted into `aws-auth-cm.yaml`
       new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-        value: autoScalingGroup.role.roleArn
+        value: autoScalingGroup.role.roleArn,
       });
     }
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.7.3',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT
-        }
-      });
+      this.addSpotInterruptHandler();
     }
   }
 
@@ -694,6 +687,26 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
+  private addSpotInterruptHandler() {
+    if (!this._spotInterruptHandler) {
+      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
+      });
+    }
+
+    return this._spotInterruptHandler;
+  }
+
+  /**
    * Opportunistically tag subnets with the required tags.
    *
    * If no subnets could be found (because this is an imported VPC), add a warning.
@@ -746,11 +759,11 @@ export class Cluster extends Resource implements ICluster {
         template: {
           metadata: {
             annotations: {
-              'eks.amazonaws.com/compute-type': computeType
-            }
-          }
-        }
-      }
+              'eks.amazonaws.com/compute-type': computeType,
+            },
+          },
+        },
+      },
     });
 
     new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
@@ -758,7 +771,7 @@ export class Cluster extends Resource implements ICluster {
       resourceName: 'deployment/coredns',
       resourceNamespace: 'kube-system',
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
-      restorePatch: renderPatch(CoreDnsComputeType.EC2)
+      restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
   }
 }
@@ -959,14 +972,14 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedImageProps) {
-    this.nodeType = props && props.nodeType;
-    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+  public constructor(props: EksOptimizedImageProps = {}) {
+    this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
-      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + 'recommended/image_id';
   }
 
@@ -1078,6 +1091,6 @@ export enum MachineImageType {
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
 
-export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
+function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
 }

@@ -185,7 +185,7 @@ class VariableComparison extends Condition {
   public renderCondition(): any {
     return {
       Variable: this.variable,
-      [ComparisonOperator[this.comparisonOperator]]: this.value
+      [ComparisonOperator[this.comparisonOperator]]: this.value,
     };
   }
 }
@@ -206,7 +206,7 @@ class CompoundCondition extends Condition {
 
   public renderCondition(): any {
     return {
-      [CompoundOperator[this.operator]]: this.conditions.map(c => c.renderCondition())
+      [CompoundOperator[this.operator]]: this.conditions.map(c => c.renderCondition()),
     };
   }
 }
@@ -221,7 +221,7 @@ class NotCondition extends Condition {
 
   public renderCondition(): any {
     return {
-      Not: this.comparisonOperation.renderCondition()
+      Not: this.comparisonOperation.renderCondition(),
     };
   }
 }
