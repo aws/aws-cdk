@@ -182,7 +182,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new Error("Only one of SecurityGroup or SecurityGroups can be populated.");
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
