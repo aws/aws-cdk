@@ -16,7 +16,7 @@ The following example shows how to send a notification to an SNS
 topic when an object is created in an S3 bucket:
 
 ```ts
-import s3n = require('@aws-cdk/aws-s3-notifications');
+import * as s3n from '@aws-cdk/aws-s3-notifications';
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 const topic = new sns.Topic(stack, 'Topic');
