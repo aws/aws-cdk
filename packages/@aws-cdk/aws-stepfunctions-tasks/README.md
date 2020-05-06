@@ -22,6 +22,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Table Of Contents
 
 - [Task](#task)
+- [Paths](#paths)
+  - [InputPath](#inputpath)
+  - [OutputPath](#outputpath)
+  - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
 - [Batch](#batch)
@@ -61,6 +65,79 @@ actions, and coordinate executions directly from the Amazon States Language in
 Step Functions. You can directly call and pass parameters to the APIs of those
 services.
 
+## Paths
+
+In the Amazon States Language, a [path](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html) is a string beginning with `$` that you
+can use to identify components within JSON text.
+
+Learn more about input and output processing in Step Functions [here](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html)
+
+### InputPath
+
+Both `InputPath` and `Parameters` fields provide a way to manipulate JSON as it
+moves through your workflow. AWS Step Functions applies the `InputPath` field first,
+and then the `Parameters` field. You can first filter your raw input to a selection
+you want using InputPath, and then apply Parameters to manipulate that input
+further, or add new values. If you don't specify an `InputPath`, a default value
+of `$` will be used.
+
+The following example provides the field named `input` as the input to the `Task`
+state that runs a Lambda function.
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda),
+  inputPath: '$.input'
+});
+```
+
+### OutputPath
+
+Tasks also allow you to select a portion of the state output to pass to the next
+state. This enables you to filter out unwanted information, and pass only the
+portion of the JSON that you care about. If you don't specify an `OutputPath`,
+a default value of `$` will be used. This passes the entire JSON node to the next
+state.
+
+The [response](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseSyntax) from a Lambda function includes the response from the function
+as well as other metadata.
+
+The following example assigns the output from the Task to a field named `result`
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda),
+  outputPath: '$.Payload.result'
+});
+```
+
+### ResultPath
+
+The output of a state can be a copy of its input, the result it produces (for
+example, output from a Task state’s Lambda function), or a combination of its
+input and result. Use [`ResultPath`](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html) to control which combination of these is
+passed to the state output. If you don't specify an `ResultPath`, a default
+value of `$` will be used.
+
+The following example adds the item from calling DynamoDB's `getItem` API to the state
+input and passes it to the next state.
+
+```ts
+new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.getItem({
+    item: {
+      MessageId: new tasks.DynamoAttributeValue().withS('12345'),
+    },
+    tableName: 'my-table',
+  }),
+  resultPath: `$.Item`
+});
+```
+
+⚠️ The `OutputPath` is computed after applying `ResultPath`. All service integrations
+return metadata as part of their response. When using `ResultPath`, it's not possible to
+merge a subset of the task output to the input.
+
 ## Task parameters from the state JSON
 
 Most tasks take parameters. Parameter values can either be static, supplied directly
@@ -69,8 +146,19 @@ in the state machine's execution (either as its input or an output of a prior st
 Parameter values available at runtime can be specified via the `Data` class,
 using methods such as `Data.stringAt()`.
 
-If so, the value is taken from the indicated location in the state JSON,
-similar to (for example) `inputPath`.
+The following example provides the field named `input` as the input to the Lambda function
+and invokes it asynchronously.
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda, {
+    payload: sfn.Data.StringAt('$.input'),
+    invocationType: tasks.InvocationType.EVENT,
+  }),
+});
+```
+
+Each service integration has its own set of parameters that can be supplied.
 
 ## Evaluate Expression
 
