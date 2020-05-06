@@ -71,7 +71,7 @@ describe('Bootstrapping v2', () => {
     };
 
     await expect(bootstrapEnvironment2(env, sdk, {}))
-      .rejects.toThrow('Refusing to downgrade existing bootstrap stack');
+      .rejects.toThrow('Not downgrading existing bootstrap stack');
   });
 
   afterEach(() => {

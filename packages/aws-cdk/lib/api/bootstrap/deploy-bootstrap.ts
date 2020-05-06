@@ -26,7 +26,7 @@ export async function deployBootstrapStack(
   const newVersion = bootstrapVersionFromTemplate(template);
   const currentBootstrapStack = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
   if (currentBootstrapStack && newVersion < currentBootstrapStack.version && !options.force) {
-    throw new Error(`Refusing to downgrade existing bootstrap stack from version '${currentBootstrapStack.version}' to version '${newVersion}'. Use --force to force.`);
+    throw new Error(`Not downgrading existing bootstrap stack from version '${currentBootstrapStack.version}' to version '${newVersion}'. Use --force to force.`);
   }
 
   const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));

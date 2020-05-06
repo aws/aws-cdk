@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -1020,6 +1020,35 @@ export = {
       s3ImportRole: importRole,
       s3ImportBuckets: [importBucket],
     }));
+
+    test.done();
+  },
+
+  'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        vpcSubnets: {
+          subnetName: 'DefinitelyDoesNotExist',
+        },
+      },
+    });
+
+    // THEN
+    const art = SynthUtils.synthesize(stack);
+    const meta = art.findMetadataByType('aws:cdk:error');
+    test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
 
     test.done();
   },

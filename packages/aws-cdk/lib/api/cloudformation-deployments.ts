@@ -79,6 +79,15 @@ export interface DeployStackOptions {
    * @default - no additional parameters will be passed to the template
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -146,6 +155,7 @@ export class CloudFormationDeployments {
       execute: options.execute,
       force: options.force,
       parameters: options.parameters,
+      usePreviousParameters: options.usePreviousParameters,
     });
   }
 

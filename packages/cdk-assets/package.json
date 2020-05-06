@@ -37,15 +37,15 @@
     "@types/jszip": "^3.1.7",
     "jszip": "^3.4.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.4.0",
-    "mock-fs": "^4.11.0",
+    "jest": "^25.5.4",
+    "mock-fs": "^4.12.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.660.0",
+    "aws-sdk": "^2.669.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
@@ -60,7 +60,10 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
+  },
+  "cdk-package": {
+    "shrinkWrap": true
   },
   "stability": "experimental",
   "maturity": "experimental",

@@ -12,7 +12,7 @@
 Define a KMS key:
 
 ```ts
-import kms = require('@aws-cdk/aws-kms');
+import * as kms from '@aws-cdk/aws-kms';
 
 new kms.Key(this, 'MyKey', {
     enableKeyRotation: true

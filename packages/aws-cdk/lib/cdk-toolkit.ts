@@ -189,6 +189,7 @@ export class CdkToolkit {
           execute: options.execute,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+          usePreviousParameters: options.usePreviousParameters,
         });
 
         const message = result.noOp
@@ -340,7 +341,7 @@ export class CdkToolkit {
     // Partition into globs and non-globs (this will mutate environmentSpecs).
     const globSpecs = partition(environmentSpecs, looksLikeGlob);
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
-      throw new Error(`Don't know how to bootstrap environment '${globSpecs}'. Run in app directory or specify an environment name like \'aws://123456789012/us-east-1\'.`);
+      throw new Error(`'${globSpecs}' is not an environment name. Run in app directory to glob or specify an environment name like \'aws://123456789012/us-east-1\'.`);
     }
 
     const environments: cxapi.Environment[] = [
@@ -563,6 +564,15 @@ export interface DeployOptions {
    * @default {}
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON

@@ -16,6 +16,7 @@ export interface TestStackArtifact {
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
   properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
+  terminationProtection?: boolean;
 }
 
 export interface TestAssembly {
@@ -76,6 +77,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       properties: {
         ...stack.properties,
         templateFile,
+        terminationProtection: stack.terminationProtection,
       },
     });
   }

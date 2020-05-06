@@ -82,6 +82,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly requiresBootstrapStackVersion?: number;
 
+  /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
@@ -99,6 +104,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
+    this.terminationProtection = properties.terminationProtection;
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));

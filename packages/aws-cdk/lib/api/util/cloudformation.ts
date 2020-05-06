@@ -116,6 +116,13 @@ export class CloudFormationStack {
     return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
   }
 
+  /**
+   * Return the termination protection of the stack
+   */
+  public get terminationProtection(): boolean | undefined {
+    return this.stack?.EnableTerminationProtection;
+  }
+
   private assertExists() {
     if (!this.exists) {
       throw new Error(`No stack named '${this.stackName}'`);
