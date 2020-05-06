@@ -586,7 +586,7 @@ export abstract class BaseService extends Resource
 
   /**
    * This method is called to create a networkConfiguration.
-   * @deprecated use configureAwsVpcNetworkingWithMultipleSecurityGroups instead.
+   * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
