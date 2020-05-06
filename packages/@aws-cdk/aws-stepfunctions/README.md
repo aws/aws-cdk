@@ -115,7 +115,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
-* [`CustomState`](#customstate)
+* [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -259,14 +259,14 @@ const map = new stepfunctions.Map(this, 'Map State', {
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
 
-### CustomState
+### Custom State
 
 It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
 the states or service integrations you are looking for. The primary reasons for this lack of
 functionality are:
 
-* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but there are no Construct
-  classes for them
+* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but not available as construct
+  classes in the CDK.
 * The state or state properties are available through Step Functions, but are not configurable
   through constructs
 
