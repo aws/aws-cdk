@@ -23,7 +23,6 @@ maps to the domain root.
 * **core:** move all types from "aws-cloudformation" to "core" ([#7736](https://github.com/aws/aws-cdk/issues/7736)) ([40fa93a](https://github.com/aws/aws-cdk/commit/40fa93a22ffbdf18b0563d1cef63bbf5814dcc3f)), closes [#4896](https://github.com/aws/aws-cdk/issues/4896) [#7035](https://github.com/aws/aws-cdk/issues/7035) [#7034](https://github.com/aws/aws-cdk/issues/7034)
 * **core:** stack termination protection ([#7610](https://github.com/aws/aws-cdk/issues/7610)) ([7ed60b8](https://github.com/aws/aws-cdk/commit/7ed60b8a5d42e93e556e3b6e9ee3618931747ac2)), closes [#1682](https://github.com/aws/aws-cdk/issues/1682)
 * **ecr:** support imageScanOnPush when creating the repository ([9df5486](https://github.com/aws/aws-cdk/commit/9df5486306fda01d963f4b1195fe8c8532cc4668)), closes [#7471](https://github.com/aws/aws-cdk/issues/7471)
-* **lambda-nodejs:** use docker instead of npm package for parcel-bundler ([55c4d0b](https://github.com/aws/aws-cdk/commit/55c4d0bb35aad7b026a88cf1a38a37af9af33f9f))
 
 
 ### Bug Fixes
