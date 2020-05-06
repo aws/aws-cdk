@@ -66,11 +66,9 @@
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib",
-    "cloudwatch",
-    "events"
+    "constructs",
+    "stepfunctions",
+    "stepfunctions-tasks"
   ],
   "author": {
     "name": "Amazon Web Services",
