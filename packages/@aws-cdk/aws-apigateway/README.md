@@ -1,4 +1,5 @@
 ## Amazon API Gateway Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -17,8 +18,6 @@ running on AWS Lambda, or any web application.
 
 ## Table of Contents
 
-- [Amazon API Gateway Construct Library](#amazon-api-gateway-construct-library)
-- [Table of Contents](#table-of-contents)
 - [Defining APIs](#defining-apis)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
@@ -35,6 +34,8 @@ running on AWS Lambda, or any web application.
 - [Access Logging](#access-logging)
 - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
+- [Using OpenAPI Definitions](#using-openapi-definitions)
+- [OpenAPI Definition](#openapi-definition)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -59,18 +60,6 @@ const book = books.addResource('{book_id}');
 book.addMethod('GET');
 book.addMethod('DELETE');
 ```
-
-Optionally, you can import a Swagger/OpenAPI definition, and API Gateway will create resources
-and methods from your specification:
-```ts
-const api = new apigateway.APIDefinitionRestApi(this, 'books-api', {
-  apiDefinition: apigateway.APIDefinition.fromAsset('path-to-your-swagger-file.json')
-});
-```
-[API Gateway Swagger/OpenAPI import limitations](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html) apply when creating a Rest API in this way.
-
-You can either create a Rest API from an imported Swagger/OpenAPI definition or define your
-API hierarchy with resources and methods, but _not both_.
 
 ## AWS Lambda-backed APIs
 
@@ -114,11 +103,11 @@ item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 Methods are associated with backend integrations, which are invoked when this
 method is called. API Gateway supports the following integrations:
 
- * `MockIntegration` - can be used to test APIs. This is the default
+* `MockIntegration` - can be used to test APIs. This is the default
    integration if one is not specified.
- * `LambdaIntegration` - can be used to invoke an AWS Lambda function.
- * `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
- * `HttpIntegration` - can be used to invoke HTTP endpoints.
+* `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+* `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
+* `HttpIntegration` - can be used to invoke HTTP endpoints.
 
 The following example shows how to integrate the `GET /book/{book_id}` method to
 an AWS Lambda function:
@@ -192,6 +181,7 @@ This construct lets you specify rate limiting properties which should be applied
 The API key created has the specified rate limits, such as quota and throttles, applied.
 
 The following example shows how to use a rate limited api key :
+
 ```ts
 const hello = new lambda.Function(this, 'hello', {
   runtime: lambda.Runtime.NODEJS_10_X,
@@ -463,9 +453,9 @@ iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
 API Gateway also allows [lambda functions to be used as authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
 
 This module provides support for token-based Lambda authorizers. When a client makes a request to an API's methods configured with such
-an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output. 
+an authorizer, API Gateway calls the Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output.
 A token-based Lambda authorizer (also called a token authorizer) receives the caller's identity in a bearer token, such as
-a JSON Web Token (JWT) or an OAuth token. 
+a JSON Web Token (JWT) or an OAuth token.
 
 API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
 The event object that the handler is called with contains the `authorizationToken` and the `methodArn` from the request to the
@@ -504,7 +494,7 @@ depending on where the defaults were specified.
 
 This module provides support for request-based Lambda authorizers. When a client makes a request to an API's methods configured with such
 an authorizer, API Gateway calls the Lambda authorizer, which takes specified parts of the request, known as identity sources,
-as input and returns an IAM policy as output. A request-based Lambda authorizer (also called a request authorizer) receives 
+as input and returns an IAM policy as output. A request-based Lambda authorizer (also called a request authorizer) receives
 the identity sources in a series of values pulled from the request, from the headers, stage variables, query strings, and the context.
 
 API Gateway interacts with the authorizer Lambda function handler by passing input and expecting the output in a specific format.
@@ -647,8 +637,8 @@ new apigw.DomainName(this, 'custom-domain', {
 ```
 
 Once you have a domain, you can map base paths of the domain to APIs.
-The following example will map the URL https://example.com/go-to-api1
-to the `api1` API and https://example.com/boom to the `api2` API.
+The following example will map the URL <https://example.com/go-to-api1>
+to the `api1` API and <https://example.com/boom> to the `api2` API.
 
 ```ts
 domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
@@ -656,7 +646,7 @@ domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
 You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
-`deploymentStage` of the `RestApi`. 
+`deploymentStage` of the `RestApi`.
 
 ```ts
 const betaDeploy = new Deployment(this, 'beta-deployment', {
@@ -800,7 +790,7 @@ running at one origin, access to selected resources from a different origin. A
 web application executes a cross-origin HTTP request when it requests a resource
 that has a different origin (domain, protocol, or port) from its own.
 
-You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS 
+You can add the CORS [preflight](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests) OPTIONS
 HTTP method to any API resource via the `defaultCorsPreflightOptions` option or by calling the `addCorsPreflight` on a specific resource.
 
 The following example will enable CORS for all methods and all origins on all resources of the API:
@@ -815,7 +805,7 @@ new apigateway.RestApi(this, 'api', {
 ```
 
 The following example will add an OPTIONS method to the `myResource` API resource, which
-only allows GET and PUT HTTP requests from the origin https://amazon.com.
+only allows GET and PUT HTTP requests from the origin <https://amazon.com.>
 
 ```ts
 myResource.addCorsPreflight({
@@ -846,8 +836,8 @@ features which are not yet supported.
 
 ## Endpoint Configuration
 
-API gateway allows you to specify an 
-[API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html). 
+API gateway allows you to specify an
+[API Endpoint Type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html).
 To define an endpoint type for the API gateway, use `endpointConfiguration` property:
 
 ```ts
@@ -880,6 +870,30 @@ By performing this association, we can invoke the API gateway using the followin
 ```
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
+
+## OpenAPI Definition
+
+CDK supports creating a REST API by importing an OpenAPI definition file. It currently supports OpenAPI v2.0 and OpenAPI
+v3.0 definition files. Read more about [Configuring a REST API using
+OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html).
+
+The following code creates a REST API using an external OpenAPI definition JSON file -
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.APIDefinition.fromAsset('path-to-file.json')
+});
+```
+
+There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
+notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
+for more details.
+
+**Note:** When starting off with an OpenAPI definition, it is possible to add Resources and Methods via the CDK APIs, in
+addition to what has already been defined in the OpenAPI.
+However, it is important to note that it is not possible to override or modify Resources and Methods that are already
+defined in the OpenAPI definition. While these will be present in the final CloudFormation template, they will be
+ignored by API Gateway. The definition in the OpenAPI definition file always takes precedent.
 
 ## APIGateway v2
 

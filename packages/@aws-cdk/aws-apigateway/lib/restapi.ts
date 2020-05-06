@@ -1,8 +1,8 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ApiDefinition, ApiDefinitionConfig } from './api-definition';
 import { ApiKey, IApiKey } from './api-key';
-import { APIDefinition, APIDefinitionConfig } from './apidefinition';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
@@ -186,13 +186,13 @@ export interface RestApiProps extends BaseRestApiProps {
 }
 
 /**
- * Represents props unique to creating a Rest API with a Swagger/OpenAPI specification
+ * Props to instantiate a new SpecRestApi
  */
-export interface APIDefinitionRestApiProps extends BaseRestApiProps {
+export interface SpecRestApiProps extends BaseRestApiProps {
   /**
    * A Swagger/OpenAPI definition compatible with API Gateway.
    */
-  readonly apiDefinition: APIDefinition;
+  readonly apiDefinition: ApiDefinition;
 }
 
 abstract class BaseRestApi extends Resource implements IRestApi {
@@ -346,7 +346,7 @@ abstract class BaseRestApi extends Resource implements IRestApi {
 }
 
 /**
- * Represents a REST API in Amazon API Gateway, created via a Swagger/OpenAPI specification.
+ * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
  *
  * Some properties normally accessible on @see {@link RestApi} - such as the description -
  * must be declared in the specification.
@@ -356,7 +356,7 @@ abstract class BaseRestApi extends Resource implements IRestApi {
  *
  * @resource AWS::ApiGateway::RestApi
  */
-export class APIDefinitionRestApi extends BaseRestApi {
+export class SpecRestApi extends BaseRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -369,18 +369,17 @@ export class APIDefinitionRestApi extends BaseRestApi {
    */
   public readonly restApiRootResourceId: string;
 
-  constructor(scope: Construct, id: string, props: APIDefinitionRestApiProps) {
+  constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      body: props.apiDefinition.isInline ? apiDefConfig.inlineDefinition : undefined,
-      bodyS3Location: props.apiDefinition.isInline ? undefined : apiDefConfig.s3Location,
+      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       parameters: props.parameters,
     });
-    props.apiDefinition.bindToResource(resource);
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
@@ -622,7 +621,7 @@ class RootResource extends ResourceBase {
   }
 }
 
-export function verifyAPIDefinitionConfig(definition: APIDefinitionConfig) {
+export function verifyAPIDefinitionConfig(definition: ApiDefinitionConfig) {
   // mutually exclusive
   if ((!definition.inlineDefinition && !definition.s3Location) || (definition.inlineDefinition && definition.s3Location)) {
     throw new Error('APIDefinition must specify one of "inlineDefinition" or "s3Location" but not both');

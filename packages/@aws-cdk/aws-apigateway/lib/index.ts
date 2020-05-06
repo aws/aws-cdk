@@ -20,7 +20,7 @@ export * from './base-path-mapping';
 export * from './cors';
 export * from './authorizers';
 export * from './access-log';
-export * from './apidefinition';
+export * from './api-definition';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';
