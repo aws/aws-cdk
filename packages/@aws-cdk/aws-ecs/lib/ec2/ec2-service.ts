@@ -153,11 +153,6 @@ export class Ec2Service extends BaseService implements IEc2Service {
   private readonly daemon: boolean;
 
   /**
-   * The security groups associated to the task.
-   */
-  private readonly securityGroups?: ec2.ISecurityGroup[];
-
-  /**
    * Constructs a new instance of the Ec2Service class.
    */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
@@ -210,14 +205,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.strategies = [];
     this.daemon = props.daemon || false;
 
+    let securityGroups;
     if (props.securityGroup !== undefined) {
-      this.securityGroups = [ props.securityGroup ];
+      securityGroups = [ props.securityGroup ];
     } else if (props.securityGroups !== undefined) {
-      this.securityGroups = props.securityGroups;
+      securityGroups = props.securityGroups;
     }
 
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, this.securityGroups);
+      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
       // We have to be smart here -- by default future Security Group rules would be created

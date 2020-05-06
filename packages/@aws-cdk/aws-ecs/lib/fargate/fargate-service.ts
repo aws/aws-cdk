@@ -125,11 +125,6 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   /**
-   * The security groups associated to the task.
-   */
-  private readonly securityGroups?: ec2.ISecurityGroup[];
-
-  /**
    * Constructs a new instance of the FargateService class.
    */
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
@@ -160,13 +155,14 @@ export class FargateService extends BaseService implements IFargateService {
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 
+    let securityGroups;
     if (props.securityGroup !== undefined) {
-      this.securityGroups = [ props.securityGroup ];
+      securityGroups = [ props.securityGroup ];
     } else if (props.securityGroups !== undefined) {
-      this.securityGroups = props.securityGroups;
+      securityGroups = props.securityGroups;
     }
 
-    this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, this.securityGroups);
+    this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
