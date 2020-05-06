@@ -24,6 +24,10 @@
     "graceful-fs": "^4.2.4",
     "typescript": "~3.8.3"
   },
+  "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
+  "resolutions": {
+    "tap-mocha-reporter": "^5.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
