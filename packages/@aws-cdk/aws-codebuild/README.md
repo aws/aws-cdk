@@ -269,6 +269,68 @@ any attempt to save more than one will result in an error.
 You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
 to inspect what credentials are stored in your account.
 
+## Test reports
+
+You can specify a test report in your buildspec:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      myReport: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+This will create a new test report group,
+with the name `<ProjectName>-myReport`.
+
+The project's role in the CDK will always be granted permissions to create and use report groups
+with names starting with the project's name;
+if you'd rather not have those permissions added,
+you can opt out of it when creating the project:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  // ...
+  grantReportGroupPermissions: false,
+});
+```
+
+Alternatively, you can specify an ARN of an existing resource group,
+instead of a simple name, in your buildspec:
+
+```typescript
+// create a new ReportGroup
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
+
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      [reportGroup.reportGroupArn]: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+If you do that, you need to grant the project's role permissions to write reports to that report group:
+
+```typescript
+reportGroup.grantWrite(project);
+```
+
+For more information on the test reports feature,
+see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).
+
 ## Events
 
 CodeBuild projects can be used either as a source for events or be triggered

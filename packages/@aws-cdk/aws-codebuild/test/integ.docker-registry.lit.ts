@@ -18,6 +18,7 @@ class TestStack extends cdk.Stack {
           },
         },
       }),
+      grantReportGroupPermissions: false,
       /// !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('my-registry/my-repo', {

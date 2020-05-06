@@ -99,6 +99,28 @@ export = {
                       },
                     ],
                   },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
+                  },
                 ],
                 'Version': '2012-10-17',
               },
@@ -247,6 +269,28 @@ export = {
                         ],
                       },
                     ],
+                  },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
@@ -422,6 +466,28 @@ export = {
                         ],
                       },
                     ],
+                  },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
@@ -737,6 +803,7 @@ export = {
 
       new codebuild.PipelineProject(stack, 'MyProject', {
         encryptionKey: key,
+        grantReportGroupPermissions: false,
       });
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
