@@ -4,8 +4,9 @@ import { Construct, Lazy, Resource, Token } from '@aws-cdk/core';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage } from './machine-image';
+import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { UserData } from './user-data';
-import { BlockDevice, EbsDeviceVolumeType } from './volume';
+import { BlockDevice } from './volume';
 
 export interface ILaunchTemplate {
   /**
@@ -161,40 +162,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate {
         // Instance itself?
         userData: Lazy.stringValue({ produce: () => props.userData?.render() }),
         iamInstanceProfile: props.role ? { arn: props.role.roleArn } : undefined,
-        blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+        blockDeviceMappings: launchTemplateBlockDeviceMappings(this, props.blockDevices),
       },
     });
 
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
   }
-}
-
-/**
- * Synthesize an array of block device mappings from a list of block device
- *
- * @param construct the instance/asg construct, used to host any warning
- * @param blockDevices list of block devices
- */
-function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnLaunchTemplate.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnLaunchTemplate.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
-
-    if (ebs) {
-      const { iops, volumeType } = ebs;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
-
-    return {
-      deviceName, ebs, virtualName,
-      noDevice: mappingEnabled === false ? '' : undefined,
-    };
-  });
 }

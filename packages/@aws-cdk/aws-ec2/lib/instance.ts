@@ -6,9 +6,10 @@ import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { ILaunchTemplate } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { BlockDevice, EbsDeviceVolumeType } from './volume';
+import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 
 /**
@@ -211,11 +212,6 @@ interface InstanceBaseProps {
 export class Instance extends Resource implements IInstance {
 
   /**
-   * The type of OS the instance is running.
-   */
-  public readonly osType: OperatingSystemType;
-
-  /**
    * Allows specify security group connections for the instance.
    */
   public readonly connections: Connections;
@@ -229,11 +225,6 @@ export class Instance extends Resource implements IInstance {
    * The principal to grant permissions to
    */
   public readonly grantPrincipal: iam.IPrincipal;
-
-  /**
-   * UserData for the instance
-   */
-  public readonly userData: UserData;
 
   /**
    * the underlying instance resource
@@ -266,8 +257,8 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
-  private readonly _role?: iam.IRole;
-  private readonly _grantPrincipal?: iam.IRole;
+  private readonly _userData?: UserData;
+  private readonly _osType?: OperatingSystemType;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -284,9 +275,18 @@ export class Instance extends Resource implements IInstance {
     this.securityGroups.push(this.securityGroup);
     Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
-    this._role = props.role ?? (props.launchTemplate ? undefined : new iam.Role(this, 'InstanceRole', {
+    if (!props.launchTemplate && !props.instanceType) {
+      throw new Error('If \'launchTemplate\' is not given, \'instanceType\' is required');
+    }
+
+    if (!props.launchTemplate && !props.machineImage) {
+      throw new Error('If \'launchTemplate\' is not given, \'machineImage\' is required');
+    }
+
+    // FIXME: What if role is not given, and Launch Template is given?
+    this.role = props.role ?? new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    }));
+    });
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
@@ -294,9 +294,9 @@ export class Instance extends Resource implements IInstance {
     });
 
     // use delayed evaluation
-    const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
+    const imageConfig = props.machineImage?.getImage(this);
+    this._userData = props.userData ?? imageConfig?.userData;
+    const userDataToken = this._userData ? Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) }) : undefined;
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -313,16 +313,16 @@ export class Instance extends Resource implements IInstance {
     }
 
     this.instance = new CfnInstance(this, 'Resource', {
-      imageId: imageConfig.imageId,
+      imageId: imageConfig?.imageId,
       keyName: props.keyName,
-      instanceType: props.instanceType.toString(),
+      instanceType: props.instanceType?.toString(),
       securityGroupIds: securityGroupsToken,
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
-      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      blockDeviceMappings: instanceBlockDeviceMappings(this, props.blockDevices),
       privateIpAddress: props.privateIpAddress,
       launchTemplate: props.launchTemplate ? {
         version: props.launchTemplate.versionNumber,
@@ -332,7 +332,7 @@ export class Instance extends Resource implements IInstance {
     });
     this.instance.node.addDependency(this.role);
 
-    this.osType = imageConfig.osType;
+    this._osType = imageConfig?.osType;
     this.node.defaultChild = this.instance;
 
     this.instanceId = this.instance.ref;
@@ -353,7 +353,6 @@ export class Instance extends Resource implements IInstance {
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
   }
-
   /**
    * Add command to the startup script of the instance.
    * The command must be in the scripting language supported by the instance's OS (i.e. Linux/Windows).
@@ -369,6 +368,25 @@ export class Instance extends Resource implements IInstance {
     this.role.addToPolicy(statement);
   }
 
+  public get userData() {
+    // FIXME: Does this suck?
+    if (!this._userData) {
+      throw new Error('Cannot access UserData on instance if it was set on LaunchTemplate');
+    }
+    return this._userData;
+  }
+
+  /**
+   * The type of OS the instance is running.
+   */
+  public get osType() {
+    // FIXME: Does this suck?
+    if (!this._osType) {
+      throw new Error('Cannot access osType on instance if a Machine Image was not given');
+    }
+    return this._osType;
+  }
+
   /**
    * Apply CloudFormation update policies for the instance
    */
@@ -382,33 +400,4 @@ export class Instance extends Resource implements IInstance {
       };
     }
   }
-}
-
-/**
- * Synthesize an array of block device mappings from a list of block device
- *
- * @param construct the instance/asg construct, used to host any warning
- * @param blockDevices list of block devices
- */
-function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnInstance.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
-
-    if (ebs) {
-      const { iops, volumeType } = ebs;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
-
-    return {
-      deviceName, ebs, virtualName,
-      noDevice: mappingEnabled === false ? {} : undefined,
-    };
-  });
 }
