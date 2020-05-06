@@ -21,4 +21,3 @@ nyc.config.js
 assets.json
 npm-shrinkwrap.json
 !.eslintrc.js
-npm-shrinkwrap.json
