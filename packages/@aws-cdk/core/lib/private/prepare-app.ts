@@ -1,5 +1,6 @@
 import { ConstructOrder } from 'constructs';
-import { Construct } from '../construct-compat';
+import { CfnResource } from '../cfn-resource';
+import { Construct, IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
 import { resolveReferences } from './refs';
 
@@ -16,6 +17,18 @@ import { resolveReferences } from './refs';
 export function prepareApp(root: Construct) {
   if (root.node.scope) {
     throw new Error('prepareApp must be called on the root node');
+  }
+
+  // apply dependencies between resources in depending subtrees
+  for (const dependency of root.node.dependencies) {
+    const targetCfnResources = findCfnResources(dependency.target);
+    const sourceCfnResources = findCfnResources(dependency.source);
+
+    for (const target of targetCfnResources) {
+      for (const source of sourceCfnResources) {
+        source.addDependsOn(target);
+      }
+    }
   }
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
@@ -58,6 +71,13 @@ function findAllNestedStacks(root: Construct) {
   }
 
   return result;
+}
+
+/**
+ * Find all resources in a set of constructs
+ */
+function findCfnResources(root: IConstruct): CfnResource[] {
+  return root.node.findAll().filter(CfnResource.isCfnResource);
 }
 
 interface INestedStackPrivateApi {

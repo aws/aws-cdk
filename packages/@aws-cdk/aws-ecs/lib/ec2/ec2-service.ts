@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -154,8 +154,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
-      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
+    if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
+      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
     if (!props.taskDefinition.isEc2Compatible) {
@@ -181,7 +181,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     },
     {
       cluster: props.cluster.clusterName,
-      taskDefinition: props.taskDefinition.taskDefinitionArn,
+      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',

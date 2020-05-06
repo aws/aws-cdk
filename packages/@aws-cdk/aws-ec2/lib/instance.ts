@@ -8,7 +8,7 @@ import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
-import { IVpc, SubnetSelection } from './vpc';
+import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
  * Name tag constant
@@ -291,10 +291,22 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly one subnet of the given type in this az');
+        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
-      subnet = subnets[0];
+      if (subnets.length > 0) {
+        subnet = subnets[0];
+      } else {
+        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+      }
+    }
+    if (!subnet) {
+      // We got here and we don't have a subnet because of validation errors.
+      // Invent one on the spot so the code below doesn't fail.
+      subnet = Subnet.fromSubnetAttributes(this, 'DummySubnet', {
+        subnetId: 's-notfound',
+        availabilityZone: 'az-notfound',
+      });
     }
 
     this.instance = new CfnInstance(this, 'Resource', {

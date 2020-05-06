@@ -55,10 +55,8 @@
   },
   "keywords": [
     "aws",
-    "aws-clib",
-    "aws-cloudlib",
     "cdk",
-    "cloudlib",
+    "constructs",
     "codepipeline",
     "pipeline"
   ],
@@ -95,7 +93,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "awslint": {
     "exclude": [

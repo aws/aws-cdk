@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -139,7 +139,7 @@ export class FargateService extends BaseService implements IFargateService {
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
       cluster: props.cluster.clusterName,
-      taskDefinition: props.taskDefinition.taskDefinitionArn,
+      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
-import * as libfs from '../../lib/fs';
+import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
 
 export = {
   files: {
@@ -18,9 +18,9 @@ export = {
       fs.writeFileSync(input3, content + '.'); // add one character, hash should be different
 
       // WHEN
-      const hash1 = libfs.fingerprint(input1);
-      const hash2 = libfs.fingerprint(input2);
-      const hash3 = libfs.fingerprint(input3);
+      const hash1 = FileSystem.fingerprint(input1);
+      const hash2 = FileSystem.fingerprint(input2);
+      const hash3 = FileSystem.fingerprint(input3);
 
       // THEN
       test.deepEqual(hash1, hash2);
@@ -37,8 +37,8 @@ export = {
       fs.writeFileSync(input2, '');
 
       // WHEN
-      const hash1 = libfs.fingerprint(input1);
-      const hash2 = libfs.fingerprint(input2);
+      const hash1 = FileSystem.fingerprint(input1);
+      const hash2 = FileSystem.fingerprint(input2);
 
       // THEN
       test.deepEqual(hash1, hash2);
@@ -51,11 +51,11 @@ export = {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-      libfs.copyDirectory(srcdir, outdir);
+      FileSystem.copyDirectory(srcdir, outdir);
 
       // WHEN
-      const hashSrc = libfs.fingerprint(srcdir);
-      const hashCopy = libfs.fingerprint(outdir);
+      const hashSrc = FileSystem.fingerprint(srcdir);
+      const hashCopy = FileSystem.fingerprint(outdir);
 
       // THEN
       test.deepEqual(hashSrc, hashCopy);
@@ -66,13 +66,13 @@ export = {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-      libfs.copyDirectory(srcdir, outdir);
+      FileSystem.copyDirectory(srcdir, outdir);
 
       // WHEN
-      const hashSrc = libfs.fingerprint(srcdir, { exclude: ['*.ignoreme'] });
+      const hashSrc = FileSystem.fingerprint(srcdir, { exclude: ['*.ignoreme'] });
 
       fs.writeFileSync(path.join(outdir, `${hashSrc}.ignoreme`), 'Ignore me!');
-      const hashCopy = libfs.fingerprint(outdir, { exclude: ['*.ignoreme'] });
+      const hashCopy = FileSystem.fingerprint(outdir, { exclude: ['*.ignoreme'] });
 
       // THEN
       test.deepEqual(hashSrc, hashCopy);
@@ -83,14 +83,14 @@ export = {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const cpydir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
-      libfs.copyDirectory(srcdir, cpydir);
+      FileSystem.copyDirectory(srcdir, cpydir);
 
       // be careful not to break a symlink
       fs.renameSync(path.join(cpydir, 'normal-dir', 'file-in-subdir.txt'), path.join(cpydir, 'move-me.txt'));
 
       // WHEN
-      const hashSrc = libfs.fingerprint(srcdir);
-      const hashCopy = libfs.fingerprint(cpydir);
+      const hashSrc = FileSystem.fingerprint(srcdir);
+      const hashCopy = FileSystem.fingerprint(cpydir);
 
       // THEN
       test.notDeepEqual(hashSrc, hashCopy);
@@ -111,15 +111,15 @@ export = {
       // now dir2 contains a symlink to a file in dir1
 
       // WHEN
-      const original = libfs.fingerprint(dir2);
+      const original = FileSystem.fingerprint(dir2);
 
       // now change the contents of the target
       fs.writeFileSync(target, 'changning you!');
-      const afterChange = libfs.fingerprint(dir2);
+      const afterChange = FileSystem.fingerprint(dir2);
 
       // revert the content to original and expect hash to be reverted
       fs.writeFileSync(target, content);
-      const afterRevert = libfs.fingerprint(dir2);
+      const afterRevert = FileSystem.fingerprint(dir2);
 
       // THEN
       test.notDeepEqual(original, afterChange);
@@ -139,15 +139,15 @@ export = {
       // now dir2 contains a symlink to a file in dir1
 
       // WHEN
-      const original = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
+      const original = FileSystem.fingerprint(dir2, { follow: SymlinkFollowMode.NEVER });
 
       // now change the contents of the target
       fs.writeFileSync(target, 'changning you!');
-      const afterChange = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
+      const afterChange = FileSystem.fingerprint(dir2, { follow: SymlinkFollowMode.NEVER });
 
       // revert the content to original and expect hash to be reverted
       fs.writeFileSync(target, content);
-      const afterRevert = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
+      const afterRevert = FileSystem.fingerprint(dir2, { follow: SymlinkFollowMode.NEVER });
 
       // THEN
       test.deepEqual(original, afterChange);
@@ -163,8 +163,22 @@ export = {
       const options2 = {path: dir, exclude: ['**', '!otherfile.py'], sourcePath: dir};
 
       // WHEN
-      const f1 = libfs.fingerprint(dir, options1);
-      const f2 = libfs.fingerprint(dir, options2);
+      const f1 = FileSystem.fingerprint(dir, options1);
+      const f2 = FileSystem.fingerprint(dir, options2);
+
+      // THEN
+      test.notDeepEqual(f1, f2);
+      test.done();
+    },
+    'considers negated exclude patterns for fingerprint'(test: Test) {
+      // GIVEN
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      const options = {path: dir, exclude: ['**', '!file.txt'], sourcePath: dir};
+
+      // WHEN
+      const f1 = FileSystem.fingerprint(dir, options);
+      fs.writeFileSync(path.join(dir, 'file.txt'), 'data');
+      const f2 = FileSystem.fingerprint(dir, options);
 
       // THEN
       test.notDeepEqual(f1, f2);
