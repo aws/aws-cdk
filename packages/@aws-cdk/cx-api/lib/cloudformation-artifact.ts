@@ -54,6 +54,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly environment: Environment;
 
+  /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
@@ -67,6 +72,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     const properties = (this.manifest.properties || {}) as AwsCloudFormationStackProperties;
     this.templateFile = properties.templateFile;
     this.parameters = properties.parameters || { };
+    this.terminationProtection = properties.terminationProtection;
 
     this.stackName = properties.stackName || artifactId;
     this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));

@@ -24,18 +24,17 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ### TypeScript example
 
 ```ts
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Put Lambda's result here in the execution's state object
-    resultPath: '$.guid',
+    task: new tasks.RunLambdaTask(submitLambda),
+    // Lambda's result is in the attribute `Payload`
+    outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
@@ -43,13 +42,11 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
+    task: new tasks.RunLambdaTask(getStatusLambda),
     // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status"
+    // Lambda's result in a field called "status" in the response
     inputPath: '$.guid',
-    resultPath: '$.status',
+    outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -58,12 +55,10 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Use "guid" field as input, output of the Lambda becomes the
-    // entire state machine output.
+    task: new tasks.RunLambdaTask(getStatusLambda),
+    // Use "guid" field as input
     inputPath: '$.guid',
+    outputPath: '$.Payload',
 });
 
 const definition = submitJob
@@ -80,6 +75,9 @@ new sfn.StateMachine(this, 'StateMachine', {
     timeout: Duration.minutes(5)
 });
 ```
+
+You can find more sample snippets and learn more about the service integrations
+in the `@aws-cdk/aws-stepfunctions-tasks` package.
 
 ## State Machine
 

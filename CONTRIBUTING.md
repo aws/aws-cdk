@@ -48,10 +48,10 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
+ - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
@@ -287,19 +287,9 @@ All packages in the repo use a standard base configuration found at [eslintrc.js
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
-extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
-
-The following additional [VS Code setting](https://code.visualstudio.com/docs/getstarted/settings) is required when the
-entire project is opened (not required if only a specific module is opened) -
-
-```json
-"eslint.workingDirectories": [
-  { "pattern": "./packages/@aws-cdk/*" },
-  { "pattern": "./packages/@monocdk-experiment/*" },
-  { "pattern": "./packages/*" },
-  { "pattern": "./tools/*" },
-],
-```
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). The VS Code setting [needed for
+the extension to work](https://github.com/Microsoft/vscode-eslint#settings-options) on the monorepo is configured in
+the [folder settings](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings).
 
 #### pkglint
 

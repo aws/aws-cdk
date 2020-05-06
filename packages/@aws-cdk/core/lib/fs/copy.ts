@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { FollowMode } from './follow-mode';
-import { CopyOptions } from './options';
+import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldExclude, shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
-  const follow = options.follow !== undefined ? options.follow : FollowMode.EXTERNAL;
+  const follow = options.follow !== undefined ? options.follow : SymlinkFollowMode.EXTERNAL;
   const exclude = options.exclude || [];
 
   rootDir = rootDir || srcDir;
@@ -24,7 +23,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
 
     const destFilePath = path.join(destDir, file);
 
-    let stat: fs.Stats | undefined = follow === FollowMode.ALWAYS
+    let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
       ? fs.statSync(sourceFilePath)
       : fs.lstatSync(sourceFilePath);
 

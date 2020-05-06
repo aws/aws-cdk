@@ -18,7 +18,7 @@ Add a CloudTrail construct - for ease of setting up CloudTrail logging in your a
 Example usage:
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
@@ -43,7 +43,7 @@ For example, to log to CloudWatch Logs
 
 ```ts
 
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true
@@ -58,7 +58,7 @@ you can use the `CloudTrailProps` configuration object.
 Example:
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
@@ -77,8 +77,8 @@ For using CloudTrail event selector to log events about Lambda
 functions, you can use `addLambdaEventSelector`.
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {

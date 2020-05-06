@@ -1,8 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FollowMode } from './follow-mode';
-import { FingerprintOptions } from './options';
+import { FingerprintOptions, SymlinkFollowMode } from './options';
 import { shouldExclude, shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
@@ -24,7 +23,7 @@ const CTRL_ETX = '\x03';
 export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
   const hash = crypto.createHash('sha256');
   _hashField(hash, 'options.extra', options.extraHash || '');
-  const follow = options.follow || FollowMode.EXTERNAL;
+  const follow = options.follow || SymlinkFollowMode.EXTERNAL;
   _hashField(hash, 'options.follow', follow);
 
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()
@@ -34,12 +33,13 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   if (exclude.length) {
     _hashField(hash, 'options.exclude', JSON.stringify(exclude));
   }
-  _processFileOrDirectory(fileOrDirectory);
+  const isDir = fs.statSync(fileOrDirectory).isDirectory();
+  _processFileOrDirectory(fileOrDirectory, isDir);
 
   return hash.digest('hex');
 
-  function _processFileOrDirectory(symbolicPath: string, realPath = symbolicPath) {
-    if (shouldExclude(exclude, symbolicPath)) {
+  function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
+    if (!isRootDir && shouldExclude(exclude, symbolicPath)) {
       return;
     }
 
@@ -50,7 +50,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
       const linkTarget = fs.readlinkSync(realPath);
       const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
       if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
-        _processFileOrDirectory(symbolicPath, resolvedLinkTarget);
+        _processFileOrDirectory(symbolicPath, false, resolvedLinkTarget);
       } else {
         _hashField(hash, `link:${relativePath}`, linkTarget);
       }
@@ -58,7 +58,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
       _hashField(hash, `file:${relativePath}`, _contentFingerprint(realPath, stat));
     } else if (stat.isDirectory()) {
       for (const item of fs.readdirSync(realPath).sort()) {
-        _processFileOrDirectory(path.join(symbolicPath, item), path.join(realPath, item));
+        _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
       }
     } else {
       throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
