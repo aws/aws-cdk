@@ -21,6 +21,8 @@ function serve_npm_packages() {
     return 1
   fi
 
+  local_cli_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+
   tarballs_glob="$dist_root/js/*.tgz"
 
   if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
@@ -28,7 +30,7 @@ function serve_npm_packages() {
     echo "Testing against latest published versions of the framework"
 
     header "Installing aws-cdk from local tarballs..."
-    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install aws-cdk) 
+    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install aws-cdk@${local_cli_version}) 
     export PATH=$npmws/node_modules/.bin:$PATH
 
   else
@@ -47,7 +49,7 @@ function serve_npm_packages() {
     trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
 
     header "Installing aws-cdk from local tarballs..."
-    (cd ${npmws} && npm install aws-cdk)
+    (cd ${npmws} && npm install aws-cdk@${local_cli_version})
     export PATH=$npmws/node_modules/.bin:$PATH
 
   fi
@@ -56,7 +58,9 @@ function serve_npm_packages() {
 
 # Make sure that installed CLI matches the build version
 function verify_installed_cli_version() {
-  local expected_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+
+  expected_version=$1
+  
   header "Expected CDK version: ${expected_version}"
 
   log "Found CDK: $(type -p cdk)"

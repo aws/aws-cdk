@@ -1,4 +1,4 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from '@aws-cdk/core';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -64,6 +64,17 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -139,6 +150,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      platformVersion: props.platformVersion,
     });
     this.addServiceAsTarget(this.service);
   }
