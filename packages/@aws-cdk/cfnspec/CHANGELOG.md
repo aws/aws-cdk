@@ -1,3 +1,41 @@
+# CloudFormation Resource Specification v14.1.0
+
+## New Resource Types
+
+* AWS::EventSchemas::RegistryPolicy
+
+## Attribute Changes
+
+* AWS::Synthetics::Canary Name (__deleted__)
+
+## Property Changes
+
+* AWS::MediaStore::Container MetricPolicy (__added__)
+* AWS::MediaStore::Container Tags (__added__)
+* AWS::Synthetics::Canary Name (__added__)
+
+## Property Type Changes
+
+* AWS::IoTEvents::DetectorModel.AssetPropertyTimestamp (__added__)
+* AWS::IoTEvents::DetectorModel.AssetPropertyValue (__added__)
+* AWS::IoTEvents::DetectorModel.AssetPropertyVariant (__added__)
+* AWS::IoTEvents::DetectorModel.DynamoDB (__added__)
+* AWS::IoTEvents::DetectorModel.DynamoDBv2 (__added__)
+* AWS::IoTEvents::DetectorModel.IotSiteWise (__added__)
+* AWS::IoTEvents::DetectorModel.Payload (__added__)
+* AWS::MediaStore::Container.MetricPolicy (__added__)
+* AWS::MediaStore::Container.MetricPolicyRule (__added__)
+* AWS::IoTEvents::DetectorModel.Action DynamoDB (__added__)
+* AWS::IoTEvents::DetectorModel.Action DynamoDBv2 (__added__)
+* AWS::IoTEvents::DetectorModel.Action IotSiteWise (__added__)
+* AWS::IoTEvents::DetectorModel.Firehose Payload (__added__)
+* AWS::IoTEvents::DetectorModel.IotEvents Payload (__added__)
+* AWS::IoTEvents::DetectorModel.IotTopicPublish Payload (__added__)
+* AWS::IoTEvents::DetectorModel.Lambda Payload (__added__)
+* AWS::IoTEvents::DetectorModel.Sns Payload (__added__)
+* AWS::IoTEvents::DetectorModel.Sqs Payload (__added__)
+
+
 # CloudFormation Resource Specification v14.0.0
 
 ## New Resource Types
