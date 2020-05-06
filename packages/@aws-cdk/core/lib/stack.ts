@@ -324,10 +324,10 @@ export class Stack extends Construct implements ITaggable {
    * @param report The set of parameters needed to obtain the context
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    if (!Object.values(cxschema.ContextProvider).includes(report.provider)) {
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
       throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
     }
-    this._missingContext.push(report);
+    this._missingContext.push(report as cxschema.MissingContext);
   }
 
   /**
