@@ -1432,6 +1432,70 @@ export = {
     test.done();
   },
 
+  's3UrlForObject returns a token with the S3 URL of the token'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    new cdk.CfnOutput(stack, 'BucketS3URL', { value: bucket.s3UrlForObject() });
+    new cdk.CfnOutput(stack, 'MyFileS3URL', { value: bucket.s3UrlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileS3URL', { value: bucket.s3UrlForObject('/your/file.txt') }); // "/" is optional
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+              ],
+            ],
+          },
+        },
+        'MyFileS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/your/file.txt',
+              ],
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
   'grantPublicAccess': {
     'by default, grants s3:GetObject to all objects'(test: Test) {
       // GIVEN

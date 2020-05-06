@@ -7,7 +7,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecs from '../../lib';
-import { LaunchType } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType } from '../../lib/base/base-service';
 
 export = {
   'When creating a Fargate Service': {
@@ -297,6 +297,66 @@ export = {
           taskDefinition,
         });
       }, /Supplied TaskDefinition is not configured for compatibility with Fargate/);
+
+      test.done();
+    },
+
+    'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+      });
+
+      // THEN
+      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        DeploymentController: {
+          Type: 'EXTERNAL',
+        },
+        DesiredCount: 1,
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
 
       test.done();
     },

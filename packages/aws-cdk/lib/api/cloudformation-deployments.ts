@@ -77,6 +77,15 @@ export interface DeployStackOptions {
    * @default - no additional parameters will be passed to the template
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -138,6 +147,7 @@ export class CloudFormationDeployments {
       execute: options.execute,
       force: options.force,
       parameters: options.parameters,
+      usePreviousParameters: options.usePreviousParameters,
     });
   }
 
@@ -172,9 +182,9 @@ export class CloudFormationDeployments {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment.account, stack.environment.region);
+    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
-    const stackSdk = await this.sdkProvider.forEnvironment(stack.environment.account, stack.environment.region, mode);
+    const stackSdk = await this.sdkProvider.forEnvironment(stack.environment, mode);
 
     return {
       stackSdk,
