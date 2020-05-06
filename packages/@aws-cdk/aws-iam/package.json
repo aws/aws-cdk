@@ -52,9 +52,7 @@
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib",
+    "constructs",
     "iam"
   ],
   "author": {
