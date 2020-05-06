@@ -487,7 +487,8 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private addDefaultEgressRule() {
     if (this.allowAllOutbound) {
-      this.directEgressRules.push(ALLOW_ALL_RULE);
+      this.directEgressRules.push(ALLOW_ALL_IPV4);
+      this.directEgressRules.push(ALLOW_ALL_IPV6);
     } else {
       this.directEgressRules.push(MATCH_NO_TRAFFIC);
     }
@@ -524,9 +525,15 @@ const MATCH_NO_TRAFFIC = {
 /**
  * Egress rule that matches all traffic
  */
-const ALLOW_ALL_RULE = {
+const ALLOW_ALL_IPV4 = {
   cidrIp: '0.0.0.0/0',
-  description: 'Allow all outbound traffic by default',
+  description: 'Allow all outbound ipv4 traffic by default',
+  ipProtocol: '-1',
+};
+
+const ALLOW_ALL_IPV6 = {
+  cidrIp: '::/0',
+  description: 'Allow all outbound ipv6 traffic by default',
   ipProtocol: '-1',
 };
 
@@ -602,5 +609,5 @@ function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGrou
  * Whether this rule refers to all traffic
  */
 function isAllTrafficRule(rule: any) {
-  return rule.cidrIp === '0.0.0.0/0' && rule.ipProtocol === '-1';
+  return (['0.0.0.0/0','::/0'].includes(rule.cidrIp) && rule.ipProtocol === '-1';
 }
