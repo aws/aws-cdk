@@ -1053,6 +1053,50 @@ export = {
     test.done();
   },
 
+  'grantDelete, with a KMS Key'(test: Test) {
+    // given
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'MyKey');
+    const deleter = new iam.User(stack, 'Deleter');
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'my-bucket-physical-name',
+      encryptionKey: key,
+      encryption: s3.BucketEncryption.KMS,
+    });
+
+    // when
+    bucket.grantDelete(deleter);
+
+    // then
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:DeleteObject*',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'MyBucketF68F3FF0',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    }));
+
+    test.done();
+  },
+
   'cross-stack permissions': {
     'in the same account and region'(test: Test) {
       const app = new cdk.App();

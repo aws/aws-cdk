@@ -627,7 +627,7 @@ abstract class BucketBase extends Resource implements IBucket {
       });
     }
 
-    if (this.encryptionKey) {
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
