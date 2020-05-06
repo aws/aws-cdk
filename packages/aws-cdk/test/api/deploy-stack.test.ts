@@ -19,7 +19,7 @@ const FAKE_STACK_WITH_PARAMETERS = testStack({
 
 const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   stackName: 'termination-protection',
-  template: FAKE_TEMPLATE,
+  template: DEFAULT_FAKE_TEMPLATE,
   terminationProtection: true,
 });
 

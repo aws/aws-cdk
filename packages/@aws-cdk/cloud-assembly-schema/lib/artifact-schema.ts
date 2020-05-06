@@ -22,6 +22,13 @@ export interface AwsCloudFormationStackProperties {
   readonly stackName?: string;
 
   /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
+
+  /**
    * The role that needs to be assumed to deploy the stack
    *
    * @default - No role is assumed (current credentials are used)

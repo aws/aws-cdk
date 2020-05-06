@@ -275,6 +275,11 @@
                     "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
                     "type": "string"
                 },
+                "terminationProtection": {
+                    "description": "Whether to enable termination protection for this stack.",
+                    "default": false,
+                    "type": "boolean"
+                },
                 "assumeRoleArn": {
                     "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
                     "type": "string"
