@@ -323,7 +323,7 @@ Here's how `Vpc.fromLookup()` can be used:
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
 is controlled by **Security Groups**. You can think of Security Groups as a
 firewall with a set of rules. By default, Security Groups allow no incoming
-(ingress) traffic and all outgoing (egress) traffic. You can add ingress rules
+(ingress) traffic and all outgoing ipv4 and ipv6 (egress) traffic. You can add ingress rules
 to them to allow incoming traffic streams. To exert fine-grained control over
 egress traffic, set `allowAllOutbound: false` on the `SecurityGroup`, after
 which you can add egress traffic rules.
