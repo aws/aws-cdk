@@ -36,6 +36,20 @@
           ]
         ]
       }
+    },
+    "S3ObjectURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "s3://",
+            {
+              "Ref": "MyBucketF68F3FF0"
+            },
+            "/myfolder/myfile.txt"
+          ]
+        ]
+      }
     }
   }
 }

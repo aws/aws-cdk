@@ -87,6 +87,16 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  s3UrlForObject(key?: string): string;
+
+  /**
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
    */
@@ -429,17 +439,20 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
-      }
-      components.push('/');
-      components.push(key);
-    }
+    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    return this.buildUrl(prefix, key);
+  }
 
-    return components.join('');
+  /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  public s3UrlForObject(key?: string): string {
+    return this.buildUrl('s3://', key);
   }
 
   /**
@@ -567,6 +580,24 @@ abstract class BucketBase extends Resource implements IBucket {
       grantee: new iam.Anyone(),
       resource: this,
     });
+  }
+
+  private buildUrl(prefix: string, key?: string): string {
+    const components = [
+      prefix,
+      this.bucketName,
+    ];
+
+    if (key) {
+      // trim prepending '/'
+      if (typeof key === 'string' && key.startsWith('/')) {
+        key = key.substr(1);
+      }
+      components.push('/');
+      components.push(key);
+    }
+
+    return components.join('');
   }
 
   private grant(
