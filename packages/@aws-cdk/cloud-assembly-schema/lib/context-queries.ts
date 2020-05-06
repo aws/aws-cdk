@@ -57,7 +57,7 @@ export interface AmiContextQuery {
 }
 
 /**
- * Query to hosted zone context provider
+ * Query to availability zone context provider
  */
 export interface AvailabilityZonesContextQuery {
   /**
@@ -109,7 +109,7 @@ export interface HostedZoneContextQuery {
 }
 
 /**
- * Query to hosted zone context provider
+ * Query to SSM Parameter Context Provider
  */
 export interface SSMParameterContextQuery {
   /**
