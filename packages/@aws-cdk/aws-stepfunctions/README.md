@@ -310,7 +310,6 @@ const stateJson = {
     },
   },
   ResultPath: null,
-  Next: finalStatus.id,
 };
 
 // custom state which represents a task to insert data into DynamoDB

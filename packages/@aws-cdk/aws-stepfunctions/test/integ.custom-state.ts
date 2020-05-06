@@ -18,7 +18,6 @@ const stateJson = {
     },
   },
   ResultPath: null,
-  Next: finalStatus.id,
 };
 
 const custom = new sfn.CustomState(stack, 'my custom task', {
