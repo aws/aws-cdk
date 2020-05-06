@@ -1,41 +1,90 @@
+import { ITable } from '@aws-cdk/aws-dynamodb';
+import { Connections, InstanceType, ISecurityGroup, IVpc, Port, Protocol, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Grant, IGrantable, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Role, ServicePrincipal, Policy, PolicyStatement, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { SecurityGroup, Connections, Port, Protocol, IVpc, Vpc, InstanceType } from '@aws-cdk/aws-ec2';
-import { Table as DynamoDBTable } from '@aws-cdk/aws-dynamodb';
-import { CfnParameterGroup, CfnCluster, CfnSubnetGroup } from './dax.generated';
-import { Ec2Service } from '../../aws-ecs/lib';
+import { CfnCluster, CfnSubnetGroup } from './dax.generated';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
 
-interface DaxClusterProps extends cdk.StackProps {
+/**
+ * The properties used to define a DAX cluster
+ */
+export interface ClusterProps {
+  /**
+   * The name of the cluster.
+   */
+  readonly clusterName: string;
+
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  vpc: IVpc;
+  readonly vpc: IVpc;
 
   /**
    * The instance type that will be used for each DAX instance in the cluster
    */
-  instanceType: InstanceType,
+  readonly instanceType: InstanceType,
 
   /**
    * How many instances the cluster should have. A replication factor of at least
    * three is needed for high availability.
+   *
+   * @default 3
    */
-  replicationFactor: number,
+  readonly replicationFactor: number,
 
   /**
-   * A map of cluster parameters to send to DAX. Example:
+   * The cluster parameters
    *
-   *   {
-   *     'query-ttl-millis': '1000',
-   *     'record-ttl-millis': '30000'
-   *   }
+   * @default The default parameter group sets cache TTL to 5 minutes for both queries and records
    */
-  clusterParameters: Map<string, string>
+  readonly parameterGroup?: IParameterGroup
 }
 
-class DaxCluster extends cdk.Construct {
+/**
+ * A cluster of DAX instances capable of caching DynamoDB responses
+ */
+export interface ICluster extends cdk.IResource {
+  /**
+   * The VPC associated with the cluster.
+   */
+  readonly vpc: IVpc;
 
-  protected id: string;
+  /**
+   * Manage the allowed network connections for the cluster with Security Groups.
+   */
+  readonly connections: Connections;
+
+  /**
+   * The endpoint at which the cluster can be accessed
+   * @attribute
+   */
+  readonly clusterDiscoveryEndpoint: string;
+
+  /**
+   * The ARN of the cluster
+   * @attribute
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The name of the cluster
+   * @attribute
+   */
+  readonly clusterName: string;
+}
+
+/**
+ * A DAX cluster
+ *
+ * @resource AWS::DAX::Cluster
+ */
+export class Cluster extends cdk.Resource implements ICluster {
+  /**
+   * Import an existing cluster to the stack from its attributes.
+   */
+  public static fromClusterAttributes(scope: cdk.Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
+  }
 
   /**
    * The VPC associated with the cluster.
@@ -52,38 +101,47 @@ class DaxCluster extends cdk.Construct {
    */
   public readonly connections: Connections;
 
-
   /**
    * The role of the cluster
    */
   public readonly role: Role;
 
   /**
-   * Parameters that control the behavior of the DAX cluster, such as how long
-   * to cache items or queries for
-   */
-  public readonly parameterGroup: CfnParameterGroup;
-
-  /**
    * The underlying Cfn resource for the cluster
+   * @attribute
    */
   public readonly cluster: CfnCluster;
 
   /**
    * The endpoint at which the cluster can be accessed
+   * @attribute
    */
-  public readonly endpoint: string;
+  public readonly clusterDiscoveryEndpoint: string;
+
+  /**
+   * The ARN of the cluster
+   * @attribute
+   */
+  public readonly clusterArn: string;
+
+  /**
+   * The name of the cluster
+   * @attribute
+   */
+  public readonly clusterName: string;
 
   /**
    * IAM policies associated with the cluster
    */
   protected policies: Policy[];
 
-  constructor(scope: cdk.Construct, id: string, props: DaxClusterProps) {
+  protected id: string;
+
+  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
     super(scope, id);
     this.id = id;
-
     this.vpc = props.vpc;
+    this.clusterName = props.clusterName;
 
     // Define a group for telling Elasticache which subnets to put cache nodes in.
     const subnetGroup = new CfnSubnetGroup(this, `${id}-subnet-group`, {
@@ -100,8 +158,8 @@ class DaxCluster extends cdk.Construct {
         protocol: Protocol.TCP,
         fromPort: 8111,
         toPort: 8111,
-        stringRepresentation: "TCP",
-      })
+        stringRepresentation: 'TCP',
+      }),
     });
 
     this.role = new Role(this, `${id}-role`, {
@@ -110,35 +168,41 @@ class DaxCluster extends cdk.Construct {
     });
 
     // The parameters for this cluster
-    this.parameterGroup = new CfnParameterGroup(this, '${id}-parameters', {
-      parameterNameValues: props.clusterParameters
-      /*parameterNameValues: {
-          'query-ttl-millis': '1000',
-          'record-ttl-millis': '30000'
-      },*/
-    });
+    let parameterGroup = props.parameterGroup;
+
+    if (!parameterGroup) {
+      parameterGroup = new ParameterGroup(this, '${id}-parameters', {
+        parameters: {
+          'query-ttl-millis': cdk.Duration.minutes(5).toMilliseconds().toString(),
+          'record-ttl-millis': cdk.Duration.minutes(5).toMilliseconds().toString(),
+        },
+      });
+    }
 
     // The cluster resource itself.
     this.cluster = new CfnCluster(this, `${id}-cluster`, {
       iamRoleArn: this.role.roleArn,
-      nodeType: props.instanceType,
-      replicationFactor: props.replicationFactor,
+      nodeType: props.instanceType.toString(),
+      replicationFactor: props.replicationFactor ? props.replicationFactor : 3,
       subnetGroupName: subnetGroup.ref,
-      parameterGroupName: this.parameterGroup.ref,
+      parameterGroupName: parameterGroup.parameterGroupName,
       securityGroupIds: [
-        this.securityGroup.securityGroupId
+        this.securityGroup.securityGroupId,
       ],
     });
 
-    this.endpoint = this.cluster.attrClusterDiscoveryEndpoint;
+    this.clusterDiscoveryEndpoint = this.cluster.attrClusterDiscoveryEndpoint;
+    this.clusterArn = this.cluster.attrArn;
 
     this.policies = [];
   }
 
-  // Add a table for the Dax cluster to be able to access
-  // This helper method adds a Policy on the same stack as the table,
-  // which allows the IAM role of this DAX cluster to talk to the table
-  addTable(tableName: string, table: DynamoDBTable) {
+  /**
+   * Add a table to the DAX cluster. This adds a policy on the same stack
+   * as the table while allows the IAM role of the cluster to have read/write
+   * access to the table.
+   */
+  public addTable(tableName: string, table: ITable) {
     const destinationStack = cdk.Stack.of(table);
 
     const policy = new Policy(destinationStack, `${this.id}-access-${tableName}`);
@@ -167,10 +231,12 @@ class DaxCluster extends cdk.Construct {
     this.policies.push(policy);
   }
 
-  // Grant the bearer of role permissions to talk to this DAX cluster.
-  // This is needed because DAX has its own custom IAM permissions prefixed
-  // with dax: instead of dynamodb:
-  grantReadWriteData(grantee: IGrantable) {
+  /**
+   * Grant the bearer of role permissions to read data from
+   * and write data to the tables that are added to this DAX
+   * cluster
+   */
+  public grantReadWriteData(grantee: IGrantable) {
     return Grant.addToPrincipal({
       grantee,
       actions: [
@@ -189,12 +255,94 @@ class DaxCluster extends cdk.Construct {
         'dax:DefineAttributeList',
         'dax:DefineAttributeListId',
         'dax:DefineKeySchema',
-        'dax:Endpoints'
+        'dax:Endpoints',
       ],
       resourceArns: [
         this.cluster.attrArn,
       ],
       scope: this,
+    });
+  }
+}
+
+/**
+ * The properties to import from the ECS cluster.
+ */
+export interface ClusterAttributes {
+  /**
+   * The VPC associated with the cluster.
+   */
+  readonly vpc: IVpc;
+
+  /**
+   * The security group which protects access to the DAX cluster
+   */
+  readonly securityGroup: ISecurityGroup;
+
+  /**
+   * The name of the cluster
+   */
+  readonly clusterName: string;
+
+  /**
+   * The ARN of the cluster
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The role of the cluster
+   */
+  readonly role: IRole;
+
+  /**
+   * The endpoint at which the cluster can be accessed
+   * @attribute
+   */
+  readonly clusterDiscoveryEndpoint: string;
+}
+
+class ImportedCluster extends cdk.Resource implements ICluster {
+  /**
+   * The VPC associated with the cluster.
+   */
+  public readonly vpc: IVpc;
+
+  /**
+   * Manage the allowed network connections for the cluster with Security Groups.
+   */
+  public readonly connections: Connections;
+
+  /**
+   * The endpoint at which the cluster can be accessed
+   * @attribute
+   */
+  public readonly clusterDiscoveryEndpoint: string;
+
+  /**
+   * The ARN of the cluster
+   * @attribute
+   */
+  public readonly clusterArn: string;
+
+  /**
+   * The name of the cluster
+   * @attribute
+   */
+  public readonly clusterName: string;
+
+  protected id: string;
+
+  constructor(scope: cdk.Construct, id: string, props: ClusterAttributes) {
+    super(scope, id);
+
+    this.id = id;
+    this.vpc = props.vpc;
+    this.clusterName = props.clusterName;
+    this.clusterArn = props.clusterArn;
+    this.clusterDiscoveryEndpoint = props.clusterDiscoveryEndpoint;
+
+    this.connections = new Connections({
+      securityGroups: [props.securityGroup],
     });
   }
 }

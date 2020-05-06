@@ -16,8 +16,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-      NetworkMode: 'awsvpc',
+    expect(stack).to(haveResource('AWS::DAX::Cluster', {
+      foo: 'bar'
     }));
 
     test.done();
