@@ -36,14 +36,14 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
    * @default - A new security group is created.
-   * @deprecated use securityGroups instead
+   * @deprecated use securityGroups instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
    *
-   * @default - A new security group is created
+   * @default - A new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 

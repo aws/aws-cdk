@@ -665,7 +665,100 @@ export = {
             taskDefinition,
             assignPublicIp: true,
           });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if vpc subnets is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const subnet = new ec2.Subnet(stack, 'MySubnet', {
+          vpcId: vpc.vpcId,
+          availabilityZone: 'eu-central-1a',
+          cidrBlock: '10.10.0.0/20',
         });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            vpcSubnets: {
+              subnets: [subnet],
+            },
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if security group is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const securityGroup = new ec2.SecurityGroup(stack, 'MySG', { vpc });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            securityGroup,
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if multiple security groups is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const securityGroups = [
+          new ec2.SecurityGroup(stack, 'MyFirstSG', { vpc }),
+          new ec2.SecurityGroup(stack, 'MySecondSG', { vpc }),
+        ];
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            securityGroups,
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
         test.done();

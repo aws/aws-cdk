@@ -43,7 +43,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - A new security group is created.
-   * @deprecated use securityGroups instead
+   * @deprecated use securityGroups instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
@@ -52,7 +52,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - A new security group is created
+   * @default - A new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -276,11 +276,14 @@ export class Ec2Service extends BaseService implements IEc2Service {
 }
 
 /**
- * Validate combinations of networking arguments
+ * Validate combinations of networking arguments.
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroups !== undefined || props.assignPublicIp) {
-    throw new Error('vpcSubnets, securityGroups and assignPublicIp can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined
+    || props.securityGroup !== undefined
+    || props.securityGroups !== undefined
+    || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 
