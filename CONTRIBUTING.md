@@ -51,7 +51,7 @@ For day-to-day development and normal contributions, the following SDKs and tool
  - [Node.js 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
+ - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
