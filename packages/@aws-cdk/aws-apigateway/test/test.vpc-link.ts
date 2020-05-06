@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
@@ -62,18 +62,14 @@ export = {
   'import/export'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const nlb0 = new elbv2.NetworkLoadBalancer(stack, 'NLB0', { vpc });
-    new apigateway.VpcLink(stack, 'VpcLink', {
-      targets: [nlb0],
-    });
-    const stack2 = new cdk.Stack();
 
     // WHEN
-    const link = apigateway.VpcLink.fromVpcLinkId(stack2, 'ImportedVpcLink', 'vpclink-id');
+    const link = apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
 
     // THEN
     test.deepEqual(link.vpcLinkId, 'vpclink-id');
+    expect(stack).notTo(haveResource('AWS::ApiGateway::VpcLink'));
+
     test.done();
   },
 

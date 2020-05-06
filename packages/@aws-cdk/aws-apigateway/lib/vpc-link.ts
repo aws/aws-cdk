@@ -3,7 +3,7 @@ import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**
- * A VPC Link.
+ * Physical ID of the VpcLink resource
  */
 export interface IVpcLink extends IResource {
   /**
@@ -47,7 +47,7 @@ export class VpcLink extends Resource implements IVpcLink {
    * Import a VPC Link by it's Id
    */
   public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
-    class Import extends VpcLink {
+    class Import extends Resource implements IVpcLink {
       public vpcLinkId = vpcLinkId;
     }
 
