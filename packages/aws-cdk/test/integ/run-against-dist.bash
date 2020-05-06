@@ -54,6 +54,10 @@ function serve_npm_packages() {
 
   fi
 
+  # a bit silly, but it verifies the PATH exports and just makes sure 
+  # that we run 'cdk' commands we use the version we just installed.
+  verify_installed_cli_version ${local_cli_version}
+
 }
 
 # Make sure that installed CLI matches the build version
