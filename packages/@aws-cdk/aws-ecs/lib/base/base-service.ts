@@ -611,7 +611,7 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworkingWithMultipleSecurityGroups(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
+  protected configureAwsVpcNetworkingWithSecurityGroups(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }

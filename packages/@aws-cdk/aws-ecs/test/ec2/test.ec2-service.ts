@@ -237,7 +237,7 @@ export = {
       test.done();
     },
 
-    'with multiple securty groups, it correctly updates cloudformation template'(test: Test) {
+    'with multiple security groups, it correctly updates the cfn template'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -245,6 +245,10 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
       });
       const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
         allowAllOutbound: true,
@@ -259,39 +263,17 @@ export = {
         vpc,
       });
 
-      cluster.addDefaultCloudMapNamespace({
-        name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE,
-      });
-
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512,
-      });
-
       // WHEN
-      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
         desiredCount: 2,
         assignPublicIp: true,
-        cloudMapOptions: {
-          name: 'myapp',
-          dnsRecordType: cloudmap.DnsRecordType.A,
-          dnsTtl: cdk.Duration.seconds(50),
-          failureThreshold: 20,
-        },
         daemon: false,
-        healthCheckGracePeriod: cdk.Duration.seconds(60),
-        maxHealthyPercent: 150,
-        minHealthyPercent: 55,
         securityGroups: [ securityGroup1, securityGroup2 ],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
-
-      service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', {
@@ -300,10 +282,6 @@ export = {
         },
         Cluster: {
           Ref: 'EcsCluster97242B84',
-        },
-        DeploymentConfiguration: {
-          MaximumPercent: 150,
-          MinimumHealthyPercent: 55,
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,
@@ -334,30 +312,8 @@ export = {
             ],
           },
         },
-        PlacementConstraints: [
-          {
-            Expression: 'attribute:ecs.instance-type =~ t2.*',
-            Type: 'memberOf',
-          },
-        ],
-        PlacementStrategies: [
-          {
-            Field: 'attribute:ecs.availability-zone',
-            Type: 'spread',
-          },
-        ],
         SchedulingStrategy: 'REPLICA',
         ServiceName: 'bonjour',
-        ServiceRegistries: [
-          {
-            RegistryArn: {
-              'Fn::GetAtt': [
-                'Ec2ServiceCloudmapService45B52C0F',
-                'Arn',
-              ],
-            },
-          },
-        ],
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -404,6 +360,10 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AWS_VPC,
       });
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
       const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
         allowAllOutbound: true,
         description: 'Example',
@@ -417,16 +377,6 @@ export = {
         vpc,
       });
 
-      cluster.addDefaultCloudMapNamespace({
-        name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE,
-      });
-
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512,
-      });
-
       // THEN
       test.throws(() => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
@@ -434,14 +384,6 @@ export = {
           taskDefinition,
           desiredCount: 2,
           assignPublicIp: true,
-          cloudMapOptions: {
-            name: 'myapp',
-            dnsRecordType: cloudmap.DnsRecordType.A,
-            dnsTtl: cdk.Duration.seconds(50),
-            failureThreshold: 20,
-          },
-          daemon: false,
-          healthCheckGracePeriod: cdk.Duration.seconds(60),
           maxHealthyPercent: 150,
           minHealthyPercent: 55,
           securityGroup: securityGroup1,
