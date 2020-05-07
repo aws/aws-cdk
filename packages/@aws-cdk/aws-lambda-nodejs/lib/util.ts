@@ -54,16 +54,13 @@ export function nodeMajorVersion(): number {
  * Finds the closest path containg a path
  */
 function findClosestPathContaining(p: string): string | undefined {
-  let closestPath;
-
   for (const nodeModulesPath of module.paths) {
-    closestPath = path.join(path.dirname(nodeModulesPath), p);
-    if (fs.existsSync(closestPath)) {
+    if (fs.existsSync(path.join(path.dirname(nodeModulesPath), p))) {
       return path.dirname(nodeModulesPath);
     }
   }
 
-  return closestPath;
+  return undefined;
 }
 
 /**
