@@ -79,7 +79,7 @@ class OutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic =  new sns.Topic(this, 'MyOutput', {
-      topicName: 'MyTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {
@@ -93,7 +93,7 @@ class AnotherOutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic = new sns.Topic(this, 'MyOtherOutput', {
-      topicName: 'MyOtherTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyOtherTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {
