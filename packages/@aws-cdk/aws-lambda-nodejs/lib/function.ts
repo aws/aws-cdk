@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Builder } from './builder';
-import { nodeMajorVersion, parseStackTrace } from './util';
+import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
@@ -65,6 +65,25 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - `.cache` in the root directory
    */
   readonly cacheDir?: string;
+
+  /**
+   * The docker tag of the node base image to use in the parcel-bundler docker image
+   *
+   * @see https://hub.docker.com/_/node/?tab=tags
+   *
+   * @default - the `process.versions.node` alpine image
+   */
+  readonly nodeDockerTag?: string;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container. If you specify this prop, ensure that
+   * this path includes `entry` and any module/dependencies used by your
+   * function otherwise bundling will not be possible.
+   *
+   * @default - the closest path containing a .git folder
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -84,6 +103,10 @@ export class NodejsFunction extends lambda.Function {
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime || defaultRunTime;
+    const projectRoot = props.projectRoot ?? findGitPath();
+    if (!projectRoot) {
+      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
+    }
 
     // Build with Parcel
     const builder = new Builder({
@@ -94,6 +117,8 @@ export class NodejsFunction extends lambda.Function {
       sourceMaps: props.sourceMaps,
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
+      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
+      projectRoot: path.resolve(projectRoot),
     });
     builder.build();
 
@@ -156,11 +181,11 @@ function findDefiningFile(): string {
 /**
  * Extracts the version from the runtime
  */
-function extractVersion(runtime: lambda.Runtime): string | undefined {
+function extractVersion(runtime: lambda.Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
-    return undefined;
+    throw new Error('Cannot extract version from runtime.');
   }
 
   return match[1];
