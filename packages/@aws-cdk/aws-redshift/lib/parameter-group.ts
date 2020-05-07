@@ -65,9 +65,9 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   /**
    * Imports a parameter group
    */
-  public static fromClusterParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+  public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
-      public readonly clusterParameterGroupName = parameterGroupName;
+      public readonly clusterParameterGroupName = clusterParameterGroupName;
     }
     return new Import(scope, id);
   }
