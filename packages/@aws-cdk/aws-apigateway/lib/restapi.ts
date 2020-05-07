@@ -27,7 +27,7 @@ export interface IRestApi extends IResourceBase {
 /**
  * Represents the props that all Rest APIs share
  */
-export interface BaseRestApiProps extends ResourceOptions {
+export interface RestApiOptions extends ResourceOptions {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -122,10 +122,9 @@ export interface BaseRestApiProps extends ResourceOptions {
 }
 
 /**
- * Represents props unique to creating a new Rest API (without a Swagger/OpenAPI
- * specification)
+ * Props to create a new instance of RestApi
  */
-export interface RestApiProps extends BaseRestApiProps {
+export interface RestApiProps extends RestApiOptions {
   /**
    * A description of the purpose of this API Gateway RestApi resource.
    *
@@ -189,14 +188,15 @@ export interface RestApiProps extends BaseRestApiProps {
 /**
  * Props to instantiate a new SpecRestApi
  */
-export interface SpecRestApiProps extends BaseRestApiProps {
+export interface SpecRestApiProps extends RestApiOptions {
   /**
-   * A Swagger/OpenAPI definition compatible with API Gateway.
+   * An OpenAPI definition compatible with API Gateway.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
    */
   readonly apiDefinition: ApiDefinition;
 }
 
-abstract class BaseRestApi extends Resource implements IRestApi {
+abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -220,7 +220,7 @@ abstract class BaseRestApi extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  constructor(scope: Construct, id: string, props: BaseRestApiProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
@@ -315,17 +315,6 @@ abstract class BaseRestApi extends Resource implements IRestApi {
     });
   }
 
-  /**
-   * Performs validation of the REST API.
-   */
-  protected validate() {
-    if (this.methods.length === 0) {
-      return [ 'The REST API doesn\'t contain any methods' ];
-    }
-
-    return [];
-  }
-
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -335,11 +324,11 @@ abstract class BaseRestApi extends Resource implements IRestApi {
     const resource = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
-    
+
     resource.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiProps) {
+  protected configureDeployment(props: RestApiOptions) {
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
 
@@ -371,14 +360,15 @@ abstract class BaseRestApi extends Resource implements IRestApi {
  * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
  *
  * Some properties normally accessible on @see {@link RestApi} - such as the description -
- * must be declared in the specification.
+ * must be declared in the specification. All Resources and Methods need to be defined as
+ * part of the OpenAPI specification file, and cannot be added via the CDK.
  *
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  *
  * @resource AWS::ApiGateway::RestApi
  */
-export class SpecRestApi extends BaseRestApi {
+export class SpecRestApi extends RestApiBase {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -426,7 +416,7 @@ export class SpecRestApi extends BaseRestApi {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends BaseRestApi implements IRestApi {
+export class RestApi extends RestApiBase implements IRestApi {
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
     class Import extends Resource implements IRestApi {
       public readonly restApiId = restApiId;
@@ -544,7 +534,7 @@ export class RestApi extends BaseRestApi implements IRestApi {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ 'The REST API doesn\'t contain any methods' ];
+      return [ "The REST API doesn't contain any methods" ];
     }
 
     return [];

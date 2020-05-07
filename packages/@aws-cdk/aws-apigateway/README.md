@@ -915,11 +915,11 @@ There are a number of limitations in using OpenAPI definitions in API Gateway. R
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
 
-**Note:** When starting off with an OpenAPI definition, it is possible to add Resources and Methods via the CDK APIs, in
-addition to what has already been defined in the OpenAPI.
-However, it is important to note that it is not possible to override or modify Resources and Methods that are already
-defined in the OpenAPI definition. While these will be present in the final CloudFormation template, they will be
-ignored by API Gateway. The definition in the OpenAPI definition file always takes precedent.
+**Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
+properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
+of these properties and potential confusion.
+Further, it is currently also not possible to configure Methods and Resources in addition to the ones in the
+specification file.
 
 ## APIGateway v2
 
