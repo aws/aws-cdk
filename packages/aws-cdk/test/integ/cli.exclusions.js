@@ -24,7 +24,12 @@ const exclusions = [
     "test": "test-cdk-deploy-wildcard-with-outputs.sh",
     "version": "v1.37.0",
     "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
-  }
+  },
+  {
+    "test": "test-cdk-deploy-with-outputs.sh",
+    "version": "v1.37.0",
+    "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
+  }  
 ]
 
 function getExclusion(test, version) {
