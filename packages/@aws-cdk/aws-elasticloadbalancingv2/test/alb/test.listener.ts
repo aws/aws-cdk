@@ -1007,21 +1007,19 @@ export = {
       certificateArns: ['cert1'],
       defaultTargetGroups: [group2],
     });
-
-    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup1', {
       priority: 10,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerRuleCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
+      ],
       targetGroups: [group1],
     });
-    listenerRule1.addCondition(
-      new elbv2.HttpHeaderListenerRuleCondition('Accept', ['application/vnd.myapp.v2+json']),
-    );
-
-    new elbv2.ApplicationListenerRule(stack, 'ListenerRule2', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup2', {
       priority: 20,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+      ],
       targetGroups: [group2],
     });
 
@@ -1075,44 +1073,36 @@ export = {
       certificateArns: ['cert1'],
       defaultTargetGroups: [group3],
     });
-
-    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup1', {
       priority: 10,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerRuleCondition.sourceIps(['192.0.2.0/24']),
+        elbv2.ListenerRuleCondition.queryStrings([{ key: 'version', value: '2' }, { value: 'foo*' }]),
+      ],
       targetGroups: [group1],
     });
-    listenerRule1.addCondition(
-      new elbv2.SourceIpListenerRuleCondition(['192.0.2.0/24']),
-    );
-    listenerRule1.addCondition(
-      new elbv2.QueryStringListenerRuleCondition([{ key: 'version', value: '2' }, { value: 'foo*' }]),
-    );
-
-    const listenerRule2 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule2', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup2', {
       priority: 20,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerRuleCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
+      ],
       targetGroups: [group1],
     });
-    listenerRule2.addCondition(
-      new elbv2.HttpHeaderListenerRuleCondition('Accept', ['application/vnd.myapp.v2+json']),
-    );
-
-    const listenerRule3 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule3', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup3', {
       priority: 30,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerRuleCondition.httpRequestMethods(['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK']),
+      ],
       targetGroups: [group2],
     });
-    listenerRule3.addCondition(
-      new elbv2.HttpRequestMethodListenerRuleCondition(['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK']),
-    );
-
-    new elbv2.ApplicationListenerRule(stack, 'ListenerRule4', {
-      listener,
-      hostHeader: 'app.test',
+    listener.addTargetGroups('TargetGroup4', {
       priority: 40,
+      conditions: [
+        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+      ],
       targetGroups: [group3],
     });
 
@@ -1201,7 +1191,7 @@ export = {
     test.done();
   },
 
-  'Add additonal condition to listener rule by old style interface'(test: Test) {
+  'Can exist together legacy style conditions and modan style conditions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1215,14 +1205,15 @@ export = {
       certificateArns: ['cert1'],
       defaultTargetGroups: [group2],
     });
-
-    const listenerRule1 = new elbv2.ApplicationListenerRule(stack, 'ListenerRule1', {
-      listener,
+    listener.addTargetGroups('TargetGroup1', {
       hostHeader: 'app.test',
+      pathPattern: '/test',
+      conditions: [
+        elbv2.ListenerRuleCondition.sourceIps(['192.0.2.0/24']),
+      ],
       priority: 10,
       targetGroups: [group1],
     });
-    listenerRule1.setCondition('path-pattern', ['/test']);
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
@@ -1230,14 +1221,16 @@ export = {
       Conditions: [
         {
           Field: 'host-header',
-          HostHeaderConfig: {
-            Values: ['app.test'],
-          },
+          Values: ['app.test'],
         },
         {
           Field: 'path-pattern',
-          PathPatternConfig: {
-            Values: ['/test'],
+          Values: ['/test'],
+        },
+        {
+          Field: 'source-ip',
+          SourceIpConfig: {
+            Values: ['192.0.2.0/24'],
           },
         },
       ],
