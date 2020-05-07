@@ -74,7 +74,7 @@
     "@types/mock-fs": "^4.10.0",
     "@types/semver": "^7.1.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.4",
     "mock-fs": "^4.12.0",
     "pkglint": "0.0.0"
   },
@@ -92,7 +92,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

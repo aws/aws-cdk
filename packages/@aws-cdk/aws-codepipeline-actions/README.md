@@ -10,8 +10,8 @@
 This package contains Actions that can be used in a CodePipeline.
 
 ```typescript
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 ```
 
 ### Sources
@@ -21,7 +21,7 @@ import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 To use a CodeCommit Repository in a CodePipeline:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repo = new codecommit.Repository(this, 'Repo', {
   // ...
@@ -140,7 +140,7 @@ we reserve the right to make breaking changes to it.
 To use an S3 Bucket as a source in CodePipeline:
 
 ```ts
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 
 const sourceBucket = new s3.Bucket(this, 'MyBucket', {
   versioned: true, // a Bucket used as a source in CodePipeline must be versioned
@@ -169,7 +169,7 @@ and your Pipeline will not react to changes in the Bucket.
 You can do it through the CDK:
 
 ```typescript
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
@@ -210,7 +210,7 @@ new codepipeline_actions.CodeBuildAction({
 To use an ECR Repository as a source in a Pipeline:
 
 ```ts
-import ecr = require('@aws-cdk/aws-ecr');
+import * as ecr from '@aws-cdk/aws-ecr';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceOutput = new codepipeline.Artifact();
@@ -253,8 +253,8 @@ new codepipeline_actions.CodeBuildAction({
 Example of a CodeBuild Project used in a Pipeline, alongside CodeCommit:
 
 ```typescript
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repository = new codecommit.Repository(this, 'MyRepository', {
   repositoryName: 'MyRepository',
@@ -541,7 +541,7 @@ new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 To use CodeDeploy for EC2/on-premise deployments in a Pipeline:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
   pipelineName: 'MyPipeline',
@@ -661,7 +661,7 @@ new codepipeline_actions.AlexaSkillDeployAction({
 If you need manifest overrides you can specify them as `parameterOverridesArtifact` in the action:
 
 ```ts
-const cloudformation = require('@aws-cdk/aws-cloudformation');
+import * as cloudformation from '@aws-cdk/aws-cloudformation';
 
 // Deploy some CFN change set and store output
 const executeOutput = new codepipeline.Artifact('CloudFormation');
@@ -717,7 +717,7 @@ a new SNS Topic will be created
 This module contains an Action that allows you to invoke a Lambda function in a Pipeline:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
@@ -756,7 +756,7 @@ API with the `outputVariables` property filled with the map of variables
 Example:
 
 ```typescript
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
@@ -764,10 +764,10 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
     runtime: lambda.Runtime.NODEJS_10_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
-        var AWS = require('aws-sdk');
+        const AWS = require('aws-sdk');
 
         exports.handler = async function(event, context) {
-            var codepipeline = new AWS.CodePipeline();
+            const codepipeline = new AWS.CodePipeline();
             await codepipeline.putJobSuccessResult({
                 jobId: event['CodePipeline.job'].id,
                 outputVariables: {

@@ -178,7 +178,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.12.0',
+        node: '>= 10.13.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
@@ -229,6 +229,8 @@ async function main() {
       '*.tsbuildinfo',
       '',
       'tsconfig.json',
+      '',
+      '.eslintrc.js',
     ]);
 
     await write('lib/index.ts', [
@@ -264,7 +266,7 @@ async function main() {
       '```',
     ]);
 
-    await write('.eslintrc.json', [
+    await write('.eslintrc.js', [
       "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
       'module.exports = baseConfig;',
     ]);
