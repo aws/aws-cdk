@@ -10,9 +10,6 @@
 set -euo pipefail
 integdir=$(cd $(dirname $0) && pwd)
 
-echo "Regression tests are currently disabled. We will re-enable after investigation"
-exit 0
-
 temp_dir=$(mktemp -d)
 
 function cleanup {
