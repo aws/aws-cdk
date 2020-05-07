@@ -131,6 +131,11 @@ Work your magic. Here are some guidelines:
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
+* If your change introduces a new construct, take a look at the our
+  [example Construct Library](packages/@aws-cdk/example-construct-library) for an explanation of the common patterns we use.
+  Feel free to start your contribution by copy&pasting files from that project,
+  and then edit and rename them as appropriate -
+  it might be easier to get started that way.
 
 #### Integration Tests
 
