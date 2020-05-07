@@ -93,17 +93,16 @@ test('url subscription with user provided dlq', () => {
           'PolicyDocument': {
             'Statement': [
               {
-                'Action': 'sqs:SendMessage',
-                'Condition': {
-                  'ArnEquals': {
-                    'aws:SourceArn': {
-                      'Ref': 'MyTopic86869434',
-                    },
-                  },
-                },
+                'Action': [
+                  'sqs:SendMessage',
+                  'sqs:GetQueueAttributes',
+                  'sqs:GetQueueUrl',
+                ],
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'sns.amazonaws.com',
+                  'AWS': {
+                    'Ref': 'MyTopic86869434',
+                  },
                 },
                 'Resource': {
                   'Fn::GetAtt': [
@@ -397,17 +396,16 @@ test('queue subscription with user provided dlq', () => {
           'PolicyDocument': {
             'Statement': [
               {
-                'Action': 'sqs:SendMessage',
-                'Condition': {
-                  'ArnEquals': {
-                    'aws:SourceArn': {
-                      'Ref': 'MyTopic86869434',
-                    },
-                  },
-                },
+                'Action': [
+                  'sqs:SendMessage',
+                  'sqs:GetQueueAttributes',
+                  'sqs:GetQueueUrl',
+                ],
                 'Effect': 'Allow',
                 'Principal': {
-                  'Service': 'sns.amazonaws.com',
+                  'AWS': {
+                    'Ref': 'MyTopic86869434',
+                  },
                 },
                 'Resource': {
                   'Fn::GetAtt': [

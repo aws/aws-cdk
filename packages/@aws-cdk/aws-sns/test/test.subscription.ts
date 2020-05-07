@@ -69,17 +69,16 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
-            Condition: {
-              ArnEquals: {
-                'aws:SourceArn': {
-                  Ref: 'TopicBFC7AF6E',
-                },
-              },
-            },
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
             Effect: 'Allow',
             Principal: {
-              Service: 'sns.amazonaws.com',
+              AWS: {
+                Ref: 'TopicBFC7AF6E',
+              },
             },
             Resource: {
               'Fn::GetAtt': [
