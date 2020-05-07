@@ -124,7 +124,7 @@ async function main(): Promise<void> {
 
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
 
-    const vpcEndpointServiceNamePrefix = region.startsWith('cn-') ? 'cn.com.amazonaws.vpce' : 'com.amazonaws.vpce';
+    const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
 
     for (const service of AWS_SERVICES) {
