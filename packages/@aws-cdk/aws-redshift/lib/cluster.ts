@@ -186,17 +186,16 @@ export interface ClusterProps {
   readonly port?: number;
 
   /**
-   * Whether to enable encryption of data in the cluster
+   * Whether to enable encryption of data at rest in the cluster.
    *
    * @default false
    */
   readonly encrypted?: boolean
 
   /**
-   * The KMS key for storage encryption.
-   * will be set to `true`.
+   * The KMS key to use for encryption of data at rest.
    *
-   * @default - default master key.
+   * @default - AWS-managed key, if encryption at rest is enabled
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -213,8 +212,6 @@ export interface ClusterProps {
 
   /**
    * The VPC to place the cluster in.
-   *
-   * @default a new Vpc will be created
    */
   readonly vpc: ec2.IVpc;
 
@@ -230,7 +227,7 @@ export interface ClusterProps {
    *
    * @default a new security group is created.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Username and password for the administrative user
@@ -316,7 +313,7 @@ export class Cluster extends ClusterBase {
    * Import an existing DatabaseCluster from properties
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
-    class Import extends ClusterBase implements ICluster {
+    class Import extends ClusterBase {
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroups,
         defaultPort: ec2.Port.tcp(attrs.clusterEndpointPort),
@@ -383,8 +380,8 @@ export class Cluster extends ClusterBase {
       applyToUpdateReplacePolicy: true,
     });
 
-    const securityGroups = props.securityGroup !== undefined ?
-      [props.securityGroup] : [new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = props.securityGroups !== undefined ?
+      props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'Redshift security group',
         vpc: this.vpc,
         securityGroupName: 'redshift SG',
@@ -427,7 +424,7 @@ export class Cluster extends ClusterBase {
       clusterSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
-      clusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
+      clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.masterUsername,
       masterUserPassword: secret

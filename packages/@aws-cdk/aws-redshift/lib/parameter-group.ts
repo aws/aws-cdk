@@ -7,10 +7,7 @@ import { CfnClusterParameterGroup } from './redshift.generated';
  * > At this time, redshift-1.0 is the only version of the Amazon Redshift engine.
  * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
  */
-export enum ParameterGroupFamily {
-  REDSHIFT_1_0 = 'redshift-1.0',
-  DUMMY = 'dummy', // hack to circumvent known bug see https://github.com/aws/aws-cdk/pull/6948#issuecomment-604015109
-}
+const REDSHIFT_1_0 = 'redshift-1.0';
 
 /**
  * A parameter group
@@ -21,7 +18,7 @@ export interface IClusterParameterGroup extends IResource {
    *
    * @attribute
    */
-  readonly parameterGroupName: string;
+  readonly clusterParameterGroupName: string;
 }
 
 /**
@@ -31,7 +28,7 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
   /**
    * The name of the parameter group
    */
-  public abstract readonly parameterGroupName: string;
+  public abstract readonly clusterParameterGroupName: string;
 }
 
 /**
@@ -42,9 +39,9 @@ export interface ClusterParameterGroupProps {
    * The version of the Amazon Redshift engine to which the parameters in the parameter group apply.
    * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
    *
-   * @default ParameterGroupFamily.REDSHIFT_1_0
+   * @default REDSHIFT_1_0
    */
-  readonly family?: ParameterGroupFamily;
+  readonly family?: string;
 
   /**
    * Description for this parameter group
@@ -68,9 +65,9 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+  public static fromClusterParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
-      public readonly parameterGroupName = parameterGroupName;
+      public readonly clusterParameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);
   }
@@ -78,19 +75,23 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   /**
    * The name of the parameter group
    */
-  public readonly parameterGroupName: string;
+  public readonly clusterParameterGroupName: string;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
+    if (props.family && props.family !== REDSHIFT_1_0) {
+      throw new Error(`Only ${REDSHIFT_1_0} is supported for PrameterGroupFamily at this time!`);
+    }
+
     const resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || `Cluster parameter group for ${props.family}`,
-      parameterGroupFamily: props.family ? props.family : ParameterGroupFamily.REDSHIFT_1_0,
+      parameterGroupFamily: props.family ? props.family : REDSHIFT_1_0,
       parameters: Object.entries(props.parameters).map(([name, value]) => {
         return {parameterName: name, parameterValue: value};
       }),
     });
 
-    this.parameterGroupName = resource.ref;
+    this.clusterParameterGroupName = resource.ref;
   }
 }
