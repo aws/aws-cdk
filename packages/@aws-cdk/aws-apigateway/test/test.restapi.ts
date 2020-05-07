@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -36,7 +36,7 @@ export = {
             },
           },
         },
-        myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029: {
+        myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a: {
           Type: 'AWS::ApiGateway::Deployment',
           Properties: {
             RestApiId: { Ref: 'myapi4C7BF186' },
@@ -48,7 +48,7 @@ export = {
           Type: 'AWS::ApiGateway::Stage',
           Properties: {
             RestApiId: { Ref: 'myapi4C7BF186' },
-            DeploymentId: { Ref: 'myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029' },
+            DeploymentId: { Ref: 'myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a' },
             StageName: 'prod',
           },
         },
@@ -590,7 +590,7 @@ export = {
         'myapiAccountC3A4750C',
         'myapiCloudWatchRoleEB425128',
         'myapiGET9B7CD29E',
-        'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9',
+        'myapiDeploymentB7EF8EB7b8edc043bcd33e0d85a3c85151f47e98',
         'myapiDeploymentStageprod329F21FF',
         'myapi162F20B8',
       ],
@@ -807,6 +807,101 @@ export = {
         },
       },
     });
+
+    test.done();
+  },
+
+  'gateway response resource is created'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.ACCESS_DENIED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'ACCESS_DENIED',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: ABSENT,
+      ResponseParameters: ABSENT,
+      ResponseTemplates: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'gateway response resource is created with parameters'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.AUTHORIZER_FAILURE,
+      statusCode: '500',
+      responseHeaders: {
+        'Access-Control-Allow-Origin': 'test.com',
+        'test-key': 'test-value',
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'AUTHORIZER_FAILURE',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: '500',
+      ResponseParameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
+        'gatewayresponse.header.test-key': 'test-value',
+      },
+      ResponseTemplates: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'gateway response resource is created with templates'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+    });
+
+    api.root.addMethod('GET');
+    api.addGatewayResponse('test-response', {
+      type: apigw.ResponseType.AUTHORIZER_FAILURE,
+      statusCode: '500',
+      templates: {
+        'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+      ResponseType: 'AUTHORIZER_FAILURE',
+      RestApiId: stack.resolve(api.restApiId),
+      StatusCode: '500',
+      ResponseParameters: ABSENT,
+      ResponseTemplates: {
+        'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
+      },
+    }));
 
     test.done();
   },

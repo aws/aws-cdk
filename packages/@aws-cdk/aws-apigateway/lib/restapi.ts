@@ -7,6 +7,7 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
+import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { Model, ModelOptions } from './model';
@@ -304,6 +305,27 @@ abstract class BaseRestApi extends Resource implements IRestApi {
     });
   }
 
+  /**
+   * Adds a new gateway response.
+   */
+  public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
+    return new GatewayResponse(this, id, {
+      restApi: this,
+      ...options,
+    });
+  }
+
+  /**
+   * Performs validation of the REST API.
+   */
+  protected validate() {
+    if (this.methods.length === 0) {
+      return [ 'The REST API doesn\'t contain any methods' ];
+    }
+
+    return [];
+  }
+
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -313,7 +335,7 @@ abstract class BaseRestApi extends Resource implements IRestApi {
     const resource = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
-
+    
     resource.node.addDependency(apiResource);
   }
 

@@ -332,6 +332,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   /**
    * The subnets used by the DB subnet group.
+   *
+   * @default - the Vpc default strategy if not specified.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -345,7 +347,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      this.node.addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
