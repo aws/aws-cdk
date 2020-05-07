@@ -182,7 +182,7 @@ export class Cluster extends cdk.Resource implements ICluster {
     // The cluster resource itself.
     this.cluster = new CfnCluster(this, `${id}-cluster`, {
       iamRoleArn: this.role.roleArn,
-      nodeType: props.instanceType.toString(),
+      nodeType: 'dax.' + props.instanceType.toString(),
       replicationFactor: props.replicationFactor ? props.replicationFactor : 3,
       subnetGroupName: subnetGroup.ref,
       parameterGroupName: parameterGroup.parameterGroupName,
