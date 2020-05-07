@@ -18,6 +18,7 @@ class EksClusterStack extends TestStack {
     const cluster = new eks.Cluster(this, 'Cluster', {
       mastersRole,
       defaultCapacity: 2,
+      version: '1.16',
     });
 
     // // fargate profile for resources in the "default" namespace

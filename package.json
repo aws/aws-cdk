@@ -20,9 +20,13 @@
     "jsii-pacmak": "^1.4.1",
     "jsii-rosetta": "^1.4.1",
     "lerna": "^3.20.2",
-    "standard-version": "^7.1.0",
+    "standard-version": "^8.0.0",
     "graceful-fs": "^4.2.4",
     "typescript": "~3.8.3"
+  },
+  "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
+  "resolutions": {
+    "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {
     "type": "git",
