@@ -459,13 +459,6 @@ export class ApplicationListenerRule extends cdk.Construct {
   }
 
   /**
-   * Remove a non-standard condition to this rule
-   */
-  public removeCondition(field: string): void {
-    delete this.conditions[field];
-  }
-
-  /**
    * Add a TargetGroup to load balance to
    */
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
