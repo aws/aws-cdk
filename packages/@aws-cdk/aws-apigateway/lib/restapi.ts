@@ -1,7 +1,7 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
-import { ApiDefinition, ApiDefinitionConfig } from './api-definition';
+import { ApiDefinition } from './api-definition';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
@@ -618,12 +618,5 @@ class RootResource extends ResourceBase {
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
-  }
-}
-
-export function verifyAPIDefinitionConfig(definition: ApiDefinitionConfig) {
-  // mutually exclusive
-  if ((!definition.inlineDefinition && !definition.s3Location) || (definition.inlineDefinition && definition.s3Location)) {
-    throw new Error('APIDefinition must specify one of "inlineDefinition" or "s3Location" but not both');
   }
 }

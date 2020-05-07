@@ -3,42 +3,51 @@
     "myapi4C7BF186": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "BodyS3Location": {
-          "Bucket": {
-            "Ref": "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58S3BucketC3882222"
+        "Body": {
+          "openapi": "3.0.2",
+          "info": {
+            "version": "1.0.0",
+            "title": "Test API for CDK"
           },
-          "Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58S3VersionKey1FFB68C8"
+          "paths": {
+            "/pets": {
+              "get": {
+                "summary": "Test Method",
+                "operationId": "testMethod",
+                "responses": {
+                  "200": {
+                    "description": "A paged array of pets",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Empty"
                         }
-                      ]
+                      }
                     }
-                  ]
+                  }
                 },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58S3VersionKey1FFB68C8"
-                        }
-                      ]
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
                     }
-                  ]
+                  },
+                  "requestTemplates": {
+                    "application/json": "{\"statusCode\": 200}"
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "type": "mock"
                 }
-              ]
-            ]
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "Empty": {
+                "title": "Empty Schema",
+                "type": "object"
+              }
+            }
           }
         },
         "Name": "my-api"
@@ -137,20 +146,32 @@
           ]
         ]
       }
-    }
-  },
-  "Parameters": {
-    "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58S3BucketC3882222": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"b4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58\""
     },
-    "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58S3VersionKey1FFB68C8": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"b4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58\""
-    },
-    "AssetParametersb4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58ArtifactHash1A35D17D": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"b4e546901387aeeb588eabec043d35a7fdbe4d304185ae7ab763bb3ae4e61d58\""
+    "PetsURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "myapi4C7BF186"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "myapiDeploymentStageprod298F01AF"
+            },
+            "/pets"
+          ]
+        ]
+      }
     }
   }
 }

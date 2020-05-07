@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: Test API for CDK
 paths:
-  /testing:
+  /pets:
     get:
       summary: Test Method
       operationId: testMethod

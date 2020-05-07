@@ -14,9 +14,52 @@ export abstract class ApiDefinition {
   }
 
   /**
-   * Creates an API definition from a string
+   * Create an API definition from an inline object. The inline object must follow the
+   * schema of OpenAPI 2.0 or OpenAPI 3.0
+   *
+   * @example
+   *   ApiDefinition.fromInline({
+   *     openapi: '3.0.2',
+   *     paths: {
+   *       '/pets': {
+   *         get: {
+   *           'responses': {
+   *             200: {
+   *               content: {
+   *                 'application/json': {
+   *                   schema: {
+   *                     $ref: '#/components/schemas/Empty',
+   *                   },
+   *                 },
+   *               },
+   *             },
+   *           },
+   *           'x-amazon-apigateway-integration': {
+   *             responses: {
+   *               default: {
+   *                 statusCode: '200',
+   *               },
+   *             },
+   *             requestTemplates: {
+   *               'application/json': '{"statusCode": 200}',
+   *             },
+   *             passthroughBehavior: 'when_no_match',
+   *             type: 'mock',
+   *           },
+   *         },
+   *       },
+   *     },
+   *     components: {
+   *       schemas: {
+   *         Empty: {
+   *           title: 'Empty Schema',
+   *           type: 'object',
+   *         },
+   *       },
+   *     },
+   *   });
    */
-  public static fromInline(definition: string): InlineApiDefinition {
+  public static fromInline(definition: any): InlineApiDefinition {
     return new InlineApiDefinition(definition);
   }
 
@@ -68,7 +111,7 @@ export interface ApiDefinitionConfig {
    *
    * @default - API definition is not defined inline
    */
-  readonly inlineDefinition?: string;
+  readonly inlineDefinition?: any;
 }
 
 /**
@@ -99,14 +142,18 @@ export class S3ApiDefinition extends ApiDefinition {
 }
 
 /**
- * OpenAPI specification from an inline string.
+ * OpenAPI specification from an inline JSON object.
  */
 export class InlineApiDefinition extends ApiDefinition {
-  constructor(private definition: string) {
+  constructor(private definition: any) {
     super();
 
-    if (definition.length === 0) {
-      throw new Error('Inline API definition cannot be empty');
+    if (typeof(definition) !== 'object') {
+      throw new Error('definition should be of type object');
+    }
+
+    if (Object.keys(definition).length === 0) {
+      throw new Error('JSON definition cannot be empty');
     }
   }
 
