@@ -334,7 +334,7 @@ export class Stack extends Construct implements ITaggable {
    * Rename a generated logical identities
    *
    * To modify the naming scheme strategy, extend the `Stack` class and
-   * override the `createNamingScheme` method.
+   * override the `allocateLogicalId` method.
    */
   public renameLogicalId(oldId: string, newId: string) {
     this._logicalIds.addRename(oldId, newId);
