@@ -378,6 +378,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   public readonly listenerRuleArn: string;
 
   private readonly conditions: {[key: string]: ListenerRuleCondition} = {};
+  private readonly legacyConditions: {[key: string]: string[]} = {};
 
   private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
@@ -410,15 +411,15 @@ export class ApplicationListenerRule extends cdk.Construct {
     });
 
     if (props.hostHeader) {
-      this.addCondition(new HostHeaderListenerRuleCondition([props.hostHeader]));
+      this.setCondition('host-header', [props.hostHeader]);
     }
 
     if (hasPathPatterns) {
       if (props.pathPattern && props.pathPatterns) {
         throw new Error('Both `pathPatterns` and `pathPattern` are specified, specify only one');
       }
-      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns!;
-      this.addCondition(new PathPatternListenerRuleCondition(pathPattern));
+      const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
+      this.setCondition('path-pattern', pathPattern);
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
@@ -441,12 +442,11 @@ export class ApplicationListenerRule extends cdk.Construct {
    */
   public setCondition(field: string, values: string[] | undefined) {
     if (values === undefined) {
-      this.removeCondition(field);
+      delete this.legacyConditions[field];
       return;
     }
 
-    const condition = this.createConditionObject(field, values);
-    this.addCondition(condition);
+    this.legacyConditions[field] = values;
   }
 
   /**
@@ -507,6 +507,11 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (this.actions.length === 0) {
       return ['Listener rule needs at least one action'];
     }
+    const legacyConditionFields = Object.keys(this.legacyConditions);
+    const conditionFields = Object.values(this.conditions).map(condition => condition.field);
+    if (legacyConditionFields.length === 0 && conditionFields.length === 0) {
+      return ['Listener rule needs at least one condition'];
+    }
     return [];
   }
 
@@ -532,7 +537,15 @@ export class ApplicationListenerRule extends cdk.Construct {
    * Render the conditions for this rule
    */
   private renderConditions(): any {
-    return Object.values(this.conditions).map(condition => condition.renderRawCondition());
+    const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
+      return { field, values };
+    });
+    const conditions = Object.values(this.conditions).map(condition => condition.renderRawCondition());
+
+    return [
+      ...legacyConditions,
+      ...conditions,
+    ];
   }
 }
 
