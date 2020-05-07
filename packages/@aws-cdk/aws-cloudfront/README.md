@@ -67,3 +67,17 @@ See [Importing an SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonCloudFr
 Example:
 
 [create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+
+#### Restrictions
+
+CloudFront supports adding restrictions to your distribution.
+
+See [Restricting the Geographic Distribution of Your Content](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html) in the CloudFront User Guide.
+
+Example:
+```ts
+new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
+   //...
+    geoRestriction: GeoRestriction.whitelist('US', 'UK')
+});
+```
