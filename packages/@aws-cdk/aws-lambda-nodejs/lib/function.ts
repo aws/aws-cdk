@@ -65,6 +65,15 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - `.cache` in the root directory
    */
   readonly cacheDir?: string;
+
+  /**
+   * The docker tag of the node base image to use in the parcel-bundler docker image
+   *
+   * @see https://hub.docker.com/_/node/?tab=tags
+   *
+   * @default - the `process.versions.node` alpine image
+   */
+  readonly nodeDockerTag?: string;
 }
 
 /**
@@ -94,6 +103,7 @@ export class NodejsFunction extends lambda.Function {
       sourceMaps: props.sourceMaps,
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
+      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
     });
     builder.build();
 
@@ -156,11 +166,11 @@ function findDefiningFile(): string {
 /**
  * Extracts the version from the runtime
  */
-function extractVersion(runtime: lambda.Runtime): string | undefined {
+function extractVersion(runtime: lambda.Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
-    return undefined;
+    throw new Error('Cannot extract version from runtime.');
   }
 
   return match[1];
