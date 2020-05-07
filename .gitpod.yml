@@ -1,0 +1,3 @@
+image: jsii/superchain
+tasks:
+  - init: yarn install --frozen-lockfile && yarn build
