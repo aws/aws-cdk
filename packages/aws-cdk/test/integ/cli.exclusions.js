@@ -16,19 +16,9 @@ For example:
 */
 const exclusions = [
   {
-    "test": "test-cdk-deploy-with-parameters.sh",
-    "version": "v1.31.0",
-    "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
-  },
-  {
-    "test": "test-cdk-deploy-wildcard-with-parameters.sh",
-    "version": "v1.31.0",
-    "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
-  },
-  {
     "test": "test-cdk-deploy-nested-stack-with-parameters.sh",
-    "version": "v1.31.0",
-    "justification": "This test doesn't use a unique sns topic name and it collides with our regular integ suite"
+    "version": "v1.37.0",
+    "justification": "This test doesn't use a unique sns topic name for the topic in the nested stack and it collides with our regular integ suite"
   }
 ]
 
