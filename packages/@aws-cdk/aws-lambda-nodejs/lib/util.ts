@@ -53,7 +53,7 @@ export function nodeMajorVersion(): number {
 /**
  * Finds the closest path containg a path
  */
-function findClosestPathContaining(p: string): string {
+function findClosestPathContaining(p: string): string | undefined {
   let closestPath;
 
   for (const nodeModulesPath of module.paths) {
@@ -63,23 +63,19 @@ function findClosestPathContaining(p: string): string {
     }
   }
 
-  if (!closestPath) {
-    throw new Error(`Cannot find path ${p}.`);
-  }
-
   return closestPath;
 }
 
 /**
  * Finds closest package.json path
  */
-export function findPkgPath(): string {
+export function findPkgPath(): string | undefined {
   return findClosestPathContaining('package.json');
 }
 
 /**
- * Finds closest .git/ and returns the path containing this directory
+ * Finds closest .git/
  */
-export function findGitPath(): string {
+export function findGitPath(): string | undefined {
   return findClosestPathContaining(`.git${path.sep}`);
 }

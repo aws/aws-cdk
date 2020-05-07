@@ -4,15 +4,15 @@ import { Builder } from '../lib/builder';
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn((_cmd: string, args: string[]) => {
-    if (args.includes('/project/packages/@aws-cdk/aws-lambda-nodejs/error')) {
+    if (args.includes('/project/folder/error')) {
       return { error: 'parcel-error' };
     }
 
-    if (args.includes('/project/packages/@aws-cdk/aws-lambda-nodejs/status')) {
+    if (args.includes('/project/folder/status')) {
       return { status: 1, stdout: Buffer.from('status-error') };
     }
 
-    if (args.includes('/project/packages/@aws-cdk/aws-lambda-nodejs/no-docker')) {
+    if (args.includes('/project/folder/no-docker')) {
       return { error: 'Error: spawnSync docker ENOENT' };
     }
 
@@ -22,12 +22,13 @@ jest.mock('child_process', () => ({
 
 test('calls docker with the correct args', () => {
   const builder = new Builder({
-    entry: 'entry',
+    entry: '/project/folder/entry.ts',
     global: 'handler',
-    outDir: 'out-dir',
-    cacheDir: 'cache-dir',
+    outDir: '/out-dir',
+    cacheDir: '/cache-dir',
     nodeDockerTag: 'lts-alpine',
     nodeVersion: '12',
+    projectRoot: '/project',
   });
   builder.build();
 
@@ -39,12 +40,12 @@ test('calls docker with the correct args', () => {
   // docker run
   expect(spawnSync).toHaveBeenNthCalledWith(2, 'docker', [
     'run', '--rm',
-    '-v', expect.stringMatching(/aws-cdk:\/project$/),
-    '-v', `${path.join(__dirname, '../out-dir')}:/out`,
-    '-v', `${path.join(__dirname, '../cache-dir')}:/cache`,
-    '-w', '/project/packages/@aws-cdk/aws-lambda-nodejs',
+    '-v', '/project:/project',
+    '-v', '/out-dir:/out',
+    '-v', '/cache-dir:/cache',
+    '-w', '/project/folder',
     'parcel-bundler',
-    'parcel', 'build', '/project/packages/@aws-cdk/aws-lambda-nodejs/entry',
+    'parcel', 'build', '/project/folder/entry.ts',
     '--out-dir', '/out',
     '--out-file', 'index.js',
     '--global', 'handler',
@@ -59,33 +60,36 @@ test('calls docker with the correct args', () => {
 
 test('throws in case of error', () => {
   const builder = new Builder({
-    entry: 'error',
+    entry: '/project/folder/error',
     global: 'handler',
     outDir: 'out-dir',
     nodeDockerTag: 'lts-alpine',
     nodeVersion: '12',
+    projectRoot: '/project',
   });
   expect(() => builder.build()).toThrow('parcel-error');
 });
 
 test('throws if status is not 0', () => {
   const builder = new Builder({
-    entry: 'status',
+    entry: '/project/folder/status',
     global: 'handler',
     outDir: 'out-dir',
     nodeDockerTag: 'lts-alpine',
     nodeVersion: '12',
+    projectRoot: '/project',
   });
   expect(() => builder.build()).toThrow('status-error');
 });
 
 test('throws if docker is not installed', () => {
   const builder = new Builder({
-    entry: 'no-docker',
+    entry: '/project/folder/no-docker',
     global: 'handler',
     outDir: 'out-dir',
     nodeDockerTag: 'lts-alpine',
     nodeVersion: '12',
+    projectRoot: '/project',
   });
   expect(() => builder.build()).toThrow('Error: spawnSync docker ENOENT');
 });

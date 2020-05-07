@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Builder } from './builder';
-import { nodeMajorVersion, parseStackTrace } from './util';
+import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
@@ -74,6 +74,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the `process.versions.node` alpine image
    */
   readonly nodeDockerTag?: string;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container. If you specify this prop, ensure that
+   * this path includes `entry` and any module/dependencies used by your
+   * function otherwise bundling will not be possible.
+   *
+   * @default - the closest path containing a .git folder
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -93,6 +103,10 @@ export class NodejsFunction extends lambda.Function {
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime || defaultRunTime;
+    const projectRoot = props.projectRoot ?? findGitPath();
+    if (!projectRoot) {
+      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
+    }
 
     // Build with Parcel
     const builder = new Builder({
@@ -104,6 +118,7 @@ export class NodejsFunction extends lambda.Function {
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
       nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
+      projectRoot: path.dirname(path.resolve(projectRoot)),
     });
     builder.build();
 

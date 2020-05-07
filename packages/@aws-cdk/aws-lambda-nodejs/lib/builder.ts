@@ -1,7 +1,7 @@
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { findGitPath, findPkgPath } from './util';
+import { findPkgPath } from './util';
 
 /**
  * Builder options
@@ -48,6 +48,12 @@ export interface BuilderOptions {
    * @see https://hub.docker.com/_/node/?tab=tags
    */
   readonly nodeDockerTag: string;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container.
+   */
+  readonly projectRoot: string;
 }
 
 /**
@@ -62,7 +68,11 @@ export class Builder {
 
   constructor(private readonly options: BuilderOptions) {
     // Original package.json
-    this.pkgPath = findPkgPath();
+    const pkgPath = findPkgPath();
+    if (!pkgPath) {
+      throw new Error('Cannot find a `package.json` in this project.');
+    }
+    this.pkgPath = pkgPath;
     this.originalPkg = fs.readFileSync(this.pkgPath);
     this.originalPkgJson = JSON.parse(this.originalPkg.toString());
   }
@@ -91,18 +101,14 @@ export class Builder {
         throw new Error(`[Status ${build.status}] stdout: ${build.stdout?.toString().trim()}\n\n\nstderr: ${build.stderr?.toString().trim()}`);
       }
 
-      // Find the git root and mount it in the container. This allows Parcel to
-      // find the same modules/dependencies as the ones available "locally". It
-      // also supports monorepos.
-      const projectRoot = path.dirname(findGitPath());
       const containerProjectRoot = '/project';
       const containerOutDir = '/out';
       const containerCacheDir = '/cache';
-      const containerEntryPath = path.join(containerProjectRoot, path.relative(projectRoot, path.resolve(this.options.entry)));
+      const containerEntryPath = path.join(containerProjectRoot, path.relative(this.options.projectRoot, path.resolve(this.options.entry)));
 
       const dockerRunArgs = [
         'run', '--rm',
-        '-v', `${projectRoot}:${containerProjectRoot}`,
+        '-v', `${this.options.projectRoot}:${containerProjectRoot}`,
         '-v', `${path.resolve(this.options.outDir)}:${containerOutDir}`,
         ...(this.options.cacheDir ? ['-v', `${path.resolve(this.options.cacheDir)}:${containerCacheDir}`] : []),
         '-w', path.dirname(containerEntryPath),
