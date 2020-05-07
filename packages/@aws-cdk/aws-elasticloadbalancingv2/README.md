@@ -65,7 +65,9 @@ Use the `addFixedResponse()` method to add fixed response rules on the listener:
 
 ```ts
 listener.addFixedResponse('Fixed', {
-    pathPattern: '/ok',
+    conditions: [
+        ListenerRuleCondition.pathPatterns(['/ok']),
+    ],
     contentType: elbv2.ContentType.TEXT_PLAIN,
     messageBody: 'OK',
     statusCode: '200'
@@ -75,16 +77,17 @@ listener.addFixedResponse('Fixed', {
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example, the
-following will route requests to the indicated AutoScalingGroup only if the
-requested host in the request is either for `example.com/ok` or
-`example.com/path`:
+HTTP request. For example, the following will route requests to the indicated
+AutoScalingGroup only if the requested host in the request is either for
+`example.com/ok` or `example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
-    pathPatterns: ['/ok', '/path'],
-    hostHeader: 'example.com',
+    conditions: [
+        ListenerRuleCondition.hostHeaders(['example.com']),
+        ListenerRuleCondition.pathPatterns(['/ok', '/path']),
+    ],
     port: 8080,
     targets: [asg]
 });
@@ -94,27 +97,6 @@ A target with a condition contains either `pathPatterns` or `hostHeader`, or
 both. If both are specified, both conditions must be met for the requests to
 be routed to the given target. `priority` is a required field when you add
 targets with conditions. The lowest number wins.
-
-Or you can add listner rule condition using `ApplicationListenerRule` directly:
-
-```
-const targetGroup = new ApplicationTargetGroup(this, 'TargetGroup', {
-  port: 8080,
-  protocol: ApplicationProtocol.HTTP,
-  targetGroupName: 'backend',
-  targets: [asg],
-  vpc: vpc,
-});
-
-const listenerRule = new ApplicationListenerRule(this, 'ListenerRule', {
-  listener,
-  priority: 10,
-  pathPatterns: ['/ok', '/path'],
-  hostHeader: 'example.com',
-  targetGroups: [targetGroup],
-});
-listenerRule.addCondition(new QueryStringListenerRuleCondition([{ key: "version", value: "2" }]));
-```
 
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
