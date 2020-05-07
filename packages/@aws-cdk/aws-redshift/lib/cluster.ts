@@ -14,12 +14,33 @@ import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
  * used for defining {@link ClusterProps.nodeType}.
  */
 export enum NodeType {
+  /**
+   * ds2.xlarge
+   */
   DS2_XLARGE = 'ds2.xlarge',
+  /**
+   * ds2.8xlarge
+   */
   DS2_8XLARGE = 'ds2.8xlarge',
+  /**
+   * dc1.large
+   */
   DC1_LARGE = 'dc1.large',
+  /**
+   * dc1.8xlarge
+   */
   DC1_8XLARGE = 'dc1.8xlarge',
+  /**
+   * dc2.large
+   */
   DC2_LARGE = 'dc2.large',
+  /**
+   * dc2.8xlarge
+   */
   DC2_8XLARGE = 'dc2.8xlarge',
+  /**
+   * ra3.16xlarge
+   */
   RA3_16XLARGE = 'ra3.16xlarge',
 }
 
@@ -28,7 +49,13 @@ export enum NodeType {
  * Used by {@link ClusterProps.clusterType}
  */
 export enum ClusterType {
+  /**
+   * single-node cluster, the {@link ClusterProps.numberOfNodes} parameter is not required
+   */
   SINGLE_NODE = 'single-node',
+  /**
+   * multi-node cluster, set the amount of nodes using {@link ClusterProps.numberOfNodes} parameter
+   */
   MULTI_NODE = 'multi-node',
 }
 

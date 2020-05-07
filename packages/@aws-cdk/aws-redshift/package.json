@@ -109,17 +109,6 @@
   },
   "awslint": {
     "exclude": [
-      "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupFamily.REDSHIFT_1_0",
-      "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupFamily.DUMMY",
-      "docs-public-apis:@aws-cdk/aws-redshift.ClusterType.MULTI_NODE",
-      "docs-public-apis:@aws-cdk/aws-redshift.ClusterType.SINGLE_NODE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC1_8XLARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC1_LARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC2_8XLARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DC2_LARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DS2_8XLARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.DS2_XLARGE",
-      "docs-public-apis:@aws-cdk/aws-redshift.NodeType.RA3_16XLARGE",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
