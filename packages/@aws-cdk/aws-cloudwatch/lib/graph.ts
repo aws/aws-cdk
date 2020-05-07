@@ -173,6 +173,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default - None
    */
   readonly rightYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
 }
 
 /**
@@ -210,6 +217,7 @@ export class GraphWidget extends ConcreteWidget {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
       },
     }];
   }
@@ -347,6 +355,26 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+}
+
+/**
+ * The position of the legend on a GraphWidget.
+ */
+export enum LegendPosition {
+  /**
+   * Legend appears below the graph (default).
+   */
+  BOTTOM = 'bottom',
+
+  /**
+   * Add shading above the annotation
+   */
+  RIGHT = 'right',
+
+  /**
+   * Add shading below the annotation
+   */
+  HIDDEN = 'hidden'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
