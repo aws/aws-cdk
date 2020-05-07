@@ -49,7 +49,7 @@ describe('AWS::CDK::Metadata', () => {
 });
 
 test('stop executing if context providers are not making progress', async () => {
-  registerContextProvider('testprovider', class {
+  registerContextProvider(cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER, class {
     public async getValue(_: { [key: string]: any }): Promise<any> {
       return 'foo';
     }
@@ -62,7 +62,7 @@ test('stop executing if context providers are not making progress', async () => 
     }],
     // Always return the same missing keys, synthesis should still finish.
     missing: [
-      { key: 'abcdef', props: {}, provider: 'testprovider' },
+      { key: 'abcdef', props: { account: '1324', region: 'us-east-1' }, provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER },
     ],
   });
   const cxasm = await cloudExecutable.synthesize();

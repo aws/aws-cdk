@@ -36,10 +36,13 @@ test('cloud assembly builder', () => {
 
   session.addMissing({
     key: 'foo',
-    provider: 'context-provider',
+    provider: cxschema.ContextProvider.VPC_PROVIDER,
     props: {
-      a: 'A',
-      b: 2,
+      account: '1234',
+      region: 'us-east-1',
+      filter: {
+        a: 'a',
+      },
     },
   });
 
@@ -67,7 +70,17 @@ test('cloud assembly builder', () => {
   expect(manifest).toStrictEqual({
     version: cxschema.Manifest.version(),
     missing: [
-      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } },
+      {
+        key: 'foo',
+        provider: 'vpc-provider',
+        props: {
+          account: '1234',
+          region: 'us-east-1',
+          filter: {
+            a: 'a',
+          },
+        },
+      },
     ],
     artifacts: {
       'tree-artifact': {
@@ -115,8 +128,14 @@ test('duplicate missing values with the same key are only reported once', () => 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
   const session = new CloudAssemblyBuilder(outdir);
 
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
+  const props: cxschema.ContextQueryProperties = {
+    account: '1234',
+    region: 'asdf',
+    filter: { a: 'a' },
+  };
+
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
 
   const assembly = session.buildAssembly();
 

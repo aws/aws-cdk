@@ -1,3 +1,5 @@
+import { ContextProvider, ContextQueryProperties } from './context-queries';
+
 /**
  * Common properties for asset metadata.
  */
@@ -256,16 +258,12 @@ export interface MissingContext {
   /**
    * The provider from which we expect this context key to be obtained.
    */
-  readonly provider: string;
+  readonly provider: ContextProvider;
 
   /**
    * A set of provider-specific options.
    */
-  readonly props: {
-    account?: string;
-    region?: string;
-    [key: string]: any;
-  };
+  readonly props: ContextQueryProperties;
 }
 
 /**

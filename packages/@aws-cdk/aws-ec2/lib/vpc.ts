@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
   IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -1008,12 +1009,12 @@ export class Vpc extends VpcBase {
     }
 
     const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
-      provider: cxapi.VPC_PROVIDER,
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
       props: {
         filter,
         returnAsymmetricSubnets: true,
         subnetGroupNameTag: options.subnetGroupNameTag,
-      } as cxapi.VpcContextQuery,
+      } as cxschema.VpcContextQuery,
       dummyValue: undefined,
     }).value;
 

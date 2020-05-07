@@ -324,7 +324,10 @@ export class Stack extends Construct implements ITaggable {
    * @param report The set of parameters needed to obtain the context
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    this._missingContext.push(report);
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
+      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
+    }
+    this._missingContext.push(report as cxschema.MissingContext);
   }
 
   /**
@@ -520,12 +523,12 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const value = ContextProvider.getValue(this, {
-      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
       dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
     }).value;
 
     if (!Array.isArray(value)) {
-      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
+      throw new Error(`Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`);
     }
 
     return value;
