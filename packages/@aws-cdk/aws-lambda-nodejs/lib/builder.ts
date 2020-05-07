@@ -72,7 +72,7 @@ export class Builder {
     if (!pkgPath) {
       throw new Error('Cannot find a `package.json` in this project.');
     }
-    this.pkgPath = pkgPath;
+    this.pkgPath = path.join(pkgPath, 'package.json');
     this.originalPkg = fs.readFileSync(this.pkgPath);
     this.originalPkgJson = JSON.parse(this.originalPkg.toString());
   }

@@ -118,7 +118,7 @@ export class NodejsFunction extends lambda.Function {
       cacheDir: props.cacheDir,
       nodeVersion: extractVersion(runtime),
       nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
-      projectRoot: path.dirname(path.resolve(projectRoot)),
+      projectRoot: path.resolve(projectRoot),
     });
     builder.build();
 

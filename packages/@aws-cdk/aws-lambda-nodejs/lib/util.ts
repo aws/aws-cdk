@@ -59,7 +59,7 @@ function findClosestPathContaining(p: string): string | undefined {
   for (const nodeModulesPath of module.paths) {
     closestPath = path.join(path.dirname(nodeModulesPath), p);
     if (fs.existsSync(closestPath)) {
-      break;
+      return path.dirname(nodeModulesPath);
     }
   }
 
