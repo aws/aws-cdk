@@ -6,7 +6,7 @@ import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, ListenerRuleCondition, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -207,6 +207,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
+        conditions: props.conditions,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
@@ -251,6 +252,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     this.addTargetGroups(id, {
+      conditions: props.conditions,
       hostHeader: props.hostHeader,
       pathPattern: props.pathPattern,
       pathPatterns: props.pathPatterns,
@@ -543,6 +545,15 @@ export interface AddRuleProps {
   readonly priority?: number;
 
   /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerRuleCondition[];
+
+  /**
    * Rule applies if the requested host matches the indicated host
    *
    * May contain up to three '*' wildcards.
@@ -552,6 +563,7 @@ export interface AddRuleProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
    * @default No host condition
+   * @deprecated Use `conditions` instead.
    */
   readonly hostHeader?: string;
 
@@ -564,7 +576,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default No path condition
-   * @deprecated Use `pathPatterns` instead.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPattern?: string;
 
@@ -577,6 +589,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
 }
@@ -680,7 +693,11 @@ export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
-  if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
-    throw new Error('Setting \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
+  const conditionsCount = props.conditions?.length || 0;
+  const hasAnyConditions = conditionsCount !== 0 ||
+    props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+  const hasPriority = props.priority !== undefined;
+  if (hasAnyConditions !== hasPriority) {
+    throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
   }
 }

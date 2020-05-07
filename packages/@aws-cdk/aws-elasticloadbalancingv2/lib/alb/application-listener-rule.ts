@@ -41,6 +41,15 @@ export interface BaseApplicationListenerRuleProps {
   readonly redirectResponse?: RedirectResponse;
 
   /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerRuleCondition[];
+
+  /**
    * Rule applies if the requested host matches the indicated host
    *
    * May contain up to three '*' wildcards.
@@ -48,6 +57,7 @@ export interface BaseApplicationListenerRuleProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
    * @default - No host condition.
+   * @deprecated Use `conditions` instead.
    */
   readonly hostHeader?: string;
 
@@ -56,7 +66,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
-   * @deprecated Use `pathPatterns` instead.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPattern?: string;
 
@@ -67,6 +77,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path conditions.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
 }
@@ -377,7 +388,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: {[key: string]: ListenerRuleCondition} = {};
+  private readonly conditions: ListenerRuleCondition[];
   private readonly legacyConditions: {[key: string]: string[]} = {};
 
   private readonly actions: any[] = [];
@@ -386,9 +397,11 @@ export class ApplicationListenerRule extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
+    this.conditions = props.conditions || [];
+
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
-    if (!props.hostHeader && !hasPathPatterns) {
-      throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
+    if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
+      throw new Error('At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
@@ -455,7 +468,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    * If the condition conflicts with an already set condition, it will be overwritten by the one you specified.
    */
   public addCondition(condition: ListenerRuleCondition) {
-    this.conditions[condition.field] = condition;
+    this.conditions.push(condition);
   }
 
   /**
@@ -500,30 +513,14 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (this.actions.length === 0) {
       return ['Listener rule needs at least one action'];
     }
+
     const legacyConditionFields = Object.keys(this.legacyConditions);
-    const conditionFields = Object.values(this.conditions).map(condition => condition.field);
+    const conditionFields = this.conditions.map(condition => condition.field);
     if (legacyConditionFields.length === 0 && conditionFields.length === 0) {
       return ['Listener rule needs at least one condition'];
     }
-    return [];
-  }
 
-  /**
-   * Create a new listener rule condition object to migrate from old interface
-   */
-  private createConditionObject(field: string, values: string[]) {
-    switch (field) {
-      case 'host-header':
-        return ListenerRuleCondition.hostHeaders(values);
-      case 'http-request-method':
-        return ListenerRuleCondition.httpRequestMethods(values);
-      case 'path-pattern':
-        return ListenerRuleCondition.pathPatterns(values);
-      case 'source-ip':
-        return ListenerRuleCondition.sourceIps(values);
-      default:
-        throw new Error(`Must specify ${field} as condition object`);
-    }
+    return [];
   }
 
   /**
@@ -533,7 +530,7 @@ export class ApplicationListenerRule extends cdk.Construct {
     const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
       return { field, values };
     });
-    const conditions = Object.values(this.conditions).map(condition => condition.renderRawCondition());
+    const conditions = this.conditions.map(condition => condition.renderRawCondition());
 
     return [
       ...legacyConditions,
