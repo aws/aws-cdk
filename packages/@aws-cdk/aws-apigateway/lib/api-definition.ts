@@ -1,7 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import { CfnRestApi } from './apigateway.generated';
 
 /**
  * Represents an OpenAPI definition asset.
@@ -39,26 +38,41 @@ export abstract class ApiDefinition {
 }
 
 /**
+ * S3 location of the API definition file
+ */
+export interface ApiDefinitionS3Location {
+  /** The S3 bucket */
+  readonly bucket: string;
+  /** The S3 key */
+  readonly key: string;
+  /**
+   * An optional version
+   * @default - latest version
+   */
+  readonly version?: string;
+}
+
+/**
  * Post-Binding Configuration for a CDK construct
  */
 export interface ApiDefinitionConfig {
   /**
    * The location of the specification in S3 (mutually exclusive with `inlineDefinition`).
    *
-   * @default a new parameter will be created
+   * @default - API definition is not an S3 location
    */
-  readonly s3Location?: CfnRestApi.S3LocationProperty;
+  readonly s3Location?: ApiDefinitionS3Location;
 
   /**
    * Inline specification (mutually exclusive with `s3Location`).
    *
-   * @default a new parameter will be created
+   * @default - API definition is not defined inline
    */
   readonly inlineDefinition?: string;
 }
 
 /**
- * Swagger/OpenAPI specification from an S3 archive
+ * OpenAPI specification from an S3 archive.
  */
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
@@ -85,7 +99,7 @@ export class S3ApiDefinition extends ApiDefinition {
 }
 
 /**
- * OpenAPI specification from an inline string (limited to 4KiB)
+ * OpenAPI specification from an inline string.
  */
 export class InlineApiDefinition extends ApiDefinition {
   constructor(private definition: string) {
@@ -122,14 +136,14 @@ export class AssetApiDefinition extends ApiDefinition {
       });
     }
 
-    if (this.asset?.isZipArchive) {
+    if (this.asset.isZipArchive) {
       throw new Error(`Asset cannot be a .zip file or a directory (${this.path})`);
     }
 
     return {
       s3Location: {
-        bucket: this.asset?.s3BucketName,
-        key: this.asset?.s3ObjectKey,
+        bucket: this.asset.s3BucketName,
+        key: this.asset.s3ObjectKey,
       },
     };
   }
