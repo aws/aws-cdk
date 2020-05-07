@@ -46,7 +46,7 @@ class ParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam').valueAsString
     });
   }
 }
@@ -56,7 +56,7 @@ class OtherParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam').valueAsString
     });
   }
 }
@@ -66,10 +66,10 @@ class MultiParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      displayName: new cdk.CfnParameter(this, 'DisplayNameParam')
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam').valueAsString
     });
     new sns.Topic(this, 'OtherTopicParameter', {
-      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam')
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam').valueAsString
     });
   }
 }
