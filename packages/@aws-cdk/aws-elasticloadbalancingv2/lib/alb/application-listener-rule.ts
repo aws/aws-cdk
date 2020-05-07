@@ -161,25 +161,73 @@ export interface RedirectResponse {
 }
 
 /**
- * Properties for a raw Cfn listener rule condition
- */
-export interface RawListenerRuleConditionProps {
-  readonly [key: string]: any;
-}
-
-/**
  * Interface for a listener rule condition
  */
-export interface IListenerRuleCondition {
+export abstract class ListenerRuleCondition {
+  /**
+   * Create a host-header listener rule condition
+   *
+   * @param values Hosts for host headers
+   */
+  public static hostHeaders(values: string[]): ListenerRuleCondition {
+    return new HostHeaderListenerRuleCondition(values);
+  }
+
+  /**
+   * Create a http-header listener rule condition
+   *
+   * @param name HTTP header name
+   * @param values HTTP header values
+   */
+  public static httpHeader(name: string, values: string[]): ListenerRuleCondition {
+    return new HttpHeaderListenerRuleCondition(name, values);
+  }
+
+  /**
+   * Create a http-request-method listener rule condition
+   *
+   * @param values HTTP request methods
+   */
+  public static httpRequestMethods(values: string[]): ListenerRuleCondition {
+    return new HttpRequestMethodListenerRuleCondition(values);
+  }
+
+  /**
+   * Create a path-pattern listener rule condition
+   *
+   * @param values Path patterns
+   */
+  public static pathPatterns(values: string[]): ListenerRuleCondition {
+    return new PathPatternListenerRuleCondition(values);
+  }
+
+  /**
+   * Create a query-string listener rule condition
+   *
+   * @param values Query string key/value pairs
+   */
+  public static queryStrings(values: QueryStringConditionProps[]): ListenerRuleCondition {
+    return new QueryStringListenerRuleCondition(values);
+  }
+
+  /**
+   * Create a source-ip listener rule condition
+   *
+   * @param values Source ips
+   */
+  public static sourceIps(values: string[]): ListenerRuleCondition {
+    return new SourceIpListenerRuleCondition(values);
+  }
+
   /**
    * Listener condition field type
    */
-  readonly field: string;
+  public readonly abstract field: string;
 
   /**
    * Render the raw Cfn listener rule condition object.
    */
-  renderRawCondition(): RawListenerRuleConditionProps;
+  public abstract renderRawCondition(): any;
 }
 
 /**
@@ -202,24 +250,14 @@ export interface QueryStringConditionProps {
 /**
  * Host header config of the listener rule condition
  */
-export class HostHeaderListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: host-header
-   */
+class HostHeaderListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'host-header';
 
-  /**
-   * Create a host-header listener rule condition
-   *
-   * @param values Hosts for host headers
-   */
   constructor(public readonly values: string[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       hostHeaderConfig: {
@@ -232,25 +270,14 @@ export class HostHeaderListenerRuleCondition implements IListenerRuleCondition {
 /**
  * HTTP header config of the listener rule condition
  */
-export class HttpHeaderListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: http-header
-   */
+class HttpHeaderListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'http-header';
 
-  /**
-   * Create a http-header listener rule condition
-   *
-   * @param name HTTP header name
-   * @param values HTTP header values
-   */
   constructor(public readonly name: string, public readonly values: string[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       httpHeaderConfig: {
@@ -264,24 +291,14 @@ export class HttpHeaderListenerRuleCondition implements IListenerRuleCondition {
 /**
  * HTTP reqeust method config of the listener rule condition
  */
-export class HttpRequestMethodListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: http-request-method
-   */
+class HttpRequestMethodListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'http-request-method';
 
-  /**
-   * Create a http-request-method listener rule condition
-   *
-   * @param values HTTP request methods
-   */
   constructor(public readonly values: string[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       httpRequestMethodConfig: {
@@ -294,24 +311,14 @@ export class HttpRequestMethodListenerRuleCondition implements IListenerRuleCond
 /**
  * Path pattern config of the listener rule condition
  */
-export class PathPatternListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: path-pattern
-   */
+class PathPatternListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'path-pattern';
 
-  /**
-   * Create a path-pattern listener rule condition
-   *
-   * @param values Path patterns
-   */
   constructor(public readonly values: string[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       pathPatternConfig: {
@@ -324,24 +331,14 @@ export class PathPatternListenerRuleCondition implements IListenerRuleCondition 
 /**
  * Query string config of the listener rule condition
  */
-export class QueryStringListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: query-string
-   */
+class QueryStringListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'query-string';
 
-  /**
-   * Create a query-string listener rule condition
-   *
-   * @param values Query string key/value pairs
-   */
   constructor(public readonly values: QueryStringConditionProps[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       queryStringConfig: {
@@ -354,24 +351,14 @@ export class QueryStringListenerRuleCondition implements IListenerRuleCondition 
 /**
  * Source ip config of the listener rule condition
  */
-export class SourceIpListenerRuleCondition implements IListenerRuleCondition {
-  /**
-   * Listener condition field type: source-ip
-   */
+class SourceIpListenerRuleCondition extends ListenerRuleCondition {
   public readonly field = 'source-ip';
 
-  /**
-   * Create a source-ip listener rule condition
-   *
-   * @param values Source ips
-   */
   constructor(public readonly values: string[]) {
+    super();
   }
 
-  /**
-   * Render the raw Cfn listener rule condition object.
-   */
-  public renderRawCondition(): RawListenerRuleConditionProps {
+  public renderRawCondition(): any {
     return {
       field: this.field,
       sourceIpConfig: {
@@ -390,7 +377,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: {[key: string]: IListenerRuleCondition} = {};
+  private readonly conditions: {[key: string]: ListenerRuleCondition} = {};
 
   private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
@@ -467,7 +454,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    *
    * If the condition conflicts with an already set condition, it will be overwritten by the one you specified.
    */
-  public addCondition(condition: IListenerRuleCondition) {
+  public addCondition(condition: ListenerRuleCondition) {
     this.conditions[condition.field] = condition;
   }
 
@@ -529,13 +516,13 @@ export class ApplicationListenerRule extends cdk.Construct {
   private createConditionObject(field: string, values: string[]) {
     switch (field) {
       case 'host-header':
-        return new HostHeaderListenerRuleCondition(values);
+        return ListenerRuleCondition.hostHeaders(values);
       case 'http-request-method':
-        return new HttpRequestMethodListenerRuleCondition(values);
+        return ListenerRuleCondition.httpRequestMethods(values);
       case 'path-pattern':
-        return new PathPatternListenerRuleCondition(values);
+        return ListenerRuleCondition.pathPatterns(values);
       case 'source-ip':
-        return new SourceIpListenerRuleCondition(values);
+        return ListenerRuleCondition.sourceIps(values);
       default:
         throw new Error(`Must specify ${field} as condition object`);
     }
@@ -544,7 +531,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   /**
    * Render the conditions for this rule
    */
-  private renderConditions(): RawListenerRuleConditionProps[] {
+  private renderConditions(): any {
     return Object.values(this.conditions).map(condition => condition.renderRawCondition());
   }
 }
