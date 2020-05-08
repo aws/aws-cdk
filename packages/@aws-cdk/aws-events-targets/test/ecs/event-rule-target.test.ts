@@ -73,7 +73,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
+  const target = new targets.EcsTask({
     cluster,
     taskDefinition,
     taskCount: 1,
@@ -81,9 +81,11 @@ test('Can use Fargate taskdef as EventRule target', () => {
       containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }],
-  }));
+  });
+  rule.addTarget(target);
 
   // THEN
+  expect(target.securityGroup).toBeDefined(); // Generated security groups should be accessible.
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
