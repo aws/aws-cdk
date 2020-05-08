@@ -312,20 +312,21 @@ export class GraphQLApi extends Construct {
         props.authorizationConfig?.defaultAuthorization?.authorizationType ===
         AuthorizationType.OIDC
           ? this.formatOpenIdConnectConfig(
-              props.authorizationConfig.defaultAuthorization.openIdConnectConfig
+              props.authorizationConfig.defaultAuthorization
+                .openIdConnectConfig!
             )
           : undefined,
       userPoolConfig:
         props.authorizationConfig?.defaultAuthorization?.authorizationType ===
         AuthorizationType.USER_POOL
           ? this.formatUserPoolConfig(
-              props.authorizationConfig.defaultAuthorization.userPoolConfig
+              props.authorizationConfig.defaultAuthorization.userPoolConfig!
             )
           : undefined,
       additionalAuthenticationProviders: props.authorizationConfig
-        ?.additionalAuthorizationModes.length
+        ?.additionalAuthorizationModes!.length
         ? this.formatAdditionalAuthorizationModes(
-            props.authorizationConfig.additionalAuthorizationModes
+            props.authorizationConfig!.additionalAuthorizationModes!
           )
         : undefined,
     });
@@ -482,11 +483,11 @@ export class GraphQLApi extends Construct {
           authenticationType: authMode.authorizationType,
           userPoolConfig:
             authMode.authorizationType === AuthorizationType.USER_POOL
-              ? this.formatUserPoolConfig(authMode.userPoolConfig)
+              ? this.formatUserPoolConfig(authMode.userPoolConfig!)
               : undefined,
           openIdConnectConfig:
             authMode.authorizationType === AuthorizationType.OIDC
-              ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig)
+              ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig!)
               : undefined,
         },
       ];
