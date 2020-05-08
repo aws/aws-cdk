@@ -102,6 +102,34 @@ export class CdkToolkit {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+
+        stream.write(format('NestedStacks of the Stack %s\n', colors.bold(stack.displayName)));
+        const oldNestedStacks = await this.props.cloudFormation.readCurrentNestedStackTemplates(stack);
+        const newNestedStacks = this.getNestedStacks(stack);
+        const oldNestedStacksParentResourceIds = oldNestedStacks?.map((ns) => ns.parentResourceId);
+        const oldNestedStacksParentPaths = oldNestedStacks?.map((ns) => ns.parentPath);
+
+        if (newNestedStacks) {
+          for (const nns of newNestedStacks) {
+            if (oldNestedStacksParentPaths.includes(nns.parentPath)) {
+              stream.write(format('%s:\n', colors.grey(nns.parentPath || nns.parentResourceId)));
+              printStackDiff(oldNestedStacks.filter((ons) => ons.parentPath === nns.parentPath)?.[0] ||
+                {template: {}}, nns, strict, contextLines, stream, true);
+            } else if (oldNestedStacksParentResourceIds.includes(nns.parentResourceId)) {
+              stream.write(format('%s:\n', colors.grey(nns.parentResourceId)));
+              printStackDiff(oldNestedStacks.filter((ons) => ons.parentResourceId === nns.parentResourceId)?.[0] ||
+                {template: {}}, nns, strict, contextLines, stream, true);
+            } else {
+              stream.write(format('%s:\n', colors.grey(nns.parentResourceId)));
+              printStackDiff({template: {}}, nns, strict, contextLines, stream, true);
+            }
+          }
+        } else {
+          for (const ons of oldNestedStacks) {
+            stream.write(format('%s:\n', colors.grey(ons.parentResourceId)));
+            printStackDiff(ons, {template: {}}, strict, contextLines, stream, true);
+          }
+        }
       }
     }
 
@@ -156,8 +184,12 @@ export class CdkToolkit {
 
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+        const oldNestedStacks = await this.props.cloudFormation.readCurrentNestedStackTemplates(stack);
+        const newNestedStacks = this.getNestedStacks(stack);
+        const oldNestedStacksParentResourceIds = oldNestedStacks?.map((ns) => ns.parentResourceId);
+        const oldNestedStacksParentPaths = oldNestedStacks?.map((ns) => ns.parentPath);
 
+        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           // only talk to user if STDIN is a terminal (otherwise, fail)
           if (!process.stdin.isTTY) {
             throw new Error(
@@ -166,6 +198,33 @@ export class CdkToolkit {
           }
 
           const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
+          if (!confirmed) { throw new Error('Aborted by user'); }
+        }
+        let prompt = false;
+        if (newNestedStacks) {
+          for (const nns of newNestedStacks) {
+            if (oldNestedStacksParentPaths.includes(nns.parentPath)) {
+              prompt = printSecurityDiff(oldNestedStacks.filter((ons) => ons.parentPath === nns.parentPath)?.[0] ||
+                {template: {}}, nns, requireApproval, true) || prompt;
+            } else if (oldNestedStacksParentResourceIds.includes(nns.parentResourceId)) {
+              prompt = printSecurityDiff(oldNestedStacks.filter((ons) => ons.parentResourceId === nns.parentResourceId)?.[0] ||
+                {template: {}}, nns, requireApproval, true) || prompt;
+            } else {
+              prompt = printSecurityDiff({template: {}}, nns, requireApproval, true) || prompt;
+            }
+          }
+        } else {
+          for (const ons of oldNestedStacks) {
+            prompt = printSecurityDiff(ons, {template: {}}, requireApproval, true) || prompt;
+          }
+        }
+
+        if (prompt && !process.stdin.isTTY) {
+          throw new Error(
+            '"--require-approval" is enabled and a nested stack includes security-sensitive updates, ' +
+            'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
+        } else if (prompt) {
+          const confirmed = await promptly.confirm('Do you wish to deploy these changes to the nested stacks (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -296,9 +355,20 @@ export class CdkToolkit {
    */
   public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
+    const nestedStacksMap: any = {};
+
+    for (const stack of stacks.stackArtifacts) {
+      nestedStacksMap[stack.stackName] = [];
+      for (const ns of this.getNestedStacks(stack)) {
+        nestedStacksMap[stack.stackName].push({[ns.parentResourceId]: {Template: ns.template}});
+      }
+    }
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
+      if (nestedStacksMap) {
+        return {Stack: stacks.firstStack.template, NestedStacks: nestedStacksMap };
+      }
       return stacks.firstStack.template;
     }
 
@@ -311,7 +381,7 @@ export class CdkToolkit {
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
     if (isIntegMode) {
-      return stacks.stackArtifacts.map(s => s.template);
+      return { Stacks: stacks.stackArtifacts.map(s => s.template), NestedStacks: nestedStacksMap };
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
@@ -446,6 +516,70 @@ export class CdkToolkit {
 
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
+  }
+
+  /**
+   * Returns all NestedStack templates
+   */
+  private getNestedStacks(stack: cxapi.CloudFormationStackArtifact): Array<{parentPath?: string, parentResourceId: string, template: any}> {
+
+    const ret = new Array<{ parentPath?: string, parentResourceId: string, template: any }>();
+    const resources = [{resources: stack.template?.Resources, parentStackResources: {} as any, parentStackId: stack.stackName}];
+    const nestedStackAssets = stack.assets.filter((ast) => {
+      return ast.path && ast.path.includes('nested.template.json');
+    });
+
+    while (nestedStackAssets.length > 0) {
+      for (const running of resources) {
+        for (const key in running.resources) {
+          if (running.resources[key].Type === 'AWS::CloudFormation::Stack') {
+            const s3Key = this.findS3VersionKeyForNestedStackResource(running, key, resources);
+            for (const ast of nestedStackAssets) {
+              if (!!s3Key && (ast as any).s3KeyParameter === s3Key) {
+                const template = deserializeStructure(fs.readFileSync(path.join(stack.assembly.directory, ast.path)).toString('utf-8'));
+                ret.push({parentPath: template.Metadata?.[cxapi.PATH_METADATA_KEY], parentResourceId: key, template});
+                resources.push({
+                  resources: template.Resources,
+                  parentStackResources: running.resources,
+                  parentStackId: key,
+                });
+                nestedStackAssets.splice(nestedStackAssets.indexOf(ast), 1);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+
+  private findS3VersionKeyForNestedStackResource(
+    running: { resources: any; parentStackId: string; parentStackResources: any },
+    key: string,
+    resources: Array<{ resources: any; parentStackId: string; parentStackResources: any }>) {
+    const url = JSON.stringify(running.resources[key].Properties?.TemplateURL);
+    let s3Key = url.match(/\w+S3VersionKey\w+/g)?.[0];
+    if (!!s3Key && s3Key.includes('referenceto')) {
+      if (Object.keys(running.parentStackResources[running.parentStackId].Properties?.Parameters || {}).includes(s3Key)) {
+        s3Key = running.parentStackResources[running.parentStackId].Properties?.Parameters[s3Key].Ref;
+      }
+      if (!!s3Key && s3Key.includes('referenceto')) {
+        let resUtil = [...resources];
+        while (resUtil.length > 0) {
+          const res = resUtil.pop() as any;
+          if (Object.keys(res.parentStackResources[res.parentStackId]?.Properties?.Parameters || {}).includes(s3Key!)) {
+            s3Key = res.parentStackResources[res.parentStackId].Properties?.Parameters[s3Key!].Ref;
+            if (s3Key!.includes('referenceto')) {
+              resUtil = [...resources];
+            } else {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return s3Key;
   }
 }
 

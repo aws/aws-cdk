@@ -16,12 +16,13 @@ import { print, warning } from './logging';
  */
 export function printStackDiff(
   oldTemplate: any,
-  newTemplate: cxapi.CloudFormationStackArtifact,
+  newTemplate: any,
   strict: boolean,
   context: number,
-  stream?: cfnDiff.FormatStream): number {
+  stream?: cfnDiff.FormatStream,
+  isNested?: boolean): number {
 
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  const diff = cfnDiff.diffTemplate(isNested ? oldTemplate.template : oldTemplate, newTemplate.template);
 
   // filter out 'AWS::CDK::Metadata' resources from the template
   if (diff.resources && !strict) {
@@ -34,9 +35,12 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
-  } else {
+    cfnDiff.formatDifferences(stream || process.stderr, diff,
+      isNested ? {} : buildLogicalToPathMap(newTemplate), context);
+  } else  if (!isNested) {
     print(colors.green('There were no differences'));
+  } else {
+    print(colors.grey('There were no differences for NestedStack ' + newTemplate.parentPath));
   }
 
   return diff.differenceCount;
@@ -55,15 +59,15 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+export function printSecurityDiff(oldTemplate: any, newTemplate: any, requireApproval: RequireApproval, isNested?: boolean): boolean {
+  const diff = cfnDiff.diffTemplate(isNested ? oldTemplate.template : oldTemplate, newTemplate.template);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // tslint:disable-next-line:max-line-length
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');
 
-    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
+    cfnDiff.formatSecurityChanges(process.stdout, diff, isNested ? {} : buildLogicalToPathMap(newTemplate));
     return true;
   }
   return false;

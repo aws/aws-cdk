@@ -122,7 +122,14 @@ export class StackActivityMonitor {
 
     try {
       this.readPromise = this.readEvents();
-      await this.readPromise;
+      const events = await this.readPromise;
+      for (const e of events) {
+        if (e.ResourceType === 'AWS::CloudFormation::Stack' && e.LogicalResourceId !== this.stackName) {
+          this.readPromise = this.readEvents(undefined, e.PhysicalResourceId);
+          await this.readPromise;
+        }
+      }
+
       this.readPromise = undefined;
 
       // We might have been stop()ped while the network call was in progress.
@@ -157,7 +164,9 @@ export class StackActivityMonitor {
 
   private rememberActivity(activity: StackActivity) {
     const status = activity.event.ResourceStatus;
-    if (!status || !activity.event.LogicalResourceId) { return; }
+    if (!status || !activity.event.LogicalResourceId ||
+      (!Object.keys(this.stack.template.Resources).includes(activity.event.LogicalResourceId) &&
+        activity.event.LogicalResourceId !== this.stack.stackName)) { return; }
 
     if (status.endsWith('_IN_PROGRESS')) {
       this.resourcesInProgress.add(activity.event.LogicalResourceId);
@@ -270,14 +279,8 @@ export class StackActivityMonitor {
     return colors.reset;
   }
 
-  private async readEvents(nextToken?: string): Promise<AWS.CloudFormation.StackEvent[]> {
-    const output = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise()
-      .catch( e => {
-        if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
-          return undefined;
-        }
-        throw e;
-      });
+  private async readEvents(nextToken?: string, stackName?: string): Promise<AWS.CloudFormation.StackEvent[]> {
+    const output = await this.readCfnEvents(stackName || this.stackName, nextToken);
 
     let events = output && output.StackEvents || [ ];
     let allNew = true;
@@ -295,10 +298,21 @@ export class StackActivityMonitor {
     // only read next page if all the events we read are new events. otherwise, we can rest.
     if (allNew && output && output.NextToken) {
       await new Promise(cb => setTimeout(cb, this.pageSleep));
-      events = events.concat(await this.readEvents(output.NextToken));
+      events = events.concat(await this.readEvents(output.NextToken, stackName || this.stackName));
     }
 
     return events;
+  }
+
+  private async readCfnEvents(stackName: string, nextToken: string | undefined) {
+    try {
+      return await this.cfn.describeStackEvents({StackName: stackName, NextToken: nextToken}).promise();
+    } catch (e) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+        return undefined;
+      }
+      throw e;
+    }
   }
 }
 

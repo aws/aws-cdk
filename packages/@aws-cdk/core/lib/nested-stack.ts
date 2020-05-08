@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
@@ -99,6 +100,10 @@ export class NestedStack extends Stack {
     super(scope, id, { env: { account: parentStack.account, region: parentStack.region } });
 
     this._parentStack = parentStack;
+
+    Stack.of(this).templateOptions.metadata = {
+      [cxapi.PATH_METADATA_KEY]: this.node.uniqueId,
+    };
 
     // @deprecate: remove this in v2.0 (redundent)
     const parentScope = new Construct(scope, id + '.NestedStack');

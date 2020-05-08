@@ -2,6 +2,7 @@ import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
@@ -64,6 +65,9 @@ export = {
     // THEN
     const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${nested.node.uniqueId}.nested.template.json`), 'utf-8'));
     test.deepEqual(template, {
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested).node.uniqueId,
+      },
       Resources: {
         ResourceInNestedStack: {
           Type: 'AWS::Resource::Nested',
@@ -86,12 +90,12 @@ export = {
     // THEN
     test.deepEqual(assembly.getStackByName(parent.stackName).assets, [{
       path: 'parentstacknestedstack844892C0.nested.template.json',
-      id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
+      id: 'caf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96',
       packaging: 'file',
-      sourceHash: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
-      s3BucketParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345',
-      s3KeyParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
-      artifactHashParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7',
+      sourceHash: 'caf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96',
+      s3BucketParameter: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3Bucket7B8F90A0',
+      s3KeyParameter: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3VersionKey0BCA3E2A',
+      artifactHashParameter: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96ArtifactHash336D7EE7',
     }]);
     test.done();
   },
@@ -117,6 +121,9 @@ export = {
     // the template includes our resource
     const filePath = path.join(assembly.directory, assembly.stacks[0].assets[0].path);
     test.deepEqual(JSON.parse(fs.readFileSync(filePath).toString('utf-8')), {
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested).node.uniqueId,
+      },
       Resources: { ResourceInNestedStack: { Type: 'AWS::Resource::Nested' } },
     });
 
@@ -140,7 +147,7 @@ export = {
                   },
                   '/',
                   {
-                    Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345',
+                    Ref: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3Bucket7B8F90A0',
                   },
                   '/',
                   {
@@ -150,7 +157,7 @@ export = {
                         'Fn::Split': [
                           '||',
                           {
-                            Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
+                            Ref: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3VersionKey0BCA3E2A',
                           },
                         ],
                       },
@@ -163,7 +170,7 @@ export = {
                         'Fn::Split': [
                           '||',
                           {
-                            Ref: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
+                            Ref: 'AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3VersionKey0BCA3E2A',
                           },
                         ],
                       },
@@ -176,17 +183,17 @@ export = {
         },
       },
       Parameters: {
-        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345: {
+        AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3Bucket7B8F90A0: {
           Type: 'String',
-          Description: 'S3 bucket for asset "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"',
+          Description: 'S3 bucket for asset "caf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96"',
         },
-        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6: {
+        AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96S3VersionKey0BCA3E2A: {
           Type: 'String',
-          Description: 'S3 key for asset version "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"',
+          Description: 'S3 key for asset version "caf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96"',
         },
-        AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7: {
+        AssetParameterscaf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96ArtifactHash336D7EE7: {
           Type: 'String',
-          Description: 'Artifact hash for asset "c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096"',
+          Description: 'Artifact hash for asset "caf2b3d74433050e60f33ff0f4d77763f1861fd8ecbe8986e2065daae1998d96"',
         },
       },
     });
@@ -277,6 +284,9 @@ export = {
 
     // nested template should use a parameter to reference the resource from the parent stack
     expect(nested).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested).node.uniqueId,
+      },
       Resources:
       {
         resource:
@@ -350,6 +360,9 @@ export = {
 
     // nested template should use a parameter to reference the resource from the parent stack
     expect(nested).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested).node.uniqueId,
+      },
       Resources: {
         resource: { Type: 'AWS::Child::Resource' },
       },
@@ -405,6 +418,9 @@ export = {
 
     // nested stack uses Fn::ImportValue like normal
     expect(nestedUnderStack1).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nestedUnderStack1).node.uniqueId,
+      },
       Resources: {
         ResourceInNestedStack1: {
           Type: 'Nested::Resource',
@@ -471,6 +487,9 @@ export = {
 
     // nested stack should output this value as if it was referenced by the parent (without the export)
     expect(nestedUnderStack1).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nestedUnderStack1).node.uniqueId,
+      },
       Resources: {
         ResourceInNestedStack: {
           Type: 'MyResource',
@@ -540,6 +559,9 @@ export = {
 
     // producing nested stack
     expect(nested1).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested1).node.uniqueId,
+      },
       Resources: {
         Resource1: {
           Type: 'Resource1',
@@ -556,6 +578,9 @@ export = {
 
     // consuming nested stack
     expect(nested2).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested2).node.uniqueId,
+      },
       Resources: {
         Resource2: {
           Type: 'Resource2',
@@ -708,6 +733,9 @@ export = {
 
     // nested2 is a "leaf", so it's just the resource
     expect(nested2).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested2).node.uniqueId,
+      },
       Resources: {
         Resource2: { Type: 'Resource::2' },
       },
@@ -717,27 +745,27 @@ export = {
     expect(nested1).to(haveResource('Resource::1'));
     const nested2Template = SynthUtils.toCloudFormation(nested1);
     test.deepEqual(nested2Template.Parameters, {
-      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Type: 'String' },
-      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Type: 'String' },
+      referencetostackAssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3Bucket45FFE918Ref: { Type: 'String' },
+      referencetostackAssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3VersionKey45F4D5A6Ref: { Type: 'String' },
     });
 
     // parent stack should have two sets of parameters. one for the first nested stack and the second
     // for the second nested stack, passed in as parameters to the first
     const template = SynthUtils.toCloudFormation(parent);
     test.deepEqual(template.Parameters, {
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3Bucket76ACFB38: { Type: 'String', Description: 'S3 bucket for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3VersionKey04162EF1: { Type: 'String', Description: 'S3 key for asset version "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfArtifactHashF227ADD3: { Type: 'String', Description: 'Artifact hash for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
+      AssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3BucketB3391B48: { Type: 'String', Description: 'S3 bucket for asset "40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8"' },
+      AssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3VersionKeyC75757DA: { Type: 'String', Description: 'S3 key for asset version "40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8"' },
+      AssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8ArtifactHash4A948727: { Type: 'String', Description: 'Artifact hash for asset "40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8"' },
+      AssetParameters411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298S3Bucket9E20227C: { Type: 'String', Description: 'S3 bucket for asset "411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298"' },
+      AssetParameters411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298S3VersionKey01A28DCE: { Type: 'String', Description: 'S3 key for asset version "411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298"' },
+      AssetParameters411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298ArtifactHash86E03876: { Type: 'String', Description: 'Artifact hash for asset "411b2496ae5b852820129c04db139ffe1ac61d05f856772f20e99a644c2bf298"' },
     });
 
     // proxy asset params to nested stack
     expect(parent).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA' },
+        referencetostackAssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3Bucket45FFE918Ref: { Ref: 'AssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3BucketB3391B48' },
+        referencetostackAssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3VersionKey45F4D5A6Ref: { Ref: 'AssetParameters40d38153bbbf43fe2dba3e44c195d39791350102f529ce92324b908305d424c8S3VersionKeyC75757DA' },
       },
     }));
 
@@ -774,9 +802,9 @@ export = {
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
       AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: { Type: 'String', Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: { Type: 'String', Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: { Type: 'String', Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParametersba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618S3BucketA7C241CD: { Type: 'String', Description: 'S3 bucket for asset "ba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618"' },
+      AssetParametersba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618S3VersionKey5F63FFDB: { Type: 'String', Description: 'S3 key for asset version "ba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618"' },
+      AssetParametersba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618ArtifactHash9ADD75F9: { Type: 'String', Description: 'Artifact hash for asset "ba6df16905a681e6c294000f721e0197956eb2acba38a6aa72fd2ca6e84f9618"' },
     });
 
     // asset proxy parameters are passed to the nested stack
@@ -826,12 +854,12 @@ export = {
       },
       {
         path: 'mystacknestedstackFAE12FB5.nested.template.json',
-        id: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
+        id: '47d911639b75397d4a9a8da7ce6952a84dcee7e3604f35edeee872ed88fb3f64',
         packaging: 'file',
-        sourceHash: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
-        s3BucketParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3Bucket67A749F8',
-        s3KeyParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3VersionKeyE1E6A8D4',
-        artifactHashParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5ArtifactHash0AEDBE8A',
+        sourceHash: '47d911639b75397d4a9a8da7ce6952a84dcee7e3604f35edeee872ed88fb3f64',
+        s3BucketParameter: 'AssetParameters47d911639b75397d4a9a8da7ce6952a84dcee7e3604f35edeee872ed88fb3f64S3Bucket36AE251A',
+        s3KeyParameter: 'AssetParameters47d911639b75397d4a9a8da7ce6952a84dcee7e3604f35edeee872ed88fb3f64S3VersionKey71358F90',
+        artifactHashParameter: 'AssetParameters47d911639b75397d4a9a8da7ce6952a84dcee7e3604f35edeee872ed88fb3f64ArtifactHash083CEC1C',
       },
     ]);
 
@@ -879,6 +907,9 @@ export = {
 
     // THEN
     expect(nested).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested).node.uniqueId,
+      },
       Resources: {
         resourceinnested: {
           Type: 'CONSUMED',
@@ -951,14 +982,14 @@ export = {
     // THEN
     expect(top).to(haveResource('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
-          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5',
-        },
-        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref: {
-          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3',
-        },
         referencetostacktoplevelBB16BF13Ref: {
           Ref: 'toplevel',
+        },
+        referencetostackAssetParameters1485ee10b2d03d7a7662a1c451ef9d8ef9b35e99d1df2edea94e54b9685884daS3BucketA5202889Ref: {
+          Ref: 'AssetParameters1485ee10b2d03d7a7662a1c451ef9d8ef9b35e99d1df2edea94e54b9685884daS3BucketDBCC6C03',
+        },
+        referencetostackAssetParameters1485ee10b2d03d7a7662a1c451ef9d8ef9b35e99d1df2edea94e54b9685884daS3VersionKey89077A1ARef: {
+          Ref: 'AssetParameters1485ee10b2d03d7a7662a1c451ef9d8ef9b35e99d1df2edea94e54b9685884daS3VersionKeyAAA23765',
         },
       },
     }));
@@ -972,6 +1003,9 @@ export = {
     }));
 
     expect(nested2).to(matchTemplate({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(nested2).node.uniqueId,
+      },
       Resources: {
         refToTopLevel: {
           Type: 'BottomLevel',
@@ -1015,6 +1049,9 @@ export = {
 
     // child (bottom) references through a parameter.
     expect(bottom).toMatch({
+      Metadata: {
+        [cxapi.PATH_METADATA_KEY]: Stack.of(bottom).node.uniqueId,
+      },
       Resources: {
         ResourceInChild: {
           Type: 'ResourceInChild',
@@ -1041,11 +1078,11 @@ export = {
         [paramName]: { Ref: 'ResourceInGrandparent' },
 
         // these are for the asset of the bottom nested stack
-        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef: {
-          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E',
+        referencetoGrandparentAssetParameters6cee14623c7de9cb5915d12de18a9f1e90b960e6c900c87b8ed7f8865c0f8419S3Bucket9875B191Ref: {
+          Ref: 'AssetParameters6cee14623c7de9cb5915d12de18a9f1e90b960e6c900c87b8ed7f8865c0f8419S3Bucket2814AD13',
         },
-        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref: {
-          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084',
+        referencetoGrandparentAssetParameters6cee14623c7de9cb5915d12de18a9f1e90b960e6c900c87b8ed7f8865c0f8419S3VersionKey46E5230CRef: {
+          Ref: 'AssetParameters6cee14623c7de9cb5915d12de18a9f1e90b960e6c900c87b8ed7f8865c0f8419S3VersionKeyD5EF27ED',
         },
       },
     }));

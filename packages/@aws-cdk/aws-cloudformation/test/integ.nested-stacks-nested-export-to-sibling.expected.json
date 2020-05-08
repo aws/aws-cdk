@@ -1,106 +1,137 @@
-[
-  {
-    "Resources": {
-      "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B": {
-        "Type": "AWS::CloudFormation::Stack",
-        "Properties": {
-          "TemplateURL": {
-            "Fn::Join": [
-              "",
-              [
-                "https://s3.",
+{
+  "Stacks": [
+    {
+      "Resources": {
+        "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://s3.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fS3Bucket2B6102E2"
+                  },
+                  "/",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fS3VersionKey1392150C"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fS3VersionKey1392150C"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "Outputs": {
+        "ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416": {
+          "Value": {
+            "Fn::GetAtt": [
+              "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B",
+              "Outputs.Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName"
+            ]
+          },
+          "Export": {
+            "Name": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
+          }
+        }
+      },
+      "Parameters": {
+        "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fS3Bucket2B6102E2": {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981f\""
+        },
+        "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fS3VersionKey1392150C": {
+          "Type": "String",
+          "Description": "S3 key for asset version \"9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981f\""
+        },
+        "AssetParameters9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981fArtifactHashBAADE149": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"9d3c9d939e58c71e78afab5fdb9ae11f733ab8e617191320654ec55ea4f6981f\""
+        }
+      }
+    },
+    {
+      "Resources": {
+        "TopicInStack27FD9238C": {
+          "Type": "AWS::SNS::Topic",
+          "Properties": {
+            "DisplayName": {
+              "Fn::Select": [
+                1,
                 {
-                  "Ref": "AWS::Region"
-                },
-                ".",
-                {
-                  "Ref": "AWS::URLSuffix"
-                },
-                "/",
-                {
-                  "Ref": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3BucketF628ECFB"
-                },
-                "/",
-                {
-                  "Fn::Select": [
-                    0,
+                  "Fn::Split": [
+                    "-",
                     {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3VersionKey0E649F42"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3VersionKey0E649F42"
-                        }
-                      ]
+                      "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
                     }
                   ]
                 }
               ]
-            ]
+            }
           }
         }
       }
-    },
-    "Outputs": {
-      "ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416": {
-        "Value": {
-          "Fn::GetAtt": [
-            "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B",
-            "Outputs.Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName"
-          ]
-        },
-        "Export": {
-          "Name": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
-        }
-      }
-    },
-    "Parameters": {
-      "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3BucketF628ECFB": {
-        "Type": "String",
-        "Description": "S3 bucket for asset \"5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219\""
-      },
-      "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219S3VersionKey0E649F42": {
-        "Type": "String",
-        "Description": "S3 key for asset version \"5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219\""
-      },
-      "AssetParameters5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219ArtifactHash37AA0C4D": {
-        "Type": "String",
-        "Description": "Artifact hash for asset \"5bbe5621d9656843b414db3e449d8c562b0b27bb293ef6999180dc5198c70219\""
-      }
     }
-  },
-  {
-    "Resources": {
-      "TopicInStack27FD9238C": {
-        "Type": "AWS::SNS::Topic",
-        "Properties": {
-          "DisplayName": {
-            "Fn::Select": [
-              1,
-              {
-                "Fn::Split": [
-                  "-",
-                  {
-                    "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicNameD753D416"
-                  }
-                ]
+  ],
+  "NestedStacks": {
+    "Stack1": [
+      {
+        "NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B": {
+          "Template": {
+            "Metadata": {
+              "aws:cdk:path": "Stack1NestedUnderStack15F1F8640"
+            },
+            "Resources": {
+              "TopicInNestedUnderStack115E329C4": {
+                "Type": "AWS::SNS::Topic"
               }
-            ]
+            },
+            "Outputs": {
+              "Stack1NestedUnderStack1TopicInNestedUnderStack136BDF841TopicName": {
+                "Value": {
+                  "Fn::GetAtt": [
+                    "TopicInNestedUnderStack115E329C4",
+                    "TopicName"
+                  ]
+                }
+              }
+            }
           }
         }
       }
-    }
+    ],
+    "Stack2": []
   }
-]
+}

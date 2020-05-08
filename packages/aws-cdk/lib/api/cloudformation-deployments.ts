@@ -1,6 +1,7 @@
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { CloudFormationStackArtifact, PATH_METADATA_KEY } from '@aws-cdk/cx-api';
 import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
+import { deserializeStructure } from '../serialize';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
@@ -125,6 +126,50 @@ export class CloudFormationDeployments {
 
     const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
     return stack.template();
+  }
+
+  public async readCurrentNestedStackTemplates(stackArtifact: CloudFormationStackArtifact): Promise<Array<{
+    parentPath?: string, parentResourceId: string, template: Template }>> {
+    debug(`Reading existing resources for the stack ${stackArtifact.displayName}.`);
+    const {stackSdk} = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    const cfn = stackSdk.cloudFormation();
+    let resources;
+    try {
+      resources = await cfn.listStackResources({StackName: stackArtifact.stackName}).promise();
+    } catch (e) {
+      if (e.code === 'ValidationError' && e.message === `Stack with id ${stackArtifact.stackName} does not exist`) {
+        return new Array<{ parentPath?: string, parentResourceId: string, template: Template }>();
+      }
+      throw e;
+    }
+
+    const ret = new Array<{ parentPath?: string, parentResourceId: string, template: Template }>();
+
+    debug(`Recursively reading NestedStack templates from stack ${stackArtifact.displayName}.`);
+    if (resources.StackResourceSummaries) {
+      const list = [{resources: resources.StackResourceSummaries, stackName: stackArtifact.stackName}];
+      while (list.length > 0) {
+        const running = list.splice(0)[0];
+        for (const res of running.resources) {
+          if (res.ResourceType === 'AWS::CloudFormation::Stack') {
+            const nested = await cfn.getTemplate({StackName: res.PhysicalResourceId}).promise();
+            const nestedStackTemplate = deserializeStructure(nested.TemplateBody!) || {};
+            ret.push({
+              parentPath: nestedStackTemplate.Metadata?.[PATH_METADATA_KEY],
+              parentResourceId: res.LogicalResourceId,
+              template: nestedStackTemplate,
+            });
+
+            const newResourceToCheck = await cfn.listStackResources({StackName: res.PhysicalResourceId!}).promise();
+            if (newResourceToCheck.StackResourceSummaries) {
+              list.push({resources: newResourceToCheck.StackResourceSummaries, stackName: res.PhysicalResourceId!});
+            }
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {

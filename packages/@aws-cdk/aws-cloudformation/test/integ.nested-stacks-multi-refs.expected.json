@@ -1,116 +1,369 @@
 {
-  "Resources": {
-    "Level1ABBD39B3": {
-      "Type": "AWS::SNS::Topic"
-    },
-    "Nested1NestedStackNested1NestedStackResourceCD0AD36B": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": {
-          "Fn::Join": [
-            "",
-            [
-              "https://s3.",
-              {
-                "Ref": "AWS::Region"
-              },
-              ".",
-              {
-                "Ref": "AWS::URLSuffix"
-              },
-              "/",
-              {
-                "Ref": "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95S3BucketDB605F9E"
-              },
-              "/",
-              {
-                "Fn::Select": [
-                  0,
-                  {
-                    "Fn::Split": [
-                      "||",
-                      {
-                        "Ref": "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95S3VersionKey26685906"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "Fn::Select": [
-                  1,
-                  {
-                    "Fn::Split": [
-                      "||",
-                      {
-                        "Ref": "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95S3VersionKey26685906"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
-        },
-        "Parameters": {
-          "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
-            "Fn::GetAtt": [
-              "Level1ABBD39B3",
-              "TopicName"
+  "Stack": {
+    "Resources": {
+      "Level1ABBD39B3": {
+        "Type": "AWS::SNS::Topic"
+      },
+      "Nested1NestedStackNested1NestedStackResourceCD0AD36B": {
+        "Type": "AWS::CloudFormation::Stack",
+        "Properties": {
+          "TemplateURL": {
+            "Fn::Join": [
+              "",
+              [
+                "https://s3.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/",
+                {
+                  "Ref": "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5S3Bucket2420A9AE"
+                },
+                "/",
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5S3VersionKeyC1E1393B"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5S3VersionKeyC1E1393B"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             ]
           },
-          "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket03F0C3B1Ref": {
-            "Ref": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket58724FCA"
-          },
-          "referencetonestedstacksmultirefsAssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey5F9CF809Ref": {
-            "Ref": "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey2CCE0573"
-          },
-          "referencetonestedstacksmultirefsAssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3Bucket8F1E17B9Ref": {
-            "Ref": "AssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3Bucket9A14AA6D"
-          },
-          "referencetonestedstacksmultirefsAssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3VersionKey9EEEF950Ref": {
-            "Ref": "AssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3VersionKeyF124C0D9"
+          "Parameters": {
+            "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+              "Fn::GetAtt": [
+                "Level1ABBD39B3",
+                "TopicName"
+              ]
+            },
+            "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref": {
+              "Ref": "AssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3Bucket8188391B"
+            },
+            "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef": {
+              "Ref": "AssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKey226E5BE9"
+            },
+            "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3Bucket76F83977Ref": {
+              "Ref": "AssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3Bucket8DD8DA35"
+            },
+            "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKey977FAC61Ref": {
+              "Ref": "AssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKeyF9BA0508"
+            }
           }
         }
       }
+    },
+    "Parameters": {
+      "AssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3Bucket8188391B": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"dfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38f\""
+      },
+      "AssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKey226E5BE9": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"dfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38f\""
+      },
+      "AssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fArtifactHashEB4EBC26": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"dfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38f\""
+      },
+      "AssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3Bucket8DD8DA35": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378\""
+      },
+      "AssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKeyF9BA0508": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378\""
+      },
+      "AssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378ArtifactHash52A96026": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378\""
+      },
+      "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5S3Bucket2420A9AE": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5\""
+      },
+      "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5S3VersionKeyC1E1393B": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5\""
+      },
+      "AssetParameters3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5ArtifactHash2EDD453D": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"3a5edf2af62a041dd2f25dbc73717822e19626b7600738ff581a7aed57db5df5\""
+      }
     }
   },
-  "Parameters": {
-    "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3Bucket58724FCA": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a\""
-    },
-    "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aS3VersionKey2CCE0573": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a\""
-    },
-    "AssetParameters495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3aArtifactHashAE1436B7": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"495a6bc36c13a0adeb3778c921d18ac4a8205f5471108fcc199a291d14855c3a\""
-    },
-    "AssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3Bucket9A14AA6D": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"cc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847\""
-    },
-    "AssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847S3VersionKeyF124C0D9": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"cc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847\""
-    },
-    "AssetParameterscc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847ArtifactHashAF64C405": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"cc623add53df153cf6a7df1cea4dc90740d7be087472579110754a633ec90847\""
-    },
-    "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95S3BucketDB605F9E": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"ad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95\""
-    },
-    "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95S3VersionKey26685906": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"ad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95\""
-    },
-    "AssetParametersad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95ArtifactHashAF8D54FC": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"ad23da1cfc8b3fd7916c6ffc7debacadf084765e62fab8acf0b8b0a9b0289f95\""
-    }
+  "NestedStacks": {
+    "nested-stacks-multi-refs": [
+      {
+        "Nested1NestedStackNested1NestedStackResourceCD0AD36B": {
+          "Template": {
+            "Metadata": {
+              "aws:cdk:path": "nestedstacksmultirefsNested146CE1F9F"
+            },
+            "Resources": {
+              "Nested2NestedStackNested2NestedStackResource877A1112": {
+                "Type": "AWS::CloudFormation::Stack",
+                "Properties": {
+                  "TemplateURL": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "https://s3.",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ".",
+                        {
+                          "Ref": "AWS::URLSuffix"
+                        },
+                        "/",
+                        {
+                          "Ref": "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3Bucket76F83977Ref"
+                        },
+                        "/",
+                        {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKey977FAC61Ref"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKey977FAC61Ref"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  "Parameters": {
+                    "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+                      "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+                    },
+                    "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref": {
+                      "Ref": "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref"
+                    },
+                    "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef": {
+                      "Ref": "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef"
+                    }
+                  }
+                }
+              }
+            },
+            "Parameters": {
+              "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3Bucket76F83977Ref": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParameters377091217e05e867e792878f89e93b291df417cacd266d1df395bf7457058378S3VersionKey977FAC61Ref": {
+                "Type": "String"
+              }
+            }
+          }
+        }
+      },
+      {
+        "Nested2NestedStackNested2NestedStackResource877A1112": {
+          "Template": {
+            "Metadata": {
+              "aws:cdk:path": "nestedstacksmultirefsNested1Nested2B1544EC7"
+            },
+            "Resources": {
+              "Nested3NestedStackNested3NestedStackResource4CFC9F55": {
+                "Type": "AWS::CloudFormation::Stack",
+                "Properties": {
+                  "TemplateURL": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "https://s3.",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ".",
+                        {
+                          "Ref": "AWS::URLSuffix"
+                        },
+                        "/",
+                        {
+                          "Ref": "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref"
+                        },
+                        "/",
+                        {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::Split": [
+                                "||",
+                                {
+                                  "Ref": "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  "Parameters": {
+                    "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+                      "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+                    },
+                    "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": {
+                      "Fn::GetAtt": [
+                        "Level2ReferencesLevel124228B1A",
+                        "TopicName"
+                      ]
+                    }
+                  }
+                }
+              },
+              "Level2ReferencesLevel124228B1A": {
+                "Type": "AWS::SNS::Topic",
+                "Properties": {
+                  "DisplayName": {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "Parameters": {
+              "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3BucketEDF2EAA4Ref": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsAssetParametersdfbbd16df9d19dafbd657ef9ea193b1624c7b6c3d6583f97746f96aee1b8c38fS3VersionKeyECD5C2BDRef": {
+                "Type": "String"
+              }
+            }
+          }
+        }
+      },
+      {
+        "Nested3NestedStackNested3NestedStackResource4CFC9F55": {
+          "Template": {
+            "Metadata": {
+              "aws:cdk:path": "nestedstacksmultirefsNested1Nested2Nested34EDB63C2"
+            },
+            "Resources": {
+              "Level3ReferencesLevel13289AD09": {
+                "Type": "AWS::SNS::Topic",
+                "Properties": {
+                  "DisplayName": {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "Level3ReferencesLevel2717B87DB": {
+                "Type": "AWS::SNS::Topic",
+                "Properties": {
+                  "DisplayName": {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "Parameters": {
+              "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+                "Type": "String"
+              },
+              "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": {
+                "Type": "String"
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 }

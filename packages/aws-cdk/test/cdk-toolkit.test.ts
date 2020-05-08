@@ -178,4 +178,16 @@ class FakeCloudFormation extends CloudFormationDeployments {
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
     }
   }
+
+  public readCurrentNestedStackTemplates(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Array<{
+    parentPath?: string, parentResourceId: string, template: Template }>> {
+    switch (stackArtifact.stackName) {
+      case MockStack.MOCK_STACK_A.stackName:
+        return Promise.resolve([{parentResourceId: `${MockStack.MOCK_STACK_A.stackName}-NSResource`, template: {}}]);
+      case MockStack.MOCK_STACK_B.stackName:
+        return Promise.resolve([{parentResourceId: `${MockStack.MOCK_STACK_B.stackName}-NSResource`, template: {}}]);
+      default:
+        return Promise.reject(`Not an expected mock stack: ${stackArtifact.stackName}`);
+    }
+  }
 }
