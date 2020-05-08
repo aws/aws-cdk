@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
@@ -107,7 +107,7 @@ export class HostedZone extends Resource implements IHostedZone {
     }
 
     const response: HostedZoneContextResponse = ContextProvider.getValue(scope, {
-      provider: cxapi.HOSTED_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.HOSTED_ZONE_PROVIDER,
       dummyValue: DEFAULT_HOSTED_ZONE,
       props: query,
     }).value;

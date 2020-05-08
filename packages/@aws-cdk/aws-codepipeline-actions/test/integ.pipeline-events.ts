@@ -18,7 +18,9 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
   repositoryName: 'foo',
 });
-const project = new codebuild.PipelineProject(stack, 'BuildProject');
+const project = new codebuild.PipelineProject(stack, 'BuildProject', {
+  grantReportGroupPermissions: false,
+});
 
 const sourceOutput = new codepipeline.Artifact('Source');
 const sourceAction = new cpactions.CodeCommitSourceAction({

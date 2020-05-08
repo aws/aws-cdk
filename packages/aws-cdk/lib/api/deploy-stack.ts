@@ -131,6 +131,15 @@ export interface DeployStackOptions {
   parameters?: { [name: string]: string | undefined };
 
   /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
+
+  /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
    * @default false
    */
@@ -170,7 +179,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
     ...options.parameters,
     ...assetParams,
-  }, cloudFormationStack.parameterNames);
+  }, options.usePreviousParameters ? cloudFormationStack.parameterNames : []);
 
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);

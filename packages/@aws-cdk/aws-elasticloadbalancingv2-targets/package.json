@@ -66,9 +66,9 @@
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib"
+    "constructs",
+    "elasticloadbalancing",
+    "elb"
   ],
   "author": {
     "name": "Amazon Web Services",

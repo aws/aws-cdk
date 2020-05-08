@@ -26,16 +26,15 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Put Lambda's result here in the execution's state object
-    resultPath: '$.guid',
+    task: new tasks.RunLambdaTask(submitLambda),
+    // Lambda's result is in the attribute `Payload`
+    outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
@@ -43,13 +42,11 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
+    task: new tasks.RunLambdaTask(getStatusLambda),
     // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status"
+    // Lambda's result in a field called "status" in the response
     inputPath: '$.guid',
-    resultPath: '$.status',
+    outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -58,12 +55,10 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Use "guid" field as input, output of the Lambda becomes the
-    // entire state machine output.
+    task: new tasks.RunLambdaTask(getStatusLambda),
+    // Use "guid" field as input
     inputPath: '$.guid',
+    outputPath: '$.Payload',
 });
 
 const definition = submitJob
@@ -80,6 +75,9 @@ new sfn.StateMachine(this, 'StateMachine', {
     timeout: Duration.minutes(5)
 });
 ```
+
+You can find more sample snippets and learn more about the service integrations
+in the `@aws-cdk/aws-stepfunctions-tasks` package.
 
 ## State Machine
 
@@ -115,6 +113,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
+* [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -256,6 +255,76 @@ const map = new stepfunctions.Map(this, 'Map State', {
     itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
 });
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
+```
+
+### Custom State
+
+It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
+the states or service integrations you are looking for. The primary reasons for this lack of
+functionality are:
+
+* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but not available as construct
+  classes in the CDK.
+* The state or state properties are available through Step Functions, but are not configurable
+  through constructs
+
+If a feature is not available, a `CustomState` can be used to supply any Amazon States Language
+JSON-based object as the state definition.
+
+[Code Snippets](https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1) are available and can be plugged in as the state definition.
+
+Custom states can be chained together with any of the other states to create your state machine
+definition. You will also need to provide any permissions that are required to the `role` that
+the State Machine uses.
+
+The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
+
+```ts
+import * as ddb from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+// create a table
+const table = new ddb.Table(this, 'montable', {
+  partitionKey: {
+    name: 'id',
+    type: ddb.AttributeType.STRING,
+  },
+});
+
+const finalStatus = new sfn.Pass(stack, 'final step');
+
+// States language JSON to put an item into DynamoDB
+// snippet generated from https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1
+const stateJson = {
+  Type: 'Task',
+  Resource: 'arn:aws:states:::dynamodb:putItem',
+  Parameters: {
+    TableName: table.tableName,
+    Item: {
+      id: {
+        S: 'MyEntry',
+      },
+    },
+  },
+  ResultPath: null,
+};
+
+// custom state which represents a task to insert data into DynamoDB
+const custom = new sfn.CustomState(this, 'my custom task', {
+  stateJson,
+});
+
+const chain = sfn.Chain.start(custom)
+      .next(finalStatus);
+
+const sm = new sfn.StateMachine(this, 'StateMachine', {
+  definition: chain,
+  timeout: cdk.Duration.seconds(30),
+});
+
+// don't forget permissions. You need to assign them
+table.grantWriteData(sm.role);
 ```
 
 ## Task Chaining

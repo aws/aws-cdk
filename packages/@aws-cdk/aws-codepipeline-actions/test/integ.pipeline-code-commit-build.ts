@@ -21,7 +21,9 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   trigger: cpactions.CodeCommitTrigger.POLL,
 });
 
-const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
+const project = new codebuild.PipelineProject(stack, 'MyBuildProject', {
+  grantReportGroupPermissions: false,
+});
 const buildAction = new cpactions.CodeBuildAction({
   actionName: 'build',
   project,

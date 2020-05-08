@@ -9,6 +9,17 @@ const FAKE_STACK = testStack({
   template: FAKE_TEMPLATE,
 });
 
+const FAKE_STACK_WITH_PARAMETERS = testStack({
+  stackName: 'withparameters',
+  template: {
+    Parameters: {
+      HasValue: { Type: 'String' },
+      HasDefault: { Type: 'String', Default: 'TheDefault' },
+      OtherParameter: { Type: 'String' },
+    },
+  },
+});
+
 const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   stackName: 'termination-protection',
   template: FAKE_TEMPLATE,
@@ -82,6 +93,88 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
       { ParameterKey: 'B', ParameterValue: 'B=value' },
     ],
   }));
+});
+
+test('reuse previous parameters if requested', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      OtherParameter: 'SomeValue',
+    },
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', UsePreviousValue: true },
+      { ParameterKey: 'HasDefault', UsePreviousValue: true },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'SomeValue' },
+    ],
+  }));
+});
+
+test('do not reuse previous parameters if not requested', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      HasValue: 'SomeValue',
+      OtherParameter: 'SomeValue',
+    },
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'SomeValue' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'SomeValue' },
+    ],
+  }));
+});
+
+test('throw exception if not enough parameters supplied', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+    ],
+  });
+
+  // WHEN
+  await expect(deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      OtherParameter: 'SomeValue',
+    },
+  })).rejects.toThrow(/CloudFormation Parameters are missing a value/);
 });
 
 test('deploy is skipped if template did not change', async () => {

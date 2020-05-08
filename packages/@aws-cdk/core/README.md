@@ -185,7 +185,7 @@ resources in the scope of `constructB`.
 If you want a single object to represent a set of constructs that are not
 necessarily in the same scope, you can use a `ConcreteDependable`. The
 following creates a single object that represents a dependency on two
-construts, `constructB` and `constructC`:
+constructs, `constructB` and `constructC`:
 
 ```ts
 // Declare the dependable object
@@ -246,24 +246,45 @@ new CustomResource(this, 'MyMagicalResource', {
 ### Custom Resource Providers
 
 Custom resources are backed by a **custom resource provider** which can be
-implemented in one of the following ways (ordered from low-level to high-level):
+implemented in one of the following ways. The following table compares the
+various provider types (ordered from low-level to high-level):
 
-* `@aws-cdk/aws-sns.Topic`
-* `@aws-cdk/aws-lambda.Function`
-* `@aws-cdk/custom-resources.Provider`
+| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation | Max Timeout     | Language | Footprint |
+|----------------------------------------------------------------------|:------------:|:--------------:|:------------------------:|:---------------:|:--------:|:---------:|
+| [sns.Topic](#amazon-sns-topic)                                       | Self-managed | Manual         | Manual                   | Unlimited       | Any      | Depends   |
+| [lambda.Function](#aws-lambda-function)                              | AWS Lambda   | Manual         | Manual                   | 15min           | Any      | Small     |
+| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | Lambda       | Auto           | Auto                     | 15min           | Node.js  | Small     |
+| [custom-resources.Provider](#the-custom-resource-provider-framework) | Lambda       | Auto           | Auto                     | Unlimited Async | Any      | Large     |
 
-**NOTE**: when defining resources for a custom resource provider, you will
-likely want to define them as a *stack singleton* so that only a single instance
-of the provider is created in your stack and which is used by all custom
-resources of that type.
+Legend:
 
-The following is a pattern for defining stack singletons in the CDK:
+- **Compute type**: which type of compute can is used to execute the handler.
+- **Error Handling**: whether errors thrown by handler code are automatically
+  trapped and a FAILED response is submitted to CloudFormation. If this is
+  "Manual", developers must take care of trapping errors. Otherwise, events
+  could cause stacks to hang.
+- **Submit to CloudFormation**: whether the framework takes care of submitting
+  SUCCESS/FAILED responses to CloudFormation through the event's response URL.
+- **Max Timeout**: maximum allows/possible timeout.
+- **Language**: which programming languages can be used to implement handlers.
+- **Footprint**: how many resources are used by the provider framework itself.
+
+**A NOTE ABOUT SINGLETONS**
+
+When defining resources for a custom resource provider, you will likely want to
+define them as a *stack singleton* so that only a single instance of the
+provider is created in your stack and which is used by all custom resources of
+that type.
+
+Here is a basic pattern for defining stack singletons in the CDK. The following
+examples ensures that only a single SNS topic is defined:
 
 ```ts
-const stack = Stack.of(this);
-const uniqueid = 'GloballyUniqueIdForSingleton';
-return stack.node.tryFindChild(uniqueid) as MySingleton 
-  ?? new MySingleton(stack, uniqueid);
+function getOrCreate(scope: Construct): sns.Topic {
+  const stack = Stack.of(this);
+  const uniqueid = 'GloballyUniqueIdForSingleton';
+  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+}
 ```
 
 #### Amazon SNS Topic
@@ -305,6 +326,132 @@ new CustomResource(this, 'MyResource', {
 });
 ```
 
+#### The `core.CustomResourceProvider` class
+
+The class [`@aws-cdk/core.CustomResourceProvider`] offers a basic low-level
+framework designed to implement simple and slim custom resource providers. It
+currently only supports Node.js-based user handlers, and it does not have
+support for asynchronous waiting (handler cannot exceed the 15min lambda
+timeout).
+
+[`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
+
+The provider has a built-in singleton method which uses the resource type as a
+stack-unique identifier and returns the service token:
+
+```ts
+const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+
+new CustomResource(this, 'MyResource', {
+  resourceType: 'Custom::MyCustomResourceType',
+  serviceToken: serviceToken
+});
+```
+
+The directory (`my-handler` in the above example) must include an `index.js` file. It cannot import
+external dependencies or files outside this directory. It must export an async
+function named `handler`. This function accepts the CloudFormation resource
+event object and returns an object with the following structure:
+
+```js
+exports.handler = async function(event) {
+  const id = event.PhysicalResourceId; // only for "Update" and "Delete"
+  const props = event.ResourceProperties;
+  const oldProps = event.OldResourceProperties; // only for "Update"s
+  
+  switch (event.RequestType) {
+    case "Create":
+      // ...
+
+    case "Update":
+      // ...
+
+      // if an error is thrown, a FAILED response will be submitted to CFN
+      throw new Error('Failed!');
+      
+    case "Delete":
+      // ...
+  }
+
+  return {
+    // (optional) the value resolved from `resource.ref`
+    // defaults to "event.PhysicalResourceId" or "event.RequestId"
+    PhysicalResourceId: "REF",
+
+    // (optional) calling `resource.getAtt("Att1")` on the custom resource in the CDK app
+    // will return the value "BAR".
+    Data: {
+      Att1: "BAR",
+      Att2: "BAZ"
+    },
+
+    // (optional) user-visible message
+    Reason: "User-visible message",
+
+    // (optional) hides values from the console
+    NoEcho: true
+  };
+}
+```
+
+Here is an complete example of a custom resource that summarizes two numbers:
+
+`sum-handler/index.js`:
+
+```js
+exports.handler = async e => {
+  return { 
+    Data: { 
+      Result: e.ResourceProperties.lhs + e.ResourceProperties.rhs
+    } 
+  };
+};
+```
+
+`sum.ts`:
+
+```ts
+export interface SumProps {
+  readonly lhs: number;
+  readonly rhs: number;
+}
+
+export class Sum extends Construct {
+  public readonly result: number;
+
+  constructor(scope: Construct, id: string, props: SumProps) {
+    super(scope, id);
+
+    const resourceType = 'Custom::Sum';
+    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
+      codeDirectory: `${__dirname}/sum-handler`,
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    const resource = new CustomResource(this, 'Resource', {
+      resourceType: resourceType,
+      serviceToken: provider.serviceToken,
+      properties: {
+        lhs: props.lhs,
+        rhs: props.rhs
+      }
+    });
+
+    this.result = Token.asNumber(resource.getAtt('Result'));
+  }
+}
+```
+
+Usage will look like this:
+
+```ts
+const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
+new CfnOutput(this, 'Result', { value: sum.result });
+```
+
 #### The Custom Resource Provider Framework
 
 The [`@aws-cdk/custom-resource`] module includes an advanced framework for
@@ -318,7 +465,7 @@ asynchronous mode, which means that users can provide an `isComplete` lambda
 function which is called periodically until the operation is complete. This
 allows implementing providers that can take up to two hours to stabilize. 
 
-Set `serviceToken` to `provider.serviceToken` to use this provider:
+Set `serviceToken` to `provider.serviceToken` to use this type of provider:
 
 ```ts
 import { Provider } from 'custom-resources';
@@ -332,6 +479,8 @@ new CustomResource(this, 'MyResource', {
   serviceToken: provider.serviceToken
 });
 ```
+
+See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html) for more details.
 
 #### Amazon SNS Topic
 

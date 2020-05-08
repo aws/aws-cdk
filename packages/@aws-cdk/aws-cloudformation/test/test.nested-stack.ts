@@ -912,7 +912,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'ParentStack', { env: { account: '1234account', region: 'us-east-44' } });
     const nestedStack = new NestedStack(stack, 'nested');
-    const provider = 'dummyProvider';
+    const provider = 'availability-zones';
     const expectedKey = ContextProvider.getKey(nestedStack, {
       provider,
     }).key;

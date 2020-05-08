@@ -22,6 +22,7 @@ new codebuild.Project(stack, 'MyProject', {
       paths: ['/root/.cache/pip/**/*'],
     },
   }),
+  grantReportGroupPermissions: false,
 });
 
 app.synth();

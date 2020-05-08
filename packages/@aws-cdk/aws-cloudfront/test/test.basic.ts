@@ -5,8 +5,14 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  CfnDistribution, CloudFrontWebDistribution, LambdaEdgeEventType, SecurityPolicyProtocol, SSLMethod,
-  ViewerCertificate, ViewerProtocolPolicy,
+  CfnDistribution,
+  CloudFrontWebDistribution,
+  GeoRestriction,
+  LambdaEdgeEventType,
+  SecurityPolicyProtocol,
+  SSLMethod,
+  ViewerCertificate,
+  ViewerProtocolPolicy,
 } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -869,5 +875,182 @@ export = {
 
     expect(stack).notTo(haveResourceLike('AWS::IAM::Role'));
     test.done();
+  },
+
+  'geo restriction': {
+    'success' : {
+      'whitelist'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}],
+          }],
+          geoRestriction: GeoRestriction.whitelist('US', 'UK'),
+        });
+
+        expect(stack).toMatch({
+          'Resources': {
+            'Bucket83908E77': {
+              'Type': 'AWS::S3::Bucket',
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain',
+            },
+            'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+              'Type': 'AWS::CloudFront::Distribution',
+              'Properties': {
+                'DistributionConfig': {
+                  'DefaultRootObject': 'index.html',
+                  'Origins': [
+                    {
+                      'DomainName': {
+                        'Fn::GetAtt': [
+                          'Bucket83908E77',
+                          'RegionalDomainName',
+                        ],
+                      },
+                      'Id': 'origin1',
+                      'S3OriginConfig': {},
+                    },
+                  ],
+                  'ViewerCertificate': {
+                    'CloudFrontDefaultCertificate': true,
+                  },
+                  'PriceClass': 'PriceClass_100',
+                  'DefaultCacheBehavior': {
+                    'AllowedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'CachedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'TargetOriginId': 'origin1',
+                    'ViewerProtocolPolicy': 'redirect-to-https',
+                    'ForwardedValues': {
+                      'QueryString': false,
+                      'Cookies': {'Forward': 'none'},
+                    },
+                    'Compress': true,
+                  },
+                  'Enabled': true,
+                  'IPV6Enabled': true,
+                  'HttpVersion': 'http2',
+                  'Restrictions': {
+                    'GeoRestriction': {
+                      'Locations': ['US', 'UK'],
+                      'RestrictionType': 'whitelist',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        test.done();
+      },
+      'blacklist'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}],
+          }],
+          geoRestriction: GeoRestriction.blacklist('US'),
+        });
+
+        expect(stack).toMatch({
+          'Resources': {
+            'Bucket83908E77': {
+              'Type': 'AWS::S3::Bucket',
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain',
+            },
+            'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+              'Type': 'AWS::CloudFront::Distribution',
+              'Properties': {
+                'DistributionConfig': {
+                  'DefaultRootObject': 'index.html',
+                  'Origins': [
+                    {
+                      'DomainName': {
+                        'Fn::GetAtt': [
+                          'Bucket83908E77',
+                          'RegionalDomainName',
+                        ],
+                      },
+                      'Id': 'origin1',
+                      'S3OriginConfig': {},
+                    },
+                  ],
+                  'ViewerCertificate': {
+                    'CloudFrontDefaultCertificate': true,
+                  },
+                  'PriceClass': 'PriceClass_100',
+                  'DefaultCacheBehavior': {
+                    'AllowedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'CachedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'TargetOriginId': 'origin1',
+                    'ViewerProtocolPolicy': 'redirect-to-https',
+                    'ForwardedValues': {
+                      'QueryString': false,
+                      'Cookies': {'Forward': 'none'},
+                    },
+                    'Compress': true,
+                  },
+                  'Enabled': true,
+                  'IPV6Enabled': true,
+                  'HttpVersion': 'http2',
+                  'Restrictions': {
+                    'GeoRestriction': {
+                      'Locations': ['US'],
+                      'RestrictionType': 'blacklist',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        test.done();
+      },
+    },
+    'error': {
+      'throws if locations is empty array'(test: Test) {
+        test.throws(() => {
+          GeoRestriction.whitelist();
+        }, 'Should provide at least 1 location');
+
+        test.throws(() => {
+          GeoRestriction.blacklist();
+        }, 'Should provide at least 1 location');
+
+        test.done();
+      },
+      'throws if locations format is wrong'(test: Test) {
+        test.throws(() => {
+          GeoRestriction.whitelist('us');
+        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+
+        test.throws(() => {
+          GeoRestriction.blacklist('us');
+        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+
+        test.done();
+      },
+    },
   },
 };

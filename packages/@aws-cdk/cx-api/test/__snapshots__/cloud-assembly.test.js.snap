@@ -24,9 +24,13 @@ Array [
   Object {
     "key": "missing:context:key",
     "props": Object {
-      "foo": 123,
+      "account": "1234",
+      "filter": Object {
+        "foo": 123,
+      },
+      "region": "us-east-1",
     },
-    "provider": "context-provider",
+    "provider": "vpc-provider",
   },
 ]
 `;

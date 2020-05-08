@@ -1,8 +1,8 @@
 {
   "%STACK_NAME_PREFIX%-outputs-test-1": {
-    "TopicName": "MyTopic"
+    "TopicName": "%STACK_NAME_PREFIX%-outputs-test-1MyTopic"
   },
   "%STACK_NAME_PREFIX%-outputs-test-2": {
-    "TopicName": "MyOtherTopic"
+    "TopicName": "%STACK_NAME_PREFIX%-outputs-test-2MyOtherTopic"
   }
 }

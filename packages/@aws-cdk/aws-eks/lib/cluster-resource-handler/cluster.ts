@@ -149,7 +149,14 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     // if this is an EKS update, we will monitor the update event itself
     if (this.event.EksUpdateId) {
-      return this.isEksUpdateComplete(this.event.EksUpdateId);
+      const complete = await this.isEksUpdateComplete(this.event.EksUpdateId);
+      if (!complete) {
+        return { IsComplete: false };
+      }
+
+      // fall through: if the update is done, we simply delegate to isActive()
+      // in order to extract attributes and state from the cluster itself, which
+      // is supposed to be in an ACTIVE state after the update is complete.
     }
 
     return this.isActive();
@@ -212,9 +219,9 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     switch (describeUpdateResponse.update.status) {
       case 'InProgress':
-        return { IsComplete: false };
+        return false;
       case 'Successful':
-        return { IsComplete: true };
+        return true;
       case 'Failed':
       case 'Cancelled':
         throw new Error(`cluster update id "${eksUpdateId}" failed with errors: ${JSON.stringify(describeUpdateResponse.update.errors)}`);

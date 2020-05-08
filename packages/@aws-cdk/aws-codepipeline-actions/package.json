@@ -50,10 +50,8 @@
   },
   "keywords": [
     "aws",
-    "aws-clib",
-    "aws-cloudlib",
     "cdk",
-    "cloudlib",
+    "constructs",
     "codepipeline",
     "pipeline"
   ],

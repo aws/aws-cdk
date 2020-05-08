@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
@@ -362,7 +362,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
       dummyValue: `dummy-value-for-${parameterName}`,
     }).value;

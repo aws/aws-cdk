@@ -912,6 +912,9 @@ export = {
               // log permissions from the CodeBuild Project Construct...
             },
             {
+              // report group permissions from the CodeBuild Project construct...
+            },
+            {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
