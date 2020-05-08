@@ -37,6 +37,8 @@ test('NodejsFunction with .ts handler', () => {
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
     global: 'handler',
     outDir: expect.stringContaining(buildDir),
+    externalModules: ['aws-sdk'],
+    installModules: [],
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {

@@ -49,3 +49,36 @@ Parcel transpiles your code (every internal module) with [@babel/preset-env](htt
 runtime version of your Lambda function as target.
 
 Configuring Babel with Parcel is possible via a `.babelrc` or a `babel` config in `package.json`.
+Additionally, [Parcel plugins](https://parceljs.org/plugins.html) can be used.
+
+### Working with modules
+
+#### Externals
+By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
+the `externalModules` prop.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  externalModules: [
+    'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
+    'cool-module', // 'cool-module' is already available in a Layer
+  ],
+});
+```
+
+#### Install modules
+Use the `installModules` prop to specify a list of modules that should not be bundled
+but included in the `node_modules` folder of the Lambda package. This is useful when
+working with native dependencies or when Parcel fails to bundle a module.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  installModules: ['native-module', 'other-module']
+});
+```
+
+The modules listed in `installModules` must be present in the `package.json`'s dependencies. The
+same version will be used for installation. If a lock file is detected (`package-lock.json` or
+`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`). The modules are
+installed in [Lambda compatible Docker container](https://github.com/lambci/docker-lambda).
+

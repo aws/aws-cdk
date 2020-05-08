@@ -67,15 +67,6 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly cacheDir?: string;
 
   /**
-   * The docker tag of the node base image to use in the parcel-bundler docker image
-   *
-   * @see https://hub.docker.com/_/node/?tab=tags
-   *
-   * @default - the `process.versions.node` alpine image
-   */
-  readonly nodeDockerTag?: string;
-
-  /**
    * The root of the project. This will be used as the source for the volume
    * mounted in the Docker container. If you specify this prop, ensure that
    * this path includes `entry` and any module/dependencies used by your
@@ -84,6 +75,22 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the closest path containing a .git folder
    */
   readonly projectRoot?: string;
+
+  /**
+   * A list of modules that should be considered as externals
+   *
+   * @default ['aws-sdk']
+   */
+  readonly externalModules?: string[];
+
+  /**
+   * A list of modules that should not be bundled but included in the
+   * `node_modules` folder. The modules will be installed in a Lambda
+   * compatible environment.
+   *
+   * @default - all modules are bundled with Parcel
+   */
+  readonly installModules?: string[]
 }
 
 /**
@@ -116,9 +123,10 @@ export class NodejsFunction extends lambda.Function {
       minify: props.minify,
       sourceMaps: props.sourceMaps,
       cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
+      runtime,
       projectRoot: path.resolve(projectRoot),
+      externalModules: props.externalModules ? Array.from(new Set(props.externalModules)) : ['aws-sdk'],
+      installModules: Array.from(new Set(props.installModules)),
     });
     builder.build();
 
@@ -176,17 +184,4 @@ function findDefiningFile(): string {
   }
 
   return stackTrace[functionIndex + 1].file;
-}
-
-/**
- * Extracts the version from the runtime
- */
-function extractVersion(runtime: lambda.Runtime): string {
-  const match = runtime.name.match(/nodejs(\d+)/);
-
-  if (!match) {
-    throw new Error('Cannot extract version from runtime.');
-  }
-
-  return match[1];
 }
