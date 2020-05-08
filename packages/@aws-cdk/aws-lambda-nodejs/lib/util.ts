@@ -76,3 +76,21 @@ export function findPkgPath(): string | undefined {
 export function findGitPath(): string | undefined {
   return findClosestPathContaining(`.git${path.sep}`);
 }
+
+/**
+ * Recursively removes a directory
+ */
+export function rmdirRecursive(p: string): void {
+  if (!fs.existsSync(p)) {
+    return;
+  }
+  for (const f of fs.readdirSync(p)) {
+    const currentPath = path.join(p, f);
+    if (fs.lstatSync(currentPath).isDirectory()) {
+      rmdirRecursive(currentPath);
+    } else {
+      fs.unlinkSync(currentPath);
+    }
+  }
+  fs.rmdirSync(p);
+}

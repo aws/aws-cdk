@@ -2,7 +2,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { findPkgPath } from './util';
+import { findPkgPath, rmdirRecursive } from './util';
 
 /**
  * Builder options
@@ -82,7 +82,7 @@ export class Builder {
     this.originalPkgJson = JSON.parse(this.originalPkg.toString());
 
     // Clean out dir
-    fs.rmdirSync(path.resolve(this.options.outDir), { recursive: true });
+    rmdirRecursive(path.resolve(this.options.outDir));
   }
 
   /**
