@@ -48,7 +48,7 @@ export interface SubscriptionOptions {
    * Queue used when `deadLetterQueue` is enabled.
    * Default queue is created when not specified.
    *
-   * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+   * @default - No dead letter queue enabled.
    */
   readonly deadLetterQueue?: IQueue;
 }

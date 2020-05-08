@@ -77,7 +77,7 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 ```
 
 ### DLQ setup for SNS Subscription
-CDK can setup or attach provided Queue as DLQ for your SNS subscription.
+CDK can attach provided Queue as DLQ for your SNS subscription.
 See the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.
 
 Example of usage with user provided DLQ.
@@ -94,19 +94,6 @@ new sns.Subscription(stack, 'Subscription', {
     protocol: sns.SubscriptionProtocol.LAMBDA,
     topic,
     deadLetterQueue: dlQueue,
-});
-```
-
-Example of usage with default Queue.
-
-```ts
-const topic = new sns.Topic(stack, 'Topic');
-
-new sns.Subscription(stack, 'Subscription', {
-    endpoint: 'endpoint',
-    protocol: sns.SubscriptionProtocol.LAMBDA,
-    topic,
-    deadLetterQueueEnabled: true,
 });
 ```
 
