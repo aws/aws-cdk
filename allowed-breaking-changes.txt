@@ -49,3 +49,6 @@ incompatible-argument:@aws-cdk/aws-iam.PrincipalPolicyFragment.<initializer>
 changed-type:@aws-cdk/aws-iam.FederatedPrincipal.conditions
 changed-type:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions
 changed-type:@aws-cdk/aws-iam.PrincipalWithConditions.conditions
+# Changing untyped property blob into typed property blob
+change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
+incompatible-argument:@aws-cdk/cloud-assembly-schema.Manifest.save
