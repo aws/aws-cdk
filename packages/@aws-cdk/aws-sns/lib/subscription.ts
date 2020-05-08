@@ -1,4 +1,4 @@
-import { ArnPrincipal } from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IQueue } from '@aws-cdk/aws-sqs';
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnSubscription } from './sns.generated';
@@ -48,7 +48,7 @@ export interface SubscriptionOptions {
    * Queue used when `deadLetterQueue` is enabled.
    * Default queue is created when not specified.
    *
-   * @default - No dead letter queue enabled.
+   * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
   readonly deadLetterQueue?: IQueue;
 }
@@ -122,7 +122,15 @@ export class Subscription extends Resource {
     }
 
     const deadLetterQueue = props.deadLetterQueue;
-    deadLetterQueue.grantSendMessages(new ArnPrincipal(props.topic.topicArn));
+
+    deadLetterQueue.addToResourcePolicy(new PolicyStatement({
+      resources: [deadLetterQueue.queueArn],
+      actions: ['sqs:SendMessage'],
+      principals: [new ServicePrincipal('sns.amazonaws.com')],
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
+      },
+    }));
 
     return deadLetterQueue;
   }
