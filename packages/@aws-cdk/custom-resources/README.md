@@ -25,12 +25,12 @@ and powerful custom resources and includes the following capabilities:
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
-with `cfn.CustomResource` and a user-provided AWS Lambda function which
-implements the actual handler.
+with a `CustomResource` and a user-provided AWS Lambda function which implements
+the actual handler.
 
 ```ts
-import cr = require('@aws-cdk/custom-resources');
-import cfn = require('@aws-cdk/aws-cloudformation');
+import { CustomResource } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
@@ -39,8 +39,8 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   isCompleteHandler: isComplete // optional async "waiter"
 });
 
-new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
-new cfn.CustomResource(this, 'Resource2', { provider: myProvider });
+new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
+new CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });
 ```
 
 Providers are implemented through AWS Lambda functions that are triggered by the
@@ -137,6 +137,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 |-----|----|--------|-----------
 |`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.
 |`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.
+|*any*|*any*|No|Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
 
@@ -158,10 +159,10 @@ with the message "Operation timed out".
 If an error is thrown, the framework will submit a "FAILED" response to AWS
 CloudFormation.
 
-The input event to `isComplete` is similar to
-[`onEvent`](#handling-lifecycle-events-onevent), with an additional guarantee
-that `PhysicalResourceId` is defines and contains the value returned from
-`onEvent` or the described default. At any case, it is guaranteed to exist.
+The input event to `isComplete` includes all request fields, combined with all
+fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
+returned from `onEvent`, it's value will be calculated based on the heuristics
+described above.
 
 The return value must be a JSON object with the following fields:
 

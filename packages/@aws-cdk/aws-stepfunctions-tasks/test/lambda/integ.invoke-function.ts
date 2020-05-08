@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 const handler = new Function(stack, 'Handler', {
   code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.PYTHON_3_6
+  runtime: Runtime.PYTHON_3_6,
 });
 
 const submitJob = new sfn.Task(stack, 'Invoke Handler', {
@@ -20,15 +20,15 @@ const submitJob = new sfn.Task(stack, 'Invoke Handler', {
 const callbackHandler = new Function(stack, 'CallbackHandler', {
   code: Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.PYTHON_3_6
+  runtime: Runtime.PYTHON_3_6,
 });
 
 const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
   task: new tasks.RunLambdaTask(callbackHandler, {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    payload: {
-      token: sfn.Context.taskToken
-    }
+    payload: sfn.TaskInput.fromObject({
+      token: sfn.Context.taskToken,
+    }),
   }),
   inputPath: '$.guid',
   resultPath: '$.status',
@@ -46,12 +46,12 @@ const chain = sfn.Chain
   .next(taskTokenHandler)
   .next(isComplete
     .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus),
   );
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
-  timeout: cdk.Duration.seconds(30)
+  timeout: cdk.Duration.seconds(30),
 });
 
 app.synth();

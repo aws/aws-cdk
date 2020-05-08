@@ -12,7 +12,7 @@ const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 1024,
-  cpu: 512
+  cpu: 512,
 });
 
 const container = taskDefinition.addContainer('web', {
@@ -21,7 +21,7 @@ const container = taskDefinition.addContainer('web', {
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.TCP
+  protocol: ecs.Protocol.TCP,
 });
 
 const service = new ecs.FargateService(stack, 'Service', {
@@ -37,9 +37,9 @@ const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing:
 const listener = lb.addListener('PublicListener', { port: 80, open: true });
 listener.addTargets('Fargate', {
   port: 80,
-  targets: [service]
+  targets: [service],
 });
 
-new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });
 
 app.synth();

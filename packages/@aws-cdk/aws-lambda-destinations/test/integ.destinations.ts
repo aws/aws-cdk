@@ -27,7 +27,7 @@ class TestStack extends Stack {
       onFailure: new destinations.SnsDestination(topic),
       onSuccess: new destinations.SqsDestination(queue),
       maxEventAge: Duration.hours(3),
-      retryAttempts: 1
+      retryAttempts: 1,
     });
 
     const onSuccessLambda = new lambda.Function(this, 'OnSucces', {
@@ -57,7 +57,7 @@ class TestStack extends Stack {
       onSuccess: new destinations.SqsDestination(queue),
       onFailure: new destinations.SnsDestination(topic),
       maxEventAge: Duration.hours(2),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
   }
 }

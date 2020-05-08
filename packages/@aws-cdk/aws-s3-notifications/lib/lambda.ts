@@ -17,7 +17,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
       this.fn.addPermission(permissionId, {
         sourceAccount: Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceArn: bucket.bucketArn
+        sourceArn: bucket.bucketArn,
       });
     }
 
@@ -28,7 +28,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     return {
       type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: this.fn.functionArn,
-      dependencies: permission ? [ permission ] : undefined
+      dependencies: permission ? [ permission ] : undefined,
     };
   }
 }

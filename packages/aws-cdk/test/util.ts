@@ -13,6 +13,7 @@ export interface TestStackArtifact {
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  terminationProtection?: boolean;
 }
 
 export interface TestAssembly {
@@ -31,7 +32,7 @@ export class MockCloudExecutable extends CloudExecutable {
     super({
       configuration,
       sdkProvider,
-      synthesizer: () => Promise.resolve(testAssembly(assembly))
+      synthesizer: () => Promise.resolve(testAssembly(assembly)),
     });
 
     this.configuration = configuration;
@@ -55,7 +56,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
-        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset }
+        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset },
       ];
     }
 
@@ -70,8 +71,9 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       dependencies: stack.depends,
       metadata,
       properties: {
-        templateFile
-      }
+        templateFile,
+        terminationProtection: stack.terminationProtection,
+      },
     });
   }
 

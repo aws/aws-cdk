@@ -160,20 +160,20 @@ export class EventBus extends Resource implements IEventBus {
 
       if (eventBusName !== undefined && eventSourceName !== undefined) {
         throw new Error(
-          '\'eventBusName\' and \'eventSourceName\' cannot both be provided'
+          '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
         );
       } else if (eventBusName !== undefined) {
         if (eventBusName === 'default') {
           throw new Error(
-            '\'eventBusName\' must not be \'default\''
+            '\'eventBusName\' must not be \'default\'',
           );
         } else if (eventBusName.indexOf('/') > -1) {
           throw new Error(
-            '\'eventBusName\' must not contain \'/\''
+            '\'eventBusName\' must not contain \'/\'',
           );
         } else if (!eventBusNameRegex.test(eventBusName)) {
           throw new Error(
-            `'eventBusName' must satisfy: ${eventBusNameRegex}`
+            `'eventBusName' must satisfy: ${eventBusNameRegex}`,
           );
         }
         return { eventBusName };
@@ -182,11 +182,11 @@ export class EventBus extends Resource implements IEventBus {
         const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
         if (!eventSourceNameRegex.test(eventSourceName)) {
           throw new Error(
-            `'eventSourceName' must satisfy: ${eventSourceNameRegex}`
+            `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
           );
         } else if (!eventBusNameRegex.test(eventSourceName)) {
           throw new Error(
-            `'eventSourceName' must satisfy: ${eventBusNameRegex}`
+            `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
           );
         }
         return { eventBusName: eventSourceName, eventSourceName };
@@ -219,20 +219,20 @@ export class EventBus extends Resource implements IEventBus {
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.stringValue({ produce: () => this.node.uniqueId }),
-      props
+      props,
     );
 
     super(scope, id, { physicalName: eventBusName });
 
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: eventBusName,
-      eventSourceName
+      eventSourceName,
     });
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {
       service: 'events',
       resource: 'event-bus',
-      resourceName: eventBus.name
+      resourceName: eventBus.name,
     });
 
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);

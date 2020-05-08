@@ -18,8 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
   - [Useful aliases](#useful-aliases)
-  - [pkglint](#pkglint)
-  - [awslint](#awslint)
+  - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
@@ -49,10 +48,10 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.12.0](https://nodejs.org/download/release/latest-v10.x/)
+ - [Node.js 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
  - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
  - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
+ - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
  - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
@@ -132,6 +131,11 @@ Work your magic. Here are some guidelines:
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
+* If your change introduces a new construct, take a look at the our
+  [example Construct Library](packages/@aws-cdk/example-construct-library) for an explanation of the common patterns we use.
+  Feel free to start your contribution by copy&pasting files from that project,
+  and then edit and rename them as appropriate -
+  it might be easier to get started that way.
 
 #### Integration Tests
 
@@ -262,7 +266,37 @@ alias lt='lr test'
 alias lw='lr watch'
 ```
 
-### pkglint
+### Linters
+
+All linters are executed automatically as part of the build script, `yarn build`.
+
+They can also be executed independently of the build script. From the root of a specific package (e.g.
+`packages/@aws-cdk/aws-ec2`), run the following command to execute all the linters on that package -
+
+```bash
+yarn lint
+```
+
+The following linters are used -
+
+- [eslint](#eslint)
+- [pkglint](#pkglint)
+- [awslint](#awslint)
+
+#### eslint
+
+Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
+2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
+
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+This can be customized for any package by modifying the `.eslintrc` file found at its root.
+
+If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). The VS Code setting [needed for
+the extension to work](https://github.com/Microsoft/vscode-eslint#settings-options) on the monorepo is configured in
+the [folder settings](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings).
+
+#### pkglint
 
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
 
@@ -279,7 +313,7 @@ You can also do that per package:
 $ lr pkglint
 ```
 
-### awslint
+#### awslint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS

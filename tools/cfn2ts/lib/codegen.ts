@@ -19,6 +19,15 @@ enum TreeAttributes {
 
 interface Dictionary<T> { [key: string]: T; }
 
+export interface CodeGeneratorOptions {
+  /**
+   * How to import the core library.
+   *
+   * @default '@aws-cdk/core'
+   */
+  readonly coreImport?: string;
+}
+
 /**
  * Emits classes for all resource types
  */
@@ -32,13 +41,14 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string, options: CodeGeneratorOptions = {}) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
+    const coreImport = options.coreImport ?? '@aws-cdk/core';
 
     const meta = {
       generated: new Date(),
-      fingerprint: spec.Fingerprint
+      fingerprint: spec.Fingerprint,
     };
 
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
@@ -48,7 +58,7 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
+    this.code.line(`import * as ${CORE} from '${coreImport}';`);
   }
 
   public async upToDate(outPath: string): Promise<boolean> {
@@ -161,7 +171,7 @@ export default class CodeGenerator {
         propName,
         spec: propSpec,
         additionalDocs: quoteCode(additionalDocs)},
-      container
+      container,
       );
       propertyMap[propName] = newName;
     });

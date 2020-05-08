@@ -131,6 +131,9 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
+    if (pkg.packageName === '@aws-cdk/core') {
+      return;
+    }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
 
@@ -822,7 +825,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0');
   }
 }
 
@@ -1102,7 +1105,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^2.0.0';
+    const REQUIRED_VERSION = '^3.0.2';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1162,6 +1165,32 @@ export class DoNotAnnounceInCatalog extends ValidationRule {
   }
 }
 
+export class EslintSetup extends ValidationRule {
+  public readonly name = 'package-info/eslint';
+
+  public validate(pkg: PackageJson) {
+    const eslintrcFilename = '.eslintrc.js';
+    if (!fs.existsSync(eslintrcFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a .eslintrc.js file at the root of the package',
+        fix: () => {
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
+          fs.writeFileSync(
+            eslintrcFilename,
+            [
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
+              'module.exports = baseConfig;'
+            ].join('\n') + '\n'
+          );
+        }
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
+    fileShouldContain(this.name, pkg, '.npmignore', '.eslintrc.js');
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -1207,4 +1236,12 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
   return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+}
+
+function repoRoot(dir: string) {
+  let root = dir;
+  for (let i = 0; i < 50 && !fs.existsSync(path.join(root, 'yarn.lock')); i++) {
+    root = path.dirname(root);
+  }
+  return root;
 }

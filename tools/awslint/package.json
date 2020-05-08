@@ -16,11 +16,11 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.1.0",
+    "@jsii/spec": "^1.5.0",
     "camelcase": "^6.0.0",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^1.1.0",
+    "jsii-reflect": "^1.5.0",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
@@ -45,6 +45,6 @@
     "cdk"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   }
 }

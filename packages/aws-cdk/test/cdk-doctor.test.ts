@@ -4,7 +4,7 @@ import { CommandHandler } from '../lib/command-api';
 describe('`cdk doctor`', () => {
   beforeEach(done => {
     mockery.registerMock('../../lib/logging', {
-      print: () => undefined
+      print: () => undefined,
     });
     mockery.enable({ useCleanCache: true, warnOnReplace: true, warnOnUnregistered: false });
     done();

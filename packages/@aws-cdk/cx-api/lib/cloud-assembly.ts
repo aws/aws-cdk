@@ -234,7 +234,7 @@ export class CloudAssemblyBuilder {
       version: cxschema.Manifest.version(),
       artifacts: this.artifacts,
       runtime: options.runtimeInfo,
-      missing: this.missing.length > 0 ? this.missing : undefined
+      missing: this.missing.length > 0 ? this.missing : undefined,
     };
 
     // now we can filter
@@ -285,8 +285,27 @@ export interface MetadataEntry extends cxschema.MetadataEntry {
  * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.Stack.reportMissingContext
  */
-export interface MissingContext extends cxschema.MissingContext {
+export interface MissingContext {
+  /**
+   * The missing context key.
+   */
+  readonly key: string;
 
+  /**
+   * The provider from which we expect this context key to be obtained.
+   *
+   * (This is the old untyped definition, which is necessary for backwards compatibility.
+   * See cxschema for a type definition.)
+   */
+  readonly provider: string;
+
+  /**
+   * A set of provider-specific options.
+   *
+   * (This is the old untyped definition, which is necessary for backwards compatibility.
+   * See cxschema for a type definition.)
+   */
+  readonly props: Record<string, any>;
 }
 
 export interface AssemblyBuildOptions {

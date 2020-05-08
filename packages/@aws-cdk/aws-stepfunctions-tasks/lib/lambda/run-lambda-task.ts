@@ -10,9 +10,9 @@ export interface RunLambdaTaskProps {
   /**
    * The JSON that you want to provide to your Lambda function as input.
    *
-   * @default - No payload
+   * @default - The state input (JSON path '$')
    */
-  readonly payload?: { [key: string]: any };
+  readonly payload?: sfn.TaskInput;
 
   /**
    * The service integration pattern indicates different ways to invoke Lambda function.
@@ -67,7 +67,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -92,11 +92,11 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },
       parameters: {
         FunctionName: this.lambdaFunction.functionName,
-        Payload: this.props.payload,
+        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
-        Qualifier: this.props.qualifier
-      }
+        Qualifier: this.props.qualifier,
+      },
     };
   }
 }

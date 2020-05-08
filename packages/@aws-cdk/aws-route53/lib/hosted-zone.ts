@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
@@ -107,9 +107,9 @@ export class HostedZone extends Resource implements IHostedZone {
     }
 
     const response: HostedZoneContextResponse = ContextProvider.getValue(scope, {
-      provider: cxapi.HOSTED_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.HOSTED_ZONE_PROVIDER,
       dummyValue: DEFAULT_HOSTED_ZONE,
-      props: query
+      props: query,
     }).value;
 
     // CDK handles the '.' at the end, so remove it here
@@ -143,7 +143,7 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
+      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
     });
 
     this.hostedZoneId = resource.ref;
@@ -213,7 +213,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
-        zone: this
+        zone: this,
       });
     }
   }

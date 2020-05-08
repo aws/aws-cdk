@@ -84,7 +84,7 @@ export class CfnRule extends CfnRefElement {
 
     this.assertions.push({
       assert: condition,
-      assertDescription: description
+      assertDescription: description,
     });
   }
 
@@ -96,9 +96,9 @@ export class CfnRule extends CfnRefElement {
       Rules: {
         [this.logicalId]: {
           RuleCondition: this.ruleCondition,
-          Assertions: capitalizePropertyNames(this, this.assertions)
-        }
-      }
+          Assertions: capitalizePropertyNames(this, this.assertions),
+        },
+      },
     };
   }
 }

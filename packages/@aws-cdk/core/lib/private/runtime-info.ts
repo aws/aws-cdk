@@ -1,6 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
+// list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk'];
+
 /**
  * Returns a list of loaded modules and their versions.
  */
@@ -14,9 +17,16 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the @aws-cdk npm scope
+  // include only libraries that are in the whitelistLibraries list
   for (const name of Object.keys(libraries)) {
-    if (!name.startsWith('@aws-cdk/')) {
+    let foundMatch = false;
+    for (const scope of WHITELIST_SCOPES) {
+      if (name.startsWith(`${scope}/`)) {
+        foundMatch = true;
+      }
+    }
+
+    if (!foundMatch) {
       delete libraries[name];
     }
   }
@@ -53,13 +63,22 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
  */
 function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
   const mod = require.cache[fileName];
+
+  if (!mod.paths) {
+    // sometimes this can be undefined. for example when querying for .json modules
+    // inside a jest runtime environment.
+    // see https://github.com/aws/aws-cdk/issues/7657
+    // potentially we can remove this if it turns out to be a bug in how jest implemented the 'require' module.
+    return undefined;
+  }
+
   const paths = mod.paths.map(stripNodeModules);
 
   try {
     const packagePath = require.resolve(
       // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths }
+      { paths },
     );
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);
