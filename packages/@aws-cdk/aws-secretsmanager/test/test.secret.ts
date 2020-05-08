@@ -130,6 +130,90 @@ export = {
           },
           Resource: '*',
         }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        }, {
           Action: 'kms:Decrypt',
           Condition: {
             StringEquals: {
@@ -231,6 +315,90 @@ export = {
             },
           },
           Resource: '*',
+        }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
         }, {
           Action: 'kms:Decrypt',
           Condition: {
