@@ -49,8 +49,18 @@ export interface EcsTaskProps {
    * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
    *
    * @default A new security group is created
+   * @deprecated use securityGroups instead
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Existing security groups to use for the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default A new security group is created
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -58,19 +68,31 @@ export interface EcsTaskProps {
  */
 export class EcsTask implements events.IRuleTarget {
   public readonly securityGroup?: ec2.ISecurityGroup;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly cluster: ecs.ICluster;
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
 
   constructor(private readonly props: EcsTaskProps) {
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
+    }
+
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
 
-    if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      const securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
-      this.securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
+      return;
     }
+    // Security groups are only configurable with the "awsvpc" network mode.
+    if (props.securityGroups) {
+      this.securityGroups = props.securityGroups;
+      return;
+    }
+    let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
+    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    this.securityGroups = [securityGroup];
   }
 
   /**
@@ -123,7 +145,7 @@ export class EcsTask implements events.IRuleTarget {
           awsVpcConfiguration: {
             subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
             assignPublicIp,
-            securityGroups: this.securityGroup && [this.securityGroup.securityGroupId],
+            securityGroups: this.securityGroups && this.securityGroups.map(sg => sg.securityGroupId),
           },
         },
       }
