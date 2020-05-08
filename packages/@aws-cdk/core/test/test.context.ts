@@ -140,8 +140,8 @@ export = {
   },
 
   'context provider errors are attached to tree'(test: Test) {
-    const contextProps = { provider: 'bloop' };
-    const contextKey = 'bloop:account=12345:region=us-east-1';  // Depends on the mangling algo
+    const contextProps = { provider: 'availability-zones' };
+    const contextKey = 'availability-zones:account=12345:region=us-east-1';  // Depends on the mangling algo
 
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });

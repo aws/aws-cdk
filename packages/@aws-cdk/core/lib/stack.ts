@@ -61,6 +61,13 @@ export interface StackProps {
    * @default {}
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -182,6 +189,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
+  /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
@@ -254,6 +266,7 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+    this.terminationProtection = props.terminationProtection;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -311,14 +324,17 @@ export class Stack extends Construct implements ITaggable {
    * @param report The set of parameters needed to obtain the context
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    this._missingContext.push(report);
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
+      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
+    }
+    this._missingContext.push(report as cxschema.MissingContext);
   }
 
   /**
    * Rename a generated logical identities
    *
    * To modify the naming scheme strategy, extend the `Stack` class and
-   * override the `createNamingScheme` method.
+   * override the `allocateLogicalId` method.
    */
   public renameLogicalId(oldId: string, newId: string) {
     this._logicalIds.addRename(oldId, newId);
@@ -507,12 +523,12 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const value = ContextProvider.getValue(this, {
-      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
       dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
     }).value;
 
     if (!Array.isArray(value)) {
-      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
+      throw new Error(`Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`);
     }
 
     return value;
@@ -778,6 +794,7 @@ export class Stack extends Construct implements ITaggable {
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: this.templateFile,
+      terminationProtection: this.terminationProtection,
       ...stackNameProperty,
     };
 

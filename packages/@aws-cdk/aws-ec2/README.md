@@ -159,6 +159,21 @@ If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
+By default, the NAT instances will route all traffic. To control what traffic
+gets routed, pass `allowAllTraffic: false` and access the
+`NatInstanceProvider.connections` member after having passed it to the VPC:
+
+```ts
+const provider = NatProvider.instance({
+  instanceType: /* ... */,
+  allowAllTraffic: false,
+});
+new Vpc(stack, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(Peer.ipv4('1.2.3.4/8'), Port.tcp(80));
+```
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the
@@ -542,6 +557,19 @@ host.allowSshAccessFrom(ec2.Peer.ipv4('1.2.3.4/32'));
 
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
+
+EBS volume for the bastion host can be encrypted like:
+```ts
+    const host = new ec2.BastionHostLinux(stack, 'BastionHost', {
+      vpc,
+      blockDevices: [{
+        deviceName: 'EBSBastionHost',
+        volume: BlockDeviceVolume.ebs(10, {
+          encrypted: true,
+        }),
+      }],
+    });
+```
 
 
 ## Block Devices

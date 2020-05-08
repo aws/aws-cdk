@@ -106,6 +106,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
         },
         {
           Action: [
+            'kms:Decrypt',
             'kms:Encrypt',
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
