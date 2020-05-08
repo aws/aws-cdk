@@ -7,7 +7,7 @@ import { CfnVpcLink } from './apigateway.generated';
  */
 export interface IVpcLink extends IResource {
   /**
-   * The VPC Link identifier.
+   * Physical ID of the VpcLink resource
    * @attribute
    */
   readonly vpcLinkId: string;
@@ -44,7 +44,7 @@ export interface VpcLinkProps {
  */
 export class VpcLink extends Resource implements IVpcLink {
   /**
-   * Import a VPC Link by it's Id
+   * Import a VPC Link by its Id
    */
   public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
     class Import extends Resource implements IVpcLink {

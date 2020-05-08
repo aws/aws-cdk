@@ -64,10 +64,9 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const link = apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
+    apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
 
     // THEN
-    test.deepEqual(link.vpcLinkId, 'vpclink-id');
     expect(stack).notTo(haveResource('AWS::ApiGateway::VpcLink'));
 
     test.done();

@@ -33,7 +33,7 @@ running on AWS Lambda, or any web application.
 - [Access Logging](#access-logging)
 - [Cross Origin Resource Sharing (CORS)](cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
-- [VPC Link](#VPC-Link)
+- [Private Integrations](#Private Integrations)
 - [Gateway Response](#gateway-response)
 - [APIGateway v2](#apigateway-v2)
 
@@ -869,12 +869,15 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
-### VPC Link
+## Private Integrations
 
-A VPC Link enables access to a resource in your VPC through Amazon API Gateway.
-You create a VPC Link resource targete for one or more network load balancers of the VPC,
-and integrate an API method with a private integration that uses the VpcLink.
-The private integration has an integration type of `HTTP` or `HTTP_PROXY` and has a connection type of `VPC_LINK`.
+A private integration makes it simple to expose HTTP/HTTPS resources behind an
+Amazon VPC for access by clients outside of the VPC. The private integration uses
+an API Gateway resource of `VpcLink` to encapsulate connections between API
+Gateway and targeted VPC resources.
+The `VpcLink` is then attached to the `Integration` of a specific API Gateway
+Method. The following code sets up a private integration with a network load
+balancer -
 
 ```ts
 const vpc = new ec2.Vpc(stack, 'VPC');
@@ -894,7 +897,7 @@ const integration = new apigw.Integration({
 });
 ```
 
-You can also import with physical ID of the existing VpcLink resource via the `VpcLink.fromVpcLinkId()`.
+Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
 
 ```ts
 const stack = new Stack(app, 'my-stack');
