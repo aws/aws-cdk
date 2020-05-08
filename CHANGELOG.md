@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **assets): fix(assets:** invalid fingerprint when 'exclude' captures root directory name ([#7719](https://github.com/aws/aws-cdk/issues/7719)) ([a5c06a3](https://github.com/aws/aws-cdk/commit/a5c06a3a27b39a5315d0cfd0d34b3c1b25cfc464)), closes [#7718](https://github.com/aws/aws-cdk/issues/7718)
+* **assets:** invalid fingerprint when 'exclude' captures root directory name ([#7719](https://github.com/aws/aws-cdk/issues/7719)) ([a5c06a3](https://github.com/aws/aws-cdk/commit/a5c06a3a27b39a5315d0cfd0d34b3c1b25cfc464)), closes [#7718](https://github.com/aws/aws-cdk/issues/7718)
 * **aws-batch:** gpuCount was ignored in JobDefinition creation ([#7587](https://github.com/aws/aws-cdk/issues/7587)) ([0f1bf23](https://github.com/aws/aws-cdk/commit/0f1bf23817774eb94505a6c68f1daa8a117bbd42))
 * **cli:** parameter value reuse is not configurable ([44310c9](https://github.com/aws/aws-cdk/commit/44310c93af939f8aaf9ca4245c944b5c93f61ab7)), closes [#7041](https://github.com/aws/aws-cdk/issues/7041)
 * **core:** docs refer to "createNamingScheme" which was renamed to "allocateLogicalId" ([#7840](https://github.com/aws/aws-cdk/issues/7840)) ([d79595d](https://github.com/aws/aws-cdk/commit/d79595d854adf160c0a6395a5f535ee270bbdf69)), closes [#7527](https://github.com/aws/aws-cdk/issues/7527)
