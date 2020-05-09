@@ -102,13 +102,6 @@
     "node": ">= 10.13.0"
   },
   "stability": "stable",
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 45,
-        "statements": 60
-      }
-    }
-  },
+  "jest": {},
   "maturity": "stable"
 }
