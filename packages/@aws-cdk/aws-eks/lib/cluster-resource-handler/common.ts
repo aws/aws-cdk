@@ -83,9 +83,4 @@ export interface EksClient {
   createFargateProfile(request: aws.EKS.CreateFargateProfileRequest): Promise<aws.EKS.CreateFargateProfileResponse>;
   describeFargateProfile(request: aws.EKS.DescribeFargateProfileRequest): Promise<aws.EKS.DescribeFargateProfileResponse>;
   deleteFargateProfile(request: aws.EKS.DeleteFargateProfileRequest): Promise<aws.EKS.DeleteFargateProfileResponse>;
-  createOpenIDConnectProvider(request: aws.IAM.CreateOpenIDConnectProviderRequest): Promise<aws.IAM.CreateOpenIDConnectProviderResponse>;
-  deleteOpenIDConnectProvider(request: aws.IAM.DeleteOpenIDConnectProviderRequest): Promise<{ $response: aws.Response<{}, aws.AWSError>; }>;
-  getOpenIDConnectProvider(request: aws.IAM.GetOpenIDConnectProviderRequest): Promise<aws.IAM.GetOpenIDConnectProviderResponse>;
-  getRole(request: aws.IAM.GetRoleRequest): Promise<aws.IAM.GetRoleResponse>;
-  updateAssumeRolePolicy(request: aws.IAM.UpdateAssumeRolePolicyRequest): Promise<{ $response: aws.Response<{}, aws.AWSError>; }>;
 }

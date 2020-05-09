@@ -16,11 +16,6 @@ export let actualRequest: {
   createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
   describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
   deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
-  createOpenIDConnectProvider?: sdk.IAM.CreateOpenIDConnectProviderRequest;
-  deleteOpenIDConnectProvider?: sdk.IAM.DeleteOpenIDConnectProviderRequest;
-  getOpenIDConnectProvider?: sdk.IAM.GetOpenIDConnectProviderRequest;
-  getRole?: sdk.IAM.GetRoleRequest;
-  updateAssumeRolePolicy?: sdk.IAM.UpdateAssumeRolePolicyRequest;
 } = { };
 
 /**
@@ -142,30 +137,6 @@ export const client: EksClient = {
     return { };
   },
 
-  createOpenIDConnectProvider: async req => {
-    actualRequest.createOpenIDConnectProvider = req;
-    return { };
-  },
-
-  deleteOpenIDConnectProvider: async req => {
-    actualRequest.deleteOpenIDConnectProvider = req;
-    return { $response: new sdk.Response() };
-  },
-
-  getOpenIDConnectProvider: async req => {
-    actualRequest.getOpenIDConnectProvider = req;
-    return { };
-  },
-  getRole: async req => {
-    actualRequest.getRole = req;
-    return {
-      Role: { Path: '/', RoleName: 'Role', RoleId: 'role', Arn: 'arn:role', CreateDate: new Date() }
-    };
-  },
-  updateAssumeRolePolicy: async req => {
-    actualRequest.updateAssumeRolePolicy = req;
-    return { $response: new sdk.Response() };
-  },
 };
 
 export const MOCK_PROPS = {

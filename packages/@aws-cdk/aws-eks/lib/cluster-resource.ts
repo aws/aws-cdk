@@ -18,7 +18,7 @@ export class ClusterResource extends Construct {
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
-  public readonly attrOpenIDConnectIssuerUrl: string;
+  public readonly attrOpenIdConnectIssuerUrl: string;
   public readonly ref: string;
 
   /**
@@ -100,16 +100,6 @@ export class ClusterResource extends Construct {
       resources: [ fargateProfileResourceArn ],
     }));
 
-    this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:GetRole', 'iam:UpdateAssumeRolePolicy' ],
-      resources: [ '*' ],
-    }));
-
-    this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'iam:CreateOpenIDConnectProvider', 'iam:DeleteOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider', 'iam:CreateServiceLinkedRole' ],
-      resources: [ '*' ],
-    }));
-
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
@@ -125,7 +115,7 @@ export class ClusterResource extends Construct {
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
     this.attrArn = Token.asString(resource.getAtt('Arn'));
     this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
-    this.attrOpenIDConnectIssuerUrl = Token.asString(resource.getAtt('OpenIDConnectIssuerUrl'));
+    this.attrOpenIdConnectIssuerUrl = Token.asString(resource.getAtt('OpenIdConnectIssuerUrl'));
   }
 
   /**

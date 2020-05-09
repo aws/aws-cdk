@@ -299,6 +299,12 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
+   * The OpenID Connect Issuer Url for your cluster.
+   * @attribute
+   */
+  public readonly clusterOpenIdConnectIssuerUrl?: string;
+
+  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -402,6 +408,7 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._clusterResource = resource;
+      this.clusterOpenIdConnectIssuerUrl = resource.attrOpenIdConnectIssuerUrl;
     } else {
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
