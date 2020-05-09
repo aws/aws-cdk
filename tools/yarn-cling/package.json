@@ -37,23 +37,7 @@
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
+  "jest": {},
   "keywords": [
     "aws",
     "cdk"

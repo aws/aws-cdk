@@ -28,14 +28,7 @@
       "disable": true
     }
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
-    }
-  },
+  "jest": {},
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",

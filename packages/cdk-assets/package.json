@@ -67,11 +67,5 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 60
-      }
-    }
-  }
+  "jest": {}
 }
