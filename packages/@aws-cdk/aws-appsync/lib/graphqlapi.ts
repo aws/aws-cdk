@@ -58,11 +58,11 @@ export interface AuthorizationMode {
    */
   readonly userPoolConfig?: UserPoolConfig;
   /**
-   * If authorizationType is `AuthorizationType.API_KEY`, this option can be confogured.
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured. If AuthorizationType.API_KEY` is in `additionalAuthorizationModes`, this option is required.
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
-   * If authorizationType is `AuthorizationType.OIDC`, this option can be configured.
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
 }
@@ -417,6 +417,15 @@ export class GraphQLApi extends Construct {
               'Missing User Pool Configuration inside an additional authorization mode'
             );
           }
+
+          if (
+            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
+            !authorizationMode.apiKeyConfig
+          ) {
+            throw new Error(
+              'Missing API Key Configuration inside an additional authorization mode'
+            );
+          }
         }
       );
     }
@@ -468,16 +477,8 @@ export class GraphQLApi extends Construct {
   ): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] {
     return authModes.reduce<
       CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
-    >((acc, authMode) => {
-      if (authMode.authorizationType === AuthorizationType.API_KEY) {
-        const apiKeyConfig: ApiKeyConfig = authMode.apiKeyConfig || {
-          name: 'DefaultAPIKey',
-          description: 'Default API Key created by CDK',
-        };
-
-        this.createAPIKey(apiKeyConfig);
-      }
-      return [
+    >(
+      (acc, authMode) => [
         ...acc,
         {
           authenticationType: authMode.authorizationType,
@@ -490,8 +491,9 @@ export class GraphQLApi extends Construct {
               ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig!)
               : undefined,
         },
-      ];
-    }, []);
+      ],
+      []
+    );
   }
 
   /**
