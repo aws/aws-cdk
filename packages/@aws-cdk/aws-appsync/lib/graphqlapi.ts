@@ -193,8 +193,15 @@ export class GraphQLApi extends Construct {
    * underlying CFN schema resource
    */
   public readonly schema: CfnGraphQLSchema;
+  /**
+   * the configured API key, if present
+   */
+  public get apiKey(): string | undefined {
+    return this._apiKey;
+  }
 
   private api: CfnGraphQLApi;
+  private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -214,7 +221,7 @@ export class GraphQLApi extends Construct {
           excludeVerboseContent: props.logConfig.excludeVerboseContent,
           fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
         },
-      }
+      },
     });
 
     this.apiId = this.api.attrApiId;
@@ -241,6 +248,19 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * add a new dummy data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   */
+  public addNoneDataSource(name: string, description: string): NoneDataSource {
+    return new NoneDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+    });
+  }
+
+  /**
    * add a new DynamoDB data source to this API
    * @param name The name of the data source
    * @param description The description of the data source
@@ -251,7 +271,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      table
+      table,
     });
   }
 
@@ -266,7 +286,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      lambdaFunction
+      lambdaFunction,
     });
   }
 
@@ -297,7 +317,7 @@ export class GraphQLApi extends Construct {
         userPoolId: upConfig.userPool.userPoolId,
         awsRegion: upConfig.userPool.stack.region,
         defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
-      }
+      },
     };
   }
 
@@ -312,17 +332,18 @@ export class GraphQLApi extends Construct {
       }
       expires = Math.round(expires / 1000);
     }
-    new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+    const key = new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
       expires,
       description: akConfig.apiKeyDesc,
       apiId: this.apiId,
     });
+    this._apiKey = key.attrApiKey;
     return { authenticationType: 'API_KEY' };
   }
 }
 
 /**
- * Base properties fo an AppSync datasource
+ * Base properties for an AppSync datasource
  */
 export interface BaseDataSourceProps {
   /**
@@ -339,6 +360,12 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+}
+
+/**
+ * properties for an AppSync datasource backed by a resource
+ */
+export interface BackedDataSourceProps extends BaseDataSourceProps {
   /**
    * The IAM service role to be assumed by AppSync to interact with the data source
    *
@@ -390,12 +417,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct implements IGrantable {
-
-  /**
-   * the principal of the data source to be IGrantable
-   */
-  public readonly grantPrincipal: IPrincipal;
+export abstract class BaseDataSource extends Construct {
   /**
    * the name of the data source
    */
@@ -406,19 +428,20 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
   public readonly ds: CfnDataSource;
 
   protected api: GraphQLApi;
-  protected serviceRole: IRole;
+  protected serviceRole?: IRole;
 
-  constructor(scope: Construct, id: string, props: BaseDataSourceProps, extended: ExtendedDataSourceProps) {
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
 
-    this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
-    this.grantPrincipal = this.serviceRole;
+    if (extended.type !== 'NONE') {
+      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
+    }
 
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
       name: props.name,
       description: props.description,
-      serviceRoleArn: this.serviceRole.roleArn,
+      serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
     this.name = props.name;
@@ -435,13 +458,45 @@ export abstract class BaseDataSource extends Construct implements IGrantable {
       ...props,
     });
   }
+}
 
+/**
+ * Abstract AppSync datasource implementation. Do not use directly but use subclasses for resource backed datasources
+ */
+export abstract class BackedDataSource extends BaseDataSource implements IGrantable {
+  /**
+   * the principal of the data source to be IGrantable
+   */
+  public readonly grantPrincipal: IPrincipal;
+
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
+    super(scope, id, props, extended);
+
+    this.grantPrincipal = this.serviceRole!;
+  }
+}
+
+/**
+ * Properties for an AppSync dummy datasource
+ */
+export interface NoneDataSourceProps extends BaseDataSourceProps {
+}
+
+/**
+ * An AppSync dummy datasource
+ */
+export class NoneDataSource extends BaseDataSource {
+  constructor(scope: Construct, id: string, props: NoneDataSourceProps) {
+    super(scope, id, props, {
+      type: 'NONE',
+    });
+  }
 }
 
 /**
  * Properties for an AppSync DynamoDB datasource
  */
-export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
+export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
    * [disable-awslint:ref-via-interface]
@@ -464,7 +519,7 @@ export interface DynamoDbDataSourceProps extends BaseDataSourceProps {
 /**
  * An AppSync datasource backed by a DynamoDB table
  */
-export class DynamoDbDataSource extends BaseDataSource {
+export class DynamoDbDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: DynamoDbDataSourceProps) {
     super(scope, id, props, {
       type: 'AMAZON_DYNAMODB',
@@ -475,9 +530,9 @@ export class DynamoDbDataSource extends BaseDataSource {
       },
     });
     if (props.readOnlyAccess) {
-      props.table.grantReadData(this.serviceRole);
+      props.table.grantReadData(this);
     } else {
-      props.table.grantReadWriteData(this.serviceRole);
+      props.table.grantReadWriteData(this);
     }
   }
 }
@@ -485,7 +540,7 @@ export class DynamoDbDataSource extends BaseDataSource {
 /**
  * Properties for an AppSync Lambda datasource
  */
-export interface LambdaDataSourceProps extends BaseDataSourceProps {
+export interface LambdaDataSourceProps extends BackedDataSourceProps {
   /**
    * The Lambda function to call to interact with this data source
    */
@@ -495,7 +550,7 @@ export interface LambdaDataSourceProps extends BaseDataSourceProps {
 /**
  * An AppSync datasource backed by a Lambda function
  */
-export class LambdaDataSource extends BaseDataSource {
+export class LambdaDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: LambdaDataSourceProps) {
     super(scope, id, props, {
       type: 'AWS_LAMBDA',
@@ -503,7 +558,7 @@ export class LambdaDataSource extends BaseDataSource {
         lambdaFunctionArn: props.lambdaFunction.functionArn,
       },
     });
-    props.lambdaFunction.grantInvoke(this.serviceRole);
+    props.lambdaFunction.grantInvoke(this);
   }
 }
 

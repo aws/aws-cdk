@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -157,8 +158,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         requestParameters: {
           repositoryName: [this.repositoryName],
-        }
-      }
+        },
+      },
     });
     return rule;
   }
@@ -201,8 +202,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         'repository-name': [this.repositoryName],
         'scan-status': ['COMPLETE'],
-        'image-tags': options.imageTags ? options.imageTags : undefined
-      }
+        'image-tags': options.imageTags ? options.imageTags : undefined,
+      },
     });
     return rule;
   }
@@ -215,7 +216,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.ecr'],
-      resources: [this.repositoryArn]
+      resources: [this.repositoryArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -316,6 +317,13 @@ export interface RepositoryProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enable the scan on push when creating the repository
+   *
+   *  @default false
+   */
+  readonly imageScanOnPush?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -387,7 +395,7 @@ export class Repository extends RepositoryBase {
     return Stack.of(scope).formatArn({
       service: 'ecr',
       resource: 'repository',
-      resourceName: repositoryName
+      resourceName: repositoryName,
     });
   }
 
@@ -422,6 +430,36 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    // image scanOnPush
+    if (props.imageScanOnPush) {
+      new cr.AwsCustomResource(this, 'ImageScanOnPush', {
+        resourceType: 'Custom::ECRImageScanOnPush',
+        onUpdate: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: props.imageScanOnPush,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
+        },
+        onDelete: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: false,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [ this.repositoryArn ] }),
+      });
+    }
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
@@ -504,7 +542,7 @@ export class Repository extends RepositoryBase {
     for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
       ret.push({
         ...rule,
-        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++
+        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++,
       });
     }
 
@@ -539,8 +577,8 @@ function renderLifecycleRule(rule: LifecycleRule) {
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
-      type: 'expire'
-    }
+      type: 'expire',
+    },
   };
 }
 

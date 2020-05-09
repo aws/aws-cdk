@@ -1,10 +1,10 @@
 ## AWS Key Management Service Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -12,7 +12,7 @@
 Define a KMS key:
 
 ```ts
-import kms = require('@aws-cdk/aws-kms');
+import * as kms from '@aws-cdk/aws-kms';
 
 new kms.Key(this, 'MyKey', {
     enableKeyRotation: true

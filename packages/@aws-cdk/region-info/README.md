@@ -1,18 +1,10 @@
 # AWS Region-Specific Information Directory
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -49,7 +41,7 @@ a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-import regionInfo = require('@aws-cdk/region-info');
+import * as regionInfo from '@aws-cdk/region-info';
 
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com

@@ -91,10 +91,14 @@ function prepare_fixture() {
 function cleanup() {
   cleanup_stack ${STACK_NAME_PREFIX}-test-1
   cleanup_stack ${STACK_NAME_PREFIX}-test-2
+  cleanup_stack ${STACK_NAME_PREFIX}-param-test-1
+  cleanup_stack ${STACK_NAME_PREFIX}-param-test-2
+  cleanup_stack ${STACK_NAME_PREFIX}-param-test-3
   cleanup_stack ${STACK_NAME_PREFIX}-iam-test
   cleanup_stack ${STACK_NAME_PREFIX}-with-nested-stack
   cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-1
   cleanup_stack ${STACK_NAME_PREFIX}-outputs-test-2
+  cleanup_stack ${STACK_NAME_PREFIX}-termination-protection
 }
 
 function setup() {

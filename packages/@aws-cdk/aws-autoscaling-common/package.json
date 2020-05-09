@@ -62,20 +62,20 @@
     "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fast-check": "^1.24.1",
+    "fast-check": "^1.24.2",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.2"
   },
   "awslint": {
     "exclude": [
@@ -99,9 +99,10 @@
     ]
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

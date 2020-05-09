@@ -1,18 +1,14 @@
 ## AWS Amplify Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module.**
->
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))
-> are auto-generated from CloudFormation. They are stable and safe to use.
->
-> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward
-> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.
-> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,9 +18,9 @@ The AWS Amplify Console provides a Git-based workflow for deploying and hosting 
 ### Setting up an app with branches, custom rules and a domain
 To set up an Amplify Console app, define an `App`:
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import amplify = require('@aws-cdk/aws-amplify');
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as amplify from '@aws-cdk/aws-amplify';
+import * as cdk from '@aws-cdk/core';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
@@ -87,9 +83,20 @@ amplifyApp.addCustomRule({
 });
 ```
 
+When working with a single page application (SPA), use the
+`CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT` to set up a 200
+rewrite for all files to `index.html` except for the following
+file extensions: css, gif, ico, jpg, js, png, txt, svg, woff,
+ttf, map, json, webmanifest.
+
+```ts
+mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+```
+
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');
+domain.mapRoot(master); // map master branch to domain root
 domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```

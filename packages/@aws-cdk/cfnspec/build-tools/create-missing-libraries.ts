@@ -55,7 +55,7 @@ async function main() {
         const indexTs = [
           (await fs.readFile(indexTsPath, { encoding: 'utf8' })).trimRight(),
           `// ${namespace} CloudFormation Resources:`,
-          `export * from './${lowcaseModuleName}.generated';`
+          `export * from './${lowcaseModuleName}.generated';`,
         ].join('\n');
         await fs.writeFile(indexTsPath, indexTs, { encoding: 'utf8' });
         continue;
@@ -113,20 +113,20 @@ async function main() {
             packageId: dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
-            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png'
+            iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
           },
           java: {
             package: `${javaGroupId}.${javaPackage}`,
             maven: {
               groupId: javaGroupId,
-              artifactId: javaArtifactId
-            }
+              artifactId: javaArtifactId,
+            },
           },
           python: {
             distName: pythonDistName,
-            module: pythonModuleName
-          }
-        }
+            module: pythonModuleName,
+          },
+        },
       },
       repository: {
         type: 'git',
@@ -146,22 +146,22 @@ async function main() {
         cfn2ts: 'cfn2ts',
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
-        compat: 'cdk-compat'
+        compat: 'cdk-compat',
       },
       'cdk-build': {
-        cloudformation: namespace
+        cloudformation: namespace,
       },
       keywords: [
         'aws',
         'cdk',
         'constructs',
         namespace,
-        moduleName
+        moduleName,
       ],
       author: {
         name: 'Amazon Web Services',
         url: 'https://aws.amazon.com',
-        organization: true
+        organization: true,
       },
       jest: {},
       license: 'Apache-2.0',
@@ -178,12 +178,13 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.12.0'
+        node: '>= 10.13.0',
       },
       stability: 'experimental',
+      maturity: 'cfn-only',
       awscdkio: {
-        announce: false
-      }
+        announce: false,
+      },
     });
 
     await write('.gitignore', [
@@ -203,7 +204,8 @@ async function main() {
       '.nycrc',
       '.LAST_PACKAGE',
       '*.snk',
-      'nyc.config.js'
+      'nyc.config.js',
+      '!.eslintrc.js',
     ]);
 
     await write('.npmignore', [
@@ -227,11 +229,13 @@ async function main() {
       '*.tsbuildinfo',
       '',
       'tsconfig.json',
+      '',
+      '.eslintrc.js',
     ]);
 
     await write('lib/index.ts', [
       `// ${namespace} CloudFormation Resources:`,
-      `export * from './${lowcaseModuleName}.generated';`
+      `export * from './${lowcaseModuleName}.generated';`,
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
@@ -246,19 +250,11 @@ async function main() {
     await write('README.md', [
       `## ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
-      '',
       '---',
       '',
-      '![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)',
+      '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
       '',
-      '> **This is a _developer preview_ (public beta) module.**',
-      '>',
-      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib))',
-      '> are auto-generated from CloudFormation. They are stable and safe to use.',
-      '>',
-      '> However, all other classes, i.e., higher level constructs, are under active development and subject to non-backward',
-      '> compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model.',
-      '> This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.',
+      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.',
       '',
       '---',
       '<!--END STABILITY BANNER-->',
@@ -268,6 +264,11 @@ async function main() {
       '```ts',
       `import ${lowcaseModuleName} = require('${packageName}');`,
       '```',
+    ]);
+
+    await write('.eslintrc.js', [
+      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+      'module.exports = baseConfig;',
     ]);
 
     const templateDir = path.join(__dirname, 'template');
@@ -280,7 +281,7 @@ async function main() {
     const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
     const unorderedDeps = {
       ...decdkPkg.dependencies,
-      [packageName]: version
+      [packageName]: version,
     };
     decdkPkg.dependencies = {};
     Object.keys(unorderedDeps).sort().forEach(k => {

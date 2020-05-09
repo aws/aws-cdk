@@ -1,7 +1,7 @@
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { findPkgPath, updatePkg } from './util';
+import { findPkgPath } from './util';
 
 /**
  * Builder options
@@ -40,47 +40,83 @@ export interface BuilderOptions {
   /**
    * The node version to use as target for Babel
    */
-  readonly nodeVersion?: string;
+  readonly nodeVersion: string;
+
+  /**
+   * The docker tag of the node base image to use in the parcel-bundler docker image
+   *
+   * @see https://hub.docker.com/_/node/?tab=tags
+   */
+  readonly nodeDockerTag: string;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container.
+   */
+  readonly projectRoot: string;
 }
 
 /**
  * Builder
  */
 export class Builder {
-  private readonly parcelBinPath: string;
+  private readonly pkgPath: string;
+
+  private readonly originalPkg: Buffer;
+
+  private readonly originalPkgJson: { [key: string]: any };
 
   constructor(private readonly options: BuilderOptions) {
-    let parcelPkgPath: string;
-    try {
-      parcelPkgPath = require.resolve('parcel-bundler/package.json'); // This will throw if `parcel-bundler` cannot be found
-    } catch (err) {
-      throw new Error('It looks like parcel-bundler is not installed. Please install v1.x of parcel-bundler with yarn or npm.');
+    // Original package.json
+    const pkgPath = findPkgPath();
+    if (!pkgPath) {
+      throw new Error('Cannot find a `package.json` in this project.');
     }
-    const parcelDir = path.dirname(parcelPkgPath);
-    const parcelPkg = JSON.parse(fs.readFileSync(parcelPkgPath, 'utf8'));
-
-    if (!parcelPkg.version || !/^1\./.test(parcelPkg.version)) { // Peer dependency on parcel v1.x
-      throw new Error(`This module has a peer dependency on parcel-bundler v1.x. Got v${parcelPkg.version}.`);
-    }
-
-    this.parcelBinPath = path.join(parcelDir, parcelPkg.bin.parcel);
+    this.pkgPath = path.join(pkgPath, 'package.json');
+    this.originalPkg = fs.readFileSync(this.pkgPath);
+    this.originalPkgJson = JSON.parse(this.originalPkg.toString());
   }
 
+  /**
+   * Build with parcel in a Docker container
+   */
   public build(): void {
-    const pkgPath = findPkgPath();
-    let originalPkg;
-
     try {
-      if (this.options.nodeVersion && pkgPath) {
-        // Update engines.node (Babel target)
-        originalPkg = updatePkg(pkgPath, {
-          engines: { node: `>= ${this.options.nodeVersion}` }
-        });
+      this.updatePkg();
+
+      const dockerBuildArgs = [
+        'build',
+        '--build-arg', `NODE_TAG=${this.options.nodeDockerTag}`,
+        '-t', 'parcel-bundler',
+        path.join(__dirname, '../parcel-bundler'),
+      ];
+
+      const build = spawnSync('docker', dockerBuildArgs);
+
+      if (build.error) {
+        throw build.error;
       }
 
-      const args = [
-        'build', this.options.entry,
-        '--out-dir', this.options.outDir,
+      if (build.status !== 0) {
+        throw new Error(`[Status ${build.status}] stdout: ${build.stdout?.toString().trim()}\n\n\nstderr: ${build.stderr?.toString().trim()}`);
+      }
+
+      const containerProjectRoot = '/project';
+      const containerOutDir = '/out';
+      const containerCacheDir = '/cache';
+      const containerEntryPath = path.join(containerProjectRoot, path.relative(this.options.projectRoot, path.resolve(this.options.entry)));
+
+      const dockerRunArgs = [
+        'run', '--rm',
+        '-v', `${this.options.projectRoot}:${containerProjectRoot}`,
+        '-v', `${path.resolve(this.options.outDir)}:${containerOutDir}`,
+        ...(this.options.cacheDir ? ['-v', `${path.resolve(this.options.cacheDir)}:${containerCacheDir}`] : []),
+        '-w', path.dirname(containerEntryPath),
+        'parcel-bundler',
+      ];
+      const parcelArgs = [
+        'parcel', 'build', containerEntryPath,
+        '--out-dir', containerOutDir,
         '--out-file', 'index.js',
         '--global', this.options.global,
         '--target', 'node',
@@ -88,26 +124,43 @@ export class Builder {
         '--log-level', '2',
         !this.options.minify && '--no-minify',
         !this.options.sourceMaps && '--no-source-maps',
-        ...this.options.cacheDir
-          ? ['--cache-dir', this.options.cacheDir]
-          : [],
+        ...(this.options.cacheDir ? ['--cache-dir', containerCacheDir] : []),
       ].filter(Boolean) as string[];
 
-      const parcel = spawnSync(this.parcelBinPath, args);
+      const parcel = spawnSync('docker', [...dockerRunArgs, ...parcelArgs]);
 
       if (parcel.error) {
         throw parcel.error;
       }
 
       if (parcel.status !== 0) {
-        throw new Error(parcel.stdout.toString().trim());
+        throw new Error(`[Status ${parcel.status}] stdout: ${parcel.stdout?.toString().trim()}\n\n\nstderr: ${parcel.stderr?.toString().trim()}`);
       }
     } catch (err) {
       throw new Error(`Failed to build file at ${this.options.entry}: ${err}`);
     } finally { // Always restore package.json to original
-      if (pkgPath && originalPkg) {
-        fs.writeFileSync(pkgPath, originalPkg);
-      }
+      this.restorePkg();
     }
+  }
+
+  /**
+   * Updates the package.json to configure Parcel
+   */
+  private updatePkg() {
+    const updateData: { [key: string]: any } = {};
+    // Update engines.node (Babel target)
+    updateData.engines = { node: `>= ${this.options.nodeVersion}` };
+
+    // Write new package.json
+    if (Object.keys(updateData).length !== 0) {
+      fs.writeFileSync(this.pkgPath, JSON.stringify({
+        ...this.originalPkgJson,
+        ...updateData,
+      }, null, 2));
+    }
+  }
+
+  private restorePkg() {
+    fs.writeFileSync(this.pkgPath, this.originalPkg);
   }
 }

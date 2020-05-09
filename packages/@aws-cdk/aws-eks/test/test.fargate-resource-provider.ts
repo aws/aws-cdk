@@ -16,17 +16,17 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
         RoleArn: 'AssumeRoleArn',
-        RoleSessionName: 'AWSCDK.EKSCluster.Create.RequestIdMock'
+        RoleSessionName: 'AWSCDK.EKSCluster.Create.RequestIdMock',
       });
 
       sinon.assert.calledWithExactly(client.createFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock'
+        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock',
       });
 
       test.deepEqual(onEventResponse, {
         PhysicalResourceId: 'MockProfileName',
-        Data: { fargateProfileArn: 'MockProfileArn' }
+        Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
       test.done();
@@ -41,8 +41,8 @@ export = {
           Config: {
             fargateProfileName: 'MyProfileNameBoom',
             clusterName: 'MockClusterName',
-          }
-        }
+          },
+        },
       }));
 
       // WHEN
@@ -51,12 +51,12 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.createFargateProfile, {
         fargateProfileName: 'MyProfileNameBoom',
-        clusterName: 'MockClusterName'
+        clusterName: 'MockClusterName',
       });
 
       test.deepEqual(onEventResponse, {
         PhysicalResourceId: 'MockProfileName',
-        Data: { fargateProfileArn: 'MockProfileArn' }
+        Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
       test.done();
@@ -68,8 +68,8 @@ export = {
 
       client.describeFargateProfile = sinon.fake.returns({
         fargateProfile: {
-          status: 'ACTIVE'
-        }
+          status: 'ACTIVE',
+        },
       });
 
       // WHEN
@@ -79,7 +79,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.equal(resp.IsComplete, true);
@@ -92,8 +92,8 @@ export = {
 
       client.describeFargateProfile = sinon.fake.returns({
         fargateProfile: {
-          status: 'CREATING'
-        }
+          status: 'CREATING',
+        },
       });
 
       // WHEN
@@ -103,7 +103,7 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.equal(resp.IsComplete, false);
@@ -116,8 +116,8 @@ export = {
 
       client.describeFargateProfile = sinon.fake.returns({
         fargateProfile: {
-          status: 'CREATE_FAILED'
-        }
+          status: 'CREATE_FAILED',
+        },
       });
 
       // WHEN
@@ -133,12 +133,12 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.equal(error.message, 'CREATE_FAILED');
       test.done();
-    }
+    },
   },
 
   update: {
@@ -147,7 +147,7 @@ export = {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Update'
+        RequestType: 'Update',
       }));
 
       // WHEN
@@ -156,21 +156,21 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
         RoleArn: 'AssumeRoleArn',
-        RoleSessionName: 'AWSCDK.EKSCluster.Update.RequestIdMock'
+        RoleSessionName: 'AWSCDK.EKSCluster.Update.RequestIdMock',
       });
 
       sinon.assert.calledWithExactly(client.createFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock'
+        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock',
       });
 
       test.deepEqual(onEventResponse, {
         PhysicalResourceId: 'MockProfileName',
-        Data: { fargateProfileArn: 'MockProfileArn' }
+        Data: { fargateProfileArn: 'MockProfileArn' },
       });
 
       test.done();
-    }
+    },
 
   },
 
@@ -180,7 +180,7 @@ export = {
       // GIVEN
       const client = newEksClientMock();
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Delete'
+        RequestType: 'Delete',
       }));
 
       // WHEN
@@ -189,12 +189,12 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.configureAssumeRole, {
         RoleArn: 'AssumeRoleArn',
-        RoleSessionName: 'AWSCDK.EKSCluster.Delete.RequestIdMock'
+        RoleSessionName: 'AWSCDK.EKSCluster.Delete.RequestIdMock',
       });
 
       sinon.assert.calledWithExactly(client.deleteFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.equal(onEventResponse, undefined);
@@ -211,18 +211,18 @@ export = {
 
       // WHEN
       const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Delete'
+        RequestType: 'Delete',
       }));
       const resp = await handler.isComplete();
 
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.deepEqual(resp, {
-        IsComplete: true
+        IsComplete: true,
       });
 
       test.done();
@@ -234,8 +234,8 @@ export = {
 
       client.describeFargateProfile = sinon.fake.returns({
         fargateProfile: {
-          status: 'DELETE_FAILED'
-        }
+          status: 'DELETE_FAILED',
+        },
       });
 
       // WHEN
@@ -251,14 +251,14 @@ export = {
       // THEN
       sinon.assert.calledWithExactly(client.describeFargateProfile, {
         clusterName: 'MockClusterName',
-        fargateProfileName: 'PhysicalResourceIdMock'
+        fargateProfileName: 'PhysicalResourceIdMock',
       });
 
       test.equal(error.message, 'DELETE_FAILED');
       test.done();
-    }
+    },
 
-  }
+  },
 };
 
 function newRequestMock(props: any = { }): any {
@@ -275,10 +275,10 @@ function newRequestMock(props: any = { }): any {
       ServiceToken: 'ServiceTokenMock',
       AssumeRoleArn: 'AssumeRoleArn',
       Config: {
-        clusterName: 'MockClusterName'
+        clusterName: 'MockClusterName',
       },
     },
-    ...props
+    ...props,
   };
 }
 
@@ -287,16 +287,17 @@ function newEksClientMock() {
     createCluster: sinon.fake.throws('not implemented'),
     deleteCluster: sinon.fake.throws('not implemented'),
     describeCluster: sinon.fake.throws('not implemented'),
+    describeUpdate: sinon.fake.throws('not implemented'),
     updateClusterConfig: sinon.fake.throws('not implemented'),
     updateClusterVersion: sinon.fake.throws('not implemented'),
     configureAssumeRole: sinon.fake(),
     createFargateProfile: sinon.fake.returns({
       fargateProfile: {
         fargateProfileName: 'MockProfileName',
-        fargateProfileArn: 'MockProfileArn'
-      }
+        fargateProfileArn: 'MockProfileArn',
+      },
     }),
     deleteFargateProfile: sinon.fake(),
-    describeFargateProfile: sinon.fake.throws('not implemented')
+    describeFargateProfile: sinon.fake.throws('not implemented'),
   };
 }

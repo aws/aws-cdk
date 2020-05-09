@@ -17,7 +17,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     }));
 
     // THEN
@@ -26,42 +26,51 @@ export = {
         'Statement': [
           {
             'Action': [
-              'kinesis:DescribeStream',
               'kinesis:DescribeStreamSummary',
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
               'kinesis:ListShards',
-              'kinesis:SubscribeToShard'
+              'kinesis:SubscribeToShard',
             ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::GetAtt': [
                 'S509448A1',
-                'Arn'
-              ]
-            }
-          }
+                'Arn',
+              ],
+            },
+          },
+          {
+            'Action': 'kinesis:DescribeStream',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn',
+              ],
+            },
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
       'Roles': [{
-        'Ref': 'FnServiceRoleB9001A96'
-      }]
+        'Ref': 'FnServiceRoleB9001A96',
+      }],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 100,
-      'StartingPosition': 'TRIM_HORIZON'
+      'StartingPosition': 'TRIM_HORIZON',
     }));
 
     test.done();
@@ -76,7 +85,7 @@ export = {
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -84,14 +93,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 50,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -106,7 +115,7 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 0,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
 
     test.done();
@@ -121,7 +130,7 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 10001,
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
 
     test.done();
@@ -136,7 +145,7 @@ export = {
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
       maxBatchingWindow: cdk.Duration.minutes(2),
-      startingPosition: lambda.StartingPosition.LATEST
+      startingPosition: lambda.StartingPosition.LATEST,
     }));
 
     // THEN
@@ -144,14 +153,14 @@ export = {
       'EventSourceArn': {
         'Fn::GetAtt': [
           'S509448A1',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       'FunctionName':  {
-        'Ref': 'Fn9270CBC0'
+        'Ref': 'Fn9270CBC0',
       },
       'MaximumBatchingWindowInSeconds': 120,
-      'StartingPosition': 'LATEST'
+      'StartingPosition': 'LATEST',
     }));
 
     test.done();
@@ -163,7 +172,7 @@ export = {
     const fn = new TestFunction(stack, 'Fn');
     const stream = new kinesis.Stream(stack, 'S');
     const eventSource = new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     });
 
     // WHEN
@@ -179,7 +188,7 @@ export = {
     const stack = new cdk.Stack();
     const stream = new kinesis.Stream(stack, 'S');
     const eventSource = new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     });
 
     // WHEN/THEN

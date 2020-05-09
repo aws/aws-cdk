@@ -1,10 +1,10 @@
 ## Amazon Elastic Load Balancing V2 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -23,9 +23,9 @@ You define an application load balancer by creating an instance of
 and adding Targets to the Listener:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 
 // ...
 
@@ -104,9 +104,9 @@ Network Load Balancers are defined in a similar way to Application Load
 Balancers:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -165,9 +165,9 @@ To use a Lambda Function as a target, use the integration class in the
 `@aws-cdk/aws-elasticloadbalancingv2-targets` package:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 
 const lambdaFunction = new lambda.Function(...);
 const lb = new elbv2.ApplicationLoadBalancer(...);

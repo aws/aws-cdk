@@ -64,7 +64,7 @@ export class Port {
       protocol: Protocol.TCP,
       fromPort: startPort,
       toPort: endPort,
-      stringRepresentation: `${renderPort(startPort)}-${renderPort(endPort)}`
+      stringRepresentation: `${renderPort(startPort)}-${renderPort(endPort)}`,
     });
   }
 
@@ -100,7 +100,7 @@ export class Port {
       protocol: Protocol.UDP,
       fromPort: startPort,
       toPort: endPort,
-      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`
+      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`,
     });
   }
 
@@ -126,7 +126,7 @@ export class Port {
       protocol: Protocol.ICMP,
       fromPort: type,
       toPort: code,
-      stringRepresentation: `ICMP Type ${type} Code ${code}`
+      stringRepresentation: `ICMP Type ${type} Code ${code}`,
     });
   }
 

@@ -152,7 +152,7 @@
                     "type": "string"
                 },
                 "sourceHash": {
-                    "description": "The hash of the source directory used to build the asset.",
+                    "description": "The hash of the asset source.",
                     "type": "string"
                 },
                 "path": {
@@ -213,7 +213,7 @@
                     "type": "string"
                 },
                 "sourceHash": {
-                    "description": "The hash of the source directory used to build the asset.",
+                    "description": "The hash of the asset source.",
                     "type": "string"
                 },
                 "path": {
@@ -255,27 +255,189 @@
                     "type": "string"
                 },
                 "provider": {
-                    "description": "The provider from which we expect this context key to be obtained.",
-                    "type": "string"
+                    "$ref": "#/definitions/ContextProvider",
+                    "description": "The provider from which we expect this context key to be obtained."
                 },
                 "props": {
                     "description": "A set of provider-specific options.",
-                    "type": "object",
-                    "additionalProperties": {},
-                    "properties": {
-                        "account": {
-                            "type": "string"
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AmiContextQuery"
                         },
-                        "region": {
-                            "type": "string"
+                        {
+                            "$ref": "#/definitions/AvailabilityZonesContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/HostedZoneContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/SSMParameterContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/VpcContextQuery"
                         }
-                    }
+                    ]
                 }
             },
             "required": [
                 "key",
                 "props",
                 "provider"
+            ]
+        },
+        "ContextProvider": {
+            "description": "Identifier for the context provider",
+            "enum": [
+                "ami",
+                "availability-zones",
+                "hosted-zone",
+                "ssm",
+                "vpc-provider"
+            ],
+            "type": "string"
+        },
+        "AmiContextQuery": {
+            "description": "Query to AMI context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Account to query",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Region to query",
+                    "type": "string"
+                },
+                "owners": {
+                    "description": "Owners to DescribeImages call (Default - All owners)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "filters": {
+                    "description": "Filters to DescribeImages call",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "filters",
+                "region"
+            ]
+        },
+        "AvailabilityZonesContextQuery": {
+            "description": "Query to hosted zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region"
+            ]
+        },
+        "HostedZoneContextQuery": {
+            "description": "Query to hosted zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "domainName": {
+                    "description": "The domain name e.g. example.com to lookup",
+                    "type": "string"
+                },
+                "privateZone": {
+                    "description": "True if the zone you want to find is a private hosted zone",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "vpcId": {
+                    "description": "The VPC ID to that the private zone must be associated with\n\nIf you provide VPC ID and privateZone is false, this will return no results\nand raise an error. (Default - Required if privateZone=true)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "domainName",
+                "region"
+            ]
+        },
+        "SSMParameterContextQuery": {
+            "description": "Query to hosted zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "parameterName": {
+                    "description": "Parameter name to query",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "parameterName",
+                "region"
+            ]
+        },
+        "VpcContextQuery": {
+            "description": "Query input for looking up a VPC",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "filter": {
+                    "description": "Filters to apply to the VPC\n\nFilter parameters are the same as passed to DescribeVpcs.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "returnAsymmetricSubnets": {
+                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "subnetGroupNameTag": {
+                    "description": "Optional tag for subnet group name.\nIf not provided, we'll look at the aws-cdk:subnet-name tag.\nIf the subnet does not have the specified tag,\nwe'll use its type as the name. (Default 'aws-cdk:subnet-name')",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "filter",
+                "region"
             ]
         },
         "RuntimeInfo": {

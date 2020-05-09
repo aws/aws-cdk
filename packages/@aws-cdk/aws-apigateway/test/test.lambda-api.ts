@@ -27,16 +27,16 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}'
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       'HttpMethod': 'ANY',
       'ResourceId': {
-        'Ref': 'lambdarestapiproxyE3AE07E3'
+        'Ref': 'lambdarestapiproxyE3AE07E3',
       },
       'RestApiId': {
-        'Ref': 'lambdarestapiAAD10924'
+        'Ref': 'lambdarestapiAAD10924',
       },
       'AuthorizationType': 'NONE',
       'Integration': {
@@ -48,24 +48,24 @@ export = {
             [
               'arn:',
               {
-                'Ref': 'AWS::Partition'
+                'Ref': 'AWS::Partition',
               },
               ':apigateway:',
               {
-                'Ref': 'AWS::Region'
+                'Ref': 'AWS::Region',
               },
               ':lambda:path/2015-03-31/functions/',
               {
                 'Fn::GetAtt': [
                   'handlerE1533BD5',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              '/invocations'
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
 
     test.done();
@@ -83,8 +83,8 @@ export = {
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
       version: new lambda.Version(stack, 'version', {
-        lambda: handler
-      })
+        lambda: handler,
+      }),
     });
 
     // WHEN
@@ -97,16 +97,16 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}'
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       'HttpMethod': 'ANY',
       'ResourceId': {
-        'Ref': 'lambdarestapiproxyE3AE07E3'
+        'Ref': 'lambdarestapiproxyE3AE07E3',
       },
       'RestApiId': {
-        'Ref': 'lambdarestapiAAD10924'
+        'Ref': 'lambdarestapiAAD10924',
       },
       'AuthorizationType': 'NONE',
       'Integration': {
@@ -118,21 +118,21 @@ export = {
             [
               'arn:',
               {
-                'Ref': 'AWS::Partition'
+                'Ref': 'AWS::Partition',
               },
               ':apigateway:',
               {
-                'Ref': 'AWS::Region'
+                'Ref': 'AWS::Region',
               },
               ':lambda:path/2015-03-31/functions/',
               {
-                'Ref': 'alias68BF17F5'
+                'Ref': 'alias68BF17F5',
               },
-              '/invocations'
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
 
     test.done();
@@ -157,21 +157,21 @@ export = {
 
     // THEN
     expect(stack).notTo(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}'
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: 'tasks'
+      PathPart: 'tasks',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: 'lambdarestapitasks224418C8' }
+      ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: 'lambdarestapitasks224418C8' }
+      ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     }));
 
     test.done();
@@ -189,12 +189,12 @@ export = {
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') }
+      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') },
     }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      defaultIntegration: new apigw.HttpIntegration('https://foo/bar')
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
     }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.done();
@@ -215,8 +215,8 @@ export = {
       handler,
       defaultCorsPreflightOptions: {
         allowOrigins: ['https://aws.amazon.com'],
-        allowMethods: ['GET', 'PUT']
-      }
+        allowMethods: ['GET', 'PUT'],
+      },
     });
 
     // THEN
@@ -232,13 +232,13 @@ export = {
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
             },
-            StatusCode: '204'
-          }
+            StatusCode: '204',
+          },
         ],
         RequestTemplates: {
-          'application/json': '{ statusCode: 200 }'
+          'application/json': '{ statusCode: 200 }',
         },
-        Type: 'MOCK'
+        Type: 'MOCK',
       },
       MethodResponses: [
         {
@@ -248,11 +248,11 @@ export = {
             'method.response.header.Vary': true,
             'method.response.header.Access-Control-Allow-Methods': true,
           },
-          StatusCode: '204'
-        }
-      ]
+          StatusCode: '204',
+        },
+      ],
     }));
 
     test.done();
-  }
+  },
 };

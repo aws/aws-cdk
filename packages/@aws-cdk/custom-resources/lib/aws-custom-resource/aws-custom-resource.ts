@@ -1,4 +1,3 @@
-import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
@@ -267,7 +266,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private readonly customResource: CustomResource;
+  private readonly customResource: cdk.CustomResource;
   private readonly props: AwsCustomResourceProps;
 
   // 'props' cannot be optional, even though all its properties are optional.
@@ -316,7 +315,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
         if (call) {
           provider.addToRolePolicy(new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources
+            resources: props.policy.resources,
           }));
         }
       }
@@ -324,14 +323,15 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
     }
 
     const create = props.onCreate || props.onUpdate;
-    this.customResource = new CustomResource(this, 'Resource', {
+    this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
-      provider: CustomResourceProvider.fromLambda(provider),
+      serviceToken: provider.functionArn,
+      pascalCaseProperties: true,
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete)
-      }
+        delete: props.onDelete && encodeBooleans(props.onDelete),
+      },
     });
   }
 

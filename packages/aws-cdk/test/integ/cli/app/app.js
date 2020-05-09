@@ -46,7 +46,7 @@ class ParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam').valueAsString
     });
   }
 }
@@ -56,7 +56,20 @@ class OtherParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam').valueAsString
+    });
+  }
+}
+
+class MultiParameterStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new sns.Topic(this, 'TopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam').valueAsString
+    });
+    new sns.Topic(this, 'OtherTopicParameter', {
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam').valueAsString
     });
   }
 }
@@ -66,7 +79,7 @@ class OutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic =  new sns.Topic(this, 'MyOutput', {
-      topicName: 'MyTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {
@@ -80,7 +93,7 @@ class AnotherOutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic = new sns.Topic(this, 'MyOtherOutput', {
-      topicName: 'MyOtherTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyOtherTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {
@@ -236,6 +249,8 @@ new YourStack(app, `${stackPrefix}-test-2`);
 // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
 new ParameterStack(app, `${stackPrefix}-param-test-1`);
 new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+// Deploy stack with multiple parameters
+new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
 // Deploy stack with outputs does ${stackPrefix}-outputs-test-*
 new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
@@ -263,5 +278,9 @@ new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
 
 new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+
+new YourStack(app, `${stackPrefix}-termination-protection`, {
+  terminationProtection: true,
+});
 
 app.synth();
