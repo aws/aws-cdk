@@ -144,7 +144,7 @@ export interface OpenIdConnectConfig {
   /**
    * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
    */
-  readonly OIDCProvider: string;
+  readonly oidcProvider: string;
 }
 
 /**
@@ -438,7 +438,7 @@ export class GraphQLApi extends Construct {
       authTtl: config.authExpiry,
       clientId: config.clientId,
       iatTtl: config.tokenExpiry,
-      issuer: config.OIDCProvider,
+      issuer: config.oidcProvider,
     };
   }
 
