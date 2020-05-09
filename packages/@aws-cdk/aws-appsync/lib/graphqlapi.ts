@@ -291,8 +291,8 @@ export class GraphQLApi extends Construct {
       });
       apiLogsRole.addManagedPolicy(
         ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AWSAppSyncPushToCloudWatchLogs'
-        )
+          'service-role/AWSAppSyncPushToCloudWatchLogs',
+        ),
       );
     }
 
@@ -312,22 +312,22 @@ export class GraphQLApi extends Construct {
         props.authorizationConfig?.defaultAuthorization?.authorizationType ===
         AuthorizationType.OIDC
           ? this.formatOpenIdConnectConfig(
-              props.authorizationConfig.defaultAuthorization
-                .openIdConnectConfig!
-            )
+            props.authorizationConfig.defaultAuthorization
+              .openIdConnectConfig!,
+          )
           : undefined,
       userPoolConfig:
         props.authorizationConfig?.defaultAuthorization?.authorizationType ===
         AuthorizationType.USER_POOL
           ? this.formatUserPoolConfig(
-              props.authorizationConfig.defaultAuthorization.userPoolConfig!
-            )
+            props.authorizationConfig.defaultAuthorization.userPoolConfig!,
+          )
           : undefined,
       additionalAuthenticationProviders: props.authorizationConfig
         ?.additionalAuthorizationModes!.length
         ? this.formatAdditionalAuthorizationModes(
-            props.authorizationConfig!.additionalAuthorizationModes!
-          )
+          props.authorizationConfig!.additionalAuthorizationModes!,
+        )
         : undefined,
     });
 
@@ -339,9 +339,9 @@ export class GraphQLApi extends Construct {
     if (defaultAuthorizationType === AuthorizationType.API_KEY) {
       const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
         ?.defaultAuthorization?.apiKeyConfig || {
-        name: 'DefaultAPIKey',
-        description: 'Default API Key created by CDK',
-      };
+          name: 'DefaultAPIKey',
+          description: 'Default API Key created by CDK',
+        };
       this.createAPIKey(apiKeyConfig);
     }
 
@@ -386,7 +386,7 @@ export class GraphQLApi extends Construct {
             defaultAuthorizationType === AuthorizationType.API_KEY
           ) {
             throw new Error(
-              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html"
+              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
             );
           }
 
@@ -395,7 +395,7 @@ export class GraphQLApi extends Construct {
             defaultAuthorizationType === AuthorizationType.IAM
           ) {
             throw new Error(
-              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html"
+              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
             );
           }
 
@@ -404,7 +404,7 @@ export class GraphQLApi extends Construct {
             !authorizationMode.openIdConnectConfig
           ) {
             throw new Error(
-              'Missing OIDC Configuration inside an additional authorization mode'
+              'Missing OIDC Configuration inside an additional authorization mode',
             );
           }
 
@@ -414,7 +414,7 @@ export class GraphQLApi extends Construct {
             !authorizationMode.userPoolConfig
           ) {
             throw new Error(
-              'Missing User Pool Configuration inside an additional authorization mode'
+              'Missing User Pool Configuration inside an additional authorization mode',
             );
           }
 
@@ -423,16 +423,16 @@ export class GraphQLApi extends Construct {
             !authorizationMode.apiKeyConfig
           ) {
             throw new Error(
-              'Missing API Key Configuration inside an additional authorization mode'
+              'Missing API Key Configuration inside an additional authorization mode',
             );
           }
-        }
+        },
       );
     }
   }
 
   private formatOpenIdConnectConfig(
-    config: OpenIdConnectConfig
+    config: OpenIdConnectConfig,
   ): CfnGraphQLApi.OpenIDConnectConfigProperty {
     return {
       authTtl: config.authExpiry,
@@ -443,7 +443,7 @@ export class GraphQLApi extends Construct {
   }
 
   private formatUserPoolConfig(
-    config: UserPoolConfig
+    config: UserPoolConfig,
   ): CfnGraphQLApi.UserPoolConfigProperty {
     return {
       userPoolId: config.userPool.userPoolId,
@@ -473,10 +473,10 @@ export class GraphQLApi extends Construct {
   }
 
   private formatAdditionalAuthorizationModes(
-    authModes: AuthorizationMode[]
+    authModes: AuthorizationMode[],
   ): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] {
     return authModes.reduce<
-      CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
+    CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
     >(
       (acc, authMode) => [
         ...acc,
@@ -492,7 +492,7 @@ export class GraphQLApi extends Construct {
               : undefined,
         },
       ],
-      []
+      [],
     );
   }
 
