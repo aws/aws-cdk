@@ -70,42 +70,42 @@ export class SDK implements ISDK {
   public cloudFormation(): AWS.CloudFormation {
     return new AWS.CloudFormation({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
   public ec2(): AWS.EC2 {
     return new AWS.EC2({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
   public ssm(): AWS.SSM {
     return new AWS.SSM({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
   public s3(): AWS.S3 {
     return new AWS.S3({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
   public route53(): AWS.Route53 {
     return new AWS.Route53({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
   public ecr(): AWS.ECR {
     return new AWS.ECR({
       ...this.config,
-      endpoint: this.localstackEndpoint
+      endpoint: this.localstackEndpoint,
     });
   }
 
