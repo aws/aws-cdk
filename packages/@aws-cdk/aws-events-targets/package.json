@@ -51,13 +51,7 @@
       "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json && rm -f lib/sdk-api-metadata.d.ts"
     ]
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 30
-      }
-    }
-  },
+  "jest": {},
   "keywords": [
     "aws",
     "cdk",

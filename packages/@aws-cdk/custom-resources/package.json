@@ -102,13 +102,7 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 70
-      }
-    }
-  },
+  "jest": {},
   "engines": {
     "node": ">= 10.13.0"
   },

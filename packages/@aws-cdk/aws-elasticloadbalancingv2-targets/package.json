@@ -46,13 +46,7 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 65
-      }
-    }
-  },
+  "jest": {},
   "keywords": [
     "aws",
     "cdk",

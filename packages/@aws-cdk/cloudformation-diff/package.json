@@ -14,15 +14,7 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 60,
-        "lines": 60,
-        "branches": 55
-      }
-    }
-  },
+  "jest": {},
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
