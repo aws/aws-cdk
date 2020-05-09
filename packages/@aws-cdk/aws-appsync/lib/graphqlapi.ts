@@ -55,15 +55,18 @@ export interface AuthorizationMode {
   readonly authorizationType: AuthorizationType;
   /**
    * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
    */
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
    * If AuthorizationType.API_KEY` is in `additionalAuthorizationModes`, this option is required.
+   * @default - none
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
    * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
 }
@@ -114,6 +117,7 @@ export interface ApiKeyConfig {
   readonly name: string;
   /**
    * Description of API key
+   * @default - none
    */
   readonly description?: string;
 
@@ -132,15 +136,19 @@ export interface ApiKeyConfig {
 export interface OpenIdConnectConfig {
   /**
    * The number of milliseconds an OIDC token is valid after being authenticated
+   * @default - none (no auth caching)
    */
   readonly authExpiry?: number;
   /**
    * The number of milliseconds an OIDC token is valid after being issued to a user
+   * @default - none (expiry determined from token validation)
    */
   readonly tokenExpiry?: number;
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
+   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @default - * (All)
    */
   readonly clientId?: string;
   /**
