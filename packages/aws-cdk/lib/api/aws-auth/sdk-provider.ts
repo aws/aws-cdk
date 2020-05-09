@@ -45,16 +45,10 @@ export interface SdkProviderOptions {
   /**
    * Custom endpoints for API calls
    *
-   * @default - standard AWS endpoints which are built from the region you have configured
+   * @default - None. Standard AWS endpoints are built from the region you
+   * have configured
    */
-  readonly endpoints?: string;
-}
-
-/**
- * Mapping of services to endpoints that the SDK will use for API requests
- */
-export interface ServiceEndpoints {
-  [serviceName: string]: string
+  readonly localstackEndpoint?: string;
 }
 
 /**
@@ -103,12 +97,12 @@ export class SdkProvider {
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
-    const endpoints = options.endpoints ? parseEndpoints(options.endpoints) : {};
+    const localstackEndpoint = options.localstackEndpoint;
 
     const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
     const region = await AwsCliCompatible.region(options.profile);
 
-    return new SdkProvider(chain, region, sdkOptions, endpoints);
+    return new SdkProvider(chain, region, sdkOptions, localstackEndpoint);
   }
 
   private readonly plugins = new CredentialPlugins();
@@ -120,7 +114,7 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     private readonly sdkOptions: ConfigurationOptions = {},
-    private readonly endpoints: ServiceEndpoints = {}) {
+    private readonly localstackEndpoint?: string) {
   }
 
   /**
@@ -132,7 +126,7 @@ export class SdkProvider {
   public async forEnvironment(accountId: string | undefined, region: string | undefined, mode: Mode): Promise<ISDK> {
     const env = await this.resolveEnvironment(accountId, region);
     const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.sdkOptions, this.endpoints);
+    return new SDK(creds, env.region, this.sdkOptions, this.localstackEndpoint);
   }
 
   /**
@@ -279,34 +273,6 @@ export interface Account {
    * The partition ('aws' or 'aws-cn' or otherwise)
    */
   readonly partition: string;
-}
-
-/**
- * Parse endpoints to produce a map of service to custom endpoints
- * @param endpoints string version of endpoints separated by commas.
- */
-function parseEndpoints(endpoints: string) {
-  let endpointMapping = {};
-  try {
-    endpointMapping = JSON.parse(endpoints);
-  } catch (e) {
-    debug('Cannot JSON parse `--endpoints` argument: %s. Failed with error: %s', endpoints, e);
-  }
-
-  try {
-    endpointMapping = endpointMapping ||
-    endpoints.split(/,/g).reduce<ServiceEndpoints>((acc, entry) => {
-      const [service, url] = entry.split('=');
-      if (service && url) {
-        acc[service] = url;
-      }
-      return acc;
-    }, {});
-  } catch (e) {
-    debug('Cannot parse `--endpoints` shorthand notation: %s. Failed with error: %s', endpoints, e);
-  }
-
-  return endpointMapping;
 }
 
 /**

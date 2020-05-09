@@ -3,7 +3,7 @@ import { ConfigurationOptions } from 'aws-sdk/lib/config';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
-import { Account, ServiceEndpoints } from './sdk-provider';
+import { Account } from './sdk-provider';
 
 /** @experimental */
 export interface ISDK {
@@ -41,7 +41,7 @@ export class SDK implements ISDK {
 
   private readonly config: ConfigurationOptions;
 
-  private readonly endpoints: ServiceEndpoints;
+  private readonly localstackEndpoint?: string;
 
   /**
    * Default retry options for SDK clients
@@ -56,7 +56,7 @@ export class SDK implements ISDK {
   private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
 
   // tslint:disable-next-line: max-line-length
-  constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}, endpoints: ServiceEndpoints = {}) {
+  constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}, localstackEndpoint?: string) {
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
@@ -64,48 +64,48 @@ export class SDK implements ISDK {
       region,
     };
     this.currentRegion = region;
-    this.endpoints = endpoints;
+    this.localstackEndpoint = localstackEndpoint;
   }
 
   public cloudFormation(): AWS.CloudFormation {
     return new AWS.CloudFormation({
       ...this.config,
-      endpoint: this.endpoints.cloudformation
+      endpoint: this.localstackEndpoint
     });
   }
 
   public ec2(): AWS.EC2 {
     return new AWS.EC2({
       ...this.config,
-      endpoint: this.endpoints.ec2
+      endpoint: this.localstackEndpoint
     });
   }
 
   public ssm(): AWS.SSM {
     return new AWS.SSM({
       ...this.config,
-      endpoint: this.endpoints.ssm
+      endpoint: this.localstackEndpoint
     });
   }
 
   public s3(): AWS.S3 {
     return new AWS.S3({
       ...this.config,
-      endpoint: this.endpoints.s3
+      endpoint: this.localstackEndpoint
     });
   }
 
   public route53(): AWS.Route53 {
     return new AWS.Route53({
       ...this.config,
-      endpoint: this.endpoints.route53
+      endpoint: this.localstackEndpoint
     });
   }
 
   public ecr(): AWS.ECR {
     return new AWS.ECR({
       ...this.config,
-      endpoint: this.endpoints.ecr
+      endpoint: this.localstackEndpoint
     });
   }
 
