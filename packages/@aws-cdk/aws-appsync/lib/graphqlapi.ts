@@ -58,7 +58,8 @@ export interface AuthorizationMode {
    */
   readonly userPoolConfig?: UserPoolConfig;
   /**
-   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured. If AuthorizationType.API_KEY` is in `additionalAuthorizationModes`, this option is required.
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * If AuthorizationType.API_KEY` is in `additionalAuthorizationModes`, this option is required.
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -138,7 +139,8 @@ export interface OpenIdConnectConfig {
    */
   readonly tokenExpiry?: number;
   /**
-   * The client identifier of the Relying party at the OpenID identity provider. A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
+   * The client identifier of the Relying party at the OpenID identity provider.
+   * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
    */
   readonly clientId?: string;
   /**
@@ -359,6 +361,57 @@ export class GraphQLApi extends Construct {
     });
   }
 
+  /**
+   * add a new dummy data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   */
+  public addNoneDataSource(name: string, description: string): NoneDataSource {
+    return new NoneDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+    });
+  }
+
+  /**
+   * add a new DynamoDB data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
+   */
+  public addDynamoDbDataSource(
+    name: string,
+    description: string,
+    table: Table,
+  ): DynamoDbDataSource {
+    return new DynamoDbDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+      table,
+    });
+  }
+
+  /**
+   * add a new Lambda data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param lambdaFunction The Lambda function to call to interact with this data source
+   */
+  public addLambdaDataSource(
+    name: string,
+    description: string,
+    lambdaFunction: IFunction,
+  ): LambdaDataSource {
+    return new LambdaDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      name,
+      lambdaFunction,
+    });
+  }
+
   private validateAuthorizationProps(props: GraphQLApiProps) {
     const defaultAuthorizationType =
       props.authorizationConfig?.defaultAuthorization?.authorizationType ||
@@ -494,49 +547,6 @@ export class GraphQLApi extends Construct {
       ],
       [],
     );
-  }
-
-  /**
-   * add a new dummy data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   */
-  public addNoneDataSource(name: string, description: string): NoneDataSource {
-    return new NoneDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-    });
-  }
-
-  /**
-   * add a new DynamoDB data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
-   */
-  public addDynamoDbDataSource(name: string, description: string, table: Table): DynamoDbDataSource {
-    return new DynamoDbDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-      table,
-    });
-  }
-
-  /**
-   * add a new Lambda data source to this API
-   * @param name The name of the data source
-   * @param description The description of the data source
-   * @param lambdaFunction The Lambda function to call to interact with this data source
-   */
-  public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
-    return new LambdaDataSource(this, `${name}DS`, {
-      api: this,
-      description,
-      name,
-      lambdaFunction,
-    });
   }
 }
 

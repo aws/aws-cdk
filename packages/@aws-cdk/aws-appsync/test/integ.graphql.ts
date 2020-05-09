@@ -3,13 +3,13 @@ import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
 import {
+  AuthorizationType,
   GraphQLApi,
   KeyCondition,
   MappingTemplate,
   PrimaryKey,
   UserPoolDefaultAction,
   Values,
-  AuthorizationType,
 } from '../lib';
 
 const app = new App();
