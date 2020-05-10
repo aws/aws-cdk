@@ -1,6 +1,8 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { spawnSync } from 'child_process';
+import * as fs from 'fs';
 
 export abstract class Code {
   /**
@@ -41,6 +43,20 @@ export abstract class Code {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
+  }
+
+  /**
+   * Lambda code from a command run in an existing Docker image.
+   */
+  public static fromDockerImage(options: DockerImageCodeOptions): AssetCode {
+    return new DockerImageCode(options);
+  }
+
+  /**
+   * Lambda code from a command run in a Docker image built from a Dockerfile.
+   */
+  public static fromDockerAsset(options: DockerAssetCodeOptions): AssetCode {
+    return new DockerAssetCode(options);
   }
 
   /**
@@ -206,6 +222,143 @@ export class AssetCode extends Code {
   }
 }
 
+/**
+ * A Docker volume
+ */
+export interface DockerVolume {
+  /**
+   * The path to the file or directory on the host machine
+   */
+  readonly hostPath: string;
+
+  /**
+   * The path where the file or directory is mounted in the container
+   */
+  readonly containerPath: string;
+}
+
+/**
+ * Docker run options
+ */
+export interface DockerRunOptions {
+  /**
+   * The command to run in the container.
+   */
+  readonly command: string[];
+
+  /**
+   * The path of the asset directory that will contain the build output of the Docker
+   * container. This path is mounted at `/asset` in the container. It is created
+   * if it doesn't exist.
+   */
+  readonly assetPath: string;
+
+  /**
+   * Additional Docker volumes to mount.
+   *
+   * @default - no additional volumes are mounted
+   */
+  readonly volumes?: DockerVolume[];
+}
+
+/**
+ * Options for DockerImageCode
+ */
+export interface DockerImageCodeOptions extends DockerRunOptions {
+  /**
+   * The Docker image where the command will run.
+   */
+  readonly image: string;
+}
+
+/**
+ * Lambda code from a command run in an existing Docker image
+ */
+export class DockerImageCode extends AssetCode {
+  constructor(options: DockerImageCodeOptions) {
+    if (!fs.existsSync(options.assetPath)) {
+      fs.mkdirSync(options.assetPath);
+    }
+
+    const volumes = options.volumes || [];
+
+    const dockerArgs: string[] = [
+      'run', '--rm',
+      '-v', `${options.assetPath}:/asset`,
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
+      options.image,
+      ...options.command,
+    ];
+
+    const docker = spawnSync('docker', dockerArgs);
+
+    if (docker.error) {
+      throw docker.error;
+    }
+
+    if (docker.status !== 0) {
+      throw new Error(`[Status ${docker.status}] stdout: ${docker.stdout?.toString().trim()}\n\n\nstderr: ${docker.stderr?.toString().trim()}`);
+    }
+
+    super(options.assetPath);
+  }
+}
+
+/**
+ * Options for DockerAssetCode
+ */
+export interface DockerAssetCodeOptions extends DockerRunOptions {
+  /**
+   * The path to the directory containing the Docker file.
+   */
+  readonly dockerPath: string;
+
+  /**
+   * Build args
+   *
+   * @default - no build args
+   */
+  readonly buildArgs?: { [key: string]: string };
+}
+
+/**
+ * Lambda code from a command run in a Docker image built from a Dockerfile.
+ */
+export class DockerAssetCode extends DockerImageCode {
+  constructor(options: DockerAssetCodeOptions) {
+    const buildArgs = options.buildArgs || {};
+
+    const dockerArgs: string[] = [
+      'build',
+      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      options.dockerPath,
+    ];
+
+    const docker = spawnSync('docker', dockerArgs);
+
+    if (docker.error) {
+      throw docker.error;
+    }
+
+    if (docker.status !== 0) {
+      throw new Error(`[Status ${docker.status}] stdout: ${docker.stdout?.toString().trim()}\n\n\nstderr: ${docker.stderr?.toString().trim()}`);
+    }
+
+    const match = docker.stdout.toString().match(/Successfully built ([a-z0-9]+)/);
+
+    if (!match) {
+      throw new Error('Failed to extract image ID from Docker build output');
+    }
+
+    super({
+      assetPath: options.assetPath,
+      command: options.command,
+      image: match[1],
+      volumes: options.volumes,
+    });
+  }
+}
+
 export interface ResourceBindOptions {
   /**
    * The name of the CloudFormation property to annotate with asset metadata.
@@ -311,4 +464,8 @@ export class CfnParametersCode extends Code {
       throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
   }
+}
+
+function flatten(x: string[][]) {
+  return Array.prototype.concat([], ...x);
 }
