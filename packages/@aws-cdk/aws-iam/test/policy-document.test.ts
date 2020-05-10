@@ -92,7 +92,6 @@ describe('IAM policy document', () => {
   test('Throws with invalid not actions', () => {
     expect(() => {
       new PolicyStatement({
-        actions: ['abc:def'],
         notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
         resources: ['*'],
       });
@@ -104,7 +103,7 @@ describe('IAM policy document', () => {
       new PolicyStatement({
         actions: ['abc:def'],
         resources: ['abc'],
-        notResources: ['abcd'],
+        notResources: ['abc'],
       });
     }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
   });

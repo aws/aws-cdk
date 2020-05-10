@@ -249,6 +249,18 @@ const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
 
 ```
 
+### Policy Statement
+
+As Per the doc of [IAM policy grammar](https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_policies_grammar.html#policies-grammar-bnf), the action and resource blocks are mandatory. Hence, the new policy stament using `PolicyStatementProps` can be created as:
+
+```ts
+const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
+policy.addStatements(new PolicyStatement({ 
+  resources: ['*'],
+  actions: ['sqs:SendMessage'] 
+}));
+```
+
 ### OpenID Connect Providers
 
 OIDC identity providers are entities in IAM that describe an external identity
