@@ -85,7 +85,7 @@
         }
       }
     },
-    "ApiDefaultAPIKeyApiKeyACDEE2CC": {
+    "ApiDefaultAPIKeyApiKey74F5313B": {
       "Type": "AWS::AppSync::ApiKey",
       "Properties": {
         "ApiId": {
