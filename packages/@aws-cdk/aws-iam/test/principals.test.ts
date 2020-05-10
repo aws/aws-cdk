@@ -72,6 +72,8 @@ test('cannot have multiple principals with different conditions in the same stat
           },
         }),
       ],
+      actions: ['abc:def'],
+      resources: ['*'],
     }));
   }).toThrow(/All principals in a PolicyStatement must have the same Conditions/);
 });
@@ -85,6 +87,8 @@ test('can have multiple principals the same conditions in the same statement', (
       new iam.ServicePrincipal('myService.amazon.com'),
       new iam.ServicePrincipal('yourservice.amazon.com'),
     ],
+    actions: ['abc:def'],
+    resources: ['*'],
   }));
 
   user.addToPolicy(new iam.PolicyStatement({
@@ -100,9 +104,10 @@ test('can have multiple principals the same conditions in the same statement', (
         },
       }),
     ],
+    actions: ['abc:def'],
+    resources: ['*'],
   }));
 });
-
 test('use Web Identity principal', () => {
   // GIVEN
   const stack = new Stack();

@@ -75,6 +75,7 @@ describe('IAM policy document', () => {
       new PolicyStatement({
         actions: ['abc:def'],
         notActions: ['abc:def'],
+        resources: ['*'],
       });
     }).toThrow(/Cannot add 'NotActions' to policy statement if 'Actions' have been added/);
   });
@@ -83,6 +84,7 @@ describe('IAM policy document', () => {
     expect(() => {
       new PolicyStatement({
         actions: ['service:action', '*', 'service:acti*', 'in:val:id'],
+        resources: ['*'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -90,7 +92,9 @@ describe('IAM policy document', () => {
   test('Throws with invalid not actions', () => {
     expect(() => {
       new PolicyStatement({
+        actions: ['abc:def'],
         notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
+        resources: ['*'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -98,8 +102,9 @@ describe('IAM policy document', () => {
   test('Cannot combine Resources and NotResources', () => {
     expect(() => {
       new PolicyStatement({
+        actions: ['abc:def'],
         resources: ['abc'],
-        notResources: ['def'],
+        notResources: ['abcd'],
       });
     }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
   });
@@ -107,6 +112,8 @@ describe('IAM policy document', () => {
   test('Cannot add NotPrincipals when Principals exist', () => {
     const stmt = new PolicyStatement({
       principals: [new CanonicalUserPrincipal('abc')],
+      actions: ['abc:def'],
+      resources: ['*'],
     });
     expect(() => {
       stmt.addNotPrincipals(new CanonicalUserPrincipal('def'));
@@ -116,6 +123,8 @@ describe('IAM policy document', () => {
   test('Cannot add Principals when NotPrincipals exist', () => {
     const stmt = new PolicyStatement({
       notPrincipals: [new CanonicalUserPrincipal('abc')],
+      actions: ['abc:def'],
+      resources: ['*'],
     });
     expect(() => {
       stmt.addPrincipals(new CanonicalUserPrincipal('def'));
@@ -215,7 +224,7 @@ describe('IAM policy document', () => {
     });
 
     test('true if there is one resource', () => {
-      expect(new PolicyStatement({ resources: ['one-resource'] }).hasResource).toEqual(true);
+      expect(new PolicyStatement({ resources: ['one-resource'], actions: ['abc:def'] }).hasResource).toEqual(true);
     });
 
     test('true for multiple resources', () => {
@@ -247,9 +256,9 @@ describe('IAM policy document', () => {
   test('statementCount returns the number of statement in the policy document', () => {
     const p = new PolicyDocument();
     expect(p.statementCount).toEqual(0);
-    p.addStatements(new PolicyStatement({ actions: ['service:action1'] }));
+    p.addStatements(new PolicyStatement({ actions: ['service:action1'], resources: ['*'] }));
     expect(p.statementCount).toEqual(1);
-    p.addStatements(new PolicyStatement({ actions: ['service:action2'] }));
+    p.addStatements(new PolicyStatement({ actions: ['service:action2'], resources: ['*'] }));
     expect(p.statementCount).toEqual(2);
   });
 
@@ -258,11 +267,11 @@ describe('IAM policy document', () => {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatements(new PolicyStatement({ principals: [new Anyone()] }));
+      p.addStatements(new PolicyStatement({ principals: [new Anyone()], actions: ['abc:def'], resources: ['*'] }));
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Action: 'abc:def', Effect: 'Allow', Principal: '*', Resource: '*' },
         ],
         Version: '2012-10-17',
       });
@@ -272,11 +281,11 @@ describe('IAM policy document', () => {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatements(new PolicyStatement({ principals: [new AnyPrincipal()] }));
+      p.addStatements(new PolicyStatement({ principals: [new AnyPrincipal()], actions: ['abc:def'], resources: ['*']}));
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Action: 'abc:def', Effect: 'Allow', Principal: '*', Resource: '*' },
         ],
         Version: '2012-10-17',
       });
