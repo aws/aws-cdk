@@ -172,7 +172,7 @@ export interface ClusterProps {
    *
    * @default - A name is automatically generated.
    */
-  readonly clusterIdentifier?: string;
+  readonly clusterName?: string;
 
   /**
    * Additional parameters to pass to the database engine
@@ -451,7 +451,7 @@ export class Cluster extends ClusterBase {
       allowVersionUpgrade: true,
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
-      clusterIdentifier: props.clusterIdentifier,
+      clusterIdentifier: props.clusterName,
       clusterSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
