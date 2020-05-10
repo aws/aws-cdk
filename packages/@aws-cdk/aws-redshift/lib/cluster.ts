@@ -215,7 +215,7 @@ export interface ClusterProps {
   /**
    * Whether to enable encryption of data at rest in the cluster.
    *
-   * @default false
+   * @default true
    */
   readonly encrypted?: boolean
 
@@ -431,6 +431,10 @@ export class Cluster extends ClusterBase {
       throw new Error('Number of nodes for cluster type multi-node must be at least 2');
     }
 
+    if (props.encrypted === false && props.encryptionKey !== undefined) {
+      throw new Error('Cannot set property encryptionKey without enabling encryption!');
+    }
+
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
@@ -468,7 +472,7 @@ export class Cluster extends ClusterBase {
       publiclyAccessible: false,
       // Encryption
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      encrypted: props.encrypted,
+      encrypted: props.encrypted !== undefined ? props.encrypted : true,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
