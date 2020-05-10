@@ -60,8 +60,7 @@ export interface AuthorizationMode {
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * If AuthorizationType.API_KEY` is in `additionalAuthorizationModes`, this option is required.
-   * @default - none
+   * @default - check default values of `ApiKeyConfig` memebers
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -113,11 +112,12 @@ export interface UserPoolConfig {
 export interface ApiKeyConfig {
   /**
    * Unique name of the API Key
+   * @default - 'DefaultAPIKey'
    */
-  readonly name: string;
+  readonly name?: string;
   /**
    * Description of API key
-   * @default - none
+   * @default - 'Default API Key created by CDK'
    */
   readonly description?: string;
 
@@ -348,7 +348,19 @@ export class GraphQLApi extends Construct {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
 
-    if (defaultAuthorizationType === AuthorizationType.API_KEY) {
+    if (
+      defaultAuthorizationType === AuthorizationType.API_KEY ||
+      props.authorizationConfig?.additionalAuthorizationModes?.reduce<boolean>(
+        (acc, authMode) =>
+          acc === false &&
+          authMode.authorizationType === AuthorizationType.API_KEY
+            ? true
+            : acc === true
+              ? true
+              : false,
+        false
+      )
+    ) {
       const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
         ?.defaultAuthorization?.apiKeyConfig || {
           name: 'DefaultAPIKey',
@@ -480,15 +492,6 @@ export class GraphQLApi extends Construct {
               'Missing User Pool Configuration inside an additional authorization mode',
             );
           }
-
-          if (
-            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
-            !authorizationMode.apiKeyConfig
-          ) {
-            throw new Error(
-              'Missing API Key Configuration inside an additional authorization mode',
-            );
-          }
         },
       );
     }
@@ -527,9 +530,9 @@ export class GraphQLApi extends Construct {
       }
       expires = Math.round(expires / 1000);
     }
-    const key = new CfnApiKey(this, `${config.name}ApiKey`, {
+    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
       expires,
-      description: config.description,
+      description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
     this._apiKey = key.attrApiKey;
