@@ -29,6 +29,7 @@ test('check that instantiation works', () => {
       MasterUserPassword: 'tooshort',
       ClusterType: 'multi-node',
       AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
       NumberOfNodes: 2,
       NodeType: 'dc2.large',
       DBName: 'default_db',
@@ -274,6 +275,29 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   // THEN
   expect(() => {
     cluster.addRotationSingleUser();
+  }).toThrowError();
+
+});
+
+test('throws validation error when trying to set encryptionKey without enabling encryption', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const key = new kms.Key(stack, 'kms-key');
+
+  // WHEN
+  const props = {
+    encrypted: false,
+    encryptionKey: key,
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+  };
+
+  // THEN
+  expect(() => {
+    new Cluster(stack, 'Redshift', props );
   }).toThrowError();
 
 });
