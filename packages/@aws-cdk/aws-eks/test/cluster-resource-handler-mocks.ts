@@ -136,7 +136,6 @@ export const client: EksClient = {
     actualRequest.deleteFargateProfile = req;
     return { };
   },
-
 };
 
 export const MOCK_PROPS = {

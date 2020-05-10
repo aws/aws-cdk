@@ -299,12 +299,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The OpenID Connect Issuer Url for your cluster.
-   * @attribute
-   */
-  public readonly clusterOpenIdConnectIssuerUrl?: string;
-
-  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -344,9 +338,19 @@ export class Cluster extends Resource implements ICluster {
   private readonly _clusterResource?: ClusterResource;
 
   /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   */
+  private readonly _clusterOpenIdConnectIssuerUrl?: string;
+
+  /**
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
+
+  private _openIdConnectProvider?: iam.OpenIdConnectProvider;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -408,7 +412,7 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._clusterResource = resource;
-      this.clusterOpenIdConnectIssuerUrl = resource.attrOpenIdConnectIssuerUrl;
+      this._clusterOpenIdConnectIssuerUrl = resource.attrOpenIdConnectIssuerUrl;
     } else {
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
@@ -622,6 +626,23 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._awsAuth;
+  }
+
+  /**
+   * Lazily creates the OpenIdConnectProvider resource, which links the cluster to AWS IAM.
+   */
+  public get openIdConnectProvider() {
+    if (!this.kubectlEnabled) {
+      throw new Error('Cannot specify a OpenID Connect Provider if kubectl is disabled');
+    }
+
+    if (!this._openIdConnectProvider) {
+      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this._clusterOpenIdConnectIssuerUrl!,
+      });
+    }
+
+    return this._openIdConnectProvider;
   }
 
   /**

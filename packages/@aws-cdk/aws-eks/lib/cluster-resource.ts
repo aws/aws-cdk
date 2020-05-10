@@ -100,6 +100,16 @@ export class ClusterResource extends Construct {
       resources: [ fargateProfileResourceArn ],
     }));
 
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:GetRole' ],
+      resources: [ '*' ],
+    }));
+
+    this.creationRole.addToPolicy(new iam.PolicyStatement({
+      actions: [ 'iam:CreateServiceLinkedRole' ],
+      resources: [ '*' ],
+    }));
+
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,

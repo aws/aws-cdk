@@ -1,4 +1,4 @@
-import { FederatedPrincipal, IRole, OpenIdConnectProvider, Role } from '@aws-cdk/aws-iam';
+import { FederatedPrincipal, IPrincipal, IRole, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
@@ -8,12 +8,15 @@ import { Cluster } from './cluster';
 export interface ServiceAccountOptions {
   /**
    * The cluster to apply the patch to.
+   * @default If no name is given, it will use the id of the resource.
    */
-  readonly name: string;
+  readonly name?: string;
+
   /**
    * The cluster to apply the patch to.
+   * @default default
    */
-  readonly namespace: string;
+  readonly namespace?: string;
 }
 
 /**
@@ -30,31 +33,32 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 /**
  * Service Account
  */
-export class ServiceAccount extends Construct {
+export class ServiceAccount extends Construct implements IPrincipal {
 
   /**
-   * The role the service account is linked to.
+   * The role which is linked to the service account.
    */
   public readonly role: IRole;
+
+  public readonly assumeRoleAction: string;
+  public readonly grantPrincipal: IPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   constructor(scope: Construct, id: string, props: ServiceAccountProps) {
     super(scope, id);
 
-    const { cluster, name, namespace } = props;
-
-    let provider = cluster.node.tryFindChild('OpenIdConnectProvider') as OpenIdConnectProvider;
-    if (!provider) {
-      if (!cluster.kubectlEnabled) {
-        throw new Error('Cannot specify a OpenID Connect Provider if kubectl is disabled');
-      }
-      provider = new OpenIdConnectProvider(cluster, 'OpenIdConnectProvider', {
-        url: props.cluster.clusterOpenIdConnectIssuerUrl!,
-      });
-    }
+    const { cluster } = props;
+    const name = props.name || id;
+    const namespace = props.namespace || 'default';
 
     this.role = new Role(this, 'Role', {
-      assumedBy: new FederatedPrincipal(provider.openIdConnectProviderArn, {}, 'sts:AssumeRoleWithWebIdentity'),
+      assumedBy: new FederatedPrincipal(props.cluster.openIdConnectProvider.openIdConnectProviderArn, {}, 'sts:AssumeRoleWithWebIdentity'),
     });
+
+    this.assumeRoleAction = this.role.assumeRoleAction;
+    this.grantPrincipal = this.role.grantPrincipal;
+    this.policyFragment = this.role.policyFragment;
+
     cluster.addResource('ServiceAccount', {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
@@ -71,4 +75,7 @@ export class ServiceAccount extends Construct {
     });
   }
 
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.role.addToPolicy(statement);
+  }
 }
