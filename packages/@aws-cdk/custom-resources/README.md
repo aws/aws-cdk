@@ -100,7 +100,7 @@ def is_complete(event, context):
   return { 'IsComplete': is_ready }
 ```
 
-[custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
+[custom resources]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html
 
 ### Handling Lifecycle Events: onEvent
 
