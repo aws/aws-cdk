@@ -44,12 +44,22 @@ export class ServiceAccount extends Construct implements IPrincipal {
   public readonly grantPrincipal: IPrincipal;
   public readonly policyFragment: PrincipalPolicyFragment;
 
+  /**
+   * The name of the service account.
+   */
+  public readonly serviceAccountName: string;
+
+  /**
+   * The namespace where the service account is located in.
+   */
+  public readonly serviceAccountNamespace: string;
+
   constructor(scope: Construct, id: string, props: ServiceAccountProps) {
     super(scope, id);
 
     const { cluster } = props;
-    const name = props.name || id;
-    const namespace = props.namespace || 'default';
+    this.serviceAccountName = props.name || id;
+    this.serviceAccountNamespace = props.namespace || 'default';
 
     this.role = new Role(this, 'Role', {
       assumedBy: new FederatedPrincipal(props.cluster.openIdConnectProvider.openIdConnectProviderArn, {}, 'sts:AssumeRoleWithWebIdentity'),
@@ -63,10 +73,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {
-        name,
-        namespace,
+        name: this.serviceAccountName,
+        namespace: this.serviceAccountNamespace,
         labels: {
-          'app.kubernetes.io/name': name,
+          'app.kubernetes.io/name': this.serviceAccountName,
         },
         annotations: {
           'eks.amazonaws.com/role-arn': this.role.roleArn,
