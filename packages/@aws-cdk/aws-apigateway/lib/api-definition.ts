@@ -4,10 +4,12 @@ import * as cdk from '@aws-cdk/core';
 
 /**
  * Represents an OpenAPI definition asset.
+ * @experimental
  */
 export abstract class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
+   * @experimental
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3ApiDefinition {
     return new S3ApiDefinition(bucket, key, objectVersion);
@@ -65,6 +67,7 @@ export abstract class ApiDefinition {
 
   /**
    * Loads the API specification from a local disk asset.
+   * @experimental
    */
   public static fromAsset(file: string, options?: s3_assets.AssetOptions): AssetApiDefinition {
     return new AssetApiDefinition(file, options);
@@ -82,6 +85,7 @@ export abstract class ApiDefinition {
 
 /**
  * S3 location of the API definition file
+ * @experimental
  */
 export interface ApiDefinitionS3Location {
   /** The S3 bucket */
@@ -97,6 +101,7 @@ export interface ApiDefinitionS3Location {
 
 /**
  * Post-Binding Configuration for a CDK construct
+ * @experimental
  */
 export interface ApiDefinitionConfig {
   /**
@@ -116,6 +121,7 @@ export interface ApiDefinitionConfig {
 
 /**
  * OpenAPI specification from an S3 archive.
+ * @experimental
  */
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
@@ -143,6 +149,7 @@ export class S3ApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from an inline JSON object.
+ * @experimental
  */
 export class InlineApiDefinition extends ApiDefinition {
   constructor(private definition: any) {
@@ -166,6 +173,7 @@ export class InlineApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from a local file.
+ * @experimental
  */
 export class AssetApiDefinition extends ApiDefinition {
   private asset?: s3_assets.Asset;

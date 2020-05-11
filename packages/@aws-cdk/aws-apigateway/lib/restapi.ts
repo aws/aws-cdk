@@ -187,6 +187,7 @@ export interface RestApiProps extends RestApiOptions {
 
 /**
  * Props to instantiate a new SpecRestApi
+ * @experimental
  */
 export interface SpecRestApiProps extends RestApiOptions {
   /**
@@ -365,6 +366,8 @@ abstract class RestApiBase extends Resource implements IRestApi {
  *
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
+ *
+ * @experimental
  *
  * @resource AWS::ApiGateway::RestApi
  */
