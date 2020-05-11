@@ -7,13 +7,13 @@ import { Cluster } from './cluster';
  */
 export interface ServiceAccountOptions {
   /**
-   * The cluster to apply the patch to.
+   * The name of the service account.
    * @default If no name is given, it will use the id of the resource.
    */
   readonly name?: string;
 
   /**
-   * The cluster to apply the patch to.
+   * The namespace of the service account.
    * @default default
    */
   readonly namespace?: string;
@@ -58,8 +58,8 @@ export class ServiceAccount extends Construct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
-    this.serviceAccountName = props.name || id;
-    this.serviceAccountNamespace = props.namespace || 'default';
+    this.serviceAccountName = props.name ?? id;
+    this.serviceAccountNamespace = props.namespace ?? 'default';
 
     this.role = new Role(this, 'Role', {
       assumedBy: new FederatedPrincipal(props.cluster.openIdConnectProvider.openIdConnectProviderArn, {}, 'sts:AssumeRoleWithWebIdentity'),

@@ -338,14 +338,6 @@ export class Cluster extends Resource implements ICluster {
   private readonly _clusterResource?: ClusterResource;
 
   /**
-   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
-   * This is because the values is only be retrieved by the API and not exposed
-   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   */
-  private readonly _clusterOpenIdConnectIssuerUrl?: string;
-
-  /**
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
@@ -412,7 +404,6 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._clusterResource = resource;
-      this._clusterOpenIdConnectIssuerUrl = resource.attrOpenIdConnectIssuerUrl;
     } else {
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
@@ -629,6 +620,21 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuerUrl(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer URL. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+  }
+
+  /**
    * Lazily creates the OpenIdConnectProvider resource, which links the cluster to AWS IAM.
    */
   public get openIdConnectProvider() {
@@ -638,7 +644,14 @@ export class Cluster extends Resource implements ICluster {
 
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this._clusterOpenIdConnectIssuerUrl!,
+        url: this.clusterOpenIdConnectIssuerUrl,
+        clientIds: [ 'sts.amazonaws.com' ],
+        /**
+         * For some reason EKS isn't validating the root certificate but a intermediat certificate
+         * which is one level up in the tree. Because of the a constant thumbprint value has to be
+         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+         */
+        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ], 
       });
     }
 
