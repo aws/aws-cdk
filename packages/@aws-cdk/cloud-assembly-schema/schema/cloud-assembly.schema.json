@@ -545,7 +545,12 @@
                     "description": "Query service name",
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "account",
+                "region",
+                "serviceName"
+            ]
         },
         "RuntimeInfo": {
             "description": "Information about the application's runtime components.",

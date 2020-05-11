@@ -183,17 +183,17 @@ export interface EndpointServiceAvailabilityZonesContextQuery {
   /**
    * Query account
    */
-  readonly account?: string;
+  readonly account: string;
 
   /**
    * Query region
    */
-  readonly region?: string;
+  readonly region: string;
 
   /**
    * Query service name
    */
-  readonly serviceName?: string;
+  readonly serviceName: string;
 }
 
 export type ContextQueryProperties = AmiContextQuery
