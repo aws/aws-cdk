@@ -426,14 +426,14 @@ export class Sum extends Construct {
     super(scope, id);
 
     const resourceType = 'Custom::Sum';
-    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
+    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
-      serviceToken: provider.serviceToken,
+      serviceToken: serviceToken,
       properties: {
         lhs: props.lhs,
         rhs: props.rhs
