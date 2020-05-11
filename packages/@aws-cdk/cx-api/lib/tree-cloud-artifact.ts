@@ -8,7 +8,7 @@ export class TreeCloudArtifact extends CloudArtifact {
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
-    const properties = (this.manifest.properties || {});
+    const properties = (this.manifest.properties || {}) as cxschema.TreeArtifactProperties;
     if (!properties.file) {
       throw new Error('Invalid TreeCloudArtifact. Missing "file" property');
     }

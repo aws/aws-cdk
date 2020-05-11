@@ -44,7 +44,7 @@ test('assembly with invalid tree metadata', () => {
 });
 
 test('assembly with tree metadata having no file property specified', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid TreeCloudArtifact/);
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('assembly with cloudformation artifact having no environment property specified', () => {
@@ -143,4 +143,10 @@ test('displayName shows both artifact ID and stack name if needed', () => {
   expect(art1.displayName).toBe('MyStackName');
   expect(art1.id).toBe('MyStackName');
   expect(art1.stackName).toBe('MyStackName');
+});
+
+test('can read assembly with asset manifest', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'asset-manifest'));
+  expect(assembly.stacks).toHaveLength(1);
+  expect(assembly.artifacts).toHaveLength(2);
 });

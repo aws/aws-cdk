@@ -447,6 +447,7 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
 }
 
 export interface DiffOptions {

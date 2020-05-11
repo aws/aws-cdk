@@ -23,23 +23,3 @@ export interface AwsDestination {
    */
   readonly assumeRoleExternalId?: string;
 }
-
-/**
- * Placeholders which can be used in the destinations
- */
-export class Placeholders {
-  /**
-   * Insert this into the destination fields to be replaced with the current region
-   */
-  public static readonly CURRENT_REGION = '${AWS::Region}';
-
-  /**
-   * Insert this into the destination fields to be replaced with the current account
-   */
-  public static readonly CURRENT_ACCOUNT = '${AWS::AccountId}';
-
-  /**
-   * Insert this into the destination fields to be replaced with the current partition
-   */
-  public static readonly CURRENT_PARTITION = '${AWS::Partition}';
-}
