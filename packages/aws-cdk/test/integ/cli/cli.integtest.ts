@@ -172,10 +172,10 @@ test('deploy wildcard with outputs', async () => {
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   expect(outputs).toEqual({
     [`${STACK_NAME_PREFIX}-outputs-test-1`]: {
-      TopicName: 'MyTopic',
+      TopicName: `${STACK_NAME_PREFIX}-outputs-test-1MyTopic`,
     },
     [`${STACK_NAME_PREFIX}-outputs-test-2`]: {
-      TopicName: 'MyOtherTopic',
+      TopicName: `${STACK_NAME_PREFIX}-outputs-test-2MyOtherTopic`,
     },
   });
 });
