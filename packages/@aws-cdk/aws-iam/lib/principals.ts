@@ -383,6 +383,31 @@ export class FederatedPrincipal extends PrincipalBase {
 }
 
 /**
+ * A principal that represents a federated identity provider as Web Identity such as Cognito, Amazon,
+ * Facebook, Google, etc.
+ */
+export class WebIdentityPrincipal extends FederatedPrincipal {
+
+  /**
+   *
+   * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(identityProvider: string, conditions: Conditions = {}) {
+    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity')
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `WebIdentityPrincipal(${this.federated})`;
+  }
+}
+
+/**
  * Use the AWS account into which a stack is deployed as the principal entity in a policy
  */
 export class AccountRootPrincipal extends AccountPrincipal {
