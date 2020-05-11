@@ -9,7 +9,7 @@
 
 ## Provider Framework
 
-AWS CloudFormation [custom resources] are extension points to the provisioning
+AWS CloudFormation [custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) are extension points to the provisioning
 engine. When CloudFormation needs to create, update or delete a custom resource,
 it sends a lifecycle event notification to a **custom resource provider**. The provider
 handles the event (e.g. creates a resource) and sends back a response to CloudFormation.
@@ -99,8 +99,6 @@ def is_complete(event, context):
 
   return { 'IsComplete': is_ready }
 ```
-
-[custom resources]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html
 
 ### Handling Lifecycle Events: onEvent
 
