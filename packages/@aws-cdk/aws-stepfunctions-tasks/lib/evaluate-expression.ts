@@ -56,7 +56,7 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
 
-    let expressionAttributeValues: {} | undefined;
+    let expressionAttributeValues = {};
     if (matches) {
       expressionAttributeValues = matches.reduce(
         (acc, m) => ({
@@ -69,16 +69,17 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
 
     const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
 
+    const parameters: Event = {
+      expression: this.props.expression,
+      expressionAttributeValues,
+    };
     return {
       resourceArn: evalFn.functionArn,
       policyStatements: [new iam.PolicyStatement({
         resources: [evalFn.functionArn],
         actions: ['lambda:InvokeFunction'],
       })],
-      parameters: {
-        expression: this.props.expression,
-        expressionAttributeValues,
-      } as Event,
+      parameters,
     };
   }
 }

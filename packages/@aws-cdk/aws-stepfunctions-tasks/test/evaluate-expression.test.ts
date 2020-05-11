@@ -59,7 +59,7 @@ test('expression does not contain paths', () => {
       'Fn::Join': [
         '',
         [
-          '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"expression":"2 + 2"},"Type":"Task","Resource":"',
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"expression":"2 + 2",\"expressionAttributeValues\":{}},"Type":"Task","Resource":"',
           {
             'Fn::GetAtt': [
               'Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1',
