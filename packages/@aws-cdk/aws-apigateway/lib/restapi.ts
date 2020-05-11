@@ -1,6 +1,7 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ApiDefinition } from './api-definition';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
@@ -23,7 +24,10 @@ export interface IRestApi extends IResourceBase {
   readonly restApiId: string;
 }
 
-export interface RestApiProps extends ResourceOptions {
+/**
+ * Represents the props that all Rest APIs share
+ */
+export interface RestApiOptions extends ResourceOptions {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -88,36 +92,45 @@ export interface RestApiProps extends ResourceOptions {
   readonly policy?: iam.PolicyDocument;
 
   /**
+   * Indicates whether to roll back the resource if a warning occurs while API
+   * Gateway is creating the RestApi resource.
+   *
+   * @default false
+   */
+  readonly failOnWarnings?: boolean;
+
+  /**
+   * Configure a custom domain name and map it to this API.
+   *
+   * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
+   */
+  readonly domainName?: DomainNameOptions;
+
+  /**
+   * Automatically configure an AWS CloudWatch role for API Gateway.
+   *
+   * @default true
+   */
+  readonly cloudWatchRole?: boolean;
+
+  /**
+   * Export name for the CfnOutput containing the API endpoint
+   *
+   * @default - when no export name is given, output will be created without export
+   */
+  readonly endpointExportName?: string;
+}
+
+/**
+ * Props to create a new instance of RestApi
+ */
+export interface RestApiProps extends RestApiOptions {
+  /**
    * A description of the purpose of this API Gateway RestApi resource.
    *
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The EndpointConfiguration property type specifies the endpoint types of a REST API
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
-   *
-   * @default - No endpoint configuration
-   */
-  readonly endpointConfiguration?: EndpointConfiguration;
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration instead
-   */
-  readonly endpointTypes?: EndpointType[];
-
-  /**
-   * The source of the API key for metering requests according to a usage
-   * plan.
-   *
-   * @default - Metering is disabled.
-   */
-  readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
    * The list of binary media mime-types that are supported by the RestApi
@@ -126,14 +139,6 @@ export interface RestApiProps extends ResourceOptions {
    * @default - RestApi supports only UTF-8-encoded text payloads.
    */
   readonly binaryMediaTypes?: string[];
-
-  /**
-   * Indicates whether to roll back the resource if a warning occurs while API
-   * Gateway is creating the RestApi resource.
-   *
-   * @default false
-   */
-  readonly failOnWarnings?: boolean;
 
   /**
    * A nullable integer that is used to enable compression (with non-negative
@@ -155,65 +160,55 @@ export interface RestApiProps extends ResourceOptions {
   readonly cloneFrom?: IRestApi;
 
   /**
-   * Automatically configure an AWS CloudWatch role for API Gateway.
+   * The source of the API key for metering requests according to a usage
+   * plan.
    *
-   * @default true
+   * @default - Metering is disabled.
    */
-  readonly cloudWatchRole?: boolean;
+  readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
-   * Configure a custom domain name and map it to this API.
+   * The EndpointConfiguration property type specifies the endpoint types of a REST API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
+   * @default - No endpoint configuration
    */
-  readonly domainName?: DomainNameOptions;
+  readonly endpointConfiguration?: EndpointConfiguration;
 
   /**
-   * Export name for the CfnOutput containing the API endpoint
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
    *
-   * @default - when no export name is given, output will be created without export
+   * @default - No endpoint types.
+   * @deprecated this property is deprecated, use endpointConfiguration instead
    */
-  readonly endpointExportName?: string;
+  readonly endpointTypes?: EndpointType[];
 }
 
 /**
- * Represents a REST API in Amazon API Gateway.
- *
- * Use `addResource` and `addMethod` to configure the API model.
- *
- * By default, the API will automatically be deployed and accessible from a
- * public endpoint.
+ * Props to instantiate a new SpecRestApi
+ * @experimental
  */
-export class RestApi extends Resource implements IRestApi {
+export interface SpecRestApiProps extends RestApiOptions {
+  /**
+   * An OpenAPI definition compatible with API Gateway.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
+   */
+  readonly apiDefinition: ApiDefinition;
+}
 
-  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
-    class Import extends Resource implements IRestApi {
-      public readonly restApiId = restApiId;
-    }
-
-    return new Import(scope, id);
-  }
-
+abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
-  public readonly restApiId: string;
+  public abstract readonly restApiId: string;
 
   /**
    * The resource ID of the root resource.
    *
    * @attribute
    */
-  public readonly restApiRootResourceId: string;
-
-  /**
-   * Represents the root resource ("/") of this API. Use it to define the API model:
-   *
-   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
-   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
-   *
-   */
-  public readonly root: IResource;
+  public abstract readonly restApiRootResourceId: string;
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -223,72 +218,13 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
-  /**
-   * The list of methods bound to this RestApi
-   */
-  public readonly methods = new Array<Method>();
-
+  private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _latestDeployment: Deployment | undefined;
 
-  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
-
-    const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
-      description: props.description,
-      policy: props.policy,
-      failOnWarnings: props.failOnWarnings,
-      minimumCompressionSize: props.minimumCompressionSize,
-      binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
-      apiKeySourceType: props.apiKeySourceType,
-      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
-      parameters: props.parameters,
-    });
-    this.node.defaultChild = resource;
-
-    this.restApiId = resource.ref;
-
-    this.configureDeployment(props);
-
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
-    if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
-    }
-
-    this.root = new RootResource(this, props, resource.attrRootResourceId);
-    this.restApiRootResourceId = resource.attrRootResourceId;
-
-    if (props.domainName) {
-      this.addDomainName('CustomDomain', props.domainName);
-    }
-  }
-
-  /**
-   * The first domain name mapped to this API, if defined through the `domainName`
-   * configuration prop, or added via `addDomainName`
-   */
-  public get domainName() {
-    return this._domainName;
-  }
-
-  /**
-   * API Gateway deployment that represents the latest changes of the API.
-   * This resource will be automatically updated every time the REST API model changes.
-   * This will be undefined if `deploy` is false.
-   */
-  public get latestDeployment() {
-    return this._latestDeployment;
-  }
-
-  /**
-   * The deployed root URL of this REST API.
-   */
-  public get url() {
-    return this.urlForPath();
   }
 
   /**
@@ -302,6 +238,15 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     return this.deploymentStage.urlForPath(path);
+  }
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * This will be undefined if `deploy` is false.
+   */
+  public get latestDeployment() {
+    return this._latestDeployment;
   }
 
   /**
@@ -325,6 +270,227 @@ export class RestApi extends Resource implements IRestApi {
    */
   public addUsagePlan(id: string, props: UsagePlanProps = {}): UsagePlan {
     return new UsagePlan(this, id, props);
+  }
+
+  /**
+   * The first domain name mapped to this API, if defined through the `domainName`
+   * configuration prop, or added via `addDomainName`
+   */
+  public get domainName() {
+    return this._domainName;
+  }
+
+  /**
+   * Gets the "execute-api" ARN
+   * @returns The "execute-api" ARN.
+   * @default "*" returns the execute API ARN for all methods/resources in
+   * this API.
+   * @param method The method (default `*`)
+   * @param path The resource path. Must start with '/' (default `*`)
+   * @param stage The stage (default `*`)
+   */
+  public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
+    if (!path.startsWith('/')) {
+      throw new Error(`"path" must begin with a "/": '${path}'`);
+    }
+
+    if (method.toUpperCase() === 'ANY') {
+      method = '*';
+    }
+
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.restApiId,
+      sep: '/',
+      resourceName: `${stage}/${method}${path}`,
+    });
+  }
+
+  /**
+   * Adds a new gateway response.
+   */
+  public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
+    return new GatewayResponse(this, id, {
+      restApi: this,
+      ...options,
+    });
+  }
+
+  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+    const role = new iam.Role(this, 'CloudWatchRole', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
+    });
+
+    const resource = new CfnAccount(this, 'Account', {
+      cloudWatchRoleArn: role.roleArn,
+    });
+
+    resource.node.addDependency(apiResource);
+  }
+
+  protected configureDeployment(props: RestApiOptions) {
+    const deploy = props.deploy === undefined ? true : props.deploy;
+    if (deploy) {
+
+      this._latestDeployment = new Deployment(this, 'Deployment', {
+        description: 'Automatically created by the RestApi construct',
+        api: this,
+        retainDeployments: props.retainDeployments,
+      });
+
+      // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
+      // stage name is part of the endpoint, so that makes sense.
+      const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
+
+      this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
+        deployment: this._latestDeployment,
+        ...props.deployOptions,
+      });
+
+      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
+    } else {
+      if (props.deployOptions) {
+        throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
+      }
+    }
+  }
+}
+
+/**
+ * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
+ *
+ * Some properties normally accessible on @see {@link RestApi} - such as the description -
+ * must be declared in the specification. All Resources and Methods need to be defined as
+ * part of the OpenAPI specification file, and cannot be added via the CDK.
+ *
+ * By default, the API will automatically be deployed and accessible from a
+ * public endpoint.
+ *
+ * @experimental
+ *
+ * @resource AWS::ApiGateway::RestApi
+ */
+export class SpecRestApi extends RestApiBase {
+  /**
+   * The ID of this API Gateway RestApi.
+   */
+  public readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   *
+   * @attribute
+   */
+  public readonly restApiRootResourceId: string;
+
+  constructor(scope: Construct, id: string, props: SpecRestApiProps) {
+    super(scope, id, props);
+    const apiDefConfig = props.apiDefinition.bind(this);
+    const resource = new CfnRestApi(this, 'Resource', {
+      name: this.physicalName,
+      policy: props.policy,
+      failOnWarnings: props.failOnWarnings,
+      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+      parameters: props.parameters,
+    });
+    this.node.defaultChild = resource;
+    this.restApiId = resource.ref;
+    this.restApiRootResourceId = resource.attrRootResourceId;
+
+    this.configureDeployment(props);
+    if (props.domainName) {
+      this.addDomainName('CustomDomain', props.domainName);
+    }
+
+    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    if (cloudWatchRole) {
+      this.configureCloudWatchRole(resource);
+    }
+  }
+}
+
+/**
+ * Represents a REST API in Amazon API Gateway.
+ *
+ * Use `addResource` and `addMethod` to configure the API model.
+ *
+ * By default, the API will automatically be deployed and accessible from a
+ * public endpoint.
+ */
+export class RestApi extends RestApiBase implements IRestApi {
+  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
+    class Import extends Resource implements IRestApi {
+      public readonly restApiId = restApiId;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * The ID of this API Gateway RestApi.
+   */
+  public readonly restApiId: string;
+
+  /**
+   * Represents the root resource ("/") of this API. Use it to define the API model:
+   *
+   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
+   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
+   *
+   */
+  public readonly root: IResource;
+
+  /**
+   * The resource ID of the root resource.
+   *
+   * @attribute
+   */
+  public readonly restApiRootResourceId: string;
+
+  /**
+   * The list of methods bound to this RestApi
+   */
+  public readonly methods = new Array<Method>();
+
+  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
+    super(scope, id, props);
+
+    const resource = new CfnRestApi(this, 'Resource', {
+      name: this.physicalName,
+      description: props.description,
+      policy: props.policy,
+      failOnWarnings: props.failOnWarnings,
+      minimumCompressionSize: props.minimumCompressionSize,
+      binaryMediaTypes: props.binaryMediaTypes,
+      endpointConfiguration: this.configureEndpoints(props),
+      apiKeySourceType: props.apiKeySourceType,
+      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
+      parameters: props.parameters,
+    });
+    this.node.defaultChild = resource;
+    this.restApiId = resource.ref;
+
+    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    if (cloudWatchRole) {
+      this.configureCloudWatchRole(resource);
+    }
+
+    this.configureDeployment(props);
+    if (props.domainName) {
+      this.addDomainName('CustomDomain', props.domainName);
+    }
+
+    this.root = new RootResource(this, props, resource.attrRootResourceId);
+    this.restApiRootResourceId = resource.attrRootResourceId;
+  }
+
+  /**
+   * The deployed root URL of this REST API.
+   */
+  public get url() {
+    return this.urlForPath();
   }
 
   /**
@@ -357,31 +523,6 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * @returns The "execute-api" ARN.
-   * @default "*" returns the execute API ARN for all methods/resources in
-   * this API.
-   * @param method The method (default `*`)
-   * @param path The resource path. Must start with '/' (default `*`)
-   * @param stage The stage (default `*`)
-   */
-  public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
-    if (!path.startsWith('/')) {
-      throw new Error(`"path" must begin with a "/": '${path}'`);
-    }
-
-    if (method.toUpperCase() === 'ANY') {
-      method = '*';
-    }
-
-    return Stack.of(this).formatArn({
-      service: 'execute-api',
-      resource: this.restApiId,
-      sep: '/',
-      resourceName: `${stage}/${method}${path}`,
-    });
-  }
-
-  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    *
@@ -392,64 +533,14 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
-   * Adds a new gateway response.
-   */
-  public addGatewayResponse(id: string, options: GatewayResponseOptions): GatewayResponse {
-    return new GatewayResponse(this, id, {
-      restApi: this,
-      ...options,
-    });
-  }
-
-  /**
    * Performs validation of the REST API.
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ 'The REST API doesn\'t contain any methods' ];
+      return [ "The REST API doesn't contain any methods" ];
     }
 
     return [];
-  }
-
-  private configureDeployment(props: RestApiProps) {
-    const deploy = props.deploy === undefined ? true : props.deploy;
-    if (deploy) {
-
-      this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: 'Automatically created by the RestApi construct',
-        api: this,
-        retainDeployments: props.retainDeployments,
-      });
-
-      // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
-      // stage name is part of the endpoint, so that makes sense.
-      const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
-
-      this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
-        deployment: this._latestDeployment,
-        ...props.deployOptions,
-      });
-
-      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
-    } else {
-      if (props.deployOptions) {
-        throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
-      }
-    }
-  }
-
-  private configureCloudWatchRole(apiResource: CfnRestApi) {
-    const role = new iam.Role(this, 'CloudWatchRole', {
-      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
-    });
-
-    const resource = new CfnAccount(this, 'Account', {
-      cloudWatchRoleArn: role.roleArn,
-    });
-
-    resource.node.addDependency(apiResource);
   }
 
   private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {

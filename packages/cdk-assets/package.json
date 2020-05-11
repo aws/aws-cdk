@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@aws-cdk/cdk-assets-schema": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^4.0.1",
     "aws-sdk": "^2.673.0",
     "glob": "^7.1.6",
