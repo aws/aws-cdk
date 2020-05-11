@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
@@ -55,6 +55,19 @@ export = {
         { Ref: 'NLB372DB3895' },
       ],
     }));
+
+    test.done();
+  },
+
+  'import'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::ApiGateway::VpcLink'));
 
     test.done();
   },
