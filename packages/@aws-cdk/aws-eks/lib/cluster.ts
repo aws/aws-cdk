@@ -12,6 +12,7 @@ import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -651,7 +652,7 @@ export class Cluster extends Resource implements ICluster {
          * which is one level up in the tree. Because of the a constant thumbprint value has to be
          * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
          */
-        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ], 
+        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
       });
     }
 
@@ -693,6 +694,19 @@ export class Cluster extends Resource implements ICluster {
    */
   public addFargateProfile(id: string, options: FargateProfileOptions) {
     return new FargateProfile(this, `fargate-profile-${id}`, {
+      ...options,
+      cluster: this,
+    });
+  }
+
+  /**
+   * Adds a service account to this cluster.
+   *
+   * @param id the id of this service account
+   * @param options service account options
+   */
+  public addServiceAccount(id: string, options: ServiceAccountOptions) {
+    return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
     });

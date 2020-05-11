@@ -395,7 +395,7 @@ export class WebIdentityPrincipal extends FederatedPrincipal {
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */
   constructor(identityProvider: string, conditions: Conditions = {}) {
-    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity')
+    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
