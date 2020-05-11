@@ -360,6 +360,9 @@
                         },
                         {
                             "$ref": "#/definitions/VpcContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
                         }
                     ]
                 }
@@ -375,6 +378,7 @@
             "enum": [
                 "ami",
                 "availability-zones",
+                "endpoint-service-availability-zones",
                 "hosted-zone",
                 "ssm",
                 "vpc-provider"
@@ -418,7 +422,7 @@
             ]
         },
         "AvailabilityZonesContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to availability zone context provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -468,7 +472,7 @@
             ]
         },
         "SSMParameterContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to SSM Parameter Context Provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -524,6 +528,24 @@
                 "filter",
                 "region"
             ]
+        },
+        "EndpointServiceAvailabilityZonesContextQuery": {
+            "description": "Query to endpoint service context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "Query service name",
+                    "type": "string"
+                }
+            }
         },
         "RuntimeInfo": {
             "description": "Information about the application's runtime components.",

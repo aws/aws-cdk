@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
@@ -395,13 +395,13 @@ export = {
       // Setup context for stack AZs
       stack.node.setContext(
         ContextProvider.getKey(stack, {
-          provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         }).key,
         ['us-east-1a', 'us-east-1b', 'us-east-1c']);
       // Setup context for endpoint service AZs
       stack.node.setContext(
         ContextProvider.getKey(stack, {
-          provider: cxapi.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+          provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
           props: {
             serviceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           },
@@ -440,7 +440,7 @@ export = {
       // Setup context for stack AZs
       stack.node.setContext(
         ContextProvider.getKey(stack, {
-          provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         }).key,
         ['us-east-1a', 'us-east-1b', 'us-east-1c']);
 

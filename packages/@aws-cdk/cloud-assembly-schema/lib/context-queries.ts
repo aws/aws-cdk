@@ -27,6 +27,12 @@ export enum ContextProvider {
    * VPC Provider
    */
   VPC_PROVIDER = 'vpc-provider',
+
+  /**
+   * VPC Endpoint Service AZ Provider
+   */
+  ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER = 'endpoint-service-availability-zones',
+
 }
 
 /**
@@ -170,8 +176,29 @@ export interface VpcContextQuery {
   readonly subnetGroupNameTag?: string;
 }
 
+/**
+ * Query to endpoint service context provider
+ */
+export interface EndpointServiceAvailabilityZonesContextQuery {
+  /**
+   * Query account
+   */
+  readonly account?: string;
+
+  /**
+   * Query region
+   */
+  readonly region?: string;
+
+  /**
+   * Query service name
+   */
+  readonly serviceName?: string;
+}
+
 export type ContextQueryProperties = AmiContextQuery
 | AvailabilityZonesContextQuery
 | HostedZoneContextQuery
 | SSMParameterContextQuery
-| VpcContextQuery;
+| VpcContextQuery
+| EndpointServiceAvailabilityZonesContextQuery;

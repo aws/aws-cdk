@@ -75,7 +75,11 @@
   },
   "stability": "stable",
   "awslint": {
-    "exclude": []
+    "exclude": [
+      "props-default-doc:@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery.serviceName"
+      ]
   },
   "dependencies": {
     "jsonschema": "^1.2.5",
