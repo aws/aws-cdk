@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, configFilePath, currentPackageJson, hasIntegTests, unitTestFiles } from '../lib/package-info';
+import { cdkBuildOptions, configFilePath, hasIntegTests, unitTestFiles } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -35,8 +35,7 @@ async function main() {
   }
 
   const testFiles = await unitTestFiles();
-  const packageJson = currentPackageJson();
-  const useJest = 'jest' in packageJson;
+  const useJest = options.jest;
 
   if (useJest) {
     if (testFiles.length > 0) {

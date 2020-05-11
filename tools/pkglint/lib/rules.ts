@@ -1196,8 +1196,24 @@ export class JestSetup extends ValidationRule {
   public readonly name = 'package-info/jest.config';
 
   public validate(pkg: PackageJson): void {
+    const cdkBuild = pkg.json['cdk-build'] || {};
+
+    // check whether the package.json contains the jest key,
+    // which we no longer use
+    if (pkg.json.jest) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Using Jest is set through a flag in the "cdk-build" key in package.json, the "jest" key is ignored',
+        fix: () => {
+          delete pkg.json.jest;
+          cdkBuild.jest = true;
+          pkg.json['cdk-build'] = cdkBuild;
+        },
+      });
+    }
+
     // this rule should only be enforced for packages that use Jest for testing
-    if (!pkg.json.jest) {
+    if (!cdkBuild.jest) {
       return;
     }
 
