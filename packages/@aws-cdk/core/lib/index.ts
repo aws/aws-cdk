@@ -8,7 +8,7 @@ export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
-export * from './stack-synthesis';
+export * from './stack-synthesizers';
 
 export * from './reference';
 export * from './cfn-condition';

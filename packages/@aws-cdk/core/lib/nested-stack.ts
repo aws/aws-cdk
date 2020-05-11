@@ -99,7 +99,7 @@ export class NestedStack extends Stack {
 
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
-      synthesizer: new NestedStackSynthesizer(parentStack.zer),
+      synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
     });
 
     this._parentStack = parentStack;
