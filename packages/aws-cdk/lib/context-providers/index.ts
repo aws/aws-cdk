@@ -55,10 +55,10 @@ export function registerContextProvider(name: string, provider: ProviderConstruc
 }
 
 const availableContextProviders: ProviderMap = {
-  [cxschema.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
-  [cxschema.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
-  [cxschema.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
-  [cxschema.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
-  [cxschema.AMI_PROVIDER]: AmiContextProviderPlugin,
-  [cxschema.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: EndpointServiceAZContextProviderPlugin,
+  [cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
+  [cxschema.ContextProvider.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
+  [cxschema.ContextProvider.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
+  [cxschema.ContextProvider.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
+  [cxschema.ContextProvider.AMI_PROVIDER]: AmiContextProviderPlugin,
+  [cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: EndpointServiceAZContextProviderPlugin,
 };
