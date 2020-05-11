@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
@@ -510,7 +510,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // If for whatever reason we can't retrieve the AZs, and no context is set,
     // we will fall back to all AZs
     const availableAZs = ContextProvider.getValue(this, {
-      provider: cxapi.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
       dummyValue: this.stack.availabilityZones,
       props: {serviceName},
     }).value;
