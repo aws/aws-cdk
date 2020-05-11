@@ -91,25 +91,21 @@ export function fullStackName(stackNames: string | string[]): string | string[] 
  * in the subprocess scripts since the app fixture can just be reused.
  */
 export async function prepareAppFixture() {
-  if (!process.env.FIXTURE_PREPARED) {
-    await shell(['rm', '-rf', INTEG_TEST_DIR]);
-    await shell(['mkdir', '-p', INTEG_TEST_DIR]);
-    await shell(['cp', '-R', path.join(__dirname, 'app') + '/', INTEG_TEST_DIR]);
+  await shell(['rm', '-rf', INTEG_TEST_DIR]);
+  await shell(['mkdir', '-p', INTEG_TEST_DIR]);
+  await shell(['cp', '-R', path.join(__dirname, 'app') + '/', INTEG_TEST_DIR]);
 
-    await shell(['npm', 'install',
-      '@aws-cdk/core',
-      '@aws-cdk/aws-sns',
-      '@aws-cdk/aws-iam',
-      '@aws-cdk/aws-lambda',
-      '@aws-cdk/aws-ssm',
-      '@aws-cdk/aws-ecr-assets',
-      '@aws-cdk/aws-cloudformation',
-      '@aws-cdk/aws-ec2'], {
-      cwd: INTEG_TEST_DIR,
-    });
-
-    process.env.FIXTURE_PREPARED = '1';
-  }
+  await shell(['npm', 'install',
+    '@aws-cdk/core',
+    '@aws-cdk/aws-sns',
+    '@aws-cdk/aws-iam',
+    '@aws-cdk/aws-lambda',
+    '@aws-cdk/aws-ssm',
+    '@aws-cdk/aws-ecr-assets',
+    '@aws-cdk/aws-cloudformation',
+    '@aws-cdk/aws-ec2'], {
+    cwd: INTEG_TEST_DIR,
+  });
 }
 
 /**

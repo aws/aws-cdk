@@ -19,6 +19,7 @@ export let testEnv = async (): Promise<Env> => {
 };
 
 export let cloudFormation = makeAwsCaller(AWS.CloudFormation);
+export let s3 = makeAwsCaller(AWS.S3);
 export let sns = makeAwsCaller(AWS.SNS);
 export let iam = makeAwsCaller(AWS.IAM);
 export let lambda = makeAwsCaller(AWS.Lambda);

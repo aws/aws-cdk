@@ -6,8 +6,11 @@ import { cdk, cdkDeploy, cdkDestroy, cleanupOldStacks, fullStackName, INTEG_TEST
 
 jest.setTimeout(600 * 1000);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await prepareAppFixture();
+});
+
+beforeEach(async () => {
   await cleanupOldStacks();
 });
 

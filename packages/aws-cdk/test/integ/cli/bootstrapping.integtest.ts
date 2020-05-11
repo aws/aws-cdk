@@ -1,10 +1,13 @@
-import { cloudFormation, deleteStacks } from './aws-helpers';
-import { cdk, cleanupOldStacks, fullStackName, prepareAppFixture } from './cdk-helpers';
+import { cloudFormation, s3 } from './aws-helpers';
+import { cdk, cdkDeploy, cleanupOldStacks, fullStackName, prepareAppFixture } from './cdk-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
+
+beforeAll(async () => {
+  await prepareAppFixture();
+});
 
 beforeEach(async () => {
-  await prepareAppFixture();
   await cleanupOldStacks();
 });
 
@@ -15,7 +18,7 @@ afterEach(async () => {
 test('can bootstrap without execution', async () => {
   const bootstrapStackName = fullStackName('toolkit-stack-1');
 
-  await cdk(['bootstrap', '-v',
+  await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--no-execute']);
   try {
@@ -26,7 +29,47 @@ test('can bootstrap without execution', async () => {
 
     expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
   } finally {
-    await deleteStacks(bootstrapStackName);
+    await deleteBootstrapStack(bootstrapStackName);
+  }
+});
+
+test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async () => {
+  const bootstrapStackName = fullStackName('updating-bootstrap-stack');
+
+  const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
+  const newBootstrapBucketName = `aws-cdk-bootstrap-integ-test-v2-bckt-${randomString()}`;
+
+  // Legacy bootstrap
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--bootstrap-bucket-name', legacyBootstrapBucketName]);
+  try {
+    // Deploy stack that uses file assets
+    await cdkDeploy('lambda', {
+      options: ['--toolkit-stack-name', bootstrapStackName],
+    });
+
+    // Upgrade bootstrap stack to "new" style
+    await cdk(['bootstrap',
+      '--toolkit-stack-name', bootstrapStackName,
+      '--bootstrap-bucket-name', newBootstrapBucketName], {
+      modEnv: {
+        CDK_NEW_BOOTSTRAP: '1',
+      },
+    });
+
+    // (Force) deploy stack again
+    await cdkDeploy('lambda', {
+      options: [
+        '--toolkit-stack-name', bootstrapStackName,
+        '--force',
+      ],
+    });
+  } finally {
+    await deleteBootstrapStack(bootstrapStackName);
+    // Just to be sure, delete on the buckets
+    await deleteBucket(legacyBootstrapBucketName);
+    await deleteBucket(newBootstrapBucketName);
   }
 });
 
@@ -44,6 +87,52 @@ test('can bootstrap multiple toolkit stacks', async () => {
       { Key: 'Foo', Value: 'Bar' },
     ]);
   } finally {
-    await deleteStacks(bootstrapStackName1, bootstrapStackName2);
+    await deleteBootstrapStack(bootstrapStackName1);
+    await deleteBootstrapStack(bootstrapStackName2);
   }
 });
+
+/**
+ * Delete bootstrap stack, cleaning S3 bucket if necessary
+ */
+async function deleteBootstrapStack(stackName: string) {
+  try {
+    const response = await cloudFormation('describeStacks', { StackName: stackName });
+
+    const bucketOutput = (response.Stacks?.[0].Outputs ?? []).find(o => o.OutputKey === 'BucketName');
+    if (bucketOutput?.OutputValue) {
+      await emptyBucket(bucketOutput?.OutputValue);
+    }
+
+  } catch (e) {
+    if (e.message.indexOf('does not exist') > -1) { return; }
+    throw e;
+  }
+}
+
+function randomString() {
+  // Crazy
+  return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
+}
+
+async function emptyBucket(bucketName: string) {
+  const objects = await s3('listObjects', { Bucket: bucketName });
+  const deletes = (objects.Contents || []).map(obj => obj.Key || '').filter(d => !!d);
+  if (deletes.length === 0) {
+    return Promise.resolve();
+  }
+  return s3('deleteObjects', {
+    Bucket: bucketName,
+    Delete: {
+      Objects: deletes.map(d => ({ Key: d })),
+      Quiet: false,
+    },
+  });
+}
+
+async function deleteBucket(bucketName: string) {
+  await emptyBucket(bucketName);
+  await s3('deleteBucket', {
+    Bucket: bucketName,
+  });
+}
