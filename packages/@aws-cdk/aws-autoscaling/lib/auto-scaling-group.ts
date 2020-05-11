@@ -187,7 +187,14 @@ export interface CommonAutoScalingGroupProps {
   readonly blockDevices?: BlockDevice[];
 
   /**
-   * The maximum amount of time that an instance can be in service.
+   * The maximum amount of time that an instance can be in service. The maximum duration applies
+   * to all current and future instances in the group. As an instance approaches its maximum duration,
+   * it is terminated and replaced, and cannot be used again.
+   *
+   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * specify a new value of 0.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
    *
    * @default none
    */
@@ -504,10 +511,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
-    this.maxInstanceLifetime = props.maxInstanceLifetime ? props.maxInstanceLifetime : undefined;
-    if (this.maxInstanceLifetime &&
+    this.maxInstanceLifetime = props.maxInstanceLifetime;
+    if (this.maxInstanceLifetime && this.maxInstanceLifetime.toSeconds() !== 0 &&
       (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
+      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive) or 0');
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
