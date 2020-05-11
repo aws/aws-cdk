@@ -28,7 +28,8 @@
     }
   },
   "cdk-build": {
-    "cloudformation": "AWS::Athena"
+    "cloudformation": "AWS::Athena",
+    "jest": true
   },
   "repository": {
     "type": "git",
@@ -60,7 +61,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",

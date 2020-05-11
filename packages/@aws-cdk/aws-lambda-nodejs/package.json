@@ -57,7 +57,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -84,5 +83,8 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }

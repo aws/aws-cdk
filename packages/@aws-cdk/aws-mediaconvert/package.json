@@ -48,7 +48,8 @@
     "build+test+package": "npm run build+test && npm run package"
   },
   "cdk-build": {
-    "cloudformation": "AWS::MediaConvert"
+    "cloudformation": "AWS::MediaConvert",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -62,7 +63,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",

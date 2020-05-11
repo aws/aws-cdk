@@ -46,7 +46,6 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "jest": {},
   "keywords": [
     "aws",
     "cdk",
@@ -97,5 +96,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }

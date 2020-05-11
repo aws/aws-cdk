@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::IAM"
+    "cloudformation": "AWS::IAM",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -80,7 +81,6 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0"

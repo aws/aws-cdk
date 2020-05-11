@@ -47,7 +47,6 @@
   "dependencies": {
     "semver": "^7.2.2"
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^25.2.1",
@@ -75,5 +74,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true
+  }
 }

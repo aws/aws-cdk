@@ -30,7 +30,8 @@
   "cdk-build": {
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "jest": true
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",
@@ -57,7 +58,6 @@
     "fs-extra": "^8.1.0",
     "pkglint": "0.0.0"
   },
-  "jest": {},
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
