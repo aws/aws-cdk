@@ -18,11 +18,11 @@ export let testEnv = async (): Promise<Env> => {
   return ret;
 };
 
-export let cloudFormation = makeAwsCaller(AWS.CloudFormation);
-export let sns = makeAwsCaller(AWS.SNS);
-export let iam = makeAwsCaller(AWS.IAM);
-export let lambda = makeAwsCaller(AWS.Lambda);
-export let sts = makeAwsCaller(AWS.STS);
+export const cloudFormation = makeAwsCaller(AWS.CloudFormation);
+export const sns = makeAwsCaller(AWS.SNS);
+export const iam = makeAwsCaller(AWS.IAM);
+export const lambda = makeAwsCaller(AWS.Lambda);
+export const sts = makeAwsCaller(AWS.STS);
 
 /**
  * Perform an AWS call from nothing
