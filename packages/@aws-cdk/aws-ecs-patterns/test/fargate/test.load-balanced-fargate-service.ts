@@ -228,6 +228,24 @@ export = {
     test.done();
   },
 
+  'setting platform version'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }));
+    test.done();
+  },
+
   'test load balanced service with family defined'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

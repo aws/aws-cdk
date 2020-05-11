@@ -2,6 +2,8 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
@@ -14,6 +16,48 @@ See the [AWS CDK Developer
 Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
 information of most of the capabilities of this library. The rest of this
 README will only cover topics not already covered in the Developer Guide.
+
+## Nested Stacks
+
+[Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
+
+As your infrastructure grows, common patterns can emerge in which you declare the same components in multiple templates. You can separate out these common components and create dedicated templates for them. Then use the resource in your template to reference other templates, creating nested stacks.
+
+For example, assume that you have a load balancer configuration that you use for most of your stacks. Instead of copying and pasting the same configurations into your templates, you can create a dedicated template for the load balancer. Then, you just use the resource to reference that template from within other templates.
+
+The following example will define a single top-level stack that contains two nested stacks: each one with a single Amazon S3 bucket:
+
+```ts
+import { Stack, Construct, StackProps } from '@aws-cdk/core';
+import cfn = require('@aws-cdk/aws-cloudformation');
+import s3 = require('@aws-cdk/aws-s3');
+
+class MyNestedStack extends cfn.NestedStack {
+  constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
+    super(scope, id, props);
+
+    new s3.Bucket(this, 'NestedBucket');  
+  }
+}
+
+class MyParentStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    new MyNestedStack(this, 'Nested1');
+    new MyNestedStack(this, 'Nested2');
+  }
+}
+```
+
+Resources references across nested/parent boundaries (even with multiple levels of nesting) will be wired by the AWS CDK
+through CloudFormation parameters and outputs. When a resource from a parent stack is referenced by a nested stack,
+a CloudFormation parameter will automatically be added to the nested stack and assigned from the parent; when a resource
+from a nested stack is referenced by a parent stack, a CloudFormation output will be automatically be added to the
+nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
+
+Nested stacks also support the use of Docker image and file assets.
+
 
 ## Durations
 
@@ -141,7 +185,7 @@ resources in the scope of `constructB`.
 If you want a single object to represent a set of constructs that are not
 necessarily in the same scope, you can use a `ConcreteDependable`. The
 following creates a single object that represents a dependency on two
-construts, `constructB` and `constructC`:
+constructs, `constructB` and `constructC`:
 
 ```ts
 // Declare the dependable object
@@ -171,6 +215,339 @@ A stack dependency has the following implications:
   * If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
     automatically deploy `stackB`.
   * `stackB`'s deployment will be performed *before* `stackA`'s deployment.
+
+## Custom Resources
+
+Custom Resources are CloudFormation resources that are implemented by arbitrary
+user code. They can do arbitrary lookups or modifications during a
+CloudFormation deployment.
+
+To define a custom resource, use the `CustomResource` construct:
+
+```ts
+import { CustomResource } from '@aws-cdk/core';
+
+new CustomResource(this, 'MyMagicalResource', {
+  resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
+
+  // the resource properties
+  properties: {
+    Property1: 'foo',
+    Property2: 'bar'
+  },
+
+  // the ARN of the provider (SNS/Lambda) which handles 
+  // CREATE, UPDATE or DELETE events for this resource type
+  // see next section for details
+  serviceToken: 'ARN'
+});
+```
+
+### Custom Resource Providers
+
+Custom resources are backed by a **custom resource provider** which can be
+implemented in one of the following ways. The following table compares the
+various provider types (ordered from low-level to high-level):
+
+| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation | Max Timeout     | Language | Footprint |
+|----------------------------------------------------------------------|:------------:|:--------------:|:------------------------:|:---------------:|:--------:|:---------:|
+| [sns.Topic](#amazon-sns-topic)                                       | Self-managed | Manual         | Manual                   | Unlimited       | Any      | Depends   |
+| [lambda.Function](#aws-lambda-function)                              | AWS Lambda   | Manual         | Manual                   | 15min           | Any      | Small     |
+| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | Lambda       | Auto           | Auto                     | 15min           | Node.js  | Small     |
+| [custom-resources.Provider](#the-custom-resource-provider-framework) | Lambda       | Auto           | Auto                     | Unlimited Async | Any      | Large     |
+
+Legend:
+
+- **Compute type**: which type of compute can is used to execute the handler.
+- **Error Handling**: whether errors thrown by handler code are automatically
+  trapped and a FAILED response is submitted to CloudFormation. If this is
+  "Manual", developers must take care of trapping errors. Otherwise, events
+  could cause stacks to hang.
+- **Submit to CloudFormation**: whether the framework takes care of submitting
+  SUCCESS/FAILED responses to CloudFormation through the event's response URL.
+- **Max Timeout**: maximum allows/possible timeout.
+- **Language**: which programming languages can be used to implement handlers.
+- **Footprint**: how many resources are used by the provider framework itself.
+
+**A NOTE ABOUT SINGLETONS**
+
+When defining resources for a custom resource provider, you will likely want to
+define them as a *stack singleton* so that only a single instance of the
+provider is created in your stack and which is used by all custom resources of
+that type.
+
+Here is a basic pattern for defining stack singletons in the CDK. The following
+examples ensures that only a single SNS topic is defined:
+
+```ts
+function getOrCreate(scope: Construct): sns.Topic {
+  const stack = Stack.of(this);
+  const uniqueid = 'GloballyUniqueIdForSingleton';
+  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+}
+```
+
+#### Amazon SNS Topic
+
+Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
+is sent to the SNS topic. Users must process these notifications (e.g. through a
+fleet of worker hosts) and submit success/failure responses to the
+CloudFormation service. 
+
+Set `serviceToken` to `topic.topicArn`  in order to use this provider:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import { CustomResource } from '@aws-cdk/core';
+
+const topic = new sns.Topic(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: topic.topicArn
+});
+```
+
+#### AWS Lambda Function
+
+An AWS lambda function is called *directly* by CloudFormation for all resource
+events. The handler must take care of explicitly submitting a success/failure
+response to the CloudFormation service and handle various error cases. 
+
+Set `serviceToken` to `lambda.functionArn` to use this provider:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { CustomResource } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: lambda.functionArn
+});
+```
+
+#### The `core.CustomResourceProvider` class
+
+The class [`@aws-cdk/core.CustomResourceProvider`] offers a basic low-level
+framework designed to implement simple and slim custom resource providers. It
+currently only supports Node.js-based user handlers, and it does not have
+support for asynchronous waiting (handler cannot exceed the 15min lambda
+timeout).
+
+[`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
+
+The provider has a built-in singleton method which uses the resource type as a
+stack-unique identifier and returns the service token:
+
+```ts
+const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+
+new CustomResource(this, 'MyResource', {
+  resourceType: 'Custom::MyCustomResourceType',
+  serviceToken: serviceToken
+});
+```
+
+The directory (`my-handler` in the above example) must include an `index.js` file. It cannot import
+external dependencies or files outside this directory. It must export an async
+function named `handler`. This function accepts the CloudFormation resource
+event object and returns an object with the following structure:
+
+```js
+exports.handler = async function(event) {
+  const id = event.PhysicalResourceId; // only for "Update" and "Delete"
+  const props = event.ResourceProperties;
+  const oldProps = event.OldResourceProperties; // only for "Update"s
+  
+  switch (event.RequestType) {
+    case "Create":
+      // ...
+
+    case "Update":
+      // ...
+
+      // if an error is thrown, a FAILED response will be submitted to CFN
+      throw new Error('Failed!');
+      
+    case "Delete":
+      // ...
+  }
+
+  return {
+    // (optional) the value resolved from `resource.ref`
+    // defaults to "event.PhysicalResourceId" or "event.RequestId"
+    PhysicalResourceId: "REF",
+
+    // (optional) calling `resource.getAtt("Att1")` on the custom resource in the CDK app
+    // will return the value "BAR".
+    Data: {
+      Att1: "BAR",
+      Att2: "BAZ"
+    },
+
+    // (optional) user-visible message
+    Reason: "User-visible message",
+
+    // (optional) hides values from the console
+    NoEcho: true
+  };
+}
+```
+
+Here is an complete example of a custom resource that summarizes two numbers:
+
+`sum-handler/index.js`:
+
+```js
+exports.handler = async e => {
+  return { 
+    Data: { 
+      Result: e.ResourceProperties.lhs + e.ResourceProperties.rhs
+    } 
+  };
+};
+```
+
+`sum.ts`:
+
+```ts
+export interface SumProps {
+  readonly lhs: number;
+  readonly rhs: number;
+}
+
+export class Sum extends Construct {
+  public readonly result: number;
+
+  constructor(scope: Construct, id: string, props: SumProps) {
+    super(scope, id);
+
+    const resourceType = 'Custom::Sum';
+    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
+      codeDirectory: `${__dirname}/sum-handler`,
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    const resource = new CustomResource(this, 'Resource', {
+      resourceType: resourceType,
+      serviceToken: provider.serviceToken,
+      properties: {
+        lhs: props.lhs,
+        rhs: props.rhs
+      }
+    });
+
+    this.result = Token.asNumber(resource.getAtt('Result'));
+  }
+}
+```
+
+Usage will look like this:
+
+```ts
+const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
+new CfnOutput(this, 'Result', { value: sum.result });
+```
+
+#### The Custom Resource Provider Framework
+
+The [`@aws-cdk/custom-resource`] module includes an advanced framework for
+implementing custom resource providers.
+
+[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
+
+Handlers are implemented as AWS Lambda functions, which means that they can be
+implemented in any Lambda-supported runtime. Furthermore, this provider has an
+asynchronous mode, which means that users can provide an `isComplete` lambda
+function which is called periodically until the operation is complete. This
+allows implementing providers that can take up to two hours to stabilize. 
+
+Set `serviceToken` to `provider.serviceToken` to use this type of provider:
+
+```ts
+import { Provider } from 'custom-resources';
+
+const provider = new Provider(this, 'MyProvider', {
+  onEventHandler: onEventLambdaFunction,
+  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
+});
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: provider.serviceToken
+});
+```
+
+See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html) for more details.
+
+#### Amazon SNS Topic
+
+Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
+is sent to the SNS topic. Users must process these notifications (e.g. through a
+fleet of worker hosts) and submit success/failure responses to the
+CloudFormation service. 
+
+Set `serviceToken` to `topic.topicArn`  in order to use this provider:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+import { CustomResource } from '@aws-cdk/core';
+
+const topic = new sns.Topic(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: topic.topicArn
+});
+```
+
+#### AWS Lambda Function
+
+An AWS lambda function is called *directly* by CloudFormation for all resource
+events. The handler must take care of explicitly submitting a success/failure
+response to the CloudFormation service and handle various error cases. 
+
+Set `serviceToken` to `lambda.functionArn` to use this provider:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { CustomResource } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyProvider');
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: lambda.functionArn
+});
+```
+
+#### The Custom Resource Provider Framework
+
+The [`@aws-cdk/custom-resource`] module includes an advanced framework for
+implementing custom resource providers.
+
+[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
+
+Handlers are implemented as AWS Lambda functions, which means that they can be
+implemented in any Lambda-supported runtime. Furthermore, this provider has an
+asynchronous mode, which means that users can provide an `isComplete` lambda
+function which is called periodically until the operation is complete. This
+allows implementing providers that can take up to two hours to stabilize. 
+
+Set `serviceToken` to `provider.serviceToken` to use this provider:
+
+```ts
+import { Provider } from 'custom-resources';
+
+const provider = new Provider(this, 'MyProvider', {
+  onEventHandler: onEventLambdaFunction,
+  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
+});
+
+new CustomResource(this, 'MyResource', {
+  serviceToken: provider.serviceToken
+});
+```
 
 ## AWS CloudFormation features
 
@@ -422,3 +799,19 @@ new CfnInclude(this, 'ID', {
   },
 });
 ```
+
+### Termination Protection
+You can prevent a stack from being accidentally deleted by enabling termination
+protection on the stack. If a user attempts to delete a stack with termination
+protection enabled, the deletion fails and the stack--including its status--remains
+unchanged. Enabling or disabling termination protection on a stack sets it for any
+nested stacks belonging to that stack as well. You can enable termination protection
+on a stack by setting the `terminationProtection` prop to `true`.
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  terminationProtection: true,
+});
+```
+
+By default, termination protection is disabled.

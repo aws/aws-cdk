@@ -24,18 +24,17 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ### TypeScript example
 
 ```ts
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Put Lambda's result here in the execution's state object
-    resultPath: '$.guid',
+    task: new tasks.RunLambdaTask(submitLambda),
+    // Lambda's result is in the attribute `Payload`
+    outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
@@ -43,13 +42,11 @@ const waitX = new sfn.Wait(this, 'Wait X Seconds', {
 });
 
 const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
+    task: new tasks.RunLambdaTask(getStatusLambda),
     // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status"
+    // Lambda's result in a field called "status" in the response
     inputPath: '$.guid',
-    resultPath: '$.status',
+    outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -58,12 +55,10 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
 });
 
 const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    }),
-    // Use "guid" field as input, output of the Lambda becomes the
-    // entire state machine output.
+    task: new tasks.RunLambdaTask(getStatusLambda),
+    // Use "guid" field as input
     inputPath: '$.guid',
+    outputPath: '$.Payload',
 });
 
 const definition = submitJob
@@ -80,6 +75,9 @@ new sfn.StateMachine(this, 'StateMachine', {
     timeout: Duration.minutes(5)
 });
 ```
+
+You can find more sample snippets and learn more about the service integrations
+in the `@aws-cdk/aws-stepfunctions-tasks` package.
 
 ## State Machine
 
@@ -115,6 +113,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
+* [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -124,397 +123,11 @@ information, see the States Language spec.
 
 A `Task` represents some work that needs to be done. The exact work to be
 done is determine by a class that implements `IStepFunctionsTask`, a collection
-of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` package. A
-couple of the tasks available are:
-
-* `tasks.InvokeActivity` -- start an Activity (Activities represent a work
-  queue that you poll on a compute fleet you manage yourself)
-* `tasks.RunBatchJob` -- run a Batch job
-* `tasks.RunLambdaTask` -- call Lambda as integrated service with magic ARN
-* `tasks.RunGlueJobTask` -- call Glue Job as integrated service
-* `tasks.PublishToTopic` -- publish a message to an SNS topic
-* `tasks.SendToQueue` -- send a message to an SQS queue
-* `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
-  depending on the type of capacity.
-* `tasks.SagemakerTrainTask` -- run a SageMaker training job
-* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
-* `tasks.StartExecution` -- call StartExecution to a state machine of Step Functions
-* `tasks.EvaluateExpression` -- evaluate an expression referencing state paths
-* `tasks.CallDynamoDB` -- call GetItem, PutItem, DeleteItem and UpdateItem APIs of DynamoDB
-
-Except `tasks.InvokeActivity`, the [service integration
-pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html)
-(`integrationPattern`) is supposed to be provided as a parameter when customers want
-to call integrated services within a Task state. The default value is `FIRE_AND_FORGET`.
-
-#### Task parameters from the state json
-
-Many tasks take parameters. The values for those can either be supplied
-directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `Data`,
-such as `Data.stringAt()`.
-
-If so, the value is taken from the indicated location in the state JSON,
-similar to (for example) `inputPath`.
-
-#### Lambda example
-
-```ts
-  const task = new sfn.Task(stack, 'Invoke2', {
-    task: new tasks.RunLambdaTask(myLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      payload: {
-        token: sfn.Context.taskToken
-      }
-    })
-  });
-```
-
-#### Glue Job example
-
-```ts
-  const task = new sfn.Task(stack, 'ETL', {
-    task: new tasks.RunGlueJobTask(glueJobName, {
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      arguments: {
-        "--table-prefix": "myTable"
-      }
-    })
-  });
-```
-
-[Example CDK app](../aws-stepfunctions-tasks/test/integ.glue-task.ts)
-
-#### Batch example
-
-```ts
-import batch = require('@aws-cdk/aws-batch');
-
-const batchQueue = new batch.JobQueue(this, 'JobQueue', {
-  computeEnvironments: [
-    {
-      order: 1,
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
-        computeResources: { vpc }
-      })
-    }
-  ]
-});
-
-const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
-  container: {
-    image: ecs.ContainerImage.fromAsset(
-      path.resolve(__dirname, 'batchjob-image')
-    )
-  }
-});
-
-const task = new sfn.Task(this, 'Submit Job', {
-  task: new tasks.RunBatchJob({
-    jobDefinition: batchJobDefinition,
-    jobName: 'MyJob',
-    jobQueue: batchQueue
-  })
-});
-```
-
-#### SNS example
-
-```ts
-import sns = require('@aws-cdk/aws-sns');
-
-// ...
-
-const topic = new sns.Topic(this, 'Topic');
-
-// Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Publish1', {
-    task: new tasks.PublishToTopic(topic, {
-        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-        message: TaskInput.fromDataAt('$.state.message'),
-    })
-});
-
-// Combine a field from the execution data with
-// a literal object.
-const task2 = new sfn.Task(this, 'Publish2', {
-    task: new tasks.PublishToTopic(topic, {
-        message: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        })
-    })
-});
-```
-
-#### SQS example
-
-```ts
-import sqs = require('@aws-cdk/aws-sqs');
-
-// ...
-
-const queue = new sns.Queue(this, 'Queue');
-
-// Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Send1', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromDataAt('$.message'),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
-});
-
-// Combine a field from the execution data with
-// a literal object.
-const task2 = new sfn.Task(this, 'Send2', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        }),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
-});
-```
-
-#### ECS example
-
-```ts
-import ecs = require('@aws-cdk/aws-ecs');
-
-// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
-
-const fargateTask = new ecs.RunEcsFargateTask({
-  cluster,
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
-        {
-          name: 'CONTAINER_INPUT',
-          value: Data.stringAt('$.valueFromStateData')
-        }
-      ]
-    }
-  ]
-});
-
-fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
-
-const task = new sfn.Task(this, 'CallFargate', {
-    task: fargateTask
-});
-```
-
-#### SageMaker Transform example
-
-```ts
-const transformJob = new tasks.SagemakerTransformTask(
-    transformJobName: "MyTransformJob",
-    modelName: "MyModelName",
-    role,
-    transformInput: {
-        transformDataSource: {
-            s3DataSource: {
-                s3Uri: 's3://inputbucket/train',
-                s3DataType: S3DataType.S3Prefix,
-            }
-        }
-    },
-    transformOutput: {
-        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
-    },
-    transformResources: {
-        instanceCount: 1,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
-});
-
-const task = new sfn.Task(this, 'Batch Inference', {
-    task: transformJob
-});
-```
-
-#### Step Functions example
-
-```ts
-// Define a state machine with one Pass state
-const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
-});
-
-// Include the state machine in a Task state with callback pattern
-const task = new sfn.Task(stack, 'ChildTask', {
-  task: new tasks.ExecuteStateMachine(child, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    input: {
-      token: sfn.Context.taskToken,
-      foo: 'bar'
-    },
-    name: 'MyExecutionName'
-  })
-});
-
-// Define a second state machine with the Task state above
-new sfn.StateMachine(stack, 'ParentStateMachine', {
-  definition: task
-});
-```
-
-#### Eval example
-
-Use the `EvaluateExpression` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
-(`eval()`). This allows you to not have to write Lambda code for simple operations.
-
-Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
-
-```ts
-const convertToSeconds = new sfn.Task(this, 'Convert to seconds', {
-  task: new tasks.EvaluateExpression({ expression: '$.waitMilliseconds / 1000' }),
-  resultPath: '$.waitSeconds'
-});
-
-const createMessage = new sfn.Task(this, 'Create message', {
-  // Note: this is a string inside a string.
-  task: new tasks.EvaluateExpression({ expression: '`Now waiting ${$.waitSeconds} seconds...`'}),
-  resultPath: '$.message'
-});
-
-const publishMessage = new sfn.Task(this, 'Publish message', {
-  task: new tasks.PublishToTopic(topic, {
-    message: sfn.TaskInput.fromDataAt('$.message'),
-  }),
-  resultPath: '$.sns'
-});
-
-const wait = new sfn.Wait(this, 'Wait', {
-  time: sfn.WaitTime.secondsPath('$.waitSeconds')
-});
-
-new sfn.StateMachine(this, 'StateMachine', {
-  definition: convertToSeconds
-    .next(createMessage)
-    .next(publishMessage)
-    .next(wait)
-});
-```
-
-The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
-runtime to use to evaluate the expression. Currently, the only runtime
-supported is `lambda.Runtime.NODEJS_10_X`.
-
-#### DynamoDB example
-
-##### PutItem
-
-```ts
-const TABLE_NAME = 'Messages';
-const MESSAGE_ID = `1234`;
-const firstNumber = 18;
-const secondNumber = 24;
-
-const putItemTask = new sfn.Task(this, 'PutItem', {
-  task: tasks.CallDynamoDB.putItem({
-    item: {
-      MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
-      Text: new tasks.DynamoAttributeValue().withS(
-        sfn.Data.stringAt('$.bar')
-      ),
-      TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`)
-    },
-    tableName: TABLE_NAME
-  })
-});
-
-const definition = new sfn.Pass(this, 'Start', {
-  result: sfn.Result.fromObject({ bar: 'SomeValue' })
-})
-  .next(putItemTask);
-
-const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition
-});
-```
-
-##### GetItem
-
-```ts
-const getItemTask = new sfn.Task(this, 'GetItem', {
-  task: tasks.CallDynamoDB.getItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
-    },
-    tableName: TABLE_NAME
-  })
-});
-
-const definition = new sfn.Pass(this, 'Start', {
-  result: sfn.Result.fromObject({ bar: 'SomeValue' })
-})
-  .next(getItemTask);
-
-const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition
-});
-```
-
-##### UpdateItem
-
-```ts
-const updateItemTask = new sfn.Task(this, 'UpdateItem', {
-  task: tasks.CallDynamoDB.updateItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
-    },
-    tableName: TABLE_NAME,
-    expressionAttributeValues: {
-      ':val': new tasks.DynamoAttributeValue().withN(
-        sfn.Data.stringAt('$.Item.TotalCount.N')
-      ),
-      ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`)
-    },
-    updateExpression: 'SET TotalCount = :val + :rand'
-  })
-});
-
-const definition = new sfn.Pass(this, 'Start', {
-  result: sfn.Result.fromObject({ bar: 'SomeValue' })
-})
-  .next(updateItemTask);
-
-const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition
-});
-```
-
-##### DeleteItem
-
-```ts
-const deleteItemTask = new sfn.Task(this, 'DeleteItem', {
-  task: tasks.CallDynamoDB.deleteItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID)
-    },
-    tableName: TABLE_NAME
-  }),
-  resultPath: 'DISCARD'
-});
-
-const definition = new sfn.Pass(this, 'Start', {
-  result: sfn.Result.fromObject({ bar: 'SomeValue' })
-})
-  .next(deleteItemTask);
-
-const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-  definition
-});
-```
+of which can be found in the `@aws-cdk/aws-stepfunctions-tasks` module.
+
+The tasks in the `@aws-cdk/aws-stepfunctions-tasks` module support the
+[service integration pattern](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html) that integrates Step Functions with services
+directly in the Amazon States language.
 
 ### Pass
 
@@ -642,6 +255,76 @@ const map = new stepfunctions.Map(this, 'Map State', {
     itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
 });
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
+```
+
+### Custom State
+
+It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
+the states or service integrations you are looking for. The primary reasons for this lack of
+functionality are:
+
+* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but not available as construct
+  classes in the CDK.
+* The state or state properties are available through Step Functions, but are not configurable
+  through constructs
+
+If a feature is not available, a `CustomState` can be used to supply any Amazon States Language
+JSON-based object as the state definition.
+
+[Code Snippets](https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1) are available and can be plugged in as the state definition.
+
+Custom states can be chained together with any of the other states to create your state machine
+definition. You will also need to provide any permissions that are required to the `role` that
+the State Machine uses.
+
+The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
+
+```ts
+import * as ddb from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+// create a table
+const table = new ddb.Table(this, 'montable', {
+  partitionKey: {
+    name: 'id',
+    type: ddb.AttributeType.STRING,
+  },
+});
+
+const finalStatus = new sfn.Pass(stack, 'final step');
+
+// States language JSON to put an item into DynamoDB
+// snippet generated from https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1
+const stateJson = {
+  Type: 'Task',
+  Resource: 'arn:aws:states:::dynamodb:putItem',
+  Parameters: {
+    TableName: table.tableName,
+    Item: {
+      id: {
+        S: 'MyEntry',
+      },
+    },
+  },
+  ResultPath: null,
+};
+
+// custom state which represents a task to insert data into DynamoDB
+const custom = new sfn.CustomState(this, 'my custom task', {
+  stateJson,
+});
+
+const chain = sfn.Chain.start(custom)
+      .next(finalStatus);
+
+const sm = new sfn.StateMachine(this, 'StateMachine', {
+  definition: chain,
+  timeout: cdk.Duration.seconds(30),
+});
+
+// don't forget permissions. You need to assign them
+table.grantWriteData(sm.role);
 ```
 
 ## Task Chaining

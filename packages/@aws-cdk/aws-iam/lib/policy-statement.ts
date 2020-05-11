@@ -56,6 +56,7 @@ export class PolicyStatement {
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
+  private principalConditionsJson?: string;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -137,7 +138,7 @@ export class PolicyStatement {
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
@@ -156,7 +157,7 @@ export class PolicyStatement {
     for (const notPrincipal of notPrincipals) {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this.notPrincipal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
@@ -379,6 +380,33 @@ export class PolicyStatement {
    */
   public toJSON() {
     return this.toStatementJson();
+  }
+
+  /**
+   * Add a principal's conditions
+   *
+   * For convenience, principals have been modeled as both a principal
+   * and a set of conditions. This makes it possible to have a single
+   * object represent e.g. an "SNS Topic" (SNS service principal + aws:SourcArn
+   * condition) or an Organization member (* + aws:OrgId condition).
+   *
+   * However, when using multiple principals in the same policy statement,
+   * they must all have the same conditions or the OR samentics
+   * implied by a list of principals cannot be guaranteed (user needs to
+   * add multiple statements in that case).
+   */
+  private addPrincipalConditions(conditions: Conditions) {
+    // Stringifying the conditions is an easy way to do deep equality
+    const theseConditions = JSON.stringify(conditions);
+    if (this.principalConditionsJson === undefined) {
+      // First principal, anything goes
+      this.principalConditionsJson = theseConditions;
+    } else {
+      if (this.principalConditionsJson !== theseConditions) {
+        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
+      }
+    }
+    this.addConditions(conditions);
   }
 }
 
