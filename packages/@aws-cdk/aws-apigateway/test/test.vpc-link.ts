@@ -59,7 +59,7 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
+  'import'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 

@@ -3,7 +3,7 @@ import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**
- * Physical ID of the VpcLink resource
+ * Represents an API Gateway VpcLink
  */
 export interface IVpcLink extends IResource {
   /**
