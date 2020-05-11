@@ -1,3 +1,4 @@
+import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
@@ -189,7 +190,7 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key',
-          provider: 'fake',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
             account: '12345689012',
             region: 'ab-north-1',
@@ -199,9 +200,8 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key-2',
-          provider: 'fake2',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
-            foo: 'bar',
             account: '12345689012',
             region: 'ab-south-1',
           },
@@ -217,7 +217,7 @@ export = {
     test.deepEqual(assembly.manifest.missing, [
       {
         key: 'missing-context-key',
-        provider: 'fake',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-north-1',
@@ -225,11 +225,10 @@ export = {
       },
       {
         key: 'missing-context-key-2',
-        provider: 'fake2',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-south-1',
-          foo: 'bar',
         },
       },
     ]);
@@ -294,6 +293,7 @@ export = {
     test.deepEqual(libs, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
+      '@aws-cdk/cdk-assets-schema': version,
       '@aws-cdk/cloud-assembly-schema': version,
       'jsii-runtime': `node.js/${process.version}`,
     });
