@@ -20,6 +20,9 @@
     "build+test+package": "npm run build+test",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "jest": true
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -37,7 +40,6 @@
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"
   },
-  "jest": {},
   "keywords": [
     "aws",
     "cdk"

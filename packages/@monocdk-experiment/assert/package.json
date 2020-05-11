@@ -15,6 +15,7 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./clone.sh"
     ],
@@ -28,7 +29,6 @@
       "disable": true
     }
   },
-  "jest": {},
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",

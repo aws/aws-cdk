@@ -16,6 +16,9 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "jest": true
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -37,7 +40,6 @@
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
   },
-  "jest": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",

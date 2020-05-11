@@ -25,6 +25,7 @@
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./generate.sh"
     ]
@@ -102,6 +103,5 @@
     "node": ">= 10.13.0"
   },
   "stability": "stable",
-  "jest": {},
   "maturity": "stable"
 }
