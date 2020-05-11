@@ -26,7 +26,7 @@ export = {
 
   'add file asset'(test: Test) {
     // WHEN
-    const location = stack.stackSynthesis.addFileAsset({
+    const location = stack.zer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
       sourceHash: 'abcdef',
@@ -44,7 +44,7 @@ export = {
 
   'add docker image asset'(test: Test) {
     // WHEN
-    const location = stack.stackSynthesis.addDockerImageAsset({
+    const location = stack.zer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
     });
@@ -58,12 +58,12 @@ export = {
 
   'synthesis'(test: Test) {
     // GIVEN
-    stack.stackSynthesis.addFileAsset({
+    stack.zer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
       sourceHash: 'abcdef',
     });
-    stack.stackSynthesis.addDockerImageAsset({
+    stack.zer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
     });

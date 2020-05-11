@@ -5,8 +5,8 @@ import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { addStackArtifactToCloudAsm, assertBound } from './shared';
-import { IStackSynthesis } from './types';
+import { addStackArtifactToAssembly, assertBound } from './_shared';
+import { IStackSynthesizer } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -29,10 +29,10 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This deployment environment is restricted in cross-environment deployments,
  * CI/CD deployments, and will use up CloudFormation parameters in your template.
  *
- * This is the only DeploymentConfiguration that supports customizing asset behavior
+ * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesis implements IStackSynthesis {
+export class LegacyStackSynthesizer implements IStackSynthesizer {
   private stack?: Stack;
   private cycle = false;
 
@@ -47,7 +47,7 @@ export class LegacyStackSynthesis implements IStackSynthesis {
    */
   private readonly addedImageAssets = new Set<string>();
 
-  public bindStack(stack: Stack): void {
+  public bind(stack: Stack): void {
     this.stack = stack;
   }
 
@@ -95,7 +95,7 @@ export class LegacyStackSynthesis implements IStackSynthesis {
     assertBound(this.stack);
 
     // Just do the default stuff, nothing special
-    addStackArtifactToCloudAsm(session, this.stack, {}, []);
+    addStackArtifactToAssembly(session, this.stack, {}, []);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {

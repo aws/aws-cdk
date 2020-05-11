@@ -1,18 +1,18 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
-import { IStackSynthesis } from './types';
+import { IStackSynthesizer } from './types';
 
 /**
  * Deployment environment for a nested stack
  *
- * Interoperates with the DeploymentConfiguration of the parent stack.
+ * Interoperates with the StackSynthesizer of the parent stack.
  */
-export class NestedStackSynthesis implements IStackSynthesis {
-  constructor(private readonly parentDeployment: IStackSynthesis) {
+export class NestedStackSynthesizer implements IStackSynthesizer {
+  constructor(private readonly parentDeployment: IStackSynthesizer) {
   }
 
-  public bindStack(_stack: Stack): void {
+  public bind(_stack: Stack): void {
     // Nothing to do
   }
 

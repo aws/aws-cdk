@@ -9,7 +9,7 @@ import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { NestedStackSynthesis } from './stack-synthesis';
+import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
@@ -99,7 +99,7 @@ export class NestedStack extends Stack {
 
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
-      stackSynthesis: new NestedStackSynthesis(parentStack.stackSynthesis),
+      synthesizer: new NestedStackSynthesizer(parentStack.zer),
     });
 
     this._parentStack = parentStack;

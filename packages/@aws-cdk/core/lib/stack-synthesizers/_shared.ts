@@ -13,11 +13,18 @@ import { Stack } from '../stack';
  * parameters (which is convenient so I can remain typesafe without
  * copy/pasting), and jsii will choke on this type.
  */
-export function addStackArtifactToCloudAsm(
+export function addStackArtifactToAssembly(
   session: ISynthesisSession,
   stack: Stack,
   stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
   additionalStackDependencies: string[]) {
+
+  // nested stack tags are applied at the AWS::CloudFormation::Stack resource
+  // level and are not needed in the cloud assembly.
+  // TODO: move these to the cloud assembly artifact properties instead of metadata
+  if (stack.tags.hasTags()) {
+    stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
+  }
 
   const deps = [
     ...stack.dependencies.map(s => s.artifactId),

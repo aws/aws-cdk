@@ -8,15 +8,15 @@ import { Fn } from '../cfn-fn';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { addStackArtifactToCloudAsm, assertBound, contentHash } from './shared';
-import { IStackSynthesis } from './types';
+import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
+import { IStackSynthesizer } from './types';
 
 /**
- * Configuration properties for DefaultDeploymentConfiguration
+ * Configuration properties for DefaultStackSynthesizer
  */
-export interface DefaultStackSynthesisProps {
+export interface DefaultStackSynthesizerProps {
   /**
-   * Name of the staging bucket
+   * Name of the S3 bucket to hold file assets
    *
    * You must supply this if you have given a non-standard name to the staging bucket.
    *
@@ -24,12 +24,12 @@ export interface DefaultStackSynthesisProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesis.DEFAULT_FILE_ASSETS_BUCKET_NAME
+   * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
    */
   readonly fileAssetsBucketName?: string;
 
   /**
-   * Name of the ECR repository to push Docker Images
+   * Name of the ECR repository to hold Docker Image assets
    *
    * You must supply this if you have given a non-standard name to the ECR repository.
    *
@@ -37,7 +37,7 @@ export interface DefaultStackSynthesisProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesis.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
+   * @default DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
    */
   readonly imageAssetsRepositoryName?: string;
 
@@ -50,7 +50,7 @@ export interface DefaultStackSynthesisProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesis.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
+   * @default DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
    */
   readonly assetPublishingRoleArn?: string;
 
@@ -70,7 +70,7 @@ export interface DefaultStackSynthesisProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesis.DEFAULT_DEPLOY_ACTION_ROLE_ARN
+   * @default DefaultStackSynthesizer.DEFAULT_DEPLOY_ACTION_ROLE_ARN
    */
   readonly deployActionRoleArn?: string;
 
@@ -83,7 +83,7 @@ export interface DefaultStackSynthesisProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesis.DEFAULT_CLOUDFORMATION_ROLE_ARN
+   * @default DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
    */
   readonly cloudFormationExecutionRole?: string;
 
@@ -93,7 +93,7 @@ export interface DefaultStackSynthesisProps {
    * You can use this and leave the other naming properties empty if you have deployed
    * the bootstrap environment with standard names but only differnet qualifiers.
    *
-   * @default DefaultStackSynthesis.DEFAULT_QUALIFIER
+   * @default DefaultStackSynthesizer.DEFAULT_QUALIFIER
    */
   readonly qualifier?: string;
 }
@@ -101,13 +101,13 @@ export interface DefaultStackSynthesisProps {
 /**
  * Uses conventionally named roles and reify asset storage locations
  *
- * This DeploymentConfiguration is the only DeploymentConfiguration that generates
+ * This synthesizer is the only StackSynthesizer that generates
  * an asset manifest, and is required to deploy CDK applications using the
  * `@aws-cdk/app-delivery` CI/CD library.
  *
  * Requires the environment to have been bootstrapped with Bootstrap Stack V2.
  */
-export class DefaultStackSynthesis implements IStackSynthesis {
+export class DefaultStackSynthesizer implements IStackSynthesizer {
   /**
    * Default ARN qualifier
    */
@@ -148,13 +148,13 @@ export class DefaultStackSynthesis implements IStackSynthesis {
   private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
   private readonly dockerImages: NonNullable<asset_schema.ManifestFile['dockerImages']> = {};
 
-  constructor(private readonly props: DefaultStackSynthesisProps = {}) {
+  constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
   }
 
-  public bindStack(stack: Stack): void {
+  public bind(stack: Stack): void {
     this.stack = stack;
 
-    const qualifier = this.props.qualifier ?? DefaultStackSynthesis.DEFAULT_QUALIFIER;
+    const qualifier = this.props.qualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -172,11 +172,11 @@ export class DefaultStackSynthesis implements IStackSynthesis {
     };
 
     // tslint:disable:max-line-length
-    this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesis.DEFAULT_FILE_ASSETS_BUCKET_NAME);
-    this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesis.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
-    this.deployActionRoleArn = specialize(this.props.deployActionRoleArn ?? DefaultStackSynthesis.DEFAULT_DEPLOY_ACTION_ROLE_ARN);
-    this.cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesis.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? DefaultStackSynthesis.DEFAULT_ASSET_PUBLISHING_ROLE_ARN);
+    this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
+    this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
+    this.deployActionRoleArn = specialize(this.props.deployActionRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ACTION_ROLE_ARN);
+    this.cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
+    this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN);
     // tslint:enable:max-line-length
   }
 
@@ -251,7 +251,7 @@ export class DefaultStackSynthesis implements IStackSynthesis {
 
     const artifactId = this.writeAssetManifest(session);
 
-    addStackArtifactToCloudAsm(session, this.stack, {
+    addStackArtifactToAssembly(session, this.stack, {
       assumeRoleArn: this.deployActionRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3Url,

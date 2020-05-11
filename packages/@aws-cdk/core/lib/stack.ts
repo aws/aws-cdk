@@ -49,10 +49,10 @@ export interface StackProps {
   /**
    * Synthesis method to use while deploying this stack
    *
-   * @default - `DefaultStackSynthesis` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
-   * is set, `LegacyStackSynthesis` otherwise.
+   * @default - `DefaultStackSynthesizer` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
+   * is set, `LegacyStackSynthesizer` otherwise.
    */
-  readonly stackSynthesis?: IStackSynthesis;
+  readonly synthesizer?: IStackSynthesizer;
 
   /**
    * Whether to enable termination protection for this stack.
@@ -211,7 +211,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @experimental
    */
-  public readonly stackSynthesis: IStackSynthesis;
+  public readonly synthesizer: IStackSynthesizer;
 
   /**
    * Logical ID generation strategy
@@ -283,10 +283,10 @@ export class Stack extends Construct implements ITaggable {
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.stackSynthesis = props.stackSynthesis ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
-      ? new DefaultStackSynthesis()
-      : new LegacyStackSynthesis());
-    this.stackSynthesis.bindStack(this);
+    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+      ? new DefaultStackSynthesizer()
+      : new LegacyStackSynthesizer());
+    this.synthesizer.bind(this);
   }
 
   /**
@@ -527,21 +527,21 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Register a file asset on this Stack
    *
-   * @deprecated Use `stack.deploymentConfiguration.addFileAsset()` if you are calling,
+   * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
    * and a different IDeploymentEnvironment class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    return this.stackSynthesis.addFileAsset(asset);
+    return this.synthesizer.addFileAsset(asset);
   }
 
   /**
    * Register a docker image asset on this Stack
    *
-   * @deprecated Use `stack.deploymentConfiguration.addDockerImageAsset()` if you are calling,
+   * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
    * and a different `IDeploymentEnvironment` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    return this.stackSynthesis.addDockerImageAsset(asset);
+    return this.synthesizer.addDockerImageAsset(asset);
   }
 
   /**
@@ -711,15 +711,8 @@ export class Stack extends Construct implements ITaggable {
       builder.addMissing(ctx);
     }
 
-    // nested stack tags are applied at the AWS::CloudFormation::Stack resource
-    // level and are not needed in the cloud assembly.
-    // TODO: move these to the cloud assembly artifact properties instead of metadata
-    if (!this.nested && this.tags.hasTags()) {
-      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
-    }
-
-    // Delegate adding artifacts to the DeploymentConfiguration
-    this.stackSynthesis.synthesizeStackArtifacts(session);
+    // Delegate adding artifacts to the Synthesizer
+    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**
@@ -928,7 +921,7 @@ import { addDependency } from './deps';
 import { prepareApp } from './private/prepare-app';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesis, IStackSynthesis, LegacyStackSynthesis } from './stack-synthesis';
+import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 

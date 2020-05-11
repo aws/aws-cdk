@@ -5,13 +5,13 @@ import { Stack } from '../stack';
 /**
  * Encodes information how a certain Stack should be deployed
  */
-export interface IStackSynthesis {
+export interface IStackSynthesizer {
   /**
    * Bind to the stack this environment is going to be used on
    *
    * Must be called before any of the other methods are called.
    */
-  bindStack(stack: Stack): void;
+  bind(stack: Stack): void;
 
   /**
    * Register a File Asset
