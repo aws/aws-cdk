@@ -907,7 +907,7 @@ The following code creates a REST API using an external OpenAPI definition JSON 
 
 ```ts
 const api = new apigateway.SpecRestApi(this, 'books-api', {
-  apiDefinition: apigateway.APIDefinition.fromAsset('path-to-file.json')
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json')
 });
 ```
 
