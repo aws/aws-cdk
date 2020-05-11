@@ -39,12 +39,10 @@ export = {
           Ref: 'VpcNetworkB258E83A',
         },
         RouteTableIds: [
-          {
-            Ref: 'VpcNetworkPrivateSubnet1RouteTableCD085FF1',
-          },
-          {
-            Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B',
-          },
+          { Ref: 'VpcNetworkPrivateSubnet1RouteTableCD085FF1' },
+          { Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B' },
+          { Ref: 'VpcNetworkPublicSubnet1RouteTable25CCC53F' },
+          { Ref: 'VpcNetworkPublicSubnet2RouteTableE5F348DF' },
         ],
         VpcEndpointType: 'Gateway',
       }));
