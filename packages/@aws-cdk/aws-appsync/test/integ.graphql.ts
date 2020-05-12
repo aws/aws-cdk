@@ -139,4 +139,37 @@ orderDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
+const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+
+httpDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'doGet1OnAws',
+  requestMappingTemplate: MappingTemplate.httpGetAndForwardArgumentsAsQueryParams('/'),
+  responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+});
+httpDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'doGet2OnAws',
+  requestMappingTemplate: MappingTemplate.httpGetAndForwardHeaders('/path1'),
+  responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+});
+httpDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'doGet3OnAws',
+  requestMappingTemplate: MappingTemplate.httpSimpleGet('/path1/path2'),
+  responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+});
+httpDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'doPostOnAws',
+  requestMappingTemplate: MappingTemplate.httpPostAndForwardArgumentsAsJson('/path3'),
+  responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+});
+httpDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'doDeleteOnAws',
+  requestMappingTemplate: MappingTemplate.httpSimpleDelete('/'),
+  responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+});
+
 app.synth();

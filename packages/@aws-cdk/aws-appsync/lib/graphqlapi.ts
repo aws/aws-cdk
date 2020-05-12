@@ -276,6 +276,21 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * add a new http data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param endpoint The http endpoint
+   */
+  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
+    return new HttpDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      endpoint,
+      name,
+    });
+  }
+
+  /**
    * add a new Lambda data source to this API
    * @param name The name of the data source
    * @param description The description of the data source
@@ -534,6 +549,30 @@ export class DynamoDbDataSource extends BackedDataSource {
     } else {
       props.table.grantReadWriteData(this);
     }
+  }
+}
+
+/**
+ * Properties for an AppSync http datasource
+ */
+export interface HttpDataSourceProps extends BaseDataSourceProps {
+  /**
+   * The http endpoint
+   */
+  readonly endpoint: string;
+}
+
+/**
+ * An AppSync datasource backed by a http endpoint
+ */
+export class HttpDataSource extends BaseDataSource {
+  constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    super(scope, id, props, {
+      httpConfig: {
+        endpoint: props.endpoint,
+      },
+      type: 'HTTP',
+    });
   }
 }
 
@@ -1025,6 +1064,128 @@ export abstract class MappingTemplate {
    */
   public static lambdaResult(): MappingTemplate {
     return this.fromString('$util.toJson($ctx.result)');
+  }
+
+  /**
+   * HTTP Request Mapping Template Sample: GET and forward arguments as query params
+   *
+   * @param resourcePath e.g. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+   */
+  public static httpGetAndForwardArgumentsAsQueryParams(resourcePath: string = '/'): MappingTemplate {
+    return this.fromString(`{
+      "version": "2018-05-29",
+      "method": "GET",
+      "resourcePath": "${resourcePath}",
+      "params":{
+          "query": $util.toJson($ctx.args),
+          "headers": {
+              "Authorization": "$ctx.request.headers.Authorization"
+          }
+      }
+    }`);
+  }
+
+  /**
+   * HTTP Request Mapping Template Sample: POST and forward arguments as json
+   *
+   * @param resourcePath e.g. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+   */
+  public static httpPostAndForwardArgumentsAsJson(resourcePath: string = '/'): MappingTemplate {
+    return this.fromString(`{
+      "version": "2018-05-29",
+      "method": "POST",
+      "resourcePath": "${resourcePath}",
+      "params":{
+          "body": $util.toJson($ctx.args),
+          "headers":{
+              "Content-Type": "application/json",
+              "Authorization": "$ctx.request.headers.Authorization"
+          }
+      }
+    }`);
+  }
+
+  /**
+   * HTTP Request Mapping Template Sample: GET and forward headers
+   *
+   * @param resourcePath e.g. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+   */
+  public static httpGetAndForwardHeaders(resourcePath: string = '/'): MappingTemplate {
+    return this.fromString(`{
+      "version": "2018-05-29",
+      "method": "GET",
+      "resourcePath": "${resourcePath}",
+      "params":{
+          ## you can forward the headers using the below utility
+          "headers": $utils.http.copyheaders($ctx.request.headers)
+      }
+    }`);
+  }
+
+  /**
+   * HTTP Request Mapping Template Sample: Simple GET
+   *
+   * @param resourcePath e.g. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+   */
+  public static httpSimpleGet(resourcePath: string = '/'): MappingTemplate {
+    return this.fromString(`{
+      "version": "2018-05-29",
+      "method": "GET",
+      "resourcePath": "${resourcePath}"
+    }`);
+  }
+
+  /**
+   * HTTP Request Mapping Template Sample: Simple DELETE
+   *
+   * @param resourcePath e.g. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+   */
+  public static httpSimpleDelete(resourcePath: string = '/'): MappingTemplate {
+    return this.fromString(`{
+      "version": "2018-05-29",
+      "method": "DELETE",
+      "resourcePath": "${resourcePath}"
+    }`);
+  }
+
+  /**
+   * HTTP Response Mapping Template Sample: Return reponse on 200 (OK)
+   */
+  public static httpReturnResponseOn200Ok(): MappingTemplate {
+    return this.fromString(`
+      ## Raise a GraphQL field error in case of a datasource invocation error
+      #if($ctx.error)
+        $util.error($ctx.error.message, $ctx.error.type)
+      #end
+      ## if the response status code is not 200, then return an error. Else return the body **
+      #if($ctx.result.statusCode == 200)
+          ## If response is 200, return the body.
+          $ctx.result.body
+      #else
+          ## If response is not 200, append the response to error block.
+          $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+      #end
+    `);
+  }
+
+  /**
+   * HTTP Response Mapping Template Sample: Return XML reponse as json
+   */
+  public static httpReturnXmlResponseAsJson(): MappingTemplate {
+    return this.fromString(`
+      ## Raise a GraphQL field error in case of a datasource invocation error
+      #if($ctx.error)
+        $util.error($ctx.error.message, $ctx.error.type)
+      #end
+      ## if the response status code is not 200, then return an error. Else return the body **
+      #if($ctx.result.statusCode == 200)
+          ## If response is 200, return the body.
+          $ctx.result.body
+      #else
+          ## If response is not 200, append the response to error block.
+          $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+      #end
+    `);
   }
 
   /**

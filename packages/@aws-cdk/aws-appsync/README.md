@@ -42,6 +42,9 @@ type Query {
     getServiceVersion: ServiceVersion
     getCustomers: [Customer]
     getCustomer(id: String): Customer
+    doGet1OnAws: String!
+    doGet2OnAws: String!
+    doGet3OnAws: String!
 }
 
 input FirstOrderInput {
@@ -54,6 +57,8 @@ type Mutation {
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
     saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+    doPostOnAws: String!
+    doDeleteOnAws: String!
 }
 ```
 
@@ -153,6 +158,39 @@ export class ApiStack extends Stack {
       fieldName: 'removeCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+    });
+
+    const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+
+    httpDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'doGet1OnAws',
+      requestMappingTemplate: MappingTemplate.httpGetAndForwardArgumentsAsQueryParams('/'),
+      responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+    });
+    httpDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'doGet2OnAws',
+      requestMappingTemplate: MappingTemplate.httpGetAndForwardHeaders('/path1'),
+      responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+    });
+    httpDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'doGet3OnAws',
+      requestMappingTemplate: MappingTemplate.httpSimpleGet('/path1/path2'),
+      responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+    });
+    httpDS.createResolver({
+      typeName: 'Mutation',
+      fieldName: 'doPostOnAws',
+      requestMappingTemplate: MappingTemplate.httpPostAndForwardArgumentsAsJson('/path3'),
+      responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
+    });
+    httpDS.createResolver({
+      typeName: 'Mutation',
+      fieldName: 'doDeleteOnAws',
+      requestMappingTemplate: MappingTemplate.httpSimpleDelete('/'),
+      responseMappingTemplate: MappingTemplate.httpReturnResponseOn200Ok(),
     });
   }
 }

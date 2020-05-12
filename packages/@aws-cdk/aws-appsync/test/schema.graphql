@@ -27,6 +27,9 @@ type Query {
     getCustomerOrdersGe(customer: String): Order
     getCustomerOrdersFilter(customer: String, order: String): Order
     getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
+    doGet1OnAws: String!
+    doGet2OnAws: String!
+    doGet3OnAws: String!
 }
 
 input FirstOrderInput {
@@ -39,4 +42,6 @@ type Mutation {
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
     saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+    doPostOnAws: String!
+    doDeleteOnAws: String!
 }
