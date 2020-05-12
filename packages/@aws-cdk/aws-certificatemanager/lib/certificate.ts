@@ -91,9 +91,14 @@ export class Certificate extends Resource implements ICertificate {
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      domainValidationOptions: allDomainNames.map(domainValidationOption),
       validationMethod: props.validationMethod,
     });
+
+    // domainValidationOptions is not applicable when DNS validation is used and CloudFormation
+    // will return an error if it is set: "ValidationDomain cannot be used with DNS validation"
+    if (props.validationMethod !== ValidationMethod.DNS) {
+      cert.domainValidationOptions = allDomainNames.map(domainValidationOption);
+    }
 
     this.certificateArn = cert.ref;
 

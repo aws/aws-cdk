@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Certificate, ValidationMethod } from '../lib';
@@ -54,7 +54,27 @@ export = {
     test.done();
   },
 
-  'can configure validation method'(test: Test) {
+  'can configure EMAIL validation method which includes DomainValidationOptions'(test: Test) {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validationMethod: ValidationMethod.EMAIL,
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      ValidationMethod: 'EMAIL',
+      DomainValidationOptions: [{
+        DomainName: 'test.example.com',
+        ValidationDomain: 'example.com',
+      }],
+    }));
+
+    test.done();
+  },
+
+  'can configure DNS validation method which excludes DomainValidationOptions'(test: Test) {
     const stack = new Stack();
 
     new Certificate(stack, 'Certificate', {
@@ -65,6 +85,7 @@ export = {
     expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
       ValidationMethod: 'DNS',
+      DomainValidationOptions: ABSENT,
     }));
 
     test.done();
