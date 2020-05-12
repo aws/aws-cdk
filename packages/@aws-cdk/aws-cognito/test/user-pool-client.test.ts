@@ -283,4 +283,57 @@ describe('User Pool Client', () => {
       AllowedOAuthScopes: [ 'aws.cognito.signin.user.admin' ],
     });
   });
+
+  test('enable user existence errors prevention', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      preventUserExistenceErrors: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: 'ENABLED',
+    });
+  });
+
+  test('disable user existence errors prevention', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      preventUserExistenceErrors: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: 'LEGACY',
+    });
+  });
+
+  test('user existence errors prevention is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: ABSENT,
+    });
+  });
 });
