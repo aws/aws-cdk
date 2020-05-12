@@ -108,10 +108,7 @@ export async function prepareAppFixture() {
   });
 }
 
-/**
- * Cleanup leftover stacks
- */
-export async function cleanupOldStacks() {
+export async function deleteableStacks(prefix: string) {
   const response = await cloudFormation('listStacks', {
     StackStatusFilter: [
       'CREATE_IN_PROGRESS' , 'CREATE_FAILED' , 'CREATE_COMPLETE' ,
@@ -128,9 +125,16 @@ export async function cleanupOldStacks() {
     ],
   });
 
-  const stacksToDelete = (response.StackSummaries ?? [])
-    .filter(s => s.StackName.startsWith(STACK_NAME_PREFIX))
+  return (response.StackSummaries ?? [])
+    .filter(s => s.StackName.startsWith(prefix))
     .map(s => s.StackName);
+}
+
+/**
+ * Cleanup leftover stacks
+ */
+export async function cleanupOldStacks() {
+  const stacksToDelete = await deleteableStacks(STACK_NAME_PREFIX);
   await deleteStacks(...stacksToDelete);
 }
 

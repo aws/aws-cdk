@@ -1,7 +1,10 @@
-import { cloudFormation, s3 } from './aws-helpers';
-import { cdk, cdkDeploy, cleanupOldStacks, fullStackName, prepareAppFixture } from './cdk-helpers';
+import { cloudFormation, deleteStacks, s3 } from './aws-helpers';
+import { cdk, cdkDeploy, cleanupOldStacks, deleteableStacks, fullStackName, prepareAppFixture } from './cdk-helpers';
 
 jest.setTimeout(600_000);
+
+const BOOTSTRAP_STACK_PREFIX = fullStackName('toolkit-stack');
+const BUCKETS_TO_DELETE = new Array<string>();
 
 beforeAll(async () => {
   await prepareAppFixture();
@@ -9,104 +12,109 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanupOldStacks();
+  BUCKETS_TO_DELETE.splice(0, BUCKETS_TO_DELETE.length);
 });
 
 afterEach(async () => {
   await cleanupOldStacks();
+  await cleanupBootstrapStacks();
+
+  // We might have lost some buckets by upgrading the bootstrap stack. Be
+  // sure to clean everything.
+  for (const bucket of BUCKETS_TO_DELETE) {
+    await deleteBucket(bucket);
+  }
 });
 
 test('can bootstrap without execution', async () => {
-  const bootstrapStackName = fullStackName('toolkit-stack-1');
+  const bootstrapStackName = `${BOOTSTRAP_STACK_PREFIX}-1`;
 
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--no-execute']);
-  try {
 
-    const resp = await cloudFormation('describeStacks', {
-      StackName: bootstrapStackName,
-    });
+  const resp = await cloudFormation('describeStacks', {
+    StackName: bootstrapStackName,
+  });
 
-    expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-  } finally {
-    await deleteBootstrapStack(bootstrapStackName);
-  }
+  expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 });
 
 test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async () => {
-  const bootstrapStackName = fullStackName('updating-bootstrap-stack');
+  const bootstrapStackName = `${BOOTSTRAP_STACK_PREFIX}-update-in-place`;
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
   const newBootstrapBucketName = `aws-cdk-bootstrap-integ-test-v2-bckt-${randomString()}`;
+  BUCKETS_TO_DELETE.push(legacyBootstrapBucketName, newBootstrapBucketName);
 
   // Legacy bootstrap
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
     '--bootstrap-bucket-name', legacyBootstrapBucketName]);
-  try {
-    // Deploy stack that uses file assets
-    await cdkDeploy('lambda', {
-      options: ['--toolkit-stack-name', bootstrapStackName],
-    });
 
-    // Upgrade bootstrap stack to "new" style
-    await cdk(['bootstrap',
+  // Deploy stack that uses file assets
+  await cdkDeploy('lambda', {
+    options: ['--toolkit-stack-name', bootstrapStackName],
+  });
+
+  // Upgrade bootstrap stack to "new" style
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--bootstrap-bucket-name', newBootstrapBucketName], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // (Force) deploy stack again
+  // --force to bypass the check which says that the template hasn't changed.
+  await cdkDeploy('lambda', {
+    options: [
       '--toolkit-stack-name', bootstrapStackName,
-      '--bootstrap-bucket-name', newBootstrapBucketName], {
-      modEnv: {
-        CDK_NEW_BOOTSTRAP: '1',
-      },
-    });
-
-    // (Force) deploy stack again
-    await cdkDeploy('lambda', {
-      options: [
-        '--toolkit-stack-name', bootstrapStackName,
-        '--force',
-      ],
-    });
-  } finally {
-    await deleteBootstrapStack(bootstrapStackName);
-    // Delete on the buckets. Needs to go after the stack delete.
-    await deleteBucket(legacyBootstrapBucketName);
-    await deleteBucket(newBootstrapBucketName);
-  }
+      '--force',
+    ],
+  });
 });
 
 test('can bootstrap multiple toolkit stacks', async () => {
-  const bootstrapStackName1 = fullStackName('toolkit-stack-1');
-  const bootstrapStackName2 = fullStackName('toolkit-stack-2');
-  try {
-    // deploy two toolkit stacks into the same environment (see #1416)
-    // one with tags
-    await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName1, '--tags', 'Foo=Bar']);
-    await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName2]);
+  const bootstrapStackName1 = `${BOOTSTRAP_STACK_PREFIX}-1`;
+  const bootstrapStackName2 = `${BOOTSTRAP_STACK_PREFIX}-2`;
 
-    const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName1 });
-    expect(response.Stacks?.[0].Tags).toEqual([
-      { Key: 'Foo', Value: 'Bar' },
-    ]);
-  } finally {
-    await deleteBootstrapStack(bootstrapStackName1);
-    await deleteBootstrapStack(bootstrapStackName2);
-  }
+  // deploy two toolkit stacks into the same environment (see #1416)
+  // one with tags
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName1, '--tags', 'Foo=Bar']);
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName2]);
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName1 });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
 });
 
 /**
  * Delete bootstrap stack, cleaning S3 bucket if necessary
  */
 async function deleteBootstrapStack(stackName: string) {
+  let response;
   try {
-    const response = await cloudFormation('describeStacks', { StackName: stackName });
-
-    const bucketOutput = (response.Stacks?.[0].Outputs ?? []).find(o => o.OutputKey === 'BucketName');
-    if (bucketOutput?.OutputValue) {
-      await emptyBucket(bucketOutput?.OutputValue);
-    }
-
+    response = await cloudFormation('describeStacks', { StackName: stackName });
   } catch (e) {
     if (e.message.indexOf('does not exist') > -1) { return; }
     throw e;
+  }
+
+  const bucketOutput = (response.Stacks?.[0].Outputs ?? []).find(o => o.OutputKey === 'BucketName');
+  if (bucketOutput?.OutputValue) {
+    await emptyBucket(bucketOutput?.OutputValue);
+  }
+
+  await deleteStacks(stackName);
+}
+
+async function cleanupBootstrapStacks() {
+  const stacksToDelete = await deleteableStacks(BOOTSTRAP_STACK_PREFIX);
+  for (const stack of stacksToDelete) {
+    await deleteBootstrapStack(stack);
   }
 }
 
