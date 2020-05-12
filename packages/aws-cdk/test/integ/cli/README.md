@@ -9,6 +9,15 @@ CLI on a simple JavaScript CDK app (stored in `app/`).
 ../run-against-repo ./test.sh
 ```
 
+Running against a failing dist build:
+
+```
+# Download and unpack the zip
+.../CMkBR4V$ tar xzvf js/aws-cdk-[0-9]*.tgz
+.../CMkBR4V$ package/test/integ/run-against-dist package/test/integ/cli/test.sh
+```
+
+
 ## Adding tests
 
 Older tests were written in bash; new tests should be written in
