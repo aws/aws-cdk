@@ -11,14 +11,7 @@
 
 This library provides constructs for Node.js Lambda functions.
 
-To use this module, you will need to add a dependency on `parcel-bundler` in your
-`package.json`:
-
-```
-yarn add parcel-bundler@^1
-# or
-npm install parcel-bundler@^1
-```
+To use this module, you will need to have Docker installed.
 
 ### Node.js Function
 Define a `NodejsFunction`:

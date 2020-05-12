@@ -1,4 +1,5 @@
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
@@ -416,11 +417,11 @@ export class LookupMachineImage implements IMachineImage {
     Object.assign(filters, this.props.filters);
 
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.AMI_PROVIDER,
+      provider: cxschema.ContextProvider.AMI_PROVIDER,
       props: {
         owners: this.props.owners,
         filters,
-      } as cxapi.AmiContextQuery,
+      } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
     }).value as cxapi.AmiContextResponse;
 
