@@ -196,7 +196,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
    *
-   * @default undefined
+   * @default none
    */
   readonly maxInstanceLifetime?: Duration;
 }
