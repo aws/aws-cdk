@@ -173,6 +173,15 @@ export interface UserPoolClientOptions {
    * @default - see defaults in `OAuthSettings`
    */
   readonly oAuth?: OAuthSettings;
+
+  /**
+   * Whether Cognito returns a UserNotFoundException exception when the
+   * user does not exist in the user pool (false), or whether it returns
+   * another type of error that doesn't reveal the user's absence.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
+   * @default true for new stacks
+   */
+  readonly preventUserExistenceErrors?: boolean;
 }
 
 /**
@@ -234,6 +243,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
       callbackUrLs: (props.oAuth?.callbackUrls && props.oAuth?.callbackUrls.length > 0) ? props.oAuth?.callbackUrls : undefined,
       allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
+      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
     });
 
     this.userPoolClientId = resource.ref;
@@ -296,5 +306,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       return Array.from(oAuthScopes);
     }
     return undefined;
+  }
+
+  private configurePreventUserExistenceErrors(prevent?: boolean): string | undefined {
+    if (prevent === undefined) {
+      return undefined;
+    }
+    return prevent ? 'ENABLED' : 'LEGACY';
   }
 }

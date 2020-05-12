@@ -93,7 +93,8 @@
           "ALLOW_USER_SRP_AUTH",
           "ALLOW_REFRESH_TOKEN_AUTH"
         ],
-        "GenerateSecret": true
+        "GenerateSecret": true,
+        "PreventUserExistenceErrors": "ENABLED"
       }
     }
   }
