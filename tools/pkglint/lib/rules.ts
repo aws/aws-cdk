@@ -1180,6 +1180,7 @@ export class EslintSetup extends ValidationRule {
             eslintrcFilename,
             [
               `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
+              "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
               'module.exports = baseConfig;'
             ].join('\n') + '\n'
           );
