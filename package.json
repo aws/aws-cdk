@@ -14,7 +14,7 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "conventional-changelog-cli": "^2.0.31",
+    "conventional-changelog-cli": "^2.0.34",
     "fs-extra": "^8.1.0",
     "jsii-diff": "^1.5.0",
     "jsii-pacmak": "^1.5.0",
@@ -52,6 +52,8 @@
       "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/core/minimatch",
       "@aws-cdk/core/minimatch/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
