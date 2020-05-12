@@ -15,6 +15,7 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./clone.sh"
     ],
@@ -26,14 +27,6 @@
     },
     "pkglint": {
       "disable": true
-    }
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
     }
   },
   "author": {

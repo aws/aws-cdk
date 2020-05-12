@@ -16,6 +16,9 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
+  "cdk-build": {
+    "jest": true
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -36,14 +39,6 @@
     "@types/node": "^10.17.21",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
-    }
   },
   "repository": {
     "type": "git",

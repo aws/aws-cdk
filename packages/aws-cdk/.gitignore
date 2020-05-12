@@ -23,3 +23,4 @@ npm-shrinkwrap.json
 # But normally should be deleted after execution.
 test/integ/cli-backwards-tests-*
 !.eslintrc.js
+!jest.config.js

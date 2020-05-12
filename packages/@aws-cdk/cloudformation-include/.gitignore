@@ -19,3 +19,4 @@ nyc.config.js
 !.eslintrc.js
 !build.js
 cfn-types-2-classes.json
+!jest.config.js

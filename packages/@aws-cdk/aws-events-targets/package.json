@@ -49,24 +49,8 @@
   "cdk-build": {
     "pre": [
       "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json && rm -f lib/sdk-api-metadata.d.ts"
-    ]
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
     ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 30,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    "jest": true
   },
   "keywords": [
     "aws",

@@ -1192,6 +1192,53 @@ export class EslintSetup extends ValidationRule {
   }
 }
 
+export class JestSetup extends ValidationRule {
+  public readonly name = 'package-info/jest.config';
+
+  public validate(pkg: PackageJson): void {
+    const cdkBuild = pkg.json['cdk-build'] || {};
+
+    // check whether the package.json contains the "jest" key,
+    // which we no longer use
+    if (pkg.json.jest) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Using Jest is set through a flag in the "cdk-build" key in package.json, the "jest" key is ignored',
+        fix: () => {
+          delete pkg.json.jest;
+          cdkBuild.jest = true;
+          pkg.json['cdk-build'] = cdkBuild;
+        },
+      });
+    }
+
+    // this rule should only be enforced for packages that use Jest for testing
+    if (!cdkBuild.jest) {
+      return;
+    }
+
+    const jestConfigFilename = 'jest.config.js';
+    if (!fs.existsSync(jestConfigFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a jest.config.js file at the root of the package',
+        fix: () => {
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
+          fs.writeFileSync(
+            jestConfigFilename,
+            [
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/jest.config');`,
+              'module.exports = baseConfig;',
+            ].join('\n') + '\n',
+          );
+        },
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
+    fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *

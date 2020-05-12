@@ -16,3 +16,4 @@ coverage
 *.snk
 nyc.config.js
 !.eslintrc.js
+!jest.config.js

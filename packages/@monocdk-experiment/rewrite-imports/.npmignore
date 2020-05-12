@@ -9,3 +9,4 @@ tsconfig.json
 *.ts
 !*.d.ts
 .eslintrc.js
+jest.config.js

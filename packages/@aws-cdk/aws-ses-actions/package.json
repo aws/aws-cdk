@@ -58,23 +58,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -124,5 +107,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }

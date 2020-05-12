@@ -47,7 +47,8 @@
   "cdk-build": {
     "pre": [
       "node ./build.js"
-    ]
+    ],
+    "jest": true
   },
   "author": {
     "name": "Amazon Web Services",
@@ -305,28 +306,6 @@
   "bundledDependencies": [
     "yaml"
   ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "ts"
-    ],
-    "collectCoverage": true,
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/?(*.)+(test).ts"
-    ]
-  },
   "keywords": [
     "aws",
     "cdk",

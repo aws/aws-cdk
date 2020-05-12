@@ -48,7 +48,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Serverless"
+    "cloudformation": "AWS::Serverless",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -79,7 +80,6 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {},
   "engines": {
     "node": ">= 10.13.0"
   },
