@@ -52,6 +52,8 @@
       "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/core/minimatch",
       "@aws-cdk/core/minimatch/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
