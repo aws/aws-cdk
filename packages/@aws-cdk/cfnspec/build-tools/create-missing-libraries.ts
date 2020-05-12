@@ -150,6 +150,7 @@ async function main() {
       },
       'cdk-build': {
         cloudformation: namespace,
+        jest: true,
       },
       keywords: [
         'aws',
@@ -163,7 +164,6 @@ async function main() {
         url: 'https://aws.amazon.com',
         organization: true,
       },
-      jest: {},
       license: 'Apache-2.0',
       devDependencies: {
         '@aws-cdk/assert': version,

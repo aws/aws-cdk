@@ -1198,7 +1198,7 @@ export class JestSetup extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const cdkBuild = pkg.json['cdk-build'] || {};
 
-    // check whether the package.json contains the jest key,
+    // check whether the package.json contains the "jest" key,
     // which we no longer use
     if (pkg.json.jest) {
       pkg.report({
