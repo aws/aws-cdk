@@ -3,12 +3,10 @@ import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import generate from '../lib';
 
-// tslint:disable:no-console
-// tslint:disable:max-line-length
-
 async function main() {
   const argv = yargs.usage('Usage: cfn2ts')
     .option('scope', { type: 'string', array: true, desc: 'Scope to generate TypeScript for (e.g: AWS::IAM)' })
+    .option('filter-resource-prefix', { type: 'string', desc: 'A prefix filter on the resource type name' })
     .option('out', { type: 'string', desc: 'Path to the directory where the TypeScript files should be written', default: 'lib' })
     .option('core-import', { type: 'string', desc: 'The typescript import to use for the CDK core module. Can also be defined in package.json under "cdk-build.cfn2ts-core-import"', default: '@aws-cdk/core' })
     .epilog('if --scope is not defined, cfn2ts will try to obtain the scope from the local package.json under the "cdk-build.cloudformation" key.')
@@ -18,6 +16,10 @@ async function main() {
 
   if (!argv.scope) {
     argv.scope = await tryAutoDetectScope(pkg);
+  }
+
+  if (!argv['filter-resource-prefix']) {
+    argv['filter-resource-prefix'] = pkg?.['cdk-build']?.['filter-resource-prefix'];
   }
 
   // read "cfn2ts-core-import" from package.json
@@ -32,10 +34,12 @@ async function main() {
 
   await generate(argv.scope, argv.out, {
     coreImport: argv['core-import'],
+    filterResourcePrefix: argv['filter-resource-prefix'],
   });
 }
 
 main().catch(err => {
+  // tslint:disable-next-line:no-console
   console.error(err);
   process.exit(1);
 });

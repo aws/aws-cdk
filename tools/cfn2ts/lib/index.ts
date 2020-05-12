@@ -4,13 +4,23 @@ import { AugmentationGenerator } from './augmentation-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
 
-export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
+export interface Options extends CodeGeneratorOptions {
+  /**
+   * Filter to apply on the resource type name.
+   * Only resource type names that match this filter will be included in the generated code.
+   * @default - no filter.
+   */
+  readonly filterResourcePrefix?: string;
+}
+
+export default async function(scopes: string | string[], outPath: string, options: Options = { }): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
   if (typeof scopes === 'string') { scopes = [scopes]; }
 
   for (const scope of scopes) {
-    const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
+    const filter = options.filterResourcePrefix ? `${scope}::${options.filterResourcePrefix}` : `${scope}::`;
+    const spec = cfnSpec.filteredSpecification(s => s.startsWith(filter));
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
     }

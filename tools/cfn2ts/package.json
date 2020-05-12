@@ -28,6 +28,7 @@
     "organization": true
   },
   "license": "Apache-2.0",
+  "jest": {},
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
     "codemaker": "^1.5.0",
