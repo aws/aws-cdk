@@ -3,3 +3,6 @@ node_modules
 *.d.ts
 *.js
 !jest.setup.js
+
+# Templating files used for `cloud-assemblies`
+!*.json.js
