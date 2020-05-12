@@ -46,7 +46,7 @@ class ParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'TopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'TopicNameParam').valueAsString
     });
   }
 }
@@ -56,7 +56,7 @@ class OtherParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam')
+      topicName: new cdk.CfnParameter(this, 'OtherTopicNameParam').valueAsString
     });
   }
 }
@@ -66,10 +66,10 @@ class MultiParameterStack extends cdk.Stack {
     super(parent, id, props);
 
     new sns.Topic(this, 'TopicParameter', {
-      displayName: new cdk.CfnParameter(this, 'DisplayNameParam')
+      displayName: new cdk.CfnParameter(this, 'DisplayNameParam').valueAsString
     });
     new sns.Topic(this, 'OtherTopicParameter', {
-      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam')
+      displayName: new cdk.CfnParameter(this, 'OtherDisplayNameParam').valueAsString
     });
   }
 }
@@ -79,7 +79,7 @@ class OutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic =  new sns.Topic(this, 'MyOutput', {
-      topicName: 'MyTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {
@@ -93,7 +93,7 @@ class AnotherOutputsStack extends cdk.Stack {
     super(parent, id, props);
 
     const topic = new sns.Topic(this, 'MyOtherOutput', {
-      topicName: 'MyOtherTopic'
+      topicName: `${cdk.Stack.of(this).stackName}MyOtherTopic`
     });
 
     new cdk.CfnOutput(this, 'TopicName', {

@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
@@ -218,12 +219,12 @@ interface MockVcpContextResponse {
 
 function mockVpcContextProviderWith(
   test: Test, response: MockVcpContextResponse,
-  paramValidator?: (options: cxapi.VpcContextQuery) => void) {
+  paramValidator?: (options: cxschema.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
-    test.equal(options.provider, cxapi.VPC_PROVIDER,
-      `Expected provider to be: '${cxapi.VPC_PROVIDER}', got: '${options.provider}'`);
+    test.equal(options.provider, cxschema.ContextProvider.VPC_PROVIDER,
+      `Expected provider to be: '${cxschema.ContextProvider.VPC_PROVIDER}', got: '${options.provider}'`);
     test.equal((options.props || {}).returnAsymmetricSubnets, true,
       `Expected options.props.returnAsymmetricSubnets to be true, got: '${(options.props || {}).returnAsymmetricSubnets}'`);
 
