@@ -48,7 +48,7 @@ export class Default {
       'states',
     ]);
 
-    // Account for idiosyncratic Service Principles in `us-iso-*` regions
+    // Account for idiosyncratic Service Principals in `us-iso-*` regions
     if (region.startsWith('us-iso-') && US_ISO_EXCEPTIONS.has(service)) {
       switch (service) {
         // Services with universal principal
@@ -61,7 +61,7 @@ export class Default {
       }
     }
 
-    // Account for idiosyncratic Service Principles in `us-isob-*` regions
+    // Account for idiosyncratic Service Principals in `us-isob-*` regions
     if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
       switch (service) {
         // Services with universal principal
