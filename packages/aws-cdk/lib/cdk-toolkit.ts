@@ -189,6 +189,7 @@ export class CdkToolkit {
           execute: options.execute,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+          usePreviousParameters: options.usePreviousParameters,
         });
 
         const message = result.noOp
@@ -446,6 +447,7 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
 }
 
 export interface DiffOptions {
@@ -562,6 +564,15 @@ export interface DeployOptions {
    * @default {}
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON

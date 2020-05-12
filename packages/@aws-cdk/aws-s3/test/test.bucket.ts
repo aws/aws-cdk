@@ -1053,6 +1053,50 @@ export = {
     test.done();
   },
 
+  'grantDelete, with a KMS Key'(test: Test) {
+    // given
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'MyKey');
+    const deleter = new iam.User(stack, 'Deleter');
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'my-bucket-physical-name',
+      encryptionKey: key,
+      encryption: s3.BucketEncryption.KMS,
+    });
+
+    // when
+    bucket.grantDelete(deleter);
+
+    // then
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:DeleteObject*',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'MyBucketF68F3FF0',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    }));
+
+    test.done();
+  },
+
   'cross-stack permissions': {
     'in the same account and region'(test: Test) {
       const app = new cdk.App();
@@ -1374,6 +1418,70 @@ export = {
                   'Ref': 'AWS::URLSuffix',
                 },
                 '/',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/your/file.txt',
+              ],
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  's3UrlForObject returns a token with the S3 URL of the token'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    new cdk.CfnOutput(stack, 'BucketS3URL', { value: bucket.s3UrlForObject() });
+    new cdk.CfnOutput(stack, 'MyFileS3URL', { value: bucket.s3UrlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileS3URL', { value: bucket.s3UrlForObject('/your/file.txt') }); // "/" is optional
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+              ],
+            ],
+          },
+        },
+        'MyFileS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
                 {
                   'Ref': 'MyBucketF68F3FF0',
                 },
