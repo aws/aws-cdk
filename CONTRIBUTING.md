@@ -292,9 +292,7 @@ All packages in the repo use a standard base configuration found at [eslintrc.js
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
-extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). The VS Code setting [needed for
-the extension to work](https://github.com/Microsoft/vscode-eslint#settings-options) on the monorepo is configured in
-the [folder settings](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings).
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). 
 
 #### pkglint
 

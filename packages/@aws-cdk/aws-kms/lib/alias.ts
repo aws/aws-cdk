@@ -73,8 +73,8 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addAlias(alias);
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void {
-    this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+    return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
