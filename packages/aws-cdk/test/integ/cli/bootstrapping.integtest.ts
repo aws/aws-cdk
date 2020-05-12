@@ -67,7 +67,7 @@ test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async
     });
   } finally {
     await deleteBootstrapStack(bootstrapStackName);
-    // Just to be sure, delete on the buckets
+    // Delete on the buckets. Needs to go after the stack delete.
     await deleteBucket(legacyBootstrapBucketName);
     await deleteBucket(newBootstrapBucketName);
   }
@@ -132,7 +132,12 @@ async function emptyBucket(bucketName: string) {
 
 async function deleteBucket(bucketName: string) {
   await emptyBucket(bucketName);
-  await s3('deleteBucket', {
-    Bucket: bucketName,
-  });
+  try {
+    await s3('deleteBucket', {
+      Bucket: bucketName,
+    });
+  } catch (e) {
+    if (e.message.indexOf('does not exist') > -1) { return; }
+    throw e;
+  }
 }
