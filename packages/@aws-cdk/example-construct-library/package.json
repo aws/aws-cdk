@@ -88,10 +88,12 @@
   "engines": {
     "node": ">= 10.13.0"
   },
-  "jest": {},
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }

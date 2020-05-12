@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::IAM"
+    "cloudformation": "AWS::IAM",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -79,23 +80,6 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 70
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

@@ -25,6 +25,7 @@
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./generate.sh"
     ]
@@ -102,19 +103,5 @@
     "node": ">= 10.13.0"
   },
   "stability": "stable",
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 45,
-        "statements": 60
-      }
-    },
-    "testMatch": [
-      "**/?(*.)+(spec|test).js?(x)"
-    ]
-  },
   "maturity": "stable"
 }
