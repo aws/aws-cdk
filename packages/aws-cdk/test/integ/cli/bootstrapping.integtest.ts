@@ -3,9 +3,10 @@ import { cdk, cdkDeploy, cleanupOldStacks, deleteableStacks, fullStackName, prep
 
 jest.setTimeout(600_000);
 
-// Needs to not start with the ACTUAL fullstack name otherwisecleanupOldStacks will pick it up.
+// Needs to not start with the ACTUAL fullstack name otherwise cleanupOldStacks will pick it up.
 const BOOTSTRAP_STACK_PREFIX = `toolkit-${fullStackName('stack')}`;
 const BUCKETS_TO_DELETE = new Array<string>();
+const QUALIFIER = randomString();
 
 beforeAll(async () => {
   await prepareAppFixture();
@@ -61,7 +62,8 @@ test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async
   // Upgrade bootstrap stack to "new" style
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
-    '--bootstrap-bucket-name', newBootstrapBucketName], {
+    '--bootstrap-bucket-name', newBootstrapBucketName,
+    '--qualifier', QUALIFIER], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
@@ -77,7 +79,28 @@ test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async
   });
 });
 
-test('can bootstrap multiple toolkit stacks', async () => {
+test('deploy new style synthesis to new style bootstrap', async () => {
+  const bootstrapStackName = BOOTSTRAP_STACK_PREFIX;
+
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--qualifier', QUALIFIER], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // Deploy stack that uses file assets
+  await cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${QUALIFIER}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+});
+
+test('can bootstrap multiple legacy toolkit stacks', async () => {
   const bootstrapStackName1 = `${BOOTSTRAP_STACK_PREFIX}-1`;
   const bootstrapStackName2 = `${BOOTSTRAP_STACK_PREFIX}-2`;
 
@@ -140,8 +163,8 @@ async function emptyBucket(bucketName: string) {
 }
 
 async function deleteBucket(bucketName: string) {
-  await emptyBucket(bucketName);
   try {
+    await emptyBucket(bucketName);
     await s3('deleteBucket', {
       Bucket: bucketName,
     });

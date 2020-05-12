@@ -11,6 +11,8 @@ import { Token } from '../token';
 import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
 import { IStackSynthesizer } from './types';
 
+export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
+
 /**
  * Configuration properties for DefaultStackSynthesizer
  */
@@ -93,7 +95,7 @@ export interface DefaultStackSynthesizerProps {
    * You can use this and leave the other naming properties empty if you have deployed
    * the bootstrap environment with standard names but only differnet qualifiers.
    *
-   * @default DefaultStackSynthesizer.DEFAULT_QUALIFIER
+   * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
 }
@@ -116,27 +118,27 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   /**
    * Default CloudFormation role ARN.
    */
-  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default deploy action role ARN.
    */
-  public static readonly DEFAULT_DEPLOY_ACTION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_DEPLOY_ACTION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-action-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default asset publishing role ARN.
    */
-  public static readonly DEFAULT_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default image assets repository name
    */
-  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default file assets bucket name
    */
-  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
   private stack?: Stack;
   private bucketName?: string;
@@ -154,7 +156,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public bind(stack: Stack): void {
     this.stack = stack;
 
-    const qualifier = this.props.qualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
 
     // Function to replace placeholders in the input string as much as possible
     //
