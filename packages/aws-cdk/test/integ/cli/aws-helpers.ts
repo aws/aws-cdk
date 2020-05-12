@@ -97,27 +97,35 @@ export async function deleteStacks(...stackNames: string[]) {
     });
   }
 
-  await retry(`Deleting ${stackNames}`, afterSeconds(300), async () => {
+  await retry(`Deleting ${stackNames}`, afterSeconds(600), async () => {
     for (const stackName of stackNames) {
-      if (await stackExists(stackName)) {
+      const status = await stackStatus(stackName);
+      if (status !== undefined && status.endsWith('_FAILED')) {
+        throw abortRetry(new Error(`'${stackName}' is in state '${status}'`));
+      }
+      if (status !== undefined) {
         throw new Error(`Delete of '${stackName}' not complete yet`);
       }
     }
   });
 }
 
-export async function stackExists(stackName: string) {
+export async function stackStatus(stackName: string): Promise<string | undefined> {
   try {
-    await cloudFormation('describeStacks', { StackName: stackName });
-    return true;
+    return (await cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
   } catch (e) {
-    if (e.message.indexOf('does not exist') > -1) { return false; }
+    if (e.message.indexOf('does not exist') > -1) { return undefined; }
     throw e;
   }
 }
 
 export function afterSeconds(seconds: number): Date {
   return new Date(Date.now() + seconds * 1000);
+}
+
+export function abortRetry(e: Error): Error {
+  (e as any).abort = true;
+  return e;
 }
 
 export async function retry<A>(operation: string, deadline: Date, block: () => Promise<A>): Promise<A> {
@@ -130,7 +138,7 @@ export async function retry<A>(operation: string, deadline: Date, block: () => P
       log(`💈 ${operation}: succeeded after ${i} attempts`);
       return ret;
     } catch (e) {
-      if (Date.now() > deadline.getTime()) {
+      if (e.abort || Date.now() > deadline.getTime( )) {
         throw new Error(`${operation}: did not succeed after ${i} attempts: ${e}`);
       }
       log(`⏳ ${operation} (${e.message})`);

@@ -3,7 +3,8 @@ import { cdk, cdkDeploy, cleanupOldStacks, deleteableStacks, fullStackName, prep
 
 jest.setTimeout(600_000);
 
-const BOOTSTRAP_STACK_PREFIX = fullStackName('toolkit-stack');
+// Needs to not start with the ACTUAL fullstack name otherwisecleanupOldStacks will pick it up.
+const BOOTSTRAP_STACK_PREFIX = `toolkit-${fullStackName('stack')}`;
 const BUCKETS_TO_DELETE = new Array<string>();
 
 beforeAll(async () => {
