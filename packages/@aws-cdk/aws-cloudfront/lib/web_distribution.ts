@@ -575,7 +575,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PRICE_CLASS_100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
