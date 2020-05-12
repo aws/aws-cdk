@@ -47,22 +47,24 @@ export interface IPrincipal extends IGrantable {
    * @returns true if the statement was added, false if the principal in
    * question does not have a policy document to add the statement to.
    *
-   * @deprecated Use `addToIdentityPolicy` instead.
+   * @deprecated Use `addToPrincipalPolicy` instead.
    */
   addToPolicy(statement: PolicyStatement): boolean;
 
   /**
    * Add to the policy of this principal.
    */
-  addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult;
+  addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult;
 }
 
 /**
- * Result of calling `addToIdentityPolicy`
+ * Result of calling `addToPrincipalPolicy`
  */
-export interface AddToIdentityPolicyResult {
+export interface AddToPrincipalPolicyResult {
   /**
    * Whether the statement was added to the identity's policies.
+   *
+   * @experimental
    */
   readonly statementAdded: boolean;
 
@@ -70,6 +72,7 @@ export interface AddToIdentityPolicyResult {
    * Dependable which allows depending on the policy change being applied
    *
    * @default - Required if `statementAdded` is true.
+   * @experimental
    */
   readonly policyDependable?: cdk.IDependable;
 }
@@ -91,10 +94,10 @@ export abstract class PrincipalBase implements IPrincipal {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
-  public addToIdentityPolicy(_statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // This base class is used for non-identity principals. None of them
     // have a PolicyDocument to add to.
     return { statementAdded: false };
@@ -181,11 +184,11 @@ export class PrincipalWithConditions implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
-  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
-    return this.principal.addToIdentityPolicy(statement);
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    return this.principal.addToPrincipalPolicy(statement);
   }
 
   public toString() {

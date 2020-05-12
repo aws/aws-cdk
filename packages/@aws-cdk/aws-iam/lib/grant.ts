@@ -150,7 +150,7 @@ export class Grant implements cdk.IDependable {
       resources: options.resourceArns,
     });
 
-    const addedToPrincipal = options.grantee.grantPrincipal.addToIdentityPolicy(statement);
+    const addedToPrincipal = options.grantee.grantPrincipal.addToPrincipalPolicy(statement);
     if (!addedToPrincipal.statementAdded) {
       return new Grant({ principalStatement: undefined, options });
     }

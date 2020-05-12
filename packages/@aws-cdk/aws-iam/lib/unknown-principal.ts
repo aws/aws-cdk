@@ -1,6 +1,6 @@
 import { ConcreteDependable, IConstruct, Stack } from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
-import { AddToIdentityPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 
 /**
  * Properties for an UnknownPrincipal
@@ -37,7 +37,7 @@ export class UnknownPrincipal implements IPrincipal {
     throw new Error(`Cannot get policy fragment of ${this.resource.node.path}, resource imported without a role`);
   }
 
-  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     const stack = Stack.of(this.resource);
     const repr = JSON.stringify(stack.resolve(statement));
     this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
@@ -46,6 +46,6 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 }

@@ -342,7 +342,7 @@ describe('IAM policy document', () => {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; },
-      addToIdentityPolicy() { return { statementAdded: false }; },
+      addToPrincipalPolicy() { return { statementAdded: false }; },
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();

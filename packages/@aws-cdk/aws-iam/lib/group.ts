@@ -4,7 +4,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { AddToIdentityPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
 import { AttachedPolicies } from './util';
 
@@ -104,7 +104,7 @@ abstract class GroupBase extends Resource implements IGroup {
   /**
    * Adds an IAM statement to the default policy.
    */
-  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToGroup(this);
@@ -115,7 +115,7 @@ abstract class GroupBase extends Resource implements IGroup {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 }
 

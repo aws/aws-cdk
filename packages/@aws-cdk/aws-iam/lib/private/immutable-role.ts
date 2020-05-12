@@ -3,7 +3,7 @@ import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
-import { AddToIdentityPolicyResult, IPrincipal } from '../principals';
+import { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
 import { IRole } from '../role';
 
 /**
@@ -45,10 +45,10 @@ export class ImmutableRole extends Construct implements IRole {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
-  public addToIdentityPolicy(_statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // Not really added, but for the purposes of consumer code pretend that it was.
     return { statementAdded: true, policyDependable: new ConcreteDependable() };
   }

@@ -6,7 +6,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToIdentityPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
@@ -192,10 +192,10 @@ export class Role extends Resource implements IRole {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToIdentityPolicy(statement).statementAdded;
+        return this.addToPrincipalPolicy(statement).statementAdded;
       }
 
-      public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
@@ -355,7 +355,7 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
@@ -365,7 +365,7 @@ export class Role extends Resource implements IRole {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   /**

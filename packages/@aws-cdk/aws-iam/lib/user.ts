@@ -5,7 +5,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { AddToIdentityPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 /**
@@ -146,10 +146,10 @@ export class User extends Resource implements IIdentity, IUser {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToIdentityPolicy(statement).statementAdded;
+        return this.addToPrincipalPolicy(statement).statementAdded;
       }
 
-      public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.defaultPolicy.attachToUser(this);
@@ -262,7 +262,7 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @returns true
    */
-  public addToIdentityPolicy(statement: PolicyStatement): AddToIdentityPolicyResult {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToUser(this);
@@ -273,7 +273,7 @@ export class User extends Resource implements IIdentity, IUser {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToIdentityPolicy(statement).statementAdded;
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
