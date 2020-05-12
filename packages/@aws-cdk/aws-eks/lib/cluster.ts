@@ -342,6 +342,8 @@ export class Cluster extends Resource implements ICluster {
    */
   private _awsAuth?: AwsAuth;
 
+  private _spotInterruptHandler?: HelmChart;
+
   private readonly version: string | undefined;
 
   /**
@@ -368,7 +370,6 @@ export class Cluster extends Resource implements ICluster {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSServicePolicy'),
       ],
     });
 
@@ -597,15 +598,7 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.7.3',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
-        },
-      });
+      this.addSpotInterruptHandler();
     }
   }
 
@@ -691,6 +684,26 @@ export class Cluster extends Resource implements ICluster {
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
     return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+  }
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
+  private addSpotInterruptHandler() {
+    if (!this._spotInterruptHandler) {
+      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
+      });
+    }
+
+    return this._spotInterruptHandler;
   }
 
   /**
@@ -959,14 +972,14 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
-  public constructor(props: EksOptimizedImageProps) {
-    this.nodeType = props && props.nodeType;
-    this.kubernetesVersion = props && props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
+  public constructor(props: EksOptimizedImageProps = {}) {
+    this.nodeType = props.nodeType ?? NodeType.STANDARD;
+    this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
-      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
       + 'recommended/image_id';
   }
 

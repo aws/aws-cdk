@@ -1,1 +1,4 @@
 cdk.context.json
+node_modules
+*.d.ts
+*.js

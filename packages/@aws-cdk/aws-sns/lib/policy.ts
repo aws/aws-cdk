@@ -3,6 +3,9 @@ import { Construct, Resource } from '@aws-cdk/core';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
 
+/**
+ * Properties to associate SNS topics with a policy
+ */
 export interface TopicPolicyProps {
   /**
    * The set of topics this policy applies to.

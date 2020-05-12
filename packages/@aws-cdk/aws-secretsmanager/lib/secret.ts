@@ -242,6 +242,12 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
+
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
+    const principle =
+       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    this.encryptionKey?.grantEncryptDecrypt(principle);
+    this.encryptionKey?.grant(principle, 'kms:CreateGrant', 'kms:DescribeKey');
   }
 
   /**

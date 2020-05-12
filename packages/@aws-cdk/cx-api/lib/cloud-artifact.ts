@@ -1,9 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from './cloud-assembly';
-import {
-  MetadataEntryResult,
-  SynthesisMessage,
-  SynthesisMessageLevel } from './metadata';
+import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -24,6 +21,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - name derived from artifact ID
    */
   readonly stackName?: string;
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -43,6 +47,8 @@ export class CloudArtifact {
         return new CloudFormationStackArtifact(assembly, id, artifact);
       case cxschema.ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
+      case cxschema.ArtifactType.ASSET_MANIFEST:
+        return new AssetManifestArtifact(assembly, id, artifact);
       default:
         return undefined;
     }
@@ -137,5 +143,6 @@ export class CloudArtifact {
 }
 
 // needs to be defined at the end to avoid a cyclic dependency
+import { AssetManifestArtifact } from './asset-manifest-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { TreeCloudArtifact } from './tree-cloud-artifact';

@@ -4,13 +4,20 @@ import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 
+/**
+ * Represents an SNS topic
+ */
 export interface ITopic extends IResource {
   /**
+   * The ARN of the topic
+   *
    * @attribute
    */
   readonly topicArn: string;
 
   /**
+   * The name of the topic
+   *
    * @attribute
    */
   readonly topicName: string;

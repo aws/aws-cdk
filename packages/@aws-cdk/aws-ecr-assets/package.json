@@ -71,23 +71,21 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "minimatch": "^3.0.4",
     "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -98,7 +96,7 @@
     "statements": 70
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "bundledDependencies": [
     "minimatch"

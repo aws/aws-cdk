@@ -3,6 +3,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import { IResource, Resource } from '@aws-cdk/core';
 import { QueuePolicy } from './policy';
 
+/**
+ * Represents an SQS queue
+ */
 export interface IQueue extends IResource {
   /**
    * The ARN of this queue
@@ -197,9 +200,9 @@ export abstract class QueueBase extends Resource implements IQueue {
       'sqs:GetQueueUrl');
 
     if (this.encryptionMasterKey) {
-      this.encryptionMasterKey.grantEncrypt(grantee);
+      // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
+      this.encryptionMasterKey.grantEncryptDecrypt(grantee);
     }
-
     return ret;
   }
 
@@ -237,7 +240,6 @@ export abstract class QueueBase extends Resource implements IQueue {
     });
   }
 }
-
 /**
  * Reference to a queue
  */
@@ -249,6 +251,9 @@ export interface QueueAttributes {
 
   /**
    * The URL of the queue.
+   * @see https://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/QueueURL.html
+   *
+   * @default - 'https://sqs.<region-endpoint>/<account-ID>/<queue-name>'
    */
   readonly queueUrl?: string;
 
@@ -260,6 +265,8 @@ export interface QueueAttributes {
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
+   *
+   * @default - None
    */
   readonly keyArn?: string;
 }
