@@ -419,6 +419,29 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
+## Routing
+
+It's possible to add routes to any subnets using the `addRoute()` method. If for example you want an
+isolated subnet to have a static route via the default Internet Gateway created for the public 
+subnet - perhaps for routing a VPN connection - you can do so like this:
+
+```ts
+const vpc = ec2.Vpc(this, "VPC", {
+  subnetConfiguration: [{
+      subnetType: SubnetType.PUBLIC,
+      name: 'Public',
+    },{
+      subnetType: SubnetType.ISOLATED,
+      name: 'Isolated',
+    }]
+})
+(vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
+    routerId: vpc.internetGateway.internetGatewayId,
+    routerType: RouterType.GATEWAY,
+    destinationCidrBlock: "8.8.8.8/32",
+})
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2

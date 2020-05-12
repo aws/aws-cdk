@@ -71,6 +71,13 @@ nodeunitShim({
       test.done();
     },
 
+    'can refer to the internet gateway'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC');
+      test.deepEqual(stack.resolve(vpc.internetGateway.internetGatewayId), { Ref: 'TheVPCIGWFA25CC08' });
+      test.done();
+    },
+
     'with only isolated subnets, the VPC should not contain an IGW or NAT Gateways'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
@@ -103,7 +110,8 @@ nodeunitShim({
           },
         ],
       });
-      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
+      expect(stack).to(countResources('AWS::EC2::InternetGateway', 1))
+      ;
       expect(stack).notTo(haveResource('AWS::EC2::NatGateway'));
       test.done();
     },
@@ -155,6 +163,33 @@ nodeunitShim({
       new Vpc(stack, 'TheVPC', { });
       expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
       expect(stack).to(countResources('AWS::EC2::NatGateway', zones));
+      test.done();
+    },
+
+    'with isolated and public subnet, should be able to use the internet gateway to define routes'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+          }
+        ]
+      });
+      (vpc.isolatedSubnets[0] as Subnet).addRoute("TheRoute", {
+        routerId: vpc.internetGateway.internetGatewayId,
+        routerType: RouterType.GATEWAY,
+        destinationCidrBlock: "8.8.8.8/32",
+      })
+      expect(stack).to(haveResource('AWS::EC2::InternetGateway'));
+      expect(stack).to(haveResourceLike('AWS::EC2::Route', {
+        DestinationCidrBlock: '8.8.8.8/32',
+        GatewayId: { }
+      }));
       test.done();
     },
 

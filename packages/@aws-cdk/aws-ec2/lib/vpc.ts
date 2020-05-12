@@ -56,6 +56,13 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
+export interface IInternetGateway {
+  /**
+   * Identifier for this IGW
+   */
+  readonly internetGatewayId: string;
+}
+
 export interface IVpc extends IResource {
   /**
    * Identifier for this VPC
@@ -94,10 +101,16 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+  
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
   readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * Internet Gateway for this VPC
+   */
+  readonly internetGateway: IInternetGateway;
 
   /**
    * Return information on the subnets appropriate for the given selection strategy
@@ -315,6 +328,11 @@ abstract class VpcBase extends Resource implements IVpc {
    * Dependencies for internet connectivity
    */
   public abstract readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * Internet Gateway for this VPC
+   */
+  public abstract readonly internetGateway: IInternetGateway;
 
   /**
    * Dependencies for NAT connectivity
@@ -1098,6 +1116,16 @@ export class Vpc extends VpcBase {
    */
   public readonly availabilityZones: string[];
 
+  /**
+   * Internet Gateway for the VPC
+   */
+  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
+
+  /*
+   * Identifier for the VPN gateway
+   */
+  public readonly vpnGatewayId?: string;
+
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1184,6 +1212,9 @@ export class Vpc extends VpcBase {
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
+
+      this.internetGateway = { internetGatewayId: igw.ref }
+
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
@@ -1731,6 +1762,8 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
+  public readonly vpnGatewayId?: string;
+  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
@@ -1770,6 +1803,7 @@ class LookedUpVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
+  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
