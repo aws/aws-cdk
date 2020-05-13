@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api');
-    api.root.addMethod('GET'); // must have at least one method
+    api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
     expect(stack).toMatch({
@@ -127,7 +127,7 @@ export = {
     test.done();
   },
 
-  'fails in synthesis if there are no methods'(test: Test) {
+  'fails in synthesis if there are no methods or definition'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');

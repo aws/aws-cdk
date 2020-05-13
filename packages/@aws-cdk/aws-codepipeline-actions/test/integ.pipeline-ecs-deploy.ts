@@ -72,6 +72,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
       value: repository.repositoryUri,
     },
   },
+  grantReportGroupPermissions: false,
 });
 // needed for `docker push`
 repository.grantPullPush(project);

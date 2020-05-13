@@ -9,7 +9,7 @@
 
 ## Provider Framework
 
-AWS CloudFormation [custom resources] are extension points to the provisioning
+AWS CloudFormation [custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) are extension points to the provisioning
 engine. When CloudFormation needs to create, update or delete a custom resource,
 it sends a lifecycle event notification to a **custom resource provider**. The provider
 handles the event (e.g. creates a resource) and sends back a response to CloudFormation.
@@ -25,12 +25,12 @@ and powerful custom resources and includes the following capabilities:
 * Implements default behavior for physical resource IDs.
 
 The following code shows how the `Provider` construct is used in conjunction
-with `cfn.CustomResource` and a user-provided AWS Lambda function which
-implements the actual handler.
+with a `CustomResource` and a user-provided AWS Lambda function which implements
+the actual handler.
 
 ```ts
-import cr = require('@aws-cdk/custom-resources');
-import cfn = require('@aws-cdk/aws-cloudformation');
+import { CustomResource } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
@@ -39,8 +39,8 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
   isCompleteHandler: isComplete // optional async "waiter"
 });
 
-new cfn.CustomResource(this, 'Resource1', { provider: myProvider });
-new cfn.CustomResource(this, 'Resource2', { provider: myProvider });
+new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
+new CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });
 ```
 
 Providers are implemented through AWS Lambda functions that are triggered by the
@@ -99,8 +99,6 @@ def is_complete(event, context):
 
   return { 'IsComplete': is_ready }
 ```
-
-[custom resources]: (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
 
 ### Handling Lifecycle Events: onEvent
 

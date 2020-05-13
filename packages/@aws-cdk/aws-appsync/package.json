@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::AppSync"
+    "cloudformation": "AWS::AppSync",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -59,23 +60,6 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
     "organization": true
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
   },
   "license": "Apache-2.0",
   "devDependencies": {
@@ -103,7 +87,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0"
   },
   "awslint": {
     "exclude": [
