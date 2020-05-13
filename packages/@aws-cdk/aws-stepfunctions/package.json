@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::StepFunctions"
+    "cloudformation": "AWS::StepFunctions",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -84,14 +85,6 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 75,
-        "statements": 80
-      }
-    }
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

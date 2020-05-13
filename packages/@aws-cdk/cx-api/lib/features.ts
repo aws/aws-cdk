@@ -30,6 +30,11 @@ export const ENABLE_DIFF_NO_FAIL_CONTEXT = 'aws-cdk:enableDiffNoFail';
 export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 
 /**
+ * Switch to new stack synthesis method which enable CI/CD
+ */
+export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -45,4 +50,7 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 export const FUTURE_FLAGS = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
+
+  // We will advertise this flag when the feature is complete
+  // [NEW_STYLE_STACK_SYNTHESIS]: 'true',
 };
