@@ -99,38 +99,37 @@ All user data stored in Amazon DynamoDB is fully encrypted at rest. When creatin
 Define a Customer managed CMK encrypted Table:
 
 ```ts
-  const table = new Table(stack, CONSTRUCT_NAME, {
-    encryption: TableEncryption.Customer_Managed,
-    partitionKey: TABLE_PARTITION_KEY
-  });
+import dynamodb = require('@aws-cdk/aws-dynamodb');
 
-// you can access the encryption key:
-assert(table.encryptionKey instanceof kms.Key);
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.CUSTOMER_MANAGED,
+});
 ```
 
 You can also supply your own key:
 
 ```ts
-  const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true
-  });
-  const table = new Table(stack, CONSTRUCT_NAME, {
-    encryption: TableEncryption.Customer_Managed,
-    encryptionKey,
-    partitionKey: TABLE_PARTITION_KEY,
-  });
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+import kms = require('@aws-cdk/aws-kms');
 
-assert(table.encryptionKey === encryptionKey);
+const encryptionKey = new kms.Key(stack, 'Key', {
+  enableKeyRotation: true
+});
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.CUSTOMER_MANAGED,
+  encryptionKey,
+});
 ```
 
-Use `TableEncryption.AWS_Managed`:
+Use `TableEncryption.AWS_MANAGED` to use the AWS managed CMK:
 
 ```ts
-  const table = new Table(stack, CONSTRUCT_NAME, {
-    encryption: TableEncryption.AWS_Managed,
-    encryptionKey,
-    partitionKey: TABLE_PARTITION_KEY,
-  });
+import dynamodb = require('@aws-cdk/aws-dynamodb');
 
-assert(table.encryptionKey == null);
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.AWS_MANAGED,
+});
 ```

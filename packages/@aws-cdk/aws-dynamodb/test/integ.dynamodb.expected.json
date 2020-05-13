@@ -408,20 +408,6 @@
                 },
                 {
                   "Ref": "AWS::NoValue"
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "TableCD117FA1",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
                 }
               ]
             },
@@ -453,20 +439,6 @@
                         ]
                       },
                       "/index/*"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "TableWithGlobalAndLocalSecondaryIndexBC540710",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
                     ]
                   ]
                 }

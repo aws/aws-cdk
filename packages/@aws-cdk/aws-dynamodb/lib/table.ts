@@ -94,16 +94,17 @@ export interface TableOptions {
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
+   *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    *
-   * @deprecated - This property is deprecated, use encryption instead
+   * @deprecated - This property is deprecated, use the `encryption` property instead.
    */
   readonly serverSideEncryption?: boolean;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
-   * @default - server-side encryption is enabled with an AWS owned customer master key
    *
+   * @default - server-side encryption is enabled with an AWS owned customer master key
    */
   readonly encryption?: TableEncryption;
 
@@ -242,30 +243,28 @@ export interface ITable extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * Returns an ARN that represents all objects within the table that match
-   * the key pattern specified. To represent all keys, specify ``"*"``.
-   */
-  arnForObjects(keyPattern: string): string;
-
-  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
+   *
+   * If the 'encryptionKey' is used, grants to the key needs to be added separately
+   * using table.encryptionKey.grant*
+   *
    * @param grantee The principal (no-op if undefined)
-   * @param tableActions The set of actions to allow (i.e. ["dynamodb:PutItem", "dynamodb:GetItem", ...])
-   * @param keyActions The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
+   *
+   * If the 'encryptionKey' is used, grants to the key needs to be added separately
+   * using table.encryptionKey.grant*
+   *
    * @param grantee The principal (no-op if undefined)
-   * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   * @param keyActions The set of actions to allow (i.e. ["kms:Encrypt", "kms:decrypt", ...])
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any): iam.Grant;
+  grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Permits an IAM principal all data read operations from this table:
@@ -275,9 +274,8 @@ export interface ITable extends IResource {
    * encrypt/decrypt will also be granted
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantReadData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantReadData(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
@@ -295,9 +293,8 @@ export interface ITable extends IResource {
    * encrypt/decrypt will also be granted
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantStreamRead(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantStreamRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Permits an IAM principal all data write operations to this table:
@@ -307,9 +304,8 @@ export interface ITable extends IResource {
    * encrypt/decrypt will also be granted
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantWriteData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantWriteData(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Permits an IAM principal to all data read/write operations to this table.
@@ -320,16 +316,14 @@ export interface ITable extends IResource {
    * encrypt/decrypt will also be granted
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantReadWriteData(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantReadWriteData(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantFullAccess(grantee: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantFullAccess(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Metric for the number of Errors executing all Lambdas
@@ -407,11 +401,11 @@ export interface TableAttributes {
   readonly tableStreamArn?: string;
 
   /**
-   * KMS encryption key, if this queue is server-side encrypted by a KMS key.
+   * KMS encryption key, if this table is server-side encrypted by a KMS key.
    *
-   * @default - no key arn
+   * @default - no key
    */
-  readonly keyArn?: string;
+  readonly encryptionKey?: kms.IKey;
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -438,69 +432,52 @@ abstract class TableBase extends Resource implements ITable {
   protected readonly regionalArns = new Array<string>();
 
   /**
-   * Returns an ARN that represents all objects within the table that match
-   * the key pattern specified. To represent all keys, specify ``"*"``.
-   *
-   * If you specify multiple components for keyPattern, they will be concatenated::
-   *
-   *   arnForObjects('home/', team, '/', user, '/*')
-   *
-   */
-  public arnForObjects(keyPattern: string): string {
-    return `${this.tableArn}/${keyPattern}`;
-  }
-
-  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
+   *
+   * If the 'encryptionKey' is used, grants to the key needs to be added separately
+   * using table.encryptionKey.grant*
+   *
    * @param grantee The principal (no-op if undefined)
-   * @param tableActions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
-   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  public grant(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
-    const resources = [this.tableArn,
-      Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-      ...this.regionalArns,
-      ...this.regionalArns.map(arn => Lazy.stringValue({
-        produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-      })),
-      objectsKeyPattern];
-    const ret = iam.Grant.addToPrincipal({
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
       grantee,
-      actions: tableActions,
-      resourceArns: resources,
+      actions,
+      resourceArns: [
+        this.tableArn,
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.stringValue({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
       scope: this,
     });
-    if (this.encryptionKey && keyActions) {
-      this.encryptionKey.grant(grantee, ...keyActions);
-    }
-    return ret;
   }
 
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
+   *
+   * If the 'encryptionKey' is used, grants to the key needs to be added separately
+   * using table.encryptionKey.grant*
+   *
    * @param grantee The principal (no-op if undefined)
-   * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  public grantStream(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[], objectsKeyPattern?: any) {
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (!this.tableStreamArn) {
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
-    const resources = [ this.tableStreamArn, objectsKeyPattern];
-    const ret = iam.Grant.addToPrincipal({
+
+    return iam.Grant.addToPrincipal({
       grantee,
-      actions: streamActions,
-      resourceArns: resources,
+      actions,
+      resourceArns: [this.tableStreamArn],
       scope: this,
     });
-    if (this.encryptionKey && keyActions) {
-      this.encryptionKey.grant(grantee, ...keyActions);
-    }
-    return ret;
   }
 
   /**
@@ -510,10 +487,9 @@ abstract class TableBase extends Resource implements ITable {
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantReadData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
-    return this.grant(grantee, perms.READ_DATA_ACTIONS, perms.KEY_READ_ACTIONS, this.arnForObjects(objectsKeyPattern));
+  public grantReadData(grantee: iam.IGrantable): iam.Grant {
+    return this.tableGrantKeyActions(grantee, perms.READ_DATA_ACTIONS, perms.KEY_READ_ACTIONS);
   }
 
   /**
@@ -545,11 +521,10 @@ abstract class TableBase extends Resource implements ITable {
    * encrypt/decrypt will also be granted.
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantStreamRead(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
+  public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
     this.grantTableListStreams(grantee);
-    return this.grantStream(grantee, perms.READ_STREAM_DATA_ACTIONS, perms.KEY_READ_ACTIONS, this.arnForObjects(objectsKeyPattern));
+    return this.streamGrantKeyActions(grantee, perms.READ_STREAM_DATA_ACTIONS, perms.KEY_READ_ACTIONS);
   }
 
   /**
@@ -560,10 +535,9 @@ abstract class TableBase extends Resource implements ITable {
    * encrypt/decrypt will also be granted.
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantWriteData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
-    return this.grant(grantee, perms.WRITE_DATA_ACTIONS, perms.KEY_WRITE_ACTIONS, this.arnForObjects(objectsKeyPattern));
+  public grantWriteData(grantee: iam.IGrantable): iam.Grant {
+    return this.tableGrantKeyActions(grantee, perms.WRITE_DATA_ACTIONS, perms.KEY_WRITE_ACTIONS);
   }
 
   /**
@@ -575,12 +549,11 @@ abstract class TableBase extends Resource implements ITable {
    * encrypt/decrypt will also be granted.
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantReadWriteData(grantee: iam.IGrantable, objectsKeyPattern: any = '*'): iam.Grant {
+  public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
     const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.grant(grantee, tableActions, keyActions, this.arnForObjects(objectsKeyPattern));
+    return this.tableGrantKeyActions(grantee, tableActions, keyActions);
   }
 
   /**
@@ -591,11 +564,10 @@ abstract class TableBase extends Resource implements ITable {
    *
    *
    * @param grantee The principal to grant access to
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantFullAccess(grantee: iam.IGrantable, objectsKeyPattern: any = '*') {
+  public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.grant(grantee, ['dynamodb:*'], keyActions, this.arnForObjects(objectsKeyPattern));
+    return this.tableGrantKeyActions(grantee, ['dynamodb:*'], keyActions);
   }
 
   /**
@@ -667,6 +639,57 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   protected abstract get hasIndex(): boolean;
+
+  /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param tableActions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
+   */
+  private tableGrantKeyActions(grantee: iam.IGrantable, tableActions: string[], keyActions?: string[]) {
+    const resources = [this.tableArn,
+      Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+      ...this.regionalArns,
+      ...this.regionalArns.map(arn => Lazy.stringValue({
+        produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+      })),
+    ];
+    const ret = iam.Grant.addToPrincipal({
+      grantee,
+      actions: tableActions,
+      resourceArns: resources,
+      scope: this,
+    });
+    if (this.encryptionKey && keyActions) {
+      this.encryptionKey.grant(grantee, ...keyActions);
+    }
+    return ret;
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param streamActions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   * @param keyActions The set of actions to allow (i.e. "kms:Encrypt", "kms:Decrypt", ...)
+   */
+  private streamGrantKeyActions(grantee: iam.IGrantable, streamActions: string[], keyActions?: string[]) {
+    if (!this.tableStreamArn) {
+      throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
+    }
+    const resources = [ this.tableStreamArn];
+    const ret = iam.Grant.addToPrincipal({
+      grantee,
+      actions: streamActions,
+      resourceArns: resources,
+      scope: this,
+    });
+    if (this.encryptionKey && keyActions) {
+      this.encryptionKey.grant(grantee, ...keyActions);
+    }
+    return ret;
+  }
 }
 
 /**
@@ -729,7 +752,7 @@ export class Table extends TableBase {
         this.tableArn = _tableArn;
         this.tableName = tableName;
         this.tableStreamArn = tableStreamArn;
-        this.encryptionKey = attrs.keyArn ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn) : undefined;
+        this.encryptionKey = attrs.encryptionKey;
       }
 
       protected get hasIndex(): boolean {
@@ -1175,8 +1198,8 @@ export class Table extends TableBase {
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
 
     // Permissions in the source region
-    this.grant(provider.onEventHandler, ['dynamodb:*']);
-    this.grant(provider.isCompleteHandler, ['dynamodb:DescribeTable']);
+    this.grant(provider.onEventHandler, 'dynamodb:*');
+    this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
 
     let previousRegion;
     for (const region of new Set(regions)) { // Remove duplicates
@@ -1255,6 +1278,10 @@ export class Table extends TableBase {
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
       throw new Error('encryptionKey is specified, so encryption must be set to Customer_Managed');
+    }
+
+    if (encryptionType === TableEncryption.CUSTOMER_MANAGED && props.replicationRegions) {
+      throw new Error('Global tables cannot be encrypted with customer managed CMK');
     }
 
     if (encryptionType === TableEncryption.CUSTOMER_MANAGED) {

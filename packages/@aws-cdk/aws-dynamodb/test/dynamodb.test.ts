@@ -397,7 +397,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
   });
 });
 
-test('fails if encryption key is used with customer managed encryption', () => {
+test('fails if encryption key is used with AWS managed CMK', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
@@ -444,6 +444,198 @@ test('fails if both encryption and serverSideEncryption is specified', () => {
     encryption: TableEncryption.DEFAULT,
     serverSideEncryption: true,
   })).toThrow(/Both encryption and serverSideEncryption is specified, only either field can be set, not both/);
+});
+
+test('fails if both replication regions used with customer managed CMK', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  })).toThrow(/Global tables cannot be encrypted with customer managed CMK/);
+});
+
+test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantReadWriteData(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'TableAKey07CC09EC': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::GetAtt': [
+                      'MyUserDC45028B',
+                      'Arn',
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Description': 'Created by Table A',
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'TableAKey07CC09EC',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': [
+                  'dynamodb:BatchGetItem',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:Query',
+                  'dynamodb:GetItem',
+                  'dynamodb:Scan',
+                  'dynamodb:BatchWriteItem',
+                  'dynamodb:PutItem',
+                  'dynamodb:UpdateItem',
+                  'dynamodb:DeleteItem',
+                ],
+                'Effect': 'Allow',
+                'Resource': [
+                  {
+                    'Fn::GetAtt': [
+                      'TableA3D7B5AFA',
+                      'Arn',
+                    ],
+                  },
+                  {
+                    'Ref': 'AWS::NoValue',
+                  },
+                ],
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableAKey07CC09EC',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
@@ -1281,7 +1473,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    table.grant(user, ['dynamodb:action1', 'dynamodb:action2']);
+    table.grant(user, 'dynamodb:action1', 'dynamodb:action2');
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -1317,10 +1509,10 @@ describe('grants', () => {
     });
   });
 
-  // test('"grant" allows adding arbitrary actions associated with this table resource', () => {
-  //   testGrant(
-  //     ['action1', 'action2'], (p, t) => t.grant(p, ['dynamodb:action1', 'dynamodb:action2'], ['kms:*'], '*'));
-  // });
+  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+    testGrant(
+      ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
+  });
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
@@ -1458,38 +1650,17 @@ describe('grants', () => {
               'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              {
-                'Fn::GetAtt': [
-                  'mytable0324D45C',
-                  'StreamArn',
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'mytable0324D45C',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+            'Resource': {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'StreamArn',
+              ],
+            },
           },
         ],
         'Version': '2012-10-17',
       },
-      'PolicyName': 'userDefaultPolicy083DF682',
-      'Users': [
-        {
-          'Ref': 'user2C2B57AE',
-        },
-      ],
+      'Users': [{ 'Ref': 'user2C2B57AE' }],
     });
   });
 
@@ -1539,20 +1710,6 @@ describe('grants', () => {
                   ],
                 ],
               },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'mytable0324D45C',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
             ],
           },
         ],
@@ -1574,7 +1731,7 @@ describe('grants', () => {
     const user = new iam.User(stack, 'user');
 
     // WHEN
-    table.grant(user, ['dynamodb:*']);
+    table.grant(user, 'dynamodb:*');
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -1686,7 +1843,6 @@ describe('import', () => {
             'Resource': [
               tableArn,
               { 'Ref': 'AWS::NoValue' },
-              'arn:aws:dynamodb:us-east-1:11111111:table/MyTable/*',
             ],
           },
         ],
@@ -1752,26 +1908,6 @@ describe('import', () => {
               },
               {
                 'Ref': 'AWS::NoValue',
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/MyTable/*',
-                  ],
-                ],
               },
             ],
           },
@@ -1853,26 +1989,7 @@ describe('import', () => {
             {
               Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
               Effect: 'Allow',
-              Resource: [tableStreamArn, {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/MyTable/*',
-                  ],
-                ],
-              }],
+              Resource: tableStreamArn,
             },
           ],
           Version: '2012-10-17',
@@ -2084,20 +2201,6 @@ describe('global', () => {
                   ],
                 ],
               },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'TableCD117FA1',
-                        'Arn',
-                      ],
-                    },
-                    '/*',
-                  ],
-                ],
-              },
             ],
           },
         ],
@@ -2246,22 +2349,6 @@ describe('global', () => {
                       Ref: 'AWS::AccountId',
                     },
                     ':table/my-table/index/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:us-east-1:',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/my-table/*',
                   ],
                 ],
               },
@@ -2469,20 +2556,6 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
             },
             {
               'Ref': 'AWS::NoValue',
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'mytable0324D45C',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
             },
           ],
         },
