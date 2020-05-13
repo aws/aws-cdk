@@ -19,6 +19,7 @@
 - [Introduction](#introduction)
 - [HTTP API](#http-api)
   - [Defining HTTP APIs](#defining-http-apis)
+  - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
 
 ## Introduction
@@ -85,6 +86,31 @@ new HttpApi(stack, 'HttpProxyApi', {
   defaultIntegration: new HttpProxyIntegration({
     url:'http://example.com',
   }),
+});
+```
+
+### Cross Origin Resource Sharing (CORS)
+
+[Cross-origin resource sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a browser security
+feature that restricts HTTP requests that are initiated from scripts running in the browser. Enabling CORS will allow
+requests to your API from a web application hosted in a domain different from your API domain.
+
+When configured CORS for an HTTP API, API Gateway automatically sends a response to preflight `OPTIONS` requests, even
+if there isn't an `OPTIONS` route configured. Note that, when this option is used, API Gateway will ignore CORS headers
+returned from your backend integration. Learn more about [Configuring CORS for an HTTP
+API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html).
+
+The `corsPreflight` option lets you specify a CORS configuration for an API.
+
+```ts
+new HttpApi(stack, 'HttpProxyApi', {
+  corsPreflight: {
+    allowCredentials: true,
+    allowHeaders: ['Authorization'],
+    allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
+    allowOrigins: ['*'],
+    maxAge: Duration.seconds(36400),
+  },
 });
 ```
 
