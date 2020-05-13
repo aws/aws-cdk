@@ -51,7 +51,7 @@ For day-to-day development and normal contributions, the following SDKs and tool
 
 - [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-⚠️ versions `13.0.0 - 13.6.0` are not supported.
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
 - [Java OpenJDK 8](http://openjdk.java.net/install/)
 - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
