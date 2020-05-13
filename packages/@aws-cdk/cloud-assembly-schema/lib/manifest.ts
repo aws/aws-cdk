@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
+import { ArtifactMetadataEntryType } from './metadata-schema';
 import * as assembly from './schema';
 
 // this prefix is used by the CLI to identify this specific error.
@@ -100,7 +101,7 @@ export class Manifest {
       if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
         for (const metadataEntries of Object.values(artifact.metadata || [])) {
           for (const metadataEntry of metadataEntries) {
-            if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+            if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
 
               const metadataAny = metadataEntry as any;
 
