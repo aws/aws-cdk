@@ -25,6 +25,7 @@
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./generate.sh"
     ]
@@ -70,7 +71,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.673.0",
+    "aws-sdk": "^2.675.0",
     "camelcase": "^6.0.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
@@ -102,19 +103,5 @@
     "node": ">= 10.13.0"
   },
   "stability": "stable",
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 45,
-        "statements": 60
-      }
-    },
-    "testMatch": [
-      "**/?(*.)+(spec|test).js?(x)"
-    ]
-  },
   "maturity": "stable"
 }
