@@ -1,5 +1,0 @@
-cdk.context.json
-node_modules
-*.d.ts
-*.js
-!jest.setup.js

@@ -1,8 +1,9 @@
 import * as child_process from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import { cloudFormation, deleteStacks, testEnv } from './aws-helpers';
 
-export const INTEG_TEST_DIR = '/tmp/cdk-integ-test2';
+export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
 export const STACK_NAME_PREFIX = process.env.STACK_NAME_PREFIX || (() => {
   // Make the stack names unique based on the codebuild project name
@@ -85,15 +86,22 @@ export function fullStackName(stackNames: string | string[]): string | string[] 
 }
 
 /**
+ * Prepare a target dir byreplicating a source directory
+ */
+export async function cloneDirectory(source: string, target: string) {
+  await shell(['rm', '-rf', target]);
+  await shell(['mkdir', '-p', target]);
+  await shell(['cp', '-R', source + '/', target]);
+}
+
+/**
  * Prepare the app fixture
  *
  * If this is done in the main test script, it will be skipped
  * in the subprocess scripts since the app fixture can just be reused.
  */
 export async function prepareAppFixture() {
-  await shell(['rm', '-rf', INTEG_TEST_DIR]);
-  await shell(['mkdir', '-p', INTEG_TEST_DIR]);
-  await shell(['cp', '-R', path.join(__dirname, 'app') + '/', INTEG_TEST_DIR]);
+  await cloneDirectory(path.join(__dirname, 'app'), INTEG_TEST_DIR);
 
   await shell(['npm', 'install',
     '@aws-cdk/core',

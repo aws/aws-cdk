@@ -14,14 +14,6 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -61,5 +53,8 @@
     "node": ">= 10.13.0"
   },
   "stability": "experimental",
-  "maturity": "experimental"
+  "maturity": "experimental",
+  "cdk-build": {
+    "jest": true
+  }
 }
