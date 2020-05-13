@@ -1,5 +1,6 @@
 export * from './lambda/invoke-function';
 export * from './lambda/run-lambda-task';
+export * from './lambda/invoke';
 export * from './invoke-activity';
 export * from './ecs/run-ecs-task-base'; // Remove this once we can
 export * from './ecs/run-ecs-task-base-types';
