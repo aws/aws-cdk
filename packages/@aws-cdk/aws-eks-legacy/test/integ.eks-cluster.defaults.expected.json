@@ -27,10 +27,6 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -41,6 +37,10 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
           }
         ]
       }
@@ -53,12 +53,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
           }
         ]
       }
@@ -95,12 +95,12 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
           }
         ]
       }
@@ -119,12 +119,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1"
           }
         ]
       }
@@ -140,10 +140,6 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -154,6 +150,10 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
           }
         ]
       }
@@ -166,12 +166,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
           }
         ]
       }
@@ -208,12 +208,12 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
           }
         ]
       }
@@ -232,12 +232,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2"
           }
         ]
       }
@@ -253,10 +253,6 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -267,6 +263,10 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
           }
         ]
       }
@@ -279,12 +279,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
           }
         ]
       }
@@ -321,12 +321,12 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
           }
         ]
       }
@@ -345,12 +345,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3"
           }
         ]
       }
@@ -366,10 +366,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -380,6 +376,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1"
           }
         ]
       }
@@ -392,12 +392,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1"
           }
         ]
       }
@@ -436,10 +436,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -450,6 +446,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2"
           }
         ]
       }
@@ -462,12 +462,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2"
           }
         ]
       }
@@ -506,10 +506,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -520,6 +516,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3"
           }
         ]
       }
@@ -532,12 +532,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3"
           }
         ]
       }
@@ -935,10 +935,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -951,6 +947,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
           }
         ],
         "VpcId": {
@@ -1084,10 +1084,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1100,6 +1096,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
           }
         ]
       }
@@ -1162,11 +1162,6 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1180,6 +1175,11 @@
             },
             "PropagateAtLaunch": true,
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "eks-integ-defaults/Cluster/DefaultCapacity"
           }
         ],
         "VPCZoneIdentifier": [
