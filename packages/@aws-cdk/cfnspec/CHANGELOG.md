@@ -1,3 +1,68 @@
+# CloudFormation Resource Specification v14.2.0
+
+## New Resource Types
+
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::Image
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__added__)
+* AWS::SSM::Association AssociationId (__added__)
+
+## Property Changes
+
+* AWS::Cloud9::EnvironmentEC2 ConnectionType (__added__)
+* AWS::ECS::Cluster ClusterSettings.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Cluster ClusterSettings.ItemType (__changed__)
+  * Old: ClusterSetting
+  * New: ClusterSettings
+* AWS::ECS::Cluster Tags.DuplicatesAllowed (__deleted__)
+* AWS::MediaStore::Container MetricPolicy (__deleted__)
+* AWS::MediaStore::Container Tags (__deleted__)
+* AWS::SSM::Association AutomationTargetParameterName (__added__)
+* AWS::SSM::Association ComplianceSeverity (__added__)
+* AWS::SSM::Association MaxConcurrency (__added__)
+* AWS::SSM::Association MaxErrors (__added__)
+* AWS::SSM::Association SyncCompliance (__added__)
+* AWS::SSM::Association WaitForSuccessTimeoutSeconds (__added__)
+* AWS::SSM::Association InstanceId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association Parameters.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association Targets.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association Targets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Parameter DataType (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::LaunchTemplate.CapacityReservationPreference (__removed__)
+* AWS::ECS::Cluster.ClusterSetting (__removed__)
+* AWS::MediaStore::Container.MetricPolicy (__removed__)
+* AWS::MediaStore::Container.MetricPolicyRule (__removed__)
+* AWS::SSM::Association.ParameterValues (__removed__)
+* AWS::ECS::Cluster.ClusterSettings (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.Type (__deleted__)
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.PrimitiveType (__added__)
+* AWS::SSM::Association.S3OutputLocation OutputS3Region (__added__)
+* AWS::SSM::Association.Target Key.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association.Target Values.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association.Target Values.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v14.1.0
 
 ## New Resource Types
