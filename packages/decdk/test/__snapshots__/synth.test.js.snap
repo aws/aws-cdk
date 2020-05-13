@@ -765,16 +765,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -869,16 +869,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3050,16 +3050,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3119,16 +3119,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet2",
           },
         ],
         "VpcId": Object {
@@ -3223,16 +3223,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3327,16 +3327,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet2",
           },
         ],
         "VpcId": Object {

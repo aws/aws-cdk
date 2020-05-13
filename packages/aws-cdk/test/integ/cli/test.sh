@@ -1,11 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/common.bash
 
-header CLI Integration Tests
-
-prepare_fixture
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo 'CLI Integration Tests'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 current_version=$(node -p "require('${scriptdir}/../../../package.json').version")
 
@@ -31,7 +30,7 @@ for test in $(cd ${scriptdir} && ls test-*.sh); do
   echo "============================================================================================"
 
   # first check this if this test should be skipped.
-  # this can happen when running in regression mode 
+  # this can happen when running in regression mode
   # when we introduce an intentional breaking change.
   skip=$(should_skip ${test})
 

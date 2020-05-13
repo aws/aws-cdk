@@ -24,3 +24,11 @@ npm-shrinkwrap.json
 test/integ/cli-backwards-tests-*
 !.eslintrc.js
 !jest.config.js
+
+# Might be created when running integ tests
+cdk.context.json
+
+# Exclude compiled integ tests specifically (but not any subdir
+# as the subdirs contain .js files that should be committed)
+test/integ/cli/*.js
+test/integ/cli/*.d.ts
