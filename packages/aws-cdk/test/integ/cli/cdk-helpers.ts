@@ -91,7 +91,7 @@ export function fullStackName(stackNames: string | string[]): string | string[] 
 export async function cloneDirectory(source: string, target: string) {
   await shell(['rm', '-rf', target]);
   await shell(['mkdir', '-p', target]);
-  await shell(['cp', '-R', source + '/', target]);
+  await shell(['cp', '-R', source + '/*', target]);
 }
 
 /**
