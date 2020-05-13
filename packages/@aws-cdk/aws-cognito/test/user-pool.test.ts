@@ -663,14 +663,11 @@ describe('User Pool', () => {
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      userPoolAddOnsSettings: {
-        advancedSecurityMode: AdvancedSecurityMode.OFF,
-      },
+      advancedSecurityMode: AdvancedSecurityMode.OFF,
     });
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      UserPoolAddOns: ABSENT,
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
@@ -687,15 +684,11 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      userPoolAddOnsSettings: {
-        advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-      },
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      userPoolAddOnsSettings: {
-        advancedSecurityMode: AdvancedSecurityMode.AUDIT,
-      },
+      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
     });
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
