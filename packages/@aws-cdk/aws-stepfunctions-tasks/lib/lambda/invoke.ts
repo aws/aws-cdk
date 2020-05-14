@@ -92,7 +92,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     const taskStateConfig: TaskStateConfig = {
       resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       parameters: {
-        FunctionName: this.props.lambdaFunction.functionName,
+        FunctionName: this.props.lambdaFunction.functionArn,
         Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
