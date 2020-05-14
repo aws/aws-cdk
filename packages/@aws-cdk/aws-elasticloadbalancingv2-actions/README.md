@@ -13,9 +13,10 @@ This package contains integration actions for ELBv2. See the README of the `@aws
 
 ## Cognito
 
-To use a Cognito UserPool for authentication, use `AuthenticateCognitoAction`. For details on the
-setup's requirements, read [Prepare to use Amazon Cognito](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#cognito-requirements).
-
+ELB allows for requests to be authenticated against a Cognito user pool using
+the `AuthenticateCognitoAction`. For details on the setup's requirements,
+read [Prepare to use Amazon
+Cognito](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#cognito-requirements).
 Here's an example:
 
 [Example of using AuthenticateCognitoAction](test/integ.cognito.lit.ts)

@@ -8,6 +8,9 @@ import { Duration } from '@aws-cdk/core';
 export interface AuthenticateCognitoActionProps {
   /**
    * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
    */
   readonly next: elbv2.ListenerAction;
 

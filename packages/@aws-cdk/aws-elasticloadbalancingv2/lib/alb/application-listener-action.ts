@@ -24,7 +24,7 @@ import { IApplicationTargetGroup } from './application-target-group';
  */
 export class ListenerAction implements IListenerAction {
   /**
-   * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
+   * Authenticate using an identity provider (IdP) that is compliant with OpenID Connect (OIDC)
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
     return new ListenerAction({

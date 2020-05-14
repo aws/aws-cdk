@@ -106,7 +106,7 @@ or lesser extent:
   to the Target Groups yourself (or access one of the other ELB routing features).
 
 Using `addAction()` gives you access to some of the features of an Elastic Load
-Balancer that the convenience methods don't:
+Balancer that the other two convenience methods don't:
 
 - **Routing stickiness**: use `ListenerAction.forward()` and supply a
   `stickinessDuration` to make sure requests are routed to the same target group
@@ -134,6 +134,7 @@ listener.addAction('Fixed', {
   })
 });
 ```
+
 Here's an example of using OIDC authentication before forwarding to a TargetGroup:
 
 ```ts
