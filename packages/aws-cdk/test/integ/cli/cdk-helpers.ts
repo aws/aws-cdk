@@ -70,6 +70,7 @@ export async function cdk(args: string[], options: CdkCliOptions = {}) {
     modEnv: {
       AWS_REGION: (await testEnv()).region,
       AWS_DEFAULT_REGION: (await testEnv()).region,
+      STACK_NAME_PREFIX,
       ...options.modEnv,
     },
   });

@@ -1,14 +1,17 @@
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { afterSeconds, cloudFormation, iam, lambda, retry, sns, sts, testEnv } from './aws-helpers';
+import { afterSeconds, cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
 import { cdk, cdkDeploy, cdkDestroy, cleanupOldStacks, cloneDirectory, fullStackName,
   INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
 
 jest.setTimeout(600 * 1000);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await prepareAppFixture();
+});
+
+beforeEach(async () => {
   await cleanupOldStacks();
 });
 
@@ -304,6 +307,11 @@ test('deploy with role', async () => {
       });
     });
 
+    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+    // Give it a little more sleep to make sure CloudFormation is not hitting a box
+    // that doesn't have it yet.
+    await sleep(5000);
+
     await cdkDeploy('test-2', {
       options: ['--role-arn', roleArn],
     });
@@ -502,10 +510,14 @@ test('generating and loading assembly', async () => {
   const asmOutputDir = path.join(os.tmpdir(), 'cdk-integ-asm');
   await shell(['rm', '-rf', asmOutputDir]);
 
-  // Synthesize a Cloud Assembly
+  // Make sure our fixture directory is clean
+  await prepareAppFixture();
+
+  // Synthesize a Cloud Assembly tothe default directory (cdk.out) and a specific directory.
+  await cdk(['synth']);
   await cdk(['synth', '--output', asmOutputDir]);
 
-  // cdk.out in the current direc,tory and the indicated --output should be the same
+  // cdk.out in the current directory and the indicated --output should be the same
   await shell(['diff', 'cdk.out', asmOutputDir], {
     cwd: INTEG_TEST_DIR,
   });
