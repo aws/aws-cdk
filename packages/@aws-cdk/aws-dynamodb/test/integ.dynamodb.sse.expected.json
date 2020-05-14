@@ -333,8 +333,7 @@
           "WriteCapacityUnits": 5
         },
         "SSESpecification": {
-          "SSEEnabled": true,
-          "SSEType": "KMS"
+          "SSEEnabled": true
         },
         "StreamSpecification": {
           "StreamViewType": "KEYS_ONLY"
@@ -508,9 +507,6 @@
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
-        },
-        "SSESpecification": {
-          "SSEEnabled": false
         }
       },
       "UpdateReplacePolicy": "Delete",

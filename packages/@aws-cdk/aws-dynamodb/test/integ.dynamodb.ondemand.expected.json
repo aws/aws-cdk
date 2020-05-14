@@ -15,10 +15,7 @@
             "AttributeType": "S"
           }
         ],
-        "BillingMode": "PAY_PER_REQUEST",
-        "SSESpecification": {
-          "SSEEnabled": false
-        }
+        "BillingMode": "PAY_PER_REQUEST"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -231,8 +228,7 @@
           "PointInTimeRecoveryEnabled": true
         },
         "SSESpecification": {
-          "SSEEnabled": true,
-          "SSEType": "KMS"
+          "SSEEnabled": true
         },
         "StreamSpecification": {
           "StreamViewType": "KEYS_ONLY"
@@ -284,10 +280,7 @@
               "ProjectionType": "ALL"
             }
           }
-        ],
-        "SSESpecification": {
-          "SSEEnabled": false
-        }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -337,10 +330,7 @@
               "ProjectionType": "ALL"
             }
           }
-        ],
-        "SSESpecification": {
-          "SSEEnabled": false
-        }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"

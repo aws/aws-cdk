@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { CfnTable } from './dynamodb.generated';
+import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
@@ -1289,19 +1289,23 @@ export class Table extends TableBase {
    * Set up key properties and return the Table encryption property from the
    * user's configuration.
    */
-  private parseEncryption(props: TableProps) {
+  private parseEncryption(props: TableProps): { sseSpecification: CfnTableProps['sseSpecification'], encryptionKey?: kms.IKey } {
     let encryptionType = props.encryption;
 
     if (encryptionType != null && props.serverSideEncryption != null) {
       throw new Error('Only one of encryption and serverSideEncryption can be specified, but both were provided');
     }
 
-    if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey ? TableEncryption.CUSTOMER_MANAGED : TableEncryption.DEFAULT;
-    }
-
     if (props.serverSideEncryption && props.encryptionKey) {
       throw new Error('encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead');
+    }
+
+    if (encryptionType === undefined) {
+      encryptionType = props.encryptionKey != null
+        // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
+        ? TableEncryption.CUSTOMER_MANAGED
+        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else DEFAULT
+        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : TableEncryption.DEFAULT;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
@@ -1312,37 +1316,29 @@ export class Table extends TableBase {
       throw new Error('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
     }
 
-    if (encryptionType === TableEncryption.CUSTOMER_MANAGED) {
-      const encryptionKey = props.encryptionKey ?? new kms.Key(this, 'Key', {
-        description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.node.path}`,
-        enableKeyRotation: true,
-      });
-
-      return {
-        sseSpecification: {
-          sseEnabled: true,
-          kmsMasterKeyId: encryptionKey.keyArn,
-          sseType: 'KMS',
-        },
-        encryptionKey,
-      };
-    }
-
-    if (props.serverSideEncryption) {
-      encryptionType = TableEncryption.AWS_MANAGED;
-    }
-
     switch (encryptionType) {
-      case TableEncryption.AWS_MANAGED: {
-        return { sseSpecification: { sseEnabled: true, sseType: 'KMS' } };
-        break;
-      }
-      case TableEncryption.DEFAULT: {
-        return { sseSpecification: { sseEnabled: false } };
-        break;
-      }
+      case TableEncryption.CUSTOMER_MANAGED:
+        const encryptionKey = props.encryptionKey ?? new kms.Key(this, 'Key', {
+          description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.node.path}`,
+          enableKeyRotation: true,
+        });
+
+        return {
+          sseSpecification: { sseEnabled: true, kmsMasterKeyId: encryptionKey.keyArn, sseType: 'KMS' },
+          encryptionKey,
+        };
+
+      case TableEncryption.AWS_MANAGED:
+        // Not specifying "sseType: 'KMS'" here because it would cause phony changes to existing stacks.
+        return { sseSpecification: { sseEnabled: true } };
+
+      case TableEncryption.DEFAULT:
+        // Not specifying "sseEnabled: false" here because it would cause phony changes to existing stacks.
+        return { sseSpecification: undefined };
+
+      default:
+        throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
     }
-    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
   }
 }
 
