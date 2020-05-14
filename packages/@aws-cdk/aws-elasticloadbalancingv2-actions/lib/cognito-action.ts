@@ -57,7 +57,7 @@ export interface AuthenticateCognitoActionProps {
   readonly sessionCookieName?: string;
 
   /**
-   * The maximum duration of the authentication session,
+   * The maximum duration of the authentication session.
    *
    * @default Duration.days(7)
    */
