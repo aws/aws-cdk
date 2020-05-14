@@ -100,7 +100,7 @@ describe('deploy', () => {
       expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
     });
 
-    test('bootstrap without an app just works', async () => {
+    test('bootstrap can be invoked without the --app argument', async () => {
       // GIVEN
       cloudExecutable.configuration.settings.clear();
       const mockSynthesize = jest.fn();
