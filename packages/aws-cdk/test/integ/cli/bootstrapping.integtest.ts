@@ -3,8 +3,11 @@ import { cdk, cleanupOldStacks, fullStackName, prepareAppFixture } from './cdk-h
 
 jest.setTimeout(600 * 1000);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await prepareAppFixture();
+});
+
+beforeEach(async () => {
   await cleanupOldStacks();
 });
 
