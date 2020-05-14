@@ -98,7 +98,6 @@ export class LambdaInvoke extends sfn.TaskStateBase {
         ClientContext: this.props.clientContext,
         Qualifier: this.props.qualifier,
       },
-      resultPath: this.resultPath,
     };
 
     return taskStateJson(taskStateConfig);
