@@ -1,5 +1,5 @@
 import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
-import { Attribute, AttributeType, BillingMode, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
+import { Attribute, AttributeType, BillingMode, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
 const STACK_NAME = 'aws-cdk-dynamodb';
