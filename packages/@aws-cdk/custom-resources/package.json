@@ -49,7 +49,8 @@
   "cdk-build": {
     "pre": [
       "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
-    ]
+    ],
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -73,7 +74,7 @@
     "@types/aws-lambda": "^8.10.39",
     "@types/fs-extra": "^8.1.0",
     "@types/sinon": "^9.0.0",
-    "aws-sdk": "^2.674.0",
+    "aws-sdk": "^2.676.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -102,25 +103,8 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {
