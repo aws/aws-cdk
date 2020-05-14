@@ -454,6 +454,23 @@ describe('User Pool', () => {
     });
   });
 
+  test('case sensitive is correctly picked up', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInAliases: { caseSensitive: false },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: {
+        CaseSensitive: false,
+      },
+    });
+  });
+
   test('required attributes', () => {
     // GIVEN
     const stack = new Stack();

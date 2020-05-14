@@ -34,6 +34,14 @@ export interface SignInAliases {
    * @default false
    */
   readonly preferredUsername?: boolean;
+
+  /**
+   * Whether sign-in aliases should be evaulated with case sensitivity.
+   * For example, when this option is set to False, users will be able to sign in using either "username" or "Username".
+   * This option enables username, preferredUsername, and email aliases to be case insensitive.
+   * @default true
+   */
+  readonly caseSensitive?: boolean;
 }
 
 /**
@@ -636,6 +644,9 @@ export class UserPool extends Resource implements IUserPool {
       emailConfiguration: undefinedIfNoKeys({
         from: props.emailSettings?.from,
         replyToEmailAddress: props.emailSettings?.replyTo,
+      }),
+      usernameConfiguration: undefinedIfNoKeys({
+        caseSensitive: props.signInAliases?.caseSensitive,
       }),
     });
 

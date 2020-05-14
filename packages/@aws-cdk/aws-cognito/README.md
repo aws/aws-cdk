@@ -108,6 +108,7 @@ available:
 * `phone`: Allow signing in using the phone number that is associated with the account.
 * `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
   is not available if the `username` option is not chosen.
+* `caseSensitive`: When false, allow signing in without checking the capitalization of the alias. Default is true.
 
 The following code sets up a user pool so that the user can sign in with either their username or their email address -
 
