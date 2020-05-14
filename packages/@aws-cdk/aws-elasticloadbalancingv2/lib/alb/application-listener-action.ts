@@ -19,12 +19,12 @@ import { IApplicationTargetGroup } from './application-target-group';
  * (Called `ListenerAction` instead of the more strictly correct
  * `ListenerAction` because this is the class most users interact
  * with, and we want to make it not too visually overwhelming).
- *
- * @experimental
  */
 export class ListenerAction implements IListenerAction {
   /**
    * Authenticate using an identity provider (IdP) that is compliant with OpenID Connect (OIDC)
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#oidc-requirements
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
     return new ListenerAction({
@@ -47,6 +47,8 @@ export class ListenerAction implements IListenerAction {
 
   /**
    * Forward to one or more Target Groups
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
   public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
@@ -74,6 +76,8 @@ export class ListenerAction implements IListenerAction {
 
   /**
    * Forward to one or more Target Groups which are weighted differently
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
   public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
@@ -94,6 +98,8 @@ export class ListenerAction implements IListenerAction {
 
   /**
    * Return a fixed response
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#fixed-response-actions
    */
   public static fixedResponse(statusCode: number, options: FixedResponseOptions = {}): ListenerAction {
     return new ListenerAction({
@@ -124,6 +130,8 @@ export class ListenerAction implements IListenerAction {
    *
    * For example, you can change the path to "/new/#{path}", the hostname to
    * "example.#{host}", or the query to "#{query}&value=xyz".
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#redirect-actions
    */
   public static redirect(options: RedirectOptions): ListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
@@ -163,7 +171,7 @@ export class ListenerAction implements IListenerAction {
   /**
    * Called when the action is being used in a listener
    */
-  public bindToListener(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
@@ -188,8 +196,6 @@ export class ListenerAction implements IListenerAction {
 
 /**
  * Options for `ListenerAction.forward()`
- *
- * @experimental
  */
 export interface ForwardOptions {
   /**
@@ -204,8 +210,6 @@ export interface ForwardOptions {
 
 /**
  * A Target Group and weight combination
- *
- * @experimental
  */
 export interface WeightedTargetGroup {
   /**
@@ -225,8 +229,6 @@ export interface WeightedTargetGroup {
 
 /**
  * Options for `ListenerAction.fixedResponse()`
- *
- * @experimental
  */
 export interface FixedResponseOptions {
   /**
@@ -264,8 +266,6 @@ export interface FixedResponseOptions {
  *
  * For example, you can change the path to "/new/#{path}", the hostname to
  * "example.#{host}", or the query to "#{query}&value=xyz".
- *
- * @experimental
  */
 export interface RedirectOptions {
   /**
@@ -325,8 +325,6 @@ export interface RedirectOptions {
 
 /**
  * Options for `ListenerAction.authenciateOidc()`
- *
- * @experimental
  */
 export interface AuthenticateOidcOptions {
   /**
@@ -389,7 +387,7 @@ export interface AuthenticateOidcOptions {
   readonly sessionCookieName?: string;
 
   /**
-   * The maximum duration of the authentication session,
+   * The maximum duration of the authentication session.
    *
    * @default Duration.days(7)
    */
@@ -438,7 +436,7 @@ class TargetGroupListenerAction extends ListenerAction {
     super(actionJson);
   }
 
-  public bindToListener(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
+  public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }

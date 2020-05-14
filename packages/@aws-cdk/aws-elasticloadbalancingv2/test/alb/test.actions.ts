@@ -20,6 +20,26 @@ export = {
     cb();
   },
 
+  'Forward action legacy rendering'(test: Test) {
+    // WHEN
+    lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.forward([group1]),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'Forward to multiple targetgroups with an Action and stickiness'(test: Test) {
     // WHEN
     lb.addListener('Listener', {

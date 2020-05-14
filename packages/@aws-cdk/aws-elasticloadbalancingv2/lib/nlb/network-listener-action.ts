@@ -15,8 +15,6 @@ import { INetworkTargetGroup } from './network-target-group';
  *
  * If an action supports chaining, the next action can be indicated
  * by passing it in the `next` property.
- *
- * @experimental
  */
 export class NetworkListenerAction implements IListenerAction {
   /**
@@ -86,7 +84,7 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Called when the action is being used in a listener
    */
-  public bindToListener(scope: Construct, listener: INetworkListener) {
+  public bind(scope: Construct, listener: INetworkListener) {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
@@ -110,8 +108,6 @@ export class NetworkListenerAction implements IListenerAction {
 
 /**
  * Options for `NetworkListenerAction.forward()`
- *
- * @experimental
  */
 export interface NetworkForwardOptions {
   /**
@@ -126,8 +122,6 @@ export interface NetworkForwardOptions {
 
 /**
  * A Target Group and weight combination
- *
- * @experimental
  */
 export interface NetworkWeightedTargetGroup {
   /**
@@ -153,7 +147,7 @@ class TargetGroupListenerAction extends NetworkListenerAction {
     super(actionJson);
   }
 
-  public bindToListener(_scope: Construct, listener: INetworkListener) {
+  public bind(_scope: Construct, listener: INetworkListener) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener);
     }

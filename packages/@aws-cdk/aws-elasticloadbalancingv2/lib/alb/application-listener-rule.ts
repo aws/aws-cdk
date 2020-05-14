@@ -257,13 +257,20 @@ export class ApplicationListenerRule extends cdk.Construct {
    * Configure the action to perform for this rule
    */
   public configureAction(action: ListenerAction) {
-    // I'd like to throw here but there might be existing programs that happen
-    // to work even though they followed an illegal call pattern. Just add a warning.
+    // It might make sense to 'throw' here.
+    //
+    // However, programs may already exist out there which configured an action twice,
+    // in which case the second action accidentally overwrite the initial action, and in some
+    // way ended up with a program that did what the author intended. If we were to add throw now,
+    // the previously working program would be broken.
+    //
+    // Instead, signal this through a warning.
+    // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.action) {
       this.node.addWarning('An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
     }
 
-    action.bindToListener(this, this.listener, this);
+    action.bind(this, this.listener, this);
     this.action = action;
   }
 

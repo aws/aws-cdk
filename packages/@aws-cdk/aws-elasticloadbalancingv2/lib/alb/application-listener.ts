@@ -418,10 +418,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Wrapper for _setDefaultAction which does a type-safe bindToListener
+   * Wrapper for _setDefaultAction which does a type-safe bind
    */
   private setDefaultAction(action: ListenerAction) {
-    action.bindToListener(this, this);
+    action.bind(this, this);
     this._setDefaultAction(action);
   }
 }

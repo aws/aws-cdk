@@ -202,10 +202,10 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   }
 
   /**
-   * Wrapper for _setDefaultAction which does a type-safe bindToListener
+   * Wrapper for _setDefaultAction which does a type-safe bind
    */
   private setDefaultAction(action: NetworkListenerAction) {
-    action.bindToListener(this, this);
+    action.bind(this, this);
     this._setDefaultAction(action);
   }
 }
