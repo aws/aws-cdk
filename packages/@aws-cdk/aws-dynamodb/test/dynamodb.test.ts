@@ -370,6 +370,32 @@ test('when specifying sse with customer managed CMK', () => {
   });
 });
 
+test('when specifying only encryptionKey', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
 test('when specifying sse with customer managed CMK with encryptionKey provided by user', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
@@ -407,7 +433,7 @@ test('fails if encryption key is used with AWS managed CMK', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.AWS_MANAGED,
     encryptionKey,
-  })).toThrow(/encryptionKey is specified, so encryption must be set to Customer_Managed/);
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
 });
 
 test('fails if encryption key is used with default encryption', () => {
@@ -420,7 +446,7 @@ test('fails if encryption key is used with default encryption', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
     encryptionKey,
-  })).toThrow(/encryptionKey is specified, so encryption must be set to Customer_Managed/);
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
 });
 
 test('fails if encryption key is used with serverSideEncryption', () => {
@@ -433,7 +459,7 @@ test('fails if encryption key is used with serverSideEncryption', () => {
     partitionKey: TABLE_PARTITION_KEY,
     serverSideEncryption: true,
     encryptionKey,
-  })).toThrow(/encryptionKey cannot be specified for serverSideEncryption, use encryption instead/);
+  })).toThrow(/encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead/);
 });
 
 test('fails if both encryption and serverSideEncryption is specified', () => {
@@ -443,7 +469,7 @@ test('fails if both encryption and serverSideEncryption is specified', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
     serverSideEncryption: true,
-  })).toThrow(/Both encryption and serverSideEncryption is specified, only either field can be set, not both/);
+  })).toThrow(/Only one of encryption and serverSideEncryption can be specified, but both were provided/);
 });
 
 test('fails if both replication regions used with customer managed CMK', () => {
@@ -453,7 +479,166 @@ test('fails if both replication regions used with customer managed CMK', () => {
     partitionKey: TABLE_PARTITION_KEY,
     replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
     encryption: TableEncryption.CUSTOMER_MANAGED,
-  })).toThrow(/Global tables cannot be encrypted with customer managed CMK/);
+  })).toThrow('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
+});
+
+test('if an encryption key is included, decrypt permissions are also added for grantStream', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryptionKey,
+    stream: StreamViewType.NEW_IMAGE,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantStreamRead(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'Key961B73FD': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'StreamSpecification': {
+            'StreamViewType': 'NEW_IMAGE',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'dynamodb:ListStreams',
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TableA3D7B5AFA',
+                          'Arn',
+                        ],
+                      },
+                      '/stream/*',
+                    ],
+                  ],
+                },
+              },
+              {
+                'Action': [
+                  'dynamodb:DescribeStream',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableA3D7B5AFA',
+                    'StreamArn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
 });
 
 test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
@@ -533,7 +718,7 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
             ],
             'Version': '2012-10-17',
           },
-          'Description': 'Created by Table A',
+          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Table A',
           'EnableKeyRotation': true,
         },
         'UpdateReplacePolicy': 'Retain',

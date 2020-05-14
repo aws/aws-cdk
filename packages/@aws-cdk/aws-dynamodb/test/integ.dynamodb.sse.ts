@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
-import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
+import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
 
 // CDK parameters
 const STACK_NAME = 'aws-cdk-dynamodb';
@@ -44,11 +45,12 @@ const stack = new Stack(app, STACK_NAME);
 const table = new Table(stack, TABLE, {
   partitionKey: TABLE_PARTITION_KEY,
   removalPolicy: RemovalPolicy.DESTROY,
+  encryption: TableEncryption.CUSTOMER_MANAGED,
 });
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
   pointInTimeRecovery: true,
-  serverSideEncryption: true,
+  encryption: TableEncryption.AWS_MANAGED,
   stream: StreamViewType.KEYS_ONLY,
   timeToLiveAttribute: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY,
@@ -107,9 +109,14 @@ tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   nonKeyAttributes: LSI_NON_KEY,
 });
 
+const encryptionKey = new kms.Key(stack, 'Key', {
+  enableKeyRotation: true,
+});
+
 const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
   partitionKey: TABLE_PARTITION_KEY,
   removalPolicy: RemovalPolicy.DESTROY,
+  encryptionKey,
 });
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
@@ -120,6 +127,7 @@ const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY
   partitionKey: TABLE_PARTITION_KEY,
   sortKey: TABLE_SORT_KEY,
   removalPolicy: RemovalPolicy.DESTROY,
+  encryption: TableEncryption.DEFAULT,
 });
 
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
@@ -127,8 +135,10 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   sortKey: LSI_SORT_KEY,
 });
 
-const user = new iam.User(stack, 'User');
-table.grantReadData(user);
-tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
+});
+table.grantReadData(role);
+tableWithGlobalAndLocalSecondaryIndex.grantReadData(role);
 
 app.synth();
