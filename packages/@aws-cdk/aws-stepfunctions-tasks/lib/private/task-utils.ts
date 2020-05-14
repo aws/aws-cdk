@@ -49,7 +49,7 @@ export function taskStateJson(config: TaskStateConfig): any {
  */
 export function validatePatternSupported(integrationPattern: IntegrationPattern, supportedPatterns: IntegrationPattern[]) {
   if (!supportedPatterns.includes(integrationPattern)) {
-    throw new Error(`Invalid Service Integration Pattern: ${integrationPattern} is not supported`);
+    throw new Error(`Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
   }
 }
 
