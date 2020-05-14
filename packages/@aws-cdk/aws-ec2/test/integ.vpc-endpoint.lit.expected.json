@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet1"
           }
         ]
       }
@@ -123,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet2"
           }
         ]
       }
@@ -220,16 +220,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PublicSubnet3"
           }
         ]
       }
@@ -317,16 +317,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet1"
           }
         ]
       }
@@ -379,16 +379,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet2"
           }
         ]
       }
@@ -441,16 +441,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc/PrivateSubnet3"
           }
         ]
       }
@@ -541,6 +541,15 @@
           },
           {
             "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
           }
         ],
         "VpcEndpointType": "Gateway"
@@ -587,6 +596,15 @@
           },
           {
             "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          },
+          {
+            "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
           }
         ],
         "VpcEndpointType": "Gateway"

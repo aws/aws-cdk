@@ -52,9 +52,9 @@
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib"
+    "constructs",
+    "cloudwatch",
+    "events"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -82,7 +82,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
