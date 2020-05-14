@@ -92,11 +92,11 @@ selected regions.
 ### Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
-* AWS owned CMK – Default encryption type. The key is owned by DynamoDB (no additional charge).
-* AWS managed CMK – The key is stored in your account and is managed by AWS KMS (AWS KMS charges apply).
-* Customer managed CMK – The key is stored in your account and is created, owned, and managed by you. You have full control over the CMK (AWS KMS charges apply).
+* AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).
+* AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS chages apply).
+* Customer managed CMK - You have full control over the KMS key used to encrypt the DynamoDB Table (AWS KMS charges apply).
 
-Define a Customer managed CMK encrypted Table:
+Creating a Table encrypted with a customer managed CMK:
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
@@ -105,6 +105,9 @@ const table = new dynamodb.Table(stack, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   encryption: TableEncryption.CUSTOMER_MANAGED,
 });
+
+// You can access the CMK that was added to the stack on your behalf by the Table construct via:
+const tableEncryptionKey = table.encryptionKey;
 ```
 
 You can also supply your own key:
@@ -119,11 +122,11 @@ const encryptionKey = new kms.Key(stack, 'Key', {
 const table = new dynamodb.Table(stack, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   encryption: TableEncryption.CUSTOMER_MANAGED,
-  encryptionKey,
+  encryptionKey, // This will be exposed as table.encryptionKey
 });
 ```
 
-Use `TableEncryption.AWS_MANAGED` to use the AWS managed CMK:
+In order to use the AWS managed CMK instead, change the code to:
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
@@ -132,4 +135,6 @@ const table = new dynamodb.Table(stack, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   encryption: TableEncryption.AWS_MANAGED,
 });
+
+// In this case, the CMK _cannot_ be accessed through table.encryptionKey.
 ```

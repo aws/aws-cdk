@@ -16,25 +16,6 @@ const RANGE_KEY_TYPE = 'RANGE';
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 /**
- * What kind of server-side encryption to apply to this table.
- */
-export enum TableEncryption {
-  /**
-   * Server-side KMS encryption with a customer master key managed by customer.
-   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
-   */
-  CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
-  /**
-   * Server-side KMS encryption with a master key managed by AWS.
-   */
-  AWS_MANAGED = 'AWS_MANAGED',
-  /**
-   * Server-side KMS encryption with a master key owned by AWS.
-   */
-  DEFAULT = 'AWS_OWNED'
-}
-
-/**
  * Represents an attribute for describing the key schema for the table
  * and indexes.
  */
@@ -48,6 +29,27 @@ export interface Attribute {
    * The data type of an attribute.
    */
   readonly type: AttributeType;
+}
+
+/**
+ * What kind of server-side encryption to apply to this table.
+ */
+export enum TableEncryption {
+  /**
+   * Server-side KMS encryption with a master key owned by AWS.
+   */
+  DEFAULT = 'AWS_OWNED',
+
+  /**
+   * Server-side KMS encryption with a customer master key managed by customer.
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
+
+  /**
+   * Server-side KMS encryption with a master key managed by AWS.
+   */
+  AWS_MANAGED = 'AWS_MANAGED',
 }
 
 /**
@@ -103,18 +105,33 @@ export interface TableOptions {
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
+   * This property cannot be set if `encryption` and/or `encryptionKey` is set.
+   *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    *
-   * @deprecated - This property is deprecated, use the `encryption` property instead.
+   * @deprecated This property is deprecated. In order to obtain the same behavior as
+   * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
    */
   readonly serverSideEncryption?: boolean;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
+   * This property cannot be set if `serverSideEncryption` is set.
+   *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    */
   readonly encryption?: TableEncryption;
+
+  /**
+   * External KMS key to use for table encryption.
+   *
+   * This property can only be set if `encryption` is set to `TableEncryption.CUSTOMER_MANAGED`.
+   *
+   * @default - If `encryption` is set to `TableEncryption.CUSTOMER_MANAGED` and this
+   * property is undefined, a new KMS key will be created and associated with this table.
+   */
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * The name of TTL attribute.
@@ -144,14 +161,6 @@ export interface TableOptions {
    * @experimental
    */
   readonly replicationRegions?: string[];
-
-  /**
-   * External KMS key to use for table encryption.
-   *
-   * @default - If encryption is set to "Customer managed" and this property is undefined,
-   * a new KMS key will be created and associated with this table.
-   */
-  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -449,7 +458,7 @@ abstract class TableBase extends Resource implements ITable {
   public abstract readonly tableStreamArn?: string;
 
   /**
-   * Optional KMS encryption key associated with this table.
+   * KMS encryption key, if this table uses a customer-managed encryption key.
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
@@ -800,6 +809,7 @@ export class Table extends TableBase {
 
     return new Import(arn, name, attrs.tableStreamArn);
   }
+
   public readonly encryptionKey?: kms.IKey;
 
   /**
