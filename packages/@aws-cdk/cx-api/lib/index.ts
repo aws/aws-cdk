@@ -2,6 +2,7 @@ export * from './cxapi';
 export * from './context/vpc';
 export * from './context/ami';
 export * from './context/availability-zones';
+export * from './context/endpoint-service-availability-zones';
 export * from './cloud-artifact';
 export * from './asset-manifest-artifact';
 export * from './cloudformation-artifact';

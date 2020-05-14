@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ContextProvider, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
@@ -383,6 +384,90 @@ export = {
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
         PrivateDnsEnabled: true,
+      }));
+
+      test.done();
+    },
+    'test endpoint service context azs discovered'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+
+      // Setup context for stack AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+        }).key,
+        ['us-east-1a', 'us-east-1b', 'us-east-1c']);
+      // Setup context for endpoint service AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+          props: {
+            serviceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          },
+        }).key,
+        ['us-east-1a', 'us-east-1c']);
+
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443},
+        lookupSupportedAzs: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'endpoint service setup with stack AZ context but no endpoint context'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+
+      // Setup context for stack AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+        }).key,
+        ['us-east-1a', 'us-east-1b', 'us-east-1c']);
+
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443},
+        lookupSupportedAzs: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
       }));
 
       test.done();

@@ -496,10 +496,8 @@ Endpoints are virtual devices. They are horizontally scaled, redundant, and high
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
-Not all VPC endpoint services are available in all availability zones. By default,
-CDK will place a VPC endpoint in one subnet per AZ, because CDK doesn't know about
-unavailable AZs. You can determine what the available AZs are from the AWS console.
-The AZs CDK places the VPC endpoint in can be configured as follows:
+By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in, 
+use the `subnets` parameter as follows:
 
 ```ts
 new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
@@ -510,6 +508,21 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
   subnets: {
     availabilityZones: ['us-east-1a', 'us-east-1c']
   }
+});
+```
+
+Per the [AWS documentation](https://aws.amazon.com/premiumsupport/knowledge-center/interface-endpoint-availability-zone/), not all
+VPC endpoint services are available in all AZs. If you specify the parameter `lookupSupportedAzs`, CDK attempts to discover which
+AZs an endpoint service is available in, and will ensure the VPC endpoint is not placed in a subnet that doesn't match those AZs.
+These AZs will be stored in cdk.context.json.
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  lookupSupportedAzs: true
 });
 ```
 

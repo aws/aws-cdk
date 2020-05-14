@@ -5,6 +5,7 @@ import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
+import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
@@ -59,4 +60,5 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
   [cxschema.ContextProvider.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
   [cxschema.ContextProvider.AMI_PROVIDER]: AmiContextProviderPlugin,
+  [cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: EndpointServiceAZContextProviderPlugin,
 };
