@@ -66,9 +66,6 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, LambdaInvoke.SUPPORTED_INTEGRATION_PATTERNS);
 
-    // TODO - why not just make the task token an input to the task?
-    // or better yet just default the task token to  $$.Task.Token
-    // that way we can insert it into "payload" on behalf of the user
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.payload)) {
       throw new Error('Task Token is required in `payload` for callback. Use Context.taskToken to set the token.');
