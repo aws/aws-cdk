@@ -8,6 +8,7 @@ export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
+export * from './stack-synthesizers';
 
 export * from './reference';
 export * from './cfn-condition';
@@ -42,6 +43,16 @@ export * from './physical-name';
 export * from './assets';
 
 export * from './tree';
+
+export * from './asset-staging';
+export * from './fs';
+
+export * from './custom-resource';
+export * from './nested-stack';
+export * from './custom-resource-provider';
+
+export * from './cfn-capabilities';
+export * from './cloudformation.generated';
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.

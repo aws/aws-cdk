@@ -22,6 +22,11 @@ export class Fn {
     return new FnRef(logicalName).toString();
   }
 
+  /** @internal */
+  public static _ref(logicalId: string): IResolvable {
+    return new FnRef(logicalId);
+  }
+
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.

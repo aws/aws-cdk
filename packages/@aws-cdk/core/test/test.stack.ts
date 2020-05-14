@@ -1,6 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, validateString } from '../lib';
+import {
+  App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
+  CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
@@ -826,6 +828,42 @@ export = {
     test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
       { path: '/parent/child', type: 'foo', data: 'bar' },
     ]);
+    test.done();
+  },
+
+  'stack tags are reflected in the stack cloud assembly artifact'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1');
+    const stack2 = new Stack(stack1, 'stack2');
+
+    // WHEN
+    Tag.add(app, 'foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    const expected = [
+      {
+        type: 'aws:cdk:stack-tags',
+        data: [ { key: 'foo', value: 'bar' } ],
+      },
+    ];
+
+    test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
+    test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
+    test.done();
+  },
+
+  'Termination Protection is reflected in Cloud Assembly artifact'(test: Test) {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    test.equals(artifact.terminationProtection, true);
+
     test.done();
   },
 };

@@ -98,11 +98,12 @@
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricGraphConfig.unit",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.color",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.label",
-      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat"
+      "props-default-doc:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.stat",
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricExpressionConfig.period"
     ]
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awscdkio": {

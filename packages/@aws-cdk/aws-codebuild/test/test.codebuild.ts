@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -98,6 +98,28 @@ export = {
                         ],
                       },
                     ],
+                  },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
@@ -247,6 +269,28 @@ export = {
                         ],
                       },
                     ],
+                  },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
@@ -422,6 +466,28 @@ export = {
                         ],
                       },
                     ],
+                  },
+                  {
+                    'Action': [
+                      'codebuild:CreateReportGroup',
+                      'codebuild:CreateReport',
+                      'codebuild:UpdateReport',
+                      'codebuild:BatchPutTestCases',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::Join': ['', [
+                        'arn:',
+                        { 'Ref': 'AWS::Partition' },
+                        ':codebuild:',
+                        { 'Ref': 'AWS::Region' },
+                        ':',
+                        { 'Ref': 'AWS::AccountId' },
+                        ':report-group/',
+                        { 'Ref': 'MyProject39F7B0AE' },
+                        '-*',
+                      ]],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
@@ -737,6 +803,7 @@ export = {
 
       new codebuild.PipelineProject(stack, 'MyProject', {
         encryptionKey: key,
+        grantReportGroupPermissions: false,
       });
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -1128,6 +1195,61 @@ export = {
             'Image': 'aws/codebuild/standard:1.0',
             'ComputeType': 'BUILD_GENERAL1_SMALL',
           },
+        }));
+
+        test.done();
+      },
+    },
+    'S3': {
+      'name is not set so use buildspec'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        new codebuild.Project(stack, 'MyProject', {
+          source: codebuild.Source.s3({
+            bucket,
+            path: 'some/path',
+          }),
+          artifacts: codebuild.Artifacts.s3({
+            bucket,
+            path: 'another/path',
+            identifier: 'artifact1',
+          }),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Artifacts':
+            {
+              'Name': ABSENT,
+              'ArtifactIdentifier': 'artifact1',
+              'OverrideArtifactName': true,
+            },
+        }));
+
+        test.done();
+      },
+      'name is set so use it'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        new codebuild.Project(stack, 'MyProject', {
+          source: codebuild.Source.s3({
+            bucket,
+            path: 'some/path',
+          }),
+          artifacts: codebuild.Artifacts.s3({
+            bucket,
+            path: 'another/path',
+            name: 'specificname',
+            identifier: 'artifact1',
+          }),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Artifacts':
+            {
+              'ArtifactIdentifier': 'artifact1',
+              'Name': 'specificname',
+              'OverrideArtifactName': ABSENT,
+            },
         }));
 
         test.done();

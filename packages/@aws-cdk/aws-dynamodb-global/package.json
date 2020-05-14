@@ -46,7 +46,6 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -63,7 +62,6 @@
     "pkglint": "0.0.0"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -85,7 +83,7 @@
     "compat": "cdk-compat"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,9 +1,8 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { CfnCustomResource, CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -35,6 +34,10 @@ export enum TableEncryption {
   DEFAULT = 'AWS_OWNED'
 }
 
+/**
+ * Represents an attribute for describing the key schema for the table
+ * and indexes.
+ */
 export interface Attribute {
   /**
    * The name of an attribute.
@@ -47,6 +50,11 @@ export interface Attribute {
   readonly type: AttributeType;
 }
 
+/**
+ * Properties of a DynamoDB Table
+ *
+ * Use {@link TableProps} for all table properties
+ */
 export interface TableOptions {
   /**
    * Partition key attribute definition.
@@ -146,6 +154,9 @@ export interface TableOptions {
   readonly encryptionKey?: kms.IKey;
 }
 
+/**
+ * Properties for a DynamoDB Table
+ */
 export interface TableProps extends TableOptions {
   /**
    * Enforces a particular physical table name.
@@ -154,6 +165,9 @@ export interface TableProps extends TableOptions {
   readonly tableName?: string;
 }
 
+/**
+ * Properties for a secondary index
+ */
 export interface SecondaryIndexProps {
   /**
    * The name of the secondary index.
@@ -173,6 +187,9 @@ export interface SecondaryIndexProps {
   readonly nonKeyAttributes?: string[];
 }
 
+/**
+ * Properties for a global secondary index
+ */
 export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a partition key for the global secondary index.
@@ -204,6 +221,9 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   readonly writeCapacity?: number;
 }
 
+/**
+ * Properties for a local secondary index
+ */
 export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a sort key for the local secondary index.
@@ -1204,7 +1224,7 @@ export class Table extends TableBase {
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
       const currentRegion = new CustomResource(this, `Replica${region}`, {
-        provider: provider.provider,
+        serviceToken: provider.provider.serviceToken,
         resourceType: 'Custom::DynamoDBReplica',
         properties: {
           TableName: this.tableName,
@@ -1316,6 +1336,11 @@ export class Table extends TableBase {
   }
 }
 
+/**
+ * Data types for attributes within a table
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes
+ */
 export enum AttributeType {
   /** Up to 400KiB of binary data (which must be encoded as base64 before sending to DynamoDB) */
   BINARY = 'B',
@@ -1339,6 +1364,11 @@ export enum BillingMode {
   PROVISIONED = 'PROVISIONED',
 }
 
+/**
+ * The set of attributes that are projected into the index
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Projection.html
+ */
 export enum ProjectionType {
   /** Only the index and primary keys are projected into the index. */
   KEYS_ONLY = 'KEYS_ONLY',

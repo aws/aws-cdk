@@ -140,7 +140,7 @@ export = {
 
     // THEN
     test.deepEqual(imported.logGroupName, 'my-log-group');
-    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    test.deepEqual(imported.logGroupArn, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*');
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     }));
@@ -157,13 +157,87 @@ export = {
 
     // THEN
     test.deepEqual(imported.logGroupName, 'my-log-group');
-    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group$/.test(imported.logGroupArn),
+    test.ok(/^arn:.+:logs:.+:.+:log-group:my-log-group:\*$/.test(imported.logGroupArn),
       `LogGroup ARN ${imported.logGroupArn} does not match the expected pattern`);
     expect(stack).to(haveResource('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     }));
     test.done();
   },
+
+  'loggroups imported by name have stream wildcard appended to grant ARN': dataDrivenTests([
+    // Regardless of whether the user put :* there already because of this bug, we
+    // don't want to append it twice.
+    [''],
+    [':*'],
+  ], (test: Test, suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'Role');
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', `my-log-group${suffix}`);
+
+    // WHEN
+    imported.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [ '', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':logs:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':log-group:my-log-group:*',
+              ]],
+            },
+          },
+        ],
+      },
+    }));
+    test.equal(imported.logGroupName, 'my-log-group');
+
+    test.done();
+  }),
+
+  'loggroups imported by ARN have stream wildcard appended to grant ARN': dataDrivenTests([
+    // Regardless of whether the user put :* there already because of this bug, we
+    // don't want to append it twice.
+    [''],
+    [':*'],
+  ], (test: Test, suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'Role');
+    const imported = LogGroup.fromLogGroupArn(stack, 'lg', `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`);
+
+    // WHEN
+    imported.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+          },
+        ],
+      },
+    }));
+    test.equal(imported.logGroupName, 'my-log-group');
+
+    test.done();
+  }),
 
   'extractMetric'(test: Test) {
     // GIVEN
@@ -242,3 +316,14 @@ export = {
     test.done();
   },
 };
+
+function dataDrivenTests(cases: any[][], body: (test: Test, ...args: any[]) => void) {
+  const ret: any = {};
+  for (let i = 0; i < cases.length; i++) {
+    const args = cases[i]; // Need to capture inside loop for safe use inside closure.
+    ret[`case ${i + 1}`] = function(test: Test) {
+      return body.apply(this, [test, ...args]);
+    };
+  }
+  return ret;
+}

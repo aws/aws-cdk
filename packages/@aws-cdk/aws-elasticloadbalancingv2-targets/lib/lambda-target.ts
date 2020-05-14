@@ -18,7 +18,8 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * load balancer.
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+    const grant = this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+    grant.applyBefore(targetGroup);
     return this.attach(targetGroup);
   }
 
@@ -29,7 +30,8 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * load balancer.
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+    const grant = this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+    grant.applyBefore(targetGroup);
     return this.attach(targetGroup);
   }
 

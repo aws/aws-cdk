@@ -46,31 +46,12 @@
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 65,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib",
-    "cloudwatch",
-    "events"
+    "constructs",
+    "stepfunctions",
+    "stepfunctions-tasks"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -83,7 +64,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.4.0",
+    "jest": "^25.5.4",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -126,7 +107,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -135,5 +116,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }
