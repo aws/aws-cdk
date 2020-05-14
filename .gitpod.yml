@@ -1,6 +1,6 @@
 image: jsii/superchain
 tasks:
-  - init: yarn install --frozen-lockfile && yarn build
+  - init: yarn build --skip-test --no-bail
 
 vscode:
   extensions:
