@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Method } from './method';
-import { VpcLink } from './vpc-link';
+import { IVpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -71,7 +71,9 @@ export interface IntegrationOptions {
    * the key, and the template is the value (specified as a string), such as
    * the following snippet:
    *
-   *   { "application/json": "{\n  \"statusCode\": \"200\"\n}" }
+   * ```
+   *   { "application/json": "{ \"statusCode\": 200 }" }
+   * ```
    *
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
@@ -96,7 +98,7 @@ export interface IntegrationOptions {
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
    */
-  readonly vpcLink?: VpcLink;
+  readonly vpcLink?: IVpcLink;
 }
 
 export interface IntegrationProps {

@@ -53,7 +53,7 @@ export interface ISecret extends IResource {
    * automatically created upon the first call to `addToResourcePolicy`. If
    * the secret is imported, then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Denies the `DeleteSecret` action to all principals within the current
@@ -130,18 +130,18 @@ abstract class SecretBase extends Resource implements ISecret {
       grantee,
       actions: ['secretsmanager:GetSecretValue'],
       resourceArns: [this.secretArn],
-      scope: this
+      scope: this,
     });
     if (versionStages != null && result.principalStatement) {
       result.principalStatement.addCondition('ForAnyValue:StringEquals', {
-        'secretsmanager:VersionStage': versionStages
+        'secretsmanager:VersionStage': versionStages,
       });
     }
 
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal)
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
     }
 
@@ -159,18 +159,20 @@ abstract class SecretBase extends Resource implements ISecret {
   public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {
     return new RotationSchedule(this, id, {
       secret: this,
-      ...options
+      ...options,
     });
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new ResourcePolicy(this, 'Policy', { secret: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+    return { statementAdded: false };
   }
 
   public denyAccountRootDelete() {
@@ -178,7 +180,7 @@ abstract class SecretBase extends Resource implements ISecret {
       actions: ['secretsmanager:DeleteSecret'],
       effect: iam.Effect.DENY,
       resources: ['*'],
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
   }
 }
@@ -240,6 +242,12 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
+
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
+    const principle =
+       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    this.encryptionKey?.grantEncryptDecrypt(principle);
+    this.encryptionKey?.grant(principle, 'kms:CreateGrant', 'kms:DescribeKey');
   }
 
   /**
@@ -252,7 +260,7 @@ export class Secret extends SecretBase {
   public addTargetAttachment(id: string, options: AttachedSecretOptions): SecretTargetAttachment {
     return new SecretTargetAttachment(this, id, {
       secret: this,
-      ...options
+      ...options,
     });
   }
 
@@ -409,7 +417,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
       secretId: props.secret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
-      targetType: props.target.asSecretAttachmentTarget().targetType
+      targetType: props.target.asSecretAttachmentTarget().targetType,
     });
 
     this.encryptionKey = props.secret.encryptionKey;

@@ -1,5 +1,5 @@
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
@@ -174,9 +174,9 @@ export class CfnParameter extends CfnElement {
           MaxValue: this.props.maxValue,
           MinLength: this.props.minLength,
           MinValue: this.props.minValue,
-          NoEcho: this.props.noEcho
-        }
-      }
+          NoEcho: this.props.noEcho,
+        },
+      },
     };
   }
 

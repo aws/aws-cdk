@@ -1,5 +1,5 @@
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 
 export interface CfnOutputProps {
   /**
@@ -69,9 +69,9 @@ export class CfnOutput extends CfnElement {
           Description: this._description,
           Value: this._value,
           Export: this._export != null ? { Name: this._export } : undefined,
-          Condition: this._condition ? this._condition.logicalId : undefined
-        }
-      }
+          Condition: this._condition ? this._condition.logicalId : undefined,
+        },
+      },
     };
   }
 }

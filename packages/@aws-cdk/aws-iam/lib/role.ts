@@ -6,10 +6,13 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
+/**
+ * Properties for defining an IAM Role
+ */
 export interface RoleProps {
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
@@ -153,15 +156,16 @@ export interface FromRoleArnOptions {
  */
 export class Role extends Resource implements IRole {
   /**
-   * Imports an external role by ARN.
+   * Import an external role by ARN.
    *
    * If the imported Role ARN is a Token (such as a
    * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
    * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
-   * `role.roleName` property will not resolve to the correct value. Instead it
+   * `roleName` property will not resolve to the correct value. Instead it
    * will resolve to the first path component. We unfortunately cannot express
    * the correct calculation of the full path name as a CloudFormation
-   * expression.
+   * expression. In this scenario the Role ARN should be supplied without the
+   * `path` in order to resolve the correct role resource.
    *
    * @param scope construct scope
    * @param id construct id
@@ -188,12 +192,16 @@ export class Role extends Resource implements IRole {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
       public attachInlinePolicy(policy: Policy): void {
@@ -235,10 +243,11 @@ export class Role extends Resource implements IRole {
 
     return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
       ? new Import(scope, id)
-      : new ImmutableRole(new Import(scope, id));
+      : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
 
-    function accountsAreEqualOrOneIsUnresolved(account1: string | undefined,
-                                               account2: string | undefined): boolean {
+    function accountsAreEqualOrOneIsUnresolved(
+      account1: string | undefined,
+      account2: string | undefined): boolean {
       return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
         account1 === account2;
     }
@@ -284,6 +293,7 @@ export class Role extends Resource implements IRole {
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
+  private immutableRole?: IRole;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -314,7 +324,7 @@ export class Role extends Resource implements IRole {
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       roleName: this.physicalName,
       maxSessionDuration,
-      description
+      description,
     });
 
     this.roleId = role.attrRoleId;
@@ -345,13 +355,17 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   /**
@@ -380,7 +394,7 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this
+      scope: this,
     });
   }
 
@@ -401,7 +415,11 @@ export class Role extends Resource implements IRole {
    * Role's policies yourself.
    */
   public withoutPolicyUpdates(): IRole {
-    return new ImmutableRole(this);
+    if (!this.immutableRole) {
+      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
+    }
+
+    return this.immutableRole;
   }
 }
 

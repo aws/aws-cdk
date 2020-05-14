@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
+  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
@@ -111,6 +111,13 @@ export interface ParameterOptions {
    * @default - auto-detect based on `parameterName`
    */
   readonly simpleName?: boolean;
+
+  /**
+   * The tier of the string parameter
+   *
+   * @default - undefined
+   */
+  readonly tier?: ParameterTier;
 }
 
 /**
@@ -165,7 +172,7 @@ abstract class ParameterBase extends Resource implements IParameter {
         'ssm:DescribeParameters',
         'ssm:GetParameters',
         'ssm:GetParameter',
-        'ssm:GetParameterHistory'
+        'ssm:GetParameterHistory',
       ],
       resourceArns: [this.parameterArn],
     });
@@ -204,6 +211,24 @@ export enum ParameterType {
    * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
    */
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
+
+/**
+ * SSM parameter tier
+ */
+export enum ParameterTier {
+  /**
+   * String
+   */
+  ADVANCED = 'Advanced',
+  /**
+   * String
+   */
+  INTELLIGENT_TIERING = 'Intelligent-Tiering',
+  /**
+   * String
+   */
+  STANDARD = 'Standard',
 }
 
 /**
@@ -271,6 +296,7 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
 }
 
 /**
@@ -291,7 +317,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new Error(`parameterName cannot be an empty string`);
+      throw new Error('parameterName cannot be an empty string');
     }
 
     const type = attrs.type || ParameterType.STRING;
@@ -336,9 +362,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
-      dummyValue: `dummy-value-for-${parameterName}`
+      dummyValue: `dummy-value-for-${parameterName}`,
     }).value;
 
     return value;
@@ -400,10 +426,19 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
@@ -411,7 +446,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;
@@ -458,17 +493,26 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;

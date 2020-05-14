@@ -1,16 +1,14 @@
 ## AWS AppSync Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,6 +20,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 Given the following GraphQL schema file `schema.graphql`:
 
 ```graphql
+type ServiceVersion {
+    version: String!
+}
+
 type Customer {
     id: String!
     name: String!
@@ -37,6 +39,7 @@ type Order {
 }
 
 type Query {
+    getServiceVersion: ServiceVersion
     getCustomers: [Customer]
     getCustomer(id: String): Customer
 }
@@ -61,8 +64,8 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const userPool = new UserPool(this, 'UserPool', {
-      signInType: SignInType.USERNAME,
+    const userPool = new UserPool(this, 'UserPool'{
+      userPoolName: 'myPool',
     });
 
     const api = new GraphQLApi(this, 'Api', {
@@ -70,11 +73,31 @@ export class ApiStack extends Stack {
       logConfig: {
         fieldLogLevel: FieldLogLevel.ALL,
       },
-      userPoolConfig: {
-        userPool,
-        defaultAction: UserPoolDefaultAction.ALLOW,
+      authorizationConfig: {
+        defaultAuthorization: {
+          userPool,
+          defaultAction: UserPoolDefaultAction.ALLOW,
+        },
+        additionalAuthorizationModes: [
+          {
+            apiKeyDesc: 'My API Key',
+          },
+        ],
       },
       schemaDefinitionFile: './schema.graphql',
+    });
+
+    const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+
+    noneDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'getServiceVersion',
+      requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+        version: '2017-02-28',
+      })),
+      responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
+        version: 'v1',
+      })),
     });
 
     const customerTable = new Table(this, 'CustomerTable', {

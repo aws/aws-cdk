@@ -18,8 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
   - [Useful aliases](#useful-aliases)
-  - [pkglint](#pkglint)
-  - [awslint](#awslint)
+  - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
@@ -27,6 +26,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Full clean build](#full-clean-build)
   - [Full Docker build](#full-docker-build)
   - [Partial build](#partial-build)
+  - [Partial pack](#partial-pack)
   - [Quick Iteration](#quick-iteration)
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
@@ -35,9 +35,11 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
+  - [Versioning](#versioning)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -46,13 +48,16 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 ## Getting Started
 
 For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
- - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+
+- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+- [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
+- [Java OpenJDK 8](http://openjdk.java.net/install/)
+- [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
+- [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+- [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
@@ -129,6 +134,11 @@ Work your magic. Here are some guidelines:
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
+* If your change introduces a new construct, take a look at the our
+  [example Construct Library](packages/@aws-cdk/example-construct-library) for an explanation of the common patterns we use.
+  Feel free to start your contribution by copy&pasting files from that project,
+  and then edit and rename them as appropriate -
+  it might be easier to get started that way.
 
 #### Integration Tests
 
@@ -141,7 +151,7 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -259,7 +269,35 @@ alias lt='lr test'
 alias lw='lr watch'
 ```
 
-### pkglint
+### Linters
+
+All linters are executed automatically as part of the build script, `yarn build`.
+
+They can also be executed independently of the build script. From the root of a specific package (e.g.
+`packages/@aws-cdk/aws-ec2`), run the following command to execute all the linters on that package -
+
+```bash
+yarn lint
+```
+
+The following linters are used -
+
+- [eslint](#eslint)
+- [pkglint](#pkglint)
+- [awslint](#awslint)
+
+#### eslint
+
+Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
+2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
+
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+This can be customized for any package by modifying the `.eslintrc` file found at its root.
+
+If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). 
+
+#### pkglint
 
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
 
@@ -276,7 +314,7 @@ You can also do that per package:
 $ lr pkglint
 ```
 
-### awslint
+#### awslint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS
@@ -381,6 +419,12 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
+> NOTE: in local builds, pack.sh will finish but will fail with an error
+> indicating the build artifacts use the marker version (`0.0.0`). This is
+> normal, and you can trust the output in `dist/` despite the failure. This is a
+> protection we have to make sure we don't accidentally release artifacts with
+> the marker version.
+
 ### Full Docker build
 
 Clone the repo:
@@ -416,6 +460,27 @@ $ ../../../scripts/buildup
 
 Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
 `buildup --resume`. If you wish to restart, run `buildup` again.
+
+### Partial pack
+
+Packing involves generating CDK code in the various target languages, and packaged up ready to be published to the
+respective package managers. Once in a while, these will need to be generated either to test the experience of a new
+feature, or reproduce a packaging failure.
+
+Before running this, make sure either that the CDK module and all of its dependencies are already built. See [Partial
+build](#partial-build) or [Full clean build](#full-clean-build).
+
+To package a specific module, say the `@aws-cdk/aws-ec2` module:
+
+```console
+$ cd <root-of-cdk-repo>
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+docker$ cd packages/@aws-cdk/aws-ec2
+docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ exit
+```
+
+The `dist/` folder within each module contains the packaged up language artifacts.
 
 ### Quick Iteration
 
@@ -526,6 +591,11 @@ The CLI package (`packages/aws-cdk`) has some integration tests that aren't
 run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
+
+### Changing Cloud Assembly Schema
+
+If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
+its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
 
 ### API Compatibility Checks
 
@@ -658,6 +728,25 @@ In the [next major version of the
 CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
+
+### Versioning
+
+All `package.json` files in this repo use a stable marker version of `0.0.0`.
+This means that when you declare dependencies, you should always use `0.0.0`.
+This makes it easier for us to bump a new version (the `bump.sh` script will
+just update the central version and create a CHANGELOG entry) and also reduces
+the chance of merge conflicts after a new version is released.
+
+Additional scripts that take part in the versioning mechanism:
+
+- `scripts/get-version.js` can be used to obtain the actual version of the repo.
+  You can use either from JavaScript code by `require('./scripts/get-version')`
+  or from a shell script `node -p "require('./scripts/get-version')"`.
+- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
+  marker.
+- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
+  all package.json files in the repo to the official version. This script is
+  invoked in CI builds and should not be used inside a development environment.
 
 ## Troubleshooting
 

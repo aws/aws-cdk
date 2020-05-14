@@ -1,10 +1,10 @@
 ## Amazon Simple Queue Service Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +21,7 @@ without losing messages or requiring other services to be available.
 Import to your project:
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
+import * as sqs from '@aws-cdk/aws-sqs';
 ```
 
 ### Basic usage

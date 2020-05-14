@@ -1,6 +1,6 @@
 {
   "name": "fixture",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "test fixtures for deCDK",
   "main": "index.js",
   "types": "index.d.ts",

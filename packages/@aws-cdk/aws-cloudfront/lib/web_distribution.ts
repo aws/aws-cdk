@@ -8,26 +8,26 @@ import { IDistribution } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
-  HTTP1_1 = "http1.1",
-  HTTP2 = "http2"
+  HTTP1_1 = 'http1.1',
+  HTTP2 = 'http2'
 }
 
 /**
  * The price class determines how many edge locations CloudFront will use for your distribution.
  */
 export enum PriceClass {
-  PRICE_CLASS_100 = "PriceClass_100",
-  PRICE_CLASS_200 = "PriceClass_200",
-  PRICE_CLASS_ALL = "PriceClass_All"
+  PRICE_CLASS_100 = 'PriceClass_100',
+  PRICE_CLASS_200 = 'PriceClass_200',
+  PRICE_CLASS_ALL = 'PriceClass_All'
 }
 
 /**
  * How HTTPs should be handled with your distribution.
  */
 export enum ViewerProtocolPolicy {
-  HTTPS_ONLY = "https-only",
-  REDIRECT_TO_HTTPS = "redirect-to-https",
-  ALLOW_ALL = "allow-all"
+  HTTPS_ONLY = 'https-only',
+  REDIRECT_TO_HTTPS = 'redirect-to-https',
+  ALLOW_ALL = 'allow-all'
 }
 
 /**
@@ -89,8 +89,8 @@ export interface AliasConfiguration {
  *
  */
 export enum SSLMethod {
-  SNI = "sni-only",
-  VIP = "vip"
+  SNI = 'sni-only',
+  VIP = 'vip'
 }
 
 /**
@@ -98,11 +98,11 @@ export enum SSLMethod {
  * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
  */
 export enum SecurityPolicyProtocol {
-  SSL_V3 = "SSLv3",
-  TLS_V1 = "TLSv1",
-  TLS_V1_2016 = "TLSv1_2016",
-  TLS_V1_1_2016 = "TLSv1.1_2016",
-  TLS_V1_2_2018 = "TLSv1.2_2018"
+  SSL_V3 = 'SSLv3',
+  TLS_V1 = 'TLSv1',
+  TLS_V1_2016 = 'TLSv1_2016',
+  TLS_V1_1_2016 = 'TLSv1.1_2016',
+  TLS_V1_2_2018 = 'TLSv1.2_2018'
 }
 
 /**
@@ -225,16 +225,16 @@ export interface CustomOriginConfig {
 }
 
 export enum OriginSslPolicy {
-  SSL_V3 = "SSLv3",
-  TLS_V1 = "TLSv1",
-  TLS_V1_1 = "TLSv1.1",
-  TLS_V1_2 = "TLSv1.2",
+  SSL_V3 = 'SSLv3',
+  TLS_V1 = 'TLSv1',
+  TLS_V1_1 = 'TLSv1.1',
+  TLS_V1_2 = 'TLSv1.2',
 }
 
 export enum OriginProtocolPolicy {
-  HTTP_ONLY = "http-only",
-  MATCH_VIEWER = "match-viewer",
-  HTTPS_ONLY = "https-only",
+  HTTP_ONLY = 'http-only',
+  MATCH_VIEWER = 'match-viewer',
+  HTTPS_ONLY = 'https-only',
 }
 
 /**
@@ -247,7 +247,7 @@ export interface S3OriginConfig {
   readonly s3BucketSource: s3.IBucket;
 
   /**
-   * The optional Oriagin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   * The optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
    *
    * @default No Origin Access Identity which requires the S3 bucket to be public accessible
    */
@@ -258,17 +258,17 @@ export interface S3OriginConfig {
  * An enum for the supported methods to a CloudFront distribution.
  */
 export enum CloudFrontAllowedMethods {
-  GET_HEAD = "GH",
-  GET_HEAD_OPTIONS = "GHO",
-  ALL = "ALL"
+  GET_HEAD = 'GH',
+  GET_HEAD_OPTIONS = 'GHO',
+  ALL = 'ALL'
 }
 
 /**
  * Enums for the methods CloudFront can cache.
  */
 export enum CloudFrontAllowedCachedMethods {
-  GET_HEAD = "GH",
-  GET_HEAD_OPTIONS = "GHO",
+  GET_HEAD = 'GH',
+  GET_HEAD_OPTIONS = 'GHO',
 }
 
 /**
@@ -381,20 +381,20 @@ export enum LambdaEdgeEventType {
    * The origin-request specifies the request to the
    * origin location (e.g. S3)
    */
-  ORIGIN_REQUEST = "origin-request",
+  ORIGIN_REQUEST = 'origin-request',
   /**
    * The origin-response specifies the response from the
    * origin location (e.g. S3)
    */
-  ORIGIN_RESPONSE = "origin-response",
+  ORIGIN_RESPONSE = 'origin-response',
   /**
    * The viewer-request specifies the incoming request
    */
-  VIEWER_REQUEST = "viewer-request",
+  VIEWER_REQUEST = 'viewer-request',
   /**
    * The viewer-response specifies the outgoing reponse
    */
-  VIEWER_RESPONSE = "viewer-response",
+  VIEWER_RESPONSE = 'viewer-response',
 }
 
 export interface ViewerCertificateOptions {
@@ -437,13 +437,13 @@ export class ViewerCertificate {
    */
   public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
     const {
-       sslMethod: sslSupportMethod = SSLMethod.SNI,
-       securityPolicy: minimumProtocolVersion,
-       aliases,
+      sslMethod: sslSupportMethod = SSLMethod.SNI,
+      securityPolicy: minimumProtocolVersion,
+      aliases,
     } = options;
 
     return new ViewerCertificate({
-      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion
+      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
@@ -461,7 +461,7 @@ export class ViewerCertificate {
     } = options;
 
     return new ViewerCertificate({
-      iamCertificateId, sslSupportMethod, minimumProtocolVersion
+      iamCertificateId, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
@@ -480,6 +480,58 @@ export class ViewerCertificate {
   private constructor(
     public readonly props: CfnDistribution.ViewerCertificateProperty,
     public readonly aliases: string[] = []) { }
+}
+
+/**
+ * Controls the countries in which your content is distributed.
+ */
+export class GeoRestriction {
+
+  /**
+   * Whitelist specific countries which you want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static whitelist(...locations: string[]) {
+    return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
+  }
+
+  /**
+   * Blacklist specific countries which you don't want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static blacklist(...locations: string[]) {
+    return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
+  }
+
+  private static LOCATION_REGEX = /^[A-Z]{2}$/;
+
+  private static validateLocations(locations: string[]) {
+    if (locations.length === 0) {
+      throw new Error('Should provide at least 1 location');
+    }
+    locations.forEach(location => {
+      if (!GeoRestriction.LOCATION_REGEX.test(location)) {
+        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+      }
+    });
+    return locations;
+  }
+
+  /**
+   * Creates an instance of GeoRestriction for internal use
+   *
+   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist/blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -523,7 +575,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PRICE_CLASS_100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
@@ -576,6 +628,13 @@ export interface CloudFrontWebDistributionProps {
    * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
    */
   readonly viewerCertificate?: ViewerCertificate;
+
+  /**
+   * Controls the countries in which your content is distributed.
+   *
+   * @default No geo restriction
+   */
+  readonly geoRestriction?: GeoRestriction;
 }
 
 /**
@@ -638,9 +697,9 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
    * Maps our methods to the string arrays they are
    */
   private readonly METHOD_LOOKUP_MAP = {
-    GH: ["GET", "HEAD"],
-    GHO: ["GET", "HEAD", "OPTIONS"],
-    ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+    GH: ['GET', 'HEAD'],
+    GHO: ['GET', 'HEAD', 'OPTIONS'],
+    ALL: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
   };
 
   /**
@@ -649,7 +708,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
   private readonly VALID_SSL_PROTOCOLS: { [method in SSLMethod]: string[] } = {
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
-      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018
+      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -660,7 +719,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
-      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
+      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
@@ -677,10 +736,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     for (const originConfig of props.originConfigs) {
       const originId = `origin${originIndex}`;
       if (!originConfig.s3OriginSource && !originConfig.customOriginSource) {
-        throw new Error("There must be at least one origin source - either an s3OriginSource or a customOriginSource");
+        throw new Error('There must be at least one origin source - either an s3OriginSource or a customOriginSource');
       }
       if (originConfig.customOriginSource && originConfig.s3OriginSource) {
-        throw new Error("There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.");
+        throw new Error('There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.');
       }
 
       const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
@@ -688,7 +747,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         Object.keys(originConfig.originHeaders).forEach(key => {
           const oHeader: CfnDistribution.OriginCustomHeaderProperty = {
             headerName: key,
-            headerValue: originConfig.originHeaders![key]
+            headerValue: originConfig.originHeaders![key],
           };
           originHeaders.push(oHeader);
         });
@@ -704,8 +763,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           s3OriginConfig = {
             originAccessIdentity:
               `origin-access-identity/cloudfront/${
-              originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName
-            }`
+                originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName
+              }`,
           };
         } else {
           s3OriginConfig = {};
@@ -729,9 +788,9 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originReadTimeout: originConfig.customOriginSource.originReadTimeout
               && originConfig.customOriginSource.originReadTimeout.toSeconds() || 30,
             originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HTTPS_ONLY,
-            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2]
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
           }
-          : undefined
+          : undefined,
       };
 
       for (const behavior of originConfig.behaviors) {
@@ -749,12 +808,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     });
     distributionConfig = {
       ...distributionConfig,
-      origins
+      origins,
     };
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
-      throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
+      throw new Error('There can only be one default behavior across all sources. [ One default behavior per distribution ].');
     }
 
     distributionConfig = { ...distributionConfig, defaultCacheBehavior: this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy) };
@@ -762,7 +821,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
-        throw new Error("pathPattern is required for all non-default behaviors");
+        throw new Error('pathPattern is required for all non-default behaviors');
       }
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
@@ -772,7 +831,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     if (props.aliasConfiguration && props.viewerCertificate) {
       throw new Error([
         'You cannot set both aliasConfiguration and viewerCertificate properties.',
-        'Please only use viewerCertificate, as aliasConfiguration is deprecated.'
+        'Please only use viewerCertificate, as aliasConfiguration is deprecated.',
       ].join(' '));
     }
 
@@ -782,7 +841,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
-        { securityPolicy, sslMethod, aliases }
+        { securityPolicy, sslMethod, aliases },
       );
     }
 
@@ -797,24 +856,36 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
           // tslint:disable-next-line:max-line-length
-          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
+          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
         }
       }
     } else {
       distributionConfig = { ...distributionConfig,
-        viewerCertificate: { cloudFrontDefaultCertificate: true }
+        viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, `LoggingBucket`);
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
       distributionConfig = {
         ...distributionConfig,
         logging: {
           bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
-          prefix: props.loggingConfig.prefix
-        }
+          prefix: props.loggingConfig.prefix,
+        },
+      };
+    }
+
+    if (props.geoRestriction) {
+      distributionConfig = {
+        ...distributionConfig,
+        restrictions: {
+          geoRestriction: {
+            restrictionType: props.geoRestriction.restrictionType,
+            locations: props.geoRestriction.locations,
+          },
+        },
       };
     }
 
@@ -830,7 +901,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress !== false,
       defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
-      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
+      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
       trustedSigners: input.trustedSigners,
@@ -846,7 +917,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           .map(fna => ({
             eventType: fna.eventType,
             lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
-          }))
+          })),
       });
 
       // allow edgelambda.amazonaws.com to assume the functions' execution role.
@@ -854,7 +925,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
             actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ]
+            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
           }));
         }
       }

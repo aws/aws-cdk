@@ -1,4 +1,5 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
+import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
@@ -19,21 +20,21 @@ export = {
       expect(stack).toMatch({
         Resources: {
           MyRepository4C4BD5FC: {
-            Type: "AWS::CodeCommit::Repository",
+            Type: 'AWS::CodeCommit::Repository',
             Properties: {
-              RepositoryName: "MyRepository",
+              RepositoryName: 'MyRepository',
               Triggers: [
                 {
                   Events: [
-                    "all"
+                    'all',
                   ],
-                  DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
-                  Name: "MyRepository/arn:aws:sns:*:123456789012:my_topic"
-                }
-              ]
-            }
-          }
-        }
+                  DestinationArn: 'arn:aws:sns:*:123456789012:my_topic',
+                  Name: 'MyRepository/arn:aws:sns:*:123456789012:my_topic',
+                },
+              ],
+            },
+          },
+        },
       });
 
       test.done();
@@ -82,10 +83,55 @@ export = {
           { Ref: 'AWS::Region' },
           ':',
           { Ref: 'AWS::AccountId' },
-          ':my-repo'
+          ':my-repo',
         ]],
       });
       test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
+
+      test.done();
+    },
+
+    'grant push'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const repository = new Repository(stack, 'Repo', {
+        repositoryName: 'repo-name',
+      });
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      // WHEN
+      repository.grantPullPush(role);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'codecommit:GitPull',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'Repo02AC86CF',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 'codecommit:GitPush',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'Repo02AC86CF',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
 
       test.done();
     },

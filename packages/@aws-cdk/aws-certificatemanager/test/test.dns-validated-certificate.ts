@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
@@ -10,7 +10,7 @@ export = {
     const stack = new Stack();
 
     const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
-      zoneName: 'example.com'
+      zoneName: 'example.com',
     });
 
     new DnsValidatedCertificate(stack, 'Certificate', {
@@ -23,12 +23,12 @@ export = {
       ServiceToken: {
         'Fn::GetAtt': [
           'CertificateCertificateRequestorFunction5E845413',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       HostedZoneId: {
         Ref: 'ExampleDotCom4D1B83AA',
-      }
+      },
     }));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Handler: 'index.certificateRequestHandler',
@@ -40,7 +40,7 @@ export = {
       Roles: [
         {
           Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
-        }
+        },
       ],
       PolicyDocument: {
         Version: '2012-10-17',
@@ -49,15 +49,15 @@ export = {
             Action: [
               'acm:RequestCertificate',
               'acm:DescribeCertificate',
-              'acm:DeleteCertificate'
+              'acm:DeleteCertificate',
             ],
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: 'route53:GetChange',
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: 'route53:changeResourceRecordSets',
@@ -69,13 +69,13 @@ export = {
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':route53:::hostedzone/',
-                  { Ref: 'ExampleDotCom4D1B83AA' }
-                ]
-              ]
-            }
+                  { Ref: 'ExampleDotCom4D1B83AA' },
+                ],
+              ],
+            },
           },
         ],
-      }
+      },
     }));
 
     test.done();
@@ -85,7 +85,7 @@ export = {
     const stack = new Stack();
 
     const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
-      zoneName: 'hello.com'
+      zoneName: 'hello.com',
     });
 
     new DnsValidatedCertificate(stack, 'Cert', {
@@ -93,8 +93,29 @@ export = {
       hostedZone: helloDotComZone,
     });
 
-    // a bit of a hack: expect(stack) will trigger validation.
-    test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
+    test.throws(() => {
+      SynthUtils.synthesize(stack);
+    }, /DNS zone hello.com is not authoritative for certificate domain name example.com/);
+
+    test.done();
+  },
+
+  'does not try to validate unresolved tokens'(test: Test) {
+    const stack = new Stack();
+
+    const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
+      zoneName: Token.asString('hello.com'),
+    });
+
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'hello.com',
+      hostedZone: helloDotComZone,
+    });
+
+    test.doesNotThrow(() => {
+      SynthUtils.synthesize(stack);
+    });
+
     test.done();
   },
 
@@ -102,7 +123,7 @@ export = {
     const stack = new Stack();
 
     const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
-      zoneName: 'example.com'
+      zoneName: 'example.com',
     });
 
     new DnsValidatedCertificate(stack, 'Cert', {
@@ -111,17 +132,17 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        ServiceToken: {
+      ServiceToken: {
         'Fn::GetAtt': [
           'CertCertificateRequestorFunction98FDF273',
-          'Arn'
-          ]
-        },
-        DomainName: 'example.com',
-        HostedZoneId: {
-          Ref: 'ExampleDotCom4D1B83AA'
-        }
-      }));
+          'Arn',
+        ],
+      },
+      DomainName: 'example.com',
+      HostedZoneId: {
+        Ref: 'ExampleDotCom4D1B83AA',
+      },
+    }));
     test.done();
   },
 
@@ -139,19 +160,21 @@ export = {
     new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'mydomain.com',
       hostedZone: imported,
+      route53Endpoint: 'https://api.route53.xxx.com',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        ServiceToken: {
+      ServiceToken: {
         'Fn::GetAtt': [
           'CertCertificateRequestorFunction98FDF273',
-          'Arn'
-          ]
-        },
-        DomainName: 'mydomain.com',
-        HostedZoneId: 'DUMMY'
-      }));
+          'Arn',
+        ],
+      },
+      DomainName: 'mydomain.com',
+      HostedZoneId: 'DUMMY',
+      Route53Endpoint: 'https://api.route53.xxx.com',
+    }));
 
     test.done();
   },
@@ -163,7 +186,7 @@ export = {
       env: { account: '12345678', region: 'us-blue-5' },
     });
     const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
-      zoneName: 'hello.com'
+      zoneName: 'hello.com',
     });
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::account-id:role/role-name');
 
@@ -171,12 +194,12 @@ export = {
     new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'hello.com',
       hostedZone: helloDotComZone,
-      customResourceRole: role
+      customResourceRole: role,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      Role: 'arn:aws:iam::account-id:role/role-name'
+      Role: 'arn:aws:iam::account-id:role/role-name',
     }));
 
     test.done();

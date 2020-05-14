@@ -36,7 +36,8 @@ export abstract class Code {
   }
 
   /**
-   * Loads the function code from a local disk asset.
+   * Loads the function code from a local disk path.
+   *
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
@@ -128,8 +129,8 @@ export class S3Code extends Code {
       s3Location: {
         bucketName: this.bucketName,
         objectKey: this.key,
-        objectVersion: this.objectVersion
-      }
+        objectVersion: this.objectVersion,
+      },
     };
   }
 }
@@ -144,17 +145,17 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error(`Lambda inline code cannot be empty`);
+      throw new Error('Lambda inline code cannot be empty');
     }
 
     if (code.length > 4096) {
-      throw new Error("Lambda source is too large, must be <= 4096 but is " + code.length);
+      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      inlineCode: this.code
+      inlineCode: this.code,
     };
   }
 }
@@ -178,7 +179,7 @@ export class AssetCode extends Code {
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
-        ...this.options
+        ...this.options,
       });
     }
 
@@ -189,14 +190,14 @@ export class AssetCode extends Code {
     return {
       s3Location: {
         bucketName: this.asset.s3BucketName,
-        objectKey: this.asset.s3ObjectKey
-      }
+        objectKey: this.asset.s3ObjectKey,
+      },
     };
   }
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error(`bindToResource() must be called after bind()`);
+      throw new Error('bindToResource() must be called after bind()');
     }
 
     const resourceProperty = options.resourceProperty || 'Code';
@@ -273,7 +274,7 @@ export class CfnParametersCode extends Code {
       s3Location: {
         bucketName: this._bucketNameParam.valueAsString,
         objectKey: this._objectKeyParam.valueAsString,
-      }
+      },
     };
   }
 

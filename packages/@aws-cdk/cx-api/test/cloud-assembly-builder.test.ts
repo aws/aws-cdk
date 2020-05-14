@@ -1,8 +1,8 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { ArtifactType, CloudAssemblyBuilder } from '../lib';
-import { CLOUD_ASSEMBLY_VERSION } from '../lib/versioning';
+import { CloudAssemblyBuilder } from '../lib';
 
 test('cloud assembly builder', () => {
   // GIVEN
@@ -12,51 +12,54 @@ test('cloud assembly builder', () => {
 
   // WHEN
   session.addArtifact('my-first-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: 123, type: 'foo', trace: [] } ]
+      foo: [ { data: '123', type: 'foo', trace: [] } ],
     },
     properties: {
       templateFile,
       parameters: {
         prop1: '1234',
-        prop2: '555'
-      }
+        prop2: '555',
+      },
     },
   });
 
   session.addArtifact('tree-artifact', {
-    type: ArtifactType.CDK_TREE,
+    type: cxschema.ArtifactType.CDK_TREE,
     properties: {
-      file: 'foo.tree.json'
-    }
+      file: 'foo.tree.json',
+    },
   });
 
   session.addMissing({
     key: 'foo',
-    provider: 'context-provider',
+    provider: cxschema.ContextProvider.VPC_PROVIDER,
     props: {
-      a: 'A',
-      b: 2
-    }
+      account: '1234',
+      region: 'us-east-1',
+      filter: {
+        a: 'a',
+      },
+    },
   });
 
   session.addArtifact('minimal-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: 'aws://111/helo-world',
     properties: {
-      templateFile
-    }
+      templateFile,
+    },
   });
 
   fs.writeFileSync(path.join(session.outdir, templateFile), JSON.stringify({
     Resources: {
       MyTopic: {
-        Type: 'AWS::S3::Topic'
-      }
-    }
+        Type: 'AWS::S3::Topic',
+      },
+    },
   }));
 
   const assembly = session.buildAssembly();
@@ -65,45 +68,55 @@ test('cloud assembly builder', () => {
   // THEN
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
-    version: CLOUD_ASSEMBLY_VERSION,
+    version: cxschema.Manifest.version(),
     missing: [
-      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
+      {
+        key: 'foo',
+        provider: 'vpc-provider',
+        props: {
+          account: '1234',
+          region: 'us-east-1',
+          filter: {
+            a: 'a',
+          },
+        },
+      },
     ],
     artifacts: {
       'tree-artifact': {
         type: 'cdk:tree',
         properties: {
-          file: 'foo.tree.json'
-        }
+          file: 'foo.tree.json',
+        },
       },
       'my-first-artifact': {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
-        metadata: { foo: [ { data: 123, type: 'foo', trace: [] } ] },
+        metadata: { foo: [ { data: '123', type: 'foo', trace: [] } ] },
         properties: {
           templateFile: 'foo.template.json',
           parameters: {
             prop1: '1234',
-            prop2: '555'
+            prop2: '555',
           },
         },
       },
       'minimal-artifact': {
         type: 'aws:cloudformation:stack',
         environment: 'aws://111/helo-world',
-        properties: { templateFile: 'foo.template.json' }
-      }
-    }
+        properties: { templateFile: 'foo.template.json' },
+      },
+    },
   });
 
   // verify we have a template file
   expect(assembly.getStackByName('minimal-artifact').template).toStrictEqual({
     Resources: {
       MyTopic: {
-        Type: 'AWS::S3::Topic'
-      }
-    }
+        Type: 'AWS::S3::Topic',
+      },
+    },
   });
 });
 
@@ -115,8 +128,14 @@ test('duplicate missing values with the same key are only reported once', () => 
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
   const session = new CloudAssemblyBuilder(outdir);
 
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
+  const props: cxschema.ContextQueryProperties = {
+    account: '1234',
+    region: 'asdf',
+    filter: { a: 'a' },
+  };
+
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
 
   const assembly = session.buildAssembly();
 

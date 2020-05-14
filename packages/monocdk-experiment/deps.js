@@ -30,8 +30,10 @@ for (const dir of modules) {
     delete pkgDevDeps[meta.name];
     continue;
   }
-
-
+  // skip private packages
+  if (meta.private) {
+    continue;
+  }
 
   if (!exists) {
     console.error(`missing dependency: ${meta.name}`);

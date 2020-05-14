@@ -8,7 +8,7 @@ export = {
 
     const rule = new CfnRule(stack, 'MyRule');
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
-    rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains([ 'hello', 'world' ], "world"))), 'some assertion');
+    rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains([ 'hello', 'world' ], 'world'))), 'some assertion');
 
     test.deepEqual(toCloudFormation(stack), {
       Rules: {
@@ -16,17 +16,17 @@ export = {
           Assertions: [
             {
               Assert: { 'Fn::Equals': [ 'lhs', 'rhs' ] },
-              AssertDescription: 'lhs equals rhs'
+              AssertDescription: 'lhs equals rhs',
             },
             {
               Assert: { 'Fn::Not': [ { 'Fn::And': [ { 'Fn::Contains': [ [ 'hello', 'world' ], 'world' ] } ] } ] },
-              AssertDescription: 'some assertion'
-            }
-          ]
-        }
-      }
+              AssertDescription: 'some assertion',
+            },
+          ],
+        },
+      },
     });
 
     test.done();
-  }
+  },
 };

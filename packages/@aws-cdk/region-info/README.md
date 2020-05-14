@@ -1,16 +1,10 @@
 # AWS Region-Specific Information Directory
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -47,7 +41,7 @@ a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-import regionInfo = require('@aws-cdk/region-info');
+import * as regionInfo from '@aws-cdk/region-info';
 
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com

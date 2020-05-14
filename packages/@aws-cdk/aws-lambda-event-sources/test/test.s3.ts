@@ -19,67 +19,67 @@ export = {
       events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
       filters: [
         { prefix: 'prefix/' },
-        { suffix: '.png' }
-      ]
+        { suffix: '.png' },
+      ],
     }));
 
     // THEN
     expect(stack).to(haveResource('Custom::S3BucketNotifications', {
-      "NotificationConfiguration": {
-        "LambdaFunctionConfigurations": [
+      'NotificationConfiguration': {
+        'LambdaFunctionConfigurations': [
           {
-            "Events": [
-              "s3:ObjectCreated:*"
+            'Events': [
+              's3:ObjectCreated:*',
             ],
-            "Filter": {
-              "Key": {
-                "FilterRules": [
+            'Filter': {
+              'Key': {
+                'FilterRules': [
                   {
-                    "Name": "prefix",
-                    "Value": "prefix/"
+                    'Name': 'prefix',
+                    'Value': 'prefix/',
                   },
                   {
-                    "Name": "suffix",
-                    "Value": ".png"
-                  }
-                ]
-              }
+                    'Name': 'suffix',
+                    'Value': '.png',
+                  },
+                ],
+              },
             },
-            "LambdaFunctionArn": {
-              "Fn::GetAtt": [
-                "Fn9270CBC0",
-                "Arn"
-              ]
-            }
+            'LambdaFunctionArn': {
+              'Fn::GetAtt': [
+                'Fn9270CBC0',
+                'Arn',
+              ],
+            },
           },
           {
-            "Events": [
-              "s3:ObjectRemoved:*"
+            'Events': [
+              's3:ObjectRemoved:*',
             ],
-            "Filter": {
-              "Key": {
-                "FilterRules": [
+            'Filter': {
+              'Key': {
+                'FilterRules': [
                   {
-                    "Name": "prefix",
-                    "Value": "prefix/"
+                    'Name': 'prefix',
+                    'Value': 'prefix/',
                   },
                   {
-                    "Name": "suffix",
-                    "Value": ".png"
-                  }
-                ]
-              }
+                    'Name': 'suffix',
+                    'Value': '.png',
+                  },
+                ],
+              },
             },
-            "LambdaFunctionArn": {
-              "Fn::GetAtt": [
-                "Fn9270CBC0",
-                "Arn"
-              ]
-            }
-          }
-        ]
-      }
+            'LambdaFunctionArn': {
+              'Fn::GetAtt': [
+                'Fn9270CBC0',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
     }));
     test.done();
-  }
+  },
 };

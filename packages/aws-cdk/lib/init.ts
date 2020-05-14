@@ -2,9 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
 import { error, print, warning } from './logging';
+import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -16,7 +16,6 @@ const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
-const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
@@ -69,10 +68,11 @@ export class InitTemplate {
   public readonly description: string;
   public readonly aliases = new Set<string>();
 
-  constructor(private readonly basePath: string,
-              public readonly name: string,
-              public readonly languages: string[],
-              info: any) {
+  constructor(
+    private readonly basePath: string,
+    public readonly name: string,
+    public readonly languages: string[],
+    info: any) {
     this.description = info.description;
     for (const alias of info.aliases || []) {
       this.aliases.add(alias);
@@ -103,7 +103,7 @@ export class InitTemplate {
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, {
-      name: decamelize(path.basename(path.resolve(targetDirectory)))
+      name: decamelize(path.basename(path.resolve(targetDirectory))),
     });
     await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
@@ -122,7 +122,7 @@ export class InitTemplate {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
+        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);
@@ -161,13 +161,13 @@ export class InitTemplate {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
-             .replace(/%name\.camelCased%/g, camelCase(project.name))
-             .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
-             .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME)
-             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
-             .replace(/%python-executable%/g, pythonExecutable())
-             .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+      .replace(/%name\.camelCased%/g, camelCase(project.name))
+      .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
+      .replace(/%cdk-version%/g, cdkVersion)
+      .replace(/%cdk-home%/g, cdkHomeDir())
+      .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+      .replace(/%python-executable%/g, pythonExecutable())
+      .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
   }
 
   /**
@@ -183,7 +183,7 @@ export class InitTemplate {
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS
+      ...cxapi.FUTURE_FLAGS,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -221,8 +221,8 @@ export const availableInitLanguages: Promise<string[]> =
  */
 async function listDirectory(dirPath: string) {
   return (await fs.readdir(dirPath))
-          .filter(p => !p.startsWith('.'))
-          .sort();
+    .filter(p => !p.startsWith('.'))
+    .sort();
 }
 
 export async function printAvailableTemplates(language?: string) {
@@ -231,8 +231,8 @@ export async function printAvailableTemplates(language?: string) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
     print(`* ${colors.green(template.name)}: ${template.description}`);
     const languageArg = language ? colors.bold(language)
-                   : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
-                                   : colors.bold(template.languages[0]);
+      : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
+        : colors.bold(template.languages[0]);
     print(`   └─ ${colors.blue(`cdk init ${colors.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
@@ -248,7 +248,7 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
-    print(`✅ All done!`);
+    print('✅ All done!');
   }
 }
 
@@ -273,14 +273,14 @@ async function initializeGitRepository(workDir: string) {
 
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
-  case 'javascript':
-    return await postInstallJavascript(canUseNetwork, workDir);
-  case 'typescript':
-    return await postInstallTypescript(canUseNetwork, workDir);
-  case 'java':
-    return await postInstallJava(canUseNetwork, workDir);
-  case 'python':
-    return await postInstallPython(workDir);
+    case 'javascript':
+      return await postInstallJavascript(canUseNetwork, workDir);
+    case 'typescript':
+      return await postInstallTypescript(canUseNetwork, workDir);
+    case 'java':
+      return await postInstallJava(canUseNetwork, workDir);
+    case 'python':
+      return await postInstallPython(workDir);
   }
 }
 
@@ -306,7 +306,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`mvn package`)}!`);
+    print(`Please run ${colors.green('mvn package')}!`);
     return;
   }
 

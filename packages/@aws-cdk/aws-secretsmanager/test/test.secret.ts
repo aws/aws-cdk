@@ -16,7 +16,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
-      GenerateSecretString: {}
+      GenerateSecretString: {},
     }));
 
     test.done();
@@ -30,16 +30,16 @@ export = {
     new secretsmanager.Secret(stack, 'Secret', {
       generateSecretString: {
         excludeUppercase: true,
-        passwordLength: 20
-      }
+        passwordLength: 20,
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeUppercase: true,
-        PasswordLength: 20
-      }
+        PasswordLength: 20,
+      },
     }));
 
     test.done();
@@ -53,16 +53,16 @@ export = {
     new secretsmanager.Secret(stack, 'Secret', {
       generateSecretString: {
         secretStringTemplate: JSON.stringify({ username: 'username' }),
-        generateStringKey: 'password'
-      }
+        generateStringKey: 'password',
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         SecretStringTemplate: '{"username":"username"}',
-        GenerateStringKey: 'password'
-      }
+        GenerateStringKey: 'password',
+      },
     }));
 
     test.done();
@@ -86,81 +86,165 @@ export = {
           Action: 'secretsmanager:GetSecretValue',
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
-        }]
-      }
+        }],
+      },
     }));
     expect(stack).to(haveResource('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [{
           Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
+            'kms:Create*',
+            'kms:Describe*',
+            'kms:Enable*',
+            'kms:List*',
+            'kms:Put*',
+            'kms:Update*',
+            'kms:Revoke*',
+            'kms:Disable*',
+            'kms:Get*',
+            'kms:Delete*',
+            'kms:ScheduleKeyDeletion',
+            'kms:CancelKeyDeletion',
+            'kms:GenerateDataKey',
+            'kms:TagResource',
+            'kms:UntagResource',
           ],
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    Ref: "AWS::Partition"
+                    Ref: 'AWS::Partition',
                   },
-                  ":iam::",
+                  ':iam::',
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId',
                   },
-                  ":root"
-                ]
-              ]
-            }
+                  ':root',
+                ],
+              ],
+            },
           },
-          Resource: "*"
+          Resource: '*',
         }, {
-          Action: "kms:Decrypt",
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
           Condition: {
             StringEquals: {
-              "kms:ViaService": {
-                "Fn::Join": [
-                  "",
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
                   [
-                    "secretsmanager.",
+                    'secretsmanager.',
                     {
-                      Ref: "AWS::Region"
+                      Ref: 'AWS::Region',
                     },
-                    ".amazonaws.com"
-                  ]
-                ]
-              }
-            }
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
           },
-          Effect: "Allow",
+        }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
           Principal: {
             AWS: {
-              "Fn::GetAtt": [
-                "Role1ABCC5F0",
-                "Arn"
-              ]
-            }
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
           },
-          Resource: "*"
-        }
-      ],
-      Version: "2012-10-17"
-      }
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        }, {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::GetAtt': [
+                'Role1ABCC5F0',
+                'Arn',
+              ],
+            },
+          },
+          Resource: '*',
+        },
+        ],
+        Version: '2012-10-17',
+      },
     }));
     test.done();
   },
@@ -188,81 +272,165 @@ export = {
               'secretsmanager:VersionStage': ['FOO', 'bar'],
             },
           },
-        }]
-      }
+        }],
+      },
     }));
     expect(stack).to(haveResource('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [{
           Action: [
-            "kms:Create*",
-            "kms:Describe*",
-            "kms:Enable*",
-            "kms:List*",
-            "kms:Put*",
-            "kms:Update*",
-            "kms:Revoke*",
-            "kms:Disable*",
-            "kms:Get*",
-            "kms:Delete*",
-            "kms:ScheduleKeyDeletion",
-            "kms:CancelKeyDeletion",
-            "kms:GenerateDataKey",
-            "kms:TagResource",
-            "kms:UntagResource"
+            'kms:Create*',
+            'kms:Describe*',
+            'kms:Enable*',
+            'kms:List*',
+            'kms:Put*',
+            'kms:Update*',
+            'kms:Revoke*',
+            'kms:Disable*',
+            'kms:Get*',
+            'kms:Delete*',
+            'kms:ScheduleKeyDeletion',
+            'kms:CancelKeyDeletion',
+            'kms:GenerateDataKey',
+            'kms:TagResource',
+            'kms:UntagResource',
           ],
-          Effect: "Allow",
+          Effect: 'Allow',
           Principal: {
             AWS: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    Ref: "AWS::Partition"
+                    Ref: 'AWS::Partition',
                   },
-                  ":iam::",
+                  ':iam::',
                   {
-                    Ref: "AWS::AccountId"
+                    Ref: 'AWS::AccountId',
                   },
-                  ":root"
-                ]
-              ]
-            }
+                  ':root',
+                ],
+              ],
+            },
           },
-          Resource: "*"
+          Resource: '*',
         }, {
-          Action: "kms:Decrypt",
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
           Condition: {
             StringEquals: {
-              "kms:ViaService": {
-                "Fn::Join": [
-                  "",
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
                   [
-                    "secretsmanager.",
+                    'secretsmanager.',
                     {
-                      Ref: "AWS::Region"
+                      Ref: 'AWS::Region',
                     },
-                    ".amazonaws.com"
-                  ]
-                ]
-              }
-            }
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
           },
-          Effect: "Allow",
+        }, {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
           Principal: {
             AWS: {
-              "Fn::GetAtt": [
-                "Role1ABCC5F0",
-                "Arn"
-              ]
-            }
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
           },
-          Resource: "*"
-        }
-      ],
-      Version: "2012-10-17"
-      }
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        }, {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::GetAtt': [
+                'Role1ABCC5F0',
+                'Arn',
+              ],
+            },
+          },
+          Resource: '*',
+        },
+        ],
+        Version: '2012-10-17',
+      },
     }));
     test.done();
   },
@@ -277,8 +445,8 @@ export = {
     new cdk.CfnResource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.secretValue
-      }
+        value: secret.secretValue,
+      },
     });
 
     // THEN
@@ -287,9 +455,9 @@ export = {
         'Fn::Join': ['', [
           '{{resolve:secretsmanager:',
           { Ref: 'SecretA720EF05' },
-          ':SecretString:::}}'
-        ]]
-      }
+          ':SecretString:::}}',
+        ]],
+      },
     }));
     test.done();
   },
@@ -302,7 +470,7 @@ export = {
 
     // WHEN
     const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretArn, encryptionKey
+      secretArn, encryptionKey,
     });
 
     // THEN
@@ -322,17 +490,17 @@ export = {
     secret.attach({
       asSecretAttachmentTarget: () => ({
         targetId: 'target-id',
-        targetType: 'target-type' as secretsmanager.AttachmentTargetType
-      })
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
       SecretId: {
-        Ref: 'SecretA720EF05'
+        Ref: 'SecretA720EF05',
       },
       TargetId: 'target-id',
-      TargetType: 'target-type'
+      TargetType: 'target-type',
     }));
 
     test.done();
@@ -345,8 +513,8 @@ export = {
     const target = {
       asSecretAttachmentTarget: () => ({
         targetId: 'target-id',
-        targetType: 'target-type' as secretsmanager.AttachmentTargetType
-      })
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      }),
     };
     secret.attach(target);
 
@@ -363,25 +531,25 @@ export = {
     const attachedSecret = secret.attach({
       asSecretAttachmentTarget: () => ({
         targetId: 'target-id',
-        targetType: 'target-type' as secretsmanager.AttachmentTargetType
-      })
+        targetType: 'target-type' as secretsmanager.AttachmentTargetType,
+      }),
     });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('export.handler = event => event;'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     // WHEN
     attachedSecret.addRotationSchedule('RotationSchedule', {
-      rotationLambda
+      rotationLambda,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
-        Ref: 'SecretAttachment2E1B7C3B' // The secret returned by the attachment, not the secret itself.
-      }
+        Ref: 'SecretAttachment2E1B7C3B', // The secret returned by the attachment, not the secret itself.
+      },
     }));
 
     test.done();
@@ -394,8 +562,8 @@ export = {
     // THEN
     test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
       generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: 'username' })
-      }
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+      },
     }), /`secretStringTemplate`.+`generateStringKey`/);
 
     test.done();
@@ -408,8 +576,8 @@ export = {
     // THEN
     test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
       generateSecretString: {
-        generateStringKey: 'password'
-      }
+        generateStringKey: 'password',
+      },
     }), /`secretStringTemplate`.+`generateStringKey`/);
 
     test.done();
@@ -437,7 +605,7 @@ export = {
     secret.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:GetSecretValue'],
       resources: ['*'],
-      principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/cool-user')]
+      principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/cool-user')],
     }));
 
     // THEN
@@ -448,18 +616,18 @@ export = {
             Action: 'secretsmanager:GetSecretValue',
             Effect: 'Allow',
             Principal: {
-              AWS: 'arn:aws:iam::123456789012:user/cool-user'
+              AWS: 'arn:aws:iam::123456789012:user/cool-user',
             },
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       SecretId: {
-        Ref: 'SecretA720EF05'
-      }
+        Ref: 'SecretA720EF05',
+      },
     }));
 
     test.done();
-  }
+  },
 };

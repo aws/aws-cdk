@@ -1,10 +1,10 @@
 ## Amazon ECS Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -24,7 +24,7 @@ adds capacity to it,
 and instantiates the Amazon ECS Service with an automatic load balancer.
 
 ```ts
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
 
 // Create an ECS cluster
 const cluster = new ecs.Cluster(this, 'Cluster', {
@@ -243,6 +243,7 @@ taskDefinition.addContainer('container', {
   },
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
+    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   }
 });
@@ -266,13 +267,15 @@ const service = new ecs.FargateService(this, 'Service', {
   desiredCount: 5
 });
 ```
+`Services` by default will create a security group if not provided.
+If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
 
 ```ts
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
@@ -296,7 +299,7 @@ Note that in the example above, the default `service` only allows you to registe
 Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
 
 ```ts
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
@@ -333,7 +336,7 @@ for the alternatives.
 `Services` can also be directly attached to a classic load balancer as targets:
 
 ```ts
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 
 const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
@@ -345,7 +348,7 @@ lb.addTarget(service);
 Similarly, if you want to have more control over load balancer targeting:
 
 ```ts
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 
 const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
@@ -420,7 +423,7 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 `@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
 ```ts
-import targets = require('@aws-cdk/aws-events-targets');
+import * as targets from '@aws-cdk/aws-events-targets';
 
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');

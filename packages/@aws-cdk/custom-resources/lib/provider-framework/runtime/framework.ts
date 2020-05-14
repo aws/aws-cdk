@@ -10,7 +10,7 @@ import { getEnv, log } from './util';
 export = {
   [consts.FRAMEWORK_ON_EVENT_HANDLER_NAME]: cfnResponse.safeHandler(onEvent),
   [consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME]: cfnResponse.safeHandler(isComplete),
-  [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout
+  [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout,
 };
 
 /**
@@ -65,7 +65,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   // if we are not complete, reeturn false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
     if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
-      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
+      throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
     throw new cfnResponse.Retry(JSON.stringify(event));
@@ -75,8 +75,8 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
     ...event,
     Data: {
       ...event.Data,
-      ...isCompleteResult.Data
-    }
+      ...isCompleteResult.Data,
+    },
   };
 
   await cfnResponse.submitResponse('SUCCESS', response);
@@ -88,7 +88,7 @@ async function onTimeout(timeoutEvent: any) {
 
   const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
-    reason: 'Operation timed out'
+    reason: 'Operation timed out',
   });
 }
 
@@ -101,7 +101,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-    Payload: JSON.stringify(payload)
+    Payload: JSON.stringify(payload),
   });
 
   log('user function response:', resp, typeof(resp));
@@ -110,7 +110,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   if (resp.FunctionError) {
     log('user function threw an error:', resp.FunctionError);
     const errorMessage = jsonPayload.errorMessage || 'error';
-    const trace = jsonPayload.trace ? `\nRemote function error: ` + jsonPayload.trace.join('\n') : '';
+    const trace = jsonPayload.trace ? '\nRemote function error: ' + jsonPayload.trace.join('\n') : '';
 
     const e = new Error(errorMessage);
     e.stack += trace;

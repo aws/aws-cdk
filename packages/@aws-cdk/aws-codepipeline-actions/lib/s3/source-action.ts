@@ -108,7 +108,7 @@ export class S3SourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
       const id = stage.pipeline.node.uniqueId + 'SourceEventRule' + this.props.bucketKey;
       if (this.props.bucket.node.tryFindChild(id)) {
@@ -117,7 +117,7 @@ export class S3SourceAction extends Action {
       }
       this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
-        paths: [this.props.bucketKey]
+        paths: [this.props.bucketKey],
       });
     }
 

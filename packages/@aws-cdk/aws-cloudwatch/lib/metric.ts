@@ -53,31 +53,34 @@ export interface CommonMetricOptions {
    *
    * CloudWatch does not honor this property for graphs.
    *
-   * @default All metric datums in the given metric stream
+   * @default - All metric datums in the given metric stream
    */
   readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
+   * @default - No label
    */
   readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph in a Dashboard
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   * @default - Automatic color
    */
   readonly color?: string;
 
   /**
    * Account which this metric comes from.
    *
-   * @default Deployment account.
+   * @default - Deployment account.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
    *
-   * @default Deployment region.
+   * @default - Deployment region.
    */
   readonly region?: string;
 }
@@ -174,37 +177,32 @@ export class Metric implements IMetric {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['cloudwatch:PutMetricData'],
-      resourceArns: ['*']
+      resourceArns: ['*'],
     });
   }
 
+  /** Dimensions of this metric */
   public readonly dimensions?: DimensionHash;
+  /** Namespace of this metric */
   public readonly namespace: string;
+  /** Name of this metric */
   public readonly metricName: string;
+  /** Period of this metric */
   public readonly period: cdk.Duration;
+  /** Statistic of this metric */
   public readonly statistic: string;
+  /** Label for this metric when added to a Graph in a Dashboard */
   public readonly label?: string;
+  /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
 
-  /**
-   * Unit of the metric.
-   *
-   * @default None
-   */
+  /** Unit of the metric. */
   public readonly unit?: Unit;
 
-  /**
-   * Account which this metric comes from.
-   *
-   * @default Deployment account.
-   */
+  /** Account which this metric comes from */
   public readonly account?: string;
 
-  /**
-   * Region which this metric comes from.
-   *
-   * @default Deployment region.
-   */
+  /** Region which this metric comes from. */
   public readonly region?: string;
 
   constructor(props: MetricProps) {
@@ -218,7 +216,7 @@ export class Metric implements IMetric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || "Average");
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -227,7 +225,7 @@ export class Metric implements IMetric {
   }
 
   /**
-   * Return a copy of Metric with properties changed.
+   * Return a copy of Metric `with` properties changed.
    *
    * All properties except namespace and metricName can be changed.
    *
@@ -258,7 +256,7 @@ export class Metric implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region)
+      region: ifUndefined(props.region, this.region),
     });
   }
 
@@ -298,15 +296,15 @@ export class Metric implements IMetric {
       },
       renderingProperties: {
         color: this.color,
-        label: this.label
-      }
+        label: this.label,
+      },
     };
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -317,14 +315,14 @@ export class Metric implements IMetric {
       period: metricConfig.metricStat.period.toSeconds(),
       statistic: stat.type === 'simple' ? stat.statistic : undefined,
       extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -342,7 +340,7 @@ export class Metric implements IMetric {
       statistic: metricConfig.metricStat.statistic,
       color: asString(metricConfig.renderingProperties?.color),
       label: asString(metricConfig.renderingProperties?.label),
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
@@ -427,7 +425,8 @@ export class MathExpression implements IMetric {
   public readonly label?: string;
 
   /**
-   * Color for this metric when added to a Graph.
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
    */
   public readonly color?: string;
 
@@ -476,23 +475,24 @@ export class MathExpression implements IMetric {
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
     return {
       mathExpression: {
+        period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
       },
       renderingProperties: {
         label: this.label,
-        color: this.color
-      }
+        color: this.color,
+      },
     };
   }
 
@@ -541,7 +541,7 @@ export class MathExpression implements IMetric {
             seen.set(id, subMetric);
             visit(subMetric);
           }
-        }
+        },
       });
     }
   }

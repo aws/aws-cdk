@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct } from './construct-compat';
 import { CfnReference } from './private/cfn-reference';
 import { Token } from './token';
 
@@ -51,7 +51,7 @@ export class ScopedAws {
 
   public get notificationArns(): string[] {
     return Token.asList(CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope), {
-      displayHint: AWS_NOTIFICATIONARNS
+      displayHint: AWS_NOTIFICATIONARNS,
     });
   }
 

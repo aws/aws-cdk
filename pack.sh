@@ -15,7 +15,8 @@ rm -fr ${distdir}
 mkdir -p ${distdir}
 
 # Split out jsii and non-jsii packages. Jsii packages will be built all at once.
-# Non-jsii packages will be run individually.
+# Non-jsii packages will be run individually. Note that currently the monoCDK
+# package is handled as non-jsii because of the way it is packaged.
 echo "Collecting package list..." >&2
 scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
 
@@ -57,8 +58,14 @@ done
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
 
-# Get version from lerna
-version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+# Get version
+version="$(node -p "require('./scripts/get-version')")"
+
+# Ensure we don't publish anything beyond 1.x for now
+if [[ ! "${version}" == "1."* ]]; then
+  echo "ERROR: accidentally releasing a major version? Expecting repo version to start with '1.' but got '${version}'"
+  exit 1
+fi
 
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
 # If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
@@ -78,6 +85,16 @@ HERE
 
 # copy CHANGELOG.md to dist/ for github releases
 cp CHANGELOG.md ${distdir}/
+
+# defensive: make sure our artifacts don't use the version marker (this means
+# that "pack" will always fails when building in a dev environment)
+# when we get to 10.0.0, we can fix this...
+marker=$(node -p "require('./scripts/get-version-marker')")
+if find dist/ | grep "${marker}"; then
+  echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
+  echo "This is expected for builds in a development environment but should not happen in CI builds!"
+  exit 1
+fi
 
 # for posterity, print all files in dist
 echo "=============================================================================================="

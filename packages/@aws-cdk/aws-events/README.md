@@ -1,10 +1,10 @@
 ## Amazon CloudWatch Events Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -113,6 +113,7 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
 
 ### Cross-account targets
@@ -121,9 +122,9 @@ It's possible to have the source of the event and a target in separate AWS accou
 
 ```typescript
 import { App, Stack } from '@aws-cdk/core';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import targets = require('@aws-cdk/aws-events-targets');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as targets from '@aws-cdk/aws-events-targets';
 
 const app = new App();
 

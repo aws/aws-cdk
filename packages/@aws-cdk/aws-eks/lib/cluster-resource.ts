@@ -1,6 +1,5 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
@@ -36,20 +35,20 @@ export class ClusterResource extends Construct {
     const provider = ClusterResourceProvider.getOrCreate(this);
 
     if (!props.roleArn) {
-      throw new Error(`"roleArn" is required`);
+      throw new Error('"roleArn" is required');
     }
 
     // the role used to create the cluster. this becomes the administrator role
     // of the cluster.
     this.creationRole = new iam.Role(this, 'CreationRole', {
-      assumedBy: new iam.CompositePrincipal(...provider.roles.map(x => new iam.ArnPrincipal(x.roleArn)))
+      assumedBy: new iam.CompositePrincipal(...provider.roles.map(x => new iam.ArnPrincipal(x.roleArn))),
     });
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
     this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'iam:PassRole' ],
-      resources: [ props.roleArn ]
+      resources: [ props.roleArn ],
     }));
 
     // if we know the cluster name, restrict the policy to only allow
@@ -57,31 +56,47 @@ export class ClusterResource extends Construct {
     // this role to manage all clusters in the account. this must be lazy since
     // `props.name` may contain a lazy value that conditionally resolves to a
     // physical name.
-    const resourceArn = Lazy.stringValue({
-      produce: () => stack.resolve(props.name)
-        ? stack.formatArn(clusterArnComponents(stack.resolve(props.name)))
-        : '*'
+    const resourceArns = Lazy.listValue({
+      produce: () => {
+        const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
+        return stack.resolve(props.name)
+          ? [ arn, `${arn}/*` ] // see https://github.com/aws/aws-cdk/issues/6060
+          : [ '*' ];
+      },
     });
 
     const fargateProfileResourceArn = Lazy.stringValue({
       produce: () => stack.resolve(props.name)
         ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
-        : '*'
+        : '*',
     });
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'ec2:DescribeSubnets' ],
+      actions: [
+        'ec2:DescribeSubnets',
+        'ec2:DescribeRouteTables',
+      ],
       resources: [ '*' ],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion', 'eks:UpdateClusterConfig', 'eks:CreateFargateProfile' ],
-      resources: [ resourceArn ]
+      actions: [
+        'eks:CreateCluster',
+        'eks:DescribeCluster',
+        'eks:DescribeUpdate',
+        'eks:DeleteCluster',
+        'eks:UpdateClusterVersion',
+        'eks:UpdateClusterConfig',
+        'eks:CreateFargateProfile',
+        'eks:TagResource',
+        'eks:UntagResource',
+      ],
+      resources: resourceArns,
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [ 'eks:DescribeFargateProfile', 'eks:DeleteFargateProfile' ],
-      resources: [ fargateProfileResourceArn ]
+      resources: [ fargateProfileResourceArn ],
     }));
 
     this.creationRole.addToPolicy(new iam.PolicyStatement({
@@ -94,13 +109,13 @@ export class ClusterResource extends Construct {
       resources: [ '*' ],
     }));
 
-    const resource = new cfn.CustomResource(this, 'Resource', {
+    const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       properties: {
         Config: props,
-        AssumeRoleArn: this.creationRole.roleArn
-      }
+        AssumeRoleArn: this.creationRole.roleArn,
+      },
     });
 
     resource.node.addDependency(this.creationRole);
@@ -123,12 +138,12 @@ export class ClusterResource extends Construct {
 
     if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
       if (!this.creationRole.assumeRolePolicy) {
-        throw new Error(`unexpected: cluster creation role must have trust policy`);
+        throw new Error('unexpected: cluster creation role must have trust policy');
       }
 
       this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
         actions: [ 'sts:AssumeRole' ],
-        principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ]
+        principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ],
       }));
 
       this.trustedPrincipals.push(trustedRole.roleArn);

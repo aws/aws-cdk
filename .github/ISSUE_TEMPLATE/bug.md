@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-labels: bug, status/needs-triage
+labels: bug, needs-triage
 ---
 
 <!--

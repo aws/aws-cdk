@@ -1,7 +1,8 @@
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from "@aws-cdk/core";
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { SubnetType, Vpc } from "../lib";
+import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -11,7 +12,7 @@ export = {
 
       test.throws(() => {
         Vpc.fromLookup(stack, 'Vpc', {
-          vpcId: Lazy.stringValue({ produce: () => 'some-id' })
+          vpcId: Lazy.stringValue({ produce: () => 'some-id' }),
         });
 
       }, 'All arguments to Vpc.fromLookup() must be concrete');
@@ -23,7 +24,7 @@ export = {
       // GIVEN
       const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
       const vpc = Vpc.fromLookup(stack, 'VPC', {
-        vpcId: 'vpc-1234'
+        vpcId: 'vpc-1234',
       });
 
       // WHEN
@@ -172,6 +173,42 @@ export = {
       restoreContextProvider(previous);
       test.done();
     },
+
+    'AZ in dummy lookup VPC matches AZ in Stack'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        availabilityZones: stack.availabilityZones,
+      });
+
+      // THEN
+      test.equals(subnets.subnets.length, 2);
+
+      test.done();
+    },
+
+    'don\'t crash when using subnetgroup name in lookup VPC'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
+
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        instanceType: new InstanceType('t2.large'),
+        machineImage: new GenericLinuxImage({ dummy: 'ami-1234' }),
+        vpcSubnets: {
+          subnetGroupName: 'application_layer',
+        },
+      });
+
+      // THEN -- no exception occurred
+
+      test.done();
+    },
   },
 };
 
@@ -180,13 +217,14 @@ interface MockVcpContextResponse {
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
 }
 
-function mockVpcContextProviderWith(test: Test, response: MockVcpContextResponse,
-                                    paramValidator?: (options: cxapi.VpcContextQuery) => void) {
+function mockVpcContextProviderWith(
+  test: Test, response: MockVcpContextResponse,
+  paramValidator?: (options: cxschema.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
-    test.equal(options.provider, cxapi.VPC_PROVIDER,
-      `Expected provider to be: '${cxapi.VPC_PROVIDER}', got: '${options.provider}'`);
+    test.equal(options.provider, cxschema.ContextProvider.VPC_PROVIDER,
+      `Expected provider to be: '${cxschema.ContextProvider.VPC_PROVIDER}', got: '${options.provider}'`);
     test.equal((options.props || {}).returnAsymmetricSubnets, true,
       `Expected options.props.returnAsymmetricSubnets to be true, got: '${(options.props || {}).returnAsymmetricSubnets}'`);
 

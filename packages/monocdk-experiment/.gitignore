@@ -2,3 +2,7 @@
 *.d.ts
 !deps.js
 !gen.js
+staging/
+tsconfig.json
+.jsii
+*.tsbuildinfo

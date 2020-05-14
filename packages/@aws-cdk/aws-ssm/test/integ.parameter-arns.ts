@@ -1,5 +1,5 @@
 // tslint:disable: max-line-length
-import { App, CfnOutput, CfnParameter, Stack } from "@aws-cdk/core";
+import { App, CfnOutput, CfnParameter, Stack } from '@aws-cdk/core';
 import * as ssm from '../lib';
 
 const app = new App();

@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { TaskDefinition } from './base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from "./container-definition";
+import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
 import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LogDriverConfig } from './log-drivers/log-driver';
@@ -115,8 +115,8 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
       options: {
         'enable-ecs-log-metadata': firelensConfig.options.enableECSLogMetadata ? 'true' : 'false',
         'config-file-type': firelensConfig.options.configFileType!,
-        'config-file-value': firelensConfig.options.configFileValue
-      }
+        'config-file-value': firelensConfig.options.configFileValue,
+      },
     };
   }
 
@@ -138,12 +138,12 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
   // grant ECR image pull permissions to executor role
   task.addToExecutionRolePolicy(new iam.PolicyStatement({
     actions: [
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage"
+      'ecr:GetAuthorizationToken',
+      'ecr:BatchCheckLayerAvailability',
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage',
     ],
-    resources: ['*']
+    resources: ['*'],
   }));
 
   // grant cloudwatch or firehose permissions to task role
@@ -155,23 +155,23 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
         'logs:CreateLogGroup',
         'logs:CreateLogStream',
         'logs:DescribeLogStreams',
-        'logs:PutLogEvents'
+        'logs:PutLogEvents',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   } else if (logName === 'firehose') {
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'firehose:PutRecordBatch',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   } else if (logName === 'kinesis') {
     task.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'kinesis:PutRecords',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
   }
 
@@ -201,7 +201,7 @@ export class FirelensLogRouter extends ContainerDefinition {
     const options = props.firelensConfig.options;
     if (options) {
       const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
-      const configFileType = options.configFileType ||
+      const configFileType = (options.configFileType === undefined || options.configFileType === FirelensConfigFileType.S3) &&
         (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue))
         ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
       this.firelensConfig = {
@@ -209,23 +209,23 @@ export class FirelensLogRouter extends ContainerDefinition {
         options: {
           enableECSLogMetadata,
           configFileType,
-          configFileValue: options.configFileValue
-        }
+          configFileValue: options.configFileValue,
+        },
       };
 
       // grant s3 access permissions
       if (configFileType === FirelensConfigFileType.S3) {
         props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
           actions: [
-            "s3:GetObject",
+            's3:GetObject',
           ],
-          resources: [options.configFileValue]
+          resources: [options.configFileValue],
         }));
         props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
           actions: [
-            "s3:GetBucketLocation",
+            's3:GetBucketLocation',
           ],
-          resources: [options.configFileValue.split('/')[0]]
+          resources: [options.configFileValue.split('/')[0]],
         }));
       }
     } else {
@@ -236,9 +236,9 @@ export class FirelensLogRouter extends ContainerDefinition {
   /**
    * Render this container definition to a CloudFormation object
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
-      ...(super.renderContainerDefinition(taskDefinition)),
+      ...(super.renderContainerDefinition()),
       firelensConfiguration: this.firelensConfig && renderFirelensConfig(this.firelensConfig),
     };
   }

@@ -29,7 +29,7 @@ export class EcrImage extends ContainerImage {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
     return {
-      imageName: this.imageName
+      imageName: this.imageName,
     };
   }
 }

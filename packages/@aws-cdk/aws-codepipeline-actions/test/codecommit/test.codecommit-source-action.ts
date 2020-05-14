@@ -1,8 +1,8 @@
-import { countResources, expect, haveResourceLike, not } from "@aws-cdk/assert";
+import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from "@aws-cdk/core";
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -16,12 +16,12 @@ export = {
       minimalPipeline(stack, undefined);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -41,12 +41,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -66,12 +66,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.POLL);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": true,
+                'Configuration': {
+                  'PollForSourceChanges': true,
                 },
               },
             ],
@@ -91,12 +91,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.NONE);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -144,17 +144,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "EnvironmentVariables": '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
+                'Name': 'Build',
+                'Configuration': {
+                  'EnvironmentVariables': '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
                 },
               },
             ],

@@ -1,7 +1,5 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
-import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Helm Chart options.
@@ -79,10 +77,10 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = KubectlProvider.getOrCreate(this);
+    const provider = props.cluster._kubectlProvider;
 
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
@@ -93,8 +91,8 @@ export class HelmChart extends Construct {
         Wait: props.wait || false,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace || 'default',
-        Repository: props.repository
-      }
+        Repository: props.repository,
+      },
     });
   }
 }

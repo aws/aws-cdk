@@ -1,10 +1,10 @@
 ## Amazon DynamoDB Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -12,7 +12,7 @@
 Here is a minimal deployable DynamoDB table definition:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
@@ -21,15 +21,19 @@ const table = new dynamodb.Table(this, 'Table', {
 
 ### Importing existing tables
 
-To import an existing table into your CDK application, use the `Table.fromTableName` or `Table.fromTableArn` 
+To import an existing table into your CDK application, use the `Table.fromTableName`, `Table.fromTableArn` or `Table.fromTableAttributes`
 factory method. This method accepts table name or table ARN which describes the properties of an already
 existing table:
 
 ```ts
-const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table'); 
+const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table');
 // now you can just call methods on the table
 table.grantReadWriteData(user);
 ```
+
+If you intend to use the `tableStreamArn` (including indirectly, for example by creating an
+`@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
+`Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
 ### Keys
 
@@ -43,7 +47,7 @@ DynamoDB supports two billing modes:
 * PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
@@ -70,4 +74,17 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.htm
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
 ### Amazon DynamoDB Global Tables
-Please see the `@aws-cdk/aws-dynamodb-global` package.
+
+You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
+
+```ts
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+const globalTable = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+});
+```
+
+When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
+selected regions.

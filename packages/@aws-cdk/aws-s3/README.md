@@ -1,10 +1,10 @@
 ## Amazon S3 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -29,8 +29,10 @@ new Bucket(this, 'MyFirstBucket');
  * `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
    `arn:aws:s3:::bucket_name/exampleobject.png` or
    `arn:aws:s3:::bucket_name/Development/*`)
- * `urlForObject(key)` - the URL of an object within the bucket (i.e.
+ * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
    `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+ * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
+   `s3://bucket/mykey`)
 
 ### Encryption
 
@@ -139,7 +141,7 @@ these common use cases.
 The following example will subscribe an SNS topic to be notified of all `s3:ObjectCreated:*` events:
 
 ```ts
-import s3n = require('@aws-cdk/aws-s3-notifications');
+import * as s3n from '@aws-cdk/aws-s3-notifications';
 
 const myTopic = new sns.Topic(this, 'MyTopic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));

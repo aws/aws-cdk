@@ -1,10 +1,10 @@
 ## Amazon Elastic Load Balancing V2 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -23,9 +23,9 @@ You define an application load balancer by creating an instance of
 and adding Targets to the Listener:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 
 // ...
 
@@ -39,11 +39,13 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 
 // Add a listener and open up the load balancer's security group
-// to the world. 'open' is the default, set this to 'false'
-// and use `listener.connections` if you want to be selective
-// about who can access the listener.
+// to the world.
 const listener = lb.addListener('Listener', {
     port: 80,
+
+    // 'open: true' is the default, you can leave it out if you want. Set it
+    // to 'false' and use `listener.connections` if you want to be selective
+    // about who can access the load balancer.
     open: true,
 });
 
@@ -73,23 +75,28 @@ listener.addFixedResponse('Fixed', {
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example,
-the following will route requests to the indicated AutoScalingGroup
-only if the requested host in the request is `example.com`:
+HTTP request. Path- and host-based conditions are supported. For example, the
+following will route requests to the indicated AutoScalingGroup only if the
+requested host in the request is either for `example.com/ok` or
+`example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
+    pathPatterns: ['/ok', '/path'],
     hostHeader: 'example.com',
     port: 8080,
     targets: [asg]
 });
 ```
 
-`priority` is a required field when you add targets with conditions. The lowest
-number wins.
+A target with a condition contains either `pathPatterns` or `hostHeader`, or
+both. If both are specified, both conditions must be met for the requests to
+be routed to the given target. `priority` is a required field when you add
+targets with conditions. The lowest number wins.
 
-Every listener must have at least one target without conditions.
+Every listener must have at least one target without conditions, which is
+where all requests that didn't match any of the conditions will be sent.
 
 ### Defining a Network Load Balancer
 
@@ -97,9 +104,9 @@ Network Load Balancers are defined in a similar way to Application Load
 Balancers:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -158,16 +165,22 @@ To use a Lambda Function as a target, use the integration class in the
 `@aws-cdk/aws-elasticloadbalancingv2-targets` package:
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import targets = require('@aws-cdk/aws-elasticloadbalancingv2-targets');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 
 const lambdaFunction = new lambda.Function(...);
 const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(lambdaFunction)]
+    targets: [new targets.LambdaTarget(lambdaFunction)],
+
+    // For Lambda Targets, you need to explicitly enable health checks if you
+    // want them.
+    healthCheck: {
+        enabled: true,
+    }
 });
 ```
 

@@ -16,5 +16,5 @@ dist
 .LAST_PACKAGE
 .jsii
 
+tsconfig.json
 *.tsbuildinfo
-

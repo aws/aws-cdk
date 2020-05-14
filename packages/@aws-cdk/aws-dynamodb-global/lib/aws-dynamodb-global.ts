@@ -1,6 +1,6 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
-import { GlobalTableCoordinator } from "./global-table-coordinator";
+import { GlobalTableCoordinator } from './global-table-coordinator';
 
 /**
  * Properties for the multiple DynamoDB tables to mash together into a
@@ -40,12 +40,12 @@ export class GlobalTable extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
     super(scope, id);
 
-    this.node.addWarning(`The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions`);
+    this.node.addWarning('The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions');
 
     this._regionalTables = [];
 
     if (props.stream != null && props.stream !== dynamodb.StreamViewType.NEW_AND_OLD_IMAGES) {
-      throw new Error("dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES");
+      throw new Error('dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES');
     }
 
     // need to set this stream specification, otherwise global tables don't work
@@ -56,13 +56,13 @@ export class GlobalTable extends cdk.Construct {
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     };
 
-    this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + "-CustomResource", props);
+    this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + '-CustomResource', props);
 
     const scopeStack = cdk.Stack.of(scope);
     // here we loop through the configured regions.
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
     for (const region of props.regions) {
-      const regionalStack = new cdk.Stack(this, id + "-" + region, { env: { region, account: scopeStack.account } });
+      const regionalStack = new cdk.Stack(this, id + '-' + region, { env: { region, account: scopeStack.account } });
       const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${region}`, regionalTableProps);
       this._regionalTables.push(regionalTable);
 

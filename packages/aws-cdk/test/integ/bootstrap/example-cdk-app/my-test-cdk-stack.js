@@ -17,7 +17,13 @@ exports.ExampleAsset = ExampleAsset;
  */
 class MyTestCdkStack extends core.Stack {
     constructor(scope, id, props) {
-        super(scope, id, props);
+        super(scope, id, {
+            ...props,
+            env: {
+                account: props.env.account,
+                region: props.env.region,
+            },
+        });
 
         // we need to have at least one resource
         // make it different based on the asset,

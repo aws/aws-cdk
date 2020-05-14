@@ -16,6 +16,17 @@ export = {
     test.done();
   },
 
+  'spacer has default height and width'(test: Test) {
+    // WHEN
+    const spacer = new Spacer();
+
+    // THEN
+    test.equal(1, spacer.height);
+    test.equal(1, spacer.width);
+
+    test.done();
+  },
+
   'column has the width of the tallest element'(test: Test) {
     // WHEN
     const col = new Column(
@@ -80,5 +91,5 @@ export = {
     }
 
     test.done();
-  }
+  },
 };

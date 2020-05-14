@@ -1,13 +1,14 @@
 export * from './aspect';
 export * from './tag-aspect';
 
-export * from './construct';
+export * from './construct-compat';
 export * from './token';
 export * from './resolvable';
 export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
+export * from './stack-synthesizers';
 
 export * from './reference';
 export * from './cfn-condition';
@@ -27,6 +28,7 @@ export * from './cfn-tag';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
+export * from './size';
 export * from './stack-trace';
 
 export * from './app';
@@ -41,6 +43,16 @@ export * from './physical-name';
 export * from './assets';
 
 export * from './tree';
+
+export * from './asset-staging';
+export * from './fs';
+
+export * from './custom-resource';
+export * from './nested-stack';
+export * from './custom-resource-provider';
+
+export * from './cfn-capabilities';
+export * from './cloudformation.generated';
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.

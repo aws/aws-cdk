@@ -22,6 +22,11 @@ export class Fn {
     return new FnRef(logicalName).toString();
   }
 
+  /** @internal */
+  public static _ref(logicalId: string): IResolvable {
+    return new FnRef(logicalId);
+  }
+
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -48,7 +53,7 @@ export class Fn {
    */
   public static join(delimiter: string, listOfValues: string[]): string {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     return new FnJoin(delimiter, listOfValues).toString();
@@ -671,7 +676,7 @@ class FnJoin implements IResolvable {
    */
   constructor(delimiter: string, listOfValues: any[]) {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     this.delimiter = delimiter;
@@ -696,7 +701,7 @@ class FnJoin implements IResolvable {
   }
 
   public toJSON() {
-    return `<Fn::Join>`;
+    return '<Fn::Join>';
   }
 
   /**

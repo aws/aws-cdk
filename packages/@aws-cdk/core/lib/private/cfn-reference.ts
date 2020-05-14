@@ -1,4 +1,4 @@
-import { Reference } from "../reference";
+import { Reference } from '../reference';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
 
@@ -77,12 +77,14 @@ export class CfnReference extends Reference {
    * The Tokens that should be returned for each consuming stack (as decided by the producing Stack)
    */
   private readonly replacementTokens: Map<Stack, IResolvable>;
+  private readonly targetStack: Stack;
 
   protected constructor(value: any, displayName: string, target: IConstruct) {
     // prepend scope path to display name
     super(value, target, displayName);
 
     this.replacementTokens = new Map<Stack, IResolvable>();
+    this.targetStack = Stack.of(target);
 
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
@@ -106,12 +108,20 @@ export class CfnReference extends Reference {
   }
 
   public hasValueForStack(stack: Stack) {
+    if (stack === this.targetStack) {
+      return true;
+    }
+
     return this.replacementTokens.has(stack);
   }
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
+    if (stack === this.targetStack) {
+      throw new Error('cannot assign a value for the same stack');
+    }
+
     if (this.hasValueForStack(stack)) {
-      throw new Error(`Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first`);
+      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -121,13 +131,13 @@ export class CfnReference extends Reference {
    */
   public toString(): string {
     return Token.asString(this, {
-      displayHint: `${this.target.node.id}.${this.displayName}`
+      displayHint: `${this.target.node.id}.${this.displayName}`,
     });
   }
 }
 
-import { CfnElement } from "../cfn-element";
-import { Construct, IConstruct } from "../construct";
-import { IResolvable, IResolveContext } from "../resolvable";
-import { Stack } from "../stack";
-import { Token } from "../token";
+import { CfnElement } from '../cfn-element';
+import { Construct, IConstruct } from '../construct-compat';
+import { IResolvable, IResolveContext } from '../resolvable';
+import { Stack } from '../stack';
+import { Token } from '../token';
