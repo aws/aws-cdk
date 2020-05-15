@@ -150,7 +150,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.150",
+    "@types/lodash": "^4.14.151",
     "@types/node": "^10.17.21",
     "@types/nodeunit": "^0.0.30",
     "@types/minimatch": "^3.0.3",
