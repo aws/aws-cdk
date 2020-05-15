@@ -27,10 +27,6 @@
           "MapPublicIpOnLaunch": true,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet1"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Public"
             },
@@ -41,6 +37,10 @@
             {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet1"
             }
           ]
         }
@@ -53,12 +53,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet1"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet1"
             }
           ]
         }
@@ -95,12 +95,12 @@
           "Domain": "vpc",
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet1"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet1"
             }
           ]
         }
@@ -119,12 +119,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet1"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet1"
             }
           ]
         }
@@ -140,10 +140,6 @@
           "MapPublicIpOnLaunch": true,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet2"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Public"
             },
@@ -154,6 +150,10 @@
             {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet2"
             }
           ]
         }
@@ -166,12 +166,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet2"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet2"
             }
           ]
         }
@@ -208,12 +208,12 @@
           "Domain": "vpc",
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet2"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet2"
             }
           ]
         }
@@ -232,12 +232,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PublicSubnet2"
-            },
-            {
               "Key": "kubernetes.io/role/elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PublicSubnet2"
             }
           ]
         }
@@ -253,10 +253,6 @@
           "MapPublicIpOnLaunch": false,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PrivateSubnet1"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Private"
             },
@@ -267,6 +263,10 @@
             {
               "Key": "kubernetes.io/role/internal-elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PrivateSubnet1"
             }
           ]
         }
@@ -279,12 +279,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PrivateSubnet1"
-            },
-            {
               "Key": "kubernetes.io/role/internal-elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PrivateSubnet1"
             }
           ]
         }
@@ -323,10 +323,6 @@
           "MapPublicIpOnLaunch": false,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PrivateSubnet2"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Private"
             },
@@ -337,6 +333,10 @@
             {
               "Key": "kubernetes.io/role/internal-elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PrivateSubnet2"
             }
           ]
         }
@@ -349,12 +349,12 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-vpc/vpc/PrivateSubnet2"
-            },
-            {
               "Key": "kubernetes.io/role/internal-elb",
               "Value": "1"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-vpc/vpc/PrivateSubnet2"
             }
           ]
         }
@@ -828,10 +828,6 @@
           ],
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-cluster/cluster22/Nodes"
-            },
-            {
               "Key": {
                 "Fn::Join": [
                   "",
@@ -844,6 +840,10 @@
                 ]
               },
               "Value": "owned"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-cluster/cluster22/Nodes"
             }
           ],
           "VpcId": {
@@ -977,10 +977,6 @@
           ],
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "k8s-cluster/cluster22/Nodes"
-            },
-            {
               "Key": {
                 "Fn::Join": [
                   "",
@@ -993,6 +989,10 @@
                 ]
               },
               "Value": "owned"
+            },
+            {
+              "Key": "Name",
+              "Value": "k8s-cluster/cluster22/Nodes"
             }
           ]
         }
@@ -1055,11 +1055,6 @@
           },
           "Tags": [
             {
-              "Key": "Name",
-              "PropagateAtLaunch": true,
-              "Value": "k8s-cluster/cluster22/Nodes"
-            },
-            {
               "Key": {
                 "Fn::Join": [
                   "",
@@ -1073,6 +1068,11 @@
               },
               "PropagateAtLaunch": true,
               "Value": "owned"
+            },
+            {
+              "Key": "Name",
+              "PropagateAtLaunch": true,
+              "Value": "k8s-cluster/cluster22/Nodes"
             }
           ],
           "VPCZoneIdentifier": [

@@ -95,7 +95,13 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: ['*'],
+        // https://docs.aws.amazon.com/step-functions/latest/dg/concept-create-iam-advanced.html#concept-create-iam-advanced-execution
+        resources: [stack.formatArn({
+          service: 'states',
+          resource: 'execution',
+          sep: ':',
+          resourceName: `${stack.parseArn(this.stateMachine.stateMachineArn, ':').resourceName}*`,
+        })],
       }));
 
       policyStatements.push(new iam.PolicyStatement({

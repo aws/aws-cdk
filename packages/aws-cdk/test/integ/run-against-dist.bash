@@ -4,6 +4,20 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+
+# This script must create 1 or 2 traps, and the 'trap' command will replace
+# the previous trap, so get some 'dynamic traps' mechanism in place
+TRAPS=()
+
+function run_traps() {
+  for cmd in "${TRAPS[@]}"; do
+    echo "cleanup: $cmd" >&2
+    eval "$cmd"
+  done
+}
+
+trap run_traps EXIT
+
 function log() {
   echo >&2 "| $@"
 }
@@ -30,7 +44,8 @@ function serve_npm_packages() {
     echo "Testing against latest published versions of the framework"
 
     header "Installing aws-cdk from local tarballs..."
-    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install aws-cdk@${local_cli_version}) 
+    # Need 'npm install --prefix' otherwise it goes to the wrong directory
+    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install --prefix $npmws aws-cdk@${local_cli_version})
     export PATH=$npmws/node_modules/.bin:$PATH
 
   else
@@ -44,17 +59,18 @@ function serve_npm_packages() {
 
     # When using '--daemon', 'npm install' first so the files are permanent, or
     # 'npx' will remove them too soon.
-    npm install serve-npm-tarballs    
+    npm install serve-npm-tarballs
     eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
-    trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
+    TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
 
     header "Installing aws-cdk from local tarballs..."
-    (cd ${npmws} && npm install aws-cdk@${local_cli_version})
+    # Need 'npm install --prefix' otherwise it goes to the wrong directory
+    (cd ${npmws} && npm install --prefix $npmws aws-cdk@${local_cli_version})
     export PATH=$npmws/node_modules/.bin:$PATH
 
   fi
 
-  # a bit silly, but it verifies the PATH exports and just makes sure 
+  # a bit silly, but it verifies the PATH exports and just makes sure
   # that we run 'cdk' commands we use the version we just installed.
   verify_installed_cli_version ${local_cli_version}
 
@@ -64,7 +80,7 @@ function serve_npm_packages() {
 function verify_installed_cli_version() {
 
   expected_version=$1
-  
+
   header "Expected CDK version: ${expected_version}"
 
   log "Found CDK: $(type -p cdk)"
@@ -120,7 +136,7 @@ function prepare_nuget_packages() {
     mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
   fi
 
-  trap clean_up_nuget_config EXIT
+  TRAPS+=('clean_up_nuget_config')
 
   cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
 <?xml version="1.0" encoding="utf-8"?>

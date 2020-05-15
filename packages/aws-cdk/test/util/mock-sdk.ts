@@ -2,6 +2,12 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 
+const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '});
+
+const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
+  () => FAKE_CREDENTIALS,
+]);
+
 /**
  * An SDK that allows replacing (some of) the clients
  *
@@ -12,14 +18,11 @@ export class MockSdkProvider extends SdkProvider {
   private readonly sdk: ISDK;
 
   constructor() {
-    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+    super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
-    this.sdk = new SDK(
-      new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '}),
-      this.defaultRegion,
-      { customUserAgent: 'aws-cdk/jest' });
+    this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
   }
 
   public defaultAccount(): Promise<Account | undefined> {

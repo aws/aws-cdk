@@ -47,12 +47,17 @@ export -f package_name
 export -f package_exists_on_npm
 export -f dirs_to_existing_names
 
-
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
     # In parallel
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
+
+    if ! ${DOWNLOAD_LATEST:-false}; then
+        current_version=$(node -p 'require("./lerna.json").version')
+        echo "Using package version ${current_version} as baseline"
+        existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
+    fi
 
     rm -rf $tmpdir
     mkdir -p $tmpdir
@@ -62,9 +67,6 @@ if ! ${SKIP_DOWNLOAD:-false}; then
 fi
 
 #----------------------------------------------------------------------
-
-# get the current version from Lerna
-current_version=$(npx lerna ls -pl | head -n 1 | cut -d ':' -f 3)
 
 echo "Checking compatibility..." >&2
 success=true

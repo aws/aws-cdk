@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api');
-    api.root.addMethod('GET'); // must have at least one method
+    api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
     expect(stack).toMatch({
@@ -127,7 +127,7 @@ export = {
     test.done();
   },
 
-  'fails in synthesis if there are no methods'(test: Test) {
+  'fails in synthesis if there are no methods or definition'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');
@@ -674,6 +674,34 @@ export = {
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',
       AuthorizationType: 'AWS_IAM',
+    }));
+
+    test.done();
+  },
+
+  'addApiKey is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addApiKey('myapikey', {
+      apiKeyName: 'myApiKey1',
+      value: '01234567890ABCDEFabcdef',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+      Name: 'myApiKey1',
+      StageKeys: [
+        {
+          RestApiId: { Ref: 'myapi162F20B8' },
+          StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+        },
+      ],
+      Value: '01234567890ABCDEFabcdef',
     }));
 
     test.done();

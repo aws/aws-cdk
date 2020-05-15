@@ -42,7 +42,7 @@ export interface IRepository extends IResource {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
@@ -115,7 +115,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The URI of this repository (represents the latest image):
@@ -343,8 +343,9 @@ export class Repository extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -366,8 +367,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -379,8 +381,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult  {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -462,11 +465,12 @@ export class Repository extends RepositoryBase {
     }
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
+    return { statementAdded: false, policyDependable: this.policyDocument };
   }
 
   /**

@@ -34,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -107,15 +107,16 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
-      if (allowNoOp) { return; }
+      if (allowNoOp) { return { statementAdded: false }; }
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 
   /**

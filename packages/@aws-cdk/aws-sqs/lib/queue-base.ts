@@ -42,7 +42,7 @@ export interface IQueue extends IResource {
    * will be automatically created upon the first call to `addToPolicy`. If
    * the queue is improted (`Queue.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant permissions to consume messages from a queue
@@ -141,14 +141,17 @@ export abstract class QueueBase extends Resource implements IQueue {
    * will be automatically created upon the first call to `addToPolicy`. If
    * the queue is improted (`Queue.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new QueuePolicy(this, 'Policy', { queues: [ this ] });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
   }
 
   /**

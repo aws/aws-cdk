@@ -25,6 +25,16 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
       }
       return context[key];
     },
+
+    'Fn::Sub'(argument: string | [string, Record<string, string>]) {
+      const template: string = evaluate(Array.isArray(argument) ? argument[0] : argument);
+      const placeholders: Record<string, string> = Array.isArray(argument) ? evaluate(argument[1]) : context;
+
+      return template.replace(/\$\{([a-zA-Z0-9.:-]*)\}/g, (_: string, key: string) => {
+        if (key in placeholders) { return placeholders[key]; }
+        throw new Error(`Unknown placeholder in Fn::Sub: ${key}`);
+      });
+    },
   };
 
   return evaluate(object);

@@ -1,4 +1,5 @@
 # VSCode extension
+.vscode/
 /.favorites.json
 
 # TypeScript incremental build states
@@ -32,6 +33,3 @@ cdk.out/
 
 # Yarn error log
 yarn-error.log
-
-# Generated jest config
-jest.config.gen.json

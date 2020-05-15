@@ -13,3 +13,4 @@ tsconfig.json
 
 *.snk
 !.eslintrc.js
+!jest.config.js

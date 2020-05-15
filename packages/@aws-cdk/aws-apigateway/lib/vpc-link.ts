@@ -1,6 +1,17 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnVpcLink } from './apigateway.generated';
+
+/**
+ * Represents an API Gateway VpcLink
+ */
+export interface IVpcLink extends IResource {
+  /**
+   * Physical ID of the VpcLink resource
+   * @attribute
+   */
+  readonly vpcLinkId: string;
+}
 
 /**
  * Properties for a VpcLink
@@ -31,7 +42,18 @@ export interface VpcLinkProps {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
-export class VpcLink extends Resource {
+export class VpcLink extends Resource implements IVpcLink {
+  /**
+   * Import a VPC Link by its Id
+   */
+  public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
+    class Import extends Resource implements IVpcLink {
+      public vpcLinkId = vpcLinkId;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Physical ID of the VpcLink resource
    * @attribute

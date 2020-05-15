@@ -46,8 +46,35 @@ export interface IPrincipal extends IGrantable {
    *
    * @returns true if the statement was added, false if the principal in
    * question does not have a policy document to add the statement to.
+   *
+   * @deprecated Use `addToPrincipalPolicy` instead.
    */
   addToPolicy(statement: PolicyStatement): boolean;
+
+  /**
+   * Add to the policy of this principal.
+   */
+  addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult;
+}
+
+/**
+ * Result of calling `addToPrincipalPolicy`
+ */
+export interface AddToPrincipalPolicyResult {
+  /**
+   * Whether the statement was added to the identity's policies.
+   *
+   * @experimental
+   */
+  readonly statementAdded: boolean;
+
+  /**
+   * Dependable which allows depending on the policy change being applied
+   *
+   * @default - Required if `statementAdded` is true.
+   * @experimental
+   */
+  readonly policyDependable?: cdk.IDependable;
 }
 
 /**
@@ -66,10 +93,14 @@ export abstract class PrincipalBase implements IPrincipal {
    */
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
-  public addToPolicy(_statement: PolicyStatement): boolean {
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // This base class is used for non-identity principals. None of them
     // have a PolicyDocument to add to.
-    return false;
+    return { statementAdded: false };
   }
 
   public toString() {
@@ -153,7 +184,11 @@ export class PrincipalWithConditions implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.principal.addToPolicy(statement);
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    return this.principal.addToPrincipalPolicy(statement);
   }
 
   public toString() {

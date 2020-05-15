@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Cognito"
+    "cloudformation": "AWS::Cognito",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,7 +64,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -88,9 +89,8 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {},
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [

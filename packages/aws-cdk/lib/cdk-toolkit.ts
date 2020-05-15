@@ -346,8 +346,12 @@ export class CdkToolkit {
 
     const environments: cxapi.Environment[] = [
       ...environmentsFromDescriptors(environmentSpecs),
-      ...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider),
     ];
+
+    // If there is an '--app' argument, select the environments from the app.
+    if (this.props.cloudExecutable.hasApp) {
+      environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
+    }
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
@@ -447,6 +451,7 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
 }
 
 export interface DiffOptions {

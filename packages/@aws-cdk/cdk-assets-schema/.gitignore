@@ -13,3 +13,4 @@ tsconfig.json
 coverage
 nyc.config.js
 !.eslintrc.js
+!jest.config.js
