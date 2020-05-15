@@ -159,6 +159,23 @@ describe('DNS Validated Certificate Handler', () => {
         CertificateArn: testCertificateArn
       }
     });
+    describeCertificateFake.onSecondCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [
+          {
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testRRName,
+              Type: 'CNAME',
+              Value: testRRValue
+            }
+          }, {
+            ValidationStatus: 'PENDING_VALIDATION'
+          }
+        ]
+      }
+    })
     describeCertificateFake.resolves({
       Certificate: {
         CertificateArn: testCertificateArn,

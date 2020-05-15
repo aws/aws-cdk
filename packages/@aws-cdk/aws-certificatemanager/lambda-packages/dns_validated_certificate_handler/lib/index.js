@@ -105,7 +105,8 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
     const options = Certificate.DomainValidationOptions || [];
-    if (options.length > 0 && options[0].ResourceRecord) {
+    const numberOfCertsToValidate = (subjectAlternativeNames || []).length + 1;
+    if (options.length >= numberOfCertsToValidate && options.every(val => val.ResourceRecord)) {
       // some alternative names will produce the same validation record
       // as the main domain (eg. example.com + *.example.com)
       // filtering duplicates to avoid errors with adding the same record
