@@ -6,9 +6,10 @@ import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, ListenerCondition, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
+import { ListenerCondition } from './conditions';
 
 /**
  * Basic properties for an ApplicationListener
