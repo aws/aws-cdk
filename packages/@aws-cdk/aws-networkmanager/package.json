@@ -48,7 +48,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::NetworkManager"
+    "cloudformation": "AWS::NetworkManager",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -62,7 +63,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -77,7 +77,7 @@
     "@aws-cdk/core": "0.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "cfn-only",

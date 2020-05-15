@@ -283,6 +283,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
+
+          return { statementAdded: true, policyDependable: this.node.findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
       },

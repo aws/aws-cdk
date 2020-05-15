@@ -85,6 +85,95 @@ test('Execute State Machine - Sync', () => {
       },
     },
   });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'ChildStateMachine9133117F',
+          },
+        },
+        {
+          Action: [
+            'states:DescribeExecution',
+            'states:StopExecution',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'ChildStateMachine9133117F',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForStepFunctionsExecutionRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [
+      {
+        Ref: 'ParentStateMachineRoleE902D002',
+      },
+    ],
+  });
 });
 
 test('Execute State Machine - Wait For Task Token', () => {
