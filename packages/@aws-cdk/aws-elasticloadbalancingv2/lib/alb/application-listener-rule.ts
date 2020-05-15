@@ -172,7 +172,7 @@ export interface RedirectResponse {
 }
 
 /**
- * Interface for a listener rule condition
+ * ListenerCondition providers definition.
  */
 export abstract class ListenerCondition {
   /**
