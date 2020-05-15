@@ -53,7 +53,7 @@ For setting up a local development environment,
 we recommend using [Gitpod](http://gitpod.io) -
 a service that allows you to spin up an in-browser
 Visual Studio Code-compatible editor,
-with everything setup up and ready to go for CDK development.
+with everything set up and ready to go for CDK development.
 Just click the button below to create your private workspace:
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
