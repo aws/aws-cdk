@@ -464,8 +464,6 @@ export class ApplicationListenerRule extends cdk.Construct {
 
   /**
    * Add a non-standard condition to this rule
-   *
-   * If the condition conflicts with an already set condition, it will be overwritten by the one you specified.
    */
   public addCondition(condition: ListenerCondition) {
     this.conditions.push(condition);
