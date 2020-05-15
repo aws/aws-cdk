@@ -1,4 +1,4 @@
-# Event Targets for AWS CloudWatch Events
+# Event Targets for AWS EventBridge
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -7,7 +7,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-This library contains integration classes to send AWS CloudWatch Events to any
+This library contains integration classes to send AWS EventBridge to any
 number of supported AWS Services. Instances of these classes should be passed
 to the `rule.addTarget()` method.
 
@@ -24,6 +24,6 @@ Currently supported are:
 * Make an AWS API call
 
 See the README of the `@aws-cdk/aws-events` library for more information on
-CloudWatch Events.
+EventBridge.
 
 
