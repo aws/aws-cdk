@@ -18,7 +18,7 @@
             "value": "DeviceTemplate"
           }
         ],
-        "description": "Set type of AWS::IoT1Click::Project.PlacementTemplate.DeviceTemplates to AWS::IoT1Click::Project.DeviceTemplate"
+        "description": "Set type of AWS::IoT1Click::Project.PlacementTemplate.DeviceTemplates to Map<String, AWS::IoT1Click::Project.DeviceTemplate>"
       }
     }
   }
