@@ -109,7 +109,7 @@ new HttpApi(stack, 'HttpProxyApi', {
     allowHeaders: ['Authorization'],
     allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
     allowOrigins: ['*'],
-    maxAge: Duration.seconds(36400),
+    maxAge: Duration.days(10),
   },
 });
 ```
