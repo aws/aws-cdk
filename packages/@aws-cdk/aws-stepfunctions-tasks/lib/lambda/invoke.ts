@@ -56,6 +56,9 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
+  protected readonly taskMetrics: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
+
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LambdaInvokeProps) {

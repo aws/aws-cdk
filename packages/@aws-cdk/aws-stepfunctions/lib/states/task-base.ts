@@ -89,9 +89,8 @@ export abstract class TaskStateBase extends State implements INextable {
 
   public readonly endStates: INextable[];
 
-  protected taskMetrics: TaskMetricsConfig = {};
-
-  protected taskPolicies: iam.PolicyStatement[] | undefined;
+  protected abstract readonly taskMetrics: TaskMetricsConfig | undefined;
+  protected abstract readonly taskPolicies: iam.PolicyStatement[] | undefined;
 
   constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
