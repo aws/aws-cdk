@@ -255,6 +255,21 @@ export = {
     });
     test.done();
   },
+
+  'detects duplicate logical IDs in the same Stack caused by overrideLogicalId'(test: Test) {
+    const stack = new Stack();
+    const resource1 = new CfnResource(stack, 'A', { type: 'Type::Of::A' });
+    const resource2 = new CfnResource(stack, 'B', { type: 'Type::Of::B' });
+
+    resource1.overrideLogicalId('C');
+    resource2.overrideLogicalId('C');
+
+    test.throws(() => {
+      toCloudFormation(stack);
+    }, /section 'Resources' already contains 'C'/);
+
+    test.done();
+  },
 };
 
 function generateString(chars: number) {
