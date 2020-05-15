@@ -231,11 +231,6 @@ export abstract class ListenerCondition {
   }
 
   /**
-   * Listener condition field type
-   */
-  public readonly abstract field: string;
-
-  /**
    * Render the raw Cfn listener rule condition object.
    */
   public abstract renderRawCondition(): any;
@@ -262,15 +257,13 @@ export interface QueryStringCondition {
  * Host header config of the listener rule condition
  */
 class HostHeaderListenerCondition extends ListenerCondition {
-  public readonly field = 'host-header';
-
   constructor(public readonly values: string[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'host-header',
       hostHeaderConfig: {
         values: this.values,
       },
@@ -282,15 +275,13 @@ class HostHeaderListenerCondition extends ListenerCondition {
  * HTTP header config of the listener rule condition
  */
 class HttpHeaderListenerCondition extends ListenerCondition {
-  public readonly field = 'http-header';
-
   constructor(public readonly name: string, public readonly values: string[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'http-header',
       httpHeaderConfig: {
         httpHeaderName: this.name,
         values: this.values,
@@ -303,15 +294,13 @@ class HttpHeaderListenerCondition extends ListenerCondition {
  * HTTP reqeust method config of the listener rule condition
  */
 class HttpRequestMethodListenerCondition extends ListenerCondition {
-  public readonly field = 'http-request-method';
-
   constructor(public readonly values: string[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'http-request-method',
       httpRequestMethodConfig: {
         values: this.values,
       },
@@ -323,15 +312,13 @@ class HttpRequestMethodListenerCondition extends ListenerCondition {
  * Path pattern config of the listener rule condition
  */
 class PathPatternListenerCondition extends ListenerCondition {
-  public readonly field = 'path-pattern';
-
   constructor(public readonly values: string[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'path-pattern',
       pathPatternConfig: {
         values: this.values,
       },
@@ -343,15 +330,13 @@ class PathPatternListenerCondition extends ListenerCondition {
  * Query string config of the listener rule condition
  */
 class QueryStringListenerCondition extends ListenerCondition {
-  public readonly field = 'query-string';
-
   constructor(public readonly values: QueryStringCondition[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'query-string',
       queryStringConfig: {
         values: this.values,
       },
@@ -363,15 +348,13 @@ class QueryStringListenerCondition extends ListenerCondition {
  * Source ip config of the listener rule condition
  */
 class SourceIpListenerCondition extends ListenerCondition {
-  public readonly field = 'source-ip';
-
   constructor(public readonly values: string[]) {
     super();
   }
 
   public renderRawCondition(): any {
     return {
-      field: this.field,
+      field: 'source-ip',
       sourceIpConfig: {
         values: this.values,
       },
@@ -513,8 +496,7 @@ export class ApplicationListenerRule extends cdk.Construct {
     }
 
     const legacyConditionFields = Object.keys(this.legacyConditions);
-    const conditionFields = this.conditions.map(condition => condition.field);
-    if (legacyConditionFields.length === 0 && conditionFields.length === 0) {
+    if (legacyConditionFields.length === 0 && this.conditions.length === 0) {
       return ['Listener rule needs at least one condition'];
     }
 
