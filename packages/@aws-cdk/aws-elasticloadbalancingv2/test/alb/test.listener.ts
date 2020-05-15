@@ -1010,15 +1010,15 @@ export = {
     listener.addTargetGroups('TargetGroup1', {
       priority: 10,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
-        elbv2.ListenerRuleCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
       ],
       targetGroups: [group1],
     });
     listener.addTargetGroups('TargetGroup2', {
       priority: 20,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
       ],
       targetGroups: [group2],
     });
@@ -1076,32 +1076,32 @@ export = {
     listener.addTargetGroups('TargetGroup1', {
       priority: 10,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
-        elbv2.ListenerRuleCondition.sourceIps(['192.0.2.0/24']),
-        elbv2.ListenerRuleCondition.queryStrings([{ key: 'version', value: '2' }, { value: 'foo*' }]),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.sourceIps(['192.0.2.0/24']),
+        elbv2.ListenerCondition.queryStrings([{ key: 'version', value: '2' }, { value: 'foo*' }]),
       ],
       targetGroups: [group1],
     });
     listener.addTargetGroups('TargetGroup2', {
       priority: 20,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
-        elbv2.ListenerRuleCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.httpHeader('Accept', ['application/vnd.myapp.v2+json']),
       ],
       targetGroups: [group1],
     });
     listener.addTargetGroups('TargetGroup3', {
       priority: 30,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
-        elbv2.ListenerRuleCondition.httpRequestMethods(['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK']),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.httpRequestMethods(['PUT', 'COPY', 'LOCK', 'MKCOL', 'MOVE', 'PROPFIND', 'PROPPATCH', 'UNLOCK']),
       ],
       targetGroups: [group2],
     });
     listener.addTargetGroups('TargetGroup4', {
       priority: 40,
       conditions: [
-        elbv2.ListenerRuleCondition.hostHeaders(['app.test']),
+        elbv2.ListenerCondition.hostHeaders(['app.test']),
       ],
       targetGroups: [group3],
     });
@@ -1209,7 +1209,7 @@ export = {
       hostHeader: 'app.test',
       pathPattern: '/test',
       conditions: [
-        elbv2.ListenerRuleCondition.sourceIps(['192.0.2.0/24']),
+        elbv2.ListenerCondition.sourceIps(['192.0.2.0/24']),
       ],
       priority: 10,
       targetGroups: [group1],

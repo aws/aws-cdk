@@ -66,7 +66,7 @@ Use the `addFixedResponse()` method to add fixed response rules on the listener:
 ```ts
 listener.addFixedResponse('Fixed', {
     conditions: [
-        ListenerRuleCondition.pathPatterns(['/ok']),
+        ListenerCondition.pathPatterns(['/ok']),
     ],
     contentType: elbv2.ContentType.TEXT_PLAIN,
     messageBody: 'OK',
@@ -85,8 +85,8 @@ AutoScalingGroup only if the requested host in the request is either for
 listener.addTargets('Example.Com Fleet', {
     priority: 10,
     conditions: [
-        ListenerRuleCondition.hostHeaders(['example.com']),
-        ListenerRuleCondition.pathPatterns(['/ok', '/path']),
+        ListenerCondition.hostHeaders(['example.com']),
+        ListenerCondition.pathPatterns(['/ok', '/path']),
     ],
     port: 8080,
     targets: [asg]

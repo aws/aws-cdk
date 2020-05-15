@@ -47,7 +47,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default - No conditions.
    */
-  readonly conditions?: ListenerRuleCondition[];
+  readonly conditions?: ListenerCondition[];
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -174,14 +174,14 @@ export interface RedirectResponse {
 /**
  * Interface for a listener rule condition
  */
-export abstract class ListenerRuleCondition {
+export abstract class ListenerCondition {
   /**
    * Create a host-header listener rule condition
    *
    * @param values Hosts for host headers
    */
-  public static hostHeaders(values: string[]): ListenerRuleCondition {
-    return new HostHeaderListenerRuleCondition(values);
+  public static hostHeaders(values: string[]): ListenerCondition {
+    return new HostHeaderListenerCondition(values);
   }
 
   /**
@@ -190,8 +190,8 @@ export abstract class ListenerRuleCondition {
    * @param name HTTP header name
    * @param values HTTP header values
    */
-  public static httpHeader(name: string, values: string[]): ListenerRuleCondition {
-    return new HttpHeaderListenerRuleCondition(name, values);
+  public static httpHeader(name: string, values: string[]): ListenerCondition {
+    return new HttpHeaderListenerCondition(name, values);
   }
 
   /**
@@ -199,8 +199,8 @@ export abstract class ListenerRuleCondition {
    *
    * @param values HTTP request methods
    */
-  public static httpRequestMethods(values: string[]): ListenerRuleCondition {
-    return new HttpRequestMethodListenerRuleCondition(values);
+  public static httpRequestMethods(values: string[]): ListenerCondition {
+    return new HttpRequestMethodListenerCondition(values);
   }
 
   /**
@@ -208,8 +208,8 @@ export abstract class ListenerRuleCondition {
    *
    * @param values Path patterns
    */
-  public static pathPatterns(values: string[]): ListenerRuleCondition {
-    return new PathPatternListenerRuleCondition(values);
+  public static pathPatterns(values: string[]): ListenerCondition {
+    return new PathPatternListenerCondition(values);
   }
 
   /**
@@ -217,8 +217,8 @@ export abstract class ListenerRuleCondition {
    *
    * @param values Query string key/value pairs
    */
-  public static queryStrings(values: QueryStringConditionProps[]): ListenerRuleCondition {
-    return new QueryStringListenerRuleCondition(values);
+  public static queryStrings(values: QueryStringCondition[]): ListenerCondition {
+    return new QueryStringListenerCondition(values);
   }
 
   /**
@@ -226,8 +226,8 @@ export abstract class ListenerRuleCondition {
    *
    * @param values Source ips
    */
-  public static sourceIps(values: string[]): ListenerRuleCondition {
-    return new SourceIpListenerRuleCondition(values);
+  public static sourceIps(values: string[]): ListenerCondition {
+    return new SourceIpListenerCondition(values);
   }
 
   /**
@@ -244,7 +244,7 @@ export abstract class ListenerRuleCondition {
 /**
  * Properties for the key/value pair of the query string
  */
-export interface QueryStringConditionProps {
+export interface QueryStringCondition {
   /**
    * The query string key for the condition
    *
@@ -261,7 +261,7 @@ export interface QueryStringConditionProps {
 /**
  * Host header config of the listener rule condition
  */
-class HostHeaderListenerRuleCondition extends ListenerRuleCondition {
+class HostHeaderListenerCondition extends ListenerCondition {
   public readonly field = 'host-header';
 
   constructor(public readonly values: string[]) {
@@ -281,7 +281,7 @@ class HostHeaderListenerRuleCondition extends ListenerRuleCondition {
 /**
  * HTTP header config of the listener rule condition
  */
-class HttpHeaderListenerRuleCondition extends ListenerRuleCondition {
+class HttpHeaderListenerCondition extends ListenerCondition {
   public readonly field = 'http-header';
 
   constructor(public readonly name: string, public readonly values: string[]) {
@@ -302,7 +302,7 @@ class HttpHeaderListenerRuleCondition extends ListenerRuleCondition {
 /**
  * HTTP reqeust method config of the listener rule condition
  */
-class HttpRequestMethodListenerRuleCondition extends ListenerRuleCondition {
+class HttpRequestMethodListenerCondition extends ListenerCondition {
   public readonly field = 'http-request-method';
 
   constructor(public readonly values: string[]) {
@@ -322,7 +322,7 @@ class HttpRequestMethodListenerRuleCondition extends ListenerRuleCondition {
 /**
  * Path pattern config of the listener rule condition
  */
-class PathPatternListenerRuleCondition extends ListenerRuleCondition {
+class PathPatternListenerCondition extends ListenerCondition {
   public readonly field = 'path-pattern';
 
   constructor(public readonly values: string[]) {
@@ -342,10 +342,10 @@ class PathPatternListenerRuleCondition extends ListenerRuleCondition {
 /**
  * Query string config of the listener rule condition
  */
-class QueryStringListenerRuleCondition extends ListenerRuleCondition {
+class QueryStringListenerCondition extends ListenerCondition {
   public readonly field = 'query-string';
 
-  constructor(public readonly values: QueryStringConditionProps[]) {
+  constructor(public readonly values: QueryStringCondition[]) {
     super();
   }
 
@@ -362,7 +362,7 @@ class QueryStringListenerRuleCondition extends ListenerRuleCondition {
 /**
  * Source ip config of the listener rule condition
  */
-class SourceIpListenerRuleCondition extends ListenerRuleCondition {
+class SourceIpListenerCondition extends ListenerCondition {
   public readonly field = 'source-ip';
 
   constructor(public readonly values: string[]) {
@@ -388,7 +388,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: ListenerRuleCondition[];
+  private readonly conditions: ListenerCondition[];
   private readonly legacyConditions: {[key: string]: string[]} = {};
 
   private readonly actions: any[] = [];
@@ -467,7 +467,7 @@ export class ApplicationListenerRule extends cdk.Construct {
    *
    * If the condition conflicts with an already set condition, it will be overwritten by the one you specified.
    */
-  public addCondition(condition: ListenerRuleCondition) {
+  public addCondition(condition: ListenerCondition) {
     this.conditions.push(condition);
   }
 

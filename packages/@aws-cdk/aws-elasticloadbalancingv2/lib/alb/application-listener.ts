@@ -6,7 +6,7 @@ import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, ListenerRuleCondition, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, ListenerCondition, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -551,7 +551,7 @@ export interface AddRuleProps {
    *
    * @default - No conditions.
    */
-  readonly conditions?: ListenerRuleCondition[];
+  readonly conditions?: ListenerCondition[];
 
   /**
    * Rule applies if the requested host matches the indicated host
