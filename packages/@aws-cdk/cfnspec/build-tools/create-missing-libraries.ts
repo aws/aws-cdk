@@ -150,6 +150,7 @@ async function main() {
       },
       'cdk-build': {
         cloudformation: namespace,
+        jest: true,
       },
       keywords: [
         'aws',
@@ -163,7 +164,6 @@ async function main() {
         url: 'https://aws.amazon.com',
         organization: true,
       },
-      jest: {},
       license: 'Apache-2.0',
       devDependencies: {
         '@aws-cdk/assert': version,
@@ -178,7 +178,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.13.0',
+        node: '>= 10.13.0 <13 || >=13.7.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
@@ -206,6 +206,7 @@ async function main() {
       '*.snk',
       'nyc.config.js',
       '!.eslintrc.js',
+      '!jest.config.js',
     ]);
 
     await write('.npmignore', [
@@ -231,6 +232,7 @@ async function main() {
       'tsconfig.json',
       '',
       '.eslintrc.js',
+      'jest.config.js',
     ]);
 
     await write('lib/index.ts', [
@@ -269,6 +271,11 @@ async function main() {
     await write('.eslintrc.js', [
       "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
       "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
+      'module.exports = baseConfig;',
+    ]);
+
+    await write('jest.config.js', [
+      "const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 
