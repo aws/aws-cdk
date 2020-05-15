@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
+import {Arn, ArnComponents, CfnOutput, ScopedAws, Stack} from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -94,6 +94,25 @@ export = {
       service: 'foo',
       resource: 'bar',
       sep: 'x' }));
+    test.done();
+  },
+
+  'works with all components and Stack is undefined'(test: Test) {
+    test.equal(Arn.format({
+      service: 'foo',
+      resource: 'bar',
+      partition: 'partition',
+      region: 'region',
+      account: 'accountid',
+    }), 'arn:partition:foo:region:accountid:bar');
+    test.done();
+  },
+
+  'fails if missing a component and Stack is undefined'(test: Test) {
+    test.throws(() => Arn.format({
+      service: 'foo',
+      resource: 'bar',
+    }), /Stack must be defined if .* component is undefined/);
     test.done();
   },
 

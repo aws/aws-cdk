@@ -75,12 +75,24 @@ export class Arn {
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
    * can be 'undefined'.
+   * @param components the components of the ARN to be formatted
+   * @param stack the Stack, used to pull Arn components if any of 'partition',
+   *              'region', or 'account' are undefined
    */
-  public static format(components: ArnComponents, stack: Stack): string {
-    const partition = components.partition !== undefined ? components.partition : stack.partition;
-    const region = components.region !== undefined ? components.region : stack.region;
-    const account = components.account !== undefined ? components.account : stack.account;
-    const sep = components.sep !== undefined ? components.sep : '/';
+  public static format(components: ArnComponents, stack?: Stack): string {
+    const requiredComponents: Array<keyof ArnComponents> = ['partition', 'region', 'account'];
+    if (!stack) {
+      for (const rc of requiredComponents) {
+        if (components[rc] === undefined) {
+          throw new Error(`Stack must be defined if "${rc}" component is undefined`);
+        }
+      }
+    }
+
+    const partition = components.partition ?? stack!.partition;
+    const region = components.region ?? stack!.region;
+    const account = components.account ?? stack!.account;
+    const sep = components.sep ?? '/';
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 
