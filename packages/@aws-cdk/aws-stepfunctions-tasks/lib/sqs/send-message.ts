@@ -67,8 +67,6 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   ];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private readonly metricsConfig: sfn.TaskMetricsConfig = {};
-  private readonly policies: iam.PolicyStatement[];
 
   constructor(scope: cdk.Construct, id: string, private readonly props: SqsSendMessageProps) {
     super(scope, id, props);
@@ -82,7 +80,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
       }
     }
 
-    this.policies = [
+    this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.props.queue.queueArn],
@@ -103,13 +101,5 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     };
 
     return taskStateJson(taskConfig);
-  }
-
-  protected taskMetrics(): sfn.TaskMetricsConfig {
-    return this.metricsConfig;
-  }
-
-  protected taskPolicies(): iam.PolicyStatement[] {
-    return this.policies;
   }
 }

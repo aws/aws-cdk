@@ -62,8 +62,6 @@ export class SnsPublish extends sfn.TaskStateBase {
   ];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private readonly metricsConfig: sfn.TaskMetricsConfig = {};
-  private readonly policies: iam.PolicyStatement[];
 
   constructor(scope: cdk.Construct, id: string, private readonly props: SnsPublishProps) {
     super(scope, id, props);
@@ -77,7 +75,7 @@ export class SnsPublish extends sfn.TaskStateBase {
       }
     }
 
-    this.policies = [
+    this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [this.props.topic.topicArn],
@@ -97,13 +95,5 @@ export class SnsPublish extends sfn.TaskStateBase {
     };
 
     return taskStateJson(taskConfig);
-  }
-
-  protected taskMetrics(): sfn.TaskMetricsConfig {
-    return this.metricsConfig;
-  }
-
-  protected taskPolicies(): iam.PolicyStatement[] {
-    return this.policies;
   }
 }

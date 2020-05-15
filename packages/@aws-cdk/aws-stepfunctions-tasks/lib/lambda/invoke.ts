@@ -57,8 +57,6 @@ export class LambdaInvoke extends sfn.TaskStateBase {
   ];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private readonly metricsConfig: sfn.TaskMetricsConfig;
-  private readonly policies: iam.PolicyStatement[];
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LambdaInvokeProps) {
     super(scope, id, props);
@@ -71,13 +69,13 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `payload` for callback. Use Context.taskToken to set the token.');
     }
 
-    this.metricsConfig = {
+    this.taskMetrics = {
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.props.lambdaFunction.functionArn },
     };
 
-    this.policies = [
+    this.taskPolicies = [
       new iam.PolicyStatement({
         resources: [this.props.lambdaFunction.functionArn],
         actions: ['lambda:InvokeFunction'],
@@ -101,21 +99,6 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     };
 
     return taskStateJson(taskStateConfig);
-  }
-
-  /**
-   * Additional policy statements that will be added to the state machine's
-   * execution role
-   */
-  protected taskPolicies(): iam.PolicyStatement[] {
-    return this.policies;
-  }
-
-  /**
-   * metrics configuration properties for the task
-   */
-  protected taskMetrics(): sfn.TaskMetricsConfig {
-    return this.metricsConfig;
   }
 }
 
