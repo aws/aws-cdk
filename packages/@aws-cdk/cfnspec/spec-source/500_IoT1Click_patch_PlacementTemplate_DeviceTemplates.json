@@ -10,6 +10,11 @@
           {
             "op": "add",
             "path": "/Properties/DeviceTemplates/Type",
+            "value": "Map"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DeviceTemplates/ItemType",
             "value": "DeviceTemplate"
           }
         ],
