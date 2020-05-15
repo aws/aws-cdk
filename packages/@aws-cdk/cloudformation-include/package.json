@@ -47,7 +47,8 @@
   "cdk-build": {
     "pre": [
       "node ./build.js"
-    ]
+    ],
+    "jest": true
   },
   "author": {
     "name": "Amazon Web Services",
@@ -295,38 +296,16 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.2",
     "@types/yaml": "1.2.0",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.4.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.4.0"
+    "ts-jest": "^26.0.0"
   },
   "bundledDependencies": [
     "yaml"
   ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "ts"
-    ],
-    "collectCoverage": true,
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ],
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/?(*.)+(test).ts"
-    ]
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -340,7 +319,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
