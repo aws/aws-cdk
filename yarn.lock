@@ -1544,10 +1544,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.21.tgz#c00e9603399126925806bed2d9a1e37da506965e"
   integrity sha512-PQKsydPxYxF1DsAFWmunaxd3sOi3iMt6Zmx/tgaagHYmwJ/9cRH91hQkeJZaUGWbvn0K5HlSVEXkn5U/llWPpQ==
 
-"@types/nodeunit@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/nodeunit/-/nodeunit-0.0.30.tgz#48d2c2719a118c7723b83306c3e800b11a2bf678"
-  integrity sha1-SNLCcZoRjHcjuDMGw+gAsRor9ng=
+"@types/nodeunit@^0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/nodeunit/-/nodeunit-0.0.31.tgz#67eb52ad22326c7d1d9febe99d553f33b166126d"
+  integrity sha512-gZvDnqhHmp2IFzvQ59VJioI84/A+FZxGbp3OqoGhvQRfFQgbCqnK+SsYMWKfXODHpJfDbTnjvgoD+xeW05fQjg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -1578,10 +1578,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/sinon@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-9.0.0.tgz#5b70a360f55645dd64f205defd2a31b749a59799"
-  integrity sha512-v2TkYHkts4VXshMkcmot/H+ERZ2SevKa10saGaJPGCJ8vh3lKrC4u663zYEeRZxep+VbG6YRDtQ6gVqw9dYzPA==
+"@types/sinon@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-9.0.1.tgz#463da26696a3d142a336a5dcbefc99006a6d6f38"
+  integrity sha512-vqWk3K1HYJExooYgORUdiGX1EdCWQxPi7P/OEIetdaJn4jNvEYoRRGLG/HwomtbzZ4IP9Syz2k4N50CItv6w6g==
   dependencies:
     "@types/sinonjs__fake-timers" "*"
 
