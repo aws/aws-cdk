@@ -310,7 +310,12 @@ export class DockerImageCode extends AssetCode {
       throw new Error(`[Status ${docker.status}] stdout: ${docker.stdout?.toString().trim()}\n\n\nstderr: ${docker.stderr?.toString().trim()}`);
     }
 
-    super(options.assetPath);
+    super(options.assetPath, {
+      exclude: options.exclude,
+      follow: options.follow,
+      readers: options.readers,
+      sourceHash: options.sourceHash,
+    });
   }
 }
 
