@@ -1,4 +1,3 @@
-// import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
 import { IStage } from '../common';
