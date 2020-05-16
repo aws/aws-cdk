@@ -70,12 +70,6 @@ export interface AddDomainNameOptions {
    */
   readonly certificate: ICertificate;
 
-  // /**
-  //  * enable default stage mapping to this domain name
-  //  *
-  //  * @default true
-  //  */
-  // readonly defaultStageMapping?: boolean;
   /**
    * The stage mapping to the domain name
    */
