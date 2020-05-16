@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { State } from './state';
+import { renderJsonPath, State } from './state';
 
 import * as cdk from '@aws-cdk/core';
 
@@ -89,12 +89,17 @@ export abstract class TaskStateBase extends State implements INextable {
 
   public readonly endStates: INextable[];
 
-  protected abstract readonly taskMetrics: TaskMetricsConfig | undefined;
-  protected abstract readonly taskPolicies: iam.PolicyStatement[] | undefined;
+  protected abstract readonly taskMetrics?: TaskMetricsConfig;
+  protected abstract readonly taskPolicies?: iam.PolicyStatement[];
+
+  private readonly timeout?: cdk.Duration;
+  private readonly heartbeat?: cdk.Duration;
 
   constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
+    this.timeout = props.timeout;
+    this.heartbeat = props.heartbeat;
   }
 
   /**
@@ -134,6 +139,7 @@ export abstract class TaskStateBase extends State implements INextable {
     return {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
+      ...this.renderTaskBase(),
       ...this.renderTask(),
     };
   }
@@ -248,6 +254,18 @@ export abstract class TaskStateBase extends State implements INextable {
       throw new Error('This Task Resource does not expose metrics');
     }
     return this.metric(prefix + suffix, props);
+  }
+
+  private renderTaskBase() {
+    return {
+      Type: 'Task',
+      Comment: this.comment,
+      TimeoutSeconds: this.timeout?.toSeconds(),
+      HeartbeatSeconds: this.heartbeat?.toSeconds(),
+      InputPath: renderJsonPath(this.inputPath),
+      OutputPath: renderJsonPath(this.outputPath),
+      ResultPath: renderJsonPath(this.resultPath),
+    };
   }
 }
 

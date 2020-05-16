@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn, TaskStateConfig, taskStateJson, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for SendMessageTask
@@ -92,17 +92,15 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   }
 
   protected renderTask(): any {
-    const taskConfig: TaskStateConfig = {
-      resourceArn: getResourceArn('sqs', 'sendMessage', this.integrationPattern),
-      parameters: {
+    return {
+      Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         QueueUrl: this.props.queue.queueUrl,
         MessageBody: this.props.messageBody.value,
         DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
-      },
+      }),
     };
-
-    return taskStateJson(taskConfig);
   }
 }

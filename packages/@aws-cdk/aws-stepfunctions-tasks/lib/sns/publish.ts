@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn, TaskStateConfig, taskStateJson, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for PublishTask
@@ -87,16 +87,14 @@ export class SnsPublish extends sfn.TaskStateBase {
   }
 
   protected renderTask(): any {
-    const taskConfig: TaskStateConfig = {
-      resourceArn: getResourceArn('sns', 'publish', this.integrationPattern),
-      parameters: {
+    return {
+      Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
         Subject: this.props.subject,
-      },
+      }),
     };
-
-    return taskStateJson(taskConfig);
   }
 }
