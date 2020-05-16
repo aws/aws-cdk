@@ -139,7 +139,7 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 
 ### Custom Domain Name
 
-Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a API `Stage`. Use `HttpApiMapping` to map the your custom name to a specific `Stage`. 
+Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a single API stage. Use `HttpApiMapping` to map the your custom name to a specific stage. 
 
 The code snippet below configures a custom domain for your API and creates a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
 
