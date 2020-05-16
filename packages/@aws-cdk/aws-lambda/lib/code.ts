@@ -241,7 +241,7 @@ export interface DockerVolume {
 /**
  * Docker run options
  */
-export interface DockerRunOptions {
+export interface DockerRunOptions extends s3_assets.AssetOptions {
   /**
    * The command to run in the container.
    */
