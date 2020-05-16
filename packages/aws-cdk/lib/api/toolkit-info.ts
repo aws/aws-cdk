@@ -7,7 +7,13 @@ import { waitForStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
-/** @experimental */
+/**
+ * Information on the Bootstrap stack
+ *
+ * Called "ToolkitInfo" for historical reasons.
+ *
+ * @experimental
+ */
 export class ToolkitInfo {
   public static determineName(overrideName?: string) {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;

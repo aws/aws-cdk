@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { HttpApiMapping } from './api-mapping';
 import { AddDomainNameOptions, DomainName } from './domain-name';
@@ -39,7 +39,53 @@ export interface HttpApiProps {
    */
   readonly createDefaultStage?: boolean;
 
-  // readonly domainName?: DomainNameOptions;
+  /**
+   * Specifies a CORS configuration for an API.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html
+   * @default - CORS disabled.
+   */
+  readonly corsPreflight?: CorsPreflightOptions;
+}
+
+/**
+ * Options for the CORS Configuration
+ */
+export interface CorsPreflightOptions {
+  /**
+   * Specifies whether credentials are included in the CORS request.
+   * @default false
+   */
+  readonly allowCredentials?: boolean;
+
+  /**
+   * Represents a collection of allowed headers.
+   * @default - No Headers are allowed.
+   */
+  readonly allowHeaders?: string[];
+
+  /**
+   * Represents a collection of allowed HTTP methods.
+   * @default - No Methods are allowed.
+   */
+  readonly allowMethods?: HttpMethod[];
+
+  /**
+   * Represents a collection of allowed origins.
+   * @default - No Origins are allowed.
+   */
+  readonly allowOrigins?: string[];
+
+  /**
+   * Represents a collection of exposed headers.
+   * @default - No Expose Headers are allowed.
+   */
+  readonly exposeHeaders?: string[];
+
+  /**
+   * The duration that the browser should cache preflight request results.
+   * @default Duration.seconds(0)
+   */
+  readonly maxAge?: Duration;
 }
 
 /**
@@ -81,10 +127,32 @@ export class HttpApi extends Resource implements IHttpApi {
 
     const apiName = props?.apiName ?? id;
 
+    let corsConfiguration: CfnApi.CorsProperty | undefined;
+    if (props?.corsPreflight) {
+      const {
+        allowCredentials,
+        allowHeaders,
+        allowMethods,
+        allowOrigins,
+        exposeHeaders,
+        maxAge,
+      } = props.corsPreflight;
+      corsConfiguration = {
+        allowCredentials,
+        allowHeaders,
+        allowMethods,
+        allowOrigins,
+        exposeHeaders,
+        maxAge: maxAge?.toSeconds(),
+      };
+    }
+
     const apiProps: CfnApiProps = {
       name: apiName,
       protocolType: 'HTTP',
+      corsConfiguration,
     };
+
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
 
@@ -153,3 +221,4 @@ export class HttpApi extends Resource implements IHttpApi {
     return dn;
   }
 }
+
