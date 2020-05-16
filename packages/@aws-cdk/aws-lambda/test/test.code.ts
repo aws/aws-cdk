@@ -213,6 +213,10 @@ export = {
           containerPath: '/src',
         },
       ],
+      environment: {
+        VAR1: 'value1',
+        VAR2: 'value2',
+      },
       command,
     });
 
@@ -220,6 +224,8 @@ export = {
       'run', '--rm',
       '-v', `${dockerAssetPath}:/asset`,
       '-v', `${srcPath}:/src`,
+      '--env', 'VAR1=value1',
+      '--env', 'VAR2=value2',
       'alpine',
       ...command,
     ]));

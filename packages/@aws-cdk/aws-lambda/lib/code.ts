@@ -260,6 +260,13 @@ export interface DockerRunOptions {
    * @default - no additional volumes are mounted
    */
   readonly volumes?: DockerVolume[];
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default - No environment variables.
+   */
+  readonly environment?: { [key: string]: string; };
 }
 
 /**
@@ -282,11 +289,13 @@ export class DockerImageCode extends AssetCode {
     }
 
     const volumes = options.volumes || [];
+    const environment = options.environment || {};
 
     const dockerArgs: string[] = [
       'run', '--rm',
       '-v', `${options.assetPath}:/asset`,
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
+      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       options.image,
       ...options.command,
     ];
