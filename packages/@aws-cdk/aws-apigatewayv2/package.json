@@ -89,12 +89,14 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },

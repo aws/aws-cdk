@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpMethod, HttpProxyIntegration, HttpRoute, HttpRouteKey } from '../../../lib';
+import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpProxyIntegration, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '../../../lib';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
@@ -38,4 +38,37 @@ describe('HttpProxyIntegration', () => {
       IntegrationMethod: 'PATCH',
     });
   });
+
+  test('custom payload format version is allowed', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpIntegration(stack, 'HttpInteg', {
+      payloadFormatVersion: PayloadFormatVersion.custom('99.99'),
+      httpApi: api,
+      integrationType: HttpIntegrationType.HTTP_PROXY,
+      integrationUri: 'some-target-url',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: "HTTP_PROXY",
+      IntegrationUri: "some-target-url",
+      PayloadFormatVersion: "99.99"
+    });
+  });
+
+  test('HttpIntegration without payloadFormatVersion is allowed', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpIntegration(stack, 'HttpInteg', {
+      httpApi: api,
+      integrationType: HttpIntegrationType.HTTP_PROXY,
+      integrationUri: 'some-target-url',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: "HTTP_PROXY",
+      IntegrationUri: "some-target-url",
+    });
+  });
+
 });

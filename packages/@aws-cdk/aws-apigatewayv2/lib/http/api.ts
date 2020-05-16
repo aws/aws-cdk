@@ -1,5 +1,7 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { HttpApiMapping } from './api-mapping';
+import { AddDomainNameOptions, DomainName } from './domain-name';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -36,6 +38,8 @@ export interface HttpApiProps {
    * @default true
    */
   readonly createDefaultStage?: boolean;
+
+  // readonly domainName?: DomainNameOptions;
 }
 
 /**
@@ -70,7 +74,7 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   public readonly httpApiId: string;
-  private readonly defaultStage: HttpStage | undefined;
+  public readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -129,5 +133,23 @@ export class HttpApi extends Resource implements IHttpApi {
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
     }));
+  }
+
+  /**
+   * Add a custom domain for this API and create the API mapping to a stage.
+   */
+  public addDomainName(options: AddDomainNameOptions): DomainName {
+    const dn = new DomainName(this, `DomainName${options.domainName}`, {
+      domainName: options.domainName,
+      certificate: options.certificate,
+    });
+
+    const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
+      api: this,
+      domainName: dn,
+      stage: options.stage,
+    });
+    mapping.node.addDependency(options.stage);
+    return dn;
   }
 }

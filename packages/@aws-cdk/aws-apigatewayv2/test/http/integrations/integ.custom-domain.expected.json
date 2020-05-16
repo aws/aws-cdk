@@ -1,0 +1,114 @@
+{
+  "Resources": {
+    "HttpProxyApiD0217C67": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "HttpProxyApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyApiD0217C67"
+        },
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationMethod": "ANY",
+        "IntegrationUri": "https://upstream.com",
+        "PayloadFormatVersion": "1.0"
+      }
+    },
+    "HttpProxyApiDefaultRoute8AF66B5C": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyApiD0217C67"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyApiDefaultStageA88F9DE3": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyApiD0217C67"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyApiDomainNameexamplecomF06AED2B": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": "example.com",
+        "DomainNameConfigurations": [{
+          "CertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate",
+          "EndpointType": "REGIONAL"
+        }]
+      }
+    },
+    "HttpProxyApiexamplecomdefaultMappingF8992CBF": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyApiD0217C67"
+        },
+        "DomainName": "example.com",
+        "Stage": "$default"
+      },
+      "DependsOn": [
+        "HttpProxyApiDefaultStageA88F9DE3"
+      ]
+    }
+  },
+  "Outputs": {
+    "RegionalDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HttpProxyApiDomainNameexamplecomF06AED2B",
+          "RegionalDomainName"
+        ]
+      }
+    },
+    "DomainName": {
+      "Value": "example.com"
+    },
+    "CustomUDomainURL": {
+      "Value": "https://example.com"
+    },
+    "Endpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpProxyApiD0217C67"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  }
+}

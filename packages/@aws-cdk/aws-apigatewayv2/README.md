@@ -108,3 +108,22 @@ If you omit the `stageName` will create a `$default` stage. A `$default` stage i
 the API's URL - `https://{api_id}.execute-api.{region}.amazonaws.com/`.
 
 Note that, `HttpApi` will always creates a `$default` stage, unless the `createDefaultStage` property is unset.
+
+
+
+### Custom Domain Name
+
+Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a API `Stage` and `HttpApiMapping` maps the custom domain name to a specific `Stage`. 
+
+The code snippet below configures a custom domain for your API and creates a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
+
+```ts
+const api = new HttpApi(stack, 'HttpProxyApi', {
+  defaultIntegration: new HttpProxyIntegration({ url }),
+});
+
+const domainName = api.addDomainNameMapping({
+  certificate: acm.Certificate.fromCertificateArn(stack, 'ImportedCert', certArn),
+  domainName: 'your-custom-domain.tld',
+});
+```
