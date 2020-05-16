@@ -1,4 +1,4 @@
-import { IPrincipal, IRole, PolicyStatement, PrincipalPolicyFragment, Role, WebIdentityPrincipal } from '@aws-cdk/aws-iam';
+import { IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
@@ -62,7 +62,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
     this.role = new Role(this, 'Role', {
-      assumedBy: new WebIdentityPrincipal(cluster.openIdConnectProvider.openIdConnectProviderArn),
+      assumedBy: new OpenIdConnectPrincipal(cluster.openIdConnectProvider),
     });
 
     this.assumeRoleAction = this.role.assumeRoleAction;
