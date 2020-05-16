@@ -11,9 +11,20 @@ class TestStack extends Stack {
         image: 'python:3.6',
         assetPath: path.join(__dirname, 'python-lambda-handler'), // this is /asset in the container
         command: [
-          'pip3', 'install',
-          '-r', '/asset/requirements.txt',
-          '-t', '/asset',
+          // Could normally be something like:
+          // ```
+          // [
+          //   'pip', 'install',
+          //   '-r', '/asset/requirements.txt',
+          //   '-t', '/asset',
+          // ]
+          // ```
+          // but we need to remove the __pycache__ folders to ensure a stable
+          // CDK asset hash for the integ test expectation, so we do:
+          '/bin/bash', '-c', `
+          pip install -r /asset/requirements.txt -t /asset &&
+          find /asset -type d -name __pycache__ -exec rm -rf {} +
+          `,
         ],
       }),
       runtime: lambda.Runtime.PYTHON_3_6,
