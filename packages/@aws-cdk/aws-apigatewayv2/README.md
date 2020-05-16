@@ -139,7 +139,7 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 
 ### Custom Domain Name
 
-Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a API `Stage` and `HttpApiMapping` maps the custom domain name to a specific `Stage`. 
+Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a API `Stage`. Use `HttpApiMapping` to map the your custom name to a specific `Stage`. 
 
 The code snippet below configures a custom domain for your API and creates a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
 
@@ -148,8 +148,42 @@ const api = new HttpApi(stack, 'HttpProxyApi', {
   defaultIntegration: new HttpProxyIntegration({ url }),
 });
 
-const domainName = api.addDomainNameMapping({
+const domainName = api.addDomainName({
   certificate: acm.Certificate.fromCertificateArn(stack, 'ImportedCert', certArn),
   domainName: 'your-custom-domain.tld',
+  stage: api.defaultStage!,
+});
+```
+
+To create a `HttpApiMapping` to a specific `Stage` other than the `$default`
+
+```ts
+// create a new stage
+const beta = api.addStage('beta', {
+  stageName: 'beta',
+});
+
+// create custom domain name with ACM certificate
+const domainName = new DomainName(stack, 'DomainName', {
+  domainName,
+  certificate,
+});
+
+// create the API mapping 
+const beta = new HttpApiMapping(stack, 'Mapping', {
+  api,
+  domainName,
+  stage: beta,
+});
+```
+
+or simply
+
+```ts
+// create a custom domain name with API mapping to the beta stage
+api.addDomainName({
+  certificate,
+  domainName,
+  stage: beta,
 });
 ```
