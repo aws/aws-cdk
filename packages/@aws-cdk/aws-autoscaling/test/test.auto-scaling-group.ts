@@ -522,14 +522,14 @@ export = {
           Value: 'MyFleet',
         },
         {
-          Key: 'superfood',
-          PropagateAtLaunch: true,
-          Value: 'acai',
-        },
-        {
           Key: 'notsuper',
           PropagateAtLaunch: false,
           Value: 'caramel',
+        },
+        {
+          Key: 'superfood',
+          PropagateAtLaunch: true,
+          Value: 'acai',
         },
       ],
     }));
