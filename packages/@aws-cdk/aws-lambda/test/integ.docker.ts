@@ -34,12 +34,10 @@ app.synth();
 // with Python dependencies. Needed for integ test expectation.
 function calcSourceHash(srcDir: string): string {
   const sha = crypto.createHash('sha256');
-  for (const dirent of fs.readdirSync(srcDir, { withFileTypes: true })) {
-    if (!dirent.isFile()) {
-      continue;
-    }
-    const data = fs.readFileSync(path.join(srcDir, dirent.name));
-    sha.update(`<file name=${dirent.name}>`);
+  const files = ['index.py', 'requirements.txt'];
+  for (const file of files) {
+    const data = fs.readFileSync(path.join(srcDir, file));
+    sha.update(`<file name=${file}>`);
     sha.update(data);
     sha.update('</file>');
   }
