@@ -73,13 +73,20 @@ export class Arn {
    *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
-   * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
-   * can be 'undefined'.
+   * is passed in. If all required ARN pieces are supplied, the supplied stack can be 'undefined'.
    */
-  public static format(components: ArnComponents, stack: Stack): string {
-    const partition = components.partition !== undefined ? components.partition : stack.partition;
-    const region = components.region !== undefined ? components.region : stack.region;
-    const account = components.account !== undefined ? components.account : stack.account;
+  public static format(components: ArnComponents, stack?: Stack): string {
+
+    if (stack === undefined && (
+      components.partition === undefined ||
+      components.region === undefined ||
+      components.account === undefined)) {
+      throw new Error('Partition, Region, and Account must all be provided if stack is absent');
+    }
+
+    const partition = components.partition !== undefined ? components.partition : stack?.partition;
+    const region = components.region !== undefined ? components.region : stack?.region;
+    const account = components.account !== undefined ? components.account : stack?.account;
     const sep = components.sep !== undefined ? components.sep : '/';
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
