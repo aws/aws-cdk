@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import { Duration, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpProxyIntegration, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '../../../lib';
-import { HttpApi, HttpMethod, HttpProxyIntegration, HttpRoute, HttpRouteKey } from '../../../lib';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
@@ -51,9 +51,9 @@ describe('HttpProxyIntegration', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      IntegrationType: "HTTP_PROXY",
-      IntegrationUri: "some-target-url",
-      PayloadFormatVersion: "99.99"
+      IntegrationType: 'HTTP_PROXY',
+      IntegrationUri: 'some-target-url',
+      PayloadFormatVersion: '99.99',
     });
   });
 
@@ -67,13 +67,13 @@ describe('HttpProxyIntegration', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      IntegrationType: "HTTP_PROXY",
-      IntegrationUri: "some-target-url",
+      IntegrationType: 'HTTP_PROXY',
+      IntegrationUri: 'some-target-url',
     });
   });
-
 });
 
+describe('CORS', () => {
   test('CORS Configuration is correctly configured.', () => {
     const stack = new Stack();
     new HttpApi(stack, 'HttpApi', {

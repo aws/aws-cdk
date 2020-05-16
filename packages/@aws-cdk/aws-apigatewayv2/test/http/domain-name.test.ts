@@ -20,13 +20,13 @@ describe('DomainName', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
-      DomainName: "example.com",
+      DomainName: 'example.com',
       DomainNameConfigurations: [
         {
-          CertificateArn: "arn:aws:acm:us-east-1:111111111111:certificate",
-          EndpointType: "REGIONAL"
-        }
-      ]
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
     });
   });
 
@@ -44,13 +44,13 @@ describe('DomainName', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
-      DomainName: "example.com",
+      DomainName: 'example.com',
       DomainNameConfigurations: [
         {
-          CertificateArn: "arn:aws:acm:us-east-1:111111111111:certificate",
-          EndpointType: "REGIONAL"
-        }
-      ]
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
     });
   });
 

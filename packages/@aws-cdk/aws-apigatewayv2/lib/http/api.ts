@@ -120,6 +120,9 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   public readonly httpApiId: string;
+  /**
+   * default stage of the api resource
+   */
   public readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
@@ -221,4 +224,3 @@ export class HttpApi extends Resource implements IHttpApi {
     return dn;
   }
 }
-

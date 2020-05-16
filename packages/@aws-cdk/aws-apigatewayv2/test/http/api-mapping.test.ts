@@ -25,10 +25,10 @@ describe('ApiMapping', () => {
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
-        Ref: "ApiF70053CD"
+        Ref: 'ApiF70053CD',
       },
-      DomainName: "example.com",
-      Stage: "$default"
+      DomainName: 'example.com',
+      Stage: '$default',
     });
   });
 
@@ -40,7 +40,7 @@ describe('ApiMapping', () => {
     });
 
     const beta = api.addStage('beta', {
-      stageName: 'beta'
+      stageName: 'beta',
     });
 
     const dn = new DomainName(stack, 'DomainName', {
@@ -56,10 +56,10 @@ describe('ApiMapping', () => {
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
       ApiId: {
-        Ref: "ApiF70053CD"
+        Ref: 'ApiF70053CD',
       },
-      DomainName: "example.com",
-      Stage: "beta"
+      DomainName: 'example.com',
+      Stage: 'beta',
     });
   });
 
