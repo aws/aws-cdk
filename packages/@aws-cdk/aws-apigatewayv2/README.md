@@ -149,7 +149,7 @@ const api = new HttpApi(stack, 'HttpProxyApi', {
 });
 
 const domainName = api.addDomainName({
-  certificate: acm.Certificate.fromCertificateArn(stack, 'ImportedCert', certArn),
+  certificate, 
   domainName: 'your-custom-domain.tld',
   stage: api.defaultStage!,
 });
