@@ -192,7 +192,7 @@ export interface CommonAutoScalingGroupProps {
    * it is terminated and replaced, and cannot be used again.
    *
    * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
-   * specify a new value of `0` or simply leave this property undefinied.
+   * simply leave this property undefinied.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
    *
@@ -512,9 +512,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime && this.maxInstanceLifetime.toSeconds() !== 0 &&
+    if (this.maxInstanceLifetime  &&
       (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive) or 0');
+      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
