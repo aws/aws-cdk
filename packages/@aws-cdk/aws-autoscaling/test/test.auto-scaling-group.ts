@@ -793,7 +793,7 @@ export = {
         vpc,
         maxInstanceLifetime: cdk.Duration.days(6),
       });
-    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\) or 0/);
+    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
 
     test.done();
   },
@@ -811,7 +811,7 @@ export = {
         vpc,
         maxInstanceLifetime: cdk.Duration.days(366),
       });
-    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\) or 0/);
+    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
 
     test.done();
   },
