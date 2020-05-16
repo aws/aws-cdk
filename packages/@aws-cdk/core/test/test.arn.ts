@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
+import { Arn, ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -253,6 +253,64 @@ export = {
         },
       },
     });
+
+    test.done();
+  },
+  
+  'stack can be omitted if partition, region, and account are provided'(test: Test) {
+
+    const components: ArnComponents = {
+      partition: 'aws',
+      service: 'a4b',
+      region: 'region',
+      account: 'accountid',
+      resource: 'resourcetype',
+      resourceName: 'resource',
+      sep: '/',
+    }
+
+    Arn.format(components) // No stack
+
+    test.done();
+  },
+
+  'stack must be present if any of (partition, region, or account) are missing'(test: Test) {
+
+    // test partition
+    var components: ArnComponents = {
+      //partition: 'aws',
+      service: 'a4b',
+      region: 'region',
+      account: 'accountid',
+      resource: 'resourcetype',
+      resourceName: 'resource',
+      sep: '/',
+    }
+    test.throws(Arn.format(components))
+    
+    // test region
+    components = {
+      partition: 'aws',
+      service: 'a4b',
+      // region: 'region',
+      account: 'accountid',
+      resource: 'resourcetype',
+      resourceName: 'resource',
+      sep: '/',
+    }
+    test.throws(Arn.format(components))
+    
+    // test account
+    components = {
+      partition: 'aws',
+      service: 'a4b',
+      region: 'region',
+      // account: 'accountid',
+      resource: 'resourcetype',
+      resourceName: 'resource',
+      sep: '/',
+    }
+    test.throws(Arn.format(components))
 
     test.done();
   },
