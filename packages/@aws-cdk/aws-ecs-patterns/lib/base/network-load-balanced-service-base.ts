@@ -285,8 +285,10 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
       port: 80,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    if (loadBalancer.getListener(listenerPort) === undefined) {
+      this.listener = loadBalancer.addListener('PublicListener', {port: listenerPort});
+      this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    }
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {

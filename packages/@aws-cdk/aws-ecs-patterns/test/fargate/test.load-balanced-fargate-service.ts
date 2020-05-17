@@ -564,6 +564,80 @@ export = {
     test.done();
   },
 
+  'passing in imported network load balancer and resources to two NLB Fargate services'(test: Test) {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack1, 'VPC');
+    const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc });
+    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const stack2 = new cdk.Stack(stack1, 'Stack2');
+    const stack3 = new cdk.Stack(stack1, 'Stack3');
+    const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster2', {
+      vpc: vpc,
+      securityGroups: cluster1.connections.securityGroups,
+      clusterName: 'cluster-name1',
+    });
+    const cluster3 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster3', {
+      vpc: vpc,
+      securityGroups: cluster1.connections.securityGroups,
+      clusterName: 'cluster-name2',
+    });
+
+    // WHEN
+    const nlb = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack2, 'ImportedNLB', {
+      loadBalancerArn: nlbArn,
+      vpc: vpc,
+    });
+    const taskDef = new ecs.FargateTaskDefinition(stack2, 'TaskDef', {
+      cpu: 1024,
+      memoryLimitMiB: 1024,
+    });
+    const container = taskDef.addContainer('myContainer', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 1024,
+    });
+    container.addPortMappings({
+      containerPort: 80,
+    });
+
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack2, 'FargateNLBService2', {
+      cluster: cluster2,
+      loadBalancer: nlb,
+      desiredCount: 1,
+      taskDefinition: taskDef,
+    });
+
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack3, 'FargateNLBService3', {
+      cluster: cluster3,
+      loadBalancer: nlb,
+      desiredCount: 1,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    expect(stack2).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
+    }));
+    expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+    expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      LoadBalancerArn: nlb.loadBalancerArn,
+      Port: 80,
+    }));
+
+    expect(stack3).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
+    }));
+    expect(stack3).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+    expect(stack3).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+      LoadBalancerArn: nlb.loadBalancerArn,
+      Port: 80,
+    }));
+
+    test.done();
+  },
+
   'passing in previously created application load balancer to ALB Fargate Service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
