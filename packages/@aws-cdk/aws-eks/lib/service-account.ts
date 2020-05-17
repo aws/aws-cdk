@@ -1,26 +1,26 @@
-import { IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
- * Service Account
+ * Options for `ServiceAccount`
  */
 export interface ServiceAccountOptions {
   /**
    * The name of the service account.
-   * @default If no name is given, it will use the id of the resource.
+   * @default - If no name is given, it will use the id of the resource.
    */
   readonly name?: string;
 
   /**
    * The namespace of the service account.
-   * @default default
+   * @default "default"
    */
   readonly namespace?: string;
 }
 
 /**
- * Service Account
+ * Properties for defining service accounts
  */
 export interface ServiceAccountProps extends ServiceAccountOptions {
   /**
@@ -58,7 +58,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
-    this.serviceAccountName = props.name ?? id;
+    this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
     this.role = new Role(this, 'Role', {
@@ -87,5 +87,9 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.role.addToPolicy(statement);
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    return this.role.addToPrincipalPolicy(statement);
   }
 }

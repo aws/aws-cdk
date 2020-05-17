@@ -636,7 +636,10 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Lazily creates the OpenIdConnectProvider resource, which links the cluster to AWS IAM.
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
    */
   public get openIdConnectProvider() {
     if (!this.kubectlEnabled) {
