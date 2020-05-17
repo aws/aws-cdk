@@ -88,7 +88,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id);
   }
 
-  public readonly listeners: Map<number, NetworkListener>;
+  private readonly listeners: Map<number, NetworkListener>;
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
