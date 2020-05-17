@@ -66,8 +66,8 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  protected readonly taskMetrics: sfn.TaskMetricsConfig | undefined;
-  protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
@@ -97,7 +97,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
       Parameters: sfn.FieldUtils.renderObject({
         QueueUrl: this.props.queue.queueUrl,
         MessageBody: this.props.messageBody.value,
-        DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
+        DelaySeconds: this.props.delay?.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
       }),
