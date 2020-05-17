@@ -34,7 +34,7 @@ running on AWS Lambda, or any web application.
 - [Access Logging](#access-logging)
 - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
 - [Endpoint Configuration](#endpoint-configuration)
-- [Private Integrations](#Private Integrations)
+- [Private Integrations](#private-integrations)
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
 - [APIGateway v2](#apigateway-v2)
