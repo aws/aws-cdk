@@ -88,13 +88,16 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id);
   }
 
+  /**
+   * Listeners set on this load balancer
+   */
   private readonly listeners: Map<number, NetworkListener>;
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
     });
 
-    this.listeners = new Map<number, NetworkListener>()
+    this.listeners = new Map<number, NetworkListener>();
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
   }
 

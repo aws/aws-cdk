@@ -220,7 +220,7 @@ export = {
     });
     const port: number = 80;
     // WHEN
-    const listener = nlb.addListener('Listener', {port: port});
+    const listener = nlb.addListener('Listener', {port});
     test.equals(nlb.getListener(port), listener);
 
     test.done();
