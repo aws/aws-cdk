@@ -58,7 +58,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
-      private readonly listeners: Map<number, NetworkListener> = new Map<number, NetworkListener>();
+      public readonly listeners: Map<number, NetworkListener> = new Map<number, NetworkListener>();
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         const listener: NetworkListener = new NetworkListener(this, lid, {
           loadBalancer: this,
