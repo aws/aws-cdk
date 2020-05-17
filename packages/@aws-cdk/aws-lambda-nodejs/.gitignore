@@ -21,3 +21,4 @@ nyc.config.js
 !test/integ-handlers/js-handler.js
 !test/function.test.handler2.js
 !.eslintrc.js
+!jest.config.js
