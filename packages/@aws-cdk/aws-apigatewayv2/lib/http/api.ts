@@ -1,7 +1,7 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { HttpApiMapping } from './api-mapping';
-import { DomainName, DomainNameOptions } from './domain-name';
+import { AddDomainNameOptions, DomainName, DomainNameOptions } from './domain-name';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -221,7 +221,7 @@ export class HttpApi extends Resource implements IHttpApi {
   /**
    * Add a custom domain for this API and create the API mapping to a stage.
    */
-  public addDomainName(options: DomainNameOptions): DomainName {
+  public addDomainName(options: AddDomainNameOptions): DomainName {
     const dn = new DomainName(this, `DomainName${options.domainName}`, {
       domainName: options.domainName,
       certificate: options.certificate,

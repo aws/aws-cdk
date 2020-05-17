@@ -69,7 +69,12 @@ export interface DomainNameOptions {
    * endpoint for the domain name.
    */
   readonly certificate: acm.ICertificate;
+}
 
+/**
+ * Options used for addDomainName()
+ */
+export interface AddDomainNameOptions extends DomainNameProps {
   /**
    * The stage mapping to the domain name
    *
