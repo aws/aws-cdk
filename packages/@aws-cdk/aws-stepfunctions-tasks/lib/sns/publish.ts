@@ -5,27 +5,34 @@ import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Properties for PublishTask
+ * Properties for publishing a message to an SNS topic
  */
 export interface SnsPublishProps extends sfn.TaskStateBaseProps {
 
   /**
-   * The SNS topic that the task will publish to
+   * The SNS topic that the task will publish to.
    */
   readonly topic: sns.ITopic;
 
   /**
-   * The text message to send to the topic.
+   * The message you want to send.
+   *
+   * With the exception of SMS, messages must be UTF-8 encoded strings and
+   * at most 256 KB in size.
+   * For SMS, each message can contain up to 140 characters.
    */
   readonly message: sfn.TaskInput;
 
   /**
-   * If true, send a different message to every subscription type
+   * Send different messages for each transport protocol.
    *
-   * If this is set to true, message must be a JSON object with a
-   * "default" key and a key for every subscription type (such as "sqs",
-   * "email", etc.) The values are strings representing the messages
-   * being sent to every subscription type.
+   * For example, you might want to send a shorter message to SMS subscribers
+   * and a more verbose message to email and SQS subscribers.
+   *
+   * Your message must be a JSON object with a top-level JSON key of
+   * "default" with a value that is a string
+   * You can define other top-level keys that define the message you want to
+   * send to a specific transport protocol (i.e. "sqs", "email", "http", etc)
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    * @default false
@@ -34,25 +41,17 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
 
   /**
    * Used as the "Subject" line when the message is delivered to email endpoints.
-   * Also included, if present, in the standard JSON messages delivered to other endpoints.
+   * This field will also be included, if present, in the standard JSON messages
+   * delivered to other endpoints.
    *
    * @default - No subject
    */
   readonly subject?: string;
-
-  /**
-   * The service integration pattern indicates different ways to call Publish to SNS.
-   *
-   * @default IntegrationPattern.REQUEST_RESPONSE
-   */
-  readonly integrationPattern?: sfn.IntegrationPattern;
 }
 
 /**
  * A Step Functions Task to publish messages to SNS topic.
  *
- * A Function can be used directly as a Resource, but this class mirrors
- * integration with other AWS services via a specific class instance.
  */
 export class SnsPublish extends sfn.TaskStateBase {
 
@@ -86,6 +85,9 @@ export class SnsPublish extends sfn.TaskStateBase {
     ];
   }
 
+  /**
+   * Provides the SNS Publish service integration task configuration
+   */
   protected renderTask(): any {
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),

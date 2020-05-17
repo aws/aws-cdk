@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Properties for SendMessageTask
+ * Properties for sending a message to an SQS queue
  */
 export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
 
@@ -20,44 +20,38 @@ export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
   readonly messageBody: sfn.TaskInput;
 
   /**
-   * The length of time, in seconds, for which to delay a specific message.
+   * The length of time, for which to delay a message.
+   * Messages that you send to the queue remain invisible to consumers for the duration
+   * of the delay period. The maximum allowed delay is 15 minutes.
    *
-   * Valid values are 0-900 seconds.
-   *
-   * @default Default value of the queue is used
+   * @default - delay set on the queue. If a delay is not set on the queue,
+   *   messages are sent immediately (0 seconds).
    */
   readonly delay?: cdk.Duration;
 
   /**
    * The token used for deduplication of sent messages.
+   * Any messages sent with the same deduplication ID are accepted successfully,
+   * but aren't delivered during the 5-minute deduplication interval.
    *
-   * @default Use content-based deduplication
+   * @default - None
    */
   readonly messageDeduplicationId?: string;
 
   /**
    * The tag that specifies that a message belongs to a specific message group.
    *
-   * Required for FIFO queues. FIFO ordering applies to messages in the same message
-   * group.
+   * Messages that belong to the same message group are processed in a FIFO manner.
+   * Messages in different message groups might be processed out of order.
    *
-   * @default No group ID
+   * @default - None
    */
   readonly messageGroupId?: string;
-
-  /**
-   * The service integration pattern indicates different ways to call SendMessage to SQS.
-   *
-   * @default IntegrationPattern.REQUEST_RESPONSE
-   */
-  readonly integrationPattern?: sfn.IntegrationPattern;
 }
 
 /**
  * A StepFunctions Task to send messages to SQS queue.
  *
- * A Function can be used directly as a Resource, but this class mirrors
- * integration with other AWS services via a specific class instance.
  */
 export class SqsSendMessage extends sfn.TaskStateBase {
 
@@ -91,6 +85,9 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     ];
   }
 
+  /**
+   * Provides the SQS SendMessage service integration task configuration
+   */
   protected renderTask(): any {
     return {
       Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),

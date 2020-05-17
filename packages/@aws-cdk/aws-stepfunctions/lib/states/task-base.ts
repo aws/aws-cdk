@@ -298,7 +298,7 @@ export interface TaskMetricsConfig {
 /**
  *
  * AWS Step Functions integrates with services directly in the Amazon States Language.
- * You can control these AWS services using three service integration patterns:
+ * You can control these AWS services using service integration patterns:
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html
  *

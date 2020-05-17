@@ -29,14 +29,15 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
   readonly invocationType?: LambdaInvocationType;
 
   /**
-   * Client context to pass to the function
+   * Up to 3583 bytes of base64-encoded data about the invoking client
+   * to pass to the function.
    *
    * @default - No context
    */
   readonly clientContext?: string;
 
   /**
-   * Version or alias of the function to be invoked
+   * Version or alias to invoke a published version of the function
    *
    * @default - No qualifier
    */
@@ -45,7 +46,6 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
 
 /**
  * Invoke a Lambda function as a Task
- *
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html
  */
@@ -87,7 +87,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
   }
 
   /**
-   * Provides the service integration task configuration
+   * Provides the Lambda Invoke service integration task configuration
    */
   protected renderTask(): any {
     return {
@@ -108,14 +108,15 @@ export class LambdaInvoke extends sfn.TaskStateBase {
  */
 export enum LambdaInvocationType {
   /**
-   * Invoke synchronously
+   * Invoke the function synchronously.
    *
+   * Keep the connection open until the function returns a response or times out.
    * The API response includes the function response and additional data.
    */
   REQUEST_RESPONSE = 'RequestResponse',
 
   /**
-   * Invoke asynchronously
+   * Invoke the function asynchronously.
    *
    * Send events that fail multiple times to the function's dead-letter queue (if it's configured).
    * The API response only includes a status code.
