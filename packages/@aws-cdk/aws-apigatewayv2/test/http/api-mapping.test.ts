@@ -52,6 +52,7 @@ describe('ApiMapping', () => {
       api,
       domainName: dn,
       stage: beta,
+      apiMappingName: 'betaMapping',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {

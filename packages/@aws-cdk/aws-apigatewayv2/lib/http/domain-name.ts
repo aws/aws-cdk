@@ -1,4 +1,4 @@
-import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 import { IStage } from '../common';
@@ -58,7 +58,7 @@ export interface DomainNameAttributes {
 /**
  * Options used when configuring custom domain
  */
-export interface AddDomainNameOptions {
+export interface DomainNameOptions {
   /**
    * The custom domain name for your API. Uppercase letters are not supported.
    */
@@ -68,12 +68,14 @@ export interface AddDomainNameOptions {
    * The reference to an AWS-managed certificate for use by the regional
    * endpoint for the domain name.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: acm.ICertificate;
 
   /**
    * The stage mapping to the domain name
+   *
+   * @default - default stage
    */
-  readonly stage: IStage;
+  readonly stage?: IStage;
 }
 
 /**
@@ -87,7 +89,7 @@ export interface DomainNameProps {
   /**
    * The ACM certificate for this domain name
    */
-  readonly certificate: ICertificate;
+  readonly certificate: acm.ICertificate;
 }
 
 enum DomainNameEndpointType {

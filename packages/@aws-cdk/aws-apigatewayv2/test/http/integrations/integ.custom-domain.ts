@@ -10,15 +10,13 @@ const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
 const api = new HttpApi(stack, 'HttpProxyApi', {
   defaultIntegration: new HttpProxyIntegration({ url: 'https://upstream.com' }),
+  domainName: {
+    certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
+    domainName: 'example.com',
+  },
 });
 
-const domainName = api.addDomainName({
-  certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
-  domainName: 'example.com',
-  stage: api.defaultStage!,
-});
-
-new CfnOutput(stack, 'RegionalDomainName', { value: domainName.regionalDomainName });
-new CfnOutput(stack, 'DomainName', { value: domainName.domainName });
-new CfnOutput(stack, 'CustomUDomainURL', { value: `https://${domainName.domainName}` });
+new CfnOutput(stack, 'RegionalDomainName', { value: api.domainName!.regionalDomainName });
+new CfnOutput(stack, 'DomainName', { value: api.domainName!.domainName });
+new CfnOutput(stack, 'CustomUDomainURL', { value: `https://${api.domainName!.domainName}` });
 new CfnOutput(stack, 'Endpoint', { value: api.url! });

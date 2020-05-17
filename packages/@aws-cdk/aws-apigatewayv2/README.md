@@ -146,12 +146,10 @@ The code snippet below configures a custom domain for your API and creates a def
 ```ts
 const api = new HttpApi(stack, 'HttpProxyApi', {
   defaultIntegration: new HttpProxyIntegration({ url }),
-});
-
-const domainName = api.addDomainName({
-  certificate, 
-  domainName: 'your-custom-domain.tld',
-  stage: api.defaultStage!,
+  domainName: {
+    certificate: acmCertificateForExampleCom,
+    domainName: 'example.com',
+  }
 });
 ```
 
@@ -163,6 +161,7 @@ const beta = api.addStage('beta', {
   stageName: 'beta',
 });
 
+
 // create custom domain name with ACM certificate
 const domainName = new DomainName(stack, 'DomainName', {
   domainName,
@@ -170,7 +169,7 @@ const domainName = new DomainName(stack, 'DomainName', {
 });
 
 // create the API mapping 
-const beta = new HttpApiMapping(stack, 'Mapping', {
+new HttpApiMapping(stack, 'Mapping', {
   api,
   domainName,
   stage: beta,
