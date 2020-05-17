@@ -209,6 +209,37 @@ export = {
     test.done();
   },
 
+  'imported network load balancer returns network listener on getListener call when a listener was added'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+      loadBalancerArn: nlbArn,
+      vpc,
+    });
+    const port: number = 80;
+    // WHEN
+    const listener = nlb.addListener('Listener', {port: port});
+    test.equals(nlb.getListener(port), listener);
+
+    test.done();
+  },
+
+  'imported network load balancer with returns undefined on getListener call when a listener was added'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+      loadBalancerArn: nlbArn,
+      vpc,
+    });
+    test.equals(nlb.getListener(80), undefined);
+
+    test.done();
+  },
+
   'imported network load balancer with vpc does not throw error when calling addTargets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

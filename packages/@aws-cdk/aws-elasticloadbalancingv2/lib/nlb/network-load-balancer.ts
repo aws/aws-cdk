@@ -58,11 +58,18 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
+      private readonly listeners: Map<number, NetworkListener> = new Map<number, NetworkListener>();
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
-        return new NetworkListener(this, lid, {
+        const listener: NetworkListener = new NetworkListener(this, lid, {
           loadBalancer: this,
           ...props,
         });
+        this.listeners.set(props.port, listener);
+        return listener;
+      }
+
+      public getListener(port: number): NetworkListener | undefined {
+        return this.listeners.get(port);
       }
 
       public get loadBalancerCanonicalHostedZoneId(): string {
@@ -81,11 +88,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id);
   }
 
+  public readonly listeners: Map<number, NetworkListener>;
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
     });
 
+    this.listeners = new Map<number, NetworkListener>()
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
   }
 
@@ -95,10 +104,21 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @returns The newly created listener
    */
   public addListener(id: string, props: BaseNetworkListenerProps): NetworkListener {
-    return new NetworkListener(this, id, {
+    const listener: NetworkListener = new NetworkListener(this, id, {
       loadBalancer: this,
       ...props,
     });
+    this.listeners.set(props.port, listener);
+    return listener;
+  }
+
+  /**
+   * Returns an listener on this load balancer, indexed by port
+   *
+   * @returns A previously created listener or undefined
+   */
+  public getListener(port: number): NetworkListener | undefined {
+    return this.listeners.get(port);
   }
 
   /**
@@ -248,4 +268,11 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
    * @returns The newly created listener
    */
   addListener(id: string, props: BaseNetworkListenerProps): NetworkListener;
+
+  /**
+   * Returns an listener on this load balancer, indexed by port
+   *
+   * @returns A previously created listener or undefined
+   */
+  getListener(port: number): NetworkListener | undefined;
 }
