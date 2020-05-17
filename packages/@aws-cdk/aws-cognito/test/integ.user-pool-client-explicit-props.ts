@@ -31,4 +31,5 @@ userpool.addClient('myuserpoolclient', {
     ],
     callbackUrls: [ 'https://redirect-here.myapp.com' ],
   },
+  preventUserExistenceErrors: true,
 });
