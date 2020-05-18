@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
+import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 
 /**
@@ -17,26 +19,42 @@ export interface BaseApplicationListenerRuleProps {
   readonly priority: number;
 
   /**
-   * Target groups to forward requests to. Only one of `fixedResponse`, `redirectResponse` or
-   * `targetGroups` can be specified.
+   * Target groups to forward requests to.
+   *
+   * Only one of `action`, `fixedResponse`, `redirectResponse` or `targetGroups` can be specified.
+   *
+   * Implies a `forward` action.
    *
    * @default - No target groups.
    */
   readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
-   * Fixed response to return. Only one of `fixedResponse`, `redirectResponse` or
-   * `targetGroups` can be specified.
+   * Action to perform when requests are received
+   *
+   * Only one of `action`, `fixedResponse`, `redirectResponse` or `targetGroups` can be specified.
+   *
+   * @default - No action
+   */
+  readonly action?: ListenerAction;
+
+  /**
+   * Fixed response to return.
+   *
+   * Only one of `action`, `fixedResponse`, `redirectResponse` or `targetGroups` can be specified.
    *
    * @default - No fixed response.
+   * @deprecated Use `action` instead.
    */
   readonly fixedResponse?: FixedResponse;
 
   /**
-   * Redirect response to return. Only one of `fixedResponse`, `redirectResponse` or
-   * `targetGroups` can be specified.
+   * Redirect response to return.
+   *
+   * Only one of `action`, `fixedResponse`, `redirectResponse` or `targetGroups` can be specified.
    *
    * @default - No redirect response.
+   * @deprecated Use `action` instead.
    */
   readonly redirectResponse?: RedirectResponse;
 
@@ -171,8 +189,8 @@ export class ApplicationListenerRule extends cdk.Construct {
 
   private readonly conditions: {[key: string]: string[] | undefined} = {};
 
-  private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
+  private action?: IListenerAction;
 
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
@@ -182,7 +200,7 @@ export class ApplicationListenerRule extends cdk.Construct {
       throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
-    const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['targetGroups', 'fixedResponse', 'redirectResponse'];
+    const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
     const providedActions = possibleActions.filter(action => props[action] !== undefined);
     if (providedActions.length > 1) {
       throw new Error(`'${providedActions}' specified together, specify only one`);
@@ -198,7 +216,7 @@ export class ApplicationListenerRule extends cdk.Construct {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
       conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.anyValue({ produce: () => this.actions }),
+      actions: cdk.Lazy.anyValue({ produce: () => this.action ? this.action.renderActions() : [] }),
     });
 
     if (props.hostHeader) {
@@ -211,6 +229,10 @@ export class ApplicationListenerRule extends cdk.Construct {
       }
       const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
       this.setCondition('path-pattern', pathPattern);
+    }
+
+    if (props.action) {
+      this.configureAction(props.action);
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
@@ -232,45 +254,72 @@ export class ApplicationListenerRule extends cdk.Construct {
   }
 
   /**
+   * Configure the action to perform for this rule
+   */
+  public configureAction(action: ListenerAction) {
+    // It might make sense to 'throw' here.
+    //
+    // However, programs may already exist out there which configured an action twice,
+    // in which case the second action accidentally overwrite the initial action, and in some
+    // way ended up with a program that did what the author intended. If we were to add throw now,
+    // the previously working program would be broken.
+    //
+    // Instead, signal this through a warning.
+    // @deprecate: upon the next major version bump, replace this with a `throw`
+    if (this.action) {
+      this.node.addWarning('An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
+    }
+
+    action.bind(this, this.listener, this);
+    this.action = action;
+  }
+
+  /**
    * Add a TargetGroup to load balance to
+   *
+   * @deprecated Use configureAction instead
    */
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
-    this.actions.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      type: 'forward',
-    });
-    targetGroup.registerListener(this.listener, this);
+    this.configureAction(ListenerAction.forward([targetGroup]));
   }
 
   /**
    * Add a fixed response
+   *
+   * @deprecated Use configureAction instead
    */
   public addFixedResponse(fixedResponse: FixedResponse) {
     validateFixedResponse(fixedResponse);
 
-    this.actions.push({
-      fixedResponseConfig: fixedResponse,
-      type: 'fixed-response',
-    });
+    this.configureAction(ListenerAction.fixedResponse(cdk.Token.asNumber(fixedResponse.statusCode), {
+      contentType: fixedResponse.contentType,
+      messageBody: fixedResponse.messageBody,
+    }));
   }
 
   /**
    * Add a redirect response
+   *
+   * @deprecated Use configureAction instead
    */
   public addRedirectResponse(redirectResponse: RedirectResponse) {
     validateRedirectResponse(redirectResponse);
 
-    this.actions.push({
-      redirectConfig: redirectResponse,
-      type: 'redirect',
-    });
+    this.configureAction(ListenerAction.redirect({
+      host: redirectResponse.host,
+      path: redirectResponse.path,
+      permanent: redirectResponse.statusCode === 'HTTP_301',
+      port: redirectResponse.port,
+      protocol: redirectResponse.protocol,
+      query: redirectResponse.query,
+    }));
   }
 
   /**
    * Validate the rule
    */
   protected validate() {
-    if (this.actions.length === 0) {
+    if (this.action === undefined) {
       return ['Listener rule needs at least one action'];
     }
     return [];
