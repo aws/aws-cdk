@@ -1,8 +1,8 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import { DockerImage, DockerVolume } from './docker';
 
 export abstract class Code {
   /**
@@ -42,22 +42,8 @@ export abstract class Code {
    *
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
+  public static fromAsset(path: string, options?: AssetCodeOptions): AssetCode {
     return new AssetCode(path, options);
-  }
-
-  /**
-   * Lambda code from a command run in an existing Docker image.
-   */
-  public static fromDockerImage(options: DockerImageCodeOptions): AssetCode {
-    return new DockerImageCode(options);
-  }
-
-  /**
-   * Lambda code from a command run in a Docker image built from a Dockerfile.
-   */
-  public static fromDockerAsset(options: DockerAssetCodeOptions): AssetCode {
-    return new DockerAssetCode(options);
   }
 
   /**
@@ -177,6 +163,54 @@ export class InlineCode extends Code {
 }
 
 /**
+ * Bundle options
+ */
+export interface BundleOptions {
+  /**
+   * The Docker image where the command will run.
+   */
+  readonly image: DockerImage;
+
+  /**
+   * The command to run in the container.
+   */
+  readonly command: string[];
+
+  /**
+   * Docker volumes to mount.
+   *
+   * @default - The path to the asset file or directory is mounted at /asset
+   */
+  readonly volumes?: DockerVolume[];
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default - no environment variables.
+   */
+  readonly environment?: { [key: string]: string; };
+
+  /**
+   * Working directory inside the container.
+   *
+   * @default - the `containerPath` of the first mounted volume.
+   */
+  readonly workingDirectory?: string;
+}
+
+/**
+ * Asset code options
+ */
+export interface AssetCodeOptions extends s3_assets.AssetOptions {
+  /**
+   * Bundle options
+   *
+   * @default - no bundling
+   */
+  readonly bundle?: BundleOptions;
+}
+
+/**
  * Lambda code from a local directory.
  */
 export class AssetCode extends Code {
@@ -186,11 +220,32 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(public readonly path: string, private readonly options: AssetCodeOptions = {}) {
     super();
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
+    if (this.options.bundle) {
+      // We are going to mount it, so ensure it exists
+      if (!fs.existsSync(this.path)) {
+        fs.mkdirSync(this.path);
+      }
+
+      const volumes = this.options.bundle.volumes ?? [
+        {
+          hostPath: this.path,
+          containerPath: '/asset',
+        },
+      ];
+
+      this.options.bundle.image.run({
+        command: this.options.bundle.command,
+        volumes,
+        environment: this.options.bundle.environment,
+        workingDirectory: this.options.bundle.workingDirectory ?? volumes[0].containerPath,
+      });
+    }
+
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
@@ -220,157 +275,6 @@ export class AssetCode extends Code {
 
     // https://github.com/aws/aws-cdk/issues/1432
     this.asset.addResourceMetadata(resource, resourceProperty);
-  }
-}
-
-/**
- * A Docker volume
- */
-export interface DockerVolume {
-  /**
-   * The path to the file or directory on the host machine
-   */
-  readonly hostPath: string;
-
-  /**
-   * The path where the file or directory is mounted in the container
-   */
-  readonly containerPath: string;
-}
-
-/**
- * Docker run options
- */
-export interface DockerRunOptions extends s3_assets.AssetOptions {
-  /**
-   * The command to run in the container.
-   */
-  readonly command: string[];
-
-  /**
-   * The path of the asset directory that will contain the build output of the Docker
-   * container. This path is mounted at `/asset` in the container. It is created
-   * if it doesn't exist.
-   */
-  readonly assetPath: string;
-
-  /**
-   * Additional Docker volumes to mount.
-   *
-   * @default - no additional volumes are mounted
-   */
-  readonly volumes?: DockerVolume[];
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default - No environment variables.
-   */
-  readonly environment?: { [key: string]: string; };
-}
-
-/**
- * Options for DockerImageCode
- */
-export interface DockerImageCodeOptions extends DockerRunOptions {
-  /**
-   * The Docker image where the command will run.
-   */
-  readonly image: string;
-}
-
-/**
- * Lambda code from a command run in an existing Docker image
- */
-export class DockerImageCode extends AssetCode {
-  constructor(options: DockerImageCodeOptions) {
-    if (!fs.existsSync(options.assetPath)) {
-      fs.mkdirSync(options.assetPath);
-    }
-
-    const volumes = options.volumes || [];
-    const environment = options.environment || {};
-
-    const dockerArgs: string[] = [
-      'run', '--rm',
-      '-v', `${options.assetPath}:/asset`,
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
-      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-      options.image,
-      ...options.command,
-    ];
-
-    const docker = spawnSync('docker', dockerArgs);
-
-    if (docker.error) {
-      throw docker.error;
-    }
-
-    if (docker.status !== 0) {
-      throw new Error(`[Status ${docker.status}] stdout: ${docker.stdout?.toString().trim()}\n\n\nstderr: ${docker.stderr?.toString().trim()}`);
-    }
-
-    super(options.assetPath, {
-      exclude: options.exclude,
-      follow: options.follow,
-      readers: options.readers,
-      sourceHash: options.sourceHash,
-    });
-  }
-}
-
-/**
- * Options for DockerAssetCode
- */
-export interface DockerAssetCodeOptions extends DockerRunOptions {
-  /**
-   * The path to the directory containing the Docker file.
-   */
-  readonly dockerPath: string;
-
-  /**
-   * Build args
-   *
-   * @default - no build args
-   */
-  readonly buildArgs?: { [key: string]: string };
-}
-
-/**
- * Lambda code from a command run in a Docker image built from a Dockerfile.
- */
-export class DockerAssetCode extends DockerImageCode {
-  constructor(options: DockerAssetCodeOptions) {
-    const buildArgs = options.buildArgs || {};
-
-    const dockerArgs: string[] = [
-      'build',
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      options.dockerPath,
-    ];
-
-    const docker = spawnSync('docker', dockerArgs);
-
-    if (docker.error) {
-      throw docker.error;
-    }
-
-    if (docker.status !== 0) {
-      throw new Error(`[Status ${docker.status}] stdout: ${docker.stdout?.toString().trim()}\n\n\nstderr: ${docker.stderr?.toString().trim()}`);
-    }
-
-    const match = docker.stdout.toString().match(/Successfully built ([a-z0-9]+)/);
-
-    if (!match) {
-      throw new Error('Failed to extract image ID from Docker build output');
-    }
-
-    super({
-      assetPath: options.assetPath,
-      command: options.command,
-      image: match[1],
-      volumes: options.volumes,
-    });
   }
 }
 
@@ -479,8 +383,4 @@ export class CfnParametersCode extends Code {
       throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
   }
-}
-
-function flatten(x: string[][]) {
-  return Array.prototype.concat([], ...x);
 }

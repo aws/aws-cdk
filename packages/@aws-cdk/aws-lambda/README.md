@@ -32,11 +32,8 @@ runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
-   filesystem which will be zipped and uploaded to S3 before deployment.
- * `lambda.Code.fromDockerImage(options)` - code from a command run in an existing
-   Docker image.
- * `lambda.Code.fromDockerAsset(options)` - code from a command run in a Docker image
-   built from a Dockerfile.
+   filesystem which will be zipped and uploaded to S3 before deployment. See also
+   [using Docker with asset code](#Using-Docker-With-Asset-Code).
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -257,6 +254,47 @@ number of times and with different properties. Using `SingletonFunction` here wi
 
 For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
 retention it seeks to manage.
+
+### Using Docker with Asset Code
+When using `lambda.Code.fromAsset(path)` it is possible to "act" on the code by running a
+command in a Docker container. By default, the asset path is mounted in the container
+at `/asset` and is set as the working directory.
+
+Example with Python:
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    bundle: {
+      image: lambda.DockerImage.fromImage('python:3.6'), // Use an existing image
+      command: [
+        'pip', 'install',
+        '-r', 'requirements.txt',
+        '-t', '.',
+      ],
+    },
+  }),
+  runtime: lambda.Runtime.PYTHON_3_6,
+  handler: 'index.handler',
+});
+```
+
+Use `lambda.DockerImage.fromBuild(path)` to build a specific image:
+
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset('/path/to/handler'), {
+    bundle: {
+      image: lambda.DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
+        buildArgs: {
+          ARG1: 'value1',
+        },
+      }),
+      command: ['my', 'cool', 'command'],
+    },
+  }),
+  // ...
+});
+```
 
 ### Language-specific APIs
 Language-specific higher level constructs are provided in separate modules:

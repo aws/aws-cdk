@@ -84,6 +84,110 @@ export = {
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
+
+    'docker image'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+      const dockerAssetPath = 'asset-path';
+      const command = ['this', 'is', 'a', 'build', 'command'];
+
+      // WHEN
+      new lambda.Function(stack, 'Fn', {
+        handler: 'foom',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(dockerAssetPath, {
+          bundle: {
+            image: lambda.DockerImage.fromImage('alpine'),
+            environment: {
+              VAR1: 'value1',
+              VAR2: 'value2',
+            },
+            command,
+          },
+        }),
+      });
+
+      // THEN
+      test.ok(spawnSyncStub.calledWith('docker', [
+        'run', '--rm',
+        '-v', `${dockerAssetPath}:/asset`,
+        '--env', 'VAR1=value1',
+        '--env', 'VAR2=value2',
+        '-w', '/asset',
+        'alpine',
+        ...command,
+      ]), 'docker run not called with expected args');
+
+      spawnSyncStub.restore();
+
+      test.done();
+    },
+
+    'docker build'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const imageId = 'abcdef123456';
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from(`Successfully built ${imageId}`),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+      const dockerPath = 'docker-path';
+      const testArg = 'cdk-test';
+      const dockerAssetPath = 'asset-path';
+      const command = ['this', 'is', 'a', 'build', 'command'];
+
+      // WHEN
+      new lambda.Function(stack, 'Fn', {
+        handler: 'foom',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(dockerAssetPath, {
+          bundle: {
+            image: lambda.DockerImage.fromBuild(dockerPath, {
+              buildArgs: {
+                TEST_ARG: testArg,
+              },
+            }),
+            command,
+          },
+        }),
+      });
+
+      // THEN
+      test.ok(spawnSyncStub.calledWith('docker', [
+        'build',
+        '--build-arg', `TEST_ARG=${testArg}`,
+        dockerPath,
+      ]), 'docker build not called with expected args');
+
+      test.ok(spawnSyncStub.calledWith('docker', [
+        'run', '--rm',
+        '-v', `${dockerAssetPath}:/asset`,
+        '-w', '/asset',
+        imageId,
+        ...command,
+      ]), 'docker run not called with expected args');
+
+      spawnSyncStub.restore();
+
+      test.done();
+
+    },
   },
 
   'lambda.Code.fromCfnParameters': {
@@ -188,95 +292,6 @@ export = {
 
       test.done();
     },
-  },
-
-  'lambda.Code.fromDockerImage'(test: Test) {
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    const dockerAssetPath = 'asset-path';
-    const srcPath = 'src-path';
-    const command = ['this', 'is', 'a', 'build', 'command'];
-
-    lambda.Code.fromDockerImage({
-      assetPath: dockerAssetPath,
-      image: 'alpine',
-      volumes: [
-        {
-          hostPath: srcPath,
-          containerPath: '/src',
-        },
-      ],
-      environment: {
-        VAR1: 'value1',
-        VAR2: 'value2',
-      },
-      command,
-    });
-
-    test.ok(spawnSyncStub.calledWith('docker', [
-      'run', '--rm',
-      '-v', `${dockerAssetPath}:/asset`,
-      '-v', `${srcPath}:/src`,
-      '--env', 'VAR1=value1',
-      '--env', 'VAR2=value2',
-      'alpine',
-      ...command,
-    ]));
-
-    spawnSyncStub.restore();
-
-    test.done();
-  },
-
-  'lambda.Code.fromDockerAsset'(test: Test) {
-    const imageId = 'abcdef123456';
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(`Successfully built ${imageId}`),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    const dockerPath = 'docker-path';
-    const testArg = 'cdk-test';
-    const dockerAssetPath = 'asset-path';
-    const command = ['this', 'is', 'a', 'build', 'command'];
-
-    lambda.Code.fromDockerAsset({
-      dockerPath,
-      buildArgs: {
-        TEST_ARG: testArg,
-      },
-      assetPath: dockerAssetPath,
-      command,
-    });
-
-    test.ok(spawnSyncStub.calledWith('docker', [
-      'build',
-      '--build-arg', `TEST_ARG=${testArg}`,
-      dockerPath,
-    ]));
-
-    test.ok(spawnSyncStub.calledWith('docker', [
-      'run', '--rm',
-      '-v', `${dockerAssetPath}:/asset`,
-      imageId,
-      ...command,
-    ]));
-
-    spawnSyncStub.restore();
-
-    test.done();
-
   },
 };
 

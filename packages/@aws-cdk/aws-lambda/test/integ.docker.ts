@@ -1,27 +1,40 @@
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
+import { App, CfnOutput, Construct, FileSystem, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
 import * as lambda from '../lib';
 
+/**
+ * Stack verification steps:
+ * * aws cloudformation describe-stacks --stack-name cdk-integ-lambda-docker --query Stacks[0].Outputs[0].OutputValue
+ * * aws lambda invoke --function-name <output from above> response.json
+ * * cat response.json
+ * The last command should show '200'
+ */
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const assetPath = path.join(__dirname, 'python-lambda-handler');
-    new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromDockerImage({
-        image: 'python:3.6',
-        assetPath, // this is /asset in the container
-        command: [
-          'pip', 'install',
-          '-r', '/asset/requirements.txt',
-          '-t', '/asset',
-        ],
-        sourceHash: calcSourceHash(assetPath),
+    const fn = new lambda.Function(this, 'Function', {
+      code: lambda.Code.fromAsset(assetPath, {
+        bundle: {
+          image: lambda.DockerImage.fromImage('python:3.6'),
+          command: [
+            'pip', 'install',
+            '-r', 'requirements.txt',
+            '-t', '.',
+          ],
+        },
+        // Python dependencies do not give a stable hash
+        sourceHash: FileSystem.fingerprint(assetPath, {
+          exclude: ['*', '!index.py', '!requirements.txt'],
+        }),
       }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
+    });
+
+    new CfnOutput(this, 'FunctionArn', {
+      value: fn.functionArn,
     });
   }
 }
@@ -29,20 +42,3 @@ class TestStack extends Stack {
 const app = new App();
 new TestStack(app, 'cdk-integ-lambda-docker');
 app.synth();
-
-// Custom source hash calculation to ensure consistent behavior
-// with Python dependencies. Needed for integ test expectation.
-function calcSourceHash(srcDir: string): string {
-  const sha = crypto.createHash('sha256');
-  for (const dirent of fs.readdirSync(srcDir, { withFileTypes: true })) {
-    if (!dirent.isFile()) {
-      continue;
-    }
-    const data = fs.readFileSync(path.join(srcDir, dirent.name));
-    sha.update(`<file name=${dirent.name}>`);
-    sha.update(data);
-    sha.update('</file>');
-  }
-
-  return sha.digest('hex');
-}
