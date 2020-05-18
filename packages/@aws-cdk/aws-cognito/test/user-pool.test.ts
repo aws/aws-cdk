@@ -28,12 +28,12 @@ describe('User Pool', () => {
         AllowAdminCreateUserOnly: true,
         InviteMessageTemplate: ABSENT,
       },
-      EmailVerificationMessage: 'Hello {username}, Your verification code is {####}',
+      EmailVerificationMessage: 'The verification code to your new account is {####}',
       EmailVerificationSubject: 'Verify your new account',
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_CODE',
-        EmailMessage: 'Hello {username}, Your verification code is {####}',
+        EmailMessage: 'The verification code to your new account is {####}',
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
@@ -117,7 +117,7 @@ describe('User Pool', () => {
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
-        EmailMessageByLink: 'Hello {username}, Verify your account by clicking on {##Verify Email##}',
+        EmailMessageByLink: 'Verify your account by clicking on {##Verify Email##}',
         EmailSubjectByLink: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },

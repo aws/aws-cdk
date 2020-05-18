@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from './construct-compat';
 import { Stack } from './stack';
@@ -99,7 +100,11 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      stack.reportMissingContext({ key, props, provider: options.provider });
+      stack.reportMissingContext({
+        key,
+        provider: options.provider as cxschema.ContextProvider,
+        props: props as cxschema.ContextQueryProperties,
+      });
 
       if (providerError !== undefined) {
         scope.node.addError(providerError);

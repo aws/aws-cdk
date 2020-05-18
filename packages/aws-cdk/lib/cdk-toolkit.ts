@@ -189,6 +189,7 @@ export class CdkToolkit {
           execute: options.execute,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+          usePreviousParameters: options.usePreviousParameters,
         });
 
         const message = result.noOp
@@ -345,8 +346,12 @@ export class CdkToolkit {
 
     const environments: cxapi.Environment[] = [
       ...environmentsFromDescriptors(environmentSpecs),
-      ...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider),
     ];
+
+    // If there is an '--app' argument, select the environments from the app.
+    if (this.props.cloudExecutable.hasApp) {
+      environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
+    }
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
@@ -446,6 +451,7 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
 }
 
 export interface DiffOptions {
@@ -562,6 +568,15 @@ export interface DeployOptions {
    * @default {}
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
 
   /**
    * Path to file where stack outputs will be written after a successful deploy as JSON

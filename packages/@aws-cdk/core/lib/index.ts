@@ -8,6 +8,7 @@ export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
+export * from './stack-synthesizers';
 
 export * from './reference';
 export * from './cfn-condition';
@@ -48,6 +49,7 @@ export * from './fs';
 
 export * from './custom-resource';
 export * from './nested-stack';
+export * from './custom-resource-provider';
 
 export * from './cfn-capabilities';
 export * from './cloudformation.generated';

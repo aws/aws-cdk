@@ -131,6 +131,15 @@ export interface DeployStackOptions {
   parameters?: { [name: string]: string | undefined };
 
   /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
+
+  /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
    * @default false
    */
@@ -149,22 +158,16 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
-  if (!options.force && cloudFormationStack.exists) {
-    // bail out if the current template is exactly the same as the one we are about to deploy
-    // in cdk-land, this means nothing changed because assets (and therefore nested stacks) are immutable.
-    debug('checking if we can skip this stack based on the currently deployed template and tags (use --force to override)');
-    const tagsIdentical = compareTags(cloudFormationStack.tags, options.tags ?? []);
-    if (JSON.stringify(stackArtifact.template) === JSON.stringify(await cloudFormationStack.template()) && tagsIdentical) {
-      debug(`${deployName}: no change in template and tags, skipping (use --force to override)`);
-      return {
-        noOp: true,
-        outputs: cloudFormationStack.outputs,
-        stackArn: cloudFormationStack.stackId,
-        stackArtifact,
-      };
-    } else {
-      debug(`${deployName}: template changed, deploying...`);
-    }
+  if (await canSkipDeploy(options, cloudFormationStack)) {
+    debug(`${deployName}: skipping deployment (use --force to override)`);
+    return {
+      noOp: true,
+      outputs: cloudFormationStack.outputs,
+      stackArn: cloudFormationStack.stackId,
+      stackArtifact,
+    };
+  } else {
+    debug(`${deployName}: deploying...`);
   }
 
   // Detect "legacy" assets (which remain in the metadata) and publish them via
@@ -176,7 +179,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
     ...options.parameters,
     ...assetParams,
-  }, cloudFormationStack.parameterNames);
+  }, options.usePreviousParameters ? cloudFormationStack.parameterNames : []);
 
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
@@ -239,6 +242,18 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
   }
+
+  // Update termination protection only if it has changed.
+  const terminationProtection = stackArtifact.terminationProtection ?? false;
+  if (cloudFormationStack.terminationProtection !== terminationProtection) {
+    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
+    await cfn.updateTerminationProtection({
+      StackName: deployName,
+      EnableTerminationProtection: terminationProtection,
+    }).promise();
+    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
+  }
+
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
 }
 
@@ -260,6 +275,13 @@ async function makeBodyParameter(
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
   toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+
+  // If the template has already been uploaded to S3, just use it from there.
+  if (stack.stackTemplateAssetObjectUrl) {
+    return { TemplateURL: stack.stackTemplateAssetObjectUrl };
+  }
+
+  // Otherwise, pass via API call (if small) or upload here (if large)
   const templateJson = toYAML(stack.template);
 
   if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
@@ -278,7 +300,6 @@ async function makeBodyParameter(
 
   const templateHash = contentHash(templateJson);
   const key = `cdk/${stack.id}/${templateHash}.yml`;
-  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
 
   assetManifest.addFileAsset(templateHash, {
     path: stack.templateFile,
@@ -287,6 +308,7 @@ async function makeBodyParameter(
     objectKey: key,
   });
 
+  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
 }
@@ -326,6 +348,51 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 }
 
+/**
+ * Checks whether we can skip deployment
+ */
+async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack): Promise<boolean> {
+  const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
+  debug(`${deployName}: checking if we can skip deploy`);
+
+  // Forced deploy
+  if (deployStackOptions.force) {
+    debug(`${deployName}: forced deployment`);
+    return false;
+  }
+
+  // No existing stack
+  if (!cloudFormationStack.exists) {
+    debug(`${deployName}: no existing stack`);
+    return false;
+  }
+
+  // Template has changed (assets taken into account here)
+  if (JSON.stringify(deployStackOptions.stack.template) !== JSON.stringify(await cloudFormationStack.template())) {
+    debug(`${deployName}: template has changed`);
+    return false;
+  }
+
+  // Tags have changed
+  if (!compareTags(cloudFormationStack.tags, deployStackOptions.tags ?? [])) {
+    debug(`${deployName}: tags have changed`);
+    return false;
+  }
+
+  // Termination protection has been updated
+  const terminationProtection = deployStackOptions.stack.terminationProtection ?? false; // cast to boolean for comparison
+  if (terminationProtection !== cloudFormationStack.terminationProtection) {
+    debug(`${deployName}: termination protection has been updated`);
+    return false;
+  }
+
+  // We can skip deploy
+  return true;
+}
+
+/**
+ * Compares two list of tags, returns true if identical.
+ */
 function compareTags(a: Tag[], b: Tag[]): boolean {
   if (a.length !== b.length) {
     return false;
