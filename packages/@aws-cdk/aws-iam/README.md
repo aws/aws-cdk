@@ -198,6 +198,17 @@ const principal = new iam.AccountPrincipal('123456789000')
   .withConditions({ StringEquals: { foo: "baz" } });
 ```
 
+The `WebIdentityPrincipal` class can be used as a principal for web identities like
+Cognito, Amazon, Google or Facebook, for example:
+
+```ts
+const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
+  .withConditions({
+    "StringEquals": { "cognito-identity.amazonaws.com:aud": "us-east-2:12345678-abcd-abcd-abcd-123456" },
+    "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "unauthenticated"}
+  });
+```
+
 ### Parsing JSON Policy Documents
 
 The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
@@ -280,6 +291,16 @@ you can reference the provider's ARN as follows:
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
   openIdConnectProviderARNs: [ provider.openIdConnectProviderArn ]
 });
+```
+
+The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenIdConnectProvider`, for example:
+
+```ts
+const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+  url: 'https://openid/connect',
+  clients: [ 'myclient1', 'myclient2' ]
+});
+const principal = new iam.OpenIdConnectPrincipal(provider);
 ```
 
 ### Features
