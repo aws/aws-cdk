@@ -1,0 +1,9 @@
+{
+    "PropertyTypes": {
+        "AWS::SSM::Association.ParameterValues": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-association-parametervalues.html",
+            "Type": "List",
+            "PrimitiveItemType": "String"
+        }
+    }
+}
