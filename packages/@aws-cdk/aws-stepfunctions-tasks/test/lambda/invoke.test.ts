@@ -108,6 +108,7 @@ describe('LambdaInvoke', () => {
       payload: sfn.TaskInput.fromObject({
         token: sfn.Context.taskToken,
       }),
+      qualifier: 'my-alias',
     });
 
     // THEN
@@ -136,6 +137,7 @@ describe('LambdaInvoke', () => {
         Payload: {
           'token.$': '$$.Task.Token',
         },
+        Qualifier: 'my-alias',
       },
     });
   });

@@ -75,7 +75,10 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     this.taskMetrics = {
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
-      metricDimensions: { LambdaFunctionArn: this.props.lambdaFunction.functionArn },
+      metricDimensions: {
+        LambdaFunctionArn: this.props.lambdaFunction.functionArn,
+        ...(this.props.qualifier && { Qualifier: this.props.qualifier }),
+      },
     };
 
     this.taskPolicies = [

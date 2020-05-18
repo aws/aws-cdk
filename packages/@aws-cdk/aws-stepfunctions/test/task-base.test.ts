@@ -1,5 +1,4 @@
 import '@aws-cdk/assert/jest';
-import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
@@ -129,10 +128,20 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', {});
 
     // WHEN
-    const metric = task.metric('my metric');
+    const metric = stack.resolve(task.metric('my metric'));
 
     // THEN
-    assertDefaultMetric(metric, 'my metric', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'my metric',
+      statistic: 'Sum'});
   });
 
   test('add metric for task state run time', () => {
@@ -142,10 +151,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricRunTime();
+    const metric = stack.resolve(task.metricRunTime());
 
     // THEN
-    assertDefaultMetric(metric, 'RunTime', Statistic.AVERAGE);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'RunTime',
+      statistic: 'Average',
+    });
   });
 
   test('add metric for task schedule time', () => {
@@ -155,10 +175,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricScheduleTime();
+    const metric = stack.resolve(task.metricScheduleTime());
 
     // THEN
-    assertDefaultMetric(metric, 'ScheduleTime', Statistic.AVERAGE);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'ScheduleTime',
+      statistic: 'Average',
+    });
   });
 
   test('add metric for time between task being scheduled to closing', () => {
@@ -168,10 +199,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricTime();
+    const metric = stack.resolve(task.metricTime());
 
     // THEN
-    assertDefaultMetric(metric, 'Time', Statistic.AVERAGE);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'Time',
+      statistic: 'Average',
+    });
   });
 
   test('add metric for number of times the task is scheduled', () => {
@@ -181,10 +223,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricScheduled();
+    const metric = stack.resolve(task.metricScheduled());
 
     // THEN
-    assertDefaultMetric(metric, 'Scheduled', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'Scheduled',
+      statistic: 'Sum',
+    });
   });
 
   test('add metric for number of times the task times out', () => {
@@ -194,10 +247,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricTimedOut();
+    const metric = stack.resolve(task.metricTimedOut());
 
     // THEN
-    assertDefaultMetric(metric, 'TimedOut', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'TimedOut',
+      statistic: 'Sum',
+    });
   });
 
   test('add metric for number of times the task was started', () => {
@@ -207,10 +271,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricStarted();
+    const metric = stack.resolve(task.metricStarted());
 
     // THEN
-    assertDefaultMetric(metric, 'Started', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'Started',
+      statistic: 'Sum',
+    });
   });
 
   test('add metric for number of times the task succeeded', () => {
@@ -220,10 +295,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricSucceeded();
+    const metric = stack.resolve(task.metricSucceeded());
 
     // THEN
-    assertDefaultMetric(metric, 'Succeeded', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'Succeeded',
+      statistic: 'Sum',
+    });
   });
 
   test('add metric for number of times the task failed', () => {
@@ -233,10 +319,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricFailed();
+    const metric = stack.resolve(task.metricFailed());
 
     // THEN
-    assertDefaultMetric(metric, 'Failed', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'Failed',
+      statistic: 'Sum',
+    });
   });
 
   test('add metric for number of times the metrics heartbeat timed out', () => {
@@ -246,10 +343,21 @@ describe('Task base', () => {
     const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
 
     // WHEN
-    const metric = task.metricHeartbeatTimedOut();
+    const metric = stack.resolve(task.metricHeartbeatTimedOut());
 
     // THEN
-    assertDefaultMetric(metric, 'HeartbeatTimedOut', Statistic.SUM);
+    expect(metric).toStrictEqual({
+      period: {
+        amount: 5,
+        unit: {
+          label: 'minutes',
+          inMillis: 60000,
+        },
+      },
+      namespace: 'AWS/States',
+      metricName: 'HeartbeatTimedOut',
+      statistic: 'Sum',
+    });
   });
 
   test('metrics must be configured to use metric* APIs', () => {
@@ -313,18 +421,6 @@ describe('Task base', () => {
     );
   });
 });
-
-function assertDefaultMetric(metric: Metric, metricName: string, statistic: Statistic) {
-  expect(metric.toMetricConfig()).toEqual({
-    metricStat: {
-      metricName,
-      namespace: 'AWS/States',
-      period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
-      statistic,
-    },
-    renderingProperties: {},
-  });
-}
 
 function render(sm: sfn.IChainable) {
   return new cdk.Stack().resolve(
