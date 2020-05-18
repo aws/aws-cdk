@@ -209,16 +209,6 @@ const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
   });
 ```
 
-The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenIdConnectProvider`, for example:
-
-```ts
-const provider = new OpenIdConnectProvider(this, 'MyProvider', {
-  url: 'https://openid/connect',
-  clients: [ 'myclient1', 'myclient2' ]
-});
-const principal = new iam.OpenIdConnectPrincipal(provider);
-```
-
 ### Parsing JSON Policy Documents
 
 The `PolicyDocument.fromJson` and `PolicyStatement.fromJson` static methods can be used to parse JSON objects. For example:
@@ -301,6 +291,16 @@ you can reference the provider's ARN as follows:
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
   openIdConnectProviderARNs: [ provider.openIdConnectProviderArn ]
 });
+```
+
+The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenIdConnectProvider`, for example:
+
+```ts
+const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+  url: 'https://openid/connect',
+  clients: [ 'myclient1', 'myclient2' ]
+});
+const principal = new iam.OpenIdConnectPrincipal(provider);
 ```
 
 ### Features
