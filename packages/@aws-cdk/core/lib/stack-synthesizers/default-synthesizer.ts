@@ -203,11 +203,16 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
+    const httpUrl = cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`);
+    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
+
     // Return CFN expression
     return {
       bucketName: cfnify(this.bucketName),
       objectKey,
-      s3Url: cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`),
+      httpUrl,
+      s3ObjectUrl,
+      s3Url: httpUrl,
     };
   }
 
