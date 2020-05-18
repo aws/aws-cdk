@@ -2,6 +2,9 @@ import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
+/**
+ * Represents a certificate in AWS Certificate Manager
+ */
 export interface ICertificate extends IResource {
   /**
    * The certificate's ARN
