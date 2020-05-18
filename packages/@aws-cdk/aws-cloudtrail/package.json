@@ -64,7 +64,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
-    "aws-sdk": "^2.678.0",
+    "aws-sdk": "^2.679.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -98,17 +98,6 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailArn",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.Trail.trailSnsTopicArn",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.TrailProps",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.READ_ONLY",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.WRITE_ONLY",
-      "docs-public-apis:@aws-cdk/aws-cloudtrail.ReadWriteType.ALL"
-    ]
-  },
   "awscdkio": {
     "announce": false
   }

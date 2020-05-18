@@ -70,7 +70,7 @@
     "cfn2ts": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.5.1"
+    "ts-jest": "^26.0.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
