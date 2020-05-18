@@ -133,6 +133,45 @@ export = {
       test.done();
     },
 
+    'docker image default to lambci'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+      const dockerAssetPath = 'asset-path';
+      const command = ['this', 'is', 'a', 'build', 'command'];
+
+      // WHEN
+      new lambda.Function(stack, 'Fn', {
+        handler: 'foom',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(dockerAssetPath, {
+          bundling: { command },
+        }),
+      });
+
+      // THEN
+      test.ok(spawnSyncStub.calledWith('docker', [
+        'run', '--rm',
+        '-v', `${dockerAssetPath}:/asset`,
+        '-w', '/asset',
+        'lambci/lambda:build-nodejs12.x',
+        ...command,
+      ]), 'docker run not called with expected args');
+
+      spawnSyncStub.restore();
+
+      test.done();
+    },
+
     'docker build'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

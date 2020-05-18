@@ -3,6 +3,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import { BundlingDockerImage, DockerVolume } from './bundling';
+import { Function } from './function';
 
 export abstract class Code {
   /**
@@ -168,8 +169,11 @@ export class InlineCode extends Code {
 export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
+   *
+   * @default - The lambci/lambda build image for the function's runtime
+   * https://hub.docker.com/r/lambci/lambda/
    */
-  readonly image: BundlingDockerImage;
+  readonly image?: BundlingDockerImage;
 
   /**
    * The command to run in the container.
@@ -240,7 +244,18 @@ export class AssetCode extends Code {
         },
       ];
 
-      this.options.bundling.image.run({
+      let image: BundlingDockerImage;
+      if (this.options.bundling.image) {
+        image = this.options.bundling.image;
+      } else {
+        if (scope instanceof Function) {
+          image = BundlingDockerImage.fromRegistry(`lambci/lambda:build-${scope.runtime.name}`);
+        } else {
+          throw new Error('Cannot derive default bundling image from scope. Please specify an image.');
+        }
+      }
+
+      image.run({
         command: this.options.bundling.command,
         volumes,
         environment: this.options.bundling.environment,
