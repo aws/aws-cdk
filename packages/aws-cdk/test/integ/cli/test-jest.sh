@@ -16,4 +16,4 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest aws-sdk
 fi
 
-npx jest --runInBand --testPathPattern 'test/integ/cli' --testMatch '**/*.integtest.js' --verbose "$@"
+npx jest --runInBand --verbose "$@"
