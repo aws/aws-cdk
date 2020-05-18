@@ -18,7 +18,7 @@ export interface CodeBuildProjectProps {
 }
 
 /**
- * Start a CodeBuild build when an AWS EventBridge rule is triggered.
+ * Start a CodeBuild build when an Amazon EventBridge rule is triggered.
  */
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(

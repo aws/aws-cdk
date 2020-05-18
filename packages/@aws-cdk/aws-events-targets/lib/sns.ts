@@ -15,7 +15,7 @@ export interface SnsTopicProps {
 }
 
 /**
- * Use an SNS topic as a target for AWS EventBridge rules.
+ * Use an SNS topic as a target for Amazon EventBridge rules.
  *
  * @example
  *

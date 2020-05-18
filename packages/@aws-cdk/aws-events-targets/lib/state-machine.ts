@@ -16,7 +16,7 @@ export interface SfnStateMachineProps {
 }
 
 /**
- * Use a StepFunctions state machine as a target for AWS EventBridge rules.
+ * Use a StepFunctions state machine as a target for Amazon EventBridge rules.
  */
 export class SfnStateMachine implements events.IRuleTarget {
   constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {

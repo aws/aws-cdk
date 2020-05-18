@@ -28,7 +28,7 @@ export interface SqsQueueProps {
 }
 
 /**
- * Use an SQS Queue as a target for AWS EventBridge rules.
+ * Use an SQS Queue as a target for Amazon EventBridge rules.
  *
  * @example
  *
