@@ -260,15 +260,35 @@ Note that, `tempPasswordValidity` can be specified only in whole days. Specifyin
 
 #### Advanced Security
 
-User ppols can be configured Advanced security. It can be turned on or used audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publishes metrics to Amazon CloudWatch. 
+User ppols can be configured Advanced security. It can be turned on or used audit mode to gather metrics on detected risks without taking action.
+In audit mode, the advanced security features publishes metrics to Amazon CloudWatch.
 See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to
 learn more.
 
 ```ts
-new UserPool(this, 'myuserpool', {
+const userPool = new UserPool(this, 'myuserpool', {
   // ...
   UserPoolAddOns: {
     AdvancedSecurityMode: 'ENFORCED',
+  },
+});
+userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
+  clientId: 'ALL',
+  accountTakeoverRiskConfiguration: {
+    actions: {
+      highAction: {
+        eventAction: AccountTakeoverEventAction.BLOCK,
+        notify: true,
+      },
+      lowAction: {
+        eventAction: AccountTakeoverEventAction.NO_ACTION,
+        notify: false,
+      },
+      mediumAction: {
+        eventAction: AccountTakeoverEventAction.MFA_IF_CONFIGURED,
+        notify: true,
+      },
+    },
   },
 });
 ```
