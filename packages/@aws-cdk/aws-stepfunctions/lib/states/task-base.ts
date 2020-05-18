@@ -147,7 +147,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Return the given named metric for this Task
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -162,7 +162,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * The interval, in milliseconds, between the time the Task starts and the time it closes.
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
@@ -171,7 +171,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * The interval, in milliseconds, for which the activity stays in the schedule state.
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
@@ -180,7 +180,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * The interval, in milliseconds, between the time the activity is scheduled and the time it closes.
    *
-   * @default average over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
@@ -189,7 +189,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times this activity is scheduled
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'Scheduled', props);
@@ -198,7 +198,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times this activity times out
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'TimedOut', props);
@@ -207,7 +207,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times this activity is started
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'Started', props);
@@ -216,7 +216,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times this activity succeeds
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'Succeeded', props);
@@ -225,7 +225,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times this activity fails
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'Failed', props);
@@ -234,7 +234,7 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Metric for the number of times the heartbeat times out for this activity
    *
-   * @default sum over 5 minutes
+   * @default - sum over 5 minutes
    */
   public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.taskMetric(this.taskMetrics?.metricPrefixPlural, 'HeartbeatTimedOut', props);
