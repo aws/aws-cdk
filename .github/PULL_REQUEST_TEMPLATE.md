@@ -1,4 +1,3 @@
-Title & body will be used as commit message and MUST follow conventional commits (see contribution guide).
 
 ----
 
