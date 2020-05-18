@@ -484,6 +484,8 @@ The `dist/` folder within each module contains the packaged up language artifact
 
 ### Quick Iteration
 
+Make sure you have configured these [aliases](#useful-aliases) to your shell profile.
+
 After you've built the modules you want to work on once, use `lr watch` for each module that you are modifying.
 
 Watch the EC2 and IAM modules in a second terminal session:
