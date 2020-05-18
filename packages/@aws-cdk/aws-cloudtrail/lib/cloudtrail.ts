@@ -6,6 +6,9 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
+/**
+ * Properties for an AWS CloudTrail trail
+ */
 export interface TrailProps {
   /**
    * For most services, events are recorded in the region where the action occurred.
@@ -98,9 +101,27 @@ export interface TrailProps {
   readonly bucket?: s3.IBucket
 }
 
+/**
+ * Types of events that CloudTrail can log
+ */
 export enum ReadWriteType {
+  /**
+   * Read-only events include API operations that read your resources,
+   * but don't make changes.
+   * For example, read-only events include the Amazon EC2 DescribeSecurityGroups
+   * and DescribeSubnets API operations.
+   */
   READ_ONLY = 'ReadOnly',
+  /**
+   * Write-only events include API operations that modify (or might modify)
+   * your resources.
+   * For example, the Amazon EC2 RunInstances and TerminateInstances API
+   * operations modify your instances.
+   */
   WRITE_ONLY = 'WriteOnly',
+  /**
+   * All events
+   */
   ALL = 'All'
 }
 
@@ -120,11 +141,15 @@ export enum ReadWriteType {
 export class Trail extends Resource {
 
   /**
+   * ARN of the CloudTrail trail
+   * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
    */
   public readonly trailArn: string;
 
   /**
+   * ARN of the Amazon SNS topic that's associated with the CloudTrail trail,
+   * i.e. arn:aws:sns:us-east-2:123456789012:mySNSTopic
    * @attribute
    */
   public readonly trailSnsTopicArn: string;
