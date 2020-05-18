@@ -39,8 +39,8 @@ export interface BasePathMappingProps extends BasePathMappingOptions {
  * This resource creates a base path that clients who call your API must use in
  * the invocation URL.
  *
- * Unless you're importing adomain with `DomainName.fromDomainNameAttributes`, 
- * you will probably want to use `DomainName.addBasePathMapping()` to define 
+ * Unless you're importing adomain with `DomainName.fromDomainNameAttributes`,
+ * you will probably want to use `DomainName.addBasePathMapping()` to define
  * mappings.
  */
 export class BasePathMapping extends Resource {
