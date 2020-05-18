@@ -19,8 +19,8 @@ class TestStack extends Stack {
         bundling: {
           command: [
             'bash', '-c', `
-            pip install -r /src/requirements.txt -t /bundle &&
-            rsync -r /src/ /bundle
+            pip install -r requirements.txt -t /bundle &&
+            rsync -r . /bundle
             `,
           ],
         },
