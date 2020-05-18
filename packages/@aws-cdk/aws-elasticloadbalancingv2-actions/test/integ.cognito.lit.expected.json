@@ -448,7 +448,7 @@
         "Protocol": "HTTPS",
         "Certificates": [
           {
-            "CertificateArn": "arn:aws:acm:eu-west-1:993655754359:certificate/9c4d0ef1-50ab-4587-9a58-19d6e4d26a1b"
+            "CertificateArn": ""
           }
         ]
       }
