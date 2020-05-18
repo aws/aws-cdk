@@ -17,17 +17,15 @@ class TestStack extends Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: lambda.BundlingDockerImage.fromRegistry('python:3.6'),
           command: [
-            'pip', 'install',
-            '-r', 'requirements.txt',
-            '-t', '.',
+            'bash', '-c', `
+            pip install -r /src/requirements.txt -t /bundle &&
+            rsync -r /src/ /bundle
+            `,
           ],
         },
         // Python dependencies do not give a stable hash
-        sourceHash: FileSystem.fingerprint(assetPath, {
-          exclude: ['*', '!index.py', '!requirements.txt'],
-        }),
+        sourceHash: FileSystem.fingerprint(assetPath),
       }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',

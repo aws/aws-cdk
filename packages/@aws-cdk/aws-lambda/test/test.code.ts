@@ -120,10 +120,11 @@ export = {
       // THEN
       test.ok(spawnSyncStub.calledWith('docker', [
         'run', '--rm',
-        '-v', `${dockerAssetPath}:/asset`,
+        '-v', `${dockerAssetPath}:/src`,
+        '-v', `.bundle/${dockerAssetPath}:/bundle`,
         '--env', 'VAR1=value1',
         '--env', 'VAR2=value2',
-        '-w', '/asset',
+        '-w', '/src',
         'alpine',
         ...command,
       ]), 'docker run not called with expected args');
@@ -161,8 +162,9 @@ export = {
       // THEN
       test.ok(spawnSyncStub.calledWith('docker', [
         'run', '--rm',
-        '-v', `${dockerAssetPath}:/asset`,
-        '-w', '/asset',
+        '-v', `${dockerAssetPath}:/src`,
+        '-v', `.bundle/${dockerAssetPath}:/bundle`,
+        '-w', '/src',
         'lambci/lambda:build-nodejs12.x',
         ...command,
       ]), 'docker run not called with expected args');
@@ -216,8 +218,9 @@ export = {
 
       test.ok(spawnSyncStub.calledWith('docker', [
         'run', '--rm',
-        '-v', `${dockerAssetPath}:/asset`,
-        '-w', '/asset',
+        '-v', `${dockerAssetPath}:/src`,
+        '-v', `.bundle/${dockerAssetPath}:/bundle`,
+        '-w', '/src',
         imageId,
         ...command,
       ]), 'docker run not called with expected args');

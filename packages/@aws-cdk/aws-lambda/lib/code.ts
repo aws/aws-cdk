@@ -2,6 +2,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
+import * as nodePath from 'path';
 import { BundlingDockerImage, DockerVolume } from './bundling';
 import { Function } from './function';
 
@@ -183,9 +184,9 @@ export interface BundlingOptions {
   readonly command: string[];
 
   /**
-   * Docker volumes to mount.
+   * Additional Docker volumes to mount.
    *
-   * @default - The path to the asset file or directory is mounted at /asset
+   * @default - no additional volumes are mounted
    */
   readonly volumes?: DockerVolume[];
 
@@ -199,9 +200,18 @@ export interface BundlingOptions {
   /**
    * Working directory inside the container.
    *
-   * @default - the `containerPath` of the first mounted volume.
+   * @default /src
    */
   readonly workingDirectory?: string;
+
+  /**
+   * Bundle directory. Subdirectories named after the asset path will be
+   * created in this directory and mounted at `/bundle` in the container.
+   * Should be added to your `.gitignore`.
+   *
+   * @default .bundle next to the asset directory
+   */
+  readonly bundleDirectory?: string;
 }
 
 /**
@@ -210,6 +220,9 @@ export interface BundlingOptions {
 export interface AssetCodeOptions extends s3_assets.AssetOptions {
   /**
    * Bundle the Lambda code by executing a command in a Docker container.
+   * The asset path will be mounted at `/src`. The Docker container is
+   * responsible for putting content at `/bundle`. The content at `/bundle`
+   * will be zipped and used as Lambda code.
    *
    * @default - asset path is zipped as is
    */
@@ -231,17 +244,30 @@ export class AssetCode extends Code {
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
+    let bundleAssetPath: string | undefined;
+
     if (this.options.bundling) {
-      // We are going to mount it, so ensure it exists
-      if (!fs.existsSync(this.path)) {
-        fs.mkdirSync(this.path);
+      // Create the directory for the bundle next to the asset path
+      const bundlePath = nodePath.join(nodePath.dirname(this.path), this.options.bundling.bundleDirectory ?? '.bundle');
+      if (!fs.existsSync(bundlePath)) {
+        fs.mkdirSync(bundlePath);
       }
 
-      const volumes = this.options.bundling.volumes ?? [
+      bundleAssetPath = nodePath.join(bundlePath, nodePath.basename(this.path));
+      if (!fs.existsSync(bundleAssetPath)) {
+        fs.mkdirSync(bundleAssetPath);
+      }
+
+      const volumes = [
         {
           hostPath: this.path,
-          containerPath: '/asset',
+          containerPath: '/src',
         },
+        {
+          hostPath: bundleAssetPath,
+          containerPath: '/bundle',
+        },
+        ...this.options.bundling.volumes ?? [],
       ];
 
       let image: BundlingDockerImage;
@@ -259,14 +285,14 @@ export class AssetCode extends Code {
         command: this.options.bundling.command,
         volumes,
         environment: this.options.bundling.environment,
-        workingDirectory: this.options.bundling.workingDirectory ?? volumes[0].containerPath,
+        workingDirectory: this.options.bundling.workingDirectory ?? '/src',
       });
     }
 
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
-        path: this.path,
+        path: bundleAssetPath ?? this.path,
         ...this.options,
       });
     }

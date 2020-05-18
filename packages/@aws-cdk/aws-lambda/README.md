@@ -256,20 +256,21 @@ For example, the `LogRetention` construct requires only one single lambda functi
 retention it seeks to manage.
 
 ### Bundling Asset Code
-When using `lambda.Code.fromAsset(path)` it is possible to "act" on the code by running a
-command in a Docker container. By default, the asset path is mounted in the container
-at `/asset` and is set as the working directory.
+When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
+command in a Docker container. The asset path will be mounted at `/src`. The Docker
+container is responsible for putting content at `/bundle`. The content at `/bundle`
+will be zipped and used as Lambda code.
 
 Example with Python:
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
-    bundle: {
-      image: lambda.BundlingDockerImage.fromRegistry('python:3.6'), // Use an existing image
+    bundling: { // Docker image defaults to the lambci/lambda build image for the function's runtime
       command: [
-        'pip', 'install',
-        '-r', 'requirements.txt',
-        '-t', '.',
+        'bash', '-c', `
+        pip install -r /src/requirements.txt -t /bundle &&
+        rsync -r /src/ /bundle
+        `,
       ],
     },
   }),
@@ -277,13 +278,16 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+The Docker image defaults to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build
+image for the function's runtime.
 
-Use `lambda.DockerImage.fromBuild(path)` to build a specific image:
+Use `lambda.DockerImage.fromRegistry(image)` to use an existing image or
+`lambda.DockerImage.fromAsset(path)` to build a specific image:
 
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler'), {
-    bundle: {
+    bundling: {
       image: lambda.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
