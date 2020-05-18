@@ -2,7 +2,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
-import { DockerImage, DockerVolume } from './docker';
+import { BundlingDockerImage, DockerVolume } from './bundling';
 
 export abstract class Code {
   /**
@@ -163,16 +163,18 @@ export class InlineCode extends Code {
 }
 
 /**
- * Bundle options
+ * Bundling options
  */
-export interface BundleOptions {
+export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
    */
-  readonly image: DockerImage;
+  readonly image: BundlingDockerImage;
 
   /**
    * The command to run in the container.
+   *
+   * @example ['npm', 'install']
    */
   readonly command: string[];
 
@@ -203,11 +205,11 @@ export interface BundleOptions {
  */
 export interface AssetCodeOptions extends s3_assets.AssetOptions {
   /**
-   * Bundle options
+   * Bundle the Lambda code by executing a command in a Docker container.
    *
-   * @default - no bundling
+   * @default - asset path is zipped as is
    */
-  readonly bundle?: BundleOptions;
+  readonly bundling?: BundlingOptions;
 }
 
 /**
@@ -225,24 +227,24 @@ export class AssetCode extends Code {
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
-    if (this.options.bundle) {
+    if (this.options.bundling) {
       // We are going to mount it, so ensure it exists
       if (!fs.existsSync(this.path)) {
         fs.mkdirSync(this.path);
       }
 
-      const volumes = this.options.bundle.volumes ?? [
+      const volumes = this.options.bundling.volumes ?? [
         {
           hostPath: this.path,
           containerPath: '/asset',
         },
       ];
 
-      this.options.bundle.image.run({
-        command: this.options.bundle.command,
+      this.options.bundling.image.run({
+        command: this.options.bundling.command,
         volumes,
-        environment: this.options.bundle.environment,
-        workingDirectory: this.options.bundle.workingDirectory ?? volumes[0].containerPath,
+        environment: this.options.bundling.environment,
+        workingDirectory: this.options.bundling.workingDirectory ?? volumes[0].containerPath,
       });
     }
 

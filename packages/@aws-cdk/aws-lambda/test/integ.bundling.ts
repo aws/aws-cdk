@@ -16,8 +16,8 @@ class TestStack extends Stack {
     const assetPath = path.join(__dirname, 'python-lambda-handler');
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(assetPath, {
-        bundle: {
-          image: lambda.DockerImage.fromImage('python:3.6'),
+        bundling: {
+          image: lambda.BundlingDockerImage.fromRegistry('python:3.6'),
           command: [
             'pip', 'install',
             '-r', 'requirements.txt',

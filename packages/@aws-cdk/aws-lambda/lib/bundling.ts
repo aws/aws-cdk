@@ -59,25 +59,25 @@ export interface DockerBuildOptions {
 }
 
 /**
- * A Docker image
+ * A Docker image used for Lambda bundling
  */
-export class DockerImage {
+export class BundlingDockerImage {
   /**
-   * Use an existing Docker image
+   * Reference an image on DockerHub or another online registry.
    *
    * @param image the image name
    */
-  public static fromImage(image: string) {
-    return new DockerImage(image);
+  public static fromRegistry(image: string) {
+    return new BundlingDockerImage(image);
   }
 
   /**
-   * Build a Docker image
+   * Reference an image that's built directly from sources on disk.
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
-  public static fromBuild(path: string, options: DockerBuildOptions = {}) {
+  public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
     const dockerArgs: string[] = [
@@ -94,7 +94,7 @@ export class DockerImage {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    return new DockerImage(match[1]);
+    return new BundlingDockerImage(match[1]);
   }
 
   /** @param image The Docker image */

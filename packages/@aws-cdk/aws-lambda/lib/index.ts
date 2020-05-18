@@ -12,7 +12,7 @@ export * from './event-source';
 export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
-export * from './docker';
+export * from './bundling';
 
 export * from './log-retention';
 

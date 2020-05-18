@@ -106,8 +106,8 @@ export = {
         handler: 'foom',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(dockerAssetPath, {
-          bundle: {
-            image: lambda.DockerImage.fromImage('alpine'),
+          bundling: {
+            image: lambda.BundlingDockerImage.fromRegistry('alpine'),
             environment: {
               VAR1: 'value1',
               VAR2: 'value2',
@@ -157,8 +157,8 @@ export = {
         handler: 'foom',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(dockerAssetPath, {
-          bundle: {
-            image: lambda.DockerImage.fromBuild(dockerPath, {
+          bundling: {
+            image: lambda.BundlingDockerImage.fromAsset(dockerPath, {
               buildArgs: {
                 TEST_ARG: testArg,
               },
