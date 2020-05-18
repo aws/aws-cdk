@@ -36,7 +36,7 @@ export interface SignInAliases {
   readonly preferredUsername?: boolean;
 
   /**
-   * Whether sign-in aliases should be evaulated with case sensitivity.
+   * Whether sign-in aliases should be evaluated with case sensitivity.
    * For example, when this option is set to false, users will be able to sign in using either `username` or `Username`.
    * This option enables username, preferredUsername, and email aliases to be case insensitive.
    * @default true
