@@ -1,8 +1,3 @@
-### Commit Message
-COMMIT/PR TITLE HERE (must follow conventionalcommits.org)
-
-COMMIT MESSAGE HERE
-### End Commit Message
 
 ----
 
