@@ -1,288 +1,119 @@
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
 
 describe('Task state', () => {
-  test('add metrics', () => {
+
+  let stack: cdk.Stack;
+  let task: sfn.Task;
+
+  beforeEach(() => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
+    stack = new cdk.Stack();
+    task = new sfn.Task(stack, 'my-task', {
       task: new FakeTask(),
     });
+  });
 
+  test('get named metric for the task', () => {
     // WHEN
     const metric = task.metric('my-metric');
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'my-metric',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'my-metric', 'Sum');
   });
 
-  test('add failed metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the task failed', () => {
     // WHEN
     const metric = task.metricFailed();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'Failed',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'Failed', 'Sum');
   });
 
-  test('add heartbeat timeout metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the metrics heartbeat timed out', () => {
     // WHEN
     const metric = task.metricHeartbeatTimedOut();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'HeartbeatTimedOut',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'HeartbeatTimedOut', 'Sum');
   });
 
-  test('add runtime metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for task state run time', () => {
     // WHEN
     const metric = task.metricRunTime();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'RunTime',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Average',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'RunTime', 'Average');
   });
 
-  test('add schedule time metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for task schedule time', () => {
     // WHEN
     const metric = task.metricScheduleTime();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'ScheduleTime',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Average',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'ScheduleTime', 'Average');
   });
 
-  test('add scheduled metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the task is scheduled', () => {
     // WHEN
     const metric = task.metricScheduled();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'Scheduled',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'Scheduled', 'Sum');
   });
 
-  test('add started metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the task was started', () => {
     // WHEN
     const metric = task.metricStarted();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'Started',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'Started', 'Sum');
   });
 
-  test('add failed metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the task succeeded', () => {
     // WHEN
     const metric = task.metricSucceeded();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'Succeeded',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'Succeeded', 'Sum');
   });
 
-  test('add time metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for time between task being scheduled to closing', () => {
     // WHEN
     const metric = task.metricTime();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'Time',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Average',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'Time', 'Average');
   });
 
-  test('add timed out metric', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new sfn.Task(stack, 'my-task', {
-      task: new FakeTask(),
-    });
-
+  test('add metric for number of times the task times out', () => {
     // WHEN
     const metric = task.metricTimedOut();
 
     // THEN
-    expect(stack.resolve(metric)).toEqual({
-      metricName: 'TimedOut',
-      namespace: 'AWS/States',
-      period: {
-        amount: 5,
-        unit: {
-          inMillis: 60000,
-          label: 'minutes',
-        },
-      },
-      statistic: 'Sum',
-      dimensions: {
-        Arn: 'resource',
-      },
-    });
+    verifyMetric(stack.resolve(metric), 'TimedOut', 'Sum');
   });
 
 });
+
+function verifyMetric(metric: Metric, metricName: string, statistic: string) {
+  expect(metric).toEqual({
+    metricName,
+    namespace: 'AWS/States',
+    period: {
+      amount: 5,
+      unit: {
+        inMillis: 60000,
+        label: 'minutes',
+      },
+    },
+    statistic,
+    dimensions: {
+      Arn: 'resource',
+    },
+  });
+}
 
 class FakeTask implements sfn.IStepFunctionsTask {
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
