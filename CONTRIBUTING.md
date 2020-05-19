@@ -497,7 +497,7 @@ $ yarn watch & # runs in the background
 
 Code...
 
-Now to test, you can either use `yarn test` or invoke nodeunit/jest directory (faster, since "test" will also build):
+Now to test, you can either use `yarn test` or invoke nodeunit/jest directory:
 
 Running nodeunit tests directory on a module
 ```console
