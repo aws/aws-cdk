@@ -1,6 +1,6 @@
-import { Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
+import { IProfilingGroup, ProfilingGroupBase } from './profiling-group-base';
 
 /**
  * Properties for creating a new Profiling Group.
@@ -9,78 +9,60 @@ export interface ProfilingGroupProps {
 
   /**
    * A name for the profiling group.
+   * @default - automatically generated name.
    */
-  readonly profilingGroupName: string;
+  readonly profilingGroupName?: string;
 
 }
 
 /**
  * A new Profiling Group.
  */
-export class ProfilingGroup extends Resource {
+export class ProfilingGroup extends ProfilingGroupBase {
 
-  /**
-   * The name of this ProfilingGroup
-   */
+  public static fromProfilingGroupName(scope: Construct, id: string, profilingGroupName: string): IProfilingGroup {
+    const stack = Stack.of(scope);
+
+    class Import extends ProfilingGroupBase {
+      public readonly profilingGroupName = profilingGroupName;
+      public readonly profilingGroupArn = stack.formatArn({
+        service: 'codeguru-profiler',
+        resource: 'profilingGroup',
+        resourceName: profilingGroupName,
+      });
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromProfilingGroupArn(scope: Construct, id: string, profilingGroupArn: string): IProfilingGroup {
+    class Import extends ProfilingGroupBase {
+      public readonly profilingGroupName = Stack.of(scope).parseArn(profilingGroupArn).resource;
+      public readonly profilingGroupArn = profilingGroupArn;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly profilingGroupName: string;
-
-  /**
-   * The ARN of this ProfilingGroup
-   */
   public readonly profilingGroupArn: string;
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps) {
     super(scope, id, {
-      physicalName: props.profilingGroupName,
+      physicalName: props.profilingGroupName || Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
-      profilingGroupName: props.profilingGroupName,
+      profilingGroupName: this.physicalName,
     });
 
     this.profilingGroupName = this.getResourceNameAttribute(profilingGroup.ref);
 
     this.profilingGroupArn = this.getResourceArnAttribute(profilingGroup.attrArn, {
-      service: 'codeguruprofiler',
-      resource: this.physicalName,
+      service: 'codeguru-profiler',
+      resource: 'profilingGroup',
+      resourceName: this.physicalName,
     });
   }
 
-  /**
-   * Grant access to publish profiling information to the Profiling Group to the given identity.
-   *
-   * This will grant the following permissions:
-   *
-   *  - codeguru-profiler:ConfigureAgent
-   *  - codeguru-profiler:PostAgentProfile
-   *
-   * @param grantee Principal to grant publish rights to
-   */
-  public grantPublish(grantee: IGrantable) {
-    // https://docs.aws.amazon.com/codeguru/latest/profiler-ug/security-iam.html#security-iam-access-control
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
-      resourceArns: [this.profilingGroupArn],
-    });
-  }
-
-  /**
-   * Grant access to read profiling information from the Profiling Group to the given identity.
-   *
-   * This will grant the following permissions:
-   *
-   *  - codeguru-profiler:GetProfile
-   *  - codeguru-profiler:DescribeProfilingGroup
-   *
-   * @param grantee Principal to grant read rights to
-   */
-  public grantRead(grantee: IGrantable) {
-    // https://docs.aws.amazon.com/codeguru/latest/profiler-ug/security-iam.html#security-iam-access-control
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['codeguru-profiler:GetProfile', 'codeguru-profiler:DescribeProfilingGroup'],
-      resourceArns: [this.profilingGroupArn],
-    });
-  }
 }
