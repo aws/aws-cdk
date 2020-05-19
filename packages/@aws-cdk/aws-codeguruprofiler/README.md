@@ -24,13 +24,13 @@ import * as codeguruprofiler from '@aws-cdk/aws-codeguruprofiler';
 Here's how to setup a profiling group and give your compute role permissions to publish to the profiling group to the profiling agent can publish profiling information:
 
 ```ts
-const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
-  profilingGroupName: 'MyAwesomeProfilingGroup',
-});
-
+// The execution role of your application that publishes to the ProfilingGroup via CodeGuru Profiler Profiling Agent. (the following is merely an example)
 const publishAppRole = new Role(stack, 'PublishAppRole', {
   assumedBy: new AccountRootPrincipal(),
 });
 
+const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
+  profilingGroupName: 'MyAwesomeProfilingGroup',
+});
 profilingGroup.grantPublish(publishAppRole);
 ```
