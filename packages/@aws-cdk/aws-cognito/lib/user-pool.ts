@@ -634,7 +634,7 @@ export interface UserPoolProps {
    *
    * @default AdvancedSecurityMode.OFF.
    */
-  readonly advancedSecurityMode?: AdvancedSecurityMode;
+  readonly advancedSecurity?: AdvancedSecurityMode;
 
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
@@ -795,7 +795,7 @@ export class UserPool extends Resource implements IUserPool {
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       userPoolAddOns: undefinedIfNoKeys({
-        advancedSecurityMode: props.advancedSecurityMode,
+        advancedSecurityMode: props.advancedSecurity,
       }),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({

@@ -269,7 +269,7 @@ learn more.
 const userPool = new UserPool(this, 'myuserpool', {
   // ...
   UserPoolAddOns: {
-    AdvancedSecurityMode: 'ENFORCED',
+    AdvancedSecurity: AdvancedSecurityMode.ENFORCED,
   },
 });
 userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {

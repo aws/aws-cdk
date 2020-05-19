@@ -672,7 +672,7 @@ describe('User Pool', () => {
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      advancedSecurityMode: AdvancedSecurityMode.OFF,
+      advancedSecurity: AdvancedSecurityMode.OFF,
     });
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -693,11 +693,11 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      advancedSecurity: AdvancedSecurityMode.ENFORCED,
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
+      advancedSecurity: AdvancedSecurityMode.AUDIT,
     });
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -721,7 +721,7 @@ describe('User Pool', () => {
     // WHEN
     const userPool = new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      advancedSecurity: AdvancedSecurityMode.ENFORCED,
     });
     userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
       clientId: 'ALL',
@@ -741,7 +741,7 @@ describe('User Pool', () => {
     // WHEN
     const userPool = new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+      advancedSecurity: AdvancedSecurityMode.ENFORCED,
     });
     userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
       clientId: 'ALL',

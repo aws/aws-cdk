@@ -43,7 +43,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     sms: true,
     otp: true,
   },
-  advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+  advancedSecurity: AdvancedSecurityMode.ENFORCED,
   passwordPolicy: {
     tempPasswordValidity: Duration.days(10),
     minLength: 12,
