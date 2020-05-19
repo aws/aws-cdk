@@ -254,14 +254,14 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     assertBound(this.stack);
 
     // Add the stack's template to the artifact manifest
-    const templateAsset = this.addStackTemplateToAssetManifest(session);
+    const templateManifestUrl = this.addStackTemplateToAssetManifest(session);
 
     const artifactId = this.writeAssetManifest(session);
 
     addStackArtifactToAssembly(session, this.stack, {
       assumeRoleArn: this.deployRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
-      stackTemplateAssetObjectUrl: templateAsset.s3Url,
+      stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: 1,
     }, [artifactId]);
   }
@@ -270,7 +270,10 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
    * Add the stack's template as one of the manifest assets
    *
    * This will make it get uploaded to S3 automatically by S3-assets. Return
-   * the URL.
+   * the manifest URL.
+   *
+   * (We can't return the location returned from `addFileAsset`, as that
+   * contains CloudFormation intrinsics which can't go into the manifest).
    */
   private addStackTemplateToAssetManifest(session: ISynthesisSession) {
     assertBound(this.stack);
@@ -278,11 +281,22 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     const templatePath = path.join(session.assembly.outdir, this.stack.templateFile);
     const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
 
-    return this.addFileAsset({
+    const sourceHash = contentHash(template);
+
+    this.addFileAsset({
       fileName: this.stack.templateFile,
       packaging: FileAssetPackaging.FILE,
-      sourceHash: contentHash(template),
+      sourceHash,
     });
+
+    // We should technically return an 'https://s3.REGION.amazonaws.com[.cn]/name/hash' URL here,
+    // because that is what CloudFormation expects to see.
+    //
+    // However, there's no way for us to actually know the UrlSuffix a priori, so we can't construct it here.
+    //
+    // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
+    // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
+    return `s3://${this.bucketName}/${sourceHash}`;
   }
 
   /**
