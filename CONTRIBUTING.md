@@ -497,16 +497,16 @@ $ yarn watch & # runs in the background
 
 Code...
 
-Now to test, you can either use `yarn test` or invoke nodeunit/jest directory:
+Now to test, you can either use `yarn test` or invoke nodeunit/jest directly:
 
-Running nodeunit tests directory on a module
+Running nodeunit tests directly on a module
 ```console
 $ cd packages/@aws-cdk/aws-iam
 $ nodeunit test/test.*.js
 <BOOM>
 ```
 
-Running jest tests directory on a module
+Running jest tests directly on a module
 ```console
 $ cd packages/@aws-cdk/aws-iam
 $ jest test/*test.js
