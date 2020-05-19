@@ -173,7 +173,7 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "yaml": "1.9.2"
+    "yaml": "1.10.0"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -301,7 +301,7 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^25.4.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.4.0"
+    "ts-jest": "^26.0.0"
   },
   "bundledDependencies": [
     "yaml"
