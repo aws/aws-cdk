@@ -1,3 +1,9 @@
+## Commit Message
+{{title}} (#{{number}})
+
+COMMIT MESSAGE HERE
+
+## End Commit Message
 
 ----
 
