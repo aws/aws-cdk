@@ -45,6 +45,7 @@ export = {
     // WHEN
     dest.addToPolicy(new iam.PolicyStatement({
       actions: ['logs:TalkToMe'],
+      resources: ['*'],
     }));
 
     // THEN
