@@ -34,13 +34,6 @@ export interface SignInAliases {
    * @default false
    */
   readonly preferredUsername?: boolean;
-
-  /**
-   * Whether sign-in aliases should be evaluated with case sensitivity.
-   * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
-   * @default true
-   */
-  readonly caseSensitive?: boolean;
 }
 
 /**
@@ -507,6 +500,13 @@ export interface UserPoolProps {
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
+
+  /**
+   * Whether sign-in aliases should be evaluated with case sensitivity.
+   * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
+   * @default true
+   */
+  readonly signIncaseSensitive?: boolean;
 }
 
 /**
@@ -645,7 +645,7 @@ export class UserPool extends Resource implements IUserPool {
         replyToEmailAddress: props.emailSettings?.replyTo,
       }),
       usernameConfiguration: undefinedIfNoKeys({
-        caseSensitive: props.signInAliases?.caseSensitive,
+        caseSensitive: props.signIncaseSensitive,
       }),
     });
 

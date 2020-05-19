@@ -454,13 +454,13 @@ describe('User Pool', () => {
     });
   });
 
-  test('case sensitive is correctly picked up', () => {
+  test('sign in case sensitive is correctly picked up', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signInAliases: { caseSensitive: false },
+      signIncaseSensitive: false,
     });
 
     // THEN
@@ -468,6 +468,19 @@ describe('User Pool', () => {
       UsernameConfiguration: {
         CaseSensitive: false,
       },
+    });
+  });
+
+  test('sign in case sensitive is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {});
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: ABSENT,
     });
   });
 
