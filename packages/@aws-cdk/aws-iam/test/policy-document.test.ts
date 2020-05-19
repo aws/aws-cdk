@@ -98,12 +98,29 @@ describe('IAM policy document', () => {
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
 
+  test('Throws with actions and notActions both undefined', () => {
+    expect(() => {
+      new PolicyStatement({
+        principals: [new CanonicalUserPrincipal('abc')],
+        resources: ['*'],
+      });
+    }).toThrow(/Action block is mandatory. Either `actions` or `notActions` prop must be specified/);
+  });
+
+  test('Throws with resources and notResources both undefined', () => {
+    expect(() => {
+      new PolicyStatement({
+        actions: ['abc:def'],
+      });
+    }).toThrow(/Resource block is mandatory. Either `resources` or `notResources` prop must be specified/);
+  });
+
   test('Cannot combine Resources and NotResources', () => {
     expect(() => {
       new PolicyStatement({
         actions: ['abc:def'],
         resources: ['abc'],
-        notResources: ['abc'],
+        notResources: ['def'],
       });
     }).toThrow(/Cannot add 'NotResources' to policy statement if 'Resources' have been added/);
   });
@@ -128,6 +145,19 @@ describe('IAM policy document', () => {
     expect(() => {
       stmt.addPrincipals(new CanonicalUserPrincipal('def'));
     }).toThrow(/Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added/);
+  });
+
+  test('combine NotActions and NotResources', () => {
+    const stack = new Stack();
+    const statement = new PolicyStatement({
+      notActions: ['abc:def'],
+      notResources: ['def'],
+    });
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      NotAction: 'abc:def',
+      NotResource: 'def',
+    });
   });
 
   test('Permission allows specifying multiple actions upon construction', () => {

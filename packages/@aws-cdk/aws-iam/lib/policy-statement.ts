@@ -33,8 +33,8 @@ export class PolicyStatement {
       resources: ensureArrayOrUndefined(obj.Resource),
       conditions: obj.Condition,
       effect: obj.Effect,
-      notActions: ensureArrayOrUndefined(obj.NotAction) ?? [],
-      notResources: ensureArrayOrUndefined(obj.NotResource) ?? [],
+      notActions: ensureArrayOrUndefined(obj.NotAction),
+      notResources: ensureArrayOrUndefined(obj.NotResource),
       principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
       notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
     });
@@ -58,7 +58,7 @@ export class PolicyStatement {
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
 
-  constructor(props: PolicyStatementProps = {actions: [], resources: []}) {
+  constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
       if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
@@ -78,6 +78,7 @@ export class PolicyStatement {
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
+    this.validateProps(props);
   }
 
   //
@@ -408,6 +409,27 @@ export class PolicyStatement {
     }
     this.addConditions(conditions);
   }
+
+  /**
+   * Validate PolicyStatementProps
+   *
+   * As per [IAM policy grammar](https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_policies_grammar.html#policies-grammar-bnf),
+   * the action and resource blocks are mandatory.
+   *
+   * @param props
+   */
+  private validateProps(props: PolicyStatementProps) {
+    if (props.conditions || props.effect || props.notPrincipals || props.notResources || props.principals || props.resources || props.sid) {
+      if (!props.actions && !props.notActions) {
+        throw new Error('Action block is mandatory. Either `actions` or `notActions` prop must be specified');
+      }
+    }
+    if (props.actions || props.conditions || props.effect || props.notActions || props.notPrincipals || props.principals || props.sid) {
+      if (!props.resources && !props.notResources) {
+        throw new Error('Resource block is mandatory. Either `resources` or `notResources` prop must be specified');
+      }
+    }
+  }
 }
 
 /**
@@ -462,7 +484,7 @@ export type Conditions = Record<string, Condition>;
 /**
  * Interface for creating a policy statement
  */
-export interface PolicyStatementBase {
+export interface PolicyStatementProps {
   /**
    * The Sid (statement ID) is an optional identifier that you provide for the
    * policy statement. You can assign a Sid value to each statement in a
@@ -530,44 +552,6 @@ export interface PolicyStatementBase {
    */
   readonly effect?: Effect;
 }
-
-interface PolicyStatementActions extends PolicyStatementBase {
-  /**
-   * List of actions to add to the statement
-   *
-   * @default - no actions
-   */
-  readonly actions: string[];
-}
-
-interface PolicyStatementNotActions extends PolicyStatementBase {
-  /**
-   * List of not actions to add to the statement
-   *
-   * @default - no not-actions
-   */
-  readonly notActions: string[];
-}
-
-interface PolicyStatementResources extends PolicyStatementBase {
-  /**
-   * Resource ARNs to add to the statement
-   *
-   * @default - no resources
-   */
-  readonly resources: string[];
-}
-
-interface PolicyStatementNotResources extends PolicyStatementBase {
-  /**
-   * NotResource ARNs to add to the statement
-   *
-   * @default - no not-resources
-   */
-  readonly notResources: string[];
-}
-
-export type PolicyStatementProps =  (PolicyStatementActions | PolicyStatementNotActions) & (PolicyStatementResources | PolicyStatementNotResources);
 
 function noUndef(x: any): any {
   const ret: any = {};
