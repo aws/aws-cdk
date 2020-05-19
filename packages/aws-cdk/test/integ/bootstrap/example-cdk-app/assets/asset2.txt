@@ -1,3 +1,0 @@
-This is just a test asset that's different than asset1,
-to force the stack to be re-deployed (and the asset re-uploaded)
-to verify the new bootstrap stack works.

@@ -33,8 +33,8 @@ export = {
     });
 
     // THEN - we have a fixed asset location with region placeholders
-    test.equals(evalCFN(location.bucketName), 'cdk-bootstrap-hnb659fds-assets-the_account-the_region');
-    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-bootstrap-hnb659fds-assets-the_account-the_region/abcdef');
+    test.equals(evalCFN(location.bucketName), 'cdk-hnb659fds-assets-the_account-the_region');
+    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef');
 
     // THEN - object key contains source hash somewhere
     test.ok(location.objectKey.indexOf('abcdef') > -1);
@@ -50,8 +50,8 @@ export = {
     });
 
     // THEN - we have a fixed asset location with region placeholders
-    test.equals(evalCFN(location.repositoryName), 'cdk-bootstrap-hnb659fds-container-assets-the_account-the_region');
-    test.equals(evalCFN(location.imageUri), 'the_account.dkr.ecr.the_region.domain.aws/cdk-bootstrap-hnb659fds-container-assets-the_account-the_region:abcdef');
+    test.equals(evalCFN(location.repositoryName), 'cdk-hnb659fds-container-assets-the_account-the_region');
+    test.equals(evalCFN(location.imageUri), 'the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
 
     test.done();
   },

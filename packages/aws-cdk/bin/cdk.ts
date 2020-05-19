@@ -53,6 +53,7 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
+      .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
       .option('trust', { type: 'array', desc: 'The (space-separated) list of AWS account IDs that should be trusted to perform deployments into this environment', default: [], hidden: true })
@@ -218,6 +219,7 @@ async function initCommandLine() {
           {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            qualifier: args.qualifier,
             tags: configuration.settings.get(['tags']),
             execute: args.execute,
             trustedAccounts: args.trust,
