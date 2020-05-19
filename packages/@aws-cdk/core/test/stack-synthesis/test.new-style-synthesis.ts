@@ -2,7 +2,7 @@ import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import { App, FileAssetPackaging, Stack } from '../../lib';
+import { App, CfnResource, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -22,6 +22,40 @@ export = {
     });
     stack = new Stack(app, 'Stack');
     cb();
+  },
+
+  'stack template is in asset manifest'(test: Test) {
+    // GIVEN
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN -- the S3 url is advertised on the stack artifact
+    const stackArtifact = asm.getStackArtifact('Stack');
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, 's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910');
+
+    // THEN - the template is in the asset manifest
+    const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+    test.ok(manifestArtifact);
+    const manifest: asset_schema.ManifestFile = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
+
+    test.deepEqual(firstFile, {
+      source: { path: 'Stack.template.json', packaging: 'file' },
+      destinations: {
+        'current_account-current_region': {
+          bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+          objectKey: '4bdae6e3b1b15f08c889d6c9133f24731ee14827a9a9ab9b6b6a9b42b6d34910',
+          assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-publishing-role-${AWS::AccountId}-${AWS::Region}',
+        },
+      },
+    });
+
+    test.done();
   },
 
   'add file asset'(test: Test) {

@@ -328,7 +328,6 @@ test('not executed and no error if --no-execute is given', async () => {
 });
 
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
-  // GIVEN
   // WHEN
   await deployStack({
     stack: testStack({
@@ -345,6 +344,27 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
     TemplateURL: 'https://use-me-use-me/',
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+});
+
+test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 's3://use-me-use-me-${AWS::AccountId}/object',
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://s3.bermuda-triangle-1337.amazonaws.com/use-me-use-me-123456789/object',
   }));
   expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
