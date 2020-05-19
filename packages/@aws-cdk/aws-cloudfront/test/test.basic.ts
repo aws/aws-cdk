@@ -840,6 +840,7 @@ export = {
             'Principal': {
               'Service': 'edgelambda.amazonaws.com',
             },
+            'Resource': '*',
           },
         ],
         'Version': '2012-10-17',
