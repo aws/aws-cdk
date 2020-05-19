@@ -74,7 +74,9 @@ test('deploy new style synthesis to new style bootstrap', async () => {
 
   await cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
-    '--qualifier', QUALIFIER], {
+    '--qualifier', QUALIFIER,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
+  ], {
     modEnv: {
       CDK_NEW_BOOTSTRAP: '1',
     },
