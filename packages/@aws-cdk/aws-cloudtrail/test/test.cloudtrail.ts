@@ -333,10 +333,9 @@ export = {
   'add an event rule'(test: Test) {
     // GIVEN
     const stack = getTestStack();
-    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WRITE_ONLY });
 
     // WHEN
-    trail.onCloudTrailEvent('DoEvents', {
+    Trail.onEvent(stack, 'DoEvents', {
       target: {
         bind: () => ({
           id: '',
