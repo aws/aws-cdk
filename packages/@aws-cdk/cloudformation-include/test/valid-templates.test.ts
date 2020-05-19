@@ -1,3 +1,4 @@
+import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -199,6 +200,38 @@ describe('CDK Include', () => {
     );
   });
 
+  test('resolves DependsOn with a single String value to the actual L1 class instance', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on.json');
+    const cfnBucket2 = cfnTemplate.getResource('Bucket2');
+
+    expect(cfnBucket2.node.dependencies).toHaveLength(1);
+    // we always render dependsOn as an array, even if it's a single string
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "Properties": {
+        "BucketName": "bucket2",
+      },
+      "DependsOn": [
+        "Bucket1",
+      ],
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('resolves DependsOn with an array of String values to the actual L1 class instances', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-depends-on-array.json');
+    const cfnBucket2 = cfnTemplate.getResource('Bucket2');
+
+    expect(cfnBucket2.node.dependencies).toHaveLength(2);
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "Properties": {
+        "BucketName": "bucket2",
+      },
+      "DependsOn": [
+        "Bucket0",
+        "Bucket1",
+      ],
+    }, ResourcePart.CompleteDefinition);
+  });
+
   test("throws an exception when encountering a Resource type it doesn't recognize", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
@@ -215,12 +248,6 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'resource-attribute-condition.json');
     }).toThrow(/The Condition resource attribute is not supported by cloudformation-include yet/);
-  });
-
-  test('throws an exception when encountering the DependsOn attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-depends-on.json');
-    }).toThrow(/The DependsOn resource attribute is not supported by cloudformation-include yet/);
   });
 
   test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {

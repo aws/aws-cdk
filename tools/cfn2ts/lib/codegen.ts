@@ -232,7 +232,7 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @experimental');
     this.code.line(' */');
-    this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any): ` +
+    this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
     if (propsType) {
@@ -252,11 +252,24 @@ export default class CodeGenerator {
     this.code.line(`cfnOptions.deletionPolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.DeletionPolicy);`);
     this.code.line(`cfnOptions.updateReplacePolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);`);
     this.code.line(`cfnOptions.metadata = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Metadata);`);
+
+    // handle DependsOn
+    this.code.line('// handle DependsOn');
+    // DependsOn can be either a single string, or an array of strings
+    this.code.line('resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];');
+    this.code.line('const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ? resourceAttributes.DependsOn : [resourceAttributes.DependsOn];');
+    this.code.openBlock('for (const dep of dependencies)');
+    this.code.line('const depResource = options.finder.findResource(dep);');
+    this.code.openBlock('if (!depResource)');
+    this.code.line("throw new Error(`Resource '${id}' depends on '${dep}' that doesn't exist`);");
+    this.code.closeBlock();
+    this.code.line('ret.node.addDependency(depResource);');
+    this.code.closeBlock();
+
     // ToDo handle:
     // 1. Condition
     // 2. CreationPolicy
     // 3. UpdatePolicy
-    // 4. DependsOn
 
     this.code.line('return ret;');
     this.code.closeBlock();

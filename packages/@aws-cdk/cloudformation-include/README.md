@@ -105,7 +105,7 @@ All items unchecked below are currently not supported.
 
 - [x] Properties
 - [ ] Condition
-- [ ] DependsOn
+- [x] DependsOn
 - [ ] CreationPolicy
 - [ ] UpdatePolicy
 - [x] UpdateReplacePolicy

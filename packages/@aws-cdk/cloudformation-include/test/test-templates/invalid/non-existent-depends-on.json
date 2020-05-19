@@ -1,8 +1,5 @@
 {
   "Resources": {
-    "Bucket1": {
-      "Type": "AWS::S3::Bucket"
-    },
     "Bucket2": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
