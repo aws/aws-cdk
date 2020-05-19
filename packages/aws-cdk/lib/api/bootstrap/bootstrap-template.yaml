@@ -290,7 +290,7 @@ Resources:
             Version: '2012-10-17'
           PolicyName: default
       RoleName:
-        Fn::Sub: cdk-${Qualifier}-deploy-action-role-${AWS::AccountId}-${AWS::Region}
+        Fn::Sub: cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
