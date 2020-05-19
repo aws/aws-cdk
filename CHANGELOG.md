@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.40.0](https://github.com/aws/aws-cdk/compare/v1.39.0...v1.40.0) (2020-05-19)
+
+
+### Features
+
+* **cfn-include:** add support for the DependsOn attribute ([613df1b](https://github.com/aws/aws-cdk/commit/613df1b8e4b794a772d6124a22463072617aef62))
+* **docdb:** high level constrcuts for db clusters and instances ([#6511](https://github.com/aws/aws-cdk/issues/6511)) ([a376dd3](https://github.com/aws/aws-cdk/commit/a376dd326e180462044b610c6925998482bd04d2))
+* **eks:** IAM roles for service accounts ([3f0d2c8](https://github.com/aws/aws-cdk/commit/3f0d2c82ef6102fb6b8cea23e397f559fa6a4d61)), closes [#6062](https://github.com/aws/aws-cdk/issues/6062) [#5388](https://github.com/aws/aws-cdk/issues/5388) [#3949](https://github.com/aws/aws-cdk/issues/3949)
+* **elbv2:** full Action support ([2939105](https://github.com/aws/aws-cdk/commit/29391059a571fc41d94275f36cf54e08c6f5441f)), closes [#2563](https://github.com/aws/aws-cdk/issues/2563) [#6310](https://github.com/aws/aws-cdk/issues/6310) [#6308](https://github.com/aws/aws-cdk/issues/6308)
+* **region-info:** add information for us-gov, us-iso, and us-isob regions ([afe0b00](https://github.com/aws/aws-cdk/commit/afe0b00b12afe383da49dcfa07f85b578728a0d1)), closes [#7876](https://github.com/aws/aws-cdk/issues/7876) [#4669](https://github.com/aws/aws-cdk/issues/4669)
+* **s3-asset:** add httpUrl and s3ObjectUrl ([eeff393](https://github.com/aws/aws-cdk/commit/eeff39324e4735096f85b32d37c95011881467b6)), closes [#7509](https://github.com/aws/aws-cdk/issues/7509) [#7221](https://github.com/aws/aws-cdk/issues/7221)
+* add support for Gitpod workspaces ([20d5511](https://github.com/aws/aws-cdk/commit/20d551142ea13c57981ad8b24ac61d03091da6b9))
+
 ## [1.39.0](https://github.com/aws/aws-cdk/compare/v1.38.0...v1.39.0) (2020-05-15)
 
 
