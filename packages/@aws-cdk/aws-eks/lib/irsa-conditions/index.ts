@@ -9,8 +9,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 async function onCreateOrUpdate(event: AWSLambda.CloudFormationCustomResourceCreateEvent | AWSLambda.CloudFormationCustomResourceUpdateEvent) {
   const roleName: string = event.ResourceProperties.RoleName;
   const openIdConnectProviderIssuerUrl: string = event.ResourceProperties.OpenIdConnectProviderIssuerUrl;
-  const serviceAccountName: string = event.ResourceProperties.serviceAccountName;
-  const serviceAccountNamespace: string = event.ResourceProperties.serviceAccountNamespace;
+  const serviceAccountName: string = event.ResourceProperties.ServiceAccountName;
+  const serviceAccountNamespace: string = event.ResourceProperties.ServiceAccountNamespace;
 
   const issuerUri = openIdConnectProviderIssuerUrl.substring(8); // Trim 'https://' from the issuer url
 
