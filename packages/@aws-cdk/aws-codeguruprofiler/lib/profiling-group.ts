@@ -23,16 +23,11 @@ export class ProfilingGroup extends ProfilingGroupBase {
   public static fromProfilingGroupName(scope: Construct, id: string, profilingGroupName: string): IProfilingGroup {
     const stack = Stack.of(scope);
 
-    class Import extends ProfilingGroupBase {
-      public readonly profilingGroupName = profilingGroupName;
-      public readonly profilingGroupArn = stack.formatArn({
-        service: 'codeguru-profiler',
-        resource: 'profilingGroup',
-        resourceName: profilingGroupName,
-      });
-    }
-
-    return new Import(scope, id);
+    return this.fromProfilingGroupArn(scope, id, stack.formatArn({
+      service: 'codeguru-profiler',
+      resource: 'profilingGroup',
+      resourceName: profilingGroupName,
+    }));
   }
 
   public static fromProfilingGroupArn(scope: Construct, id: string, profilingGroupArn: string): IProfilingGroup {

@@ -9,11 +9,12 @@ describe('profiling group', () => {
 
   test('attach read permission to Profiling group via fromProfilingGroupArn', () => {
     const stack = new Stack();
-    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    // dummy role to test out read permissions on ProfilingGroup
     const readAppRole = new Role(stack, 'ReadAppRole', {
       assumedBy: new AccountRootPrincipal(),
     });
 
+    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
     profilingGroup.grantRead(readAppRole);
 
     expect(stack).toMatch({
@@ -80,11 +81,12 @@ describe('profiling group', () => {
 
   test('attach publish permission to Profiling group via fromProfilingGroupName', () => {
     const stack = new Stack();
-    const profilingGroup = ProfilingGroup.fromProfilingGroupName(stack, 'MyProfilingGroup', 'MyAwesomeProfilingGroup');
+    // dummy role to test out publish permissions on ProfilingGroup
     const publishAppRole = new Role(stack, 'PublishAppRole', {
       assumedBy: new AccountRootPrincipal(),
     });
 
+    const profilingGroup = ProfilingGroup.fromProfilingGroupName(stack, 'MyProfilingGroup', 'MyAwesomeProfilingGroup');
     profilingGroup.grantPublish(publishAppRole);
 
     expect(stack).toMatch({
