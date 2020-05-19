@@ -1,7 +1,7 @@
-import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { RetentionDays } from '@aws-cdk/aws-logs';
+import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -160,10 +160,12 @@ export = {
     'with cloud watch logs': {
       'enabled'(test: Test) {
         const stack = getTestStack();
-        new Trail(stack, 'MyAmazingCloudTrail', {
+        const t = new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
         });
 
+        test.ok(t.logGroup);
+        test.deepEqual(stack.resolve(t.logGroup!.logGroupArn), { 'Fn::GetAtt': ['MyAmazingCloudTrailLogGroup2BE67F87', 'Arn'] });
         expect(stack).to(haveResource('AWS::CloudTrail::Trail'));
         expect(stack).to(haveResource('AWS::S3::Bucket'));
         expect(stack).to(haveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties));
@@ -177,7 +179,7 @@ export = {
               Effect: 'Allow',
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
-                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
+                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroup2BE67F87', 'Arn'],
               },
             }],
           },
@@ -188,6 +190,7 @@ export = {
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
+
       'enabled and custom retention'(test: Test) {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
@@ -205,6 +208,46 @@ export = {
         }));
         const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
+        test.done();
+      },
+
+      'enabled and with custom log group'(test: Test) {
+        const stack = getTestStack();
+        const cloudWatchLogGroup = new LogGroup(stack, 'MyLogGroup', {
+          retention: RetentionDays.FIVE_DAYS,
+        });
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          sendToCloudWatchLogs: true,
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
+          cloudWatchLogGroup,
+        });
+
+        expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+          RetentionInDays: 5,
+        }));
+
+        expect(stack).to(haveResource('AWS::CloudTrail::Trail', {
+          CloudWatchLogsLogGroupArn: stack.resolve(cloudWatchLogGroup.logGroupArn),
+        }));
+
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [{
+              Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
+            }],
+          },
+        }));
+        test.done();
+      },
+
+      'disabled'(test: Test) {
+        const stack = getTestStack();
+        const t = new Trail(stack, 'MyAmazingCloudTrail', {
+          sendToCloudWatchLogs: false,
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
+        });
+        test.equals(t.logGroup, undefined);
+        expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
         test.done();
       },
     },
