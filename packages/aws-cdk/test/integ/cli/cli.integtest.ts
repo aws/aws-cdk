@@ -1,18 +1,22 @@
 import { promises as fs } from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import { afterSeconds, cloudFormation, iam, lambda, retry, sns, sts } from './aws-helpers';
-import { cdk, cdkDeploy, cdkDestroy, cleanupOldStacks, fullStackName, INTEG_TEST_DIR,
-  log, prepareAppFixture, STACK_NAME_PREFIX } from './cdk-helpers';
+import { cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
+import { cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
+  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
 
 jest.setTimeout(600 * 1000);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await prepareAppFixture();
-  await cleanupOldStacks();
+});
+
+beforeEach(async () => {
+  await cleanup();
 });
 
 afterEach(async () => {
-  await cleanupOldStacks();
+  await cleanup();
 });
 
 test('VPC Lookup', async () => {
@@ -296,12 +300,17 @@ test('deploy with role', async () => {
       }),
     });
 
-    await retry('Trying to assume fresh role', afterSeconds(300), async () => {
+    await retry('Trying to assume fresh role', retry.forSeconds(300), async () => {
       await sts('assumeRole', {
         RoleArn: roleArn,
         RoleSessionName: 'testing',
       });
     });
+
+    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+    // Give it a little more sleep to make sure CloudFormation is not hitting a box
+    // that doesn't have it yet.
+    await sleep(5000);
 
     await cdkDeploy('test-2', {
       options: ['--role-arn', roleArn],
@@ -461,3 +470,95 @@ test('failed deploy does not hang', async () => {
   // this will hang if we introduce https://github.com/aws/aws-cdk/issues/6403 again.
   await expect(cdkDeploy('failed')).rejects.toThrow('exited with error');
 });
+
+test('can still load old assemblies', async () => {
+  const cxAsmDir =  path.join(os.tmpdir(), 'cdk-integ-cx');
+
+  const testAssembliesDirectory = path.join(__dirname, 'cloud-assemblies');
+  for (const asmdir of await listChildDirs(testAssembliesDirectory)) {
+    log(`ASSEMBLY ${asmdir}`);
+    await cloneDirectory(asmdir, cxAsmDir);
+
+    // Some files in the asm directory that have a .js extension are
+    // actually treated as templates. Evaluate them using NodeJS.
+    const templates = await listChildren(cxAsmDir, fullPath => Promise.resolve(fullPath.endsWith('.js')));
+    for (const template of templates) {
+      const targetName = template.replace(/.js$/, '');
+      await shell([process.execPath, template, '>', targetName], {
+        cwd: cxAsmDir,
+        modEnv: {
+          TEST_ACCOUNT: (await testEnv()).account,
+          TEST_REGION: (await testEnv()).region,
+        },
+      });
+    }
+
+    // Use this directory as a Cloud Assembly
+    const output = await cdk([
+      '--app', cxAsmDir,
+      '-v',
+      'synth']);
+
+    // Assert that there was no providerError in CDK's stderr
+    // Because we rely on the app/framework to actually error in case the
+    // provider fails, we inspect the logs here.
+    expect(output).not.toContain('$providerError');
+  }
+});
+
+test('generating and loading assembly', async () => {
+  const asmOutputDir = path.join(os.tmpdir(), 'cdk-integ-asm');
+  await shell(['rm', '-rf', asmOutputDir]);
+
+  // Make sure our fixture directory is clean
+  await prepareAppFixture();
+
+  // Synthesize a Cloud Assembly tothe default directory (cdk.out) and a specific directory.
+  await cdk(['synth']);
+  await cdk(['synth', '--output', asmOutputDir]);
+
+  // cdk.out in the current directory and the indicated --output should be the same
+  await shell(['diff', 'cdk.out', asmOutputDir], {
+    cwd: INTEG_TEST_DIR,
+  });
+
+  // Check that we can 'ls' the synthesized asm.
+  // Change to some random directory to make sure we're not accidentally loading cdk.json
+  const list = await cdk(['--app', asmOutputDir, 'ls'], { cwd: os.tmpdir() });
+  // Same stacks we know are in the app
+  expect(list).toContain(`${STACK_NAME_PREFIX}-lambda`);
+  expect(list).toContain(`${STACK_NAME_PREFIX}-test-1`);
+  expect(list).toContain(`${STACK_NAME_PREFIX}-test-2`);
+
+  // Check that we can use '.' and just synth ,the generated asm
+  const stackTemplate = await cdk(['--app', '.', 'synth', fullStackName('test-2')], {
+    cwd: asmOutputDir,
+  });
+  expect(stackTemplate).toContain('topic152D84A37');
+
+  // Deploy a Lambda from the copied asm
+  await cdkDeploy('lambda', { options: ['-a', '.'], cwd: asmOutputDir });
+
+  // Remove the original custom docker file that was used during synth.
+  // this verifies that the assemly has a copy of it and that the manifest uses
+  // relative paths to reference to it.
+  await fs.unlink(path.join(INTEG_TEST_DIR, 'docker', 'Dockerfile.Custom'));
+
+  // deploy a docker image with custom file without synth (uses assets)
+  await cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir });
+});
+
+async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
+  const ret = new Array<string>();
+  for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
+    const fullPath = path.join(parent, child.toString());
+    if (await pred(fullPath)) {
+      ret.push(fullPath);
+    }
+  }
+  return ret;
+}
+
+async function listChildDirs(parent: string) {
+  return listChildren(parent, async (fullPath: string) => (await fs.stat(fullPath)).isDirectory());
+}

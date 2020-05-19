@@ -47,13 +47,40 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Getting Started
 
-For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
- - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+### Gitpod
+
+For setting up a local development environment,
+we recommend using [Gitpod](http://gitpod.io) -
+a service that allows you to spin up an in-browser
+Visual Studio Code-compatible editor,
+with everything set up and ready to go for CDK development.
+Just click the button below to create your private workspace:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
+
+This will start a new Gitpod workspace,
+and immediately kick off a build of the CDK code.
+Once it's done (it takes around an hour, unfortunately),
+you can work on any package that you want to modify,
+as described in ['Quick Iteration'](#quick-iteration) below.
+
+Gitpod is free for 50 hours per month -
+make sure to stop your workspace when you're done
+(you can always resume it later, and it won't need to run the build again).
+
+### Local dependencies
+
+If you don't want to use Gitpod,
+you need to have the following SDKs and tools locally:
+
+- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+- [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
+- [Java OpenJDK 8](http://openjdk.java.net/install/)
+- [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
+- [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+- [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
 The basic commands to get the repository cloned and built locally follow:
 

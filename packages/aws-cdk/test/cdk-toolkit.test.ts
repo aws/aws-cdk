@@ -99,6 +99,29 @@ describe('deploy', () => {
       }, expect.anything(), expect.anything());
       expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
     });
+
+    test('bootstrap can be invoked without the --app argument', async () => {
+      // GIVEN
+      cloudExecutable.configuration.settings.clear();
+      const mockSynthesize = jest.fn();
+      cloudExecutable.synthesize = mockSynthesize;
+
+      const toolkit = defaultToolkitSetup();
+
+      // WHEN
+      await toolkit.bootstrap(['aws://123456789012/west-pole'], undefined, undefined, false, false, {});
+
+      // THEN
+      expect(mockBootstrapEnvironment).toHaveBeenCalledWith({
+        account: '123456789012',
+        region: 'west-pole',
+        name: 'aws://123456789012/west-pole',
+      }, expect.anything(), expect.anything());
+      expect(mockBootstrapEnvironment).toHaveBeenCalledTimes(1);
+
+      expect(cloudExecutable.hasApp).toEqual(false);
+      expect(mockSynthesize).not.toHaveBeenCalled();
+    });
   });
 });
 

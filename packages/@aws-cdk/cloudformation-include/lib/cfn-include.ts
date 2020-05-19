@@ -92,7 +92,7 @@ export class CfnInclude extends core.CfnElement {
       throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
     }
     // fail early for resource attributes we don't support yet
-    const knownAttributes = ['Type', 'Properties', 'DeletionPolicy', 'UpdateReplacePolicy', 'Metadata'];
+    const knownAttributes = ['Type', 'Properties', 'DependsOn', 'DeletionPolicy', 'UpdateReplacePolicy', 'Metadata'];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
         throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
@@ -103,7 +103,19 @@ export class CfnInclude extends core.CfnElement {
     const [moduleName, ...className] = l1ClassFqn.split('.');
     const module = require(moduleName);  // eslint-disable-line @typescript-eslint/no-require-imports
     const jsClassFromModule = module[className.join('.')];
-    const l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes);
+    const self = this;
+    const finder: core.ICfnFinder = {
+      findResource(lId: string): core.CfnResource | undefined {
+        if (!(lId in (self.template.Resources || {}))) {
+          return undefined;
+        }
+        return self.getOrCreateResource(lId);
+      },
+    };
+    const options: core.FromCloudFormationOptions = {
+      finder,
+    };
+    const l1Instance = jsClassFromModule.fromCloudFormation(this, logicalId, resourceAttributes, options);
 
     if (this.preserveLogicalIds) {
       // override the logical ID to match the original template

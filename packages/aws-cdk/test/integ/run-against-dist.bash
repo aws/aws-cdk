@@ -4,6 +4,20 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+
+# This script must create 1 or 2 traps, and the 'trap' command will replace
+# the previous trap, so get some 'dynamic traps' mechanism in place
+TRAPS=()
+
+function run_traps() {
+  for cmd in "${TRAPS[@]}"; do
+    echo "cleanup: $cmd" >&2
+    eval "$cmd"
+  done
+}
+
+trap run_traps EXIT
+
 function log() {
   echo >&2 "| $@"
 }
@@ -47,7 +61,7 @@ function serve_npm_packages() {
     # 'npx' will remove them too soon.
     npm install serve-npm-tarballs
     eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
-    trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
+    TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
 
     header "Installing aws-cdk from local tarballs..."
     # Need 'npm install --prefix' otherwise it goes to the wrong directory
@@ -122,7 +136,7 @@ function prepare_nuget_packages() {
     mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
   fi
 
-  trap clean_up_nuget_config EXIT
+  TRAPS+=('clean_up_nuget_config')
 
   cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
 <?xml version="1.0" encoding="utf-8"?>

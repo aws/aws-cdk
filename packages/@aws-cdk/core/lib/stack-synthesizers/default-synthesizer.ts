@@ -11,6 +11,8 @@ import { Token } from '../token';
 import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
 import { IStackSynthesizer } from './types';
 
+export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
+
 /**
  * Configuration properties for DefaultStackSynthesizer
  */
@@ -70,9 +72,9 @@ export interface DefaultStackSynthesizerProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesizer.DEFAULT_DEPLOY_ACTION_ROLE_ARN
+   * @default DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN
    */
-  readonly deployActionRoleArn?: string;
+  readonly deployRoleArn?: string;
 
   /**
    * The role CloudFormation will assume when deploying the Stack
@@ -93,7 +95,7 @@ export interface DefaultStackSynthesizerProps {
    * You can use this and leave the other naming properties empty if you have deployed
    * the bootstrap environment with standard names but only differnet qualifiers.
    *
-   * @default DefaultStackSynthesizer.DEFAULT_QUALIFIER
+   * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
 }
@@ -116,32 +118,32 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   /**
    * Default CloudFormation role ARN.
    */
-  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
-   * Default deploy action role ARN.
+   * Default deploy role ARN.
    */
-  public static readonly DEFAULT_DEPLOY_ACTION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-deploy-action-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default asset publishing role ARN.
    */
-  public static readonly DEFAULT_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-bootstrap-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default image assets repository name
    */
-  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-bootstrap-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default file assets bucket name
    */
-  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-bootstrap-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
   private stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
-  private deployActionRoleArn?: string;
+  private deployRoleArn?: string;
   private cloudFormationExecutionRoleArn?: string;
   private assetPublishingRoleArn?: string;
 
@@ -154,7 +156,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public bind(stack: Stack): void {
     this.stack = stack;
 
-    const qualifier = this.props.qualifier ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -174,7 +176,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     // tslint:disable:max-line-length
     this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
-    this.deployActionRoleArn = specialize(this.props.deployActionRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ACTION_ROLE_ARN);
+    this.deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
     this.cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN);
     // tslint:enable:max-line-length
@@ -203,11 +205,16 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
+    const httpUrl = cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`);
+    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
+
     // Return CFN expression
     return {
       bucketName: cfnify(this.bucketName),
       objectKey,
-      s3Url: cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`),
+      httpUrl,
+      s3ObjectUrl,
+      s3Url: httpUrl,
     };
   }
 
@@ -252,7 +259,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     const artifactId = this.writeAssetManifest(session);
 
     addStackArtifactToAssembly(session, this.stack, {
-      assumeRoleArn: this.deployActionRoleArn,
+      assumeRoleArn: this.deployRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3Url,
       requiresBootstrapStackVersion: 1,
