@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import * as tasks from '../lib';
+import * as tasks from '../../lib';
 
 let stack: Stack;
 let child: sfn.StateMachine;

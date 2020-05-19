@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
-import * as tasks from '../lib';
+import * as tasks from '../../lib';
 
 /*
  * Stack verification steps:

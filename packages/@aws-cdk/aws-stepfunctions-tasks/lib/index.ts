@@ -10,7 +10,7 @@ export * from './ecs/run-ecs-fargate-task';
 export * from './sagemaker/sagemaker-task-base-types';
 export * from './sagemaker/sagemaker-train-task';
 export * from './sagemaker/sagemaker-transform-task';
-export * from './start-execution';
+export * from './stepfunctions/start-execution';
 export * from './evaluate-expression';
 export * from './emr/emr-create-cluster';
 export * from './emr/emr-set-cluster-termination-protection';
