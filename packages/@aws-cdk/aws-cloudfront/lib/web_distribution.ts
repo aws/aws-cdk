@@ -925,6 +925,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
             actions: [ 'sts:AssumeRole' ],
+            resources: ['*'],
             principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
           }));
         }
