@@ -508,24 +508,32 @@ The `dist/` folder within each module contains the packaged up language artifact
 
 ### Quick Iteration
 
-After you've built the modules you want to work on once, use `lr watch` for each module that you are modifying.
+After you've built the modules you want to work on once, use `yarn watch` for each module that you are modifying.
 
 Watch the EC2 and IAM modules in a second terminal session:
 
 ```console
 $ cd packages/@aws-cdk/aws-ec2
-$ lr watch & # runs in the background
+$ yarn watch & # runs in the background
 $ cd packages/@aws-cdk/aws-iam
-$ lr watch & # runs in the background
+$ yarn watch & # runs in the background
 ```
 
 Code...
 
-Now to test, you can either use `lr test` or invoke nodeunit directory (faster, since "test" will also build):
+Now to test, you can either use `yarn test` or invoke nodeunit/jest directly:
 
+Running nodeunit tests directly on a module
 ```console
 $ cd packages/@aws-cdk/aws-iam
 $ nodeunit test/test.*.js
+<BOOM>
+```
+
+Running jest tests directly on a module
+```console
+$ cd packages/@aws-cdk/aws-iam
+$ jest test/*test.js
 <BOOM>
 ```
 
