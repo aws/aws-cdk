@@ -1,6 +1,9 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '@aws-cdk/core';
+import * as path from 'path';
 import { Cluster } from './cluster';
+
+const RESOURCE_TYPE = 'Custom::AWSCDK-EKS-IRSAConditions';
 
 /**
  * Options for `ServiceAccount`
@@ -63,6 +66,32 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
     this.role = new Role(this, 'Role', {
       assumedBy: new OpenIdConnectPrincipal(cluster.openIdConnectProvider),
+    });
+
+    const provider = CustomResourceProvider.getOrCreate(this, RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'irsa-conditions'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'iam:UpdateAssumeRolePolicy',
+            'iam:GetRole',
+          ],
+        },
+      ],
+    });
+
+    new CustomResource(this, 'Resource', {
+      resourceType: RESOURCE_TYPE,
+      serviceToken: provider,
+      properties: {
+        RoleName: this.role.roleName,
+        OpenIdConnectProviderIssuerUrl: cluster.clusterOpenIdConnectIssuerUrl,
+        ServiceAccountName: this.serviceAccountName,
+        ServiceAccountNamespace: this.serviceAccountNamespace,
+      },
     });
 
     this.assumeRoleAction = this.role.assumeRoleAction;
