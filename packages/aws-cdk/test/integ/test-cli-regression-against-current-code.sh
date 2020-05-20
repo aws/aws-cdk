@@ -1,17 +1,14 @@
 #!/bin/bash
-# 
-# Run our integration tests in regression mode against the 
+#
+# Run our integration tests in regression mode against the
 # local code of the framework and CLI.
-# 
+#
 #   1. Download the latest released version of the aws-cdk repo.
 #   2. Copy its integration tests directory ((test/integ/cli)) here.
 #   3. Run the integration tests from the copied directory.
 #
 set -euo pipefail
 integdir=$(cd $(dirname $0) && pwd)
-
-echo "Regression tests are currently disabled. We will re-enable after investigation"
-exit 0
 
 temp_dir=$(mktemp -d)
 
@@ -42,8 +39,8 @@ function download_repo {
 
     # we need to download the repo code from GitHub in order to extract
     # the integration tests that were present in that version of the repo.
-    # TODO - consider switching this to 'npm install', 
-    # apparently we publish the integ tests in the package.    
+    # TODO - consider switching this to 'npm install',
+    # apparently we publish the integ tests in the package.
     version=$1
 
     out="${temp_dir}/.repo.tar.gz"
@@ -72,10 +69,6 @@ integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/packages/aws-cdk/test/integ/cli ${integ_under_test}
-echo "Copying test runner to integration tests of version ${VERSION_UNDER_TEST}"
-cp -r ${integdir}/cli/test.sh ${integ_under_test}/test.sh
-echo "Copying common.bash to integration tests of version ${VERSION_UNDER_TEST}"
-cp -r ${integdir}/cli/common.bash ${integ_under_test}/common.bash
 
 echo "Running integration tests of version ${VERSION_UNDER_TEST} from ${integ_under_test}"
 VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh
