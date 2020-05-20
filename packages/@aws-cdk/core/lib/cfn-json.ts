@@ -1,6 +1,7 @@
 import { Construct } from './construct-compat';
 import { CustomResource } from './custom-resource';
-import { CustomResourceProvider, CustomResourceProviderRuntime } from './custom-resource-provider';
+import { CfnUtilsProvider } from './private/cfn-utils-provider';
+import { CfnUtilsResourceType } from './private/cfn-utils-provider/consts';
 import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
@@ -47,19 +48,12 @@ export class CfnJson extends Construct implements IResolvable {
 
     this.creationStack = captureStackTrace();
 
-    const resourceType = 'Custom::AWSCDKCfnJson';
-    const stack = Stack.of(this);
-
-    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
-      codeDirectory: `${__dirname}/cfn-json-provider`,
-    });
-
-    this.jsonString = stack.toJsonString(props.value);
+    // stringify the JSON object in a token-aware way.
+    this.jsonString = Stack.of(this).toJsonString(props.value);
 
     const resource = new CustomResource(this, 'Resource', {
-      serviceToken: provider,
-      resourceType,
+      serviceToken: CfnUtilsProvider.getOrCreate(this),
+      resourceType: CfnUtilsResourceType.CFN_JSON,
       properties: {
         Value: this.jsonString,
       },

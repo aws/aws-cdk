@@ -1,7 +1,8 @@
 import { Test } from 'nodeunit';
 import { App, CfnResource, Lazy, Stack } from '../lib';
 import { CfnJson } from '../lib/cfn-json';
-import { handler } from '../lib/cfn-json-provider/index';
+import { CfnUtilsResourceType } from '../lib/private/cfn-utils-provider/consts';
+import { handler } from '../lib/private/cfn-utils-provider/index';
 
 export = {
 
@@ -79,7 +80,12 @@ export = {
 
   async 'resource provider simply parses json and reflects back as an attribute'(test: Test) {
     const input = { foo: 1234 };
-    const response = await handler({ ResourceProperties: { Value: JSON.stringify(input) } });
+    const response = await handler({
+      ResourceType: CfnUtilsResourceType.CFN_JSON,
+      ResourceProperties: {
+        Value: JSON.stringify(input),
+      },
+    } as any);
     test.deepEqual(input, response.Data.Value);
     test.done();
   },
