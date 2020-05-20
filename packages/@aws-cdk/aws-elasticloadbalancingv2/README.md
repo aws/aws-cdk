@@ -34,43 +34,32 @@ const vpc = new ec2.Vpc(...);
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-    vpc,
-    internetFacing: true
+  vpc,
+  internetFacing: true
 });
 
 // Add a listener and open up the load balancer's security group
 // to the world.
 const listener = lb.addListener('Listener', {
-    port: 80,
+  port: 80,
 
-    // 'open: true' is the default, you can leave it out if you want. Set it
-    // to 'false' and use `listener.connections` if you want to be selective
-    // about who can access the load balancer.
-    open: true,
+  // 'open: true' is the default, you can leave it out if you want. Set it
+  // to 'false' and use `listener.connections` if you want to be selective
+  // about who can access the load balancer.
+  open: true,
 });
 
 // Create an AutoScaling group and add it as a load balancing
 // target to the listener.
 const asg = new autoscaling.AutoScalingGroup(...);
 listener.addTargets('ApplicationFleet', {
-    port: 8080,
-    targets: [asg]
+  port: 8080,
+  targets: [asg]
 });
 ```
 
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
-
-Use the `addFixedResponse()` method to add fixed response rules on the listener:
-
-```ts
-listener.addFixedResponse('Fixed', {
-    pathPattern: '/ok',
-    contentType: elbv2.ContentType.TEXT_PLAIN,
-    messageBody: 'OK',
-    statusCode: '200'
-});
-```
 
 #### Conditions
 
@@ -82,11 +71,11 @@ requested host in the request is either for `example.com/ok` or
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
-    priority: 10,
-    pathPatterns: ['/ok', '/path'],
-    hostHeader: 'example.com',
-    port: 8080,
-    targets: [asg]
+  priority: 10,
+  pathPatterns: ['/ok', '/path'],
+  hostHeader: 'example.com',
+  port: 8080,
+  targets: [asg]
 });
 ```
 
@@ -97,6 +86,67 @@ targets with conditions. The lowest number wins.
 
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
+
+#### Convenience methods and more complex Actions
+
+Routing traffic from a Load Balancer to a Target involves the following steps:
+
+- Create a Target Group, register the Target into the Target Group
+- Add an Action to the Listener which forwards traffic to the Target Group.
+
+Various methods on the `Listener` take care of this work for you to a greater
+or lesser extent:
+
+- `addTargets()` performs both steps: automatically creates a Target Group and the
+  required Action.
+- `addTargetGroups()` gives you more control: you create the Target Group (or
+  Target Groups) yourself and the method creates Action that routes traffic to
+  the Target Groups.
+- `addAction()` gives you full control: you supply the Action and wire it up
+  to the Target Groups yourself (or access one of the other ELB routing features).
+
+Using `addAction()` gives you access to some of the features of an Elastic Load
+Balancer that the other two convenience methods don't:
+
+- **Routing stickiness**: use `ListenerAction.forward()` and supply a
+  `stickinessDuration` to make sure requests are routed to the same target group
+  for a given duration.
+- **Weighted Target Groups**: use `ListenerAction.weightedForward()`
+  to give different weights to different target groups.
+- **Fixed Responses**: use `ListenerAction.fixedResponse()` to serve
+  a static response (ALB only).
+- **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
+  redirect response (ALB only).
+- **Authentication**: use `ListenerAction.authenticateOidc()` to
+  perform OpenID authentication before serving a request (see the
+  `@aws-cdk/aws-elasticloadbalancingv2-actions` package for direct authentication
+  integration with Cognito) (ALB only).
+
+Here's an example of serving a fixed response at the `/ok` URL:
+
+```ts
+listener.addAction('Fixed', {
+  pathPatterns: ['/ok'],
+  priority: 10,
+  action: ListenerAction.fixedResponse(200, {
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+  })
+});
+```
+
+Here's an example of using OIDC authentication before forwarding to a TargetGroup:
+
+```ts
+listener.addAction('DefaultAction', {
+  action: ListenerAction.authenticateOidc({
+    authorizationEndpoint: 'https://example.com/openid',
+    // Other OIDC properties here
+    // ...
+    next: ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
 
 ### Defining a Network Load Balancer
 
@@ -111,19 +161,19 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
-    vpc,
-    internetFacing: true
+  vpc,
+  internetFacing: true
 });
 
 // Add a listener on a particular port.
 const listener = lb.addListener('Listener', {
-    port: 443,
+  port: 443,
 });
 
 // Add targets on a particular port.
 listener.addTargets('AppFleet', {
-    port: 443,
-    targets: [asg]
+  port: 443,
+  targets: [asg]
 });
 ```
 
@@ -152,8 +202,8 @@ and add it to the listener by calling `addTargetGroups` instead of `addTargets`.
 
 ```ts
 const group = listener.addTargets('AppFleet', {
-    port: 443,
-    targets: [asg1],
+  port: 443,
+  targets: [asg1],
 });
 
 group.addTarget(asg2);
@@ -174,13 +224,13 @@ const lb = new elbv2.ApplicationLoadBalancer(...);
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
-    targets: [new targets.LambdaTarget(lambdaFunction)],
+  targets: [new targets.LambdaTarget(lambdaFunction)],
 
-    // For Lambda Targets, you need to explicitly enable health checks if you
-    // want them.
-    healthCheck: {
-        enabled: true,
-    }
+  // For Lambda Targets, you need to explicitly enable health checks if you
+  // want them.
+  healthCheck: {
+    enabled: true,
+  }
 });
 ```
 
@@ -192,12 +242,12 @@ Health checks are configured upon creation of a target group:
 
 ```ts
 listener.addTargets('AppFleet', {
-    port: 8080,
-    targets: [asg],
-    healthCheck: {
-        path: '/ping',
-        interval: cdk.Duration.minutes(1),
-    }
+  port: 8080,
+  targets: [asg],
+  healthCheck: {
+    path: '/ping',
+    interval: cdk.Duration.minutes(1),
+  }
 });
 ```
 
@@ -211,11 +261,11 @@ If not, you will have to configure the security groups appropriately:
 
 ```ts
 listener.addTargets('AppFleet', {
-    port: 8080,
-    targets: [asg],
-    healthCheck: {
-        port: 8088,
-    }
+  port: 8080,
+  targets: [asg],
+  healthCheck: {
+    port: 8088,
+  }
 });
 
 listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
@@ -247,11 +297,11 @@ load balancing target:
 
 ```ts
 public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
-    targetGroup.registerConnectable(...);
-    return {
-        targetType: TargetType.Instance | TargetType.Ip
-        targetJson: { id: ..., port: ... },
-    };
+  targetGroup.registerConnectable(...);
+  return {
+    targetType: TargetType.Instance | TargetType.Ip
+    targetJson: { id: ..., port: ... },
+  };
 }
 ```
 `targetType` should be one of `Instance` or `Ip`. If the target can be

@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
@@ -414,6 +415,55 @@ export class FederatedPrincipal extends PrincipalBase {
 
   public toString() {
     return `FederatedPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as Web Identity such as Cognito, Amazon,
+ * Facebook, Google, etc.
+ */
+export class WebIdentityPrincipal extends FederatedPrincipal {
+
+  /**
+   *
+   * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(identityProvider: string, conditions: Conditions = {}) {
+    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `WebIdentityPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as from a OpenID Connect provider.
+ */
+export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
+
+  /**
+   *
+   * @param openIdConnectProvider OpenID Connect provider
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
+    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `OpenIdConnectPrincipal(${this.federated})`;
   }
 }
 
