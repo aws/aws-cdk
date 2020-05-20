@@ -63,4 +63,11 @@ export interface BootstrappingParameters {
    * @default - the role will have no policies attached
    */
   readonly cloudFormationExecutionPolicies?: string[];
+
+  /**
+   * Identifier to distinguish multiple bootstrapped environments
+   *
+   * @default - Default qualifier
+   */
+  readonly qualifier?: string;
 }

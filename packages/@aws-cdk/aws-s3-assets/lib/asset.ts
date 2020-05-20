@@ -63,9 +63,21 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   /**
    * Attribute which represents the S3 URL of this asset.
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * @deprecated use `httpUrl`
    */
   public readonly s3Url: string;
+
+  /**
+   * Attribute which represents the S3 HTTP URL of this asset.
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   */
+  public readonly httpUrl: string;
+
+  /**
+   * Attribute which represents the S3 URL of this asset.
+   * @example s3://bucket/key
+   */
+  public readonly s3ObjectUrl: string;
 
   /**
    * The path to the asset (stringinfied token).
@@ -118,7 +130,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     this.s3BucketName = location.bucketName;
     this.s3ObjectKey = location.objectKey;
-    this.s3Url = location.s3Url;
+    this.s3ObjectUrl = location.s3ObjectUrl;
+    this.httpUrl = location.httpUrl;
+    this.s3Url = location.httpUrl; // for backwards compatibility
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 

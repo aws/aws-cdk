@@ -161,9 +161,10 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
     const objectKey = `${s3Prefix}${s3Filename}`;
 
-    const s3Url = `https://s3.${this.stack.region}.${this.stack.urlSuffix}/${bucketName}/${objectKey}`;
+    const httpUrl = `https://s3.${this.stack.region}.${this.stack.urlSuffix}/${bucketName}/${objectKey}`;
+    const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
 
-    return { bucketName, objectKey, s3Url };
+    return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
   }
 
   private get assetParameters() {
