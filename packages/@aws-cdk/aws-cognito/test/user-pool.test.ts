@@ -460,7 +460,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      signIncaseSensitive: false,
+      signInCaseSensitive: false,
     });
 
     // THEN

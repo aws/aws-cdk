@@ -148,6 +148,8 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
+A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not check the capitalization of the alias when signing in. Default is true.
+
 ### Attributes
 
 Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
@@ -310,10 +312,6 @@ userpool.addTrigger(UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 
 The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
-
-### Case Sensitivity
-
-A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not check the capitalization of the alias when signing in. Default is true.
 
 ### Importing User Pools
 

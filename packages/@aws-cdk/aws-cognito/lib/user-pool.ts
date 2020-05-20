@@ -506,7 +506,7 @@ export interface UserPoolProps {
    * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
    * @default true
    */
-  readonly signIncaseSensitive?: boolean;
+  readonly signInCaseSensitive?: boolean;
 }
 
 /**
@@ -645,7 +645,7 @@ export class UserPool extends Resource implements IUserPool {
         replyToEmailAddress: props.emailSettings?.replyTo,
       }),
       usernameConfiguration: undefinedIfNoKeys({
-        caseSensitive: props.signIncaseSensitive,
+        caseSensitive: props.signInCaseSensitive,
       }),
     });
 
