@@ -20,7 +20,7 @@ describe('Task state', () => {
     const metric = task.metric('my-metric');
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'my-metric', 'Sum');
+    verifyMetric(metric, 'my-metric', 'Sum');
   });
 
   test('add metric for number of times the task failed', () => {
@@ -28,7 +28,7 @@ describe('Task state', () => {
     const metric = task.metricFailed();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'Failed', 'Sum');
+    verifyMetric(metric, 'Failed', 'Sum');
   });
 
   test('add metric for number of times the metrics heartbeat timed out', () => {
@@ -36,7 +36,7 @@ describe('Task state', () => {
     const metric = task.metricHeartbeatTimedOut();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'HeartbeatTimedOut', 'Sum');
+    verifyMetric(metric, 'HeartbeatTimedOut', 'Sum');
   });
 
   test('add metric for task state run time', () => {
@@ -44,7 +44,7 @@ describe('Task state', () => {
     const metric = task.metricRunTime();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'RunTime', 'Average');
+    verifyMetric(metric, 'RunTime', 'Average');
   });
 
   test('add metric for task schedule time', () => {
@@ -52,7 +52,7 @@ describe('Task state', () => {
     const metric = task.metricScheduleTime();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'ScheduleTime', 'Average');
+    verifyMetric(metric, 'ScheduleTime', 'Average');
   });
 
   test('add metric for number of times the task is scheduled', () => {
@@ -60,7 +60,7 @@ describe('Task state', () => {
     const metric = task.metricScheduled();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'Scheduled', 'Sum');
+    verifyMetric(metric, 'Scheduled', 'Sum');
   });
 
   test('add metric for number of times the task was started', () => {
@@ -68,7 +68,7 @@ describe('Task state', () => {
     const metric = task.metricStarted();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'Started', 'Sum');
+    verifyMetric(metric, 'Started', 'Sum');
   });
 
   test('add metric for number of times the task succeeded', () => {
@@ -76,7 +76,7 @@ describe('Task state', () => {
     const metric = task.metricSucceeded();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'Succeeded', 'Sum');
+    verifyMetric(metric, 'Succeeded', 'Sum');
   });
 
   test('add metric for time between task being scheduled to closing', () => {
@@ -84,7 +84,7 @@ describe('Task state', () => {
     const metric = task.metricTime();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'Time', 'Average');
+    verifyMetric(metric, 'Time', 'Average');
   });
 
   test('add metric for number of times the task times out', () => {
@@ -92,7 +92,7 @@ describe('Task state', () => {
     const metric = task.metricTimedOut();
 
     // THEN
-    verifyMetric(stack.resolve(metric), 'TimedOut', 'Sum');
+    verifyMetric(metric, 'TimedOut', 'Sum');
   });
 
 });
