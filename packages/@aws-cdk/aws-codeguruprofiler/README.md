@@ -29,8 +29,6 @@ const publishAppRole = new Role(stack, 'PublishAppRole', {
   assumedBy: new AccountRootPrincipal(),
 });
 
-const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
-  profilingGroupName: 'MyAwesomeProfilingGroup',
-});
+const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup');
 profilingGroup.grantPublish(publishAppRole);
 ```
