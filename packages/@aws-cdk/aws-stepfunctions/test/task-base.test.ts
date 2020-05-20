@@ -125,7 +125,7 @@ describe('Task base', () => {
 
   test('get named metric for this task', () => {
     // WHEN
-    const metric = stack.resolve(task.metric('my-metric'));
+    const metric = task.metric('my-metric');
 
     // THEN
     verifyMetric(metric, 'my-metric', 'Sum');
@@ -133,7 +133,7 @@ describe('Task base', () => {
 
   test('add metric for task state run time', () => {
     // WHEN
-    const metric = stack.resolve(task.metricRunTime());
+    const metric = task.metricRunTime();
 
     // THEN
     verifyMetric(metric, 'RunTime', 'Average');
@@ -141,7 +141,7 @@ describe('Task base', () => {
 
   test('add metric for task schedule time', () => {
     // WHEN
-    const metric = stack.resolve(task.metricScheduleTime());
+    const metric = task.metricScheduleTime();
 
     // THEN
     verifyMetric(metric, 'ScheduleTime', 'Average');
@@ -149,7 +149,7 @@ describe('Task base', () => {
 
   test('add metric for time between task being scheduled to closing', () => {
     // WHEN
-    const metric = stack.resolve(task.metricTime());
+    const metric = task.metricTime();
 
     // THEN
     verifyMetric(metric, 'Time', 'Average');
@@ -157,7 +157,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the task is scheduled', () => {
     // WHEN
-    const metric = stack.resolve(task.metricScheduled());
+    const metric = task.metricScheduled();
 
     // THEN
     verifyMetric(metric, 'Scheduled', 'Sum');
@@ -165,7 +165,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the task times out', () => {
     // WHEN
-    const metric = stack.resolve(task.metricTimedOut());
+    const metric = task.metricTimedOut();
 
     // THEN
     verifyMetric(metric, 'TimedOut', 'Sum');
@@ -173,7 +173,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the task was started', () => {
     // WHEN
-    const metric = stack.resolve(task.metricStarted());
+    const metric = task.metricStarted();
 
     // THEN
     verifyMetric(metric, 'Started', 'Sum');
@@ -181,7 +181,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the task succeeded', () => {
     // WHEN
-    const metric = stack.resolve(task.metricSucceeded());
+    const metric = task.metricSucceeded();
 
     // THEN
     verifyMetric(metric, 'Succeeded', 'Sum');
@@ -189,7 +189,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the task failed', () => {
     // WHEN
-    const metric = stack.resolve(task.metricFailed());
+    const metric = task.metricFailed();
 
     // THEN
     verifyMetric(metric, 'Failed', 'Sum');
@@ -197,7 +197,7 @@ describe('Task base', () => {
 
   test('add metric for number of times the metrics heartbeat timed out', () => {
     // WHEN
-    const metric = stack.resolve(task.metricHeartbeatTimedOut());
+    const metric = task.metricHeartbeatTimedOut();
 
     // THEN
     verifyMetric(metric, 'HeartbeatTimedOut', 'Sum');
@@ -265,7 +265,7 @@ describe('Task base', () => {
 });
 
 function verifyMetric(metric: Metric, metricName: string, statistic: string) {
-  expect(metric).toStrictEqual({
+  expect(metric).toEqual({
     period: {
       amount: 5,
       unit: {
