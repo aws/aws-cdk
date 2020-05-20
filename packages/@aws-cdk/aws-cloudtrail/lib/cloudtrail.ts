@@ -66,7 +66,7 @@ export interface TrailProps {
    * How long to retain logs in CloudWatchLogs.
    * Ignored if sendToCloudWatchLogs is false or if cloudWatchLogGroup is set.
    *
-   *  @default logs.RetentionDays.OneYear
+   *  @default logs.RetentionDays.ONE_YEAR
    */
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
@@ -165,7 +165,7 @@ export class Trail extends Resource {
    * The CloudWatch log group to which CloudTrail events are sent.
    * `undefined` if `sendToCloudWatchLogs` property is false.
    */
-  public readonly logGroup: logs.ILogGroup | undefined;
+  public readonly logGroup?: logs.ILogGroup;
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
