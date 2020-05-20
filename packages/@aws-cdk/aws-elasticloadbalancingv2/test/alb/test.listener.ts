@@ -1024,6 +1024,55 @@ export = {
 
     test.done();
   },
+
+  'not allowed to combine action specifiers when instantiating a Rule directly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    const baseProps = { listener, priority: 1, pathPatterns: ['/path1', '/path2'] };
+
+    // WHEN
+    test.throws(() => {
+      new elbv2.ApplicationListenerRule(stack, 'Rule1',  {
+        ...baseProps,
+        fixedResponse: { statusCode: '200' },
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+    }, /specify only one/);
+
+    test.throws(() => {
+      new elbv2.ApplicationListenerRule(stack, 'Rule2',  {
+        ...baseProps,
+        targetGroups: [group],
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+    }, /specify only one/);
+
+    test.done();
+  },
+
+  'not allowed to specify defaultTargetGroups and defaultAction together'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    test.throws(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultTargetGroups: [group],
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+    }, /Specify at most one/);
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {

@@ -63,7 +63,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
@@ -85,14 +85,12 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-certificatemanager.CertificateProps",
-      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps",
-      "docs-public-apis:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps",
-      "docs-public-apis:@aws-cdk/aws-certificatemanager.ICertificate"
+      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps"
     ]
   },
   "stability": "stable",

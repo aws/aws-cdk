@@ -68,10 +68,10 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/aws-lambda": "^8.10.39",
-    "@types/lodash": "^4.14.150",
-    "@types/nodeunit": "^0.0.30",
-    "@types/sinon": "^9.0.0",
-    "aws-sdk": "^2.675.0",
+    "@types/lodash": "^4.14.152",
+    "@types/nodeunit": "^0.0.31",
+    "@types/sinon": "^9.0.3",
+    "aws-sdk": "^2.679.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -110,7 +110,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
