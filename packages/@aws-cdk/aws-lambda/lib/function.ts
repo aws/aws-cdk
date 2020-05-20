@@ -485,9 +485,8 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    this.runtime = props.runtime;
     const code = props.code.bind(this);
-    verifyCodeConfig(code, this.runtime);
+    verifyCodeConfig(code, props.runtime);
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
@@ -522,6 +521,8 @@ export class Function extends FunctionBase {
       resourceName: this.physicalName,
       sep: ':',
     });
+
+    this.runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);

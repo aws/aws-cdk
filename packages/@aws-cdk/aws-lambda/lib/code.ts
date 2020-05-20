@@ -170,7 +170,7 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
     super();
   }
 
