@@ -334,6 +334,7 @@ export = {
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
     test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Unable to perform this operation since kubectl is not enabled for this cluster/);
+    test.throws(() => cluster.openIdConnectProvider, /Cannot specify a OpenID Connect Provider if kubectl is disabled/);
     test.done();
   },
 
@@ -1128,6 +1129,38 @@ export = {
           'Fn::GetAtt': [
             'MyClusterCreationRoleB5FA4FF3',
             'Arn',
+          ],
+        },
+      }));
+      test.done();
+    },
+    'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
+    // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+      // WHEN
+      const provider = cluster.openIdConnectProvider;
+
+      // THEN
+      test.equal(provider, cluster.openIdConnectProvider, 'openIdConnect provider is different and created more than once.');
+      expect(stack).to(haveResource('Custom::AWSCDKOpenIdConnectProvider', {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0',
+            'Arn',
+          ],
+        },
+        ClientIDList: [
+          'sts.amazonaws.com',
+        ],
+        ThumbprintList: [
+          '9e99a48a9960b14926bb7f3b02e22da2b0ab7280',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
           ],
         },
       }));
