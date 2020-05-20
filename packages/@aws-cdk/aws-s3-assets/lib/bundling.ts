@@ -100,12 +100,14 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  constructor(public readonly image: string) {}
+  private constructor(public readonly image: string) {}
 
   /**
    * Runs a Docker image
+   *
+   * @internal
    */
-  public run(options: DockerRunOptions) {
+  public _run(options: DockerRunOptions) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];

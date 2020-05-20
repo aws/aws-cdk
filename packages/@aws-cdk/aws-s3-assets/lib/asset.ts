@@ -13,6 +13,8 @@ const BUNDLING_OUTPUT_DIR = '/output';
 
 /**
  * Bundling options
+ *
+ * @experimental
  */
 export interface BundlingOptions {
   /**
@@ -92,6 +94,8 @@ export interface AssetOptions extends assets.CopyOptions {
    * will be zipped and used as the final asset.
    *
    * @default - asset path is zipped as is
+   *
+   * @experimental
    */
   readonly bundling?: BundlingOptions;
 }
@@ -190,7 +194,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
         ...props.bundling.volumes ?? [],
       ];
 
-      props.bundling.image.run({
+      props.bundling.image._run({
         command: props.bundling.command,
         volumes,
         environment: props.bundling.environment,
