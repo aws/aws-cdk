@@ -323,4 +323,37 @@ describe('cloudtrail', () => {
       });
     });
   });
+
+  describe('onEvent', () => {
+    test('add an event rule', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      Trail.onEvent(stack, 'DoEvents', {
+        target: {
+          bind: () => ({
+            id: '',
+            arn: 'arn',
+          }),
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Events::Rule', {
+        EventPattern: {
+          'detail-type': [
+            'AWS API Call via CloudTrail',
+          ],
+        },
+        State: 'ENABLED',
+        Targets: [
+          {
+            Arn: 'arn',
+            Id: 'Target0',
+          },
+        ],
+      });
+    });
+  });
 });
