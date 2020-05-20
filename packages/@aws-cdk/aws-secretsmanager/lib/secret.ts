@@ -156,7 +156,7 @@ abstract class SecretBase extends Resource implements ISecret {
   }
 
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
-    // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:PutSecretValue'],
@@ -165,7 +165,7 @@ abstract class SecretBase extends Resource implements ISecret {
     });
 
     if (this.encryptionKey) {
-      // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
+      // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantEncrypt(
         new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );

@@ -47,12 +47,12 @@ use a secret. This can be achieved with the `Secret.grantRead` and/or
 
 ```ts
 const role = new iam.Role(stack, 'SomeRole', { assumedBy: new iam.AccountRootPrincipal() });
-const secret = new secretsmanager.Secret(stack, 'Secret', {});
+const secret = new secretsmanager.Secret(stack, 'Secret');
 secret.grantRead(role);
 secret.grantWrite(role);
 ```
 
-If, as in the following example, your secret was created with a KMS key
+If, as in the following example, your secret was created with a KMS key:
 ```ts
 const key = new kms.Key(stack, 'KMS');
 const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
@@ -61,7 +61,7 @@ secret.grantWrite(role);
 ```
 then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
-SecretsManager service principle.
+SecretsManager service principal.
 
 ### Rotating a Secret with a custom Lambda function
 A rotation schedule can be added to a Secret using a custom Lambda function:
