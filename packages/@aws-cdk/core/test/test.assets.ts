@@ -46,7 +46,29 @@ export = {
     });
 
     test.done();
+  },
 
+  'addFileAsset correctly sets object urls'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const assetLocation = stack.addFileAsset({
+      fileName: 'file-name',
+      packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      sourceHash: 'source-hash',
+    });
+
+    // THEN
+    const expectedS3UrlPrefix = 's3://';
+    const expectedHttpUrlPrefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+
+    test.equal(
+      assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, ''),
+      assetLocation.httpUrl.replace(expectedHttpUrlPrefix, ''),
+    );
+
+    test.done();
   },
 
   'addDockerImageAsset correctly sets metadata'(test: Test) {

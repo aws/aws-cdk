@@ -12,6 +12,7 @@ import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -342,6 +343,8 @@ export class Cluster extends Resource implements ICluster {
    */
   private _awsAuth?: AwsAuth;
 
+  private _openIdConnectProvider?: iam.OpenIdConnectProvider;
+
   private _spotInterruptHandler?: HelmChart;
 
   private readonly version: string | undefined;
@@ -618,6 +621,48 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuerUrl(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer URL. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+  }
+
+  /**
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get openIdConnectProvider() {
+    if (!this.kubectlEnabled) {
+      throw new Error('Cannot specify a OpenID Connect Provider if kubectl is disabled');
+    }
+
+    if (!this._openIdConnectProvider) {
+      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this.clusterOpenIdConnectIssuerUrl,
+        clientIds: [ 'sts.amazonaws.com' ],
+        /**
+         * For some reason EKS isn't validating the root certificate but a intermediat certificate
+         * which is one level up in the tree. Because of the a constant thumbprint value has to be
+         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+         */
+        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
+      });
+    }
+
+    return this._openIdConnectProvider;
+  }
+
+  /**
    * Defines a Kubernetes resource in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
@@ -652,6 +697,19 @@ export class Cluster extends Resource implements ICluster {
    */
   public addFargateProfile(id: string, options: FargateProfileOptions) {
     return new FargateProfile(this, `fargate-profile-${id}`, {
+      ...options,
+      cluster: this,
+    });
+  }
+
+  /**
+   * Adds a service account to this cluster.
+   *
+   * @param id the id of this service account
+   * @param options service account options
+   */
+  public addServiceAccount(id: string, options: ServiceAccountOptions) {
+    return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
     });

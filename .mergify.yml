@@ -16,6 +16,7 @@ pull_request_rules:
         strict: smart
         method: squash
         strict_method: merge
+        commit_message: title+body
       delete_head_branch: {}
     conditions:
       - base!=release
@@ -29,7 +30,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      - status-success=Semantic Pull Request
+      #- status-success=Semantic Pull Request
       - status-success=mandatory-changes
   - name: automatic merge
     actions:
@@ -40,6 +41,7 @@ pull_request_rules:
         # Merge instead of squash
         method: merge
         strict_method: merge
+        commit_message: title+body
       delete_head_branch: {}
     conditions:
       - -title~=(WIP|wip)
@@ -54,7 +56,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      - status-success=Semantic Pull Request
+      #- status-success=Semantic Pull Request
       - status-success=mandatory-changes
   - name: remove stale reviews
     actions:
@@ -111,5 +113,5 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      - status-success=Semantic Pull Request
+      #- status-success=Semantic Pull Request
       - status-success=mandatory-changes

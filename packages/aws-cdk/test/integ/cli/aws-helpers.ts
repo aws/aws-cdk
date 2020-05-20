@@ -19,6 +19,7 @@ export let testEnv = async (): Promise<Env> => {
 };
 
 export const cloudFormation = makeAwsCaller(AWS.CloudFormation);
+export const s3 = makeAwsCaller(AWS.S3);
 export const sns = makeAwsCaller(AWS.SNS);
 export const iam = makeAwsCaller(AWS.IAM);
 export const lambda = makeAwsCaller(AWS.Lambda);
@@ -96,29 +97,44 @@ export async function deleteStacks(...stackNames: string[]) {
     });
   }
 
-  await retry(`Deleting ${stackNames}`, afterSeconds(300), async () => {
+  await retry(`Deleting ${stackNames}`, retry.forSeconds(600), async () => {
     for (const stackName of stackNames) {
-      if (await stackExists(stackName)) {
+      const status = await stackStatus(stackName);
+      if (status !== undefined && status.endsWith('_FAILED')) {
+        throw retry.abort(new Error(`'${stackName}' is in state '${status}'`));
+      }
+      if (status !== undefined) {
         throw new Error(`Delete of '${stackName}' not complete yet`);
       }
     }
   });
 }
 
-export async function stackExists(stackName: string) {
+export async function stackStatus(stackName: string): Promise<string | undefined> {
   try {
-    await cloudFormation('describeStacks', { StackName: stackName });
-    return true;
+    return (await cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
   } catch (e) {
-    if (e.message.indexOf('does not exist') > -1) { return false; }
+    if (isStackMissingError(e)) { return undefined; }
     throw e;
   }
 }
 
-export function afterSeconds(seconds: number): Date {
-  return new Date(Date.now() + seconds * 1000);
+export function isStackMissingError(e: Error) {
+  return e.message.indexOf('does not exist') > -1;
 }
 
+export function isBucketMissingError(e: Error) {
+  return e.message.indexOf('does not exist') > -1;
+}
+
+/**
+ * Retry an async operation until a deadline is hit.
+ *
+ * Use `retry.forSeconds()` to construct a deadline relative to right now.
+ *
+ * Exceptions will cause the operation to retry. Use `retry.abort` to annotate an exception
+ * to stop the retry and end in a failure.
+ */
 export async function retry<A>(operation: string, deadline: Date, block: () => Promise<A>): Promise<A> {
   let i = 0;
   log(`💈 ${operation}`);
@@ -129,7 +145,7 @@ export async function retry<A>(operation: string, deadline: Date, block: () => P
       log(`💈 ${operation}: succeeded after ${i} attempts`);
       return ret;
     } catch (e) {
-      if (Date.now() > deadline.getTime()) {
+      if (e.abort || Date.now() > deadline.getTime( )) {
         throw new Error(`${operation}: did not succeed after ${i} attempts: ${e}`);
       }
       log(`⏳ ${operation} (${e.message})`);
@@ -138,6 +154,52 @@ export async function retry<A>(operation: string, deadline: Date, block: () => P
   }
 }
 
+/**
+ * Make a deadline for the `retry` function relative to the current time.
+ */
+retry.forSeconds = (seconds: number): Date => {
+  return new Date(Date.now() + seconds * 1000);
+};
+
+/**
+ * Annotate an error to stop the retrying
+ */
+retry.abort = (e: Error): Error => {
+  (e as any).abort = true;
+  return e;
+};
+
 export async function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
+}
+
+export async function emptyBucket(bucketName: string) {
+  const objects = await s3('listObjects', { Bucket: bucketName });
+  const deletes = (objects.Contents || []).map(obj => obj.Key || '').filter(d => !!d);
+  if (deletes.length === 0) {
+    return Promise.resolve();
+  }
+  return s3('deleteObjects', {
+    Bucket: bucketName,
+    Delete: {
+      Objects: deletes.map(d => ({ Key: d })),
+      Quiet: false,
+    },
+  });
+}
+
+export async function deleteBucket(bucketName: string) {
+  try {
+    await emptyBucket(bucketName);
+    await s3('deleteBucket', {
+      Bucket: bucketName,
+    });
+  } catch (e) {
+    if (isBucketMissingError(e)) { return; }
+    throw e;
+  }
+}
+
+export function outputFromStack(key: string, stack: AWS.CloudFormation.Stack): string | undefined {
+  return (stack.Outputs ?? []).find(o => o.OutputKey === key)?.OutputValue;
 }

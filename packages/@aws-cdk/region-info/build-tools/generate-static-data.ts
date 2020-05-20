@@ -38,6 +38,10 @@ async function main(): Promise<void> {
     'us-east-1',
     'us-west-1',
     'us-west-2',
+    // 'us-gov-east-1',
+    // 'us-gov-west-1',
+    // 'us-iso-east-1',
+    // 'us-isob-east-1',
     'ap-south-1',
     'ap-east-1',
     // 'ap-northeast-3',
@@ -67,6 +71,8 @@ async function main(): Promise<void> {
     'us-east-1': 'Z3AQBSTGFYJSTF',
     'us-west-1': 'Z2F56UZL2M1ACD',
     'us-west-2': 'Z3BJ6K6RIION7M',
+    'us-gov-east-1': 'Z2NIFVYYW2VKV1',
+    'us-gov-west-1': 'Z31GFT0UA1I2HV',
     'ap-east-1': 'ZNB98KWMFR0R6',
     'ap-south-1': 'Z11RGJOFQNVJUP',
     'ap-northeast-3': 'Z2YQB5RD63NC85',
@@ -84,11 +90,30 @@ async function main(): Promise<void> {
     'me-south-1': 'Z1MPMWCPA7YB62',
   };
 
-  for (const region of AWS_REGIONS) {
-    const partition = region.startsWith('cn-') ? 'aws-cn' : 'aws';
-    registerFact(region, 'PARTITION', partition);
+  interface IRegion { partition: string, domainSuffix: string }
 
-    const domainSuffix = partition === 'aws' ? 'amazonaws.com' : 'amazonaws.com.cn';
+  const PARTITION_MAP: { [region: string]: IRegion } = {
+    'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
+    'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
+    'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
+    'us-iso-': { partition: 'aws-iso', domainSuffix: 'c2s.ic.gov' },
+    'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
+  };
+
+  const defaultMap = 'default';
+
+  for (const region of AWS_REGIONS) {
+    let partition = PARTITION_MAP[defaultMap].partition;
+    let domainSuffix = PARTITION_MAP[defaultMap].domainSuffix;
+
+    for (const key in PARTITION_MAP) {
+      if (region.startsWith(key)) {
+        partition = PARTITION_MAP[key].partition;
+        domainSuffix = PARTITION_MAP[key].domainSuffix;
+      }
+    }
+
+    registerFact(region, 'PARTITION', partition);
     registerFact(region, 'DOMAIN_SUFFIX', domainSuffix);
 
     registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
@@ -99,7 +124,7 @@ async function main(): Promise<void> {
 
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
 
-    const vpcEndpointServiceNamePrefix = region.startsWith('cn-') ? 'cn.com.amazonaws.vpce' : 'com.amazonaws.vpce';
+    const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
 
     for (const service of AWS_SERVICES) {
@@ -108,7 +133,7 @@ async function main(): Promise<void> {
   }
   lines.push('  }');
   lines.push('');
-  lines.push('  private constructor() {}'),
+  lines.push('  private constructor() {}');
   lines.push('}');
 
   await fs.writeFile(path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));

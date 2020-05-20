@@ -10,7 +10,7 @@ labels: needs-triage
 
 <!--
 ⚠️ Important Information
-For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk). This repository's issues are intended for feature requests and bug reports.
+For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/tagged/aws-cdk). This repository's issues are intended for feature requests and bug reports.
 -->
 
 ### The Question
