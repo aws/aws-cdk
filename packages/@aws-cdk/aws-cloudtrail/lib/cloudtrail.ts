@@ -1,8 +1,10 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
@@ -75,11 +77,11 @@ export interface TrailProps {
    */
   readonly kmsKey?: kms.IKey;
 
-  /** The name of an Amazon SNS topic that is notified when new log files are published.
+  /** SNS topic that is notified when new log files are published.
    *
    * @default - No notifications.
    */
-  readonly snsTopic?: string; // TODO: fix to use L2 SNS
+  readonly snsTopic?: sns.ITopic;
 
   /**
    * The name of the trail. We recoomend customers do not set an explicit name.
@@ -98,7 +100,7 @@ export interface TrailProps {
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly bucket?: s3.IBucket
+  readonly bucket?: s3.IBucket;
 }
 
 /**
@@ -219,7 +221,7 @@ export class Trail extends Resource {
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
-      snsTopicName: props.snsTopic,
+      snsTopicName: props.snsTopic?.topicName,
       eventSelectors: this.eventSelectors,
     });
 
@@ -283,11 +285,22 @@ export class Trail extends Resource {
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
    *
-   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
+   * @param handlers the list of lambda function handlers whose data events should be logged (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addLambdaEventSelector(dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+  public addLambdaEventSelector(handlers: lambda.IFunction[], options: AddEventSelectorOptions = {}) {
+    if (handlers.length === 0) { return; }
+    const dataResourceValues = handlers.map((h) => h.functionArn);
     return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, dataResourceValues, options);
+  }
+
+  /**
+   * Log all Lamda data events for all lambda functions the account.
+   * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
+   * @default false
+   */
+  public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ 'arn:aws:lambda' ], options);
   }
 
   /**
@@ -299,11 +312,22 @@ export class Trail extends Resource {
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
    *
-   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
+   * @param s3Selector the list of S3 bucket with optional prefix to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+  public addS3EventSelector(s3Selector: S3EventSelector[], options: AddEventSelectorOptions = {}) {
+    if (s3Selector.length === 0) { return; }
+    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
     return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
+  }
+
+  /**
+   * Log all S3 data events for all objects for all buckets in the account.
+   * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
+   * @default false
+   */
+  public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [ 'arn:aws:s3:::' ], options);
   }
 
   /**
@@ -341,6 +365,20 @@ export interface AddEventSelectorOptions {
    * @default true
    */
   readonly includeManagementEvents?: boolean;
+}
+
+/**
+ * Selecting an S3 bucket and an optional prefix to be logged for data events.
+ */
+export interface S3EventSelector {
+  /** S3 bucket */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * Data events for objects whose key matches this prefix will be logged.
+   * @default - all objects
+   */
+  readonly objectPrefix?: string;
 }
 
 /**
