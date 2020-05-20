@@ -1,15 +1,26 @@
 import '@aws-cdk/assert/jest';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
 
 describe('Task base', () => {
-  test('instantiate a concrete implementation', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+  let stack: cdk.Stack;
+  let task: sfn.TaskStateBase;
 
+  beforeEach(() => {
+    // GIVEN
+    stack = new cdk.Stack();
+    task = new FakeTask(stack, 'my-task', {
+      metrics: {
+        metricPrefixPlural: '',
+        metricPrefixSingular: '',
+      },
+    });
+  });
+  test('instantiate a concrete implementation with properties', () => {
     // WHEN
-    const task = new ConcreteTask(stack, 'my-task', {
+    task = new FakeTask(stack, 'my-exciting-task', {
       comment: 'my exciting task',
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
@@ -17,9 +28,9 @@ describe('Task base', () => {
 
     // THEN
     expect(render(task)).toEqual({
-      StartAt: 'my-task',
+      StartAt: 'my-exciting-task',
       States: {
-        'my-task': {
+        'my-exciting-task': {
           End: true,
           Type: 'Task',
           Comment: 'my exciting task',
@@ -34,8 +45,6 @@ describe('Task base', () => {
 
   test('add catch configuration', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const task = new ConcreteTask(stack, 'my-task');
     const failure = new sfn.Fail(stack, 'failed', {
       error: 'DidNotWork',
       cause: 'We got stuck',
@@ -68,10 +77,6 @@ describe('Task base', () => {
   });
 
   test('add retry configuration', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new ConcreteTask(stack, 'my-task');
-
     // WHEN
     task.addRetry({ errors: ['HTTPError'], maxAttempts: 2 })
       .addRetry(); // adds default retry
@@ -100,270 +105,107 @@ describe('Task base', () => {
   });
 
   test('add a next state to the task in the chain', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new ConcreteTask(stack, 'mytask');
-
     // WHEN
     task.next(new sfn.Pass(stack, 'passState'));
 
     // THEN
     expect(render(task)).toEqual({
-      StartAt: 'mytask',
+      StartAt: 'my-task',
       States: {
-        mytask: {
+        'my-task': {
           Next: 'passState',
           Type: 'Task',
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
         },
-        passState: { Type: 'Pass', End: true },
+        'passState': { Type: 'Pass', End: true },
       },
     });
   });
 
   test('get named metric for this task', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new ConcreteTask(stack, 'mytask', {});
-
     // WHEN
-    const metric = stack.resolve(task.metric('my metric'));
+    const metric = stack.resolve(task.metric('my-metric'));
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'my metric',
-      statistic: 'Sum'});
+    verifyMetric(metric, 'my-metric', 'Sum');
   });
 
   test('add metric for task state run time', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixSingular: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricRunTime());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'RunTime',
-      statistic: 'Average',
-    });
+    verifyMetric(metric, 'RunTime', 'Average');
   });
 
   test('add metric for task schedule time', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixSingular: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricScheduleTime());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'ScheduleTime',
-      statistic: 'Average',
-    });
+    verifyMetric(metric, 'ScheduleTime', 'Average');
   });
 
   test('add metric for time between task being scheduled to closing', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixSingular: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricTime());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'Time',
-      statistic: 'Average',
-    });
+    verifyMetric(metric, 'Time', 'Average');
   });
 
   test('add metric for number of times the task is scheduled', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricScheduled());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'Scheduled',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'Scheduled', 'Sum');
   });
 
   test('add metric for number of times the task times out', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricTimedOut());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'TimedOut',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'TimedOut', 'Sum');
   });
 
   test('add metric for number of times the task was started', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricStarted());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'Started',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'Started', 'Sum');
   });
 
   test('add metric for number of times the task succeeded', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricSucceeded());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'Succeeded',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'Succeeded', 'Sum');
   });
 
   test('add metric for number of times the task failed', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricFailed());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'Failed',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'Failed', 'Sum');
   });
 
   test('add metric for number of times the metrics heartbeat timed out', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskMetrics: sfn.TaskMetricsConfig = { metricPrefixPlural: '' };
-    const task = new ConcreteTask(stack, 'mytask', { metrics: taskMetrics });
-
     // WHEN
     const metric = stack.resolve(task.metricHeartbeatTimedOut());
 
     // THEN
-    expect(metric).toStrictEqual({
-      period: {
-        amount: 5,
-        unit: {
-          label: 'minutes',
-          inMillis: 60000,
-        },
-      },
-      namespace: 'AWS/States',
-      metricName: 'HeartbeatTimedOut',
-      statistic: 'Sum',
-    });
+    verifyMetric(metric, 'HeartbeatTimedOut', 'Sum');
   });
 
   test('metrics must be configured to use metric* APIs', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const task = new ConcreteTask(stack, 'mytask', {});
+    task = new FakeTask(stack, 'mytask', {});
 
     // THEN
     expect(() => {
@@ -422,21 +264,36 @@ describe('Task base', () => {
   });
 });
 
+function verifyMetric(metric: Metric, metricName: string, statistic: string) {
+  expect(metric).toStrictEqual({
+    period: {
+      amount: 5,
+      unit: {
+        label: 'minutes',
+        inMillis: 60000,
+      },
+    },
+    namespace: 'AWS/States',
+    metricName,
+    statistic,
+  });
+}
+
 function render(sm: sfn.IChainable) {
   return new cdk.Stack().resolve(
     new sfn.StateGraph(sm.startState, 'Test Graph').toGraphJson(),
   );
 }
 
-interface ConcreteTaskProps extends sfn.TaskStateBaseProps {
+interface FakeTaskProps extends sfn.TaskStateBaseProps {
   readonly metrics?: sfn.TaskMetricsConfig;
 }
 
-class ConcreteTask extends sfn.TaskStateBase {
+class FakeTask extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: cdk.Construct, id: string, props: ConcreteTaskProps = {}) {
+  constructor(scope: cdk.Construct, id: string, props: FakeTaskProps = {}) {
     super(scope, id, props);
     this.taskMetrics = props.metrics;
   }
