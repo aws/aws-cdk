@@ -281,14 +281,16 @@ new lambda.Function(this, 'Function', {
 ```
 Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
 
-Use `lambda.DockerImage.fromRegistry(image)` to use an existing image or
-`lambda.DockerImage.fromAsset(path)` to build a specific image:
+Use `assets.BundlingDockerImage.fromRegistry(image)` to use an existing image or
+`assets.BundlingDockerImage.fromAsset(path)` to build a specific image:
 
 ```ts
+import * as assets from '@aws-cdk/aws-s3-assets';
+
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler'), {
     bundling: {
-      image: lambda.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+      image: assets.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },
