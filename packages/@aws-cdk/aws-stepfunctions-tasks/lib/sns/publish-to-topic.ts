@@ -5,6 +5,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for PublishTask
+ *
+ * @deprecated Use `SnsPublish`
  */
 export interface PublishToTopicProps {
   /**
@@ -48,6 +50,8 @@ export interface PublishToTopicProps {
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
+ *
+ * @deprecated Use `SnsPublish`
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
 
