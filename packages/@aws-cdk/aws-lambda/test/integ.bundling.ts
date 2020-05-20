@@ -19,10 +19,11 @@ class TestStack extends Stack {
         bundling: {
           image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
           command: [
-            'bash', '-c', `
-            pip install -r requirements.txt -t /output &&
-            rsync -r . /output
-            `,
+            'bash', '-c', [
+              'rsync -r . /output',
+              'cd /output',
+              'pip install -r requirements.txt -t .',
+            ].join(' && '),
           ],
         },
         // Python dependencies do not give a stable hash
