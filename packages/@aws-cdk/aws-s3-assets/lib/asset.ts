@@ -5,11 +5,62 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import { BundlingDockerImage, DockerVolume } from './bundling';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
+const BUNDLING_INPUT_DIR = '/input';
+const BUNDLING_OUTPUT_DIR = '/output';
+
+/**
+ * Bundling options
+ */
+export interface BundlingOptions {
+  /**
+   * The Docker image where the command will run.
+   */
+  readonly image: BundlingDockerImage;
+
+  /**
+   * The command to run in the container.
+   *
+   * @example ['npm', 'install']
+   *
+   * @default - run the command defined in the image
+   */
+  readonly command?: string[];
+
+  /**
+   * Additional Docker volumes to mount.
+   *
+   * @default - no additional volumes are mounted
+   */
+  readonly volumes?: DockerVolume[];
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default - no environment variables.
+   */
+  readonly environment?: { [key: string]: string; };
+
+  /**
+   * Working directory inside the container.
+   *
+   * @default /input
+   */
+  readonly workingDirectory?: string;
+
+  /**
+   * Bundle directory. Subdirectories named after the asset path will be
+   * created in this directory and mounted at `/output` in the container.
+   * Should be added to your `.gitignore`.
+   *
+   * @default .bundle next to the asset directory
+   */
+  readonly bundleDirectory?: string;
+}
 
 export interface AssetOptions extends assets.CopyOptions {
-
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -33,6 +84,16 @@ export interface AssetOptions extends assets.CopyOptions {
    * @experimental
    */
   readonly sourceHash?: string;
+
+  /**
+   * Bundle the asset by executing a command in a Docker container.
+   * The asset path will be mounted at `/input`. The Docker container is
+   * responsible for putting content at `/output`. The content at `/output`
+   * will be zipped and used as the asset.
+   *
+   * @default - asset path is zipped as is
+   */
+  readonly bundling?: BundlingOptions;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -102,6 +163,40 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
+
+    // Bundling
+    let bundleAssetPath: string | undefined;
+    if (props.bundling) {
+      // Create the directory for the bundle next to the asset path
+      const bundlePath = path.join(path.dirname(props.path), props.bundling.bundleDirectory ?? '.bundle');
+      if (!fs.existsSync(bundlePath)) {
+        fs.mkdirSync(bundlePath);
+      }
+
+      bundleAssetPath = path.join(bundlePath, path.basename(props.path));
+      if (!fs.existsSync(bundleAssetPath)) {
+        fs.mkdirSync(bundleAssetPath);
+      }
+
+      const volumes = [
+        {
+          hostPath: props.path,
+          containerPath: BUNDLING_INPUT_DIR,
+        },
+        {
+          hostPath: bundleAssetPath,
+          containerPath: BUNDLING_OUTPUT_DIR,
+        },
+        ...props.bundling.volumes ?? [],
+      ];
+
+      props.bundling.image.run({
+        command: props.bundling.command,
+        volumes,
+        environment: props.bundling.environment,
+        workingDirectory: props.bundling.workingDirectory ?? BUNDLING_INPUT_DIR,
+      });
+    }
 
     // stage the asset source (conditionally).
     const staging = new assets.Staging(this, 'Stage', {

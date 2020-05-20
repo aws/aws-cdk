@@ -21,8 +21,10 @@ export interface DockerVolume {
 export interface DockerRunOptions {
   /**
    * The command to run in the container.
+   *
+   * @default - run the command defined in the image
    */
-  readonly command: string[];
+  readonly command?: string[];
 
   /**
    * Docker volumes to mount.
@@ -106,6 +108,7 @@ export class BundlingDockerImage {
   public run(options: DockerRunOptions) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
+    const command = options.command || [];
 
     const dockerArgs: string[] = [
       'run', '--rm',
@@ -115,7 +118,7 @@ export class BundlingDockerImage {
         ? ['-w', options.workingDirectory]
         : [],
       this.image,
-      ...options.command,
+      ...command,
     ];
 
     exec('docker', dockerArgs);

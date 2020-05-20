@@ -1,3 +1,5 @@
+import * as assets from '@aws-cdk/aws-s3-assets';
+
 export interface LambdaRuntimeProps {
   /**
    * Whether the ``ZipFile`` (aka inline code) property can be used with this runtime.
@@ -154,10 +156,19 @@ export class Runtime {
    */
   public readonly family?: RuntimeFamily;
 
+  /**
+   * The bundling Docker image for this runtime.
+   *  Points to the lambdci/lambda build image for this runtime.
+   *
+   * @see https://hub.docker.com/r/lambci/lambda/
+   */
+  public readonly bundlingDockerImage: assets.BundlingDockerImage;
+
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
+    this.bundlingDockerImage = assets.BundlingDockerImage.fromRegistry(`lambci/lambda:build-${name}`);
 
     Runtime.ALL.push(this);
   }

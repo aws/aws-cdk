@@ -1,10 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as nodePath from 'path';
-import { BundlingDockerImage, DockerVolume } from './bundling';
-import { Function } from './function';
 
 export abstract class Code {
   /**
@@ -44,7 +40,7 @@ export abstract class Code {
    *
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static fromAsset(path: string, options?: AssetCodeOptions): AssetCode {
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
   }
 
@@ -165,71 +161,6 @@ export class InlineCode extends Code {
 }
 
 /**
- * Bundling options
- */
-export interface BundlingOptions {
-  /**
-   * The Docker image where the command will run.
-   *
-   * @default - The lambci/lambda build image for the function's runtime
-   * https://hub.docker.com/r/lambci/lambda/
-   */
-  readonly image?: BundlingDockerImage;
-
-  /**
-   * The command to run in the container.
-   *
-   * @example ['npm', 'install']
-   */
-  readonly command: string[];
-
-  /**
-   * Additional Docker volumes to mount.
-   *
-   * @default - no additional volumes are mounted
-   */
-  readonly volumes?: DockerVolume[];
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default - no environment variables.
-   */
-  readonly environment?: { [key: string]: string; };
-
-  /**
-   * Working directory inside the container.
-   *
-   * @default /src
-   */
-  readonly workingDirectory?: string;
-
-  /**
-   * Bundle directory. Subdirectories named after the asset path will be
-   * created in this directory and mounted at `/bundle` in the container.
-   * Should be added to your `.gitignore`.
-   *
-   * @default .bundle next to the asset directory
-   */
-  readonly bundleDirectory?: string;
-}
-
-/**
- * Asset code options
- */
-export interface AssetCodeOptions extends s3_assets.AssetOptions {
-  /**
-   * Bundle the Lambda code by executing a command in a Docker container.
-   * The asset path will be mounted at `/src`. The Docker container is
-   * responsible for putting content at `/bundle`. The content at `/bundle`
-   * will be zipped and used as Lambda code.
-   *
-   * @default - asset path is zipped as is
-   */
-  readonly bundling?: BundlingOptions;
-}
-
-/**
  * Lambda code from a local directory.
  */
 export class AssetCode extends Code {
@@ -239,60 +170,15 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: AssetCodeOptions = {}) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
-    let bundleAssetPath: string | undefined;
-
-    if (this.options.bundling) {
-      // Create the directory for the bundle next to the asset path
-      const bundlePath = nodePath.join(nodePath.dirname(this.path), this.options.bundling.bundleDirectory ?? '.bundle');
-      if (!fs.existsSync(bundlePath)) {
-        fs.mkdirSync(bundlePath);
-      }
-
-      bundleAssetPath = nodePath.join(bundlePath, nodePath.basename(this.path));
-      if (!fs.existsSync(bundleAssetPath)) {
-        fs.mkdirSync(bundleAssetPath);
-      }
-
-      const volumes = [
-        {
-          hostPath: this.path,
-          containerPath: '/src',
-        },
-        {
-          hostPath: bundleAssetPath,
-          containerPath: '/bundle',
-        },
-        ...this.options.bundling.volumes ?? [],
-      ];
-
-      let image: BundlingDockerImage;
-      if (this.options.bundling.image) {
-        image = this.options.bundling.image;
-      } else {
-        if (scope instanceof Function) {
-          image = BundlingDockerImage.fromRegistry(`lambci/lambda:build-${scope.runtime.name}`);
-        } else {
-          throw new Error('Cannot derive default bundling image from scope. Please specify an image.');
-        }
-      }
-
-      image.run({
-        command: this.options.bundling.command,
-        volumes,
-        environment: this.options.bundling.environment,
-        workingDirectory: this.options.bundling.workingDirectory ?? '/src',
-      });
-    }
-
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
-        path: bundleAssetPath ?? this.path,
+        path: this.path,
         ...this.options,
       });
     }

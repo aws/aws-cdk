@@ -265,7 +265,8 @@ Example with Python:
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
-    bundling: { // Docker image defaults to the lambci/lambda build image for the function's runtime
+    bundling: {
+      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
         'bash', '-c', `
         pip install -r requirements.txt -t /bundle &&
@@ -278,8 +279,7 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
-The Docker image defaults to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build
-image for the function's runtime.
+Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
 
 Use `lambda.DockerImage.fromRegistry(image)` to use an existing image or
 `lambda.DockerImage.fromAsset(path)` to build a specific image:
