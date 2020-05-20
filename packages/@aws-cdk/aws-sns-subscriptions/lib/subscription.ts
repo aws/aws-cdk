@@ -13,8 +13,8 @@ export interface SubscriptionProps {
   readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
 
   /**
-   * Queue used when `deadLetterQueue` is enabled.
-   * Default queue is created when not specified.
+   * Queue to be used as dead letter queue.
+   * If not passed no dead letter queue is enabled.
    *
    * @default - No dead letter queue enabled.
    */
