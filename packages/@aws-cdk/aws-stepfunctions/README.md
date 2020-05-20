@@ -31,22 +31,22 @@ import * as lambda from '@aws-cdk/aws-lambda';
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda),
-    // Lambda's result is in the attribute `Payload`
-    outputPath: '$.Payload',
+const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
+  lambdaFunction: submitLambda,
+  // Lambda's result is in the attribute `Payload`
+  outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
     time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
-const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status" in the response
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Pass just the field named "guid" into the Lambda, put the
+  // Lambda's result in a field called "status" in the response
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -54,11 +54,11 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Use "guid" field as input
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Use "guid" field as input
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const definition = submitJob
