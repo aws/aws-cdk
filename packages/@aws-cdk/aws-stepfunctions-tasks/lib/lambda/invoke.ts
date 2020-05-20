@@ -39,7 +39,11 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * Version or alias to invoke a published version of the function
    *
-   * @default - No qualifier
+   * You only need to supply this if you want the version of the Lambda Function to depend
+   * on data in the state machine state. If not, you can pass the appropriate Alias or Version object
+   * directly as the `lambdaFunction` argument.
+   *
+   * @default - Version or alias inherent to the `lambdaFunction` object.
    */
   readonly qualifier?: string;
 }
