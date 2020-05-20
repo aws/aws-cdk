@@ -89,7 +89,7 @@ export interface AssetOptions extends assets.CopyOptions {
    * Bundle the asset by executing a command in a Docker container.
    * The asset path will be mounted at `/input`. The Docker container is
    * responsible for putting content at `/output`. The content at `/output`
-   * will be zipped and used as the asset.
+   * will be zipped and used as the final asset.
    *
    * @default - asset path is zipped as is
    */
