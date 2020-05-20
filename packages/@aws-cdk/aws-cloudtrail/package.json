@@ -93,6 +93,11 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
+  "awslint": {
+    "exclude": [
+      "events-method-signature:@aws-cdk/aws-cloudtrail.Trail.onEvent"
+    ]
+  },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
