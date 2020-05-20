@@ -1109,12 +1109,12 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
-test('error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes', () => {
+test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   const gsiNonKeyAttributes: string[] = [];
-  for (let i = 0; i < 21; i++) {
+  for (let i = 0; i < 101; i++) {
     gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
   }
 
@@ -1124,7 +1124,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
     sortKey: GSI_SORT_KEY,
     projectionType: ProjectionType.INCLUDE,
     nonKeyAttributes: gsiNonKeyAttributes,
-  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
+  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 100/);
 });
 
 test('error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table', () => {
