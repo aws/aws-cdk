@@ -49,6 +49,10 @@ incompatible-argument:@aws-cdk/aws-iam.PrincipalPolicyFragment.<initializer>
 changed-type:@aws-cdk/aws-iam.FederatedPrincipal.conditions
 changed-type:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions
 changed-type:@aws-cdk/aws-iam.PrincipalWithConditions.conditions
-# Changing untyped property blob into typed property blob
-change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
+removed:@aws-cdk/cdk-assets-schema.Placeholders
+# Following two are because we're turning: properties: {string=>any} into a union of typed interfaces
+# Needs to be removed after next release.
 incompatible-argument:@aws-cdk/cloud-assembly-schema.Manifest.save
+change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
+removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_DEPLOY_ACTION_ROLE_ARN
+removed:@aws-cdk/core.DefaultStackSynthesizerProps.deployActionRoleArn

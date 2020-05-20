@@ -13,6 +13,21 @@ import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
+// We need to map regions to domain suffixes, and the SDK already has a function to do this.
+// It's not part of the public API, but it's also unlikely to go away.
+//
+// Reuse that function, and add a safety check so we don't accidentally break if they ever
+// refactor that away.
+
+/* eslint-disable @typescript-eslint/no-require-imports */
+// tslint:disable-next-line: no-var-requires
+const regionUtil = require('aws-sdk/lib/region_config');
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+if (!regionUtil.getEndpointSuffix) {
+  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+}
+
 type TemplateBodyParameter = {
   TemplateBody?: string
   TemplateURL?: string
@@ -275,6 +290,13 @@ async function makeBodyParameter(
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
   toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+
+  // If the template has already been uploaded to S3, just use it from there.
+  if (stack.stackTemplateAssetObjectUrl) {
+    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment) };
+  }
+
+  // Otherwise, pass via API call (if small) or upload here (if large)
   const templateJson = toYAML(stack.template);
 
   if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
@@ -293,7 +315,6 @@ async function makeBodyParameter(
 
   const templateHash = contentHash(templateJson);
   const key = `cdk/${stack.id}/${templateHash}.yml`;
-  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
 
   assetManifest.addFileAsset(templateHash, {
     path: stack.templateFile,
@@ -302,6 +323,7 @@ async function makeBodyParameter(
     objectKey: key,
   });
 
+  const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
 }
@@ -400,4 +422,38 @@ function compareTags(a: Tag[], b: Tag[]): boolean {
   }
 
   return true;
+}
+
+/**
+ * Format an S3 URL in the manifest for use with CloudFormation
+ *
+ * Replaces environment placeholders (which this field may contain),
+ * and reformats s3://.../... urls into S3 REST URLs (which CloudFormation
+ * expects)
+ */
+function restUrlFromManifest(url: string, environment: cxapi.Environment): string {
+  const doNotUseMarker = '**DONOTUSE**';
+  // This URL may contain placeholders, so still substitute those.
+  url = cxapi.EnvironmentPlaceholders.replace(url, {
+    accountId: environment.account,
+    region: environment.region,
+    partition: doNotUseMarker,
+  });
+
+  // Yes, this is extremely crude, but we don't actually need this so I'm not inclined to spend
+  // a lot of effort trying to thread the right value to this location.
+  if (url.indexOf(doNotUseMarker) > -1) {
+    throw new Error('Cannot use \'${AWS::Partition}\' in the \'stackTemplateAssetObjectUrl\' field');
+  }
+
+  const s3Url = url.match(/s3:\/\/([^/]+)\/(.*)$/);
+  if (!s3Url) { return url; }
+
+  // We need to pass an 'https://s3.REGION.amazonaws.com[.cn]/bucket/object' URL to CloudFormation, but we
+  // got an 's3://bucket/object' URL instead. Construct the rest API URL here.
+  const bucketName = s3Url[1];
+  const objectKey = s3Url[2];
+
+  const urlSuffix: string = regionUtil.getEndpointSuffix(environment.region);
+  return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
 }

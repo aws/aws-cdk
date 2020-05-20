@@ -1,12 +1,9 @@
 import { deployStack } from '../../lib';
-import { testStack } from '../util';
+import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
-
-const FAKE_TEMPLATE = { resource: 'noerrorresource' };
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
-  template: FAKE_TEMPLATE,
 });
 
 const FAKE_STACK_WITH_PARAMETERS = testStack({
@@ -22,7 +19,7 @@ const FAKE_STACK_WITH_PARAMETERS = testStack({
 
 const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   stackName: 'termination-protection',
-  template: FAKE_TEMPLATE,
+  template: DEFAULT_FAKE_TEMPLATE,
   terminationProtection: true,
 });
 
@@ -51,7 +48,7 @@ beforeEach(() => {
       Changes: [],
     })),
     executeChangeSet: jest.fn((_o) => ({})),
-    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(FAKE_TEMPLATE) })),
+    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(DEFAULT_FAKE_TEMPLATE) })),
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
@@ -328,6 +325,48 @@ test('not executed and no error if --no-execute is given', async () => {
 
   // THEN
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('use S3 url for stack deployment if present in Stack Artifact', async () => {
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 'https://use-me-use-me/',
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://use-me-use-me/',
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+});
+
+test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 's3://use-me-use-me-${AWS::AccountId}/object',
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://s3.bermuda-triangle-1337.amazonaws.com/use-me-use-me-123456789/object',
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', async () => {

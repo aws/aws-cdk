@@ -8,6 +8,7 @@ export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
 export * from './string-fragments';
+export * from './stack-synthesizers';
 
 export * from './reference';
 export * from './cfn-condition';
@@ -27,6 +28,7 @@ export * from './cfn-tag';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
+export * from './from-cfn';
 export * from './size';
 export * from './stack-trace';
 

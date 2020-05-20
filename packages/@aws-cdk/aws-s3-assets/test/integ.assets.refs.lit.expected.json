@@ -54,7 +54,7 @@
         ]
       }
     },
-    "S3URL": {
+    "S3HttpURL": {
       "Value": {
         "Fn::Join": [
           "",
@@ -68,6 +68,46 @@
               "Ref": "AWS::URLSuffix"
             },
             "/",
+            {
+              "Ref": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"
+            },
+            "/",
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "S3ObjectURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "s3://",
             {
               "Ref": "AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B"
             },

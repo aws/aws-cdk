@@ -133,6 +133,13 @@ export interface CDKBuildOptions {
    * An optional command (formatted as a list of strings) to run before testing.
    */
   test?: string[];
+
+  /**
+   * Whether the package uses Jest for tests.
+   * The default is NodeUnit,
+   * but we want to eventually move all of them to Jest.
+   */
+  jest?: boolean;
 }
 
 /**
