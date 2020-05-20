@@ -1,9 +1,9 @@
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
-import { FileAsset } from './file-asset';
+import {FileAsset} from './file-asset';
 import { ManifestFile } from './manifest-schema';
 import { loadMyPackageJson } from './private/my-package-json';
-import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
+import {assertIsObject, expectKey, isFileAssetPackaging, isMapOf, isObjectAnd, isString} from './private/schema-helpers';
 
 const PACKAGE_VERSION = loadMyPackageJson().version;
 
@@ -63,7 +63,7 @@ function isFileAsset(entry: object): FileAsset {
   expectKey(entry, 'source', source => {
     assertIsObject(source);
     expectKey(source, 'path', isString);
-    expectKey(source, 'packaging', isString, true);
+    expectKey(source, 'packaging', isFileAssetPackaging, true);
     return source;
   });
 

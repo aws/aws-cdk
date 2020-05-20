@@ -22,7 +22,7 @@
     "lerna": "^3.21.0",
     "standard-version": "^8.0.0",
     "graceful-fs": "^4.2.4",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.3"
   },
   "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {

@@ -34,7 +34,7 @@
     "@types/jest": "^25.2.3",
     "jest": "^25.5.4",
     "@types/node": "^13.9.1",
-    "typescript": "~3.8.3",
+    "typescript": "~3.9.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {

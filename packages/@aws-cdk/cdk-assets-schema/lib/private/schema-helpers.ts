@@ -12,6 +12,8 @@
  *   if (!valid(input)) { throw; }
  *   return input;
  */
+import {FileAssetPackaging} from '../file-asset';
+
 export function expectKey<K extends string, A extends object, R, P extends (x: unknown) => R>(obj: A, key: K, validate: P, optional?: boolean):
   asserts obj is A & {[k in K]: ReturnType<P>}  {
   if (typeof obj !== 'object' || obj === null || (!(key in obj) && !optional)) {
@@ -51,4 +53,11 @@ export function isObjectAnd<A>(p: (x: object) => A): (x: unknown) => A {
 
 export function assertIsObject(x: unknown): asserts x is object {
   if (typeof x !== 'object' || x === null) { throw new Error(`Expected a map, got '${x}'`); }
+}
+
+// This is a special case; all other fields are either concrete objects or primitives
+export function isFileAssetPackaging(x: unknown): FileAssetPackaging {
+  const k = isString(x);
+  if (!(k in FileAssetPackaging)) { throw new Error(`Expected FileAssetPackaging, got '${k}'`); }
+  return k as FileAssetPackaging;
 }
