@@ -20,8 +20,8 @@ class TestStack extends Stack {
           image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
           command: [
             'bash', '-c', `
-            pip install -r requirements.txt -t /bundle &&
-            rsync -r . /bundle
+            pip install -r requirements.txt -t /output &&
+            rsync -r . /output
             `,
           ],
         },
