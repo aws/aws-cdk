@@ -1,0 +1,165 @@
+{
+  "Parameters": {
+    "PrincipalTag": {
+      "Type": "String",
+      "Default": "developer"
+    },
+    "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071S3Bucket0ECE790A": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071\""
+    },
+    "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071S3VersionKeyD4FD1455": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071\""
+    },
+    "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071ArtifactHashA0EEA317": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071\""
+    }
+  },
+  "Resources": {
+    "PrincipalTagCondition94CCB594": {
+      "Type": "Custom::AWSCDKCfnJson",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomAWSCDKCfnJsonCustomResourceProviderHandler6DD6F5A6",
+            "Arn"
+          ]
+        },
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"aws:PrincipalTag/",
+              {
+                "Ref": "PrincipalTag"
+              },
+              "\":\"true\"}"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomAWSCDKCfnJsonCustomResourceProviderRole68D45660": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      }
+    },
+    "CustomAWSCDKCfnJsonCustomResourceProviderHandler6DD6F5A6": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071S3Bucket0ECE790A"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071S3VersionKeyD4FD1455"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters356d0b04350bd4ab42ccab5ee2ffc0d414a9b22e9e3b4ade72665e3ef1f28071S3VersionKeyD4FD1455"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomAWSCDKCfnJsonCustomResourceProviderRole68D45660",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "CustomAWSCDKCfnJsonCustomResourceProviderRole68D45660"
+      ]
+    },
+    "MyRoleF48FFE04": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "Fn::GetAtt": [
+                    "PrincipalTagCondition94CCB594",
+                    "Value"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  }
+}

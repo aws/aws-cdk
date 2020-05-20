@@ -3,6 +3,7 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
+import { Token } from '@aws-cdk/core';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -211,8 +212,24 @@ export class PrincipalWithConditions implements IPrincipal {
     Object.entries(principalConditions).forEach(([operator, condition]) => {
       mergedConditions[operator] = condition;
     });
+
     Object.entries(additionalConditions).forEach(([operator, condition]) => {
-      mergedConditions[operator] = { ...mergedConditions[operator], ...condition };
+      // merge the conditions if one of the additional conditions uses an
+      // operator that's already used by the principal's conditions merge the
+      // inner structure.
+      const existing = mergedConditions[operator];
+      if (!existing) {
+        mergedConditions[operator] = condition;
+        return; // continue
+      }
+
+      // if either the existing condition or the new one contain unresolved
+      // tokens, fail the merge. this is as far as we go at this point.
+      if (Token.isUnresolved(condition) || Token.isUnresolved(existing)) {
+        throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+      }
+
+      mergedConditions[operator] = { ...existing, ...condition };
     });
     return mergedConditions;
   }

@@ -25,6 +25,7 @@ export * from './stack';
 export * from './cfn-element';
 export * from './cfn-dynamic-reference';
 export * from './cfn-tag';
+export * from './cfn-json';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
