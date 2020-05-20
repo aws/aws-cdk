@@ -6,6 +6,8 @@ import * as path from 'path';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
+ * Properties to create a DNS validated certificate managed by AWS Certificate Manager
+ *
  * @experimental
  */
 export interface DnsValidatedCertificateProps extends CertificateProps {
