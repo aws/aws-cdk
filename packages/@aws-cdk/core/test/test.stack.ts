@@ -853,6 +853,19 @@ export = {
     test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
     test.done();
   },
+
+  'Termination Protection is reflected in Cloud Assembly artifact'(test: Test) {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    test.equals(artifact.terminationProtection, true);
+
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
@@ -46,8 +47,35 @@ export interface IPrincipal extends IGrantable {
    *
    * @returns true if the statement was added, false if the principal in
    * question does not have a policy document to add the statement to.
+   *
+   * @deprecated Use `addToPrincipalPolicy` instead.
    */
   addToPolicy(statement: PolicyStatement): boolean;
+
+  /**
+   * Add to the policy of this principal.
+   */
+  addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult;
+}
+
+/**
+ * Result of calling `addToPrincipalPolicy`
+ */
+export interface AddToPrincipalPolicyResult {
+  /**
+   * Whether the statement was added to the identity's policies.
+   *
+   * @experimental
+   */
+  readonly statementAdded: boolean;
+
+  /**
+   * Dependable which allows depending on the policy change being applied
+   *
+   * @default - Required if `statementAdded` is true.
+   * @experimental
+   */
+  readonly policyDependable?: cdk.IDependable;
 }
 
 /**
@@ -66,10 +94,14 @@ export abstract class PrincipalBase implements IPrincipal {
    */
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
-  public addToPolicy(_statement: PolicyStatement): boolean {
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // This base class is used for non-identity principals. None of them
     // have a PolicyDocument to add to.
-    return false;
+    return { statementAdded: false };
   }
 
   public toString() {
@@ -153,7 +185,11 @@ export class PrincipalWithConditions implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.principal.addToPolicy(statement);
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    return this.principal.addToPrincipalPolicy(statement);
   }
 
   public toString() {
@@ -379,6 +415,55 @@ export class FederatedPrincipal extends PrincipalBase {
 
   public toString() {
     return `FederatedPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as Web Identity such as Cognito, Amazon,
+ * Facebook, Google, etc.
+ */
+export class WebIdentityPrincipal extends FederatedPrincipal {
+
+  /**
+   *
+   * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(identityProvider: string, conditions: Conditions = {}) {
+    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `WebIdentityPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as from a OpenID Connect provider.
+ */
+export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
+
+  /**
+   *
+   * @param openIdConnectProvider OpenID Connect provider
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
+    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `OpenIdConnectPrincipal(${this.federated})`;
   }
 }
 

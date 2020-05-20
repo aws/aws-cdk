@@ -108,7 +108,8 @@
       "module-name:@aws-cdk/core",
       "construct-ctor:@aws-cdk/core.CustomResourceProvider",
       "construct-interface-extends-iconstruct:@aws-cdk/core.ICustomResourceProvider",
-      "props-physical-name:@aws-cdk/core.CustomResourceProps"
+      "props-physical-name:@aws-cdk/core.CustomResourceProps",
+      "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind"
     ]
   },
   "scripts": {
@@ -149,9 +150,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.150",
+    "@types/lodash": "^4.14.152",
     "@types/node": "^10.17.21",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "@types/minimatch": "^3.0.3",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -164,6 +165,7 @@
   "dependencies": {
     "minimatch": "^3.0.4",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "constructs": "^3.0.2"
   },
@@ -172,12 +174,13 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awscdkio": {

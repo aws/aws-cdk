@@ -23,6 +23,9 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
   if (params.cloudFormationExecutionPolicies?.length) {
     throw new Error('--cloudformation-execution-policies can only be passed for the new bootstrap experience.');
   }
+  if (params.qualifier) {
+    throw new Error('--qualifier can only be passed for the new bootstrap experience.');
+  }
 
   return deployBootstrapStack(
     legacyBootstrapTemplate(params),
@@ -58,6 +61,7 @@ export async function bootstrapEnvironment2(
       FileAssetsBucketKmsKeyId: params.kmsKeyId,
       TrustedAccounts: params.trustedAccounts?.join(','),
       CloudFormationExecutionPolicies: params.cloudFormationExecutionPolicies?.join(','),
+      Qualifier: params.qualifier,
     },
     environment,
     sdkProvider,
