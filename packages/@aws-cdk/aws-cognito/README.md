@@ -272,9 +272,9 @@ const userPool = new UserPool(this, 'myuserpool', {
     AdvancedSecurity: AdvancedSecurityMode.ENFORCED,
   },
 });
-userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
-  clientId: 'ALL',
-  accountTakeoverRiskConfiguration: {
+new UserPoolRiskConfigurationAttachment(stack, 'Pool1Security', {
+  userPool,
+  accountTakeoverRisk: {
     actions: {
       highAction: {
         eventAction: AccountTakeoverEventAction.BLOCK,

@@ -4,7 +4,6 @@ import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
 import {
-  AccountTakeoverEventAction,
   AdvancedSecurityMode,
   Mfa,
   NumberAttribute,
@@ -710,78 +709,6 @@ describe('User Pool', () => {
       UserPoolName: 'Pool2',
       UserPoolAddOns: {
         AdvancedSecurityMode: 'AUDIT',
-      },
-    });
-  });
-
-  test('UserPool Risk Configuration is correctly set', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const userPool = new UserPool(stack, 'Pool1', {
-      userPoolName: 'Pool1',
-      advancedSecurity: AdvancedSecurityMode.ENFORCED,
-    });
-    userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
-      clientId: 'ALL',
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolRiskConfigurationAttachment', {
-      ClientId: 'ALL',
-      UserPoolId: stack.resolve(userPool.userPoolId),
-    });
-  });
-
-  test('AccountTakeOverConfiguration of UserPool Risk Configuration is correctly set', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const userPool = new UserPool(stack, 'Pool1', {
-      userPoolName: 'Pool1',
-      advancedSecurity: AdvancedSecurityMode.ENFORCED,
-    });
-    userPool.setUserPoolRiskConfiguration('userPoolRiskConfiguration', {
-      clientId: 'ALL',
-      accountTakeoverRiskConfiguration: {
-        actions: {
-          highAction: {
-            eventAction: AccountTakeoverEventAction.BLOCK,
-            notify: true,
-          },
-          lowAction: {
-            eventAction: AccountTakeoverEventAction.NO_ACTION,
-            notify: false,
-          },
-          mediumAction: {
-            eventAction: AccountTakeoverEventAction.MFA_IF_CONFIGURED,
-            notify: true,
-          },
-        },
-      },
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolRiskConfigurationAttachment', {
-      ClientId: 'ALL',
-      UserPoolId: stack.resolve(userPool.userPoolId),
-      AccountTakeoverRiskConfiguration: {
-        Actions: {
-          HighAction: {
-            EventAction: 'BLOCK',
-            Notify: true,
-          },
-          LowAction: {
-            EventAction: 'NO_ACTION',
-            Notify: false,
-          },
-          MediumAction: {
-            EventAction: 'MFA_IF_CONFIGURED',
-            Notify: true,
-          },
-        },
       },
     });
   });

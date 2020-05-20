@@ -1,7 +1,7 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { CfnUserPool, CfnUserPoolRiskConfigurationAttachment } from './cognito.generated';
+import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
@@ -379,148 +379,6 @@ export interface PasswordPolicy {
 }
 
 /**
- * The different ways in which a adaptive authentication for advanced security can be configured.
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html
- */
-export enum AccountTakeoverEventAction {
-  /** All sign-in attempts are blocked */
-  BLOCK = 'BLOCK',
-  /** Users who don't have MFA configured are allowed to sign in without an additional factor. */
-  MFA_IF_CONFIGURED = 'MFA_IF_CONFIGURED',
-  /** Users who don't have MFA configured are blocked from signing in. */
-  MFA_REQUIRED = 'MFA_REQUIRED',
-  /** The sign-in attempt is allowed without an additional factor. */
-  NO_ACTION = 'NO_ACTION'
-}
-
-/**
- * The action for account takeover.
- */
-export interface AccountTakeoverAction {
-  /**
-   * The event action for account takeover.
-   */
-  readonly eventAction: AccountTakeoverEventAction;
-  /**
-   * The flagment specifying whether to send a notification
-   */
-  readonly notify: boolean;
-}
-
-/**
- * The actions for account takeover.
- */
-export interface AccountTakeoverActions {
-  /**
-   * The action for high risk of account takeover.
-   * @default - no action configured
-   */
-  readonly highAction?: AccountTakeoverAction;
-  /**
-   * The action for low risk of account takeover.
-   * @default - no configured
-   */
-  readonly lowAction?: AccountTakeoverAction;
-  /**
-   * The action for medium risk of account takeover.
-   * @default - no configured
-   */
-  readonly mediumAction?: AccountTakeoverAction;
-}
-
-/**
- * The configuration for actions and notification for different levels of risk detected for a potential account takeover.
- */
-export interface AccountTakeoverRiskConfiguration {
-  /**
-   * The actions of account takeover risk configuration.
-   */
-  readonly actions: AccountTakeoverActions;
-
-  /**
-   * The notify configuration used to construct email notifications.
-   * @default - no configured
-   */
-  readonly notifyConfiguration?: CfnUserPoolRiskConfigurationAttachment.NotifyConfigurationTypeProperty;
-}
-
-/**
- * The action for compromised credentials.
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-compromised-credentials.html
- */
-export enum CompromisedCredentialsEventAction {
-  /** Blocking requires users to choose another password */
-  BLOCK = 'BLOCK',
-  /** all attempted uses of compromised credentials to Amazon CloudWatch */
-  NO_ACTION = 'NO_ACTION',
-}
-
-/**
- * The actions for compromised credentials.
- */
-export interface CompromisedCredentialsActions {
-  /**
-   * The action compromised credentials event.
-   */
-  readonly eventAction: CompromisedCredentialsEventAction;
-}
-
-/**
- * The event type for compromised credentials check.
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-compromised-credentials.html
- */
-export enum CompromisedCredentialsEvent {
-  /** Users sign in */
-  SIGN_IN = 'SIGN_IN',
-  /** Users change password */
-  PASSWORD_CHANGE = 'PASSWORD_CHANGE',
-  /** Users sign up */
-  SIGN_UP = 'SIGN_UP',
-}
-
-/**
- * The configuration for compromised credentials risk.
- */
-export interface CompromisedCredentialsRiskConfiguration {
-  /**
-   * The actions for compromised credentials risk.
-   */
-  readonly actions: CompromisedCredentialsActions;
-  /**
-   * The trigger for compromised credentials check.
-   * @default - Not set.
-   */
-  readonly eventFilter?: CompromisedCredentialsEvent[];
-}
-
-/**
- * Risk settings for advanced security.
- */
-export interface UserPoolRiskConfigurationOptions {
-  /**
-   * The identifier of the app client to which you want to specify the risk setting.
-   * You can specify a single client or all clients.
-   */
-  readonly clientId: string;
-
-  /**
-   * The account takeover risk configuration including the notify configuration and actions.
-   * @default - no configured
-   */
-  readonly accountTakeoverRiskConfiguration?: AccountTakeoverRiskConfiguration;
-  /**
-   * The compromised credentials risk configuration including the event filter and action.
-   * @default - no configured
-   */
-  readonly compromisedCredentialsRiskConfiguration?: CompromisedCredentialsRiskConfiguration;
-  /**
-   * The configuration to override the risk decision.
-   * @default - no configured
-   */
-  readonly riskExceptionConfiguration?: CfnUserPoolRiskConfigurationAttachment.RiskExceptionConfigurationTypeProperty;
-}
-
-/**
  * Email settings for the user pool.
  */
 export interface EmailSettings {
@@ -842,17 +700,6 @@ export class UserPool extends Resource implements IUserPool {
   public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
       userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Set risk Configuration for this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html
-   */
-  public setUserPoolRiskConfiguration(id: string, options: UserPoolRiskConfigurationOptions): CfnUserPoolRiskConfigurationAttachment {
-    return new CfnUserPoolRiskConfigurationAttachment(this, id, {
-      userPoolId: this.userPoolId,
       ...options,
     });
   }
