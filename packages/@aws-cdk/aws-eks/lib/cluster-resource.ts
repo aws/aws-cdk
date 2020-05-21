@@ -19,6 +19,7 @@ export class ClusterResource extends Construct {
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
   public readonly attrOpenIdConnectIssuerUrl: string;
+  public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
 
   /**
@@ -126,6 +127,7 @@ export class ClusterResource extends Construct {
     this.attrArn = Token.asString(resource.getAtt('Arn'));
     this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
     this.attrOpenIdConnectIssuerUrl = Token.asString(resource.getAtt('OpenIdConnectIssuerUrl'));
+    this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
   }
 
   /**
