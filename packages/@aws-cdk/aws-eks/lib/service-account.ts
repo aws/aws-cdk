@@ -60,6 +60,9 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
+    /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
+    * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
+    */
     const conditions = new CfnJson(this, 'ConditionJson', {
       value: {
         [`${cluster.clusterOpenIdConnectIssuerUrl}:aud`]: 'sts.amazonaws.com',
