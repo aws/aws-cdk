@@ -142,7 +142,7 @@ export interface ICustomAttribute {
 }
 
 /**
- * Configuration that will be fed into CloudFormation for any attribute type.
+ * Configuration that will be fed into CloudFormation for any custom attribute type.
  */
 export interface CustomAttributeConfig {
   // tslint:disable:max-line-length
@@ -150,7 +150,6 @@ export interface CustomAttributeConfig {
    * The data type of the custom attribute.
    *
    * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html#CognitoUserPools-Type-SchemaAttributeType-AttributeDataType
-   * @default - None.
    */
   readonly dataType: string;
   // tslint:enable:max-line-length
@@ -217,7 +216,7 @@ export interface StringAttributeProps extends StringAttributeConstraints, Custom
 }
 
 /**
- * The String attribute type.
+ * The String custom attribute type.
  */
 export class StringAttribute implements ICustomAttribute {
   private readonly minLen?: number;
