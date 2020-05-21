@@ -81,7 +81,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       if (error.message.includes(cxschema.VERSION_MISMATCH)) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
-        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
       }
       throw error;
     }
