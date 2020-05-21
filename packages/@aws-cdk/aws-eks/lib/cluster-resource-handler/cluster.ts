@@ -198,7 +198,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
           CertificateAuthorityData: cluster.certificateAuthority?.data,
-          OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer,
+          OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer?.substring(8), // Strips off https:// from the issuer url
         },
       };
     }

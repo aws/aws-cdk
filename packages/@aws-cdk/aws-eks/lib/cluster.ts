@@ -648,7 +648,7 @@ export class Cluster extends Resource implements ICluster {
 
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
+        url: 'https://' + this.clusterOpenIdConnectIssuerUrl,
         clientIds: [ 'sts.amazonaws.com' ],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate

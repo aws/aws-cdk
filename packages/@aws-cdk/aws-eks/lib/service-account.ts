@@ -3,8 +3,6 @@ import { Construct, CustomResource, CustomResourceProvider, CustomResourceProvid
 import * as path from 'path';
 import { Cluster } from './cluster';
 
-const RESOURCE_TYPE = 'Custom::AWSCDK-EKS-IRSAConditions';
-
 /**
  * Options for `ServiceAccount`
  */
@@ -39,6 +37,11 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 export class ServiceAccount extends Construct implements IPrincipal {
 
   /**
+   * The CloudFormation resource type.
+   */
+  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-IRSAConditions';
+
+  /**
    * The role which is linked to the service account.
    */
   public readonly role: IRole;
@@ -68,7 +71,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
       assumedBy: new OpenIdConnectPrincipal(cluster.openIdConnectProvider),
     });
 
-    const provider = CustomResourceProvider.getOrCreate(this, RESOURCE_TYPE, {
+    const provider = CustomResourceProvider.getOrCreate(this, ServiceAccount.RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'irsa-conditions'),
       runtime: CustomResourceProviderRuntime.NODEJS_12,
       policyStatements: [
@@ -84,7 +87,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     });
 
     new CustomResource(this, 'Resource', {
-      resourceType: RESOURCE_TYPE,
+      resourceType: ServiceAccount.RESOURCE_TYPE,
       serviceToken: provider,
       properties: {
         RoleName: this.role.roleName,
