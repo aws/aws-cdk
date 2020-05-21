@@ -198,6 +198,11 @@ const principal = new iam.AccountPrincipal('123456789000')
   .withConditions({ StringEquals: { foo: "baz" } });
 ```
 
+> NOTE: If you need to define an IAM condition that uses a token (such as a
+> deploy-time attribute of another resource) in a JSON map key, use `CfnJson` to
+> render this condition. See [this test](./test/integ-condition-with-ref.ts) for
+> an example.
+
 The `WebIdentityPrincipal` class can be used as a principal for web identities like
 Cognito, Amazon, Google or Facebook, for example:
 
