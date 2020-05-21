@@ -78,10 +78,13 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     try {
       return new cxapi.CloudAssembly(appDir);
     } catch (error) {
-      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+      if (error.versionMismatch) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
-        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+        const manifestVersion = error.actualManifestVersion;
+
+        throw new Error('The CLI version you are using does not support your application version. Please upgrade the CLI to the latest version.'
+        + `\n(Your application requires a CLI that supports a cloud assembly of version '${manifestVersion}' or above.)`);
       }
       throw error;
     }

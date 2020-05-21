@@ -4,11 +4,6 @@ import * as semver from 'semver';
 import { ArtifactMetadataEntryType } from './metadata-schema';
 import * as assembly from './schema';
 
-// this prefix is used by the CLI to identify this specific error.
-// in which case we want to instruct the user to upgrade his CLI.
-// see exec.ts#createAssembly
-export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
-
 /**
  * Protocol utility class.
  */
@@ -62,7 +57,18 @@ export class Manifest {
     if (semver.gt(actual, maxSupported)) {
       // we use a well known error prefix so that the CLI can identify this specific error
       // and print some more context to the user.
-      throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
+      const error = new Error(`Cloud assembly schema version mismatch: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
+
+      // we want to signal to consumers that this specific error was thrown. (for example the CLI)
+      // since this is a jsii module, we cannot use custom exception types.
+      // take advantage of the ability to simply attach properties to a JS object.
+      // note that these properties will be lost in case it is consumed from a different language as a jsii module.
+      // for our purposes its ok since the CLI is not a jsii module. (see exec.ts#createAssembly)
+      (error as any).versionMismatch = true;
+      (error as any).actualManifestVersion = actual;
+      (error as any).supportedManifestVersion = maxSupported;
+
+      throw error;
     }
 
     // now validate the format is good.
