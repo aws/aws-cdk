@@ -65,8 +65,8 @@ export class ServiceAccount extends Construct implements IPrincipal {
     */
     const conditions = new CfnJson(this, 'ConditionJson', {
       value: {
-        [`${cluster.clusterOpenIdConnectIssuerUrl}:aud`]: 'sts.amazonaws.com',
-        [`${cluster.clusterOpenIdConnectIssuerUrl}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
+        [`${cluster.clusterOpenIdConnectIssuer}:aud`]: 'sts.amazonaws.com',
+        [`${cluster.clusterOpenIdConnectIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
       },
     });
     const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({

@@ -636,6 +636,21 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuer(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuer;
+  }
+
+  /**
    * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
    * to link this cluster to AWS IAM.
    *
@@ -648,7 +663,7 @@ export class Cluster extends Resource implements ICluster {
 
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: 'https://' + this.clusterOpenIdConnectIssuerUrl,
+        url: this.clusterOpenIdConnectIssuerUrl,
         clientIds: [ 'sts.amazonaws.com' ],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate
