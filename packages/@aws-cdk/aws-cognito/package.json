@@ -96,7 +96,10 @@
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolFacebookIdentityProviderProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolAmazonIdentityProviderProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolAppleIdentityProviderProps"
     ]
   },
   "stability": "experimental",

@@ -14,120 +14,14 @@ export interface IUserPoolIdentityProvider extends IResource {
 }
 
 /**
- * The options to create a new UserPoolIdentityProvider for a given UserPool.
+ * Properties to initialize UserPoolFacebookIdentityProvider
  */
-export interface UserPoolIdentityProviderOptions {
+export interface UserPoolFacebookIdentityProviderProps {
   /**
-   * The name of this provider. This will be its primary identifier.
-   */
-  readonly userPoolIdentityProviderName: string;
-
-  /**
-   * Options to integrate with third party social identity providers such as Facebook, Google, Amazon and Apple.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html#cognito-user-pools-facebook-provider
-   */
-  readonly socialIdentity: SocialIdentityProvider;
-}
-
-/**
- * The properties to initialize a new UserPoolIdentityProvider
- */
-export interface UserPoolIdentityProviderProps extends UserPoolIdentityProviderOptions {
-  /**
-   * The user pool to whom this provider is attached to.
+   * The user pool to which this construct provides identities.
    */
   readonly userPool: IUserPool;
-}
 
-/**
- * Options to integrate with the various social identity providers.
- */
-export class SocialIdentityProvider {
-  /**
-   * Federate with 'Facebook Login'
-   * @see https://developers.facebook.com/docs/facebook-login/
-   */
-  public static facebook(options: FacebookProviderOptions) {
-    const scopes = options.scopes ?? [ 'public_profile' ];
-    return new SocialIdentityProvider('Facebook', {
-      client_id: options.clientId,
-      client_secret: options.clientSecret,
-      authorize_scopes: scopes.join(','),
-      api_version: options.apiVersion,
-    });
-  }
-
-  /**
-   * Federate with 'Google Sign In'
-   * @see https://developers.google.com/identity/
-   */
-  public static google(options: GoogleProviderOptions) {
-    const scopes = options.scopes ?? [ 'profile', 'email', 'openid' ];
-    return new SocialIdentityProvider('Google', {
-      client_id: options.clientId,
-      client_secret: options.clientSecret,
-      authorize_scopes: scopes.join(' '),
-    });
-  }
-
-  /**
-   * Federate with 'Login with Amazon'
-   * @see https://developer.amazon.com/apps-and-games/login-with-amazon
-   */
-  public static amazon(options: AmazonProviderOptions) {
-    const scopes = options.scopes ?? [ 'profile' ];
-    return new SocialIdentityProvider('LoginWithAmazon', {
-      client_id: options.clientId,
-      client_secret: options.clientSecret,
-      authorize_scopes: scopes.join(' '),
-    });
-  }
-
-  /**
-   * Federate with 'Sign in with Apple'
-   * @see https://developer.apple.com/sign-in-with-apple/
-   */
-  public static apple(options: AppleProviderOptions) {
-    const scopes = options.scopes ?? [ 'public_profile', 'email' ];
-    return new SocialIdentityProvider('SignInWithApple', {
-      client_id: options.servicesId,
-      team_id: options.teamId,
-      key_id: options.keyId,
-      private_key: options.privateKey,
-      authorize_scopes: scopes.join(' '),
-    });
-  }
-
-  /**
-   * Custom configuration that is not yet supported by the CDK.
-   */
-  public static custom(providerType: string, providerDetails: { [key: string]: any }) {
-    return new SocialIdentityProvider(providerType, providerDetails);
-  }
-
-  // tslint:disable:max-line-length
-  /**
-   * The type of the provider as recognized by CloudFormation
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html#cfn-cognito-userpoolidentityprovider-providertype
-   */
-  public readonly providerType: string;
-  /**
-   * The properties needed to connect to the provider as recognized by CloudFormation
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html#cfn-cognito-userpoolidentityprovider-providerdetails
-   */
-  public readonly providerDetails: { [key: string]: any };
-  // tslint:enable
-
-  private constructor(providerType: string, providerDetails: { [key: string]: any }) {
-    this.providerType = providerType;
-    this.providerDetails = providerDetails;
-  }
-}
-
-/**
- * Options to integrate with 'Facebook Login'.
- */
-export interface FacebookProviderOptions {
   /**
    * The client id recognized by Facebook APIs.
    */
@@ -151,29 +45,42 @@ export interface FacebookProviderOptions {
 }
 
 /**
- * Options to integrate with 'Google Sign in'.
+ * Represents a identity provider that integrates with 'Facebook Login'
+ * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-export interface GoogleProviderOptions {
-  /**
-   * The client id recognized by 'Google Sign in'.
-   */
-  readonly clientId: string;
-  /**
-   * The client secret to be accompanied with clientId for Google to authenticate the client.
-   */
-  readonly clientSecret: string;
-  /**
-   * The list of Google permissions to obtain for getting access to the Google profile.
-   * @see https://developers.google.com/identity/protocols/oauth2/scopes
-   * @default [ profile, email, openid ]
-   */
-  readonly scopes?: string[];
+export class UserPoolFacebookIdentityProvider extends Resource implements IUserPoolIdentityProvider {
+  public readonly providerName: string;
+
+  constructor(scope: Construct, id: string, props: UserPoolFacebookIdentityProviderProps) {
+    super(scope, id);
+
+    const scopes = props.scopes ?? [ 'public_profile' ];
+
+    const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
+      userPoolId: props.userPool.userPoolId,
+      providerName: 'Facebook', // must be 'Facebook' when the type is 'Facebook'
+      providerType: 'Facebook',
+      providerDetails: {
+        client_id: props.clientId,
+        client_secret: props.clientSecret,
+        authorize_scopes: scopes.join(','),
+        api_version: props.apiVersion,
+      },
+    });
+
+    this.providerName = super.getResourceNameAttribute(resource.ref);
+  }
 }
 
 /**
- * Options to integrate with 'Login with Amazon'.
+ * Properties to initialize UserPoolAmazonIdentityProvider
  */
-export interface AmazonProviderOptions {
+export interface UserPoolAmazonIdentityProviderProps {
+  /**
+   * The user pool to which this construct provides identities.
+   */
+  readonly userPool: IUserPool;
+
   /**
    * The client id recognized by 'Login with Amazon' APIs.
    * @see https://developer.amazon.com/docs/login-with-amazon/security-profile.html#client-identifier
@@ -193,9 +100,41 @@ export interface AmazonProviderOptions {
 }
 
 /**
- * Options to integrate with 'Sign in with Apple'.
+ * Represents a identity provider that integrates with 'Login with Amazon'
+ * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-export interface AppleProviderOptions {
+export class UserPoolAmazonIdentityProvider extends Resource implements IUserPoolIdentityProvider {
+  public readonly providerName: string;
+
+  constructor(scope: Construct, id: string, props: UserPoolAmazonIdentityProviderProps) {
+    super(scope, id);
+
+    const scopes = props.scopes ?? [ 'profile' ];
+
+    const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
+      userPoolId: props.userPool.userPoolId,
+      providerName: 'LoginWithAmazon', // must be 'LoginWithAmazon' when the type is 'LoginWithAmazon'
+      providerType: 'LoginWithAmazon',
+      providerDetails: {
+        client_id: props.clientId,
+        client_secret: props.clientSecret,
+        authorize_scopes: scopes.join(' '),
+      },
+    });
+
+    this.providerName = super.getResourceNameAttribute(resource.ref);
+  }
+}
+
+/**
+ * Properties to initialize UserPoolAppleIdentityProvider
+ */
+export interface UserPoolAppleIdentityProviderProps {
+  /**
+   * The user pool to which this construct provides identities.
+   */
+  readonly userPool: IUserPool;
+
   /**
    * The Services id received when the 'Sign in with Apple' client was created.
    */
@@ -221,23 +160,61 @@ export interface AppleProviderOptions {
 }
 
 /**
- * Define a identity provider for a user pool.
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-provider.html
+ * Represents a identity provider that integrates with 'Login with Amazon'
+ * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-export class UserPoolIdentityProvider extends Resource implements IUserPoolIdentityProvider {
+export class UserPoolAppleIdentityProvider extends Resource implements IUserPoolIdentityProvider {
   public readonly providerName: string;
 
-  constructor(scope: Construct, id: string, props: UserPoolIdentityProviderProps) {
-    super(scope, id, {
-      physicalName: props.userPoolIdentityProviderName,
-    });
+  constructor(scope: Construct, id: string, props: UserPoolAppleIdentityProviderProps) {
+    super(scope, id);
+
+    const scopes = props.scopes ?? [ 'public_profile', 'email' ];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      providerName: this.physicalName,
       userPoolId: props.userPool.userPoolId,
-      providerType: props.socialIdentity.providerType,
-      providerDetails: props.socialIdentity.providerDetails,
+      providerName: 'SignInWithApple', // must be 'SignInWithApple' when the type is 'SignInWithApple'
+      providerType: 'SignInWithApple',
+      providerDetails: {
+        client_id: props.servicesId,
+        team_id: props.teamId,
+        key_id: props.keyId,
+        private_key: props.privateKey,
+        authorize_scopes: scopes.join(' '),
+      },
     });
+
     this.providerName = super.getResourceNameAttribute(resource.ref);
   }
+}
+
+/**
+ * Options to integrate with the various social identity providers.
+ */
+export class UserPoolIdentityProvider {
+  /**
+   * Federate with 'Facebook Login'
+   * @see https://developers.facebook.com/docs/facebook-login/
+   */
+  public static facebook(scope: Construct, id: string, options: UserPoolFacebookIdentityProviderProps) {
+    return new UserPoolFacebookIdentityProvider(scope, id, options);
+  }
+
+  /**
+   * Federate with 'Login with Amazon'
+   * @see https://developer.amazon.com/apps-and-games/login-with-amazon
+   */
+  public static amazon(scope: Construct, id: string, options: UserPoolAmazonIdentityProviderProps) {
+    return new UserPoolAmazonIdentityProvider(scope, id, options);
+  }
+
+  /**
+   * Federate with 'Sign in with Apple'
+   * @see https://developer.apple.com/sign-in-with-apple/
+   */
+  public static apple(scope: Construct, id: string, options: UserPoolAppleIdentityProviderProps) {
+    return new UserPoolAppleIdentityProvider(scope, id, options);
+  }
+
+  private constructor() {}
 }

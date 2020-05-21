@@ -5,7 +5,6 @@ import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { UserPoolIdentityProvider, UserPoolIdentityProviderOptions } from './user-pool-idp';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -677,17 +676,6 @@ export class UserPool extends Resource implements IUserPool {
    */
   public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Associated a identity provider to this user pool
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html
-   */
-  public addIdentityProvider(id: string, options: UserPoolIdentityProviderOptions): UserPoolIdentityProvider {
-    return new UserPoolIdentityProvider(this, id, {
       userPool: this,
       ...options,
     });
