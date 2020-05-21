@@ -109,7 +109,8 @@
       "construct-ctor:@aws-cdk/core.CustomResourceProvider",
       "construct-interface-extends-iconstruct:@aws-cdk/core.ICustomResourceProvider",
       "props-physical-name:@aws-cdk/core.CustomResourceProps",
-      "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind"
+      "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind",
+      "props-no-any:@aws-cdk/core.CfnJsonProps.value"
     ]
   },
   "scripts": {
@@ -150,7 +151,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.151",
+    "@types/lodash": "^4.14.152",
     "@types/node": "^10.17.21",
     "@types/nodeunit": "^0.0.31",
     "@types/minimatch": "^3.0.3",

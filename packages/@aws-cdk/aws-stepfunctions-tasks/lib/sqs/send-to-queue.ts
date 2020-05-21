@@ -6,6 +6,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export interface SendToQueueProps {
   /**
@@ -54,6 +56,8 @@ export interface SendToQueueProps {
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
 

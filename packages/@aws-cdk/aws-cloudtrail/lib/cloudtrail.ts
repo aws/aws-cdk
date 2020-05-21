@@ -6,6 +6,9 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
+/**
+ * Properties for an AWS CloudTrail trail
+ */
 export interface TrailProps {
   /**
    * For most services, events are recorded in the region where the action occurred.
@@ -60,11 +63,18 @@ export interface TrailProps {
   readonly sendToCloudWatchLogs?: boolean;
 
   /**
-   * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
+   * How long to retain logs in CloudWatchLogs.
+   * Ignored if sendToCloudWatchLogs is false or if cloudWatchLogGroup is set.
    *
-   *  @default logs.RetentionDays.OneYear
+   *  @default logs.RetentionDays.ONE_YEAR
    */
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
+   * @default - a new log group is created and used.
+   */
+  readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -98,9 +108,27 @@ export interface TrailProps {
   readonly bucket?: s3.IBucket
 }
 
+/**
+ * Types of events that CloudTrail can log
+ */
 export enum ReadWriteType {
+  /**
+   * Read-only events include API operations that read your resources,
+   * but don't make changes.
+   * For example, read-only events include the Amazon EC2 DescribeSecurityGroups
+   * and DescribeSubnets API operations.
+   */
   READ_ONLY = 'ReadOnly',
+  /**
+   * Write-only events include API operations that modify (or might modify)
+   * your resources.
+   * For example, the Amazon EC2 RunInstances and TerminateInstances API
+   * operations modify your instances.
+   */
   WRITE_ONLY = 'WriteOnly',
+  /**
+   * All events
+   */
   ALL = 'All'
 }
 
@@ -120,14 +148,41 @@ export enum ReadWriteType {
 export class Trail extends Resource {
 
   /**
+   * Create an event rule for when an event is recorded by any Trail in the account.
+   *
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
+   */
+  public static onEvent(scope: Construct, id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(scope, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail'],
+    });
+    return rule;
+  }
+
+  /**
+   * ARN of the CloudTrail trail
+   * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
    */
   public readonly trailArn: string;
 
   /**
+   * ARN of the Amazon SNS topic that's associated with the CloudTrail trail,
+   * i.e. arn:aws:sns:us-east-2:123456789012:mySNSTopic
    * @attribute
    */
   public readonly trailSnsTopicArn: string;
+
+  /**
+   * The CloudWatch log group to which CloudTrail events are sent.
+   * `undefined` if `sendToCloudWatchLogs` property is false.
+   */
+  public readonly logGroup?: logs.ILogGroup;
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
@@ -158,19 +213,22 @@ export class Trail extends Resource {
       },
     }));
 
-    let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
 
     if (props.sendToCloudWatchLogs) {
-      logGroup = new logs.CfnLogGroup(this, 'LogGroup', {
-        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR,
-      });
+      if (props.cloudWatchLogGroup) {
+        this.logGroup = props.cloudWatchLogGroup;
+      } else {
+        this.logGroup = new logs.LogGroup(this, 'LogGroup', {
+          retention: props.cloudWatchLogsRetention ?? logs.RetentionDays.ONE_YEAR,
+        });
+      }
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
       logsRole.addToPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [logGroup.attrArn],
+        resources: [this.logGroup.logGroupArn],
       }));
     }
 
@@ -192,8 +250,8 @@ export class Trail extends Resource {
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
-      cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
+      cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
+      cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors,
     });
@@ -288,14 +346,11 @@ export class Trail extends Resource {
    * be captured from any one.
    *
    * Be sure to filter the event further down using an event pattern.
+   *
+   * @deprecated - use Trail.onEvent()
    */
   public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      detailType: ['AWS API Call via CloudTrail'],
-    });
-    return rule;
+    return Trail.onEvent(this, id, options);
   }
 }
 

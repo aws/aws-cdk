@@ -102,3 +102,29 @@ test('can have multiple principals the same conditions in the same statement', (
     ],
   }));
 });
+
+test('use Web Identity principal', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com');
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual('cognito-identity.amazonaws.com');
+  expect(stack.resolve(principal.assumeRoleAction)).toStrictEqual('sts:AssumeRoleWithWebIdentity');
+});
+
+test('use OpenID Connect principal from provider', () => {
+  // GIVEN
+  const stack = new Stack();
+  const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+    url: 'https://openid-endpoint',
+  });
+
+  // WHEN
+  const principal = new iam.OpenIdConnectPrincipal(provider);
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+});
