@@ -21,5 +21,7 @@ export * from './states/wait';
 export * from './states/map';
 export * from './states/custom-state';
 
+export * from './states/task-base';
+
 // AWS::StepFunctions CloudFormation Resources:
 export * from './stepfunctions.generated';

@@ -148,6 +148,9 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
+A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
+check the capitalization of the alias when signing in. Default is true.
+
 ### Attributes
 
 Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito

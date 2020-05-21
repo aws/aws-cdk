@@ -532,7 +532,24 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
-new sfn.Task(this, 'Invoke with state input');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const myLambda = new lambda.Function(this, 'my sample lambda', {
+  code: Code.fromInline(`exports.handler = async () => {
+    return {
+      statusCode: '200',
+      body: 'hello, world!'
+    };
+  };`),
+  runtime: Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+});
+
+new tasks.LambdaInvoke(this, 'Invoke with state input', {
+  lambdaFunction: myLambda,
+});
 ```
 
 When a function is invoked, the Lambda service sends  [these response
@@ -545,16 +562,15 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
-new sfn.Task(this, 'Invoke with empty object as payload', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    payload: sfn.TaskInput.fromObject({})
-  }),
+new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
+  lambdaFunction: myLambda,
+  payload: sfn.TaskInput.fromObject({}),
 });
 
-new sfn.Task(this, 'Invoke with payload field in the state input', {
-  task: new tasks.RunLambdaTask(myOtherLambda, {
-    payload: sfn.TaskInput.fromDataAt('$.Payload'),
-  }),
+// use the output of myLambda as input
+new tasks.LambdaInvoke(this, 'Invoke with payload field in the state input', {
+  lambdaFunction: myOtherLambda,
+  payload: sfn.TaskInput.fromDataAt('$.Payload'),
 });
 ```
 
@@ -562,10 +578,9 @@ The following snippet invokes a Lambda and sets the task output to only include
 the Lambda function response.
 
 ```ts
-new sfn.Task(this, 'Invoke and set function response as task output', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    payload: sfn.TaskInput.fromDataAt('$'),
-  }),
+new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
+  lambdaFunction: myLambda,
+  payload: sfn.TaskInput.fromDataAt('$'),
   outputPath: '$.Payload',
 });
 ```
@@ -581,15 +596,14 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
-  const task = new sfn.Task(stack, 'Invoke with callback', {
-    task: new tasks.RunLambdaTask(myLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      payload: {
-        token: sfn.Context.taskToken,
-        input: sfn.TaskInput.fromDataAt('$.someField'),
-      }
-    })
-  });
+new tasks.LambdaInvoke(stack, 'Invoke with callback', {
+  lambdaFunction: myLambda,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  payload: sfn.TaskInput.fromObject({
+    token: sfn.Context.taskToken,
+    input: sfn.Data.stringAt('$.someField'),
+  }),
+});
 ```
 
 ⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
@@ -677,28 +691,28 @@ You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publ
 
 ```ts
 import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 // ...
 
 const topic = new sns.Topic(this, 'Topic');
 
 // Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Publish1', {
-    task: new tasks.PublishToTopic(topic, {
-        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-        message: TaskInput.fromDataAt('$.state.message'),
-    })
+const task1 = new tasks.SnsPublish(this, 'Publish1', {
+  topic,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  message: sfn.TaskInput.fromDataAt('$.state.message'),
 });
 
 // Combine a field from the execution data with
 // a literal object.
-const task2 = new sfn.Task(this, 'Publish2', {
-    task: new tasks.PublishToTopic(topic, {
-        message: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        })
-    })
+const task2 = new tasks.SnsPublish(this, 'Publish2', {
+  topic,
+  message: sfn.TaskInput.fromObject({
+    field1: 'somedata',
+    field2: sfn.Data.stringAt('$.field2'),
+  })
 });
 ```
 
@@ -740,31 +754,27 @@ You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueServi
 to send a message to an SQS queue.
 
 ```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as sqs from '@aws-cdk/aws-sqs';
 
 // ...
 
-const queue = new sns.Queue(this, 'Queue');
+const queue = new sqs.Queue(this, 'Queue');
 
 // Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Send1', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromDataAt('$.message'),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
+const task1 = new tasks.SqsSendMessage(this, 'Send1', {
+  queue,
+  messageBody: sfn.TaskInput.fromDataAt('$.message'),
 });
 
 // Combine a field from the execution data with
 // a literal object.
-const task2 = new sfn.Task(this, 'Send2', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        }),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
+const task2 = new tasks.SqsSendMessage(this, 'Send2', {
+  queue,
+  messageBody: sfn.TaskInput.fromObject({
+    field1: 'somedata',
+    field2: sfn.Data.stringAt('$.field2'),
+  }),
 });
 ```
