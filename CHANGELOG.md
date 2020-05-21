@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.41.0](https://github.com/aws/aws-cdk/compare/v1.40.0...v1.41.0) (2020-05-21)
+
+
+### Features
+
+* **cloudtrail:** create cloudwatch event without needing to create a Trail ([#8076](https://github.com/aws/aws-cdk/issues/8076)) ([0567a23](https://github.com/aws/aws-cdk/commit/0567a2360ac713e3171c9a82767611174dadb6c6)), closes [#6716](https://github.com/aws/aws-cdk/issues/6716)
+* **cognito:** user pool - case sensitivity for sign in ([460394f](https://github.com/aws/aws-cdk/commit/460394f3dc4737cee80504d6c8ef106ecc3b67d5)), closes [#7988](https://github.com/aws/aws-cdk/issues/7988) [#7235](https://github.com/aws/aws-cdk/issues/7235)
+* **core:** CfnJson enables intrinsics in hash keys ([#8099](https://github.com/aws/aws-cdk/issues/8099)) ([195cd40](https://github.com/aws/aws-cdk/commit/195cd405d9f0869875de2ec78661aee3af2c7c7d)), closes [#8084](https://github.com/aws/aws-cdk/issues/8084)
+* **secretsmanager:** adds grantWrite to Secret ([#7858](https://github.com/aws/aws-cdk/issues/7858)) ([3fed84b](https://github.com/aws/aws-cdk/commit/3fed84ba9eec3f53c662966e366aa629209b7bf5))
+* **sns:** add support for subscription DLQ in SNS ([383cdb8](https://github.com/aws/aws-cdk/commit/383cdb86effeafdf5d0767ed379b16b3d78a933b))
+* **stepfunctions:** new service integration classes for Lambda, SNS, and SQS ([#7946](https://github.com/aws/aws-cdk/issues/7946)) ([c038848](https://github.com/aws/aws-cdk/commit/c0388483524832ca7863de4ee9c472b8ab39de8e)), closes [#6715](https://github.com/aws/aws-cdk/issues/6715) [#6489](https://github.com/aws/aws-cdk/issues/6489)
+
+
+### Bug Fixes
+
+* **apigateway:** contextAccountId in AccessLogField incorrectly resolves to requestId ([7b89e80](https://github.com/aws/aws-cdk/commit/7b89e805c716fa73d41cc97fcb728634e7a59136)), closes [#7952](https://github.com/aws/aws-cdk/issues/7952) [#7951](https://github.com/aws/aws-cdk/issues/7951)
+* **autoscaling:** add noDevice as a volume type ([#7253](https://github.com/aws/aws-cdk/issues/7253)) ([751958b](https://github.com/aws/aws-cdk/commit/751958b69225fdfc52622781c618f5a77f881fb6)), closes [#7242](https://github.com/aws/aws-cdk/issues/7242)
+
 ## [1.40.0](https://github.com/aws/aws-cdk/compare/v1.39.0...v1.40.0) (2020-05-20)
 
 
