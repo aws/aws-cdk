@@ -148,6 +148,23 @@ export enum ReadWriteType {
 export class Trail extends Resource {
 
   /**
+   * Create an event rule for when an event is recorded by any Trail in the account.
+   *
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
+   */
+  public static onEvent(scope: Construct, id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(scope, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail'],
+    });
+    return rule;
+  }
+
+  /**
    * ARN of the CloudTrail trail
    * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
@@ -329,14 +346,11 @@ export class Trail extends Resource {
    * be captured from any one.
    *
    * Be sure to filter the event further down using an event pattern.
+   *
+   * @deprecated - use Trail.onEvent()
    */
   public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      detailType: ['AWS API Call via CloudTrail'],
-    });
-    return rule;
+    return Trail.onEvent(this, id, options);
   }
 }
 

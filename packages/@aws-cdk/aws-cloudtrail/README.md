@@ -95,3 +95,32 @@ trail.addLambdaEventSelector(["arn:aws:lambda"]);
 // Add an event selector to log data events for the provided Lambda functions.
 trail.addLambdaEventSelector([lambdaFunction.functionArn]);
 ```
+
+Using the `Trail.onEvent()` API, an EventBridge rule can be created that gets triggered for
+every event logged in CloudTrail.
+To only use the events that are of interest, either from a particular service, specific account or
+time range, they can be filtered down using the APIs available in `aws-events`. The following code
+filters events for S3 from a specific AWS account and triggers a lambda function. See [Events delivered via
+CloudTrail](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#events-for-services-not-listed)
+to learn more about the event structure for events from CloudTrail.
+
+```ts
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as eventTargets from '@aws-cdk/aws-events-targets';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const myFunctionHandler = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset('resource/myfunction');
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+});
+
+const eventRule = Trail.onEvent(this, 'MyCloudWatchEvent', {
+  target: new eventTargets.LambdaFunction(myFunctionHandler),
+});
+
+eventRule.addEventPattern({
+  account: '123456789012',
+  source: 'aws.s3',
+});
+```
