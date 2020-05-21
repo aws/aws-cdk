@@ -714,7 +714,6 @@ export = {
         }),
       }, {
         deviceName: 'ebs-snapshot',
-        mappingEnabled: false,
         volume: autoscaling.BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
           volumeSize: 500,
           deleteOnTermination: false,
@@ -723,6 +722,13 @@ export = {
       }, {
         deviceName: 'ephemeral',
         volume: autoscaling.BlockDeviceVolume.ephemeral(0),
+      }, {
+        deviceName: 'disabled',
+        volume: autoscaling.BlockDeviceVolume.ephemeral(1),
+        mappingEnabled: false,
+      }, {
+        deviceName: 'none',
+        volume: autoscaling.BlockDeviceVolume.noDevice(),
       }],
     });
 
@@ -748,15 +754,78 @@ export = {
             VolumeSize: 500,
             VolumeType: 'sc1',
           },
-          NoDevice: true,
+          NoDevice: ABSENT,
         },
         {
           DeviceName: 'ephemeral',
           VirtualName: 'ephemeral0',
           NoDevice: ABSENT,
         },
+        {
+          DeviceName: 'disabled',
+          NoDevice: true,
+        },
+        {
+          DeviceName: 'none',
+          NoDevice: true,
+        },
       ],
     }));
+
+    test.done();
+  },
+
+  'can configure maxInstanceLifetime'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      maxInstanceLifetime: cdk.Duration.days(7),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      'MaxInstanceLifetime': 604800,
+    }));
+
+    test.done();
+  },
+
+  'throws if maxInstanceLifetime < 7 days'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(6),
+      });
+    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
+
+    test.done();
+  },
+
+  'throws if maxInstanceLifetime > 365 days'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(366),
+      });
+    }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
 
     test.done();
   },

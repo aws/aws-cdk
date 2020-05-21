@@ -14,7 +14,7 @@ import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
-import { BlockDevice, EbsDeviceVolumeType } from './volume';
+import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
 
 /**
  * Name tag constant
@@ -185,6 +185,20 @@ export interface CommonAutoScalingGroupProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * The maximum amount of time that an instance can be in service. The maximum duration applies
+   * to all current and future instances in the group. As an instance approaches its maximum duration,
+   * it is terminated and replaced, and cannot be used again.
+   *
+   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * simply leave this property undefinied.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
+   *
+   * @default none
+   */
+  readonly maxInstanceLifetime?: Duration;
 }
 
 /**
@@ -411,6 +425,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly spotPrice?: string;
 
+  /**
+   * The maximum amount of time that an instance can be in service.
+   */
+  public readonly maxInstanceLifetime?: Duration;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -455,11 +474,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
       blockDeviceMappings: (props.blockDevices !== undefined ?
-        synthesizeBlockDeviceMappings(this, props.blockDevices).map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
-          ({ deviceName, ebs, virtualName, noDevice }) => ({
-            deviceName, ebs, virtualName, noDevice: noDevice ? true : undefined,
-          }),
-        ) : undefined),
+        synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
     });
 
     launchConfig.node.addDependency(this.role);
@@ -492,6 +507,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
+    this.maxInstanceLifetime = props.maxInstanceLifetime;
+    if (this.maxInstanceLifetime  &&
+      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
+    }
+
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
@@ -515,6 +536,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
+      maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -947,6 +969,13 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
   return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
     const { virtualName, ebsDevice: ebs } = volume;
 
+    if (volume === BlockDeviceVolume._NO_DEVICE || mappingEnabled === false) {
+      return {
+        deviceName,
+        noDevice: true,
+      };
+    }
+
     if (ebs) {
       const { iops, volumeType } = ebs;
 
@@ -961,7 +990,6 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
 
     return {
       deviceName, ebs, virtualName,
-      noDevice: mappingEnabled === false ? true : undefined,
     };
   });
 }
