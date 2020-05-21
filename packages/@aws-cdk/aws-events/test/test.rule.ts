@@ -717,7 +717,7 @@ export = {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': 'MySid',
+        'StatementId': `Allow-account-${sourceAccount}`,
         'Principal': sourceAccount,
       }));
 
