@@ -1,8 +1,8 @@
-import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { Size, Stack, Tag } from '@aws-cdk/core';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode} from '../lib';
+import { CfnDeletionPolicy, RemovalPolicy, Size, Stack, Tag } from '@aws-cdk/core';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -18,7 +18,7 @@ test('default file system is created correctly', () => {
     vpc,
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem'));
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {DeletionPolicy: CfnDeletionPolicy.RETAIN}));
   expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
 });
@@ -209,5 +209,13 @@ test('auto-named if none provided', () => {
     FileSystemTags: [
       {Key: 'Name', Value: fileSystem.node.path},
     ],
+  }));
+});
+
+test('removalPolicy is DESTROY', () => {
+  new FileSystem(stack, 'EfsFileSystem', {vpc, removalPolicy: RemovalPolicy.DESTROY});
+
+  expectCDK(stack).to(haveResource('AWS::EFS:FileSystem', {
+    DeletionPolicy: CfnDeletionPolicy.DELETE,
   }));
 });
