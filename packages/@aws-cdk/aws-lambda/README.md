@@ -69,7 +69,8 @@ fn.role // the Role
 You can also provide your own IAM role. Provided IAM roles will not automatically
 be given permissions to execute the Lambda function. To provide a role and grant
 it appropriate permissions:
-```
+
+```ts
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
