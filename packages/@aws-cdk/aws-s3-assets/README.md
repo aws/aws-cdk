@@ -50,6 +50,9 @@ The following examples grants an IAM group read permissions on an asset:
 
 [Example of granting read access to an asset](./test/integ.assets.permissions.lit.ts)
 
+The following example uses custom asset bundling to convert a markdown file to html:
+[Example of using asset bundling](./test/integ.assets.bundling.lit.ts)
+
 ## How does it work?
 
 When an asset is defined in a construct, a construct metadata entry

@@ -4,7 +4,7 @@ import * as lambda from '../lib';
 
 /**
  * Stack verification steps:
- * * aws cloudformation describe-stacks --stack-name cdk-integ-lambda-docker --query Stacks[0].Outputs[0].OutputValue
+ * * aws cloudformation describe-stacks --stack-name cdk-integ-lambda-bundling --query Stacks[0].Outputs[0].OutputValue
  * * aws lambda invoke --function-name <output from above> response.json
  * * cat response.json
  * The last command should show '200'
@@ -40,5 +40,5 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-docker');
+new TestStack(app, 'cdk-integ-lambda-bundling');
 app.synth();

@@ -158,7 +158,7 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
-   * Points to the lambdci/lambda build image for this runtime.
+   * Points to the lambci/lambda build image for this runtime.
    *
    * @see https://hub.docker.com/r/lambci/lambda/
    */

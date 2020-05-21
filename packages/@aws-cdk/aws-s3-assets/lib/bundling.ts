@@ -18,7 +18,7 @@ export interface DockerVolume {
 /**
  * Docker run options
  */
-export interface DockerRunOptions {
+interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -107,7 +107,7 @@ export class BundlingDockerImage {
    *
    * @internal
    */
-  public _run(options: DockerRunOptions) {
+  public _run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
