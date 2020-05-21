@@ -244,7 +244,7 @@ export class Rule extends Resource implements IRule {
           });
           new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
             action: 'events:PutEvents',
-            statementId: 'MySid',
+            statementId: `Allow-account-${sourceAccount}`,
             principal: sourceAccount,
           });
         }
