@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, countResources } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -88,6 +88,18 @@ export = {
       ForceUpdateEnabled: false,
     },
     ));
+    test.done();
+  },
+  'create nodegroups with kubectlEnabled is false'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 2 });
+    // add a extra nodegroup
+    cluster.addNodegroup('extra-ng');
+    // THEN
+    expect(stack).to(countResources('AWS::EKS::Nodegroup',2));
     test.done();
   },
   'create nodegroup with instanceType provided'(test: Test) {
