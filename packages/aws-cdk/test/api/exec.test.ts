@@ -72,8 +72,8 @@ test('cli throws when manifest version > schema version', async () => {
     mockVersionNumber.restore();
   }
 
-  const expectedError = 'The CLI version you are using does not support your application version. Please upgrade the CLI to the latest version.'
-    + `\n(Your application requires a CLI that supports a cloud assembly of version '${mockManifestVersion}' or above.)`;
+  const expectedError = 'This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.'
+    + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion})`;
 
   config.settings.set(['app'], 'cdk.out');
 

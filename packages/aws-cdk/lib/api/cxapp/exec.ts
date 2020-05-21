@@ -78,12 +78,10 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     try {
       return new cxapi.CloudAssembly(appDir);
     } catch (error) {
-      if (error.versionMismatch && error.manifestVersion) {
+      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
-
-        throw new Error('The CLI version you are using does not support your application version. Please upgrade the CLI to the latest version.'
-        + `\n(Your application requires a CLI that supports a cloud assembly of version '${error.manifestVersion}' or above.)`);
+        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
       }
       throw error;
     }
