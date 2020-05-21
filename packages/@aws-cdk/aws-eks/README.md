@@ -526,7 +526,7 @@ With services account you can provide Kubernetes Pods access to AWS resources.
 
 ```ts
 // add service account
-const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
+const sa = cluster.addServiceAccount('MyServiceAccount', {});
 
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
@@ -536,16 +536,19 @@ cluster.addResource('mypod', {
   kind: 'Pod',
   metadata: { name: 'mypod' },
   spec: {
+    serviceAccountName: sa.serviceAccountName
     containers: [
       {
         name: 'hello',
         image: 'paulbouwer/hello-kubernetes:1.5',
         ports: [ { containerPort: 8080 } ],
-        serviceAccountName: serviceAccount.serviceAccountName
+
       }
     ]
   }
 });
+// print the IAM role arn for this service account
+new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
 > Warning: Currently there are no condition set on the IAM Role which results that there are no restrictions on other pods to assume the role. This will be improved in the near future. 
