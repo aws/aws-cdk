@@ -5,6 +5,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for RunLambdaTask
+ *
+ * @deprecated Use `LambdaInvoke`
  */
 export interface RunLambdaTaskProps {
   /**
@@ -58,6 +60,7 @@ export interface RunLambdaTaskProps {
  * `SendTaskSuccess/SendTaskFailure` in `waitForTaskToken` mode.
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html
+ * @deprecated Use `LambdaInvoke`
  */
 export class RunLambdaTask implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
