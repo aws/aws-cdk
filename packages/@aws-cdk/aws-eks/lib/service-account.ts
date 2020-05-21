@@ -34,12 +34,6 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
  * Service Account
  */
 export class ServiceAccount extends Construct implements IPrincipal {
-
-  /**
-   * The CloudFormation resource type.
-   */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-IRSAConditions';
-
   /**
    * The role which is linked to the service account.
    */

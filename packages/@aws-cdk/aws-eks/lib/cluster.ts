@@ -708,7 +708,7 @@ export class Cluster extends Resource implements ICluster {
    * @param id the id of this service account
    * @param options service account options
    */
-  public addServiceAccount(id: string, options?: ServiceAccountOptions) {
+  public addServiceAccount(id: string, options: ServiceAccountOptions = { }) {
     return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
