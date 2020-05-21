@@ -37,6 +37,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
   - [App Clients](#app-clients)
+  - [Identity Providers](#identity-providers)
   - [Domains](#domains)
 
 ## User Pools
@@ -413,6 +414,36 @@ pool.addClient('app-client', {
   preventUserExistenceErrors: true,
 });
 ```
+
+### Identity Providers
+
+Users that are part of a user pool can sign in either directly through a user pool, or federate through a third-party
+identity provider. Once configured, the Cognito backend will take care of integrating with the third-party provider.
+Read more about [Adding User Pool Sign-in Through a Third
+Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html).
+
+The following third-party identity providers are currentlhy supported in the CDK -
+
+* [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
+* [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+
+The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
+provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
+third-party identity provider.
+
+```ts
+const userpool = new UserPool(stack, 'Pool');
+
+const provider = UserPoolIdentityProvider.amazon(stack, 'Amazon', {
+  clientId: 'amzn-client-id',
+  clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+```
+
+In order to allow users to sign in with a third-party identity provider, the app client that faces the user should be
+configured to use the identity provider. See [App Clients](#app-clients) section to know more about App Clients.
+The identity providers should be configured on `identityProviders` property available on the `UserPoolClient` construct.
 
 ### Domains
 
