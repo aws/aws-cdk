@@ -78,7 +78,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     try {
       return new cxapi.CloudAssembly(appDir);
     } catch (error) {
-      if (error.versionMismatch) {
+      if (error.versionMismatch && error.actualManifestVersion) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
         const manifestVersion = error.actualManifestVersion;
