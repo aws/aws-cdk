@@ -92,6 +92,27 @@ test('deploy new style synthesis to new style bootstrap', async () => {
   });
 });
 
+test('deploy old style synthesis to new style bootstrap', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--qualifier', QUALIFIER,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
+  ], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // Deploy stack that uses file assets
+  await cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+    ],
+  });
+});
+
 test('deploying new style synthesis to old style bootstrap fails', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
