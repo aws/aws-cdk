@@ -8,8 +8,8 @@ import * as path from 'path';
 import { BundlingDockerImage, DockerVolume } from './bundling';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
-const BUNDLING_INPUT_DIR = '/input';
-const BUNDLING_OUTPUT_DIR = '/output';
+const BUNDLING_INPUT_DIR = '/asset-input';
+const BUNDLING_OUTPUT_DIR = '/asset-output';
 
 /**
  * Bundling options
@@ -48,13 +48,13 @@ export interface BundlingOptions {
   /**
    * Working directory inside the container.
    *
-   * @default /input
+   * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
    * Bundle directory. Subdirectories named after the asset path will be
-   * created in this directory and mounted at `/output` in the container.
+   * created in this directory and mounted at `/asset-output` in the container.
    * Should be added to your `.gitignore`.
    *
    * @default .bundle next to the asset directory
@@ -89,9 +89,10 @@ export interface AssetOptions extends assets.CopyOptions {
 
   /**
    * Bundle the asset by executing a command in a Docker container.
-   * The asset path will be mounted at `/input`. The Docker container is
-   * responsible for putting content at `/output`. The content at `/output`
-   * will be zipped and used as the final asset.
+   * The asset path will be mounted at `/asset-input`. The Docker
+   * container is responsible for putting content at `/asset-output`.
+   * The content at `/asset-output` will be zipped and used as the
+   * final asset.
    *
    * @default - asset path is zipped as is
    *

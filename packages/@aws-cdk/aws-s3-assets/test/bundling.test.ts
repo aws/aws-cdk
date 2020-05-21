@@ -38,11 +38,11 @@ test('bundling with image from registry', () => {
 
   expect(spawnSync).toHaveBeenCalledWith('docker', [
     'run', '--rm',
-    '-v', `${SAMPLE_ASSET_DIR}:/input`,
-    '-v', expect.stringMatching(new RegExp(`${path.join('.bundle', path.basename(SAMPLE_ASSET_DIR))}:/output$`)),
+    '-v', `${SAMPLE_ASSET_DIR}:/asset-input`,
+    '-v', expect.stringMatching(new RegExp(`${path.join('.bundle', path.basename(SAMPLE_ASSET_DIR))}:/asset-output$`)),
     '--env', 'VAR1=value1',
     '--env', 'VAR2=value2',
-    '-w', '/input',
+    '-w', '/asset-input',
     image,
     ...command,
   ]);
