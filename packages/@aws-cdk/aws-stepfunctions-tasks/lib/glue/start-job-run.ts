@@ -21,7 +21,7 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
    *
    * @default - Default arguments set in the job definition
    */
-  readonly arguments?: { [key: string]: string };
+  readonly arguments?: sfn.TaskInput;
 
   /**
    * The job run timeout.
@@ -95,7 +95,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         JobName: this.props.glueJobName,
-        Arguments: this.props.arguments,
+        Arguments: this.props.arguments?.value,
         Timeout: this.props.timeout?.toMinutes(),
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,

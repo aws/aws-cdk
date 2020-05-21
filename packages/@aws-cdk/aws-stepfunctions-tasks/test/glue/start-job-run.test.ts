@@ -51,7 +51,7 @@ test('Invoke glue job with full properties', () => {
   const task = new GlueStartJobRun(stack, 'Task', {
     glueJobName,
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    arguments: jobArguments,
+    arguments: sfn.TaskInput.fromObject(jobArguments),
     timeout: glueJobTimeout,
     securityConfiguration,
     notifyDelayAfter,
@@ -83,6 +83,38 @@ test('Invoke glue job with full properties', () => {
       NotificationProperty: {
         NotifyDelayAfter: notifyDelayAfterMinutes,
       },
+    },
+  });
+});
+
+test('job arguments can reference state input', () => {
+  const task = new GlueStartJobRun(stack, 'Task', {
+    glueJobName,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    arguments: sfn.TaskInput.fromDataAt('$.input'),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobName': glueJobName,
+      'Arguments.$': '$.input',
     },
   });
 });

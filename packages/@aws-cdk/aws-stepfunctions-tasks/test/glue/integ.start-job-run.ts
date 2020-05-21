@@ -44,9 +44,9 @@ const job = new glue.CfnJob(stack, 'Glue Job', {
 const jobTask = new GlueStartJobRun(stack, 'Glue Job Task', {
   glueJobName: job.name!,
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  arguments: {
+  arguments: sfn.TaskInput.fromObject({
     '--enable-metrics': 'true',
-  },
+  }),
 });
 
 const startTask = new sfn.Pass(stack, 'Start Task');
