@@ -258,7 +258,7 @@ retention it seeks to manage.
 ### Bundling Asset Code
 When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
 command in a Docker container. The asset path will be mounted at `/input`. The Docker
-container is responsible for putting content at `/output`. The content at `/bundle`
+container is responsible for putting content at `/output`. The content at `/output`
 will be zipped and used as Lambda code.
 
 Example with Python:
