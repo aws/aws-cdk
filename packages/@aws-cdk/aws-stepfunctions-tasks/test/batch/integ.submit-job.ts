@@ -49,9 +49,9 @@ class RunBatchStack extends cdk.Stack {
         memory: 256,
         vcpus: 1,
       },
-      payload: {
+      payload: sfn.TaskInput.fromObject({
         foo: sfn.Data.stringAt('$.bar'),
-      },
+      }),
       attempts: 3,
       attemptDuration: cdk.Duration.seconds(60),
     });

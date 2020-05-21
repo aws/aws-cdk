@@ -83,7 +83,7 @@ export interface BatchJobDependency {
 
 /**
  * Properties for RunBatchJob
- * 
+ *
  */
 export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
   /**
