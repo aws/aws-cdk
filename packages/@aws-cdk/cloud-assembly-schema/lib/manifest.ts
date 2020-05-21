@@ -65,7 +65,7 @@ export class Manifest {
       // note that these properties will be lost in case it is consumed from a different language as a jsii module.
       // for our purposes its ok since the CLI is not a jsii module. (see exec.ts#createAssembly)
       (error as any).versionMismatch = true;
-      (error as any).actualManifestVersion = actual;
+      (error as any).manifestVersion = actual;
       (error as any).supportedManifestVersion = maxSupported;
 
       throw error;
