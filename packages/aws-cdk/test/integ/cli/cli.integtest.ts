@@ -316,8 +316,14 @@ test('deploy with role', async () => {
       options: ['--role-arn', roleArn],
     });
 
+    // Immediately delete the stack again before we delete the role.
+    //
+    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+    // operations will fail when CloudFormation tries to assume the role that's already gone.
+    await cdkDestroy('test-2');
+
   } finally {
-    deleteRole();
+    await deleteRole();
   }
 
   async function deleteRole() {
