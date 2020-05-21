@@ -1,6 +1,5 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '@aws-cdk/core';
-import * as path from 'path';
+import { CfnJson, Construct  } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -67,35 +66,16 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
-    this.role = new Role(this, 'Role', {
-      assumedBy: new OpenIdConnectPrincipal(cluster.openIdConnectProvider),
-    });
-
-    const provider = CustomResourceProvider.getOrCreate(this, ServiceAccount.RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'irsa-conditions'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Resource: '*',
-          Action: [
-            'iam:UpdateAssumeRolePolicy',
-            'iam:GetRole',
-          ],
-        },
-      ],
-    });
-
-    new CustomResource(this, 'Resource', {
-      resourceType: ServiceAccount.RESOURCE_TYPE,
-      serviceToken: provider,
-      properties: {
-        RoleName: this.role.roleName,
-        OpenIdConnectProviderIssuerUrl: cluster.clusterOpenIdConnectIssuerUrl,
-        ServiceAccountName: this.serviceAccountName,
-        ServiceAccountNamespace: this.serviceAccountNamespace,
+    const conditions = new CfnJson(this, 'ConditionJson', {
+      value: {
+        [`${cluster.clusterOpenIdConnectIssuerUrl}:aud`]: 'sts.amazonaws.com',
+        [`${cluster.clusterOpenIdConnectIssuerUrl}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
       },
     });
+    const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+      StringEquals: conditions,
+    });
+    this.role = new Role(this, 'Role', { assumedBy: principal });
 
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.grantPrincipal = this.role.grantPrincipal;
