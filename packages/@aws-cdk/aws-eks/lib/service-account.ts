@@ -69,7 +69,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addResource('ServiceAccount', {
+    cluster.addResource(id + 'Resource', {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {
