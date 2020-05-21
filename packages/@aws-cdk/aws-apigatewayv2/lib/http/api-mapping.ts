@@ -1,18 +1,7 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
-import { IStage } from '../common';
-import { IHttpApi } from './api';
-import { IDomainName } from './domain-name';
-
-/**
- *  interface of the HttpApiMapping resource
- */
-export interface IHttpApiMapping extends IResource {
-  /**
-   * ID of the HttpApiMapping
-   */
-  readonly httpApiMappingId: string;
-}
+import { IApiMapping, IDomainName, IStage } from '../common';
+import { IHttpApi } from '../http/api';
 
 /**
  * Properties used to create the HttpApiMapping resource
@@ -41,20 +30,20 @@ export interface HttpApiMappingProps {
  * Create a new API mapping for API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
-export class HttpApiMapping extends Resource implements IHttpApiMapping {
+export class HttpApiMapping extends Resource implements IApiMapping {
   /**
    * import from API ID
    */
-  public static fromApiId(scope: Construct, id: string, httpApiMappingId: string): IHttpApiMapping {
-    class Import extends Resource implements IHttpApiMapping {
-      public readonly httpApiMappingId = httpApiMappingId;
+  public static fromApiId(scope: Construct, id: string, apiMappingId: string): IApiMapping {
+    class Import extends Resource implements IApiMapping {
+      public readonly apiMappingId = apiMappingId;
     }
     return new Import(scope, id);
   }
   /**
    * ID of the API Mapping
    */
-  public readonly httpApiMappingId: string;
+  public readonly apiMappingId: string;
   /**
    * Name of the API Mapping
    */
@@ -72,7 +61,7 @@ export class HttpApiMapping extends Resource implements IHttpApiMapping {
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);
-    this.httpApiMappingId = resource.ref;
+    this.apiMappingId = resource.ref;
   }
 
 }

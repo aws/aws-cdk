@@ -80,8 +80,8 @@ describe('ApiMapping', () => {
       stage: api.defaultStage!,
     });
 
-    const imported = HttpApiMapping.fromApiId(stack, 'ImportedMapping', mapping.httpApiMappingId );
+    const imported = HttpApiMapping.fromApiId(stack, 'ImportedMapping', mapping.apiMappingId );
 
-    expect(imported.httpApiMappingId).toEqual(mapping.httpApiMappingId);
+    expect(imported.apiMappingId).toEqual(mapping.apiMappingId);
   });
 });

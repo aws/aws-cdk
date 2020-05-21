@@ -1,59 +1,7 @@
-import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
-import { IStage } from '../common';
-
-/**
- * interface for the DomainName
- */
-export interface IDomainName extends IResource {
-  /**
-   * the logical ID of the domain name
-   *
-   * @attribute
-   */
-  readonly domainNameId: string;
-  /**
-   * domain name string
-   *
-   * @attribute
-   */
-  readonly domainName: string;
-  /**
-   * The domain name associated with the regional endpoint for this custom domain name.
-   *
-   * @attribute
-   */
-  readonly regionalDomainName: string;
-  /**
-   * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
-   *
-   * @attribute
-   */
-  readonly regionalHostedZoneId: string;
-}
-
-/**
- * custom domain name attributes
- */
-export interface DomainNameAttributes {
-  /**
-   * domain name logic ID
-   */
-  readonly domainNameId: string;
-  /**
-   * domain name string
-   */
-  readonly domainName: string;
-  /**
-   * The domain name associated with the regional endpoint for this custom domain name.
-   */
-  readonly regionalDomainName: string;
-  /**
-   * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
-   */
-  readonly regionalHostedZoneId: string;
-}
+import { DomainNameAttributes,  IDomainName, IStage } from '../common';
 
 /**
  * Options used when configuring custom domain
@@ -68,7 +16,7 @@ export interface DomainNameOptions {
    * The reference to an AWS-managed certificate for use by the regional
    * endpoint for the domain name.
    */
-  readonly certificate: acm.ICertificate;
+  readonly certificate: ICertificate;
 }
 
 /**
@@ -94,7 +42,7 @@ export interface DomainNameProps {
   /**
    * The ACM certificate for this domain name
    */
-  readonly certificate: acm.ICertificate;
+  readonly certificate: ICertificate;
 }
 
 enum DomainNameEndpointType {
