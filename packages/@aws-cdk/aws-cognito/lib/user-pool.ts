@@ -2,7 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { IAttribute, RequiredAttributes } from './user-pool-attr';
+import { ICustomAttribute, StandardAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
@@ -456,16 +456,25 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @default - No attributes are required.
+   * @deprecated use {@link standardAttributes}
+   * @default - No required attributes.
    */
-  readonly requiredAttributes?: RequiredAttributes;
+  readonly requiredAttributes?: StandardAttributes;
+
+  /**
+   * The set of attributes that are required for every user in the user pool.
+   * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   *
+   * @default - No standard attributes are required.
+   */
+  readonly standardAttributes?: StandardAttributes;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
    *
    * @default - No custom attributes.
    */
-  readonly customAttributes?: { [key: string]: IAttribute };
+  readonly customAttributes?: { [key: string]: ICustomAttribute };
 
   /**
    * Configure whether users of this user pool can or are required use MFA to sign in.
@@ -605,7 +614,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = {};
+  private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -847,21 +856,38 @@ export class UserPool extends UserPoolBase {
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
-    if (props.requiredAttributes) {
-      const stdAttributes = Object.keys(props.requiredAttributes)
+    if (props.standardAttributes) {
+      const standardAttributes = props.standardAttributes;
+      const stdAttributes = Object.keys(standardAttributes)
         .filter(
           attrName =>
-            !!props.requiredAttributes![attrName as keyof RequiredAttributes],
+            !!standardAttributes[attrName as keyof StandardAttributes],
+        ).filter(
+          attrName =>
+            standardAttributes[attrName as keyof StandardAttributes]!.required ||
+            standardAttributes[attrName as keyof StandardAttributes]!.mutable,
         )
-        .map(attrName =>
-          this.renderAttribute(
-            StandardAttributeMap[attrName as keyof RequiredAttributes],
-            props.requiredAttributes![attrName as keyof RequiredAttributes]!,
-          ),
-        )
-        .map(attrProp => ({ ...attrProp, required: true }));
+        .map(attrName => ({
+          name: StandardAttributeMap[attrName as keyof StandardAttributes],
+          ...(standardAttributes[attrName as keyof StandardAttributes] || {}),
+        }));
 
       schema.push(...stdAttributes);
+    } else if (props.requiredAttributes) {
+      const requiredAttributes = props.requiredAttributes;
+      const requiredAttrs = Object.keys(requiredAttributes)
+        .filter(
+          attrName =>
+            !!requiredAttributes[attrName as keyof StandardAttributes],
+        )
+        .map(
+          attrName => ({
+            name: StandardAttributeMap[attrName as keyof StandardAttributes],
+            required: true,
+          }),
+        );
+
+      schema.push(...requiredAttrs);
     }
 
     if (props.customAttributes) {
@@ -879,7 +905,7 @@ export class UserPool extends UserPoolBase {
 
   private renderAttribute(
     name: string,
-    attribute: IAttribute,
+    attribute: ICustomAttribute,
   ): CfnUserPool.SchemaAttributeProperty {
     const attrConfig = attribute.bind();
     const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
@@ -926,7 +952,7 @@ const enum StandardAttribute {
 }
 
 const StandardAttributeMap: Record<
-keyof RequiredAttributes,
+keyof StandardAttributes,
 StandardAttribute
 > = {
   address: StandardAttribute.ADDRESS,

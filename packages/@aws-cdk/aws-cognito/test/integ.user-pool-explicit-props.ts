@@ -1,6 +1,6 @@
 import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StandardAttribute, StringAttribute, UserPool } from '../lib';
+import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -26,9 +26,13 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  requiredAttributes: {
-    fullname: new StandardAttribute(),
-    email: new StandardAttribute(),
+  standardAttributes: {
+    fullname: {
+      required: true,
+    },
+    email: {
+      required: true,
+    },
   },
   customAttributes: {
     'some-string-attr': new StringAttribute(),

@@ -167,9 +167,15 @@ four optional attributes.
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  requiredAttributes: {
-    fullname: new StandardAttribute(),
-    address: StandardAttribute.asMutable(),
+  standardAttributes: {
+    fullname: {
+      required: true,
+      mutable: false,
+    },
+    address: {
+      required: false,
+      mutable: true,
+    },
   },
   customAttributes: {
     'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),

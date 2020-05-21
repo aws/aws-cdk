@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StandardAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -490,9 +490,13 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      requiredAttributes: {
-        fullname: new StandardAttribute(),
-        timezone: new StandardAttribute(),
+      standardAttributes: {
+        fullname: {
+          required: true,
+        },
+        timezone: {
+          required: true,
+        },
       },
     });
 
@@ -511,15 +515,21 @@ describe('User Pool', () => {
     });
   });
 
-  test('mutable required attributes', () => {
+  test('mutable standard attributes', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      requiredAttributes: {
-        fullname: new StandardAttribute({ mutable: true }),
-        timezone: new StandardAttribute({ mutable: true }),
+      standardAttributes: {
+        fullname: {
+          required: true,
+          mutable: true,
+        },
+        timezone: {
+          required: true,
+          mutable: true,
+        },
       },
     });
 
@@ -540,7 +550,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('schema is absent when required attributes are specified but as false', () => {
+  test('schema is absent when standard attributes are specified but not required and not mutable', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -550,7 +560,12 @@ describe('User Pool', () => {
     });
     new UserPool(stack, 'Pool2', {
       userPoolName: 'Pool2',
-      requiredAttributes: {},
+      standardAttributes: {
+        familyName: {
+          required: false,
+          mutable: false,
+        },
+      },
     });
 
     // THEN

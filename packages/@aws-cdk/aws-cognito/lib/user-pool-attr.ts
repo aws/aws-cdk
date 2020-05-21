@@ -1,9 +1,9 @@
 /**
- * The set of standard attributes that can be marked as required.
+ * The set of standard attributes that can be marked as required or mutable.
  *
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
-export interface RequiredAttributes {
+export interface StandardAttributes {
   /**
    * Whether the user's postal address is a required attribute.
    * @default - Attribute is not required
@@ -108,19 +108,43 @@ export interface RequiredAttributes {
 }
 
 /**
- * Represents a custom attribute type.
+ * Standard attribute that can be marked as required or mutable.
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
-export interface IAttribute {
+export interface StandardAttribute {
   /**
-   * Bind this custom attribute type to the values as expected by CloudFormation
+   * Specifies whether the value of the attribute can be changed.
+   * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
+   * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
+   * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
+   *
+   * @default false
    */
-  bind(): AttributeConfig;
+  readonly mutable?: boolean;
+  /**
+   * Specifies whether the attribute is required upon user registration.
+   * If the attribute is required and the user does not provide a value, registration or sign-in will fail.
+   *
+   * @default false
+   */
+  readonly required?: boolean;
 }
 
 /**
- * Configuration that will be fed into CloudFormation for any custom attribute type.
+ * Represents a custom attribute type.
  */
-export interface AttributeConfig {
+export interface ICustomAttribute {
+  /**
+   * Bind this custom attribute type to the values as expected by CloudFormation
+   */
+  bind(): CustomAttributeConfig;
+}
+
+/**
+ * Configuration that will be fed into CloudFormation for any attribute type.
+ */
+export interface CustomAttributeConfig {
   // tslint:disable:max-line-length
   /**
    * The data type of the custom attribute.
@@ -128,7 +152,7 @@ export interface AttributeConfig {
    * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html#CognitoUserPools-Type-SchemaAttributeType-AttributeDataType
    * @default - None.
    */
-  readonly dataType?: string;
+  readonly dataType: string;
   // tslint:enable:max-line-length
 
   /**
@@ -151,13 +175,13 @@ export interface AttributeConfig {
    *
    * @default false
    */
-  readonly mutable?: boolean
+  readonly mutable?: boolean;
 }
 
 /**
- * Constraints that can be applied to a attribute of any type.
+ * Constraints that can be applied to a custom attribute of any type.
  */
-export interface AttributeProps {
+export interface CustomAttributeProps {
   /**
    * Specifies whether the value of the attribute can be changed.
    * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
@@ -167,29 +191,6 @@ export interface AttributeProps {
    * @default false
    */
   readonly mutable?: boolean
-}
-
-/**
- * A Standard attribute
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
- */
-export class StandardAttribute implements IAttribute {
-  /**
-   * Returns a mutable StandardAttribute.
-   */
-  public static asMutable(): StandardAttribute {
-    return new StandardAttribute({ mutable: true });
-  }
-
-  private readonly mutable?: boolean;
-
-  constructor(props: AttributeProps = {}) {
-    this.mutable = props.mutable;
-  }
-
-  public bind(): AttributeConfig {
-    return { mutable: this.mutable };
-  }
 }
 
 /**
@@ -212,13 +213,13 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends StringAttributeConstraints, AttributeProps {
+export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {
 }
 
 /**
  * The String attribute type.
  */
-export class StringAttribute implements IAttribute {
+export class StringAttribute implements ICustomAttribute {
   private readonly minLen?: number;
   private readonly maxLen?: number;
   private readonly mutable?: boolean;
@@ -235,7 +236,7 @@ export class StringAttribute implements IAttribute {
     this.mutable = props?.mutable;
   }
 
-  public bind(): AttributeConfig {
+  public bind(): CustomAttributeConfig {
     let stringConstraints: StringAttributeConstraints | undefined;
     if (this.minLen || this.maxLen) {
       stringConstraints = {
@@ -272,13 +273,13 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends NumberAttributeConstraints, AttributeProps {
+export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {
 }
 
 /**
  * The Number custom attribute type.
  */
-export class NumberAttribute implements IAttribute {
+export class NumberAttribute implements ICustomAttribute {
   private readonly min?: number;
   private readonly max?: number;
   private readonly mutable?: boolean;
@@ -289,7 +290,7 @@ export class NumberAttribute implements IAttribute {
     this.mutable = props?.mutable;
   }
 
-  public bind(): AttributeConfig {
+  public bind(): CustomAttributeConfig {
     let numberConstraints: NumberAttributeConstraints | undefined;
     if (this.min || this.max) {
       numberConstraints = {
@@ -309,14 +310,14 @@ export class NumberAttribute implements IAttribute {
 /**
  * The Boolean custom attribute type.
  */
-export class BooleanAttribute implements IAttribute {
+export class BooleanAttribute implements ICustomAttribute {
   private readonly mutable?: boolean;
 
-  constructor(props: AttributeProps = {}) {
+  constructor(props: CustomAttributeProps = {}) {
     this.mutable = props?.mutable;
   }
 
-  public bind(): AttributeConfig {
+  public bind(): CustomAttributeConfig {
     return {
       dataType: 'Boolean',
       mutable: this.mutable,
@@ -327,14 +328,14 @@ export class BooleanAttribute implements IAttribute {
 /**
  * The DateTime custom attribute type.
  */
-export class DateTimeAttribute implements IAttribute {
+export class DateTimeAttribute implements ICustomAttribute {
   private readonly mutable?: boolean;
 
-  constructor(props: AttributeProps = {}) {
+  constructor(props: CustomAttributeProps = {}) {
     this.mutable = props?.mutable;
   }
 
-  public bind(): AttributeConfig {
+  public bind(): CustomAttributeConfig {
     return {
       dataType: 'DateTime',
       mutable: this.mutable,

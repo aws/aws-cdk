@@ -1,13 +1,12 @@
 import '@aws-cdk/assert/jest';
-import { AttributeConfig, BooleanAttribute, DateTimeAttribute, IAttribute, NumberAttribute, StandardAttribute, StringAttribute } from '../lib';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
 
   describe('mutable', () => {
     test('default', () => {
       // GIVEN
-      const allAttributes: IAttribute[] = [
-        new StandardAttribute(),
+      const allAttributes: ICustomAttribute[] = [
         new StringAttribute(),
         new NumberAttribute(),
         new BooleanAttribute(),
@@ -15,7 +14,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: AttributeConfig[] = allAttributes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {
@@ -28,8 +27,7 @@ describe('User Pool Attributes', () => {
       const allTrueProps = {
         mutable: true,
       };
-      const allAttributeTypes: IAttribute[] = [
-        new StandardAttribute(allTrueProps),
+      const allAttributeTypes: ICustomAttribute[] = [
         new StringAttribute(allTrueProps),
         new NumberAttribute(allTrueProps),
         new BooleanAttribute(allTrueProps),
@@ -37,7 +35,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: AttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {
@@ -52,8 +50,7 @@ describe('User Pool Attributes', () => {
       const allFalseProps = {
         mutable: false,
       };
-      const allAttributeTypes: IAttribute[] = [
-        new StandardAttribute(allFalseProps),
+      const allAttributeTypes: ICustomAttribute[] = [
         new StringAttribute(allFalseProps),
         new NumberAttribute(allFalseProps),
         new BooleanAttribute(allFalseProps),
@@ -61,7 +58,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: AttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
 
       // THEN
       bounds.forEach((bound) => {
@@ -136,36 +133,6 @@ describe('User Pool Attributes', () => {
         max: 600,
       });
       expect(bound.stringConstraints).toBeUndefined();
-    });
-  });
-
-  describe('StandardAttribute', () => {
-    test('default', () => {
-      // GIVE
-      const attr = new StandardAttribute();
-
-      // WHEN
-      const bound = attr.bind();
-
-      // THEN
-      expect(bound.dataType).toBeUndefined();
-      expect(bound.stringConstraints).toBeUndefined();
-      expect(bound.numberConstraints).toBeUndefined();
-      expect(bound.mutable).toBeUndefined();
-    });
-
-    test('asMutable', () => {
-      // GIVE
-      const attr = StandardAttribute.asMutable();
-
-      // WHEN
-      const bound = attr.bind();
-
-      // THEN
-      expect(bound.dataType).toBeUndefined();
-      expect(bound.stringConstraints).toBeUndefined();
-      expect(bound.numberConstraints).toBeUndefined();
-      expect(bound.mutable).toBeTruthy();
     });
   });
 
