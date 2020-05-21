@@ -61,7 +61,7 @@ export interface DockerBuildOptions {
 }
 
 /**
- * A Docker image used for Lambda bundling
+ * A Docker image used for asset bundling
  */
 export class BundlingDockerImage {
   /**
