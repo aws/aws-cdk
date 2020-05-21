@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, countResources } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -99,7 +99,7 @@ export = {
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng');
     // THEN
-    expect(stack).to(countResources('AWS::EKS::Nodegroup',2));
+    expect(stack).to(countResources('AWS::EKS::Nodegroup', 2));
     test.done();
   },
   'create nodegroup with instanceType provided'(test: Test) {
