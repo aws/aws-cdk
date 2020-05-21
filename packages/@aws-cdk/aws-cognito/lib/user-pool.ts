@@ -2,7 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, StandardAttributes } from './user-pool-attr';
+import { ICustomAttribute, RequiredAttributes, StandardAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
@@ -459,7 +459,7 @@ export interface UserPoolProps {
    * @deprecated use {@link standardAttributes}
    * @default - No required attributes.
    */
-  readonly requiredAttributes?: StandardAttributes;
+  readonly requiredAttributes?: RequiredAttributes;
 
   /**
    * The set of attributes that are required for every user in the user pool.
