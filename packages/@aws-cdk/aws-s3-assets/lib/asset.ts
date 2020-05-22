@@ -195,12 +195,16 @@ export class Asset extends cdk.Construct implements assets.IAsset {
         ...props.bundling.volumes ?? [],
       ];
 
-      props.bundling.image._run({
-        command: props.bundling.command,
-        volumes,
-        environment: props.bundling.environment,
-        workingDirectory: props.bundling.workingDirectory ?? BUNDLING_INPUT_DIR,
-      });
+      try {
+        props.bundling.image._run({
+          command: props.bundling.command,
+          volumes,
+          environment: props.bundling.environment,
+          workingDirectory: props.bundling.workingDirectory ?? BUNDLING_INPUT_DIR,
+        });
+      } catch (err) {
+        throw new Error(`Failed to run bundling Docker image for asset ${id}: ${err}`);
+      }
     }
 
     // stage the asset source (conditionally).
