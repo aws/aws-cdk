@@ -531,7 +531,7 @@ const sa = cluster.addServiceAccount('MyServiceAccount', {});
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
 
-cluster.addResource('mypod', {
+const mypod = cluster.addResource('mypod', {
   apiVersion: 'v1',
   kind: 'Pod',
   metadata: { name: 'mypod' },
@@ -547,6 +547,10 @@ cluster.addResource('mypod', {
     ]
   }
 });
+
+// create the resource after the service account
+mypod.node.addDependency(sa);
+
 // print the IAM role arn for this service account
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
