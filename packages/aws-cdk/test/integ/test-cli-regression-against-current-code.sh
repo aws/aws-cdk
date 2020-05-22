@@ -78,6 +78,7 @@ cp -r ${temp_dir}/package/test/integ/cli ${integ_under_test}
 echo "Hotpatching the test runner (can be removed after release 1.40.0)" >&2
 cp -r ${integdir}/cli/test-jest.sh ${integ_under_test}
 cp -r ${integdir}/cli/jest.config.js ${integ_under_test}
+cp -r ${integdir}/cli/jest.setup.js ${integ_under_test}
 
 echo "Running integration tests of version ${VERSION_UNDER_TEST} from ${integ_under_test}"
 VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh
