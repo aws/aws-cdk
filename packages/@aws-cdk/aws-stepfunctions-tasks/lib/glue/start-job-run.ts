@@ -24,18 +24,6 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
   readonly arguments?: sfn.TaskInput;
 
   /**
-   * The job run timeout.
-   *
-   * This is the maximum time that a job run can consume resources before it is
-   * terminated and enters TIMEOUT status.
-   *
-   * Must be at least 1 minute.
-   *
-   * @default - Default timeout set in the job definition
-   */
-  readonly timeout?: Duration;
-
-  /**
    * The name of the SecurityConfiguration structure to be used with this job run.
    *
    * This must match the Glue API
