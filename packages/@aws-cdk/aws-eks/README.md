@@ -555,8 +555,6 @@ mypod.node.addDependency(sa);
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
-> Warning: Currently there are no condition set on the IAM Role which results that there are no restrictions on other pods to assume the role. This will be improved in the near future. 
-
 ### Roadmap
 
 - [ ] AutoScaling (combine EC2 and Kubernetes scaling)
