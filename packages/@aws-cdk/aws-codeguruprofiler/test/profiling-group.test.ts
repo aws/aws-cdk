@@ -205,6 +205,23 @@ describe('profiling group', () => {
     });
   });
 
+  test('default profiling group without name when name exceeding limit is generated', () => {
+    const stack = new Stack();
+    new ProfilingGroup(stack, 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSize_InOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharacters_InSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConcatenateThemToGetTheIdentifier', {
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C': {
+          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
+          'Properties': {
+            'ProfilingGroupName': 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGrnTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca2FE009B0',
+          },
+        },
+      },
+    });
+  });
+
   test('grant publish permissions profiling group', () => {
     const stack = new Stack();
     const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
