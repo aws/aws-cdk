@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
-import { render } from './utils/render-util';
+import { render } from './private/render-util';
 
 describe('Custom State', () => {
   let stack: cdk.Stack;

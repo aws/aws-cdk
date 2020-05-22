@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import { Pass, Wait, WaitTime } from '../lib';
-import { render } from './utils/render-util';
+import { render } from './private/render-util';
 
 describe('Wait State', () => {
   test('wait time from ISO8601 timestamp', () => {
