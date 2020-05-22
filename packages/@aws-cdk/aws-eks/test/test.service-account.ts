@@ -50,6 +50,14 @@ export = {
                   Ref: 'ClusterOpenIdConnectProviderE7EB0530',
                 },
               },
+              Condition: {
+                StringEquals: {
+                  'Fn::GetAtt': [
+                    'MyServiceAccountConditionJson1ED3BC54',
+                    'Value',
+                  ],
+                },
+              },
             },
           ],
           Version: '2012-10-17',
