@@ -2298,7 +2298,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "ClustermanifestServiceAccountD03C306D": {
+    "ClustermanifestMyServiceAccountResource1564245E": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
       "Properties": {
         "ServiceToken": {
