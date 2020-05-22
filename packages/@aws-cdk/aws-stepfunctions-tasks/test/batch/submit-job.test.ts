@@ -86,7 +86,7 @@ test('Task with all the parameters', () => {
       foo: sfn.Data.stringAt('$.bar'),
     }),
     attempts: 3,
-    attemptDuration: cdk.Duration.seconds(60),
+    timeout: cdk.Duration.seconds(60),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -134,7 +134,7 @@ test('supports tokens', () => {
     jobName: sfn.Data.stringAt('$.jobName'),
     jobQueue: batchJobQueue,
     arraySize: sfn.Data.numberAt('$.arraySize'),
-    attemptDuration: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
+    timeout: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
     attempts: sfn.Data.numberAt('$.attempts'),
   });
 
@@ -303,7 +303,7 @@ test('Task throws if attempt duration is less than 60 sec', () => {
       jobDefinition: batchJobDefinition,
       jobName: 'JobName',
       jobQueue: batchJobQueue,
-      attemptDuration: cdk.Duration.seconds(59),
+      timeout: cdk.Duration.seconds(59),
     });
   }).toThrow(
     /attempt duration must be greater than 60 seconds./,

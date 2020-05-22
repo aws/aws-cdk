@@ -2,7 +2,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Stack, withResolved } from '@aws-cdk/core';
+import { Construct, Stack, withResolved } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -148,16 +148,6 @@ export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
    * @default 1
    */
   readonly attempts?: number;
-
-  /**
-   * The time duration (measured from the job attempt's startedAt timestamp)
-   * after which AWS Batch terminates unfinished jobs.
-   *
-   * The minimum value is 1 minute.
-   *
-   * @default - None
-   */
-  readonly attemptDuration?: Duration;
 }
 
 /**
@@ -203,7 +193,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
     // validate timeout
     // tslint:disable-next-line:no-unused-expression
-    props.attemptDuration !== undefined && withResolved(props.attemptDuration.toSeconds(), (timeout) => {
+    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
         throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);
       }
@@ -253,10 +243,11 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
             ? { Attempts: this.props.attempts }
             : undefined,
 
-        Timeout: this.props.attemptDuration
-          ? { AttemptDurationSeconds: this.props.attemptDuration.toSeconds() }
+        Timeout: this.props.timeout
+          ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
           : undefined,
       }),
+      TimeoutSeconds: undefined,
     };
   }
 
