@@ -288,7 +288,7 @@ Use `assets.BundlingDockerImage.fromRegistry(image)` to use an existing image or
 import * as assets from '@aws-cdk/aws-s3-assets';
 
 new lambda.Function(this, 'Function', {
-  code: lambda.Code.fromAsset('/path/to/handler'), {
+  code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
       image: assets.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
         buildArgs: {
