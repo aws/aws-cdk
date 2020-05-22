@@ -63,6 +63,44 @@
         }
       }
     },
+    "poolclient2623294C": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "pool056F3F7E"
+        },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "email",
+          "phone",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO",
+          {
+            "Ref": "amazon2D32744A"
+          }
+        ]
+      }
+    },
+    "pooldomain430FA744": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "nija-test-pool",
+        "UserPoolId": {
+          "Ref": "pool056F3F7E"
+        }
+      }
+    },
     "amazon2D32744A": {
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
       "Properties": {
@@ -75,21 +113,6 @@
           "client_id": "amzn-client-id",
           "client_secret": "amzn-client-secret",
           "authorize_scopes": "profile"
-        }
-      }
-    },
-    "facebook4309A463": {
-      "Type": "AWS::Cognito::UserPoolIdentityProvider",
-      "Properties": {
-        "ProviderName": "Facebook",
-        "ProviderType": "Facebook",
-        "UserPoolId": {
-          "Ref": "pool056F3F7E"
-        },
-        "ProviderDetails": {
-          "client_id": "amzn-client-id",
-          "client_secret": "amzn-client-secret",
-          "authorize_scopes": "public_profile"
         }
       }
     }

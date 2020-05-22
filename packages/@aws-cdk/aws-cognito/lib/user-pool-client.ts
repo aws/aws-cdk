@@ -1,6 +1,7 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * Types of authentication flow
@@ -182,6 +183,20 @@ export interface UserPoolClientOptions {
    * @default true for new stacks
    */
   readonly preventUserExistenceErrors?: boolean;
+
+  /**
+   * Whether users registered in the user pool should be able to sign in using this client.
+   * If this is set to `true` and `identityProviders` are set, the client will only allow sign in via
+   * third-party identity providers.
+   * @default true
+   */
+  readonly allowUserPoolIdentities?: boolean;
+
+  /**
+   * The list of federated identity providers that users should be able to use to sign in using this client.
+   * @default - no identity providers
+   */
+  readonly identityProviders?: IUserPoolIdentityProvider[];
 }
 
 /**
@@ -244,6 +259,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       callbackUrLs: (props.oAuth?.callbackUrls && props.oAuth?.callbackUrls.length > 0) ? props.oAuth?.callbackUrls : undefined,
       allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
+      supportedIdentityProviders: this.configureIdentityProviders(props),
     });
 
     this.userPoolClientId = resource.ref;
@@ -313,5 +329,17 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       return undefined;
     }
     return prevent ? 'ENABLED' : 'LEGACY';
+  }
+
+  private configureIdentityProviders(props: UserPoolClientProps): string[] | undefined {
+    const providers: Set<string> = new Set();
+    if (props.allowUserPoolIdentities === undefined || props.allowUserPoolIdentities === true) {
+      providers.add('COGNITO');
+    }
+    if (props.identityProviders) {
+      props.identityProviders.forEach((p) => providers.add(p.providerName));
+    }
+    if (providers.size === 0) { return undefined; }
+    return Array.from(providers);
   }
 }

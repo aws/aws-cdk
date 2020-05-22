@@ -94,7 +94,10 @@
           "ALLOW_REFRESH_TOKEN_AUTH"
         ],
         "GenerateSecret": true,
-        "PreventUserExistenceErrors": "ENABLED"
+        "PreventUserExistenceErrors": "ENABLED",
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
       }
     }
   }

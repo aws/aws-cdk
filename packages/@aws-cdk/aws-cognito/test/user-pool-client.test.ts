@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient } from '../lib';
+import { OAuthScope, UserPool, UserPoolClient, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -17,6 +17,7 @@ describe('User Pool Client', () => {
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
+      SupportedIdentityProviders: [ 'COGNITO' ],
     });
   });
 
@@ -334,6 +335,68 @@ describe('User Pool Client', () => {
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: ABSENT,
+    });
+  });
+
+  test('allowUserPoolIdentities', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPoolClientName: 'Client1',
+      userPool: pool,
+      allowUserPoolIdentities: false,
+    });
+    new UserPoolClient(stack, 'Client2', {
+      userPoolClientName: 'Client2',
+      userPool: pool,
+      allowUserPoolIdentities: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      SupportedIdentityProviders: ABSENT,
+    });
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client2',
+      SupportedIdentityProviders: [ 'COGNITO' ],
+    });
+  });
+
+  test('identityProviders', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const idp = UserPoolIdentityProvider.amazon(stack, 'amazonidp', {
+      userPool: pool,
+      clientId: 'amzn-client-id',
+      clientSecret: 'amzn-client-secret',
+    });
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPoolClientName: 'Client1',
+      userPool: pool,
+      identityProviders: [ idp ],
+    });
+    new UserPoolClient(stack, 'Client2', {
+      userPoolClientName: 'Client2',
+      userPool: pool,
+      identityProviders: [ idp ],
+      allowUserPoolIdentities: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      SupportedIdentityProviders: [ 'COGNITO', { Ref: 'amazonidp6ADCCBDD' } ],
+    });
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client2',
+      SupportedIdentityProviders: [ { Ref: 'amazonidp6ADCCBDD' } ],
     });
   });
 });

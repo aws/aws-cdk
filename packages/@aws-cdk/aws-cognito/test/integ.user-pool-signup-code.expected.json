@@ -84,7 +84,10 @@
           "Ref": "myuserpool01998219"
         },
         "ClientName": "signup-test",
-        "GenerateSecret": false
+        "GenerateSecret": false,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
       }
     }
   },
