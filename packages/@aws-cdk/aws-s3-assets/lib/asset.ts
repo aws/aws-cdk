@@ -53,11 +53,11 @@ export interface BundlingOptions {
   readonly workingDirectory?: string;
 
   /**
-   * Bundle directory. Subdirectories named after the asset path will be
+   * Bundling directory. Subdirectories named after the asset unique id will be
    * created in this directory and mounted at `/asset-output` in the container.
    * Should be added to your `.gitignore`.
    *
-   * @default .bundle next to the asset directory
+   * @default ".bundle" under the current working directory
    */
   readonly bundleDirectory?: string;
 }
@@ -172,20 +172,20 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     // Bundling
     let bundleAssetPath: string | undefined;
     if (props.bundling) {
-      // Create the directory for the bundle next to the asset path
-      const bundlePath = path.join(path.dirname(props.path), props.bundling.bundleDirectory ?? '.bundle');
+      // Create the directory for the bundle in the current working directory
+      const bundlePath = path.join('./', props.bundling.bundleDirectory ?? '.bundle');
       if (!fs.existsSync(bundlePath)) {
         fs.mkdirSync(bundlePath);
       }
 
-      bundleAssetPath = path.join(bundlePath, path.basename(props.path));
+      bundleAssetPath = path.resolve(path.join(bundlePath, this.node.uniqueId));
       if (!fs.existsSync(bundleAssetPath)) {
         fs.mkdirSync(bundleAssetPath);
       }
 
       const volumes = [
         {
-          hostPath: props.path,
+          hostPath: path.resolve(props.path),
           containerPath: BUNDLING_INPUT_DIR,
         },
         {
@@ -206,7 +206,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     // stage the asset source (conditionally).
     const staging = new assets.Staging(this, 'Stage', {
       ...props,
-      sourcePath: path.resolve(props.path),
+      sourcePath: path.resolve(bundleAssetPath ?? props.path),
     });
 
     this.sourceHash = props.sourceHash || staging.sourceHash;

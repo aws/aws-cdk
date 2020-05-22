@@ -1,16 +1,78 @@
 {
   "Parameters": {
-    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3Bucket8CD0F73B": {
+    "AssetParameters4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cbS3Bucket6A787065": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+      "Description": "S3 bucket for asset \"4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cb\""
     },
-    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3VersionKeyA9EAF743": {
+    "AssetParameters4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cbS3VersionKey61D8476E": {
       "Type": "String",
-      "Description": "S3 key for asset version \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+      "Description": "S3 key for asset version \"4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cb\""
     },
-    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8ArtifactHashBAE492DD": {
+    "AssetParameters4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cbArtifactHash83AE1BC1": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+      "Description": "Artifact hash for asset \"4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cb\""
+    }
+  },
+  "Resources": {
+    "MyUserDC45028B": {
+      "Type": "AWS::IAM::User"
+    },
+    "MyUserDefaultPolicy7B897426": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cbS3Bucket6A787065"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters4f0a73620441d4ecb45db9aa49637c5696cbd960cd8f249c66e285c4cfd612cbS3Bucket6A787065"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyUserDefaultPolicy7B897426",
+        "Users": [
+          {
+            "Ref": "MyUserDC45028B"
+          }
+        ]
+      }
     }
   }
 }

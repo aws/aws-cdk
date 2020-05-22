@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
 import * as assets from '../lib';
@@ -7,7 +8,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     /// !show
-    new assets.Asset(this, 'BundledAsset', {
+    const asset = new assets.Asset(this, 'BundledAsset', {
       path: path.join(__dirname, 'markdown-asset'), // /asset-input and working directory in the container
       bundling: {
         image: assets.BundlingDockerImage.fromAsset(path.join(__dirname, 'alpine-markdown')), // Build an image
@@ -19,6 +20,9 @@ class TestStack extends Stack {
       },
     });
     /// !hide
+
+    const user = new iam.User(this, 'MyUser');
+    asset.grantRead(user);
   }
 }
 
