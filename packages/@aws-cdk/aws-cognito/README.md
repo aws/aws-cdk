@@ -446,4 +446,8 @@ pool.addDomain('CustomDomain', {
 
 Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
-Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html)
+
+The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
+hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
+Console](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html#cognito-user-pools-create-an-app-integration).
