@@ -152,7 +152,7 @@ pass.next(nextState);
 The `Pass` state also supports passing key-value pairs as input. Values can
 be static, or selected from the input with a path.
 
-The following example creates filters the `greeting` field from the state input
+The following example filters the `greeting` field from the state input
 and also injects a field called `otherData`.
 
 ```ts
