@@ -127,7 +127,8 @@ export class SdkProvider {
    * If `region` is undefined, the default value will be used.
    */
   public async withAssumedRole(roleArn: string, externalId: string | undefined, region: string | undefined) {
-    debug(`Assuming role '${roleArn}'`);
+    // https://github.com/aws/aws-sdk-js/issues/3272
+    debug(`Assuming role '${roleArn}'. If you see the error 'Missing credentials in config, if using AWS_CONFIG_FILE, set AWS_SDK_LOAD_CONFIG=1', it most likely means that the indicate role does not exist. In that case, bootstrap the indicated environment and try again.`);
     region = region ?? this.defaultRegion;
 
     const creds = new AWS.ChainableTemporaryCredentials({

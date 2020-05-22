@@ -206,6 +206,10 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
     }
+    // Update variable to mark that the stack does not exist anymore, but avoid
+    // doing an actual lookup in CloudFormation (which would be silly to do if
+    // we just deleted it).
+    cloudFormationStack = CloudFormationStack.doesNotExist(cfn, deployName);
   }
 
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);

@@ -64,27 +64,27 @@ export class SDK implements ISDK {
   }
 
   public cloudFormation(): AWS.CloudFormation {
-    return new AWS.CloudFormation(this.config);
+    return logFailingCalls(new AWS.CloudFormation(this.config));
   }
 
   public ec2(): AWS.EC2 {
-    return new AWS.EC2(this.config);
+    return logFailingCalls(new AWS.EC2(this.config));
   }
 
   public ssm(): AWS.SSM {
-    return new AWS.SSM(this.config);
+    return logFailingCalls(new AWS.SSM(this.config));
   }
 
   public s3(): AWS.S3 {
-    return new AWS.S3(this.config);
+    return logFailingCalls(new AWS.S3(this.config));
   }
 
   public route53(): AWS.Route53 {
-    return new AWS.Route53(this.config);
+    return logFailingCalls(new AWS.Route53(this.config));
   }
 
   public ecr(): AWS.ECR {
-    return new AWS.ECR(this.config);
+    return logFailingCalls(new AWS.ECR(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
@@ -103,4 +103,48 @@ export class SDK implements ISDK {
   }
 }
 
+/**
+ * Return a wrapping object for the underlying service object
+ *
+ * Monitor all calls and log the ones that failed. This is slightly more
+ * complicated than necessary because we must hook into the `promise()` method
+ * of the object that's being returned from the methods of the object that we
+ * wrap.
+ */
+function logFailingCalls<A extends object>(service: A): A {
+  return new Proxy(service, {
+    get(obj: A, prop: string) {
+      const real = (obj as any)[prop];
+      // Only intercept methods, and not the 'makeRequest' method or the
+      // 'constructor' field (which points to a function but one that I don't wanna replace).
+      if (!obj.hasOwnProperty(prop) || !isFunction(real)) { return real; }
+
+      // NOTE: This must be a function() and not an () => {
+      // because I need 'this' to be dynamically bound and not statically bound.
+      // If your linter complains don't listen to it!
+      return function(this: any) {
+        // Call the underlying function. If it returns an object with a promise()
+        // method on it, wrap that 'promise' method.
+        const args = [].slice.call(arguments, 0);
+        const response = real.apply(this, args);
+        if (typeof response !== 'object' || !response) { return response; }
+        if (!('promise' in response)) { return response; }
+
+        const ret = Object.create(response);
+        ret.promise = () => {
+          return response.promise().catch((e: Error) => {
+            debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message}`);
+            return Promise.reject(e); // Re-'throw' the error
+          });
+        };
+        return ret;
+      };
+    },
+  });
+}
+
 const CURRENT_ACCOUNT_KEY = Symbol('current_account_key');
+
+function isFunction(x: any): x is (...args: any[]) => any {
+  return x && {}.toString.call(x) === '[object Function]';
+}
