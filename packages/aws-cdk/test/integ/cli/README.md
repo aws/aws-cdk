@@ -17,6 +17,12 @@ Running against a failing dist build:
 .../CMkBR4V$ package/test/integ/run-against-dist package/test/integ/cli/test.sh
 ```
 
+Run a single jest test:
+
+```
+/path/to/run-against-XXXX /path/to/test-jest.sh -t 'name of the test'
+```
+
 
 ## Adding tests
 
