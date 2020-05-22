@@ -5,6 +5,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for RunGlueJobTask
+ *
+ * @deprecated use `GlueStartJobRun`
  */
 export interface RunGlueJobTaskProps {
 
@@ -63,6 +65,8 @@ export interface RunGlueJobTaskProps {
  * https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-JobRun
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
+ *
+ * @deprecated use `GlueStartJobRun`
  */
 export class RunGlueJobTask implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
