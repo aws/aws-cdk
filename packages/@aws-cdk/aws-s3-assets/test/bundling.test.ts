@@ -10,6 +10,7 @@ jest.mock('child_process');
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
+  jest.clearAllMocks();
 });
 
 test('bundling with image from registry', () => {
@@ -39,7 +40,7 @@ test('bundling with image from registry', () => {
   expect(spawnSync).toHaveBeenCalledWith('docker', [
     'run', '--rm',
     '-v', `${SAMPLE_ASSET_DIR}:/asset-input`,
-    '-v', expect.stringMatching(new RegExp(`${path.join('.bundle', path.basename(SAMPLE_ASSET_DIR))}:/asset-output$`)),
+    '-v', expect.stringMatching(new RegExp(`${path.join('.bundle', 'Asset')}:/asset-output$`)),
     '--env', 'VAR1=value1',
     '--env', 'VAR2=value2',
     '-w', '/asset-input',
@@ -72,13 +73,13 @@ test('bundling with image from asset', () => {
     },
   });
 
-  expect(spawnSync).toHaveBeenCalledWith('docker', [
+  expect(spawnSync).toHaveBeenNthCalledWith(1, 'docker', [
     'build',
     '--build-arg', `TEST_ARG=${testArg}`,
     dockerPath,
   ]);
 
-  expect(spawnSync).toHaveBeenCalledWith('docker', expect.arrayContaining([
+  expect(spawnSync).toHaveBeenNthCalledWith(2, 'docker', expect.arrayContaining([
     imageId,
   ]));
 });
@@ -119,7 +120,7 @@ test('throws in case of spawnSync error', () => {
     bundling: {
       image: assets.BundlingDockerImage.fromRegistry('alpine'),
     },
-  })).toThrow(spawnSyncError);
+  })).toThrow(spawnSyncError.message);
 });
 
 test('throws if status is not 0', () => {
@@ -137,5 +138,5 @@ test('throws if status is not 0', () => {
     bundling: {
       image: assets.BundlingDockerImage.fromRegistry('alpine'),
     },
-  })).toThrow(/^\[Status -1\]/);
+  })).toThrow(/\[Status -1\]/);
 });
