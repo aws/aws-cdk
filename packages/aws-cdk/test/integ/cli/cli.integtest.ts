@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { afterSeconds, cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
-import { cdk, cdkDeploy, cdkDestroy, cleanupOldStacks, cloneDirectory, fullStackName,
+import { cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
+import { cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
   INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
 
 jest.setTimeout(600 * 1000);
@@ -12,11 +12,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await cleanupOldStacks();
+  await cleanup();
 });
 
 afterEach(async () => {
-  await cleanupOldStacks();
+  await cleanup();
 });
 
 test('VPC Lookup', async () => {
@@ -300,7 +300,7 @@ test('deploy with role', async () => {
       }),
     });
 
-    await retry('Trying to assume fresh role', afterSeconds(300), async () => {
+    await retry('Trying to assume fresh role', retry.forSeconds(300), async () => {
       await sts('assumeRole', {
         RoleArn: roleArn,
         RoleSessionName: 'testing',
@@ -316,8 +316,14 @@ test('deploy with role', async () => {
       options: ['--role-arn', roleArn],
     });
 
+    // Immediately delete the stack again before we delete the role.
+    //
+    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+    // operations will fail when CloudFormation tries to assume the role that's already gone.
+    await cdkDestroy('test-2');
+
   } finally {
-    deleteRole();
+    await deleteRole();
   }
 
   async function deleteRole() {

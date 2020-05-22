@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { cloudFormation, deleteStacks, testEnv } from './aws-helpers';
+import { cloudFormation, deleteBucket, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
 
 export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
@@ -118,29 +118,48 @@ export async function prepareAppFixture() {
 }
 
 /**
- * Cleanup leftover stacks
+ * Return the stacks starting with our testing prefix that should be deleted
  */
-export async function cleanupOldStacks() {
-  const response = await cloudFormation('listStacks', {
-    StackStatusFilter: [
-      'CREATE_IN_PROGRESS' , 'CREATE_FAILED' , 'CREATE_COMPLETE' ,
-      'ROLLBACK_IN_PROGRESS' , 'ROLLBACK_FAILED' , 'ROLLBACK_COMPLETE' ,
-      'DELETE_FAILED',
-      'UPDATE_IN_PROGRESS' , 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS' ,
-      'UPDATE_COMPLETE' , 'UPDATE_ROLLBACK_IN_PROGRESS' ,
-      'UPDATE_ROLLBACK_FAILED' ,
-      'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS' ,
-      'UPDATE_ROLLBACK_COMPLETE' , 'REVIEW_IN_PROGRESS' ,
-      'IMPORT_IN_PROGRESS' , 'IMPORT_COMPLETE' ,
-      'IMPORT_ROLLBACK_IN_PROGRESS' , 'IMPORT_ROLLBACK_FAILED' ,
-      'IMPORT_ROLLBACK_COMPLETE' ,
-    ],
-  });
+export async function deleteableStacks(prefix: string): Promise<AWS.CloudFormation.Stack[]> {
+  const statusFilter = [
+    'CREATE_IN_PROGRESS', 'CREATE_FAILED', 'CREATE_COMPLETE',
+    'ROLLBACK_IN_PROGRESS', 'ROLLBACK_FAILED', 'ROLLBACK_COMPLETE',
+    'DELETE_FAILED',
+    'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS',
+    'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_IN_PROGRESS',
+    'UPDATE_ROLLBACK_FAILED',
+    'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS',
+    'UPDATE_ROLLBACK_COMPLETE', 'REVIEW_IN_PROGRESS',
+    'IMPORT_IN_PROGRESS', 'IMPORT_COMPLETE',
+    'IMPORT_ROLLBACK_IN_PROGRESS', 'IMPORT_ROLLBACK_FAILED',
+    'IMPORT_ROLLBACK_COMPLETE',
+  ];
 
-  const stacksToDelete = (response.StackSummaries ?? [])
-    .filter(s => s.StackName.startsWith(STACK_NAME_PREFIX))
-    .map(s => s.StackName);
-  await deleteStacks(...stacksToDelete);
+  const response = await cloudFormation('describeStacks', {});
+
+  return (response.Stacks ?? [])
+    .filter(s => s.StackName.startsWith(prefix))
+    .filter(s => statusFilter.includes(s.StackStatus));
+}
+
+/**
+ * Cleanup leftover stacks and buckets
+ */
+export async function cleanup(): Promise<void> {
+  const stacksToDelete = await deleteableStacks(STACK_NAME_PREFIX);
+
+  // Bootstrap stacks have buckets that need to be cleaned
+  const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+  await Promise.all(bucketNames.map(emptyBucket));
+
+  await deleteStacks(...stacksToDelete.map(s => s.StackName));
+
+  // We might have leaked some buckets by upgrading the bootstrap stack. Be
+  // sure to clean everything.
+  for (const bucket of bucketsToDelete) {
+    await deleteBucket(bucket);
+  }
+  bucketsToDelete = [];
 }
 
 /**
@@ -191,4 +210,20 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       }
     });
   });
+}
+
+let bucketsToDelete = new Array<string>();
+
+/**
+ * Append this to the list of buckets to potentially delete
+ *
+ * At the end of a test, we clean up buckets that may not have gotten destroyed
+ * (for whatever reason).
+ */
+export function rememberToDeleteBucket(bucketName: string) {
+  bucketsToDelete.push(bucketName);
+}
+
+function defined<A>(x: A): x is NonNullable<A> {
+  return x !== undefined;
 }
