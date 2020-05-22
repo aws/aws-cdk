@@ -1,12 +1,16 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import * as stepfunctions from '../lib';
+import * as sfn from '../lib';
+import { render } from './utils/render-util';
 
 describe('Custom State', () => {
-  test('maintains the state Json provided during construction', () => {
+  let stack: cdk.Stack;
+  let stateJson: any;
+
+  beforeEach(() => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const stateJson = {
+    stack = new cdk.Stack();
+    stateJson = {
       Type: 'Task',
       Resource: 'arn:aws:states:::dynamodb:putItem',
       Parameters: {
@@ -19,9 +23,11 @@ describe('Custom State', () => {
       },
       ResultPath: null,
     };
+  });
 
+  test('maintains the state Json provided during construction', () => {
     // WHEN
-    const customState = new stepfunctions.CustomState(stack, 'Custom', {
+    const customState = new sfn.CustomState(stack, 'Custom', {
       stateJson,
     });
 
@@ -30,5 +36,39 @@ describe('Custom State', () => {
       ...stateJson,
       End: true,
     });
+  });
+
+  test('can add a next state to the chain', () => {
+    // WHEN
+    const definition = new sfn.CustomState(stack, 'Custom', {
+      stateJson,
+    }).next(new sfn.Pass(stack, 'MyPass'));
+
+    // THEN
+    expect(render(stack, definition)).toStrictEqual(
+      {
+        StartAt: 'Custom',
+        States: {
+          Custom: {
+            Next: 'MyPass',
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
+                },
+              },
+            },
+            ResultPath: null,
+          },
+          MyPass: {
+            Type: 'Pass',
+            End: true,
+          },
+        },
+      },
+    );
   });
 });
