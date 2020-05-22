@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "myuserpoolsmsRole0E16FDD9": {
+    "UserPoolsmsRole4EA729DD": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -9,7 +9,7 @@
               "Action": "sts:AssumeRole",
               "Condition": {
                 "StringEquals": {
-                  "sts:ExternalId": "integuserpoolclientexplicitpropsmyuserpoolFC6541FF"
+                  "sts:ExternalId": "integuserpooldomainsigninurlUserPool1325E89F"
                 }
               },
               "Effect": "Allow",
@@ -37,7 +37,7 @@
         ]
       }
     },
-    "myuserpool01998219": {
+    "UserPool6BA7E5F2": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
         "AdminCreateUserConfig": {
@@ -46,10 +46,10 @@
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
         "SmsConfiguration": {
-          "ExternalId": "integuserpoolclientexplicitpropsmyuserpoolFC6541FF",
+          "ExternalId": "integuserpooldomainsigninurlUserPool1325E89F",
           "SnsCallerArn": {
             "Fn::GetAtt": [
-              "myuserpoolsmsRole0E16FDD9",
+              "UserPoolsmsRole4EA729DD",
               "Arn"
             ]
           }
@@ -63,11 +63,20 @@
         }
       }
     },
-    "myuserpoolmyuserpoolclientAFB2274E": {
+    "UserPoolDomainD0EA232A": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "cdk-integ-user-pool-domain",
+        "UserPoolId": {
+          "Ref": "UserPool6BA7E5F2"
+        }
+      }
+    },
+    "UserPoolUserPoolClient40176907": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {
-          "Ref": "myuserpool01998219"
+          "Ref": "UserPool6BA7E5F2"
         },
         "AllowedOAuthFlows": [
           "implicit",
@@ -75,27 +84,41 @@
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
         "AllowedOAuthScopes": [
+          "profile",
           "phone",
           "email",
           "openid",
-          "profile",
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
-          "https://redirect-here.myapp.com"
+          "https://example.com"
         ],
-        "ClientName": "myuserpoolclient",
-        "ExplicitAuthFlows": [
-          "ALLOW_USER_PASSWORD_AUTH",
-          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
-          "ALLOW_CUSTOM_AUTH",
-          "ALLOW_USER_SRP_AUTH",
-          "ALLOW_REFRESH_TOKEN_AUTH"
-        ],
-        "GenerateSecret": true,
-        "PreventUserExistenceErrors": "ENABLED",
         "SupportedIdentityProviders": [
           "COGNITO"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "SignInUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "UserPoolDomainD0EA232A"
+            },
+            ".auth.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazoncognito.com/login?client_id=",
+            {
+              "Ref": "UserPoolUserPoolClient40176907"
+            },
+            "&response_type=code&redirect_uri=https://example.com"
+          ]
         ]
       }
     }

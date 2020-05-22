@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
@@ -528,7 +528,7 @@ export interface IUserPool extends IResource {
   /**
    * Create a user pool client.
    */
-  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
 }
 
 /**
@@ -547,7 +547,7 @@ export class UserPool extends Resource implements IUserPool {
         resourceName: userPoolId,
       });
 
-      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
+      public addClient(clientId: string, options?: UserPoolClientOptions): UserPoolClient {
         return new UserPoolClient(this, clientId, {
           userPool: this,
           ...options,
@@ -673,7 +673,7 @@ export class UserPool extends Resource implements IUserPool {
    * Add a new app client to this user pool.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
    */
-  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
       userPool: this,
       ...options,
