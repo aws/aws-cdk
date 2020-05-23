@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/core';
 import { Condition } from '../condition';
-import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
 
@@ -357,15 +356,6 @@ export abstract class State extends cdk.Construct implements IChainable {
       Parameters: this.parameters,
       OutputPath: renderJsonPath(this.outputPath),
     };
-  }
-
-  /**
-   * Render Parameters in ASL JSON format
-   */
-  protected renderParameters(): any {
-    return FieldUtils.renderObject({
-      Parameters: this.parameters,
-    });
   }
 
   /**
