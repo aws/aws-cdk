@@ -54,6 +54,13 @@ export interface BuilderOptions {
    * mounted in the Docker container.
    */
   readonly projectRoot: string;
+
+  /**
+   * The environment variables to pass to the container running Parcel.
+   *
+   * @default - no environment variables are passed to the container
+   */
+  readonly environment?: { [key: string]: string; };
 }
 
 /**
@@ -111,6 +118,7 @@ export class Builder {
         '-v', `${this.options.projectRoot}:${containerProjectRoot}`,
         '-v', `${path.resolve(this.options.outDir)}:${containerOutDir}`,
         ...(this.options.cacheDir ? ['-v', `${path.resolve(this.options.cacheDir)}:${containerCacheDir}`] : []),
+        ...flatten(Object.entries(this.options.environment || {}).map(([k, v]) => ['--env', `${k}=${v}`])),
         '-w', path.dirname(containerEntryPath),
         'parcel-bundler',
       ];
@@ -163,4 +171,8 @@ export class Builder {
   private restorePkg() {
     fs.writeFileSync(this.pkgPath, this.originalPkg);
   }
+}
+
+function flatten(x: string[][]) {
+  return Array.prototype.concat([], ...x);
 }
