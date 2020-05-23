@@ -36,6 +36,7 @@ describe('Bootstrapping v2', () => {
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: {
         FileAssetsBucketName: 'my-bucket-name',
+        PublicAccessBlockConfiguration: 'true',
       },
     }));
   });
@@ -50,6 +51,21 @@ describe('Bootstrapping v2', () => {
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: {
         FileAssetsBucketKmsKeyId: 'my-kms-key-id',
+        PublicAccessBlockConfiguration: 'true',
+      },
+    }));
+  });
+
+  test('passes false to PublicAccessBlockConfiguration', async () => {
+    await bootstrapEnvironment2(env, sdk, {
+      parameters: {
+        publicAccessBlockConfiguration: false,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: {
+        PublicAccessBlockConfiguration: 'false',
       },
     }));
   });

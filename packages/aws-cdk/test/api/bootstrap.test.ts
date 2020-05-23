@@ -55,6 +55,7 @@ test('do bootstrap', async () => {
   expect(bucketProperties.BucketName).toBeUndefined();
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -73,6 +74,7 @@ test('do bootstrap using custom bucket name', async () => {
   expect(bucketProperties.BucketName).toBe('foobar');
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -91,6 +93,26 @@ test('do bootstrap using KMS CMK', async () => {
   expect(bucketProperties.BucketName).toBeUndefined();
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBe('myKmsKey');
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+});
+
+test('bootstrap disable bucket Public Access Block Configuration', async () => {
+  // WHEN
+  const ret = await bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      publicAccessBlockConfiguration: false,
+    },
+  });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
@@ -109,6 +131,7 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
   expect(bucketProperties.BucketName).toBeUndefined();
   expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
     .toBeUndefined();
+  expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
 });
