@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as tasks from '../../lib';
+import { EmrCreateCluster } from '../../lib';
 
 let stack: cdk.Stack;
 let clusterRole: iam.Role;
@@ -36,14 +36,14 @@ beforeEach(() => {
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -82,14 +82,14 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
 
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -128,14 +128,14 @@ test('Create Cluster with SYNC integrationPattern', () => {
 
 test('Create Cluster with clusterConfiguration Name from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
     serviceRole,
     autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -174,7 +174,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
 
 test('Create Cluster with Tags', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
@@ -184,8 +184,8 @@ test('Create Cluster with Tags', () => {
       key: 'Key',
       value: 'Value',
     }],
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -228,7 +228,7 @@ test('Create Cluster with Tags', () => {
 
 test('Create Cluster with Applications', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
@@ -238,8 +238,8 @@ test('Create Cluster with Applications', () => {
       { name: 'Hive', version: '0.0' },
       { name: 'Spark', version: '0.0' },
     ],
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -282,7 +282,7 @@ test('Create Cluster with Applications', () => {
 
 test('Create Cluster with Bootstrap Actions', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
@@ -295,8 +295,8 @@ test('Create Cluster with Bootstrap Actions', () => {
         args: [ 'Arg' ],
       },
     }],
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -342,7 +342,7 @@ test('Create Cluster with Bootstrap Actions', () => {
 
 test('Create Cluster with Configurations', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
@@ -354,8 +354,8 @@ test('Create Cluster with Configurations', () => {
         Key: 'Value',
       },
     }],
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -400,7 +400,7 @@ test('Create Cluster with Configurations', () => {
 
 test('Create Cluster with KerberosAttributes', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
     name: 'Cluster',
@@ -413,8 +413,8 @@ test('Create Cluster with KerberosAttributes', () => {
       crossRealmTrustPrincipalPassword: 'password2',
       kdcAdminPassword: 'password3',
     },
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -460,12 +460,11 @@ test('Create Cluster with KerberosAttributes', () => {
 
 test('Create Cluster without Roles', () => {
   // WHEN
-  const createClusterTask = new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     name: 'Cluster',
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   });
-  const task = new sfn.Task(stack, 'Task', { task: createClusterTask});
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -563,7 +562,7 @@ test('Create Cluster without Roles', () => {
 
 test('Create Cluster with Instances configuration', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
       additionalMasterSecurityGroups: ['MasterGroup'],
       additionalSlaveSecurityGroups: ['SlaveGroup'],
@@ -587,8 +586,8 @@ test('Create Cluster with Instances configuration', () => {
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -644,10 +643,10 @@ test('Create Cluster with Instances configuration', () => {
 
 test('Create Cluster with InstanceFleet', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
       instanceFleets: [{
-        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
         instanceTypeConfigs: [{
           bidPrice: '1',
           bidPriceAsPercentageOfOnDemandPrice: 1,
@@ -662,7 +661,7 @@ test('Create Cluster with InstanceFleet', () => {
               volumeSpecification: {
                 iops: 1,
                 sizeInGB: 1,
-                volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
               },
               volumesPerInstance: 1,
             }],
@@ -674,7 +673,7 @@ test('Create Cluster with InstanceFleet', () => {
         launchSpecifications: {
           spotSpecification: {
             blockDurationMinutes: 1,
-            timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
             timeoutDurationMinutes: 1,
           },
         },
@@ -686,8 +685,8 @@ test('Create Cluster with InstanceFleet', () => {
     clusterRole,
     name: 'Cluster',
     serviceRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -759,7 +758,7 @@ test('Create Cluster with InstanceFleet', () => {
 
 test('Create Cluster with InstanceGroup', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.EmrCreateCluster({
+  const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
       instanceGroups: [{
         autoScalingPolicy: {
@@ -769,9 +768,9 @@ test('Create Cluster with InstanceGroup', () => {
           },
           rules: [{
             action: {
-              market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+              market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
               simpleScalingPolicyConfiguration: {
-                adjustmentType: tasks.EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
                 coolDown: 1,
                 scalingAdjustment: 1,
               },
@@ -780,7 +779,7 @@ test('Create Cluster with InstanceGroup', () => {
             name: 'Name',
             trigger: {
               cloudWatchAlarmDefinition: {
-                comparisonOperator: tasks.EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
                 dimensions: [{
                   key: 'Key',
                   value: 'Value',
@@ -789,16 +788,16 @@ test('Create Cluster with InstanceGroup', () => {
                 metricName: 'Name',
                 namespace: 'Namespace',
                 period: cdk.Duration.seconds(300),
-                statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
                 threshold: 1,
-                unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE,
+                unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
               },
             },
           }, {
             action: {
-              market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+              market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
               simpleScalingPolicyConfiguration: {
-                adjustmentType: tasks.EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
                 coolDown: 1,
                 scalingAdjustment: 1,
               },
@@ -807,7 +806,7 @@ test('Create Cluster with InstanceGroup', () => {
             name: 'Name',
             trigger: {
               cloudWatchAlarmDefinition: {
-                comparisonOperator: tasks.EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
                 dimensions: [{
                   key: 'Key',
                   value: 'Value',
@@ -816,9 +815,9 @@ test('Create Cluster with InstanceGroup', () => {
                 metricName: 'Name',
                 namespace: 'Namespace',
                 period: cdk.Duration.seconds(sfn.Data.numberAt('$.CloudWatchPeriod')),
-                statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
                 threshold: 1,
-                unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE,
+                unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
               },
             },
           }],
@@ -835,16 +834,16 @@ test('Create Cluster with InstanceGroup', () => {
             volumeSpecification: {
               iops: 1,
               sizeInGB: 1,
-              volumeType: tasks.EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
             },
             volumesPerInstance: 1,
           }],
           ebsOptimized: true,
         },
         instanceCount: 1,
-        instanceRole: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceRole: EmrCreateCluster.InstanceRoleType.MASTER,
         instanceType: 'm5.xlarge',
-        market: tasks.EmrCreateCluster.InstanceMarket.ON_DEMAND,
+        market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
         name: 'Name',
       }],
     },
@@ -852,8 +851,8 @@ test('Create Cluster with InstanceGroup', () => {
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }) });
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -978,15 +977,13 @@ test('Create Cluster with InstanceGroup', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new sfn.Task(stack, 'Task', {
-      task: new tasks.EmrCreateCluster({
-        instances: {},
-        clusterRole,
-        name: 'Cluster',
-        serviceRole,
-        autoScalingRole,
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      }),
+    new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call CreateCluster./i);
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });

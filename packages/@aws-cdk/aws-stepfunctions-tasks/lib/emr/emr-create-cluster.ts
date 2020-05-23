@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for EmrCreateCluster
@@ -12,7 +12,7 @@ import { getResourceArn } from '../resource-arn-suffix';
  *
  * @experimental
  */
-export interface EmrCreateClusterProps {
+export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   /**
    * A specification of the number and type of Amazon EC2 instances.
    */
@@ -138,15 +138,6 @@ export interface EmrCreateClusterProps {
    * @default true
    */
   readonly visibleToAllUsers?: boolean;
-
-  /**
-   * The service integration pattern indicates different ways to call CreateCluster.
-   *
-   * The valid value is either FIRE_AND_FORGET or SYNC.
-   *
-   * @default SYNC
-   */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -158,31 +149,32 @@ export interface EmrCreateClusterProps {
  *
  * @experimental
  */
-export class EmrCreateCluster implements sfn.IStepFunctionsTask {
+export class EmrCreateCluster extends sfn.TaskStateBase {
+
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+    sfn.IntegrationPattern.REQUEST_RESPONSE,
+    sfn.IntegrationPattern.RUN_JOB,
+  ];
+
+  protected taskPolicies?: iam.PolicyStatement[];
+  protected taskMetrics?: sfn.TaskMetricsConfig;
 
   private readonly visibleToAllUsers: boolean;
-  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.IntegrationPattern;
 
   private _serviceRole?: iam.IRole;
   private _clusterRole?: iam.IRole;
   private _autoScalingRole?: iam.IRole;
 
-  constructor(private readonly props: EmrCreateClusterProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: EmrCreateClusterProps) {
+    super(scope, id, props);
     this.visibleToAllUsers = (this.props.visibleToAllUsers !== undefined) ? this.props.visibleToAllUsers : true;
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
+    this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
+    validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this._serviceRole = this.props.serviceRole;
     this._clusterRole = this.props.clusterRole;
     this._autoScalingRole = this.props.autoScalingRole;
-
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
-
-    if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call CreateCluster.`);
-    }
   }
 
   /**
@@ -221,24 +213,25 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
     return this._autoScalingRole;
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  protected renderTask(): any {
     // If the Roles are undefined then they weren't provided, so create them
-    this._serviceRole = this._serviceRole || this.createServiceRole(task);
-    this._clusterRole = this._clusterRole || this.createClusterRole(task);
+    this._serviceRole = this._serviceRole || this.createServiceRole();
+    this._clusterRole = this._clusterRole || this.createClusterRole();
 
     // AutoScaling roles are not valid with InstanceFleet clusters.
     // Attempt to create only if .instances.instanceFleets is undefined or empty
     if (this.props.instances.instanceFleets === undefined || this.props.instances.instanceFleets.length === 0) {
-      this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole(task);
+      this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
     // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
     } else if (this._autoScalingRole !== undefined) {
       throw new Error('Auto Scaling roles can not be specified with instance fleets.');
     }
 
+    this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
+
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
-      policyStatements: this.createPolicyStatements(task, this._serviceRole, this._clusterRole, this._autoScalingRole),
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         Instances: EmrCreateCluster.InstancesConfigPropertyToJson(this.props.instances),
         JobFlowRole: cdk.stringToCloudFormation(this._clusterRole.roleName),
         Name: cdk.stringToCloudFormation(this.props.name),
@@ -259,7 +252,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
         Tags: cdk.listMapper(cdk.cfnTagToCloudFormation)(this.props.tags),
         VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
-      },
+      }),
     };
   }
 
@@ -267,9 +260,9 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    * This generates the PolicyStatements required by the Task to call CreateCluster.
    */
   private createPolicyStatements(
-    task: sfn.Task, serviceRole: iam.IRole, clusterRole: iam.IRole,
+    serviceRole: iam.IRole, clusterRole: iam.IRole,
     autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
-    const stack = cdk.Stack.of(task);
+    const stack = cdk.Stack.of(this);
 
     const policyStatements = [
       new iam.PolicyStatement({
@@ -297,7 +290,7 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
       }));
     }
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
         resources: [stack.formatArn({
@@ -314,8 +307,8 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
   /**
    * Generate the Role used by the EMR Service
    */
-  private createServiceRole(task: sfn.Task): iam.IRole {
-    return new iam.Role(task, 'ServiceRole', {
+  private createServiceRole(): iam.IRole {
+    return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
@@ -328,12 +321,12 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
    *
    * Data access permissions will need to be updated by the user
    */
-  private createClusterRole(task: sfn.Task): iam.IRole {
-    const role = new iam.Role(task, 'InstanceRole', {
+  private createClusterRole(): iam.IRole {
+    const role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    new iam.CfnInstanceProfile(task, 'InstanceProfile', {
+    new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ role.roleName ],
       instanceProfileName: role.roleName,
     });
@@ -344,8 +337,8 @@ export class EmrCreateCluster implements sfn.IStepFunctionsTask {
   /**
    * Generate the Role used to AutoScale the Cluster
    */
-  private createAutoScalingRole(task: sfn.Task): iam.IRole {
-    const role = new iam.Role(task, 'AutoScalingRole', {
+  private createAutoScalingRole(): iam.IRole {
+    const role = new iam.Role(this, 'AutoScalingRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole'),
