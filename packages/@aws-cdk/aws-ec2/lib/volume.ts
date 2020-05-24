@@ -90,6 +90,15 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The identifier (key ID, key alias, ID ARN, or alias ARN) of the AWS Key Management Service (AWS KMS)
+   * customer master key (CMK) to use for Amazon EBS encryption.
+   * If this parameter is not specified, your AWS managed CMK for EBS is used.
+   *
+   * @default None
+   */
+  readonly kmsKeyId?: string;
 }
 
 /**
@@ -129,6 +138,10 @@ export class BlockDeviceVolume {
    * @param options additional device options
    */
   public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
+    // If KmsKeyId is specified, the encrypted state must be true.
+    if (options.kmsKeyId && !options.encrypted) {
+      (options.encrypted as boolean) = true; // Encryption is implied if KMS key is specified.
+    }
     return new this({ ...options, volumeSize });
   }
 

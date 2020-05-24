@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert';
+import * as kms from '@aws-cdk/aws-kms';
 import '@aws-cdk/assert/jest';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
@@ -196,6 +197,153 @@ nodeunitShim({
               DeleteOnTermination: true,
               Encrypted: true,
               Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-snapshot',
+            Ebs: {
+              DeleteOnTermination: false,
+              SnapshotId: 'snapshot-id',
+              VolumeSize: 500,
+              VolumeType: 'sc1',
+            },
+            NoDevice: {},
+          },
+          {
+            DeviceName: 'ephemeral',
+            VirtualName: 'ephemeral0',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can set customer managed CMK'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'CustomKey');
+
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            kmsKeyId:  key.keyArn,
+            volumeType: EbsDeviceVolumeType.IO1,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-snapshot',
+          mappingEnabled: false,
+          volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+            volumeSize: 500,
+            deleteOnTermination: false,
+            volumeType: EbsDeviceVolumeType.SC1,
+          }),
+        }, {
+          deviceName: 'ephemeral',
+          volume: BlockDeviceVolume.ephemeral(0),
+        }],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
+        BlockDeviceMappings: [
+          {
+            DeviceName: 'ebs',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              Iops: 5000,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'CustomKey1E6D0D07',
+                  'Arn',
+                ],
+              },
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-snapshot',
+            Ebs: {
+              DeleteOnTermination: false,
+              SnapshotId: 'snapshot-id',
+              VolumeSize: 500,
+              VolumeType: 'sc1',
+            },
+            NoDevice: {},
+          },
+          {
+            DeviceName: 'ephemeral',
+            VirtualName: 'ephemeral0',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'when specifying only kmsKeyId'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'CustomKey');
+
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            kmsKeyId:  key.keyArn,
+            volumeType: EbsDeviceVolumeType.IO1,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-snapshot',
+          mappingEnabled: false,
+          volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+            volumeSize: 500,
+            deleteOnTermination: false,
+            volumeType: EbsDeviceVolumeType.SC1,
+          }),
+        }, {
+          deviceName: 'ephemeral',
+          volume: BlockDeviceVolume.ephemeral(0),
+        }],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
+        BlockDeviceMappings: [
+          {
+            DeviceName: 'ebs',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              Iops: 5000,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'CustomKey1E6D0D07',
+                  'Arn',
+                ],
+              },
               VolumeSize: 15,
               VolumeType: 'io1',
             },
