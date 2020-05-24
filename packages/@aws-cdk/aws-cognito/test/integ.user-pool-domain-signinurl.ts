@@ -3,7 +3,8 @@ import { UserPool } from '../lib';
 
 /*
  * Stack verification steps:
- * * Run the command 'curl -sS -D - <stack output SignInUrl>' should return HTTP/2 200
+ * * Run the command `curl -sS -D - '<stack output SignInUrl>' -o /dev/null` should return HTTP/2 200.
+ * * It didn't work if it returns 302 or 400.
  */
 
 const app = new App();
