@@ -70,6 +70,23 @@ describe('Task utils', () => {
       });
     });
 
+    test('get resourceArn for a Step Functions start execution run job integration pattern', () => {
+      // WHEN
+      const resourceArn = integrationResourceArn('states', 'startExecution', IntegrationPattern.RUN_JOB);
+
+      // THEN
+      expect(stack.resolve(resourceArn)).toEqual({
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {Ref: 'AWS::Partition'},
+            ':states:::states:startExecution.sync:2',
+          ],
+        ],
+      });
+    });
+
     test('get resourceArn for a wait for task token integration pattern', () => {
       // WHEN
       const resourceArn = integrationResourceArn(service, api, IntegrationPattern.WAIT_FOR_TASK_TOKEN);

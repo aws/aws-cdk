@@ -1,6 +1,4 @@
-import {
-  IntegrationPattern,
-} from '@aws-cdk/aws-stepfunctions';
+import { IntegrationPattern } from '@aws-cdk/aws-stepfunctions';
 import { Aws } from '@aws-cdk/core';
 
 /**
@@ -30,6 +28,7 @@ export function integrationResourceArn(service: string, api: string, integration
   if (!service || !api) {
     throw new Error("Both 'service' and 'api' must be provided to build the resource ARN.");
   }
-  return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
-        (integrationPattern ? resourceArnSuffix[integrationPattern] : '');
+  const integrationSuffix = service === 'states' && integrationPattern === IntegrationPattern.RUN_JOB ? ':2' : '';
+
+  return `arn:${Aws.PARTITION}:states:::${service}:${api}` + (integrationPattern ? resourceArnSuffix[integrationPattern] : '') + integrationSuffix;
 }

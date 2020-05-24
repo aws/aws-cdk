@@ -728,15 +728,14 @@ const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
 });
 
 // Include the state machine in a Task state with callback pattern
-const task = new sfn.Task(stack, 'ChildTask', {
-  task: new tasks.ExecuteStateMachine(child, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    input: {
-      token: sfn.Context.taskToken,
-      foo: 'bar'
-    },
-    name: 'MyExecutionName'
-  })
+const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+  stateMachine: child,
+  integrationPattern: sfn.ServiceIntegration.WAIT_FOR_TASK_TOKEN,
+  input: sfn.TaskInput.fromObject({
+    token: sfn.Context.taskToken,
+    foo: 'bar'
+  }),
+  name: 'MyExecutionName'
 });
 
 // Define a second state machine with the Task state above
