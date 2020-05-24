@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { getResourceArn } from '../resource-arn-suffix';
-import { EmrCreateCluster } from './create-cluster';
+import { EmrCreateCluster } from './emr-create-cluster';
 
 /**
  * Properties for EmrModifyInstanceGroupByName

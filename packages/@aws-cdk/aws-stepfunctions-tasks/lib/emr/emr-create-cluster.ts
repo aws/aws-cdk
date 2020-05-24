@@ -130,7 +130,7 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    *
    * @default No Tags
    */
-  readonly tags?: cdk.CfnTag[];
+  readonly tags?: Tag[];
 
   /**
    * A value of true indicates that all IAM users in the AWS account can perform cluster actions if they have the proper IAM policy permissions.
@@ -138,6 +138,23 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * @default true
    */
   readonly visibleToAllUsers?: boolean;
+}
+
+/**
+ * Applied to EC2 instances
+ */
+export interface Tag {
+  /**
+   * The key name of the tag. You can specify a value that is 1 to 128 Unicode
+   * characters in length and cannot be prefixed with aws:
+   */
+  readonly key: string;
+
+  /**
+   * The value for the tag. You can specify a value that is 0 to 256 Unicode
+   * characters in length and cannot be prefixed with aws:
+   */
+  readonly value: string;
 }
 
 /**
@@ -156,14 +173,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected taskPolicies?: iam.PolicyStatement[];
-  protected taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
   private readonly visibleToAllUsers: boolean;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  private _serviceRole?: iam.IRole;
-  private _clusterRole?: iam.IRole;
+  private _serviceRole: iam.IRole;
+  private _clusterRole: iam.IRole;
   private _autoScalingRole?: iam.IRole;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: EmrCreateClusterProps) {
@@ -172,9 +189,22 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
     validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
-    this._serviceRole = this.props.serviceRole;
-    this._clusterRole = this.props.clusterRole;
     this._autoScalingRole = this.props.autoScalingRole;
+
+    // If the Roles are undefined then they weren't provided, so create them
+    this._serviceRole = this.props.serviceRole ?? this.createServiceRole();
+    this._clusterRole = this.props.clusterRole ?? this.createClusterRole();
+
+    // AutoScaling roles are not valid with InstanceFleet clusters.
+    // Attempt to create only if .instances.instanceFleets is undefined or empty
+    if (this.props.instances.instanceFleets === undefined || this.props.instances.instanceFleets.length === 0) {
+      this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
+      // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
+    } else if (this._autoScalingRole !== undefined) {
+      throw new Error('Auto Scaling roles can not be specified with instance fleets.');
+    }
+
+    this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
   }
 
   /**
@@ -214,20 +244,6 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   }
 
   protected renderTask(): any {
-    // If the Roles are undefined then they weren't provided, so create them
-    this._serviceRole = this._serviceRole || this.createServiceRole();
-    this._clusterRole = this._clusterRole || this.createClusterRole();
-
-    // AutoScaling roles are not valid with InstanceFleet clusters.
-    // Attempt to create only if .instances.instanceFleets is undefined or empty
-    if (this.props.instances.instanceFleets === undefined || this.props.instances.instanceFleets.length === 0) {
-      this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
-    // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
-    } else if (this._autoScalingRole !== undefined) {
-      throw new Error('Auto Scaling roles can not be specified with instance fleets.');
-    }
-
-    this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
