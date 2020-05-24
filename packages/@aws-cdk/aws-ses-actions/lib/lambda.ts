@@ -1,8 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * The type of invocation to use for a Lambda Action.
@@ -61,7 +61,7 @@ export class Lambda implements ses.IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: cdk.Aws.ACCOUNT_ID
+        sourceAccount: cdk.Aws.ACCOUNT_ID,
       });
     }
 
@@ -78,8 +78,8 @@ export class Lambda implements ses.IReceiptRuleAction {
       lambdaAction: {
         functionArn: this.props.function.functionArn,
         invocationType: this.props.invocationType,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

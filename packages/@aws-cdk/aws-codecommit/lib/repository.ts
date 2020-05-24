@@ -1,4 +1,5 @@
-import events = require('@aws-cdk/aws-events');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 
@@ -76,6 +77,26 @@ export interface IRepository extends IResource {
    * Defines a CloudWatch event rule which triggers when a commit is pushed to a branch.
    */
   onCommit(id: string, options?: OnCommitOptions): events.Rule;
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull this repository.
+   */
+  grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull and push this repository.
+   */
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to read this repository.
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -121,7 +142,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: [ 'aws.codecommit' ],
-      resources: [ this.repositoryArn ]
+      resources: [ this.repositoryArn ],
     });
     rule.addTarget(options.target);
     return rule;
@@ -205,6 +226,32 @@ abstract class RepositoryBase extends Resource implements IRepository {
       rule.addEventPattern({ detail: { referenceName: options.branches }});
     }
     return rule;
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+    });
+  }
+
+  public grantPull(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'codecommit:GitPull');
+  }
+
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee, 'codecommit:GitPush');
+  }
+
+  public grantRead(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      'codecommit:EvaluatePullRequestApprovalRules',
+      'codecommit:Get*',
+      'codecommit:Describe*',
+    );
   }
 }
 
@@ -342,9 +389,9 @@ export class Repository extends RepositoryBase {
  * Creates for a repository trigger to an SNS topic or Lambda function.
  */
 export interface RepositoryTriggerOptions {
-   /**
-    * A name for the trigger.Triggers on a repository must have unique names
-    */
+  /**
+   * A name for the trigger.Triggers on a repository must have unique names
+   */
   readonly name?: string;
 
   /**

@@ -1,22 +1,26 @@
+import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
 describe('IAM policy', () => {
-  test('fails when policy is empty', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-    new Policy(stack, 'MyPolicy');
+  let app: App;
+  let stack: Stack;
 
-    expect(() => app.synth()).toThrow(/Policy is empty/);
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'MyStack');
+  });
+
+  test('fails when "forced" policy is empty', () => {
+    new Policy(stack, 'MyPolicy', { force: true });
+
+    expect(() => app.synth()).toThrow(/is empty/);
   });
 
   test('policy with statements', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-
     const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
@@ -27,21 +31,18 @@ describe('IAM policy', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
-          PolicyDocument:
+            PolicyDocument:
            { Statement:
             [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
               { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyPolicyName' } },
-        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } } });
+           Version: '2012-10-17' },
+            PolicyName: 'MyPolicyName' } },
+      MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } } });
   });
 
   test('policy name can be omitted, in which case the logical id will be used', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-
     const policy = new Policy(stack, 'MyPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
@@ -52,26 +53,22 @@ describe('IAM policy', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { PolicyDocument:
            { Statement:
             [ { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
               { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' } ],
-             Version: '2012-10-17' },
+           Version: '2012-10-17' },
           PolicyName: 'MyPolicy39D66CF6',
           Users: [ { Ref: 'MyUserDC45028B' } ] } },
-        MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
+      MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
   });
 
   test('policy can be attached users, groups and roles and added permissions via props', () => {
-    const app = new App();
-
-    const stack = new Stack(app, 'MyStack');
-
     const user1 = new User(stack, 'User1');
     const group1 = new Group(stack, 'Group1');
     const role1 = new Role(stack, 'Role1', {
-      assumedBy: new ServicePrincipal('test.service')
+      assumedBy: new ServicePrincipal('test.service'),
     });
 
     new Policy(stack, 'MyTestPolicy', {
@@ -87,29 +84,27 @@ describe('IAM policy', () => {
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
         Role13A5C70C1:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
-             Version: '2012-10-17' } } },
+           Version: '2012-10-17' } } },
         MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { Groups: [ { Ref: 'Group1BEBD4686' } ],
-          PolicyDocument:
+            PolicyDocument:
            { Statement:
             [ { Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'Foo',
-          Roles: [ { Ref: 'Role13A5C70C1' } ],
-          Users: [ { Ref: 'User1E278A736' } ] } } } });
+           Version: '2012-10-17' },
+            PolicyName: 'Foo',
+            Roles: [ { Ref: 'Role13A5C70C1' } ],
+            Users: [ { Ref: 'User1E278A736' } ] } } } });
   });
 
   test('idempotent if a principal (user/group/role) is attached twice', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
     const p = new Policy(stack, 'MyPolicy');
     p.addStatements(new PolicyStatement({ actions: ['*'], resources: ['*'] }));
 
@@ -120,20 +115,16 @@ describe('IAM policy', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { PolicyDocument:
            { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
              Version: '2012-10-17' },
           PolicyName: 'MyPolicy39D66CF6',
           Users: [ { Ref: 'MyUserDC45028B' } ] } },
-        MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
+      MyUserDC45028B: { Type: 'AWS::IAM::User' } } });
   });
 
   test('users, groups, roles and permissions can be added using methods', () => {
-    const app = new App();
-
-    const stack = new Stack(app, 'MyStack');
-
     const p = new Policy(stack, 'MyTestPolicy', {
       policyName: 'Foo',
     });
@@ -147,33 +138,30 @@ describe('IAM policy', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { Groups: [ { Ref: 'Group1BEBD4686' } ],
-          PolicyDocument:
+            PolicyDocument:
            { Statement:
             [ { Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'Foo',
-          Roles: [ { Ref: 'Role13A5C70C1' } ],
-          Users: [ { Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' } ] } },
-        User1E278A736: { Type: 'AWS::IAM::User' },
-        User21F1486D1: { Type: 'AWS::IAM::User' },
-        Group1BEBD4686: { Type: 'AWS::IAM::Group' },
-        Role13A5C70C1:
+           Version: '2012-10-17' },
+            PolicyName: 'Foo',
+            Roles: [ { Ref: 'Role13A5C70C1' } ],
+            Users: [ { Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' } ] } },
+      User1E278A736: { Type: 'AWS::IAM::User' },
+      User21F1486D1: { Type: 'AWS::IAM::User' },
+      Group1BEBD4686: { Type: 'AWS::IAM::Group' },
+      Role13A5C70C1:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
-             Version: '2012-10-17' } } } } });
+           Version: '2012-10-17' } } } } });
   });
 
   test('policy can be attached to users, groups or role via methods on the principal', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-
     const policy = new Policy(stack, 'MyPolicy');
     const user = new User(stack, 'MyUser');
     const group = new Group(stack, 'MyGroup');
@@ -188,31 +176,28 @@ describe('IAM policy', () => {
     expect(stack).toMatchTemplate({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
-         Properties:
+           Properties:
           { Groups: [ { Ref: 'MyGroupCBA54B1B' } ],
-          PolicyDocument:
+            PolicyDocument:
            { Statement: [ { Action: '*', Effect: 'Allow', Resource: '*' } ],
              Version: '2012-10-17' },
-          PolicyName: 'MyPolicy39D66CF6',
-          Roles: [ { Ref: 'MyRoleF48FFE04' } ],
-          Users: [ { Ref: 'MyUserDC45028B' } ] } },
-        MyUserDC45028B: { Type: 'AWS::IAM::User' },
-        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
-        MyRoleF48FFE04:
+            PolicyName: 'MyPolicy39D66CF6',
+            Roles: [ { Ref: 'MyRoleF48FFE04' } ],
+            Users: [ { Ref: 'MyUserDC45028B' } ] } },
+      MyUserDC45028B: { Type: 'AWS::IAM::User' },
+      MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+      MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
-             Version: '2012-10-17' } } } } });
+           Version: '2012-10-17' } } } } });
   });
 
   test('fails if policy name is not unique within a user/group/role', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-
     // create two policies named Foo and attach them both to the same user/group/role
     const p1 = new Policy(stack, 'P1', { policyName: 'Foo' });
     const p2 = new Policy(stack, 'P2', { policyName: 'Foo' });
@@ -236,33 +221,27 @@ describe('IAM policy', () => {
     p3.attachToRole(role);
   });
 
-  test('fails if policy is not attached to a principal', () => {
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-    new Policy(stack, 'MyPolicy');
-    expect(() => app.synth()).toThrow(/Policy must be attached to at least one principal: user, group or role/);
+  test('fails if "forced" policy is not attached to a principal', () => {
+    new Policy(stack, 'MyPolicy', { force: true });
+    expect(() => app.synth()).toThrow(/attached to at least one principal: user, group or role/);
   });
 
   test("generated policy name is the same as the logical id if it's shorter than 128 characters", () => {
-    const stack = new Stack();
-
     createPolicyWithLogicalId(stack, 'Foo');
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      "PolicyName": "Foo",
+      'PolicyName': 'Foo',
     });
   });
 
   test('generated policy name only uses the last 128 characters of the logical id', () => {
-    const stack = new Stack();
-
     const logicalId128 = 'a' + dup(128 - 2) + 'a';
     const logicalIdOver128 = 'PREFIX' + logicalId128;
 
     createPolicyWithLogicalId(stack, logicalIdOver128);
 
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      "PolicyName": logicalId128,
+      'PolicyName': logicalId128,
     });
 
     function dup(count: number) {
@@ -272,6 +251,64 @@ describe('IAM policy', () => {
       }
       return r;
     }
+  });
+
+  test('force=false, dependency on empty Policy never materializes', () => {
+    // GIVEN
+    const pol = new Policy(stack, 'Pol', { force: false });
+
+    const res = new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    res.node.addDependency(pol);
+
+    // THEN
+    expect(stack).toMatchTemplate({
+      Resources: {
+        Resource: {
+          Type: 'Some::Resource',
+        },
+      },
+    });
+  });
+
+  test('force=false, dependency on attached and non-empty Policy can be taken', () => {
+    // GIVEN
+    const pol = new Policy(stack, 'Pol', { force: false });
+    pol.addStatements(new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['*'],
+    }));
+    pol.attachToUser(new User(stack, 'User'));
+
+    const res = new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+    });
+
+    // WHEN
+    res.node.addDependency(pol);
+
+    // THEN
+    expect(stack).toHaveResource('Some::Resource', {
+      Type: 'Some::Resource',
+      DependsOn: [ 'Pol0FE9AD5D' ],
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('empty policy is OK if force=false', () => {
+    new Policy(stack, 'Pol', { force: false });
+
+    app.synth();
+    // If we got here, all OK
+  });
+
+  test('reading policyName forces a Policy to materialize', () => {
+    const pol = new Policy(stack, 'Pol', { force: false });
+    Array.isArray(pol.policyName);
+
+    expect(() => app.synth()).toThrow(/must contain at least one statement/);
   });
 });
 

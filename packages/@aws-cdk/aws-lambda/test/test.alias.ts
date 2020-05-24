@@ -1,8 +1,8 @@
 import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import lambda = require('../lib');
+import * as lambda from '../lib';
 
 export = {
   'version and aliases'(test: Test): void {
@@ -10,7 +10,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('1');
@@ -22,19 +22,19 @@ export = {
 
     expect(stack).to(beASupersetOfTemplate({
       MyLambdaVersion16CDE3C40: {
-        Type: "AWS::Lambda::Version",
+        Type: 'AWS::Lambda::Version',
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" }
-        }
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
         },
-        Alias325C5727: {
-        Type: "AWS::Lambda::Alias",
+      },
+      Alias325C5727: {
+        Type: 'AWS::Lambda::Alias',
         Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" },
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
           FunctionVersion: stack.resolve(version.version),
-          Name: "prod"
-        }
-        }
+          Name: 'prod',
+        },
+      },
     }));
 
     test.done();
@@ -45,7 +45,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     new lambda.Alias(stack, 'Alias', {
@@ -54,7 +54,7 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: '$LATEST',
       Name: 'latest',
     }));
@@ -68,7 +68,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('NewVersion');
@@ -79,12 +79,12 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Version', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
     }));
 
     expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
-      Name: "prod"
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
+      Name: 'prod',
     }));
 
     test.done();
@@ -96,7 +96,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version1 = fn.addVersion('1');
@@ -105,7 +105,7 @@ export = {
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version: version1,
-      additionalVersions: [{ version: version2, weight: 0.1 }]
+      additionalVersions: [{ version: version2, weight: 0.1 }],
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
@@ -113,23 +113,66 @@ export = {
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: stack.resolve(version2.version),
-          FunctionWeight: 0.1
-          }
-        ]
-        }
+            FunctionVersion: stack.resolve(version2.version),
+            FunctionWeight: 0.1,
+          },
+        ],
+      },
     }));
 
     test.done();
   },
+  'version and aliases with provisioned execution'(test: Test): void {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
 
+    const pce = 5;
+    const version = fn.addVersion('1', undefined, 'testing', pce);
+
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: pce,
+    });
+
+    expect(stack).to(beASupersetOfTemplate({
+      MyLambdaVersion16CDE3C40: {
+        Type: 'AWS::Lambda::Version',
+        Properties: {
+          FunctionName: {
+            Ref: 'MyLambdaCCE802FB',
+          },
+          ProvisionedConcurrencyConfig: {
+            ProvisionedConcurrentExecutions: 5,
+          },
+        },
+      },
+      Alias325C5727: {
+        Type: 'AWS::Lambda::Alias',
+        Properties: {
+          FunctionName: { Ref: 'MyLambdaCCE802FB' },
+          FunctionVersion: stack.resolve(version.version),
+          Name: 'prod',
+          ProvisionedConcurrencyConfig: {
+            ProvisionedConcurrentExecutions: 5,
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
   'sanity checks on version weights'(test: Test) {
     const stack = new Stack();
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('1');
@@ -138,7 +181,7 @@ export = {
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod', version,
-        additionalVersions: [{ version, weight: 5 }]
+        additionalVersions: [{ version, weight: 5 }],
       });
     });
 
@@ -146,7 +189,7 @@ export = {
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
         aliasName: 'prod', version,
-        additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }]
+        additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
     });
 
@@ -160,7 +203,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('1');
@@ -171,29 +214,66 @@ export = {
       metric: alias.metric('Test'),
       alarmName: 'Test',
       threshold: 1,
-      evaluationPeriods: 1
+      evaluationPeriods: 1,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       Dimensions: [{
-        Name: "FunctionName",
+        Name: 'FunctionName',
         Value: {
-          Ref: "MyLambdaCCE802FB"
-        }
+          Ref: 'MyLambdaCCE802FB',
+        },
       }, {
-        Name: "Resource",
+        Name: 'Resource',
         Value: {
           'Fn::Join': [
             '',
             [
-              { Ref: "MyLambdaCCE802FB" },
-              ':prod'
-            ]
-          ]
-        }
-      }]
+              { Ref: 'MyLambdaCCE802FB' },
+              ':prod',
+            ],
+          ],
+        },
+      }],
     }));
+
+    test.done();
+  },
+
+  'sanity checks provisionedConcurrentExecutions'(test: Test) {
+    const stack = new Stack();
+    const pce = -1;
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN: Alias provisionedConcurrencyConfig less than 0
+    test.throws(() => {
+      new lambda.Alias(stack, 'Alias1', {
+        aliasName: 'prod',
+        version: fn.addVersion('1'),
+        provisionedConcurrentExecutions: pce,
+      });
+    });
+
+    // WHEN: Version provisionedConcurrencyConfig less than 0
+    test.throws(() => {
+      new lambda.Version(stack, 'Version 1', {
+        lambda: fn,
+        codeSha256: undefined,
+        description: undefined,
+        provisionedConcurrentExecutions: pce,
+      });
+    });
+
+    // WHEN: Adding a version provisionedConcurrencyConfig less than 0
+    test.throws(() => {
+      fn.addVersion('1', undefined, undefined, pce);
+    });
 
     test.done();
   },
@@ -205,7 +285,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('1');
@@ -224,7 +304,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const version = fn.addVersion('1');
@@ -232,27 +312,122 @@ export = {
 
     // WHEN
     test.deepEqual(stack.resolve(alias.functionName), {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
           {
-            "Fn::Select": [
+            'Fn::Select': [
               6,
               {
-                "Fn::Split": [
-                  ":",
+                'Fn::Split': [
+                  ':',
                   {
-                    Ref: "Alias325C5727"
-                  }
-                ]
-              }
-            ]
+                    Ref: 'Alias325C5727',
+                  },
+                ],
+              },
+            ],
           },
-          ":prod"
-        ]
-      ]
+          ':prod',
+        ],
+      ],
     });
 
     test.done();
-  }
+  },
+
+  'with event invoke config'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = fn.addVersion('1');
+
+    // WHEN
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      onSuccess: {
+        bind: () => ({
+          destination: 'on-success-arn',
+        }),
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: {
+        Ref: 'fn5FF616E3',
+      },
+      Qualifier: {
+        'Fn::Select': [
+          7,
+          {
+            'Fn::Split': [
+              ':',
+              {
+                Ref: 'Alias325C5727',
+              },
+            ],
+          },
+        ],
+      },
+      DestinationConfig: {
+        OnSuccess: {
+          Destination: 'on-success-arn',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'throws when calling configureAsyncInvoke on already configured alias'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      onSuccess: {
+        bind: () => ({
+          destination: 'on-success-arn',
+        }),
+      },
+    });
+
+    // THEN
+    test.throws(() => alias.configureAsyncInvoke({ retryAttempts: 0 }), /An EventInvokeConfig has already been configured/);
+
+    test.done();
+  },
+
+  'event invoke config on imported alias'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const fn = lambda.Version.fromVersionArn(stack, 'Fn', 'arn:aws:lambda:region:account-id:function:function-name:version');
+    const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias-name', aliasVersion: fn });
+
+    // WHEN
+    alias.configureAsyncInvoke({
+      retryAttempts: 1,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+      FunctionName: 'function-name',
+      Qualifier: 'alias-name',
+      MaximumRetryAttempts: 1,
+    }));
+
+    test.done();
+  },
 };

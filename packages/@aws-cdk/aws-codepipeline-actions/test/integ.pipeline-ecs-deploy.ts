@@ -1,11 +1,11 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecr = require('@aws-cdk/aws-ecr');
-import ecs = require('@aws-cdk/aws-ecs');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 1,
 });
-const cluster = new ecs.Cluster(stack, "EcsCluster", {
+const cluster = new ecs.Cluster(stack, 'EcsCluster', {
   vpc,
 });
 const repository = new ecr.Repository(stack, 'EcrRepo');
@@ -72,6 +72,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
       value: repository.repositoryUri,
     },
   },
+  grantReportGroupPermissions: false,
 });
 // needed for `docker push`
 repository.grantPullPush(project);

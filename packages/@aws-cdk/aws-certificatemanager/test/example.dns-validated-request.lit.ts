@@ -1,6 +1,6 @@
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import certmgr = require('../lib');
+import * as certmgr from '../lib';
 
 class CertStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -8,12 +8,12 @@ class CertStack extends Stack {
     /// !show
     const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
       domainName: 'example.com',
-      privateZone: false
+      privateZone: false,
     });
 
     const certificate = new certmgr.DnsValidatedCertificate(this, 'TestCertificate', {
-        domainName: 'test.example.com',
-        hostedZone,
+      domainName: 'test.example.com',
+      hostedZone,
     });
     /// !hide
 

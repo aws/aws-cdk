@@ -1,8 +1,10 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct, Stack, Token } from '@aws-cdk/core';
-import crypto = require('crypto');
+import * as crypto from 'crypto';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
+const KUBECTL_APP_CN_ARN = 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl';
+
 const KUBECTL_APP_VERSION = '1.13.7';
 
 export interface KubectlLayerProps {
@@ -26,7 +28,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
    */
   public static getOrCreate(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
     const stack = Stack.of(scope);
-    const id = 'kubectl-layer-8C2542BC-BF2B-4DFE-B765-E181FD30A9A0';
+    const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
     const exists = stack.node.tryFindChild(id) as KubectlLayer;
     if (exists) {
       return exists;
@@ -48,7 +50,7 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
   constructor(scope: Construct, id: string, props: KubectlLayerProps = {}) {
     super(scope, id);
 
-    const uniqueId = crypto.createHash('md5').update(this.node.path).digest("hex");
+    const uniqueId = crypto.createHash('md5').update(this.node.path).digest('hex');
     const version = props.version || KUBECTL_APP_VERSION;
 
     this.stack.templateOptions.transforms = [ 'AWS::Serverless-2016-10-31' ]; // required for AWS::Serverless
@@ -56,13 +58,13 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
       type: 'AWS::Serverless::Application',
       properties: {
         Location: {
-          ApplicationId: KUBECTL_APP_ARN,
-          SemanticVersion: version
+          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN :  KUBECTL_APP_ARN,
+          SemanticVersion: version,
         },
         Parameters: {
-          LayerName: `kubectl-${uniqueId}`
-        }
-      }
+          LayerName: `kubectl-${uniqueId}`,
+        },
+      },
     });
 
     this.layerVersionArn = Token.asString(resource.getAtt('Outputs.LayerVersionArn'));
@@ -74,5 +76,10 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
 
   public addPermission(_id: string, _permission: lambda.LayerVersionPermission): void {
     return;
+  }
+
+  public isChina(): boolean {
+    const region = this.stack.region;
+    return !Token.isUnresolved(region) && region.startsWith('cn-');
   }
 }

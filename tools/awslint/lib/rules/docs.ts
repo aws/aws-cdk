@@ -1,4 +1,4 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { CoreTypes } from './core-types';
 
@@ -98,6 +98,6 @@ function isCfnType(ctx: DocsLinterContext) {
   }
 }
 
-function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => U[]): U[] {
+function flatMap<T, U>(array: readonly T[], callbackfn: (value: T, index: number, array: readonly T[]) => U[]): U[] {
   return Array.prototype.concat(...array.map(callbackfn));
 }

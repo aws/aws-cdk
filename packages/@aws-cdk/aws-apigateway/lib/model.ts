@@ -1,8 +1,8 @@
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
-import jsonSchema = require('./json-schema');
+import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
-import util = require('./util');
+import * as util from './util';
 
 export interface IModel {
   /**
@@ -61,7 +61,7 @@ export interface ModelOptions {
    * The content type for the model. You can also force a
    * content type in the request or response model mapping.
    *
-   * @default -
+   * @default 'application/json'
    */
   readonly contentType?: string;
 
@@ -167,9 +167,9 @@ export class Model extends Resource implements IModel {
     const modelProps: CfnModelProps = {
       name: this.physicalName,
       restApiId: props.restApi.restApiId,
-      contentType: props.contentType,
+      contentType: props.contentType ?? 'application/json',
       description: props.description,
-      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema)
+      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema),
     };
 
     const resource = new CfnModel(this, 'Resource', modelProps);

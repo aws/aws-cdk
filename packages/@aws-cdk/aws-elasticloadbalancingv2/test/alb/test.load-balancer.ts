@@ -1,10 +1,10 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {
@@ -20,12 +20,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Scheme: "internet-facing",
+      Scheme: 'internet-facing',
       Subnets: [
-        { Ref: "StackPublicSubnet1Subnet0AD81D22" },
-        { Ref: "StackPublicSubnet2Subnet3C7D2288" },
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
       ],
-      Type: "application"
+      Type: 'application',
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
-      ]
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -63,12 +63,12 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Scheme: "internal",
+      Scheme: 'internal',
       Subnets: [
-        { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
-        { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
+        { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
+        { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
       ],
-      Type: "application"
+      Type: 'application',
     }));
 
     test.done();
@@ -91,18 +91,18 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
-          Key: "deletion_protection.enabled",
-          Value: "true"
+          Key: 'deletion_protection.enabled',
+          Value: 'true',
         },
         {
-          Key: "routing.http2.enabled",
-          Value: "false"
+          Key: 'routing.http2.enabled',
+          Value: 'false',
         },
         {
-          Key: "idle_timeout.timeout_seconds",
-          Value: "1000"
-        }
-      ]
+          Key: 'idle_timeout.timeout_seconds',
+          Value: '1000',
+        },
+      ],
     }));
 
     test.done();
@@ -124,13 +124,13 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
-          Key: "access_logs.s3.enabled",
-          Value: "true"
+          Key: 'access_logs.s3.enabled',
+          Value: 'true',
         },
         {
-          Key: "access_logs.s3.bucket",
-          Value: { Ref: "AccessLoggingBucketA6D88F29" }
-        }
+          Key: 'access_logs.s3.bucket',
+          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+        },
       ],
     }));
 
@@ -140,21 +140,21 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ["s3:PutObject*", "s3:Abort*"],
+            Action: ['s3:PutObject*', 's3:Abort*'],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
-              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/AWSLogs/",
-              { Ref: "AWS::AccountId" }, "/*"]]
-            }
-          }
-        ]
-      }
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+        ],
+      },
     }));
 
     // verify the ALB depends on the bucket *and* the bucket policy
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29']
+      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -175,17 +175,17 @@ export = {
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
-          Key: "access_logs.s3.enabled",
-          Value: "true"
+          Key: 'access_logs.s3.enabled',
+          Value: 'true',
         },
         {
-          Key: "access_logs.s3.bucket",
-          Value: { Ref: "AccessLoggingBucketA6D88F29" }
+          Key: 'access_logs.s3.bucket',
+          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
         {
-          Key: "access_logs.s3.prefix",
-          Value: "prefix-of-access-logs"
-        }
+          Key: 'access_logs.s3.prefix',
+          Value: 'prefix-of-access-logs',
+        },
       ],
     }));
 
@@ -195,16 +195,16 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ["s3:PutObject*", "s3:Abort*"],
+            Action: ['s3:PutObject*', 's3:Abort*'],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
-              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/prefix-of-access-logs/AWSLogs/",
-              { Ref: "AWS::AccountId" }, "/*"]]
-            }
-          }
-        ]
-      }
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -217,7 +217,7 @@ export = {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    const metrics = [];
+    const metrics = new Array<Metric>();
     metrics.push(lb.metricActiveConnectionCount());
     metrics.push(lb.metricClientTlsNegotiationErrorCount());
     metrics.push(lb.metricConsumedLCUs());
@@ -244,7 +244,7 @@ export = {
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
       test.deepEqual(stack.resolve(metric.dimensions), {
-        LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
+        LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
       });
     }
 
@@ -253,19 +253,62 @@ export = {
 
   'loadBalancerName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
       loadBalancerName: 'myLoadBalancer',
-      vpc
+      vpc,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      Name: 'myLoadBalancer'
+      Name: 'myLoadBalancer',
     }));
+    test.done();
+  },
+
+  'imported load balancer with no vpc throws error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'myArn';
+    const sg = new ec2.SecurityGroup(stack, 'sg', {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.throws(() => listener.addTargets('Targets', {port: 8080}));
+
+    test.done();
+  },
+
+  'imported load balancer with vpc does not throw error when calling addTargets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const albArn = 'MyArn';
+    const sg = new ec2.SecurityGroup(stack, 'sg', {
+      vpc,
+      securityGroupName: 'mySg',
+    });
+    const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+      securityGroupId: sg.securityGroupId,
+      vpc,
+    });
+
+    // WHEN
+    const listener = alb.addListener('Listener', { port: 80 });
+    test.doesNotThrow(() => listener.addTargets('Targets', {port: 8080}));
+
     test.done();
   },
 };

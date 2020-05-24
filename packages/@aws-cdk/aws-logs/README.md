@@ -1,10 +1,10 @@
 ## Amazon CloudWatch Logs Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -216,3 +216,9 @@ const pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result
     .whereString('component', '=', 'HttpServer')
     .whereNumber('result_code', '!=', 200);
 ```
+
+### Notes
+
+Be aware that Log Group ARNs will always have the string `:*` appended to
+them, to match the behavior of [the CloudFormation `AWS::Logs::LogGroup`
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values).

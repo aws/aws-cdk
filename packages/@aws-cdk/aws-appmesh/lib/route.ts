@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -145,14 +145,14 @@ export class Route extends cdk.Resource implements IRoute {
 
   constructor(scope: cdk.Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     this.virtualRouter = props.virtualRouter;
 
     const routeType = props.routeType !== undefined ? props.routeType :
       props.prefix !== undefined ? RouteType.HTTP :
-      RouteType.TCP;
+        RouteType.TCP;
 
     if (routeType === RouteType.HTTP) {
       this.httpRoute = this.renderHttpRoute(props);

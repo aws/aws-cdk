@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
 export = {
@@ -19,11 +19,35 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "TargetTrackingScaling",
+      PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
-        PredefinedMetricSpecification: { PredefinedMetricType: "EC2SpotFleetRequestAverageCPUUtilization" },
-        TargetValue: 30
-      }
+        PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
+        TargetValue: 30,
+      },
+
+    }));
+
+    test.done();
+  },
+
+  'test setup target tracking on predefined metric for lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+      targetValue: 0.9,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
+        TargetValue: 0.9,
+      },
 
     }));
 
@@ -43,18 +67,18 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "TargetTrackingScaling",
+      PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
-          MetricName: "Metric",
-          Namespace: "Test",
-          Statistic: "Average"
+          MetricName: 'Metric',
+          Namespace: 'Test',
+          Statistic: 'Average',
         },
-        TargetValue: 30
-      }
+        TargetValue: 30,
+      },
 
     }));
 
     test.done();
-  }
+  },
 };

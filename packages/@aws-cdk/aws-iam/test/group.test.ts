@@ -9,7 +9,7 @@ describe('IAM groups', () => {
     new Group(stack, 'MyGroup');
 
     expect(stack).toMatchTemplate({
-      Resources: { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } }
+      Resources: { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } },
     });
   });
 
@@ -26,10 +26,10 @@ describe('IAM groups', () => {
       { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         User1E278A736:
          { Type: 'AWS::IAM::User',
-         Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } },
+           Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } },
         User21F1486D1:
          { Type: 'AWS::IAM::User',
-         Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } } } });
+           Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } } } });
   });
 
   test('create with managed policy', () => {
@@ -38,14 +38,14 @@ describe('IAM groups', () => {
 
     // WHEN
     new Group(stack, 'MyGroup', {
-      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')]
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Group', {
       ManagedPolicyArns: [
-        { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
-      ]
+        { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf' ] ] },
+      ],
     });
   });
 });

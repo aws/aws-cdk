@@ -1,5 +1,5 @@
-import cfnspec = require('@aws-cdk/cfnspec');
-import types = require('./types');
+import * as cfnspec from '@aws-cdk/cfnspec';
+import * as types from './types';
 import { deepEqual, diffKeyedEntities } from './util';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
@@ -29,7 +29,7 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
 export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
   const resourceType =  {
     oldType: oldValue && oldValue.Type,
-    newType: newValue && newValue.Type
+    newType: newValue && newValue.Type,
   };
   let propertyDiffs: { [key: string]: types.PropertyDifference<any> } = {};
   let otherDiffs: { [key: string]: types.Difference<any> } = {};
@@ -39,8 +39,8 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
     const impl = typeSpec.ResourceTypes[resourceType.oldType];
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
-                      newValue!.Properties,
-                      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+      newValue!.Properties,
+      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;

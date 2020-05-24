@@ -1,10 +1,10 @@
-import assets = require('@aws-cdk/assets');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import * as assets from '@aws-cdk/assets';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -63,9 +63,21 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
   /**
    * Attribute which represents the S3 URL of this asset.
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * @deprecated use `httpUrl`
    */
   public readonly s3Url: string;
+
+  /**
+   * Attribute which represents the S3 HTTP URL of this asset.
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   */
+  public readonly httpUrl: string;
+
+  /**
+   * Attribute which represents the S3 URL of this asset.
+   * @example s3://bucket/key
+   */
+  public readonly s3ObjectUrl: string;
 
   /**
    * The path to the asset (stringinfied token).
@@ -110,15 +122,17 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     const stack = cdk.Stack.of(this);
 
-    const location = stack.addFileAsset({
+    const location = stack.synthesizer.addFileAsset({
       packaging,
       sourceHash: this.sourceHash,
-      fileName: staging.stagedPath
+      fileName: staging.stagedPath,
     });
 
     this.s3BucketName = location.bucketName;
     this.s3ObjectKey = location.objectKey;
-    this.s3Url = location.s3Url;
+    this.s3ObjectUrl = location.s3ObjectUrl;
+    this.httpUrl = location.httpUrl;
+    this.s3Url = location.httpUrl; // for backwards compatibility
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 

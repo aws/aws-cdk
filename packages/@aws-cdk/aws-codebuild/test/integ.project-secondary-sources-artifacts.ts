@@ -1,13 +1,13 @@
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import codebuild = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as codebuild from '../lib';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-secondary-sources-artifacts');
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new codebuild.Project(stack, 'MyProject', {
@@ -29,6 +29,7 @@ new codebuild.Project(stack, 'MyProject', {
       identifier: 'AddArtifact1',
     }),
   ],
+  grantReportGroupPermissions: false,
 });
 
 app.synth();

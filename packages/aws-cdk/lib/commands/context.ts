@@ -1,6 +1,6 @@
-import colors = require('colors/safe');
-import yargs = require('yargs');
-import version = require('../../lib/version');
+import * as colors from 'colors/safe';
+import * as yargs from 'yargs';
+import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
 import { Context, PROJECT_CONFIG } from '../settings';
@@ -13,7 +13,7 @@ export const builder = {
     alias: 'e',
     desc: 'The context key (or its index) to reset',
     type: 'string',
-    requiresArg: true
+    requiresArg: true,
   },
   clear: {
     desc: 'Clear all context',
@@ -54,11 +54,11 @@ function listContext(context: any) {
   const keys = contextKeys(context);
 
   if (keys.length === 0) {
-    print(`This CDK application does not have any saved context values yet.`);
+    print('This CDK application does not have any saved context values yet.');
     print('');
-    print(`Context will automatically be saved when you synthesize CDK apps`);
-    print(`that use environment context information like AZ information, VPCs,`);
-    print(`SSM parameters, and so on.`);
+    print('Context will automatically be saved when you synthesize CDK apps');
+    print('that use environment context information like AZ information, VPCs,');
+    print('SSM parameters, and so on.');
 
     return;
   }

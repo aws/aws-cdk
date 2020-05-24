@@ -1,9 +1,9 @@
 import { expect as expectStack, haveResource } from '@aws-cdk/assert';
-import apigw = require('@aws-cdk/aws-apigateway');
-import acm = require('@aws-cdk/aws-certificatemanager');
-import route53 = require('@aws-cdk/aws-route53');
+import * as apigw from '@aws-cdk/aws-apigateway';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
   // GIVEN
@@ -13,40 +13,40 @@ test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
     domainName: {
       domainName: 'example.com',
       certificate: cert,
-    }
+    },
   });
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
   api.root.addMethod('GET');
 
   // WHEN
   new route53.ARecord(stack, 'A', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
   });
 
   // THEN
   expectStack(stack).to(haveResource('AWS::Route53::RecordSet', {
-    Name: "example.com.",
-    Type: "A",
+    Name: 'example.com.',
+    Type: 'A',
     AliasTarget: {
       DNSName: {
-        "Fn::GetAtt": [
-          "apiCustomDomain64773C4F",
-          "RegionalDomainName"
-        ]
+        'Fn::GetAtt': [
+          'apiCustomDomain64773C4F',
+          'RegionalDomainName',
+        ],
       },
       HostedZoneId: {
-        "Fn::GetAtt": [
-          "apiCustomDomain64773C4F",
-          "RegionalHostedZoneId"
-        ]
-      }
+        'Fn::GetAtt': [
+          'apiCustomDomain64773C4F',
+          'RegionalHostedZoneId',
+        ],
+      },
     },
     HostedZoneId: {
-      Ref: "zoneEB40FF1E"
-    }
+      Ref: 'zoneEB40FF1E',
+    },
   }));
 });
 
@@ -56,36 +56,36 @@ test('targets.ApiGatewayDomain can be used to directly reference a domain', () =
   const cert = new acm.Certificate(stack, 'cert', { domainName: 'example.com' });
   const domain = new apigw.DomainName(stack, 'domain', { domainName: 'example.com', certificate: cert });
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
 
   // WHEN
   new route53.ARecord(stack, 'A', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domain))
+    target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domain)),
   });
 
   // THEN
   expectStack(stack).to(haveResource('AWS::Route53::RecordSet', {
-    Name: "example.com.",
-    Type: "A",
+    Name: 'example.com.',
+    Type: 'A',
     AliasTarget: {
       DNSName: {
-        "Fn::GetAtt": [
-          "domainFBFFA2F6",
-          "RegionalDomainName"
-        ]
+        'Fn::GetAtt': [
+          'domainFBFFA2F6',
+          'RegionalDomainName',
+        ],
       },
       HostedZoneId: {
-        "Fn::GetAtt": [
-          "domainFBFFA2F6",
-          "RegionalHostedZoneId"
-        ]
-      }
+        'Fn::GetAtt': [
+          'domainFBFFA2F6',
+          'RegionalHostedZoneId',
+        ],
+      },
     },
     HostedZoneId: {
-      Ref: "zoneEB40FF1E"
-    }
+      Ref: 'zoneEB40FF1E',
+    },
   }));
 });
 
@@ -94,7 +94,7 @@ test('fails if an ApiGateway is used with an API that does not define a domain n
   const stack = new Stack();
   const api = new apigw.RestApi(stack, 'api');
   const zone = new route53.HostedZone(stack, 'zone', {
-    zoneName: 'example.com'
+    zoneName: 'example.com',
   });
   api.root.addMethod('GET');
 
@@ -102,7 +102,7 @@ test('fails if an ApiGateway is used with an API that does not define a domain n
   expect(() => {
     new route53.ARecord(stack, 'A', {
       zone,
-      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api))
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
     });
   }).toThrow(/API does not define a default domain name/);
 });

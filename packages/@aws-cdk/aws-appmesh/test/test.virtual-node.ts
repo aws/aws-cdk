@@ -1,9 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
-import appmesh = require('../lib');
-import { Protocol } from '../lib';
+import * as appmesh from '../lib';
 
 export = {
   'When an existing VirtualNode': {
@@ -56,7 +55,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -79,8 +78,8 @@ export = {
         node.addListeners({
           portMapping: {
             port: 8081,
-            protocol: Protocol.TCP,
-          }
+            protocol: appmesh.Protocol.TCP,
+          },
         });
 
         // THEN
@@ -96,7 +95,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -124,8 +123,8 @@ export = {
     node2.addListeners({
       portMapping: {
         port: 8081,
-        protocol: Protocol.TCP,
-      }
+        protocol: appmesh.Protocol.TCP,
+      },
     });
 
     // THEN
@@ -150,7 +149,7 @@ export = {
           },
         },
         VirtualNodeName: 'meshtestnode428A9479',
-      })
+      }),
     );
 
     test.done();

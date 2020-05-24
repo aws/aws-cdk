@@ -1,10 +1,10 @@
-import { Lazy } from "../lazy";
-import { Reference } from "../reference";
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext  } from "../resolvable";
-import { TokenizedStringFragments } from "../string-fragments";
-import { Token } from "../token";
-import { Intrinsic } from "./intrinsic";
-import { resolve } from "./resolve";
+import { Lazy } from '../lazy';
+import { Reference } from '../reference';
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
+import { Token } from '../token';
+import { Intrinsic } from './intrinsic';
+import { resolve } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -69,8 +69,8 @@ export class CloudFormationLang {
       JSON.stringify(resolve(obj, {
         preparing: ctx.preparing,
         scope: ctx.scope,
-        resolver: new IntrinsincWrapper()
-      }), undefined, space)
+        resolver: new IntrinsincWrapper(),
+      }), undefined, space),
     });
 
     function wrap(value: any): any {
@@ -139,7 +139,7 @@ function deepQuoteStringsForJSON(x: any): any {
 const CLOUDFORMATION_CONCAT: IFragmentConcatenator = {
   join(left: any, right: any) {
     return CloudFormationLang.concat(left, right);
-  }
+  },
 };
 
 /**
@@ -171,9 +171,16 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   }
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
-    return isIntrinsic(obj)
-      && Object.keys(obj)[0] === 'Fn::Join'
-      && obj['Fn::Join'][0] === delimiter;
+    if (!isIntrinsic(obj)) { return false; }
+    if (Object.keys(obj)[0] !== 'Fn::Join') { return false;  }
+
+    const [ delim, list ] = obj['Fn::Join'];
+    if (delim !== delimiter) { return false; }
+
+    if (Token.isUnresolved(list)) { return false; }
+    if (!Array.isArray(list)) { return false; }
+
+    return true;
   }
 }
 

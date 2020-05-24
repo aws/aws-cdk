@@ -1,9 +1,9 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 
@@ -45,7 +45,9 @@ pipeline.addStage({
   ],
 });
 
-const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
+const project = new codebuild.PipelineProject(stack, 'MyBuildProject', {
+  grantReportGroupPermissions: false,
+});
 const buildAction = new cpactions.CodeBuildAction({
   actionName: 'Build1',
   project,

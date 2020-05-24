@@ -1,13 +1,13 @@
 import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import events = require('../lib');
+import * as events from '../lib';
 
 export = {
   'cron expressions day and dow are mutex: given weekday'(test: Test) {
     // Run every 10 minutes Monday through Friday
     test.equal('cron(0/10 * ? * MON-FRI *)', events.Schedule.cron({
       minute: '0/10',
-      weekDay: 'MON-FRI'
+      weekDay: 'MON-FRI',
     }).expressionString);
     test.done();
   },

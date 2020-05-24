@@ -11,10 +11,10 @@ export = {
     new CfnOutput(stack, 'MyOutput', {
       exportName: 'ExportName',
       value: ref,
-      description: 'CfnOutput properties'
+      description: 'CfnOutput properties',
     });
     test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'R' } },
-    Outputs:
+      Outputs:
      { MyOutput:
       { Description: 'CfnOutput properties',
         Export: { Name: 'ExportName' },
@@ -33,9 +33,9 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Outputs: {
         SomeOutput: {
-          Value: 'x'
-        }
-      }
+          Value: 'x',
+        },
+      },
     });
 
     test.done();

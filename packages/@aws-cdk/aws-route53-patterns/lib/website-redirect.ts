@@ -6,6 +6,9 @@ import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { Construct, RemovalPolicy } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 
+/**
+ * Properties to configure an HTTPS Redirect
+ */
 export interface HttpsRedirectProps {
   /**
    * HostedZone of the domain
@@ -29,6 +32,10 @@ export interface HttpsRedirectProps {
   readonly certificate?: ICertificate;
 }
 
+/**
+ * Allows creating a domainA -> domainB redirect using CloudFront and S3.
+ * You can specify multiple domains to be redirected.
+ */
 export class HttpsRedirect extends Construct {
   constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
@@ -50,6 +57,7 @@ export class HttpsRedirect extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
+      defaultRootObject: '',
       originConfigs: [{
         behaviors: [{ isDefaultBehavior: true }],
         customOriginSource: {
@@ -67,7 +75,7 @@ export class HttpsRedirect extends Construct {
     });
 
     domainNames.forEach((domainName) => {
-      const hash = crypto.createHash('md5').update(domainName).digest("hex").substr(0, 6);
+      const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
       new ARecord(this, `RedirectAliasRecord${hash}`, {
         recordName: domainName,
         zone: props.zone,

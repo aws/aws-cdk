@@ -1,11 +1,11 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
+  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import cxapi = require('@aws-cdk/cx-api');
-import ssm = require('./ssm.generated');
+import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
 /**
@@ -111,6 +111,13 @@ export interface ParameterOptions {
    * @default - auto-detect based on `parameterName`
    */
   readonly simpleName?: boolean;
+
+  /**
+   * The tier of the string parameter
+   *
+   * @default - undefined
+   */
+  readonly tier?: ParameterTier;
 }
 
 /**
@@ -148,6 +155,11 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
+  /**
+   * The encryption key that is used to encrypt this parameter.
+   *
+   * * @default - default master key
+   */
   public readonly encryptionKey?: kms.IKey;
 
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -160,7 +172,7 @@ abstract class ParameterBase extends Resource implements IParameter {
         'ssm:DescribeParameters',
         'ssm:GetParameters',
         'ssm:GetParameter',
-        'ssm:GetParameterHistory'
+        'ssm:GetParameterHistory',
       ],
       resourceArns: [this.parameterArn],
     });
@@ -202,6 +214,24 @@ export enum ParameterType {
 }
 
 /**
+ * SSM parameter tier
+ */
+export enum ParameterTier {
+  /**
+   * String
+   */
+  ADVANCED = 'Advanced',
+  /**
+   * String
+   */
+  INTELLIGENT_TIERING = 'Intelligent-Tiering',
+  /**
+   * String
+   */
+  STANDARD = 'Standard',
+}
+
+/**
  * Common attributes for string parameters.
  */
 export interface CommonStringParameterAttributes {
@@ -230,6 +260,11 @@ export interface CommonStringParameterAttributes {
   readonly simpleName?: boolean;
 }
 
+/**
+ * Attributes for parameters of various types of string.
+ *
+ * @see ParameterType
+ */
 export interface StringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve.
@@ -246,6 +281,9 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   readonly type?: ParameterType;
 }
 
+/**
+ * Attributes for secure string parameters.
+ */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
    * The version number of the value you wish to retrieve. This is required for secure strings.
@@ -258,6 +296,7 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
 }
 
 /**
@@ -278,7 +317,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new Error(`parameterName cannot be an empty string`);
+      throw new Error('parameterName cannot be an empty string');
     }
 
     const type = attrs.type || ParameterType.STRING;
@@ -323,9 +362,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
-      dummyValue: `dummy-value-for-${parameterName}`
+      dummyValue: `dummy-value-for-${parameterName}`,
     }).value;
 
     return value;
@@ -387,10 +426,19 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: props.type || ParameterType.STRING,
       value: props.stringValue,
     });
@@ -398,7 +446,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;
@@ -414,6 +462,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
   /**
    * Imports an external parameter of type string list.
+   * Returns a token and should not be parsed.
    */
   public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {
@@ -444,17 +493,26 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
+    if (this.physicalName.length > 2048) {
+      throw new Error('Name cannot be longer than 2048 characters.');
+    }
+
+    if (props.description && props.description?.length > 1024) {
+      throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
+      tier: props.tier,
       type: ParameterType.STRING_LIST,
       value: props.stringListValue.join(','),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;

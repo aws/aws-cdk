@@ -1,6 +1,6 @@
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import cloudfront = require('../lib');
+import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -11,10 +11,10 @@ class AcmCertificateAliasStack extends Stack {
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'AnAmazingWebsiteProbably', {
       originConfigs: [{
         s3OriginSource: { s3BucketSource },
-        behaviors: [{ isDefaultBehavior: true }]
+        behaviors: [{ isDefaultBehavior: true }],
       }],
       viewerCertificate: cloudfront.ViewerCertificate.fromCloudFrontDefaultCertificate(
-        'www.example.com'
+        'www.example.com',
       ),
     });
     /// !hide

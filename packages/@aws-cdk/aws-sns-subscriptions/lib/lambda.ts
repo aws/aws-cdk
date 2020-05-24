@@ -1,7 +1,7 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
-import { Construct } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sns from '@aws-cdk/aws-sns';
+import { Construct, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -17,11 +17,14 @@ export class LambdaSubscription implements sns.ITopicSubscription {
   constructor(private readonly fn: lambda.IFunction, private readonly props: LambdaSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for a Lambda function to subscribe to an SNS topic
+   */
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.fn)) {
-      throw new Error(`The supplied lambda Function object must be an instance of Construct`);
+      throw new Error('The supplied lambda Function object must be an instance of Construct');
     }
 
     this.fn.addPermission(`AllowInvoke:${topic.node.uniqueId}`, {
@@ -35,6 +38,16 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
+      region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
+  }
+
+  private regionFromArn(topic: sns.ITopic): string | undefined {
+    // no need to specify `region` for topics defined within the same stack.
+    if (topic instanceof sns.Topic) {
+      return undefined;
+    }
+    return Stack.of(topic).parseArn(topic.topicArn).region;
   }
 }

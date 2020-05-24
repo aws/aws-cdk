@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
-import appmesh = require('../lib');
+import * as appmesh from '../lib';
 
 export = {
   'When adding route to existing VirtualRouter': {
@@ -68,7 +68,7 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        })
+        }),
       );
 
       test.done();
@@ -105,7 +105,7 @@ export = {
             },
         },
         backends: [
-            service1,
+          service1,
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
@@ -118,7 +118,7 @@ export = {
             },
         },
         backends: [
-            service2,
+          service2,
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
@@ -131,7 +131,7 @@ export = {
             },
         },
         backends: [
-            service1,
+          service1,
         ],
       });
 
@@ -186,7 +186,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::Route', {
@@ -208,7 +208,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::Route', {
@@ -230,7 +230,7 @@ export = {
               },
             },
           },
-        })
+        }),
       );
 
       test.done();
@@ -297,7 +297,7 @@ export = {
           VirtualRouterName: {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
-        })
+        }),
       );
 
       test.done();

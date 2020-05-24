@@ -1,6 +1,6 @@
-import s3 = require('@aws-cdk/aws-s3');
-import s3_assets = require('@aws-cdk/aws-s3-assets');
-import cdk = require('@aws-cdk/core');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 
 export interface SourceConfig {
   /**
@@ -43,7 +43,7 @@ export class Source {
    */
   public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
     return {
-      bind: () => ({ bucket, zipObjectKey })
+      bind: () => ({ bucket, zipObjectKey }),
     };
   }
 
@@ -51,22 +51,25 @@ export class Source {
    * Uses a local asset as the deployment source.
    * @param path The path to a local .zip file or a directory
    */
-  public static asset(path: string): ISource {
+  public static asset(path: string, options?: s3_assets.AssetOptions): ISource {
     return {
       bind(context: cdk.Construct): SourceConfig {
         let id = 1;
         while (context.node.tryFindChild(`Asset${id}`)) {
           id++;
         }
-        const asset = new s3_assets.Asset(context, `Asset${id}`, { path });
+        const asset = new s3_assets.Asset(context, `Asset${id}`, {
+          path,
+          ...options,
+        });
         if (!asset.isZipArchive) {
-          throw new Error(`Asset path must be either a .zip file or a directory`);
+          throw new Error('Asset path must be either a .zip file or a directory');
         }
         return {
           bucket: asset.bucket,
-          zipObjectKey: asset.s3ObjectKey
+          zipObjectKey: asset.s3ObjectKey,
         };
-      }
+      },
     };
   }
 

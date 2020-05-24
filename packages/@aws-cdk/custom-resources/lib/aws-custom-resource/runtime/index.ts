@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import AWS = require('aws-sdk');
+import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
@@ -16,9 +16,9 @@ export function flatten(object: object): { [key: string]: string } {
         .map(key =>
           typeof child[key] === 'object' && child[key] !== null
             ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] })
-      ));
-    }(object)
+            : ({ [path.concat([key]).join('.')]: child[key] }),
+        ));
+    }(object),
   );
 }
 
@@ -47,16 +47,60 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
       (acc, [k, v]) => pred(k)
         ? { ...acc, [k]: v }
         : acc,
-        {}
+      {},
     );
 }
 
+let latestSdkInstalled = false;
+
+/**
+ * Installs latest AWS SDK v2
+ */
+function installLatestSdk(): void {
+  console.log('Installing latest AWS SDK v2');
+  // Both HOME and --prefix are needed here because /tmp is the only writable location
+  execSync('HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp');
+  latestSdkInstalled = true;
+}
+
+/* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
-    console.log(JSON.stringify(event));
-    console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
+    let AWS: any;
+    if (!latestSdkInstalled) {
+      try {
+        installLatestSdk();
+        AWS = require('/tmp/node_modules/aws-sdk');
+      } catch (e) {
+        console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        AWS = require('aws-sdk'); // Fallback to pre-installed version
+      }
+    } else {
+      AWS = require('/tmp/node_modules/aws-sdk');
+    }
 
-    let physicalResourceId = (event as any).PhysicalResourceId;
+    if (process.env.USE_NORMAL_SDK) { // For tests only
+      AWS = require('aws-sdk');
+    }
+
+    console.log(JSON.stringify(event));
+    console.log('AWS SDK VERSION: ' + AWS.VERSION);
+
+    // Default physical resource id
+    let physicalResourceId: string;
+    switch (event.RequestType) {
+      case 'Create':
+        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
+                             event.LogicalResourceId;
+        break;
+      case 'Update':
+      case 'Delete':
+        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
+        break;
+    }
+
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
@@ -78,14 +122,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
           : flatData;
       } catch (e) {
-        if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
         }
       }
 
-      physicalResourceId = call.physicalResourceIdPath
-        ? flatData[call.physicalResourceIdPath]
-        : call.physicalResourceId;
+      if (call.physicalResourceId?.responsePath) {
+        physicalResourceId = flatData[call.physicalResourceId.responsePath];
+      }
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);
@@ -103,21 +147,23 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       RequestId: event.RequestId,
       LogicalResourceId: event.LogicalResourceId,
       NoEcho: false,
-      Data: data
+      Data: data,
     });
 
     console.log('Responding', responseBody);
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const parsedUrl = require('url').parse(event.ResponseURL);
     const requestOptions = {
       hostname: parsedUrl.hostname,
       path: parsedUrl.path,
       method: 'PUT',
-      headers: { 'content-type': '', 'content-length': responseBody.length }
+      headers: { 'content-type': '', 'content-length': responseBody.length },
     };
 
     return new Promise((resolve, reject) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const request = require('https').request(requestOptions, resolve);
         request.on('error', reject);
         request.write(responseBody);

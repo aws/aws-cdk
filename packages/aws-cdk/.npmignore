@@ -16,3 +16,12 @@ dist
 !test/integ/run-wrappers/dist
 
 *.tsbuildinfo
+
+tsconfig.json
+
+# init templates include default tsconfig.json files which we need
+!lib/init-templates/**/tsconfig.json
+.eslintrc.js
+jest.config.js
+!lib/init-templates/**/jest.config.js
+!test/integ/cli/jest.config.js

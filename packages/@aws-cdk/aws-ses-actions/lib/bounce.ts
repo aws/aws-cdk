@@ -1,5 +1,5 @@
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
 
 /**
  * Construction properties for a BounceTemplate.
@@ -32,31 +32,31 @@ export class BounceTemplate {
   public static readonly MAILBOX_DOES_NOT_EXIST = new BounceTemplate({
     message: 'Mailbox does not exist',
     smtpReplyCode: '550',
-    statusCode: '5.1.1'
+    statusCode: '5.1.1',
   });
 
   public static readonly MESSAGE_TOO_LARGE = new BounceTemplate({
     message: 'Message too large',
     smtpReplyCode: '552',
-    statusCode: '5.3.4'
+    statusCode: '5.3.4',
   });
 
   public static readonly MAILBOX_FULL = new BounceTemplate({
     message: 'Mailbox full',
     smtpReplyCode: '552',
-    statusCode: '5.2.2'
+    statusCode: '5.2.2',
   });
 
   public static readonly MESSAGE_CONTENT_REJECTED = new BounceTemplate({
     message: 'Message content rejected',
     smtpReplyCode: '500',
-    statusCode: '5.6.1'
+    statusCode: '5.6.1',
   });
 
   public static readonly TEMPORARY_FAILURE = new BounceTemplate({
     message: 'Temporary failure',
     smtpReplyCode: '450',
-    statusCode: '4.0.0'
+    statusCode: '4.0.0',
   });
 
   constructor(public readonly props: BounceTemplateProps) {
@@ -101,8 +101,8 @@ export class Bounce implements ses.IReceiptRuleAction {
         smtpReplyCode: this.props.template.props.smtpReplyCode,
         message: this.props.template.props.message,
         topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
-        statusCode: this.props.template.props.statusCode
-      }
+        statusCode: this.props.template.props.statusCode,
+      },
     };
   }
 }

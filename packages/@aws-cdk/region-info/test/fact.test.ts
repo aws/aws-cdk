@@ -11,6 +11,16 @@ describe('find', () => {
   });
 });
 
+describe('requireFact', () => {
+  test('throws error for an unknown fact', () => {
+    expect(() => Fact.requireFact(AWS_REGIONS[0], 'not:a:known:fact')).toThrowError();
+  });
+
+  test('throws error for an unknown region', () => {
+    expect(() => Fact.requireFact('bermuda-triangle-42', FactName.PARTITION)).toThrowError();
+  });
+});
+
 describe('register', () => {
   test('allows registering an arbitrary fact', () => {
     // GIVEN

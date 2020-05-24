@@ -14,10 +14,18 @@ let errors = false;
 
 for (const dir of modules) {
   const module = path.resolve(root, dir);
-  if (!fs.existsSync(path.join(module, '.jsii'))) {
+  const meta = require(path.join(module, 'package.json'));
+
+  // skip non-jsii modules
+  if (!meta.jsii) {
     continue;
   }
-  const meta = require(path.join(module, 'package.json'));
+
+  // skip the `@aws-cdk/cloudformation-include` module
+  if (dir === 'cloudformation-include') {
+    continue;
+  }
+
   const exists = deps[meta.name];
 
   if (meta.deprecated) {
@@ -26,6 +34,10 @@ for (const dir of modules) {
       errors = true;
     }
     delete deps[meta.name];
+    continue;
+  }
+  // skip private packages
+  if (meta.private) {
     continue;
   }
 

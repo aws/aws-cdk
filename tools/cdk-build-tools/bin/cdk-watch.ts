@@ -1,4 +1,4 @@
-import yargs = require('yargs');
+import * as yargs from 'yargs';
 import { shell } from '../lib/os';
 import { packageCompiler } from '../lib/package-info';
 
@@ -14,12 +14,12 @@ async function main() {
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
-      defaultDescription: 'jsii provided by node dependencies'
+      defaultDescription: 'jsii provided by node dependencies',
     })
     .option('tsc', {
       type: 'string',
       desc: 'Specify a different tsc executable',
-      defaultDescription: 'tsc provided by node dependencies'
+      defaultDescription: 'tsc provided by node dependencies',
     })
     .argv as any;
 

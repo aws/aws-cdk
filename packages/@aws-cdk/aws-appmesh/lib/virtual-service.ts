@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -106,7 +106,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     if (props.virtualNode && props.virtualRouter) {

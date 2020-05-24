@@ -1,25 +1,26 @@
-import cxapi = require('@aws-cdk/cx-api');
-import childProcess = require('child_process');
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import os = require('os');
-import path = require('path');
+import * as cxapi from '@aws-cdk/cx-api';
+import * as childProcess from 'child_process';
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { error, print, warning } from './logging';
+import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
-const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false) {
+export async function cliInit(type?: string, language?: string, canUseNetwork = true, generateOnly = false, workDir = process.cwd()) {
   if (!type && !language) {
     await printAvailableTemplates();
     return;
@@ -41,7 +42,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, language, canUseNetwork, generateOnly);
+  await initializeProject(template, language, canUseNetwork, generateOnly, workDir);
 }
 
 /**
@@ -67,10 +68,11 @@ export class InitTemplate {
   public readonly description: string;
   public readonly aliases = new Set<string>();
 
-  constructor(private readonly basePath: string,
-              public readonly name: string,
-              public readonly languages: string[],
-              info: any) {
+  constructor(
+    private readonly basePath: string,
+    public readonly name: string,
+    public readonly languages: string[],
+    info: any) {
     this.description = info.description;
     for (const alias of info.aliases || []) {
       this.aliases.add(alias);
@@ -101,7 +103,7 @@ export class InitTemplate {
     const hookTempDirectory = path.join(targetDirectory, 'tmp');
     await fs.mkdir(hookTempDirectory);
     await this.installFiles(sourceDirectory, targetDirectory, {
-      name: decamelize(path.basename(path.resolve(targetDirectory)))
+      name: decamelize(path.basename(path.resolve(targetDirectory))),
     });
     await this.applyFutureFlags(targetDirectory);
     await this.invokeHooks(hookTempDirectory, targetDirectory);
@@ -120,7 +122,7 @@ export class InitTemplate {
         await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
         continue;
       } else if (file.match(/^.*\.hook\.(d.)?[^.]+$/)) {
-        await this.installProcessed(fromFile, path.join(targetDirectory, "tmp", file), project);
+        await this.installProcessed(fromFile, path.join(targetDirectory, 'tmp', file), project);
         continue;
       } else {
         await fs.copy(fromFile, toFile);
@@ -142,6 +144,7 @@ export class InitTemplate {
 
     for (const file of files) {
       if (file.match(/^.*\.hook\.js$/)) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
         await invoke(targetDirectory);
       }
@@ -155,15 +158,16 @@ export class InitTemplate {
 
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
-             .replace(/%name\.camelCased%/g, camelCase(project.name))
-             .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
-             .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME)
-             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
-             .replace(/%python-executable%/g, pythonExecutable())
-             .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+      .replace(/%name\.camelCased%/g, camelCase(project.name))
+      .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
+      .replace(/%cdk-version%/g, cdkVersion)
+      .replace(/%cdk-home%/g, cdkHomeDir())
+      .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+      .replace(/%python-executable%/g, pythonExecutable())
+      .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
   }
 
   /**
@@ -179,7 +183,7 @@ export class InitTemplate {
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS
+      ...cxapi.FUTURE_FLAGS,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -217,8 +221,8 @@ export const availableInitLanguages: Promise<string[]> =
  */
 async function listDirectory(dirPath: string) {
   return (await fs.readdir(dirPath))
-          .filter(p => !p.startsWith('.'))
-          .sort();
+    .filter(p => !p.startsWith('.'))
+    .sort();
 }
 
 export async function printAvailableTemplates(language?: string) {
@@ -227,64 +231,64 @@ export async function printAvailableTemplates(language?: string) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
     print(`* ${colors.green(template.name)}: ${template.description}`);
     const languageArg = language ? colors.bold(language)
-                   : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
-                                   : colors.bold(template.languages[0]);
+      : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
+        : colors.bold(template.languages[0]);
     print(`   └─ ${colors.blue(`cdk init ${colors.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
-async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean) {
-  await assertIsEmptyDirectory();
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
+  await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
-  await template.install(language, process.cwd());
+  await template.install(language, workDir);
   if (!generateOnly) {
-    await initializeGitRepository();
-    await postInstall(language, canUseNetwork);
+    await initializeGitRepository(workDir);
+    await postInstall(language, canUseNetwork, workDir);
   }
   if (await fs.pathExists('README.md')) {
     print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   } else {
-    print(`✅ All done!`);
+    print('✅ All done!');
   }
 }
 
-async function assertIsEmptyDirectory() {
-  const files = await fs.readdir(process.cwd());
+async function assertIsEmptyDirectory(workDir: string) {
+  const files = await fs.readdir(workDir);
   if (files.filter(f => !f.startsWith('.')).length !== 0) {
     throw new Error('`cdk init` cannot be run in a non-empty directory!');
   }
 }
 
-async function initializeGitRepository() {
-  if (await isInGitRepository(process.cwd())) { return; }
+async function initializeGitRepository(workDir: string) {
+  if (await isInGitRepository(workDir)) { return; }
   print('Initializing a new git repository...');
   try {
-    await execute('git', 'init');
-    await execute('git', 'add', '.');
-    await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
+    await execute('git', ['init'], { cwd: workDir });
+    await execute('git', ['add', '.'], { cwd: workDir });
+    await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
   } catch (e) {
     warning('Unable to initialize git repository for your project.');
   }
 }
 
-async function postInstall(language: string, canUseNetwork: boolean) {
+async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
-  case 'javascript':
-    return await postInstallJavascript(canUseNetwork);
-  case 'typescript':
-    return await postInstallTypescript(canUseNetwork);
-  case 'java':
-    return await postInstallJava(canUseNetwork);
-  case 'python':
-    return await postInstallPython();
+    case 'javascript':
+      return await postInstallJavascript(canUseNetwork, workDir);
+    case 'typescript':
+      return await postInstallTypescript(canUseNetwork, workDir);
+    case 'java':
+      return await postInstallJava(canUseNetwork, workDir);
+    case 'python':
+      return await postInstallPython(workDir);
   }
 }
 
-async function postInstallJavascript(canUseNetwork: boolean) {
-  return postInstallTypescript(canUseNetwork);
+async function postInstallJavascript(canUseNetwork: boolean, cwd: string) {
+  return postInstallTypescript(canUseNetwork, cwd);
 }
 
-async function postInstallTypescript(canUseNetwork: boolean) {
+async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
@@ -294,27 +298,27 @@ async function postInstallTypescript(canUseNetwork: boolean) {
 
   print(`Executing ${colors.green(`${command} install`)}...`);
   try {
-    await execute(command, 'install');
+    await execute(command, ['install'], { cwd });
   } catch (e) {
     throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
   }
 }
 
-async function postInstallJava(canUseNetwork: boolean) {
+async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`mvn package`)}!`);
+    print(`Please run ${colors.green('mvn package')}!`);
     return;
   }
 
   print(`Executing ${colors.green('mvn package')}...`);
-  await execute('mvn', 'package');
+  await execute('mvn', ['package'], { cwd });
 }
 
-async function postInstallPython() {
+async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute(python, '-m venv', '.env');
+    await execute(python, ['-m venv', '.env'], { cwd });
   } catch (e) {
     print('Unable to create virtualenv automatically');
     print(`Please run ${colors.green(python + ' -m venv .env')}!`);
@@ -349,8 +353,8 @@ function isRoot(dir: string) {
  *
  * @returns STDOUT (if successful).
  */
-async function execute(cmd: string, ...args: string[]) {
-  const child = childProcess.spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {

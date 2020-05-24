@@ -1,14 +1,12 @@
+## Welcome to your CDK F# project!
 
-# CDK HelloWorld
+This is a blank project for F# development with CDK.
 
-Welcome to your CDK .NET project!
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
-a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
+It uses the [.NET Core CLI](https://docs.microsoft.com/dotnet/articles/core/) to compile and execute your project.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app. It uses the `dotnet` CLI to do this.
-
-# Useful commands
+## Useful commands
 
 * `dotnet build src` compile this app
 * `cdk ls`           list all stacks in the app

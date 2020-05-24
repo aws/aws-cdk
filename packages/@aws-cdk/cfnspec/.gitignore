@@ -7,7 +7,8 @@ CHANGELOG.md.new
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 dist
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js

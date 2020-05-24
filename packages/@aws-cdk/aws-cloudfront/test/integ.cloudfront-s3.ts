@@ -1,7 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cloudfront = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cloudfront from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudfront-s3');
@@ -9,22 +8,24 @@ const stack = new cdk.Stack(app, 'integ-cloudfront-s3');
 const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const oai = new cloudfront.CfnCloudFrontOriginAccessIdentity(stack, 'OAI', {
   cloudFrontOriginAccessIdentityConfig: {
-    comment: 'Allows CloudFront to reach to the bucket!',
-  }
+    comment: 'Allows CloudFront to reach the bucket!',
+  },
 });
+
+const oaiImported = cloudfront.OriginAccessIdentity.fromOriginAccessIdentityName(
+  stack,
+  'OAIImported',
+  oai.ref,
+);
+
 const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
   originConfigs: [{
     behaviors: [{ isDefaultBehavior: true }],
     s3OriginSource: {
       s3BucketSource: bucket,
-      originAccessIdentityId: oai.ref,
+      originAccessIdentity: oaiImported,
     },
-  }]
+  }],
 });
-bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:Get*', 's3:List*'],
-  resources: [bucket.bucketArn, bucket.arnForObjects('*')],
-  principals: [new iam.CanonicalUserPrincipal(oai.attrS3CanonicalUserId)],
-}));
 
 new cdk.CfnOutput(stack, 'DistributionDomainName', { value: dist.domainName });

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { CrossAccountDestination } from '../lib';
 
@@ -9,20 +9,20 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });
 
     // WHEN
     new CrossAccountDestination(stack, 'Dest', {
       destinationName: 'MyDestination',
       role,
-      targetArn: 'arn:bogus'
+      targetArn: 'arn:bogus',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', {
       DestinationName: 'MyDestination',
-      RoleArn: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] },
+      RoleArn: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
       TargetArn: 'arn:bogus',
     }));
 
@@ -33,18 +33,18 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });
 
     const dest = new CrossAccountDestination(stack, 'Dest', {
       destinationName: 'MyDestination',
       role,
-      targetArn: 'arn:bogus'
+      targetArn: 'arn:bogus',
     });
 
     // WHEN
     dest.addToPolicy(new iam.PolicyStatement({
-      actions: ['logs:TalkToMe']
+      actions: ['logs:TalkToMe'],
     }));
 
     // THEN
@@ -55,5 +55,5 @@ export = {
     }));
 
     test.done();
-  }
+  },
 };

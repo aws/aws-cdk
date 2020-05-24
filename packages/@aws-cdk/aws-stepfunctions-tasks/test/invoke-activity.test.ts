@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import tasks = require('../lib');
+import * as tasks from '../lib';
 
 test('Activity can be used in a Task', () => {
   // GIVEN
@@ -11,17 +11,17 @@ test('Activity can be used in a Task', () => {
   const activity = new sfn.Activity(stack, 'Activity');
   const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeActivity(activity) });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      "Fn::Join": ["", [
-        "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-        { Ref: "Activity04690B0A" },
-        "\"}}}"
-      ]]
+      'Fn::Join': ['', [
+        '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+        { Ref: 'Activity04690B0A' },
+        '"}}}',
+      ]],
     },
   });
 });
@@ -42,7 +42,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
     activity.metricStarted(),
     activity.metricSucceeded(),
     activity.metricTime(),
-    activity.metricTimedOut()
+    activity.metricTimedOut(),
   ];
 
   const taskMetrics = [
@@ -57,7 +57,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
     task.metricTimedOut(),
   ];
 
-    // THEN
+  // THEN
   for (let i = 0; i < activityMetrics.length; i++) {
     expect(activityMetrics[i]).toEqual(taskMetrics[i]);
   }

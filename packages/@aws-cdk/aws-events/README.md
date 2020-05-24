@@ -1,10 +1,10 @@
 ## Amazon CloudWatch Events Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -39,6 +39,8 @@ event when the pipeline changes it's state.
 * __EventBuses__: An event bus can receive events from your own custom applications
   or it can receive events from applications and services created by AWS SaaS partners.
   See [Creating an Event Bus](https://docs.aws.amazon.com/eventbridge/latest/userguide/create-event-bus.html).
+
+## Rule
 
 The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
@@ -76,6 +78,27 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+## Scheduling
+
+You can configure a Rule to run on a schedule (cron or rate). 
+
+The following example runs a task every day at 4am:
+
+```ts
+import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+...
+
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition });
+
+new Rule(this, 'ScheduleRule', {
+ schedule: Schedule.cron({ minute: '0', hour: '4' }),
+ targets: [ecsTaskTarget],
+});
+```
+
+More details in [ScheduledEvents](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html) documentation page.
+
 ## Event Targets
 
 The `@aws-cdk/aws-events-targets` module includes classes that implement the `IRuleTarget`
@@ -90,6 +113,7 @@ The following targets are supported:
 * `targets.SnsTopic`: Publish into an SNS topic
 * `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
+* `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
 
 ### Cross-account targets
@@ -98,9 +122,9 @@ It's possible to have the source of the event and a target in separate AWS accou
 
 ```typescript
 import { App, Stack } from '@aws-cdk/core';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import targets = require('@aws-cdk/aws-events-targets');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as targets from '@aws-cdk/aws-events-targets';
 
 const app = new App();
 

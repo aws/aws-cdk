@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-secretsmanager",
-  "version": "1.16.1",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::SecretsManager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.SecretsManager",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.secretsmanager",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "secretsmanager",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "secretsmanager"
         }
       },
       "python": {
@@ -65,28 +63,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-kms": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
@@ -99,8 +103,13 @@
       "props-default-doc:@aws-cdk/aws-secretsmanager.SecretStringGenerator.generateStringKey",
       "props-default-doc:@aws-cdk/aws-secretsmanager.SecretAttributes.encryptionKey",
       "docs-public-apis:@aws-cdk/aws-secretsmanager.ISecretTargetAttachment",
-      "docs-public-apis:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn"
+      "docs-public-apis:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
+      "props-physical-name:@aws-cdk/aws-secretsmanager.ResourcePolicyProps"
     ]
   },
-  "stability": "stable"
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

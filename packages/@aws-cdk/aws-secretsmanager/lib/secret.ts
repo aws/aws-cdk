@@ -1,8 +1,9 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
-import secretsmanager = require('./secretsmanager.generated');
+import * as secretsmanager from './secretsmanager.generated';
 
 /**
  * A secret in AWS Secrets Manager.
@@ -41,9 +42,31 @@ export interface ISecret extends IResource {
   grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
+   * Grants writing the secret value to some role.
+   *
+   * @param grantee       the principal being granted permission.
+   */
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Adds a rotation schedule to the secret.
    */
   addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule;
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this secret.
+   *
+   * If this secret was created in this stack, a resource policy will be
+   * automatically created upon the first call to `addToResourcePolicy`. If
+   * the secret is imported, then this is a no-op.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
+   * Denies the `DeleteSecret` action to all principals within the current
+   * account.
+   */
+  denyAccountRootDelete(): void;
 }
 
 /**
@@ -103,6 +126,10 @@ abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IKey;
   public abstract readonly secretArn: string;
 
+  protected abstract readonly autoCreatePolicy: boolean;
+
+  private policy?: ResourcePolicy;
+
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
@@ -110,18 +137,37 @@ abstract class SecretBase extends Resource implements ISecret {
       grantee,
       actions: ['secretsmanager:GetSecretValue'],
       resourceArns: [this.secretArn],
-      scope: this
+      scope: this,
     });
     if (versionStages != null && result.principalStatement) {
       result.principalStatement.addCondition('ForAnyValue:StringEquals', {
-        'secretsmanager:VersionStage': versionStages
+        'secretsmanager:VersionStage': versionStages,
       });
     }
 
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal)
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
+      );
+    }
+
+    return result;
+  }
+
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    const result = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['secretsmanager:PutSecretValue'],
+      resourceArns: [this.secretArn],
+      scope: this,
+    });
+
+    if (this.encryptionKey) {
+      // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
+      this.encryptionKey.grantEncrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
     }
 
@@ -139,8 +185,29 @@ abstract class SecretBase extends Resource implements ISecret {
   public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {
     return new RotationSchedule(this, id, {
       secret: this,
-      ...options
+      ...options,
     });
+  }
+
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.policy && this.autoCreatePolicy) {
+      this.policy = new ResourcePolicy(this, 'Policy', { secret: this });
+    }
+
+    if (this.policy) {
+      this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
+    }
+    return { statementAdded: false };
+  }
+
+  public denyAccountRootDelete() {
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:DeleteSecret'],
+      effect: iam.Effect.DENY,
+      resources: ['*'],
+      principals: [new iam.AccountRootPrincipal()],
+    }));
   }
 }
 
@@ -164,6 +231,7 @@ export class Secret extends SecretBase {
     class Import extends SecretBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly secretArn = attrs.secretArn;
+      protected readonly autoCreatePolicy = false;
     }
 
     return new Import(scope, id);
@@ -171,6 +239,8 @@ export class Secret extends SecretBase {
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
+
+  protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: SecretProps = {}) {
     super(scope, id, {
@@ -198,17 +268,45 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
+
+    // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
+    const principle =
+       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    this.encryptionKey?.grantEncryptDecrypt(principle);
+    this.encryptionKey?.grant(principle, 'kms:CreateGrant', 'kms:DescribeKey');
   }
 
   /**
    * Adds a target attachment to the secret.
    *
    * @returns an AttachedSecret
+   *
+   * @deprecated use `attach()` instead
    */
   public addTargetAttachment(id: string, options: AttachedSecretOptions): SecretTargetAttachment {
     return new SecretTargetAttachment(this, id, {
       secret: this,
-      ...options
+      ...options,
+    });
+  }
+
+  /**
+   * Attach a target to this secret
+   *
+   * @param target The target to attach
+   * @returns An attached secret
+   */
+  public attach(target: ISecretAttachmentTarget): ISecret {
+    const id = 'Attachment';
+    const existing = this.node.tryFindChild(id);
+
+    if (existing) {
+      throw new Error('Secret is already attached to a target.');
+    }
+
+    return new SecretTargetAttachment(this, id, {
+      secret: this,
+      target,
     });
   }
 }
@@ -229,13 +327,42 @@ export interface ISecretAttachmentTarget {
 export enum AttachmentTargetType {
   /**
    * A database instance
+   *
+   * @deprecated use RDS_DB_INSTANCE instead
    */
   INSTANCE = 'AWS::RDS::DBInstance',
 
   /**
    * A database cluster
+   *
+   * @deprecated use RDS_DB_CLUSTER instead
    */
-  CLUSTER = 'AWS::RDS::DBCluster'
+  CLUSTER = 'AWS::RDS::DBCluster',
+
+  /**
+   * AWS::RDS::DBInstance
+   */
+  RDS_DB_INSTANCE = 'AWS::RDS::DBInstance',
+
+  /**
+   * AWS::RDS::DBCluster
+   */
+  RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
+
+  /**
+   * AWS::Redshift::Cluster
+   */
+  REDSHIFT_CLUSTER = 'AWS::Redshift::Cluster',
+
+  /**
+   * AWS::DocDB::DBInstance
+   */
+  DOCDB_DB_INSTANCE = 'AWS::DocDB::DBInstance',
+
+  /**
+   * AWS::DocDB::DBCluster
+   */
+  DOCDB_DB_CLUSTER = 'AWS::DocDB::DBCluster'
 }
 
 /**
@@ -255,6 +382,8 @@ export interface SecretAttachmentTargetProps {
 
 /**
  * Options to add a secret attachment to a secret.
+ *
+ * @deprecated use `secret.attach()` instead
  */
 export interface AttachedSecretOptions {
   /**
@@ -292,6 +421,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public encryptionKey?: kms.IKey | undefined;
       public secretArn = secretTargetAttachmentSecretArn;
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
+      protected readonly autoCreatePolicy = false;
     }
 
     return new Import(scope, id);
@@ -305,13 +435,15 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
    */
   public readonly secretTargetAttachmentSecretArn: string;
 
+  protected readonly autoCreatePolicy = true;
+
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
       secretId: props.secret.secretArn,
       targetId: props.target.asSecretAttachmentTarget().targetId,
-      targetType: props.target.asSecretAttachmentTarget().targetType
+      targetType: props.target.asSecretAttachmentTarget().targetType,
     });
 
     this.encryptionKey = props.secret.encryptionKey;

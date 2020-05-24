@@ -1,5 +1,5 @@
-import camelcase = require('camelcase');
-import reflect = require('jsii-reflect');
+import * as camelcase from 'camelcase';
+import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
@@ -10,11 +10,11 @@ export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a
 
 cfnResourceLinter.add({
   code: 'resource-class',
-  message: 'every resource must have a resource class (L2)',
+  message: `every resource must have a resource class (L2), add '@resource %s' to its docstring`,
   warning: true,
   eval: e => {
     const l2 = ResourceReflection.findAll(e.ctx.classType.assembly).find(r => r.cfn.fullname === e.ctx.fullname);
-    e.assert(l2, e.ctx.fullname);
+    e.assert(l2, e.ctx.fullname, e.ctx.fullname);
   }
 });
 
@@ -24,13 +24,13 @@ export class CfnResourceReflection {
    * @param fullName first two components are case-insensitive (e.g. `aws::s3::Bucket` is equivalent to `Aws::S3::Bucket`)
    */
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
-    const [ org, ns, resource ] = fullName.split('::');
-    const fqn = `@aws-cdk/${org.toLocaleLowerCase()}-${ns.toLocaleLowerCase()}.Cfn${resource}`;
-    if (!sys.tryFindFqn(fqn)) {
-      return undefined;
+    for (const cls of sys.classes) {
+      if (cls.docs.customTag('cloudformationResource')?.toLocaleLowerCase() === fullName.toLocaleLowerCase()) {
+        return new CfnResourceReflection(cls);
+      }
     }
-    const cls = sys.findClass(fqn);
-    return new CfnResourceReflection(cls);
+
+    return undefined;
   }
 
   /**

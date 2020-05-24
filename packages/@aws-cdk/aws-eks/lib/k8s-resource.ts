@@ -1,7 +1,9 @@
-import cfn = require('@aws-cdk/aws-cloudformation');
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
+/**
+ * Properties for KubernetesResources
+ */
 export interface KubernetesResourceProps {
   /**
    * The EKS cluster to apply this configuration to.
@@ -52,22 +54,19 @@ export class KubernetesResource extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
+    const provider = props.cluster._kubectlProvider;
 
-    // we maintain a single manifest custom resource handler for each cluster
-    const handler = props.cluster._k8sResourceHandler;
-    if (!handler) {
-      throw new Error(`Cannot define a KubernetesManifest resource on a cluster with kubectl disabled`);
-    }
-
-    new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(handler),
+    new CustomResource(this, 'Resource', {
+      serviceToken: provider.serviceToken,
       resourceType: KubernetesResource.RESOURCE_TYPE,
       properties: {
         // `toJsonString` enables embedding CDK tokens in the manifest and will
         // render a CloudFormation-compatible JSON string (similar to
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
-      }
+        ClusterName: props.cluster.clusterName,
+        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+      },
     });
   }
 }

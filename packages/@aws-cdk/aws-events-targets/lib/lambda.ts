@@ -1,5 +1,5 @@
-import events = require('@aws-cdk/aws-events');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as events from '@aws-cdk/aws-events';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { addLambdaPermission } from './util';
 
 /**

@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 
@@ -79,7 +79,7 @@ tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   partitionKey: GSI_PARTITION_KEY,
   sortKey: GSI_SORT_KEY,
   projectionType: ProjectionType.INCLUDE,
-  nonKeyAttributes: GSI_NON_KEY
+  nonKeyAttributes: GSI_NON_KEY,
 });
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_5,
@@ -89,22 +89,22 @@ tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
 
 tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_2,
-  sortKey: LSI_SORT_KEY
+  sortKey: LSI_SORT_KEY,
 });
 tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
-  sortKey: TABLE_SORT_KEY
+  sortKey: TABLE_SORT_KEY,
 });
 tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_3,
   sortKey: LSI_SORT_KEY,
-  projectionType: ProjectionType.KEYS_ONLY
+  projectionType: ProjectionType.KEYS_ONLY,
 });
 tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_4,
   sortKey: LSI_SORT_KEY,
   projectionType: ProjectionType.INCLUDE,
-  nonKeyAttributes: LSI_NON_KEY
+  nonKeyAttributes: LSI_NON_KEY,
 });
 
 const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
@@ -113,7 +113,7 @@ const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDA
 });
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
-  partitionKey: GSI_PARTITION_KEY
+  partitionKey: GSI_PARTITION_KEY,
 });
 
 const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
@@ -124,7 +124,7 @@ const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY
 
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
-  sortKey: LSI_SORT_KEY
+  sortKey: LSI_SORT_KEY,
 });
 
 const user = new iam.User(stack, 'User');

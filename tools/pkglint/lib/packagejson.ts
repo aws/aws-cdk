@@ -1,6 +1,6 @@
-import colors = require('colors/safe');
-import fs = require('fs-extra');
-import path = require('path');
+import * as colors from 'colors/safe';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 /**
  * Return all package JSONs in the root directory
@@ -289,6 +289,11 @@ export class PackageJson {
       lines.push(line);
       this.writeFileLinesSync(fileName, lines);
     }
+  }
+
+  public removeFromFileSync(fileName: string, line: string) {
+    const lines = this.readFileLinesSync(fileName).filter(l => l.trim() !== line);
+    this.writeFileLinesSync(fileName, lines);
   }
 
   /**

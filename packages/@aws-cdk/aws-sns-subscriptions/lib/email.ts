@@ -1,4 +1,4 @@
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -23,12 +23,16 @@ export class EmailSubscription implements sns.ITopicSubscription {
   constructor(private readonly emailAddress: string, private readonly props: EmailSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for an email address to subscribe to an SNS topic
+   */
   public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
     return {
       subscriberId: this.emailAddress,
       endpoint: this.emailAddress,
       protocol: this.props.json ? sns.SubscriptionProtocol.EMAIL_JSON : sns.SubscriptionProtocol.EMAIL,
       filterPolicy: this.props.filterPolicy,
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 }

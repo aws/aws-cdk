@@ -1,10 +1,10 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
-import path = require('path');
+import * as path from 'path';
 
 const app = new cdk.App();
 
@@ -21,7 +21,7 @@ class EventStack extends cdk.Stack {
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
-      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
     });
 
     // A rule that describes the event trigger (in this case a scheduled run)
@@ -37,9 +37,9 @@ class EventStack extends cdk.Stack {
       containerOverrides: [{
         containerName: 'TheContainer',
         environment: [
-          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
-        ]
-      }]
+          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' },
+        ],
+      }],
     }));
     /// !hide
   }

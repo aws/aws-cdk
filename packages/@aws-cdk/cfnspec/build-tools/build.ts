@@ -5,10 +5,10 @@
  * document at `spec/specification.json`.
  */
 
-import fastJsonPatch = require('fast-json-patch');
-import fs = require('fs-extra');
-import md5 = require('md5');
-import path = require('path');
+import * as fastJsonPatch from 'fast-json-patch';
+import * as fs from 'fs-extra';
+import * as md5 from 'md5';
+import * as path from 'path';
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 
@@ -26,13 +26,19 @@ async function main() {
     }
   }
 
-  detectScrutinyTypes(spec);
+  massageSpec(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
   const outDir = path.join(process.cwd(), 'spec');
   await fs.mkdirp(outDir);
   await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
+}
+
+export function massageSpec(spec: schema.Specification) {
+  detectScrutinyTypes(spec);
+  replaceIncompleteTypes(spec);
+  dropTypelessAttributes(spec);
 }
 
 function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
@@ -49,6 +55,45 @@ function decorateResourceTypes(data: any) {
   for (const name of Object.keys(resourceTypes)) {
     resourceTypes[name].RequiredTransform = requiredTransform;
   }
+}
+
+/**
+ * Fix incomplete type definitions in PropertyTypes
+ *
+ * Some user-defined types are defined to not have any properties, and not
+ * be a collection of other types either. They have no definition at all.
+ *
+ * Add a property object type with empty properties.
+ */
+function replaceIncompleteTypes(spec: schema.Specification) {
+  for (const [name, definition] of Object.entries(spec.PropertyTypes)) {
+    if (!schema.isRecordType(definition)
+    && !schema.isCollectionProperty(definition)
+    && !schema.isScalarProperty(definition)
+    && !schema.isPrimitiveProperty(definition)) {
+      // tslint:disable-next-line:no-console
+      console.log(`[${name}] Incomplete type, adding empty "Properties" field`);
+
+      (definition as unknown as schema.RecordProperty).Properties = {};
+    }
+  }
+}
+
+/**
+ * Drop Attributes specified with the different ResourceTypes that have
+ * no type specified.
+ */
+function dropTypelessAttributes(spec: schema.Specification) {
+  const resourceTypes = spec.ResourceTypes;
+  Object.values(resourceTypes).forEach((resourceType) => {
+    const attributes = resourceType.Attributes ?? {};
+    Object.keys(attributes).forEach((attrKey) => {
+      const attrVal = attributes[attrKey];
+      if (Object.keys(attrVal).length === 0) {
+        delete attributes[attrKey];
+      }
+    });
+  });
 }
 
 function merge(spec: any, fragment: any, jsonPath: string[]) {

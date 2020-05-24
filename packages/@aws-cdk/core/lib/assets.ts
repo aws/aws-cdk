@@ -58,6 +58,13 @@ export interface DockerImageAssetSource {
   readonly dockerBuildTarget?: string;
 
   /**
+   * Path to the Dockerfile (relative to the directory).
+   *
+   * @default - no file
+   */
+  readonly dockerFile?: string;
+
+  /**
    * ECR repository name
    *
    * Specify this property if you need to statically address the image, e.g.
@@ -65,6 +72,7 @@ export interface DockerImageAssetSource {
    * registry and the tag parts.
    *
    * @default - automatically derived from the asset's ID.
+   * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
 }
@@ -103,10 +111,23 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
+   * @deprecated use `httpUrl`
+   */
+  readonly s3Url: string;
+
+  /**
+   * The HTTP URL of this asset on Amazon S3.
    *
    * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
    */
-  readonly s3Url: string;
+  readonly httpUrl: string;
+
+  /**
+   * The S3 URL of this asset on Amazon S3.
+   *
+   * @example s3://mybucket/myobject
+   */
+  readonly s3ObjectUrl: string;
 }
 
 /**

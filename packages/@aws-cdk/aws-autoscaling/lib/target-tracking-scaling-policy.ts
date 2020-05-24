@@ -1,5 +1,5 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 
@@ -110,11 +110,15 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
   constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
+      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
 
     if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
+    }
+
+    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
+      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
     }
 
     super(scope, id);
@@ -132,7 +136,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           resourceLabel: props.resourceLabel,
         } : undefined,
         targetValue: props.targetValue,
-      }
+      },
     });
 
     this.scalingPolicyArn = this.resource.ref;
@@ -141,18 +145,14 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
 function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toAlarmConfig();
-
-  if (!c.statistic) {
-    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
-  }
+  const c = metric.toMetricConfig().metricStat!;
 
   return {
     dimensions: c.dimensions,
     metricName: c.metricName,
     namespace: c.namespace,
     statistic: c.statistic,
-    unit: c.unit
+    unit: c.unitFilter,
   };
 }
 

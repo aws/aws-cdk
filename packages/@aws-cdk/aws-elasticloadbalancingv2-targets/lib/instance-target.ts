@@ -1,5 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 /**
  * An EC2 instance that is the target for load balancing
@@ -40,7 +40,7 @@ export class InstanceIdTarget implements elbv2.IApplicationLoadBalancerTarget, e
   private attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.INSTANCE,
-      targetJson: { id: this.instanceId, port: this.port }
+      targetJson: { id: this.instanceId, port: this.port },
     };
   }
 }

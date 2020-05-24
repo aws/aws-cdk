@@ -2,10 +2,12 @@
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiSy9rWmVENzRDbXBoVlhYaHBsNks4OGJDRXFtV1IySmhCVjJoaytDU2dtVWhhVys3NS9Odk5DbC9lR2JUTkRvSWlHSXZrNVhYQ3ZsaUJFY3o4OERQY1pnPSIsIml2UGFyYW1ldGVyU3BlYyI6IlB3ODEyRW9KdU0yaEp6NDkiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/awslabs/aws-cdk)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/aws/aws-cdk)
 [![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.svg)](https://badge.fury.io/nu/Amazon.CDK)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core)
+[![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/aws/aws-cdk&style=flat)](https://mergify.io)
 
 The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development
 framework to define cloud infrastructure in code and provision it through AWS CloudFormation.
@@ -17,10 +19,12 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript (GA, [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/))
-* Python (GA, [Python ≥ 3.6](https://www.python.org/downloads/))
-* Java (Developer Preview, [Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
-* .NET (Developer Preview, [.NET Core ≥ 2.0](https://dotnet.microsoft.com/download))
+* JavaScript, TypeScript ([Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/))
+  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+* Python ([Python ≥ 3.6](https://www.python.org/downloads/))
+* Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
+* .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
 
 -------
 
@@ -29,7 +33,9 @@ The CDK is available in the following languages:
 [Getting Started](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
-[Getting Help](#getting-help)
+[Getting Help](#getting-help) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs) |
+[Roadmap](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md)
 
 Developers use the [CDK framework] in one of the
 supported programming languages to define reusable cloud components called [constructs], which
@@ -51,11 +57,12 @@ on AWS.
 [apps]: https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html#apps
 [Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
 [AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
-[AWS Construct Library]: https://docs.aws.amazon.com/cdk/latest/guide/aws_construct_lib.html
+[AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
 
 ## At a glance
 
-Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.3.0](https://nodejs.org/download/release/latest-v10.x/)):
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 
 ```bash
 $ npm i -g aws-cdk
@@ -120,6 +127,13 @@ for tracking bugs and feature requests.
 We welcome community contributions and pull requests. See
 [CONTRIBUTING](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Roadmap
+
+The [AWS CDK Roadmap project board] lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP] for more information and FAQs.
+
+[AWS CDK Roadmap project board]: https://github.com/orgs/aws/projects/7
+[Roadmap]: (https://github.com/aws/aws-cdk/ROADMAP.md)
 
 ## License
 

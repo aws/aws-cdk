@@ -53,7 +53,7 @@ export class NetworkUtils {
       .split('.')
       .reduce(
         (p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i),
-        0
+        0,
       );
   }
 
@@ -69,7 +69,7 @@ export class NetworkUtils {
   public static numToIp(ipNum: number): string {
     // this all because bitwise math is signed
     let remaining = ipNum;
-    const address = [];
+    const address = new Array<number>();
     for (let i = 0; i < 4; i++) {
       if (remaining !== 0) {
         address.push(Math.floor(remaining / 256 ** (3 - i)));

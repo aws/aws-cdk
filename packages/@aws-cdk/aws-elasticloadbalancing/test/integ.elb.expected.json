@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -83,7 +83,13 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -117,16 +123,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-elb-integ/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-elb-integ/VPC/PrivateSubnet1"
           }
         ]
       }

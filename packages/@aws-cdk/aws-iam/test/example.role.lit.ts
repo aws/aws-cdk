@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
@@ -7,7 +7,7 @@ export class ExampleConstruct extends cdk.Construct {
 
     /// !show
     const role = new Role(this, 'MyRole', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com')
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
     role.addToPolicy(new PolicyStatement({

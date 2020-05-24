@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import autoscaling = require('../lib');
+import * as autoscaling from '../lib';
 
 export = {
   'test utc cron, hour only'(test: Test) {
@@ -10,5 +10,5 @@ export = {
   'test utc cron, hour and minute'(test: Test) {
     test.equals(autoscaling.Schedule.cron({ hour: '18', minute: '24' }).expressionString, '24 18 * * *');
     test.done();
-  }
+  },
 };

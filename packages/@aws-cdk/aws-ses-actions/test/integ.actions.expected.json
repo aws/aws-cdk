@@ -47,7 +47,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "FunctionServiceRole675BB04A"
@@ -134,7 +134,9 @@
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -355,7 +357,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function dropSpamCode(event, _, callback) {\n    console.log('Spam filter');\n    const sesNotification = event.Records[0].ses;\n    console.log(\"SES Notification:\\n\", JSON.stringify(sesNotification, null, 2));\n    // Check if any spam check failed\n    if (sesNotification.receipt.spfVerdict.status === 'FAIL'\n        || sesNotification.receipt.dkimVerdict.status === 'FAIL'\n        || sesNotification.receipt.spamVerdict.status === 'FAIL'\n        || sesNotification.receipt.virusVerdict.status === 'FAIL') {\n        console.log('Dropping spam');\n        // Stop processing rule set, dropping message\n        callback(null, { disposition: 'STOP_RULE_SET' });\n    }\n    else {\n        callback(null, null);\n    }\n}"
+          "ZipFile": "exports.handler = function dropSpamCode(event, _, callback) {\n    console.log('Spam filter');\n    const sesNotification = event.Records[0].ses;\n    console.log('SES Notification:\\n', JSON.stringify(sesNotification, null, 2));\n    // Check if any spam check failed\n    if (sesNotification.receipt.spfVerdict.status === 'FAIL'\n        || sesNotification.receipt.dkimVerdict.status === 'FAIL'\n        || sesNotification.receipt.spamVerdict.status === 'FAIL'\n        || sesNotification.receipt.virusVerdict.status === 'FAIL') {\n        console.log('Dropping spam');\n        // Stop processing rule set, dropping message\n        callback(null, { disposition: 'STOP_RULE_SET' });\n    }\n    else {\n        callback(null, null);\n    }\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -364,7 +366,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"

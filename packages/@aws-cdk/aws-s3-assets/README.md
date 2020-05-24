@@ -1,16 +1,10 @@
 ## AWS CDK Assets
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -40,7 +34,8 @@ to an S3 bucket during deployment.
 
  * `s3BucketName` - the name of the assets S3 bucket.
  * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)
- * `s3Url` - the S3 URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
+ * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://mybucket/mykey.zip)
+ * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
 
 In the following example, the various asset attributes are exported as stack outputs:
 

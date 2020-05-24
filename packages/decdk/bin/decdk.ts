@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import colors = require('colors/safe');
+import * as cdk from '@aws-cdk/core';
+import * as colors from 'colors/safe';
 import { DeclarativeStack, loadTypeSystem, readTemplate, stackNameFromFileName } from '../lib';
 
 async function main() {

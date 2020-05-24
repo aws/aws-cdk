@@ -1,18 +1,23 @@
-import events = require('@aws-cdk/aws-events');
-import { Construct } from '@aws-cdk/core';
-import codepipeline = require('../lib');
+import * as events from '@aws-cdk/aws-events';
+import { Construct, Lazy } from '@aws-cdk/core';
+import * as codepipeline from '../lib';
+
+export interface IFakeSourceActionVariables {
+  readonly firstVariable: string;
+}
 
 export interface FakeSourceActionProps extends codepipeline.CommonActionProps {
-  output: codepipeline.Artifact;
+  readonly output: codepipeline.Artifact;
 
-  extraOutputs?: codepipeline.Artifact[];
+  readonly extraOutputs?: codepipeline.Artifact[];
 
-  region?: string;
+  readonly region?: string;
 }
 
 export class FakeSourceAction implements codepipeline.IAction {
   public readonly inputs?: codepipeline.Artifact[];
   public readonly outputs?: codepipeline.Artifact[];
+  public readonly variables: IFakeSourceActionVariables;
 
   public readonly actionProperties: codepipeline.ActionProperties;
 
@@ -24,10 +29,13 @@ export class FakeSourceAction implements codepipeline.IAction {
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 4 },
       outputs: [props.output, ...props.extraOutputs || []],
     };
+    this.variables = {
+      firstVariable: Lazy.stringValue({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
+    };
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {};
   }
 

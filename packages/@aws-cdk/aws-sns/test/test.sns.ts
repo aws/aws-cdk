@@ -1,10 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import { App, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sns = require('../lib');
-import { SubscriptionProtocol, Topic } from '../lib';
+import * as sns from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -15,11 +14,11 @@ export = {
       new sns.Topic(stack, 'MyTopic');
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic"
-          }
-        }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+          },
+        },
       });
 
       test.done();
@@ -33,14 +32,14 @@ export = {
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "TopicName": "topicName"
-          }
-          }
-        }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'TopicName': 'topicName',
+            },
+          },
+        },
       });
 
       test.done();
@@ -50,19 +49,34 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        displayName: 'displayName'
+        displayName: 'displayName',
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "DisplayName": "displayName"
-          }
-          }
-        }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'DisplayName': 'displayName',
+            },
+          },
+        },
       });
+
+      test.done();
+    },
+
+    'specify kmsMasterKey'(test: Test) {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, 'CustomKey');
+
+      new sns.Topic(stack, 'MyTopic', {
+        masterKey: key,
+      });
+
+      expect(stack).to(haveResource('AWS::SNS::Topic', {
+        'KmsMasterKeyId': { 'Ref': 'CustomKey1E6D0D07' },
+      }));
 
       test.done();
     },
@@ -72,19 +86,19 @@ export = {
 
       new sns.Topic(stack, 'MyTopic', {
         topicName: 'topicName',
-        displayName: 'displayName'
+        displayName: 'displayName',
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-            "DisplayName": "displayName",
-            "TopicName": "topicName"
-          }
-          }
-        }
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'DisplayName': 'displayName',
+              'TopicName': 'topicName',
+            },
+          },
+        },
       });
 
       test.done();
@@ -100,21 +114,21 @@ export = {
     topic.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['sns:*'],
-      principals: [new iam.ArnPrincipal('arn')]
+      principals: [new iam.ArnPrincipal('arn')],
     }));
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: [{
-        "Sid": "0",
-        "Action": "sns:*",
-        "Effect": "Allow",
-        "Principal": { "AWS": "arn" },
-        "Resource": "*"
-      }]
-    }
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          'Sid': '0',
+          'Action': 'sns:*',
+          'Effect': 'Allow',
+          'Principal': { 'AWS': 'arn' },
+          'Resource': '*',
+        }],
+      },
     }));
 
     test.done();
@@ -131,16 +145,16 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-    "PolicyDocument": {
-      Version: '2012-10-17',
-      "Statement": [
-      {
-        "Action": "sns:Publish",
-        "Effect": "Allow",
-        "Resource": stack.resolve(topic.topicArn)
-      }
-      ],
-    }
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
     }));
 
     test.done();
@@ -155,36 +169,36 @@ export = {
     topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['service:statement1'] }));
 
     expect(stack).toMatch({
-      "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic"
-      },
-      "MyTopicPolicy12A5EC17": {
-        "Type": "AWS::SNS::TopicPolicy",
-        "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-          {
-            "Action": "service:statement0",
-            "Effect": "Allow",
-            "Sid": "0"
-          },
-          {
-            "Action": "service:statement1",
-            "Effect": "Allow",
-            "Sid": "1"
-          }
-          ],
-          "Version": "2012-10-17"
+      'Resources': {
+        'MyTopic86869434': {
+          'Type': 'AWS::SNS::Topic',
         },
-        "Topics": [
-          {
-          "Ref": "MyTopic86869434"
-          }
-        ]
-        }
-      }
-      }
+        'MyTopicPolicy12A5EC17': {
+          'Type': 'AWS::SNS::TopicPolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'service:statement0',
+                  'Effect': 'Allow',
+                  'Sid': '0',
+                },
+                {
+                  'Action': 'service:statement1',
+                  'Effect': 'Allow',
+                  'Sid': '1',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'Topics': [
+              {
+                'Ref': 'MyTopic86869434',
+              },
+            ],
+          },
+        },
+      },
     });
 
     test.done();
@@ -214,7 +228,7 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
       period: cdk.Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
     });
 
     test.deepEqual(stack.resolve(topic.metricPublishSize()), {
@@ -222,7 +236,7 @@ export = {
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
       period: cdk.Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     test.done();
@@ -230,16 +244,16 @@ export = {
 
   'subscription is created under the topic scope by default'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const topic = new Topic(stack, 'Topic');
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
     topic.addSubscription({
       bind: () => ({
-        protocol: SubscriptionProtocol.HTTP,
+        protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
-        subscriberId: 'my-subscription'
-      })
+        subscriberId: 'my-subscription',
+      }),
     });
 
     // THEN
@@ -249,24 +263,24 @@ export = {
 
   'if "scope" is defined, subscription will be created under that scope'(test: Test) {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'A');
-    const stack2 = new Stack(app, 'B');
-    const topic = new Topic(stack, 'Topic');
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'A');
+    const stack2 = new cdk.Stack(app, 'B');
+    const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
     topic.addSubscription({
       bind: () => ({
-        protocol: SubscriptionProtocol.HTTP,
+        protocol: sns.SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
         subscriberScope: stack2,
-        subscriberId: 'subscriberId'
-      })
+        subscriberId: 'subscriberId',
+      }),
     });
 
     // THEN
     expect(stack).notTo(haveResource('AWS::SNS::Subscription'));
     expect(stack2).to(haveResource('AWS::SNS::Subscription'));
     test.done();
-  }
+  },
 };

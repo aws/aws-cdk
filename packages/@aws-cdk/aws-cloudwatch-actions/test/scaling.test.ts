@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
-import actions = require('../lib');
+import * as actions from '../lib';
 
 test('can use topic as alarm action', () => {
   // GIVEN
@@ -14,15 +14,15 @@ test('can use topic as alarm action', () => {
     maxCapacity: 100,
     instanceType: new ec2.InstanceType('t-1000.macro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    vpc
+    vpc,
   });
   const action = new autoscaling.StepScalingAction(stack, 'Action', {
-    autoScalingGroup
+    autoScalingGroup,
   });
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
     metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Henk' }),
     evaluationPeriods: 3,
-    threshold: 100
+    threshold: 100,
   });
 
   // WHEN
@@ -31,7 +31,7 @@ test('can use topic as alarm action', () => {
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
     AlarmActions: [
-      { Ref: "Action62AD07C0" }
+      { Ref: 'Action62AD07C0' },
     ],
   });
 });

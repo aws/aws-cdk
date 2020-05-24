@@ -1,6 +1,6 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
+import { Construct, IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -9,7 +9,8 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 
 export interface ILogGroup extends IResource {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
+   *
    * @attribute
    */
   readonly logGroupArn: string;
@@ -76,7 +77,7 @@ export interface ILogGroup extends IResource {
  */
 abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
-   * The ARN of this log group
+   * The ARN of this log group, with ':*' appended
    */
   public abstract readonly logGroupArn: string;
 
@@ -94,7 +95,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addStream(id: string, props: StreamOptions = {}): LogStream {
     return new LogStream(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -107,7 +108,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter {
     return new SubscriptionFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -120,7 +121,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
     return new MetricFilter(this, id, {
       logGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -144,10 +145,10 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       metricNamespace,
       metricName,
       filterPattern: FilterPattern.exists(jsonField),
-      metricValue: jsonField
+      metricValue: jsonField,
     });
 
-    return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
+    return new cloudwatch.Metric({ metricName, namespace: metricNamespace }).attachTo(this);
   }
 
   /**
@@ -305,12 +306,33 @@ export interface LogGroupProps {
  */
 export class LogGroup extends LogGroupBase {
   /**
-   * Import an existing LogGroup
+   * Import an existing LogGroup given its ARN
    */
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
+    const baseLogGroupArn = logGroupArn.replace(/:\*$/, '');
+
     class Import extends LogGroupBase {
-      public readonly logGroupArn = logGroupArn;
-      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
+      public readonly logGroupArn = `${baseLogGroupArn}:*`;
+      public readonly logGroupName = Stack.of(scope).parseArn(baseLogGroupArn, ':').resourceName!;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing LogGroup given its name
+   */
+  public static fromLogGroupName(scope: Construct, id: string, logGroupName: string): ILogGroup {
+    const baseLogGroupName = logGroupName.replace(/:\*$/, '');
+
+    class Import extends LogGroupBase {
+      public readonly logGroupName = baseLogGroupName;
+      public readonly logGroupArn = Stack.of(scope).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: baseLogGroupName + ':*',
+      });
     }
 
     return new Import(scope, id);
@@ -335,7 +357,7 @@ export class LogGroup extends LogGroupBase {
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
-    if (retentionInDays !== undefined && retentionInDays <= 0) {
+    if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 

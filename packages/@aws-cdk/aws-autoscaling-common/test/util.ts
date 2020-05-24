@@ -1,5 +1,5 @@
-import fc = require('fast-check');
-import scalingcommon = require('../lib');
+import * as fc from 'fast-check';
+import * as scalingcommon from '../lib';
 
 export class ArbitraryCompleteIntervals extends fc.Arbitrary<scalingcommon.CompleteScalingInterval[]> {
   public generate(mrng: fc.Random): fc.Shrinkable<scalingcommon.CompleteScalingInterval[]> {

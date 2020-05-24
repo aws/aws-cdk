@@ -14,6 +14,20 @@ import { Token } from './token';
  */
 export class Fn {
   /**
+   * The ``Ref`` intrinsic function returns the value of the specified parameter or resource.
+   * Note that it doesn't validate the logicalName, it mainly serves paremeter/resource reference defined in a ``CfnInclude`` template.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  public static ref(logicalName: string): string {
+    return new FnRef(logicalName).toString();
+  }
+
+  /** @internal */
+  public static _ref(logicalId: string): IResolvable {
+    return new FnRef(logicalId);
+  }
+
+  /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
    * @param logicalNameOfResource The logical name (also called logical ID) of
@@ -39,7 +53,7 @@ export class Fn {
    */
   public static join(delimiter: string, listOfValues: string[]): string {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     return new FnJoin(delimiter, listOfValues).toString();
@@ -308,6 +322,21 @@ export class Fn {
 class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
+  }
+}
+
+/**
+ * The intrinsic function ``Ref`` returns the value of the specified parameter or resource.
+ * When you specify a parameter's logical name, it returns the value of the parameter.
+ * When you specify a resource's logical name, it returns a value that you can typically use to refer to that resource, such as a physical ID.
+ */
+class FnRef extends FnBase {
+  /**
+   * Creates an ``Ref`` function.
+   * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
+   */
+  constructor(logicalName: string) {
+    super('Ref', logicalName);
   }
 }
 
@@ -647,7 +676,7 @@ class FnJoin implements IResolvable {
    */
   constructor(delimiter: string, listOfValues: any[]) {
     if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
+      throw new Error('FnJoin requires at least one value to be provided');
     }
 
     this.delimiter = delimiter;
@@ -672,7 +701,7 @@ class FnJoin implements IResolvable {
   }
 
   public toJSON() {
-    return `<Fn::Join>`;
+    return '<Fn::Join>';
   }
 
   /**

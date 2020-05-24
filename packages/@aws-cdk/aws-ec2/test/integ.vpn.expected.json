@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
           }
         ]
       }
@@ -83,7 +83,13 @@
     "MyVpcPublicSubnet1EIP096967CB": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1NATGatewayAD3400C1": {
@@ -117,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
           }
         ]
       }
@@ -174,7 +180,13 @@
     "MyVpcPublicSubnet2EIP8CCBA239": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet2NATGateway91BFBEC9": {
@@ -208,16 +220,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
           }
         ]
       }
@@ -265,7 +277,13 @@
     "MyVpcPublicSubnet3EIPC5ACADAB": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet3NATGatewayD4B50EBE": {
@@ -299,16 +317,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1"
           }
         ]
       }
@@ -361,16 +379,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2"
           }
         ]
       }
@@ -423,16 +441,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet3"
           }
         ]
       }
@@ -562,9 +580,6 @@
           "Ref": "MyVpcDynamicCustomerGatewayFB63DFBF"
         },
         "Type": "ipsec.1",
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        },
         "StaticRoutesOnly": false,
         "Tags": [
           {
@@ -572,6 +587,9 @@
             "Value": "aws-cdk-ec2-vpn/MyVpc"
           }
         ],
+        "VpnGatewayId": {
+          "Ref": "MyVpcVpnGateway11FB05E5"
+        },
         "VpnTunnelOptionsSpecifications": [
           {
             "PreSharedKey": "secretkey1234"
@@ -600,16 +618,16 @@
           "Ref": "MyVpcStaticCustomerGateway43D01906"
         },
         "Type": "ipsec.1",
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        },
         "StaticRoutesOnly": true,
         "Tags": [
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpn/MyVpc"
           }
-        ]
+        ],
+        "VpnGatewayId": {
+          "Ref": "MyVpcVpnGateway11FB05E5"
+        }
       }
     },
     "MyVpcStaticRoute192168100240A24A5CC": {

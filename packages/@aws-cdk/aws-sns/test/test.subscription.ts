@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import { Queue } from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sns = require('../lib');
+import * as sns from '../lib';
 
 export = {
   'create a subscription'(test: Test) {
@@ -13,7 +14,7 @@ export = {
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
@@ -21,8 +22,80 @@ export = {
       Endpoint: 'endpoint',
       Protocol: 'lambda',
       TopicArn: {
-        Ref: 'TopicBFC7AF6E'
-      }
+        Ref: 'TopicBFC7AF6E',
+      },
+    }));
+    test.done();
+  },
+
+  'create a subscription with DLQ when client provides DLQ'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const dlQueue = new Queue(stack, 'DeadLetterQueue', {
+      queueName: 'MySubscription_DLQ',
+      retentionPeriod: cdk.Duration.days(14),
+    });
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+      deadLetterQueue: dlQueue,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      Endpoint: 'endpoint',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TopicBFC7AF6E',
+      },
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          'Fn::GetAtt': [
+            'DeadLetterQueue9F481546',
+            'Arn',
+          ],
+        },
+      },
+    }));
+    expect(stack).to(haveResource('AWS::SQS::Queue', {
+      QueueName: 'MySubscription_DLQ',
+      MessageRetentionPeriod: 1209600,
+    }));
+    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Condition: {
+              ArnEquals: {
+                'aws:SourceArn': {
+                  Ref: 'TopicBFC7AF6E',
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'sns.amazonaws.com',
+            },
+            Resource: {
+              'Fn::GetAtt': [
+                'DeadLetterQueue9F481546',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Queues: [
+        {
+          Ref: 'DeadLetterQueue9F481546',
+        },
+      ],
     }));
     test.done();
   },
@@ -49,10 +122,10 @@ export = {
           betweenStrict: { start: 2000, stop: 3000 },
           greaterThanOrEqualTo: 1000,
           lessThanOrEqualTo: -2,
-        })
+        }),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
@@ -63,7 +136,7 @@ export = {
           'green',
           {'anything-but': ['white', 'orange']},
           { prefix: 'bl'},
-          { prefix: 'ye'}
+          { prefix: 'ye'},
         ],
         price: [
           { numeric: ['=', 100] },
@@ -74,7 +147,7 @@ export = {
           { numeric: ['<=', -2] },
           { numeric: ['>=', 300, '<=', 350] },
           { numeric: ['>', 2000, '<', 3000] },
-        ]
+        ],
       },
     }));
     test.done();
@@ -92,13 +165,13 @@ export = {
         size: sns.SubscriptionFilter.existsFilter(),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic
+      topic,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::Subscription', {
       FilterPolicy: {
-        size: [{ exists: true }]
+        size: [{ exists: true }],
       },
     }));
     test.done();
@@ -114,7 +187,7 @@ export = {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
-      rawMessageDelivery: true
+      rawMessageDelivery: true,
     }), /Raw message delivery/);
     test.done();
   },
@@ -159,5 +232,5 @@ export = {
       },
     }), /\(120\) must not exceed 100/);
     test.done();
-  }
+  },
 };

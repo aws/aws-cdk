@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import events = require('@aws-cdk/aws-events');
-import sns = require('@aws-cdk/aws-sns');
-import subs = require('@aws-cdk/aws-sns-subscriptions');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as events from '@aws-cdk/aws-events';
+import * as sns from '@aws-cdk/aws-sns';
+import * as subs from '@aws-cdk/aws-sns-subscriptions';
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
 const app = new cdk.App();
 
@@ -33,20 +33,20 @@ project.onStateChange('StateChange', { target: new targets.SnsTopic(topic) });
 // details.
 project.onPhaseChange('PhaseChange', {
   target: new targets.SnsTopic(topic, {
-    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`)
-  })
+    message: events.RuleTargetInput.fromText(`Build phase changed to ${codebuild.PhaseChangeEvent.completedPhase}`),
+  }),
 });
 
 // trigger a build when a commit is pushed to the repo
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
-  branches: ['master']
+  branches: ['master'],
 });
 
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromText(
-    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
-  )
+    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`,
+  ),
 }));
 
 app.synth();

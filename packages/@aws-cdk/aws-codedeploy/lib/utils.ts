@@ -1,4 +1,4 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Aws } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
@@ -16,7 +16,7 @@ export function arnForDeploymentConfig(name: string): string {
 }
 
 export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
-      CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   return alarms.length === 0
     ? undefined
     : {
@@ -33,7 +33,7 @@ enum AutoRollbackEvent {
 }
 
 export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
-    CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
+CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 
   // we roll back failed deployments by default
@@ -54,7 +54,7 @@ export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], aut
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new Error(
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
-        "at least one CloudWatch alarm with the Deployment Group");
+        'at least one CloudWatch alarm with the Deployment Group');
     }
   }
 

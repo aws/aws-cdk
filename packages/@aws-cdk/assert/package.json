@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assert",
-  "version": "1.16.1",
+  "version": "0.0.0",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,11 +14,6 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "nyc": {
-    "statements": 40,
-    "lines": 40,
-    "branches": 30
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -26,16 +21,23 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "cdk-build-tools": "1.16.1",
-    "pkglint": "1.16.1"
+    "@types/jest": "^25.2.3",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^25.5.4",
+    "pkglint": "0.0.0",
+    "ts-jest": "^26.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "1.16.1",
-    "@aws-cdk/core": "1.16.1",
-    "@aws-cdk/cx-api": "1.16.1",
-    "jest": "^24.9.0",
-    "source-map-support": "^0.5.16"
+    "@aws-cdk/cloudformation-diff": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "constructs": "^3.0.2"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "jest": "^25.5.4",
+    "constructs": "^3.0.2"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -48,7 +50,11 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "maturity": "experimental",
+  "cdk-build": {
+    "jest": true
+  }
 }

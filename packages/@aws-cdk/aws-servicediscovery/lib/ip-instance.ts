@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
@@ -79,7 +79,7 @@ export class IpInstance extends InstanceBase {
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {
-        throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
+      throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
     }
     if (dnsRecordType === DnsRecordType.SRV) {
       if (!props.port) {
@@ -107,10 +107,10 @@ export class IpInstance extends InstanceBase {
         AWS_INSTANCE_IPV4: props.ipv4,
         AWS_INSTANCE_IPV6: props.ipv6,
         AWS_INSTANCE_PORT: port.toString(),
-        ...props.customAttributes
+        ...props.customAttributes,
       },
       instanceId: props.instanceId || this.uniqueInstanceId(),
-      serviceId: props.service.serviceId
+      serviceId: props.service.serviceId,
     });
 
     this.service = props.service;

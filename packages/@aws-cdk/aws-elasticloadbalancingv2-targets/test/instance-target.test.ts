@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Stack } from '@aws-cdk/core';
-import targets = require('../lib');
+import * as targets from '../lib';
 
 test('Can create target groups with instance id target', () => {
   // GIVEN
@@ -20,11 +20,11 @@ test('Can create target groups with instance id target', () => {
   // THEN
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
-    Protocol: "HTTP",
+    Protocol: 'HTTP',
     Targets: [
-      { Id: "i-1234" }
+      { Id: 'i-1234' },
     ],
-    TargetType: "instance",
+    TargetType: 'instance',
   }));
 });
 
@@ -50,10 +50,10 @@ test('Can create target groups with instance target', () => {
   // THEN
   expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
-    Protocol: "HTTP",
+    Protocol: 'HTTP',
     Targets: [
-      { Id: {Ref: 'InstanceC1063A87'} }
+      { Id: {Ref: 'InstanceC1063A87'} },
     ],
-    TargetType: "instance",
+    TargetType: 'instance',
   }));
 });

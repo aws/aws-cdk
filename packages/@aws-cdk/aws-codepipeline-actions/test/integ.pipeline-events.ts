@@ -1,13 +1,13 @@
 // Use pipeline as CloudWAtch event target
 
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import targets = require('@aws-cdk/aws-events-targets');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 
@@ -18,7 +18,9 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
   repositoryName: 'foo',
 });
-const project = new codebuild.PipelineProject(stack, 'BuildProject');
+const project = new codebuild.PipelineProject(stack, 'BuildProject', {
+  grantReportGroupPermissions: false,
+});
 
 const sourceOutput = new codepipeline.Artifact('Source');
 const sourceAction = new cpactions.CodeCommitSourceAction({
@@ -51,13 +53,13 @@ const eventState = events.EventField.fromPath('$.detail.state');
 pipeline.onStateChange('OnPipelineStateChange', {
   target: new targets.SnsTopic(topic, {
     message: events.RuleTargetInput.fromText(`Pipeline ${eventPipeline} changed state to ${eventState}`),
-  })
+  }),
 });
 
 sourceStage.onStateChange('OnSourceStateChange', new targets.SnsTopic(topic));
 
 sourceAction.onStateChange('OnActionStateChange', new targets.SnsTopic(topic)).addEventPattern({
-  detail: { state: [ 'STARTED' ] }
+  detail: { state: [ 'STARTED' ] },
 });
 
 app.synth();

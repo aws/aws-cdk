@@ -1,8 +1,11 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Fn } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
+import { Alias, AliasOptions } from './alias';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
+import { addAlias } from './util';
 
 export interface IVersion extends IFunction {
   /**
@@ -15,12 +18,19 @@ export interface IVersion extends IFunction {
    * The underlying AWS Lambda function.
    */
   readonly lambda: IFunction;
+
+  /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias
+   * @param options Alias options
+   */
+  addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
 
 /**
- * Properties for a new Lambda version
+ * Options for `lambda.Version`
  */
-export interface VersionProps {
+export interface VersionOptions extends EventInvokeConfigOptions {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -37,6 +47,26 @@ export interface VersionProps {
    */
   readonly description?: string;
 
+  /**
+   * Specifies a provisioned concurrency configuration for a function's version.
+   *
+   * @default No provisioned concurrency
+   */
+  readonly provisionedConcurrentExecutions?: number;
+
+  /**
+   * Whether to retain old versions of this function when a new version is
+   * created.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * Properties for a new Lambda version
+ */
+export interface VersionProps extends VersionOptions {
   /**
    * Function to get the value of
    */
@@ -81,7 +111,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param versionArn The version ARN to create this version from
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
-    const version = extractVersionFromArn(versionArn);
+    const version = extractQualifierFromArn(versionArn);
     const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
 
     class Import extends QualifiedFunctionBase implements IVersion {
@@ -92,7 +122,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
 
+      protected readonly qualifier = version;
       protected readonly canCreatePermissions = false;
+
+      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+        return addAlias(this, this, name, opts);
+      }
     }
     return new Import(scope, id);
   }
@@ -106,7 +141,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
 
+      protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = false;
+
+      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+        return addAlias(this, this, name, opts);
+      }
     }
     return new Import(scope, id);
   }
@@ -116,6 +156,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly functionArn: string;
   public readonly functionName: string;
 
+  protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
@@ -126,12 +167,29 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
-      functionName: props.lambda.functionName
+      functionName: props.lambda.functionName,
+      provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+
+    if (props.removalPolicy) {
+      version.applyRemovalPolicy(props.removalPolicy, {
+        default: RemovalPolicy.DESTROY,
+      });
+    }
 
     this.version = version.attrVersion;
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
+    this.qualifier = version.attrVersion;
+
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
   }
 
   public get grantPrincipal() {
@@ -150,26 +208,52 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         // construct the ARN from the underlying lambda so that alarms on an alias
         // don't cause a circular dependency with CodeDeploy
         // see: https://github.com/aws/aws-cdk/issues/2231
-        Resource: `${this.lambda.functionArn}:${this.version}`
+        Resource: `${this.lambda.functionArn}:${this.version}`,
       },
-      ...props
+      ...props,
     });
+  }
+
+  /**
+   * Defines an alias for this version.
+   * @param aliasName The name of the alias (e.g. "live")
+   * @param options Alias options
+   */
+  public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
+    return addAlias(this, this, aliasName, options);
+  }
+
+  /**
+   * Validate that the provisionedConcurrentExecutions makes sense
+   *
+   * Member must have value greater than or equal to 1
+   */
+  private determineProvisionedConcurrency(props: VersionProps): CfnVersion.ProvisionedConcurrencyConfigurationProperty | undefined {
+    if (!props.provisionedConcurrentExecutions) {
+      return undefined;
+    }
+
+    if (props.provisionedConcurrentExecutions <= 0) {
+      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+    }
+
+    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
   }
 }
 
 /**
- * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the version
- * name from the ARN.
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the
+ * qualifier (= version or alias) from the ARN.
  *
  * Version ARNs look like this:
  *
- *   arn:aws:lambda:region:account-id:function:function-name:version
+ *   arn:aws:lambda:region:account-id:function:function-name:qualifier
  *
- * ..which means that in order to extract the `version` component from the ARN, we can
+ * ..which means that in order to extract the `qualifier` component from the ARN, we can
  * split the ARN using ":" and select the component in index 7.
  *
  * @returns `FnSelect(7, FnSplit(':', arn))`
  */
-function extractVersionFromArn(arn: string) {
+export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
 }

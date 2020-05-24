@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnConfigRule } from './config.generated';
 
@@ -47,8 +47,8 @@ abstract class RuleBase extends Resource implements IRule {
     rule.addEventPattern({
       source: ['aws.config'],
       detail: {
-        configRuleName: [this.configRuleName]
-      }
+        configRuleName: [this.configRuleName],
+      },
     });
     rule.addTarget(options.target);
     return rule;
@@ -137,7 +137,7 @@ abstract class RuleNew extends RuleBase {
    */
   public scopeToResources(...types: string[]) {
     this.scopeTo({
-      complianceResourceTypes: types
+      complianceResourceTypes: types,
     });
   }
 
@@ -150,7 +150,7 @@ abstract class RuleNew extends RuleBase {
   public scopeToTag(key: string, value?: string) {
     this.scopeTo({
       tagKey: key,
-      tagValue: value
+      tagValue: value,
     });
   }
 
@@ -167,10 +167,30 @@ abstract class RuleNew extends RuleBase {
  * The maximum frequency at which the AWS Config rule runs evaluations.
  */
 export enum MaximumExecutionFrequency {
+
+  /**
+   * 1 hour.
+   */
   ONE_HOUR = 'One_Hour',
+
+  /**
+   * 3 hours.
+   */
   THREE_HOURS = 'Three_Hours',
+
+  /**
+   * 6 hours.
+   */
   SIX_HOURS = 'Six_Hours',
+
+  /**
+   * 12 hours.
+   */
   TWELVE_HOURS = 'Twelve_Hours',
+
+  /**
+   * 24 hours.
+   */
   TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
 }
 
@@ -250,8 +270,8 @@ export class ManagedRule extends RuleNew {
       scope: Lazy.anyValue({ produce: () => this.scope }),
       source: {
         owner: 'AWS',
-        sourceIdentifier: props.identifier
-      }
+        sourceIdentifier: props.identifier,
+      },
     });
 
     this.configRuleName = rule.ref;
@@ -317,30 +337,30 @@ export class CustomRule extends RuleNew {
 
     if (props.configurationChanges) {
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'ConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'ConfigurationItemChangeNotification',
+      });
       sourceDetails.push({
-          eventSource: 'aws.config',
-          messageType: 'OversizedConfigurationItemChangeNotification'
-        });
+        eventSource: 'aws.config',
+        messageType: 'OversizedConfigurationItemChangeNotification',
+      });
     }
 
     if (props.periodic) {
       sourceDetails.push({
         eventSource: 'aws.config',
         maximumExecutionFrequency: props.maximumExecutionFrequency,
-        messageType: 'ScheduledNotification'
+        messageType: 'ScheduledNotification',
       });
     }
 
     props.lambdaFunction.addPermission('Permission', {
-      principal: new iam.ServicePrincipal('config.amazonaws.com')
+      principal: new iam.ServicePrincipal('config.amazonaws.com'),
     });
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole'),
       );
     }
 
@@ -356,8 +376,8 @@ export class CustomRule extends RuleNew {
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
-        sourceIdentifier: props.lambdaFunction.functionArn
-      }
+        sourceIdentifier: props.lambdaFunction.functionArn,
+      },
     });
 
     this.configRuleName = rule.ref;

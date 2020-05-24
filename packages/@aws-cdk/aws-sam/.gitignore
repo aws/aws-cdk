@@ -5,11 +5,12 @@
 .jsii
 .LAST_BUILD
 .LAST_PACKAGE
-.nycrc
+nyc.config.js
 .nyc_output
 coverage
 dist
 tsconfig.json
-tslint.json
 
 *.snk
+!.eslintrc.js
+!jest.config.js

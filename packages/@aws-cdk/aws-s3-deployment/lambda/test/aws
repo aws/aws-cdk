@@ -24,4 +24,4 @@ if sys.argv[2] == "sync":
     sys.argv[4] = "contents.zip"
 
 with open("./aws.out", "a") as myfile:
-    myfile.write(" ".join(sys.argv[1:]) + "\n")
+    myfile.write(json.dumps(sys.argv[1:]) + "\n")

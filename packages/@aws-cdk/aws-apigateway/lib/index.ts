@@ -7,6 +7,7 @@ export * from './stage';
 export * from './integrations';
 export * from './lambda-api';
 export * from './api-key';
+export * from './rate-limited-api-key';
 export * from './usage-plan';
 export * from './vpc-link';
 export * from './methodresponse';
@@ -17,8 +18,12 @@ export * from './json-schema';
 export * from './domain-name';
 export * from './base-path-mapping';
 export * from './cors';
+export * from './authorizers';
+export * from './access-log';
+export * from './api-definition';
+export * from './gateway-response';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';
 // AWS::ApiGatewayV2 CloudFormation resources:
-export * from './apigatewayv2.generated';
+export * from './apigatewayv2';

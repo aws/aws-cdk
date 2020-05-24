@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 
@@ -19,7 +19,7 @@ export = {
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
-              ':s3:::hello']]
+              ':s3:::hello']],
       });
       test.done();
     },
@@ -28,7 +28,7 @@ export = {
       const stack = new cdk.Stack();
       test.throws(() => parseBucketArn(stack, {}), /Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed/);
       test.done();
-    }
+    },
   },
 
   parseBucketName: {
@@ -52,35 +52,35 @@ export = {
       const bucketArn = `arn:aws:s3:::${cdk.Token.asString({ Ref: 'my-bucket' })}`;
 
       test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), {
-        "Fn::Select": [
+        'Fn::Select': [
           0,
           {
-            "Fn::Split": [
-              "/",
+            'Fn::Split': [
+              '/',
               {
-                "Fn::Select": [
+                'Fn::Select': [
                   5,
                   {
-                    "Fn::Split": [
-                      ":",
+                    'Fn::Split': [
+                      ':',
                       {
-                        "Fn::Join": [
-                          "",
+                        'Fn::Join': [
+                          '',
                           [
-                            "arn:aws:s3:::",
+                            'arn:aws:s3:::',
                             {
-                              Ref: "my-bucket"
-                            }
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                              Ref: 'my-bucket',
+                            },
+                          ],
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       });
       test.done();
     },

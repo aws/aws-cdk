@@ -1,4 +1,4 @@
-import lambda = require('@aws-cdk/aws-lambda');
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Resource } from '@aws-cdk/core';
 import { ISecret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
@@ -42,8 +42,8 @@ export class RotationSchedule extends Resource {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda.functionArn,
       rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30
-      }
+        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
+      },
     });
   }
 }

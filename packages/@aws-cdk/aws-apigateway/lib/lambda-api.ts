@@ -1,5 +1,5 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
@@ -37,14 +37,14 @@ export interface LambdaRestApiProps extends RestApiProps {
 /**
  * Defines an API Gateway REST API with AWS Lambda proxy integration.
  *
- * Use the `proxyPath` property to define a greedy proxy ("{proxy+}") and "ANY"
+ * Use the `proxy` property to define a greedy proxy ("{proxy+}") and "ANY"
  * method from the specified path. If not defined, you will need to explicity
  * add resources and methods to the API.
  */
 export class LambdaRestApi extends RestApi {
   constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
     if ((props.options && props.options.defaultIntegration) || props.defaultIntegration) {
-      throw new Error(`Cannot specify "defaultIntegration" since Lambda integration is automatically defined`);
+      throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
 
     super(scope, id, {
@@ -65,13 +65,13 @@ export class LambdaRestApi extends RestApi {
 }
 
 function addResourceThrows(): Resource {
-  throw new Error(`Cannot call 'addResource' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addMethodThrows(): Method {
-  throw new Error(`Cannot call 'addMethod' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addProxyThrows(): ProxyResource {
-  throw new Error(`Cannot call 'addProxy' on a proxying LambdaRestApi; set 'proxy' to false`);
+  throw new Error('Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }

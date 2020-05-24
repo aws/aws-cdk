@@ -27,16 +27,16 @@
           "MapPublicIpOnLaunch": true,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PublicSubnet1"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Public"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet1"
             }
           ]
         }
@@ -84,7 +84,13 @@
       "VPCPublicSubnet1EIP6AD938E8": {
         "Type": "AWS::EC2::EIP",
         "Properties": {
-          "Domain": "vpc"
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet1"
+            }
+          ]
         }
       },
       "VPCPublicSubnet1NATGatewayE0556630": {
@@ -118,16 +124,16 @@
           "MapPublicIpOnLaunch": true,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PublicSubnet2"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Public"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet2"
             }
           ]
         }
@@ -175,7 +181,13 @@
       "VPCPublicSubnet2EIP4947BC00": {
         "Type": "AWS::EC2::EIP",
         "Properties": {
-          "Domain": "vpc"
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet2"
+            }
+          ]
         }
       },
       "VPCPublicSubnet2NATGateway3C070193": {
@@ -209,16 +221,16 @@
           "MapPublicIpOnLaunch": true,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PublicSubnet3"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Public"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet3"
             }
           ]
         }
@@ -266,7 +278,13 @@
       "VPCPublicSubnet3EIPAD4BC883": {
         "Type": "AWS::EC2::EIP",
         "Properties": {
-          "Domain": "vpc"
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PublicSubnet3"
+            }
+          ]
         }
       },
       "VPCPublicSubnet3NATGatewayD3048F5C": {
@@ -300,16 +318,16 @@
           "MapPublicIpOnLaunch": false,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PrivateSubnet1"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Private"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PrivateSubnet1"
             }
           ]
         }
@@ -362,16 +380,16 @@
           "MapPublicIpOnLaunch": false,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PrivateSubnet2"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Private"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PrivateSubnet2"
             }
           ]
         }
@@ -424,16 +442,16 @@
           "MapPublicIpOnLaunch": false,
           "Tags": [
             {
-              "Key": "Name",
-              "Value": "Stack1/VPC/PrivateSubnet3"
-            },
-            {
               "Key": "aws-cdk:subnet-name",
               "Value": "Private"
             },
             {
               "Key": "aws-cdk:subnet-type",
               "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "Stack1/VPC/PrivateSubnet3"
             }
           ]
         }

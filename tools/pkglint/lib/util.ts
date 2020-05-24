@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 import { PackageJson } from "./packagejson";
 
 /**
@@ -40,6 +40,19 @@ export function fileShouldContain(ruleName: string, pkg: PackageJson, fileName: 
         ruleName,
         message: `${fileName} should contain '${line}'`,
         fix: () => pkg.addToFileSync(fileName, line)
+      });
+    }
+  }
+}
+
+export function fileShouldNotContain(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
+  for (const line of lines) {
+    const doesContain = pkg.fileContainsSync(fileName, line);
+    if (doesContain) {
+      pkg.report({
+        ruleName,
+        message: `${fileName} should NOT contain '${line}'`,
+        fix: () => pkg.removeFromFileSync(fileName, line)
       });
     }
   }
@@ -124,15 +137,6 @@ export function deepSet(x: any, jsonPath: string[], value: any) {
   x[jsonPath[0]] = value;
 }
 
-/**
- * Find 'lerna.json' and read the global package version from there
- */
-export function monoRepoVersion() {
-  const found = findLernaJSON();
-  const lernaJson = require(found);
-  return lernaJson.version;
-}
-
 export function findUpward(dir: string, pred: (x: string) => boolean): string | undefined {
   while (true) {
     if (pred(dir)) { return dir; }
@@ -154,14 +158,16 @@ export function monoRepoRoot() {
   return ret;
 }
 
-function findLernaJSON() {
-  return path.join(monoRepoRoot(), 'lerna.json');
-}
-
 export function* findInnerPackages(dir: string): IterableIterator<string> {
   for (const fname of fs.readdirSync(dir, { encoding: 'utf8' })) {
-    const stat = fs.statSync(path.join(dir, fname));
-    if (!stat.isDirectory()) { continue; }
+    try {
+      const stat = fs.statSync(path.join(dir, fname));
+      if (!stat.isDirectory()) { continue; }
+    } catch (e) {
+      // Survive invalid symlinks
+      if (e.code !== 'ENOENT') { throw e; }
+      continue;
+    }
     if (fname === 'node_modules') { continue; }
 
     if (fs.existsSync(path.join(dir, fname, 'package.json'))) {

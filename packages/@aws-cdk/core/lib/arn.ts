@@ -188,15 +188,17 @@ export class Arn {
       resourceName += rest.join(':');
     }
 
-    // "|| undefined" will cause empty strings to be treated as "undefined"
+    // "|| undefined" will cause empty strings to be treated as "undefined".
+    // Optional ARN attributes (e.g. region, account) should return as empty string
+    // if they are provided as such.
     return filterUndefined({
       service: service || undefined,
-      resource: resource || undefined ,
+      resource: resource || undefined,
       partition: partition || undefined,
-      region: region || undefined,
-      account: account || undefined,
+      region,
+      account,
       resourceName,
-      sep
+      sep,
     });
   }
 

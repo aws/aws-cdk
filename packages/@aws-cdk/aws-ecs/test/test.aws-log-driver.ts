@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/core');
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -24,13 +24,13 @@ export = {
         datetimeFormat: 'format',
         logRetention: logs.RetentionDays.ONE_MONTH,
         multilinePattern: 'pattern',
-        streamPrefix: 'hello'
-      })
+        streamPrefix: 'hello',
+      }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.ONE_MONTH
+      RetentionInDays: logs.RetentionDays.ONE_MONTH,
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -43,17 +43,17 @@ export = {
               'awslogs-stream-prefix': 'hello',
               'awslogs-region': { Ref: 'AWS::Region' },
               'awslogs-datetime-format': 'format',
-              'awslogs-multiline-pattern': 'pattern'
-            }
-          }
-        }
-      ]
+              'awslogs-multiline-pattern': 'pattern',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
   },
 
-  "create an aws log driver using awsLogs"(test: Test) {
+  'create an aws log driver using awsLogs'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -61,13 +61,13 @@ export = {
         datetimeFormat: 'format',
         logRetention: logs.RetentionDays.ONE_MONTH,
         multilinePattern: 'pattern',
-        streamPrefix: 'hello'
-      })
+        streamPrefix: 'hello',
+      }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.ONE_MONTH
+      RetentionInDays: logs.RetentionDays.ONE_MONTH,
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -80,11 +80,11 @@ export = {
               'awslogs-stream-prefix': 'hello',
               'awslogs-region': { Ref: 'AWS::Region' },
               'awslogs-datetime-format': 'format',
-              'awslogs-multiline-pattern': 'pattern'
-            }
-          }
-        }
-      ]
+              'awslogs-multiline-pattern': 'pattern',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -99,13 +99,13 @@ export = {
       image,
       logging: new ecs.AwsLogDriver({
         logGroup,
-        streamPrefix: 'hello'
-      })
+        streamPrefix: 'hello',
+      }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.TWO_YEARS
+      RetentionInDays: logs.RetentionDays.TWO_YEARS,
     }));
 
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
@@ -116,11 +116,11 @@ export = {
             Options: {
               'awslogs-group': { Ref: 'LogGroupF5B46931' },
               'awslogs-stream-prefix': 'hello',
-              'awslogs-region': { Ref: 'AWS::Region' }
-            }
-          }
-        }
-      ]
+              'awslogs-region': { Ref: 'AWS::Region' },
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -132,7 +132,7 @@ export = {
       image,
       logging: new ecs.AwsLogDriver({
         streamPrefix: 'hello',
-      })
+      }),
     });
 
     // THEN
@@ -149,9 +149,9 @@ export = {
     test.throws(() => new ecs.AwsLogDriver({
       logGroup,
       logRetention: logs.RetentionDays.FIVE_DAYS,
-      streamPrefix: 'hello'
+      streamPrefix: 'hello',
     }), /`logGroup`.*`logRetentionDays`/);
 
     test.done();
-  }
+  },
 };

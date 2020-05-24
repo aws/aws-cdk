@@ -1,5 +1,5 @@
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/core');
+import * as sqs from '@aws-cdk/aws-sqs';
+import * as cdk from '@aws-cdk/core';
 import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
@@ -11,7 +11,7 @@ class SqsEventSourceTest extends cdk.Stack {
     const queue = new sqs.Queue(this, 'Q');
 
     fn.addEventSource(new SqsEventSource(queue, {
-      batchSize: 5
+      batchSize: 5,
     }));
   }
 }

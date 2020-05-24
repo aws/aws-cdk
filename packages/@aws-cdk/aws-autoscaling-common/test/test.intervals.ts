@@ -1,6 +1,6 @@
-import fc = require('fast-check');
+import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
 import { arbitrary_complete_intervals } from './util';
 
@@ -39,7 +39,7 @@ export = {
         return (alarms.lowerAlarmIntervalIndex === undefined
           || alarms.upperAlarmIntervalIndex === undefined
           || alarms.lowerAlarmIntervalIndex < alarms.upperAlarmIntervalIndex);
-      }
+      },
     ));
 
     test.done();
@@ -53,7 +53,7 @@ export = {
 
         return (alarms.lowerAlarmIntervalIndex === undefined || intervals[alarms.lowerAlarmIntervalIndex].change !== undefined)
           && (alarms.upperAlarmIntervalIndex === undefined || intervals[alarms.upperAlarmIntervalIndex].change !== undefined);
-      }
+      },
     ));
 
     test.done();
@@ -69,7 +69,7 @@ export = {
 
         const alarms = findAlarmThresholds(intervals);
         return (alarms.lowerAlarmIntervalIndex === i - 1 && alarms.upperAlarmIntervalIndex === i + 1);
-      }
+      },
     ));
 
     test.done();
@@ -83,7 +83,7 @@ export = {
         fc.pre(alarms.lowerAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.lowerAlarmIntervalIndex!].upper !== Infinity;
-      }
+      },
     ));
 
     test.done();
@@ -97,7 +97,7 @@ export = {
         fc.pre(alarms.upperAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.upperAlarmIntervalIndex!].lower !== 0;
-      }
+      },
     ));
 
     test.done();

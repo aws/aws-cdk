@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 
 export = {
   'Enable proxy protocol v2 attribute for target group'(test: Test) {
@@ -14,7 +14,7 @@ export = {
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      proxyProtocolV2: true
+      proxyProtocolV2: true,
     });
 
     // THEN
@@ -22,9 +22,9 @@ export = {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
-          Value: 'true'
-        }
-      ]
+          Value: 'true',
+        },
+      ],
     }));
 
     test.done();
@@ -39,7 +39,7 @@ export = {
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      proxyProtocolV2: false
+      proxyProtocolV2: false,
     });
 
     // THEN
@@ -47,9 +47,9 @@ export = {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
-          Value: 'false'
-        }
-      ]
+          Value: 'false',
+        },
+      ],
     }));
 
     test.done();

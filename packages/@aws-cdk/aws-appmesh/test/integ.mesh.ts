@@ -1,6 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 
 import * as appmesh from '../lib/';
 
@@ -29,7 +29,7 @@ const router = mesh.addVirtualRouter('router', {
 
 const virtualService = mesh.addVirtualService('service', {
   virtualRouter: router,
-  virtualServiceName: `service1.domain.local`,
+  virtualServiceName: 'service1.domain.local',
 });
 
 const node = mesh.addVirtualNode('node', {
@@ -46,9 +46,9 @@ const node = mesh.addVirtualNode('node', {
 });
 
 node.addBackends(new appmesh.VirtualService(stack, 'service-2', {
-    virtualServiceName: 'service2.domain.local',
-    mesh,
-  }),
+  virtualServiceName: 'service2.domain.local',
+  mesh,
+}),
 );
 
 router.addRoute('route-1', {

@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/core');
-import ssm = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as ssm from '../lib';
 
 class CreatingStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -8,7 +8,7 @@ class CreatingStack extends cdk.Stack {
 
     new ssm.StringParameter(this, 'String', {
       parameterName: '/My/Public/Parameter',
-      stringValue: 'abcdef'
+      stringValue: 'abcdef',
     });
   }
 }
@@ -29,7 +29,7 @@ class UsingStack extends cdk.Stack {
     // 'version' is always required.
     const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValue', {
       parameterName: '/My/Secret/Parameter',
-      version: 5
+      version: 5,
     });
     /// !hide
 

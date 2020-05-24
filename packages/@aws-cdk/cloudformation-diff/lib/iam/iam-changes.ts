@@ -1,11 +1,11 @@
-import cfnspec = require('@aws-cdk/cfnspec');
-import colors = require('colors/safe');
-import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
+import * as cfnspec from '@aws-cdk/cfnspec';
+import * as colors from 'colors/safe';
+import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
-import { renderIntrinsics } from "../render-intrinsics";
+import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
 import { ManagedPolicyAttachment, ManagedPolicyJson, parseManagedPolicies } from './managed-policy';
-import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from "./statement";
+import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from './statement';
 
 export interface IamChangesProps {
   propertyChanges: PropertyChange[];
@@ -75,7 +75,7 @@ export class IamChanges {
         statement.effect,
         renderTargets(statement.actions),
         renderTargets(statement.principals),
-        renderCondition(statement.condition)
+        renderCondition(statement.condition),
       ].map(s => colors.green(s)));
     }
     for (const statement of this.statements.removals) {
@@ -85,7 +85,7 @@ export class IamChanges {
         statement.effect,
         renderTargets(statement.actions),
         renderTargets(statement.principals),
-        renderCondition(statement.condition)
+        renderCondition(statement.condition),
       ].map(s => colors.red(s)));
     }
 

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 import { CfnMesh } from './appmesh.generated';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
@@ -170,7 +170,7 @@ export class Mesh extends MeshBase {
 
   constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
-      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     const mesh = new CfnMesh(this, 'Resource', {

@@ -3,6 +3,13 @@ import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
 
 export = {
+  'TagManagerOptions can set tagPropertyName'(test: Test) {
+    const tagPropName = 'specialName';
+    const mgr = new TagManager(TagType.MAP, 'Foo', undefined, { tagPropertyName: tagPropName });
+
+    test.deepEqual(mgr.tagPropertyName, tagPropName);
+    test.done();
+  },
   '#setTag() supports setting a tag regardless of Type'(test: Test) {
     const notTaggable = new TagManager(TagType.NOT_TAGGABLE, 'AWS::Resource::Type');
     notTaggable.setTag('key', 'value');
@@ -20,7 +27,7 @@ export = {
       mgr.setTag('dne', 'notanymore');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'notanymore'}]);
       test.done();
-    }
+    },
   },
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
@@ -36,7 +43,7 @@ export = {
       mgr.setTag('dne', 'iwin');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'iwin'}]);
       test.done();
-    }
+    },
   },
   'when there are no tags': {
     '#renderTags() returns undefined'(test: Test) {
@@ -48,7 +55,7 @@ export = {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       test.equal(mgr.hasTags(), false);
       test.done();
-    }
+    },
   },
   '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
@@ -65,16 +72,16 @@ export = {
       res.setTag('asg', 'only', 0, false);
     }
     test.deepEqual(standard.renderTags(), [
-      {key: 'foo', value: 'bar'},
       {key: 'asg', value: 'only'},
+      {key: 'foo', value: 'bar'},
     ]);
     test.deepEqual(asg.renderTags(), [
-      {key: 'foo', value: 'bar', propagateAtLaunch: true},
       {key: 'asg', value: 'only', propagateAtLaunch: false},
+      {key: 'foo', value: 'bar', propagateAtLaunch: true},
     ]);
     test.deepEqual(keyValue.renderTags(), [
+      { Key: 'asg', Value : 'only' },
       { Key: 'foo', Value : 'bar' },
-      { Key: 'asg', Value : 'only' }
     ]);
     test.deepEqual(mapper.renderTags(), {
       foo: 'bar',
@@ -104,6 +111,25 @@ export = {
     test.deepEqual(mgr.renderTags(), undefined);
     test.done();
   },
+  'tags are always ordered by key name'(test: Test) {
+    const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
+    mgr.setTag('key', 'foo');
+    mgr.setTag('aardvark', 'zebra');
+    mgr.setTag('name', 'test');
+    test.deepEqual(mgr.renderTags(), [
+      {key: 'aardvark', value: 'zebra'},
+      {key: 'key', value: 'foo'},
+      {key: 'name', value: 'test'},
+    ]);
+    mgr.setTag('myKey', 'myVal');
+    test.deepEqual(mgr.renderTags(), [
+      {key: 'aardvark', value: 'zebra'},
+      {key: 'key', value: 'foo'},
+      {key: 'myKey', value: 'myVal'},
+      {key: 'name', value: 'test'},
+    ]);
+    test.done();
+  },
   'excludeResourceTypes only tags resources that do not match'(test: Test) {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource');
 
@@ -119,5 +145,5 @@ export = {
     test.equal(false, mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
 
     test.done();
-  }
+  },
 };

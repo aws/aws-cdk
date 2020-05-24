@@ -1,4 +1,4 @@
-import aws = require('aws-sdk');
+import * as aws from 'aws-sdk';
 
 export enum Mode {
   ForReading,

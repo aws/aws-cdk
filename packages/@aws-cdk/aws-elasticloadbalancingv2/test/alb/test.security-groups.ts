@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import elbv2 = require('../../lib');
+import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
 export = {
@@ -14,7 +14,7 @@ export = {
     // WHEN
     fixture.listener.addTargets('TargetGroup', {
       port: 8008,
-      targets: [target]
+      targets: [target],
     });
 
     // THEN
@@ -32,7 +32,7 @@ export = {
     // WHEN
     fixture.listener.addTargets('TargetGroup1', {
       port: 80,
-      targets: [target1]
+      targets: [target1],
     });
 
     fixture.listener.addTargetGroups('Rule', {
@@ -41,8 +41,8 @@ export = {
       targetGroups: [new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup2', {
         vpc: fixture.vpc,
         port: 8008,
-        targets: [target2]
-      })]
+        targets: [target2],
+      })],
     });
 
     // THEN
@@ -60,16 +60,16 @@ export = {
     const group = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
       vpc: fixture.vpc,
       port: 8008,
-      targets: [target]
+      targets: [target],
     });
 
     fixture.listener.addTargetGroups('Default', {
-      targetGroups: [group]
+      targetGroups: [group],
     });
     fixture.listener.addTargetGroups('WithPath', {
       priority: 10,
       pathPattern: '/hello',
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // THEN
@@ -83,10 +83,10 @@ export = {
     const fixture = new TestFixture();
     const group = new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup', {
       vpc: fixture.vpc,
-      port: 8008
+      port: 8008,
     });
     fixture.listener.addTargetGroups('Default', {
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // WHEN
@@ -126,7 +126,7 @@ export = {
       listener: fixture.listener,
       targetGroups: [childGroup],
       priority: 100,
-      hostHeader: 'www.foo.com'
+      hostHeader: 'www.foo.com',
     });
 
     // THEN
@@ -187,7 +187,7 @@ export = {
       // Must be a non-default target
       priority: 10,
       hostHeader: 'example.com',
-      targetGroups: [group]
+      targetGroups: [group],
     });
 
     // THEN
@@ -208,12 +208,12 @@ export = {
     expect(fixture.stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
-          CidrIp: "0.0.0.0/0",
-          Description: "Open to the world",
+          CidrIp: '0.0.0.0/0',
+          Description: 'Open to the world',
           FromPort: 80,
-          IpProtocol: "tcp",
-          ToPort: 80
-        }
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
       ],
     }));
 
@@ -228,26 +228,26 @@ export = {
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       listenerArn: 'listener-arn',
       securityGroupId: 'imported-security-group-id',
-      defaultPort: 8080
+      defaultPort: 8080,
     });
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-      CidrIp: "0.0.0.0/0",
-      Description: "Open to the world",
-      IpProtocol: "tcp",
+      CidrIp: '0.0.0.0/0',
+      Description: 'Open to the world',
+      IpProtocol: 'tcp',
       FromPort: 8080,
       ToPort: 8080,
-      GroupId: 'imported-security-group-id'
+      GroupId: 'imported-security-group-id',
     }));
 
     test.done();
   },
 };
 
-const LB_SECURITY_GROUP = { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] };
-const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6" };
+const LB_SECURITY_GROUP = { 'Fn::GetAtt': [ 'LBSecurityGroup8A41EA2B', 'GroupId' ] };
+const IMPORTED_LB_SECURITY_GROUP = { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6' };
 
 function expectSameStackSGRules(stack: cdk.Stack) {
   expectSGRules(stack, LB_SECURITY_GROUP);
@@ -260,19 +260,19 @@ function expectedImportedSGRules(stack: cdk.Stack) {
 function expectSGRules(stack: cdk.Stack, lbGroup: any) {
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
     GroupId: lbGroup,
-    IpProtocol: "tcp",
-    Description: "Load balancer to target",
-    DestinationSecurityGroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
+    IpProtocol: 'tcp',
+    Description: 'Load balancer to target',
+    DestinationSecurityGroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     FromPort: 8008,
-    ToPort: 8008
+    ToPort: 8008,
   }));
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
-    IpProtocol: "tcp",
-    Description: "Load balancer to target",
+    IpProtocol: 'tcp',
+    Description: 'Load balancer to target',
     FromPort: 8008,
-    GroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
+    GroupId: { 'Fn::GetAtt': [ 'TargetSGDB98152D', 'GroupId' ] },
     SourceSecurityGroupId: lbGroup,
-    ToPort: 8008
+    ToPort: 8008,
   }));
 }
 
@@ -287,7 +287,7 @@ class TestFixture {
     this.app = new cdk.App();
     this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
-      maxAzs: 2
+      maxAzs: 2,
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 

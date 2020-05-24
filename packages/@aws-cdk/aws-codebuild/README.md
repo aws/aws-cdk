@@ -1,10 +1,10 @@
 ## AWS CodeBuild Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -29,7 +29,7 @@ $ npm i @aws-cdk/aws-codebuild
 Import it into your code:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
+import * as codebuild from '@aws-cdk/aws-codebuild';
 ```
 
 The `codebuild.Project` construct represents a build project resource. See the
@@ -54,8 +54,8 @@ CodeBuild!`:
 Use an AWS CodeCommit repository as the source of this build:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repository = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
 new codebuild.Project(this, 'MyFirstCodeCommitProject', {
@@ -68,8 +68,8 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as s3 from '@aws-cdk/aws-s3';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
@@ -89,7 +89,7 @@ Example:
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  webhook: true, // optional, default: true if `webhookFilteres` were provided, false otherwise
+  webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
     codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
@@ -115,6 +115,30 @@ const bbSource = codebuild.Source.bitBucket({
 });
 ```
 
+## Artifacts
+
+CodeBuild Projects can produce Artifacts and upload them to S3. For example:
+
+```ts
+const project = codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  artifacts: codebuild.Artifacts.s3({
+      bucket,
+      includeBuildId: false,
+      packageZip: true,
+      path: 'another/path',
+      identifier: 'AddArtifact1',
+    }),
+});
+```
+
+Because we've not set the `name` property, this example will set the
+`overrideArtifactName` parameter, and produce an artifact named as defined in
+the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
+`another/path` and the artifact will be a zipfile.
+
 ## CodePipeline
 
 To add a CodeBuild Project as an Action to CodePipeline,
@@ -130,7 +154,7 @@ const project = new codebuild.PipelineProject(this, 'Project', {
 })
 ```
 
-For more details, see the readme of the `@aws-cdk/@aws-codepipeline` package.
+For more details, see the readme of the `@aws-cdk/@aws-codepipeline-actions` package.
 
 ## Caching
 
@@ -156,9 +180,9 @@ With local caching, the cache is stored on the codebuild instance itself. This i
 cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
 guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
 
-* `LocalCacheMode.Source` caches Git metadata for primary and secondary sources.
-* `LocalCacheMode.DockerLayer` caches existing Docker layers.
-* `LocalCacheMode.Custom` caches directories you specify in the buildspec file.
+* `LocalCacheMode.SOURCE` caches Git metadata for primary and secondary sources.
+* `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
+* `LocalCacheMode.CUSTOM` caches directories you specify in the buildspec file.
 
 ```typescript
 new codebuild.Project(this, 'Project', {
@@ -167,7 +191,7 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
+  cache: codebuild.Cache.local(LocalCacheMode.DOCKER_LAYER, LocalCacheMode.CUSTOM)
 });
 ```
 
@@ -188,9 +212,9 @@ can use the `environment` property to customize the build environment:
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
-You can either specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
-`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+You can specify one of the predefined Windows/Linux images by using one
+of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
+`LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
@@ -200,6 +224,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
   local asset.
+* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
 
 The following example shows how to define an image from a Docker asset:
 
@@ -213,6 +238,99 @@ The following example shows how to define an image from a private docker registr
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
 
+## Credentials
+
+CodeBuild allows you to store credentials used when communicating with various sources,
+like GitHub:
+
+```typescript
+new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+  accessToken: cdk.SecretValue.secretsManager('my-token'),
+});
+// GitHub Enterprise is almost the same,
+// except the class is called GitHubEnterpriseSourceCredentials
+```
+
+and BitBucket:
+
+```typescript
+new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
+  username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
+  password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
+});
+```
+
+**Note**: the credentials are global to a given account in a given region -
+they are not defined per CodeBuild project.
+CodeBuild only allows storing a single credential of a given type
+(GitHub, GitHub Enterprise or BitBucket)
+in a given account in a given region -
+any attempt to save more than one will result in an error.
+You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
+to inspect what credentials are stored in your account.
+
+## Test reports
+
+You can specify a test report in your buildspec:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      myReport: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+This will create a new test report group,
+with the name `<ProjectName>-myReport`.
+
+The project's role in the CDK will always be granted permissions to create and use report groups
+with names starting with the project's name;
+if you'd rather not have those permissions added,
+you can opt out of it when creating the project:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  // ...
+  grantReportGroupPermissions: false,
+});
+```
+
+Alternatively, you can specify an ARN of an existing resource group,
+instead of a simple name, in your buildspec:
+
+```typescript
+// create a new ReportGroup
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
+
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      [reportGroup.reportGroupArn]: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+If you do that, you need to grant the project's role permissions to write reports to that report group:
+
+```typescript
+reportGroup.grantWrite(project);
+```
+
+For more information on the test reports feature,
+see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).
+
 ## Events
 
 CodeBuild projects can be used either as a source for events or be triggered
@@ -225,9 +343,11 @@ project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-const targets = require('@aws-cdk/aws-events-targets');
+import * as targets from '@aws-cdk/aws-events-targets';
 
-codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
+codeCommitRepository.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+});
 ```
 
 ### Using Project as an event source
@@ -340,11 +460,41 @@ For example:
 ```ts
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
-    vpc: vpc,
-    buildSpec: codebuild.BuildSpec.fromObject({
-      // ...
-    }),
+  vpc: vpc,
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
 });
 
 project.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
 ```
+
+## Project File System Location EFS
+
+Add support for CodeBuild to build on AWS EFS file system mounts using
+the new ProjectFileSystemLocation.
+The `fileSystemLocations` property which accepts a list `ProjectFileSystemLocation`
+as represented by the interface `IFileSystemLocations`.
+The only supported file system type is `EFS`.
+
+For example:
+
+```ts
+new codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  fileSystemLocations: [
+    codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts"
+    })
+  ]
+});
+```
+
+Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
+
+[Minimal Example](./test/integ.project-file-system-location.ts)

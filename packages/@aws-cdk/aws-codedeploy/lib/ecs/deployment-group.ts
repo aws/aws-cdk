@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 
 import { arnForDeploymentGroup } from '../utils';
 import { IEcsApplication } from './application';
@@ -49,9 +49,9 @@ export class EcsDeploymentGroup {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
   }
 

@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import logs = require('@aws-cdk/aws-logs');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -14,11 +14,11 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
     const arn = logGroup.logGroupArn;
 
     this.fn.addPermission('CanInvokeLambda', {
-      principal: new iam.ServicePrincipal(`logs.amazonaws.com`),
+      principal: new iam.ServicePrincipal('logs.amazonaws.com'),
       sourceArn: arn,
       // Using SubScription Filter as scope is okay, since every Subscription Filter has only
       // one destination.
-      scope
+      scope,
     });
     return { arn: this.fn.functionArn };
   }

@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ssm = require('../lib');
+import * as ssm from '../lib';
 
 export = {
   'can reference SSMPS string - specific version'(test: Test) {
@@ -11,7 +11,7 @@ export = {
     // WHEN
     const ref = ssm.StringParameter.fromStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
-      version: 123
+      version: 123,
     });
 
     // THEN
@@ -33,10 +33,10 @@ export = {
     expect(stack).toMatch({
       Parameters: {
         RefParameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
-          Default: "/some/key"
-        }
-      }
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/some/key',
+        },
+      },
     });
 
     test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter' });
@@ -51,7 +51,7 @@ export = {
     // WHEN
     const ref = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
-      version: 123
+      version: 123,
     }).stringValue;
 
     // THEN

@@ -1,10 +1,10 @@
-import cfnSpec = require('@aws-cdk/cfnspec');
-import fs = require('fs-extra');
+import * as cfnSpec from '@aws-cdk/cfnspec';
+import * as fs from 'fs-extra';
 import { AugmentationGenerator } from './augmentation-generator';
-import CodeGenerator from './codegen';
+import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
 
-export default async function(scopes: string | string[], outPath: string): Promise<void> {
+export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
   if (typeof scopes === 'string') { scopes = [scopes]; }
@@ -17,7 +17,7 @@ export default async function(scopes: string | string[], outPath: string): Promi
     const name = packageName(scope);
     const affix = computeAffix(scope, scopes);
 
-    const generator = new CodeGenerator(name, spec, affix);
+    const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
     await generator.save(outPath);
 

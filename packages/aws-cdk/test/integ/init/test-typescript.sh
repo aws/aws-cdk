@@ -17,13 +17,17 @@ else
 fi
 
 for template in $templates; do
-    echo "Trying template $template"
+    echo "Trying TypeScript template $template"
 
     setup
 
-    cdk init -l typescript -t $template
-    npm ls # this will fail if we have unmet peer dependencies
+    cdk init -l typescript $template
+    npm prune && npm ls # this will fail if we have unmet peer dependencies
     npm run build
     npm run test
-    cdk synth
+
+    # Can't run `cdk synth` on libraries
+    if [[ $template != "lib" ]]; then
+        cdk synth
+    fi
 done

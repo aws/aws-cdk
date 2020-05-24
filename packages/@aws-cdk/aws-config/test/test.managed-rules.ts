@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import config = require('../lib');
+import * as config from '../lib';
 
 export = {
   'access keys rotated'(test: Test) {
@@ -16,7 +16,7 @@ export = {
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
-        SourceIdentifier: 'ACCESS_KEYS_ROTATED'
+        SourceIdentifier: 'ACCESS_KEYS_ROTATED',
       },
     }));
 
@@ -34,21 +34,21 @@ export = {
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
-        SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK'
+        SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
       },
       InputParameters: {
         cloudformationRoleArn: {
           'Fn::GetAtt': [
             'DriftRole8A5FB833',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       },
       Scope: {
         ComplianceResourceTypes: [
-          'AWS::CloudFormation::Stack'
-        ]
-      }
+          'AWS::CloudFormation::Stack',
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -58,11 +58,11 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: "config.amazonaws.com"
-            }
-          }
+              Service: 'config.amazonaws.com',
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         {
@@ -71,13 +71,13 @@ export = {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
-              ':iam::aws:policy/ReadOnlyAccess'
-            ]
-          ]
-        }
-      ]
+              ':iam::aws:policy/ReadOnlyAccess',
+            ],
+          ],
+        },
+      ],
     }));
 
     test.done();
@@ -91,28 +91,28 @@ export = {
 
     // WHEN
     new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
-      topics: [topic1, topic2]
+      topics: [topic1, topic2],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
-        SourceIdentifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK'
+        SourceIdentifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK',
       },
       InputParameters: {
         snsTopic1: {
-          Ref: 'AllowedTopic10C9144F9'
+          Ref: 'AllowedTopic10C9144F9',
         },
         snsTopic2: {
-          Ref: 'AllowedTopic24ECF6C0D'
-        }
+          Ref: 'AllowedTopic24ECF6C0D',
+        },
       },
       Scope: {
         ComplianceResourceTypes: [
-          'AWS::CloudFormation::Stack'
-        ]
-      }
+          'AWS::CloudFormation::Stack',
+        ],
+      },
     }));
 
     test.done();
@@ -125,9 +125,9 @@ export = {
 
     // THEN
     test.throws(() => new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
-      topics: [topic, topic, topic, topic, topic, topic]
+      topics: [topic, topic, topic, topic, topic, topic],
     }), /5 topics/);
 
     test.done();
-  }
+  },
 };

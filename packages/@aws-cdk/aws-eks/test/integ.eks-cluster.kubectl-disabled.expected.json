@@ -26,16 +26,20 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
           }
         ]
       }
@@ -47,6 +51,10 @@
           "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
@@ -83,7 +91,17 @@
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1NATGatewayE0556630": {
@@ -99,6 +117,10 @@
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet1"
@@ -117,16 +139,20 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
           }
         ]
       }
@@ -138,6 +164,10 @@
           "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
@@ -174,7 +204,17 @@
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2NATGateway3C070193": {
@@ -190,6 +230,10 @@
           "Ref": "VPCPublicSubnet2Subnet74179F39"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet2"
@@ -208,16 +252,20 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
           }
         ]
       }
@@ -229,6 +277,10 @@
           "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
@@ -265,7 +317,17 @@
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3NATGatewayD3048F5C": {
@@ -281,6 +343,10 @@
           "Ref": "VPCPublicSubnet3Subnet631C5E25"
         },
         "Tags": [
+          {
+            "Key": "kubernetes.io/role/elb",
+            "Value": "1"
+          },
           {
             "Key": "Name",
             "Value": "eks-integ-kubectl-disabled/VPC/PublicSubnet3"
@@ -299,10 +365,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -313,6 +375,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -325,12 +391,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -369,10 +435,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -383,6 +445,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -395,12 +461,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -439,10 +505,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -453,6 +515,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -465,12 +531,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -520,7 +586,7 @@
         }
       }
     },
-    "EKSClusterClusterRoleB72F3251": {
+    "EKSClusterRoleC0AEAC3D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -545,18 +611,6 @@
                   "Ref": "AWS::Partition"
                 },
                 ":iam::aws:policy/AmazonEKSClusterPolicy"
-              ]
-            ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKSServicePolicy"
               ]
             ]
           }
@@ -635,7 +689,7 @@
         },
         "RoleArn": {
           "Fn::GetAtt": [
-            "EKSClusterClusterRoleB72F3251",
+            "EKSClusterRoleC0AEAC3D",
             "Arn"
           ]
         }
@@ -654,10 +708,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -670,6 +720,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
           }
         ],
         "VpcId": {
@@ -803,10 +857,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -819,6 +869,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
           }
         ]
       }
@@ -875,16 +929,10 @@
       "Properties": {
         "MaxSize": "1",
         "MinSize": "1",
-        "DesiredCapacity": "1",
         "LaunchConfigurationName": {
           "Ref": "EKSClusterNodesLaunchConfig921F1106"
         },
         "Tags": [
-          {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
-          },
           {
             "Key": {
               "Fn::Join": [
@@ -899,6 +947,11 @@
             },
             "PropagateAtLaunch": true,
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "eks-integ-kubectl-disabled/EKSCluster/Nodes"
           }
         ],
         "VPCZoneIdentifier": [

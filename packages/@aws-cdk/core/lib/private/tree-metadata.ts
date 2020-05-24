@@ -1,8 +1,8 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
-import { ArtifactType } from '@aws-cdk/cx-api';
-import { Construct, IConstruct, ISynthesisSession } from '../construct';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
 
@@ -40,7 +40,7 @@ export class TreeMetadata extends Construct {
         id: construct.node.id || 'App',
         path: construct.node.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
-        attributes: this.synthAttributes(construct)
+        attributes: this.synthAttributes(construct),
       };
 
       lookup[node.path] = node;
@@ -59,8 +59,8 @@ export class TreeMetadata extends Construct {
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
       properties: {
-        file: FILE_PATH
-      }
+        file: FILE_PATH,
+      },
     });
   }
 

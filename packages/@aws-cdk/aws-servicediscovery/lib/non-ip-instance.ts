@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { IService } from './service';
@@ -50,8 +50,8 @@ export class NonIpInstance extends InstanceBase {
       instanceId: props.instanceId || this.uniqueInstanceId(),
       serviceId: props.service.serviceId,
       instanceAttributes: {
-        ...props.customAttributes
-      }
+        ...props.customAttributes,
+      },
     });
 
     this.service = props.service;

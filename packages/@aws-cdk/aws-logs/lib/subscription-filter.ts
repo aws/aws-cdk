@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Resource } from '@aws-cdk/core';
 import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
@@ -60,7 +60,7 @@ export class SubscriptionFilter extends Resource {
       logGroupName: props.logGroup.logGroupName,
       destinationArn: destProps.arn,
       roleArn: destProps.role && destProps.role.roleArn,
-      filterPattern: props.filterPattern.logPatternString
+      filterPattern: props.filterPattern.logPatternString,
     });
   }
 }

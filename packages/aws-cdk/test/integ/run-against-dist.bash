@@ -4,6 +4,20 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+
+# This script must create 1 or 2 traps, and the 'trap' command will replace
+# the previous trap, so get some 'dynamic traps' mechanism in place
+TRAPS=()
+
+function run_traps() {
+  for cmd in "${TRAPS[@]}"; do
+    echo "cleanup: $cmd" >&2
+    eval "$cmd"
+  done
+}
+
+trap run_traps EXIT
+
 function log() {
   echo >&2 "| $@"
 }
@@ -16,113 +30,57 @@ function header() {
 }
 
 function serve_npm_packages() {
-  if [ -n "${VERDACCIO_PID:-}" ]; then
-    log >&2 "verdaccio is already running"
-    use_verdaccio
-    return
+  if [ -n "${SERVE_NPM_TARBALLS_PID:-}" ]; then
+    log >&2 "Verdaccio is already running"
+    return 1
   fi
 
-  tarballs=$dist_root/js/*.tgz
+  local_cli_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
 
-  log "Discovering local package names..."
-  # Read the package names from each tarball, so that we can generate
-  # a Verdaccio config that will keep each of these packages locally
-  # and not go to NPMJS for it.
-  package_names=""
-  for tgz in $tarballs; do
-    name=$(node -pe 'JSON.parse(process.argv[1]).name' "$(tar xOzf $tgz package/package.json)")
-    package_names="$package_names $name"
-  done
+  tarballs_glob="$dist_root/js/*.tgz"
 
-  #------------------------------------------------------------------------------
-  # Start a local npm repository and install the CDK from the distribution to it
-  #------------------------------------------------------------------------------
-  header "Starting local NPM Repository"
-  local verdaccio_config="${npmws}/config.yaml"
+  if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
 
-  verdacciobin=$(type -p verdaccio) || {
-    (cd $npmws && npm install --no-save verdaccio)
-    verdacciobin=$npmws/node_modules/.bin/verdaccio
-  }
+    echo "Testing against latest published versions of the framework"
 
-  # start consumer verdaccio with npm
-  header "Starting verdaccio (with npm uplink)"
-  write_verdaccio_config "${verdaccio_config}" "$package_names"
-  $verdacciobin --config "${verdaccio_config}" &
-  local pid=$!
-  trap "echo 'shutting down verdaccio'; kill ${pid} || true" EXIT
-  log >&2 "waiting for verdaccio to start..."
-  sleep 1
-  log "consumer verdaccio pid: ${pid}"
+    header "Installing aws-cdk from local tarballs..."
+    # Need 'npm install --prefix' otherwise it goes to the wrong directory
+    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install --prefix $npmws aws-cdk@${local_cli_version})
+    export PATH=$npmws/node_modules/.bin:$PATH
 
-  export VERDACCIO_PID=$pid
+  else
 
-  use_verdaccio
+    echo "Testing against local versions of the framework"
 
-  log "Publishing NPM tarballs..."
-  for tgz in $tarballs; do
-    # Doesn't matter what directory it is, just shouldn't be the
-    # aws-cdk package directory.
-    (cd $npmws && npm --quiet publish $tgz)
-  done
+    #------------------------------------------------------------------------------
+    # Start a mock npm repository from the given tarballs
+    #------------------------------------------------------------------------------
+    header "Starting local NPM Repository"
+
+    # When using '--daemon', 'npm install' first so the files are permanent, or
+    # 'npx' will remove them too soon.
+    npm install serve-npm-tarballs
+    eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
+    TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
+
+    header "Installing aws-cdk from local tarballs..."
+    # Need 'npm install --prefix' otherwise it goes to the wrong directory
+    (cd ${npmws} && npm install --prefix $npmws aws-cdk@${local_cli_version})
+    export PATH=$npmws/node_modules/.bin:$PATH
+
+  fi
+
+  # a bit silly, but it verifies the PATH exports and just makes sure
+  # that we run 'cdk' commands we use the version we just installed.
+  verify_installed_cli_version ${local_cli_version}
+
 }
-
-function write_verdaccio_config() {
-  local verdaccio_config="$1"
-  local packages="${2:-}"
-
-  cat > "${verdaccio_config}" <<HERE
-storage: ${npmws}/storage
-uplinks:
-  npmjs:
-    url: https://registry.npmjs.org
-    cache: false
-max_body_size: '100mb'
-publish:
-  allow_offline: true
-logs:
-  - {type: file, path: '$npmws/verdaccio.log', format: pretty, level: info}
-packages:
-HERE
-
-  # List of packages we're expecting to publish into the server,
-  # so for all of these we explicitly configure a missing upstream server.
-  for package in $packages; do
-    cat >> "${verdaccio_config}" <<HERE
-  '${package}':
-    access: \$all
-    publish: \$all
-HERE
-  done
-
-    cat >> "${verdaccio_config}" <<HERE
-  '**':
-    access: \$all
-    publish: \$all
-    proxy: npmjs
-HERE
-
-  cat >&2 ${verdaccio_config}
-}
-
-function use_verdaccio() {
-  log >&2 "configuring npm to use verdaccio"
-
-  # Token MUST be passed via .npmrc: https://github.com/npm/npm/issues/15565
-  export npm_config_userconfig="${npmws}/.npmrc"
-  echo "//localhost:4873/:_authToken=none" >> ${npm_config_userconfig}
-  echo "" >> ${npm_config_userconfig}
-
-  # Pass registry via environment variable, so that if this script gets run via 'npm run'
-  # and all $npm_config_xxx settings are passed via environment variables, we still
-  # get to override it (the file would normally be ignored in that case).
-  export npm_config_registry=http://localhost:4873/
-}
-
 
 # Make sure that installed CLI matches the build version
 function verify_installed_cli_version() {
-  local expected_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+
+  expected_version=$1
+
   header "Expected CDK version: ${expected_version}"
 
   log "Found CDK: $(type -p cdk)"
@@ -149,21 +107,56 @@ function prepare_java_packages() {
     exit 1
   fi
 
+  # Rename all maven-metadata.xml* files to maven-metadata-local.xml*
+  # This is necessary for Maven to find them correctly after we've rsync'ed
+  # them into place:
+  # https://github.com/sonatype/sonatype-aether/blob/master/aether-impl/src/main/java/org/sonatype/aether/impl/internal/SimpleLocalRepositoryManager.java#L114
+  for f in $(find $dist_root/java -name maven-metadata.xml\*); do
+    mv "$f" "$(echo "$f" | sed s/metadata\.xml/metadata-local.xml/)"
+  done
+
   export MAVEN_CONFIG=${MAVEN_CONFIG:-$HOME/.m2}
   rsync -a $dist_root/java/ ${MAVEN_CONFIG}/repository
 }
 
 function prepare_nuget_packages() {
   # For NuGet, we wrap the "dotnet" CLI command to use local packages.
-  log "Hijacking 'dotnet build' command..."
+  log "Writing new NuGet configuration..."
 
-  ORIGINAL_DOTNET=$(type -p dotnet) || { echo "No 'dotnet' found" >&2; exit 1; }
-  export ORIGINAL_DOTNET
-  export NUGET_SOURCE=$dist_root/dotnet
+  local NUGET_SOURCE=$dist_root/dotnet
 
   if [ ! -d "$NUGET_SOURCE" ]; then
     echo "NuGet packages missing at $NUGET_SOURCE" >&2
     exit 1
+  fi
+
+  mkdir -p $HOME/.nuget/NuGet
+  if [ -f $HOME/.nuget/NuGet/NuGet.Config ]; then
+    echo "⚠️ Saving previous NuGet.Config to $HOME/.nuget/NuGet/NuGet.Config.bak"
+    mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
+  fi
+
+  TRAPS+=('clean_up_nuget_config')
+
+  cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="Locally Distributed Packages" value="${NUGET_SOURCE}" />
+    <add key="NuGet official package source" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+EOF
+}
+
+function clean_up_nuget_config() {
+  log "Restoring NuGet configuration"
+  if [ -f $HOME/.nuget/NuGet/NuGet.Config.bak ]; then
+    log "-> Restoring $HOME/.nuget/NuGet/NuGet.Config from $HOME/.nuget/NuGet/NuGet.Config.bak"
+    mv -f $HOME/.nuget/NuGet/NuGet.Config.bak $HOME/.nuget/NuGet/NuGet.Config
+  else
+    log "-> Removing $HOME/.nuget/NuGet/NuGet.Config"
+    rm -f $HOME/.nuget/NuGet/NuGet.Config
   fi
 }
 

@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { joinWithCommas, stringifyOptions } from './utils';
 
 /**
@@ -49,7 +49,7 @@ export class JsonFileLogDriver extends LogDriver {
 
     // Validation
     if (props.maxFile && props.maxFile < 0) {
-        throw new Error('`maxFile` must be a positive integer.');
+      throw new Error('`maxFile` must be a positive integer.');
     }
   }
 
@@ -65,7 +65,7 @@ export class JsonFileLogDriver extends LogDriver {
         'compress': this.props.compress,
         'labels': joinWithCommas(this.props.labels),
         'env': joinWithCommas(this.props.env),
-        'env-regex': this.props.envRegex
+        'env-regex': this.props.envRegex,
       }),
     };
   }

@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigateway = require('../lib');
+import * as apigateway from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -17,14 +17,14 @@ export = {
     new apigateway.RequestValidator(stack, 'my-model', {
       restApi: api,
       validateRequestBody: true,
-      validateRequestParameters: false
+      validateRequestParameters: false,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
-      ValidateRequestParameters: false
+      ValidateRequestParameters: false,
     }));
 
     test.done();
@@ -44,17 +44,17 @@ export = {
       restApi: api,
       requestValidatorName: 'my-model',
       validateRequestBody: false,
-      validateRequestParameters: true
+      validateRequestParameters: true,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
-      Name: "my-model",
+      Name: 'my-model',
       ValidateRequestBody: false,
-      ValidateRequestParameters: true
+      ValidateRequestParameters: true,
     }));
 
     test.done();
-  }
+  },
 };

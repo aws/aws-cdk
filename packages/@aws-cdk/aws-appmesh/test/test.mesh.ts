@@ -1,10 +1,10 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
-import appmesh = require('../lib');
+import * as appmesh from '../lib';
 
 export = {
   'When creating a Mesh': {
@@ -21,7 +21,7 @@ export = {
           haveResource('AWS::AppMesh::Mesh', {
             Spec: {
             },
-          })
+          }),
         );
 
         test.done();
@@ -47,7 +47,7 @@ export = {
                 Type: 'ALLOW_ALL',
               },
             },
-          })
+          }),
         );
 
         test.done();
@@ -72,7 +72,7 @@ export = {
               port: 8080,
               protocol: appmesh.Protocol.HTTP,
             },
-          }
+          },
         });
 
         // THEN
@@ -88,7 +88,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -112,7 +112,7 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      cloudMapService: service
+      cloudMapService: service,
     });
 
     // THEN
@@ -120,11 +120,11 @@ export = {
       Spec: {
         ServiceDiscovery: {
           AWSCloudMap: {
-            NamespaceName: "domain.local",
-            ServiceName: { "Fn::GetAtt": [ "testnamespaceSvcB55702EC", "Name" ] }
-          }
-        }
-      }
+            NamespaceName: 'domain.local',
+            ServiceName: { 'Fn::GetAtt': [ 'testnamespaceSvcB55702EC', 'Name' ] },
+          },
+        },
+      },
     }));
 
     test.done();
@@ -152,7 +152,7 @@ export = {
               port: 8080,
               protocol: appmesh.Protocol.HTTP,
             },
-          }
+          },
         });
 
         // THEN
@@ -183,7 +183,7 @@ export = {
               port: 8080,
               protocol: appmesh.Protocol.HTTP,
             },
-          }
+          },
         });
 
         mesh.addVirtualService('service', {
@@ -203,7 +203,7 @@ export = {
                 },
               },
             },
-          })
+          }),
         );
 
         test.done();
@@ -246,7 +246,7 @@ export = {
                 },
               },
             },
-          })
+          }),
         );
 
         test.done();
@@ -279,17 +279,17 @@ export = {
               Logging: {
                 AccessLog: {
                   File: {
-                    Path: "/dev/stdout"
-                  }
-                }
+                    Path: '/dev/stdout',
+                  },
+                },
               },
               ServiceDiscovery: {
                 DNS: {
-                  Hostname: "test.domain.local"
-                }
-              }
+                  Hostname: 'test.domain.local',
+                },
+              },
             },
-          })
+          }),
         );
 
         test.done();
@@ -331,7 +331,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -385,7 +385,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -415,7 +415,7 @@ export = {
             },
           },
           backends: [
-              service1,
+            service1,
           ],
         });
 
@@ -433,7 +433,7 @@ export = {
                 },
               ],
             },
-          })
+          }),
         );
 
         test.done();
@@ -455,7 +455,7 @@ export = {
         MeshName: 'abc',
         Spec: {},
         VirtualServiceName: 'test.domain.local',
-      })
+      }),
     );
 
     test.done();

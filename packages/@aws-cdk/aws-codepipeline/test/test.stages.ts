@@ -1,7 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codepipeline = require('../lib');
+import * as codepipeline from '../lib';
+import { Stage } from '../lib/stage';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -20,9 +21,9 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
+        'Stages': [
+          { 'Name': 'FirstStage' },
+          { 'Name': 'SecondStage' },
         ],
       }));
 
@@ -43,10 +44,10 @@ export = {
       });
 
       expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
-          { "Name": "ThirdStage" },
+        'Stages': [
+          { 'Name': 'FirstStage' },
+          { 'Name': 'SecondStage' },
+          { 'Name': 'ThirdStage' },
         ],
       }));
 
@@ -89,7 +90,7 @@ export = {
       test.done();
     },
 
-    "providing more than one placement value results in an error"(test: Test) {
+    'providing more than one placement value results in an error'(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Stage' });
@@ -108,6 +109,31 @@ export = {
       }, function(e: any) {
         return /rightBefore/.test(e) && /justAfter/.test(e);
       });
+
+      test.done();
+    },
+
+    'can be retrieved from a pipeline after it has been created'(test: Test) {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'FirstStage',
+          },
+        ],
+      });
+
+      pipeline.addStage({ stageName: 'SecondStage' });
+
+      test.equal(pipeline.stages.length, 2);
+      test.equal(pipeline.stages[0].stageName, 'FirstStage');
+      test.equal(pipeline.stages[1].stageName, 'SecondStage');
+
+      // adding stages to the returned array should have no effect
+      pipeline.stages.push(new Stage({
+        stageName: 'ThirdStage',
+      }, pipeline));
+      test.equal(pipeline.stageCount, 2);
 
       test.done();
     },

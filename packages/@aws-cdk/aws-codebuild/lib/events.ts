@@ -1,4 +1,4 @@
-import events = require('@aws-cdk/aws-events');
+import * as events from '@aws-cdk/aws-events';
 
 /**
  * Event fields for the CodeBuild "state change" event

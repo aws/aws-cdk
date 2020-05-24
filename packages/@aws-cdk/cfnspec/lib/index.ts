@@ -1,11 +1,12 @@
-import crypto = require('crypto');
-import schema = require('./schema');
+import * as crypto from 'crypto';
+import * as schema from './schema';
 export { schema };
 
 /**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
  */
 export function specification(): schema.Specification {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('../spec/specification.json');
 }
 
@@ -29,6 +30,7 @@ export function resourceSpecification(typeName: string): schema.ResourceType {
 export function resourceAugmentation(typeName: string): schema.ResourceAugmentation {
   const fileName = typeName.replace(/::/g, '_');
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`./augmentations/${fileName}.json`);
   } catch (e) {
     return {};

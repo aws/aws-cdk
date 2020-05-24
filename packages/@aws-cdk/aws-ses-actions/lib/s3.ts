@@ -1,9 +1,9 @@
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * Construction properties for a S3 action.
@@ -55,9 +55,9 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID
-        }
-      }
+          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+        },
+      },
     });
     this.props.bucket.addToResourcePolicy(s3Statement);
 
@@ -78,12 +78,12 @@ export class S3 implements ses.IReceiptRuleAction {
         conditions: {
           Null: {
             'kms:EncryptionContext:aws:ses:rule-name': 'false',
-            'kms:EncryptionContext:aws:ses:message-id': 'false'
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID
-          }
-        }
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID,
+          },
+        },
       });
 
       this.props.kmsKey.addToResourcePolicy(kmsStatement);
@@ -94,8 +94,8 @@ export class S3 implements ses.IReceiptRuleAction {
         bucketName: this.props.bucket.bucketName,
         kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

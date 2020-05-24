@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigw = require('../lib');
+import * as apigw from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -14,7 +14,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -27,45 +27,45 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      "HttpMethod": "ANY",
-      "ResourceId": {
-        "Ref": "lambdarestapiproxyE3AE07E3"
+      'HttpMethod': 'ANY',
+      'ResourceId': {
+        'Ref': 'lambdarestapiproxyE3AE07E3',
       },
-      "RestApiId": {
-        "Ref": "lambdarestapiAAD10924"
+      'RestApiId': {
+        'Ref': 'lambdarestapiAAD10924',
       },
-      "AuthorizationType": "NONE",
-      "Integration": {
-        "IntegrationHttpMethod": "POST",
-        "Type": "AWS_PROXY",
-        "Uri": {
-          "Fn::Join": [
-            "",
+      'AuthorizationType': 'NONE',
+      'Integration': {
+        'IntegrationHttpMethod': 'POST',
+        'Type': 'AWS_PROXY',
+        'Uri': {
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-                "Ref": "AWS::Partition"
+                'Ref': 'AWS::Partition',
               },
-              ":apigateway:",
+              ':apigateway:',
               {
-                "Ref": "AWS::Region"
+                'Ref': 'AWS::Region',
               },
-              ":lambda:path/2015-03-31/functions/",
+              ':lambda:path/2015-03-31/functions/',
               {
-                "Fn::GetAtt": [
-                  "handlerE1533BD5",
-                  "Arn"
-                ]
+                'Fn::GetAtt': [
+                  'handlerE1533BD5',
+                  'Arn',
+                ],
               },
-              "/invocations"
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
 
     test.done();
@@ -78,13 +78,13 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
       version: new lambda.Version(stack, 'version', {
-        lambda: handler
-      })
+        lambda: handler,
+      }),
     });
 
     // WHEN
@@ -97,42 +97,42 @@ export = {
 
     // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      "HttpMethod": "ANY",
-      "ResourceId": {
-        "Ref": "lambdarestapiproxyE3AE07E3"
+      'HttpMethod': 'ANY',
+      'ResourceId': {
+        'Ref': 'lambdarestapiproxyE3AE07E3',
       },
-      "RestApiId": {
-        "Ref": "lambdarestapiAAD10924"
+      'RestApiId': {
+        'Ref': 'lambdarestapiAAD10924',
       },
-      "AuthorizationType": "NONE",
-      "Integration": {
-        "IntegrationHttpMethod": "POST",
-        "Type": "AWS_PROXY",
-        "Uri": {
-          "Fn::Join": [
-            "",
+      'AuthorizationType': 'NONE',
+      'Integration': {
+        'IntegrationHttpMethod': 'POST',
+        'Type': 'AWS_PROXY',
+        'Uri': {
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-                "Ref": "AWS::Partition"
+                'Ref': 'AWS::Partition',
               },
-              ":apigateway:",
+              ':apigateway:',
               {
-                "Ref": "AWS::Region"
+                'Ref': 'AWS::Region',
               },
-              ":lambda:path/2015-03-31/functions/",
+              ':lambda:path/2015-03-31/functions/',
               {
-                "Ref": "alias68BF17F5"
+                'Ref': 'alias68BF17F5',
               },
-              "/invocations"
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
 
     test.done();
@@ -145,7 +145,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -157,21 +157,21 @@ export = {
 
     // THEN
     expect(stack).notTo(haveResource('AWS::ApiGateway::Resource', {
-      "PathPart": "{proxy+}"
+      'PathPart': '{proxy+}',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      PathPart: 'tasks'
+      PathPart: 'tasks',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: 'lambdarestapitasks224418C8' }
+      ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: 'lambdarestapitasks224418C8' }
+      ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     }));
 
     test.done();
@@ -184,18 +184,74 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') }
+      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') },
     }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      defaultIntegration: new apigw.HttpIntegration('https://foo/bar')
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
     }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+
+    test.done();
+  },
+
+  'LambdaRestApi defines a REST API with CORS enabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['GET', 'PUT'],
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
+            },
+            StatusCode: '204',
+          },
+        ],
+        RequestTemplates: {
+          'application/json': '{ statusCode: 200 }',
+        },
+        Type: 'MOCK',
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+          },
+          StatusCode: '204',
+        },
+      ],
+    }));
 
     test.done();
   },

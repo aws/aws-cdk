@@ -1,6 +1,6 @@
-import reflect = require('jsii-reflect');
-import { PrimitiveType } from 'jsii-spec';
-import util = require('util');
+import * as reflect from 'jsii-reflect';
+import { PrimitiveType } from '@jsii/spec';
+import * as util from 'util';
 
 export interface LinterOptions {
   /**
@@ -52,7 +52,7 @@ export class AggregateLinter extends LinterBase {
 export class Linter<T> extends LinterBase {
   private readonly _rules: { [name: string]: ConcreteRule<T> } = { };
 
-  constructor(private readonly init: (assembly: reflect.Assembly) => T | T[] | undefined) {
+  constructor(private readonly init: (assembly: reflect.Assembly) => T | readonly T[] | undefined) {
     super();
   }
 
@@ -83,7 +83,7 @@ export class Linter<T> extends LinterBase {
     }
 
     if (!Array.isArray(ctxs)) {
-      ctxs = [ ctxs ];
+      ctxs = [ctxs] as readonly T[];
     }
 
     const diag = new Array<Diagnostic>();

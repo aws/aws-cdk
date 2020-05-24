@@ -1,10 +1,9 @@
-import cdk = require('@aws-cdk/core');
-import { ConstructNode } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
-import { validateName } from "../lib/validation";
+import { validateName } from '../lib/validation';
 import { FakeSourceAction } from './fake-source-action';
 
 interface NameValidationTestCase {
@@ -19,7 +18,7 @@ export = {
       { name: 'BlahBleep123.@-_', shouldPassValidation: true, explanation: 'should be valid' },
       { name: '', shouldPassValidation: false, explanation: 'the empty string should be invalid' },
       { name: ' BlahBleep', shouldPassValidation: false, explanation: 'spaces should be invalid' },
-      { name: '!BlahBleep', shouldPassValidation: false, explanation: '\'!\' should be invalid' }
+      { name: '!BlahBleep', shouldPassValidation: false, explanation: '\'!\' should be invalid' },
     ];
 
     cases.forEach(testCase => {
@@ -42,7 +41,7 @@ export = {
       test.deepEqual((stage as any).validate().length, 1);
 
       test.done();
-    }
+    },
   },
 
   'Pipeline validation': {
@@ -50,7 +49,7 @@ export = {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      test.deepEqual(ConstructNode.validate(pipeline.node).length, 1);
+      test.deepEqual(cdk.ConstructNode.validate(pipeline.node).length, 1);
 
       test.done();
     },
@@ -69,11 +68,11 @@ export = {
         ],
       });
 
-      test.deepEqual(ConstructNode.validate(pipeline.node).length, 1);
+      test.deepEqual(cdk.ConstructNode.validate(pipeline.node).length, 1);
 
       test.done();
-    }
-  }
+    },
+  },
 };
 
 function stageForTesting(): IStage {

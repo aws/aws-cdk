@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.FluentdLogDriver({
-        tag: 'hello'
+        tag: 'hello',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
-              tag: 'hello'
-            }
-          }
-        }
-      ]
+              tag: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,7 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.FluentdLogDriver(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -55,10 +55,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'fluentd'
-          }
-        }
-      ]
+            LogDriver: 'fluentd',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -79,16 +79,16 @@ export = {
         labels: [
           'one',
           'two',
-          'three'
+          'three',
         ],
         env: [
           'one',
           'two',
-          'three'
+          'three',
         ],
-        envRegex: '[0-9]{1}'
+        envRegex: '[0-9]{1}',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -107,22 +107,22 @@ export = {
               'tag': 'my-tag',
               'labels': 'one,two,three',
               'env': 'one,two,three',
-              'env-regex': '[0-9]{1}'
-            }
-          }
-        }
-      ]
+              'env-regex': '[0-9]{1}',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
   },
 
-  "create a fluentd log driver using fluentd"(test: Test) {
+  'create a fluentd log driver using fluentd'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
       logging: ecs.LogDrivers.fluentd(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -130,10 +130,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'fluentd'
-          }
-        }
-      ]
+            LogDriver: 'fluentd',
+          },
+        },
+      ],
     }));
 
     test.done();

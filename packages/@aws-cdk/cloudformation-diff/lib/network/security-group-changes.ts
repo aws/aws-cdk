@@ -1,9 +1,9 @@
-import colors = require('colors/safe');
-import { PropertyChange, ResourceChange } from "../diff/types";
-import { DiffableCollection } from "../diffable";
-import { renderIntrinsics } from "../render-intrinsics";
+import * as colors from 'colors/safe';
+import { PropertyChange, ResourceChange } from '../diff/types';
+import { DiffableCollection } from '../diffable';
+import { renderIntrinsics } from '../render-intrinsics';
 import { deepRemoveUndefined, dropIfEmpty, makeComparator } from '../util';
-import { RuleJson, SecurityGroupRule } from "./security-group-rule";
+import { RuleJson, SecurityGroupRule } from './security-group-rule';
 
 export interface SecurityGroupChangesProps {
   ingressRulePropertyChanges: PropertyChange[];

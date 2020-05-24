@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import route53 = require('../lib');
+import * as route53 from '../lib';
 
 export = {
   'with default ttl'(test: Test) {
@@ -9,7 +9,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -17,20 +17,20 @@ export = {
       zone,
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz')
+      target: route53.RecordTarget.fromValues('zzz'),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CNAME",
+      Name: 'www.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "zzz"
+        'zzz',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -40,7 +40,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -49,20 +49,20 @@ export = {
       recordName: 'aa',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('bbb'),
-      ttl: Duration.seconds(6077)
+      ttl: Duration.seconds(6077),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "aa.myzone.",
-      Type: "CNAME",
+      Name: 'aa.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "bbb"
+        'bbb',
       ],
-      TTL: "6077"
+      TTL: '6077',
     }));
     test.done();
   },
@@ -72,7 +72,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -84,13 +84,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "myzone.",
-      Type: "A",
+      Name: 'myzone.',
+      Type: 'A',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "1.2.3.4"
+        '1.2.3.4',
       ],
     }));
     test.done();
@@ -101,28 +101,28 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
     new route53.ARecord(stack, 'A', {
       zone,
       recordName: 'www',
-      target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "A",
+      Name: 'www.myzone.',
+      Type: 'A',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "1.2.3.4",
-        "5.6.7.8"
+        '1.2.3.4',
+        '5.6.7.8',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -132,36 +132,36 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     const target: route53.IAliasRecordTarget = {
       bind: () => {
         return {
           hostedZoneId: 'Z2P70J7EXAMPLE',
-          dnsName: 'foo.example.com'
+          dnsName: 'foo.example.com',
         };
-      }
+      },
     };
 
     // WHEN
     new route53.ARecord(zone, 'Alias', {
       zone,
       recordName: '_foo',
-      target: route53.RecordTarget.fromAlias(target)
+      target: route53.RecordTarget.fromAlias(target),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: '_foo.myzone.',
       HostedZoneId: {
-        Ref: 'HostedZoneDB99F866'
+        Ref: 'HostedZoneDB99F866',
       },
       Type: 'A',
       AliasTarget: {
         HostedZoneId: 'Z2P70J7EXAMPLE',
         DNSName: 'foo.example.com',
-      }
+      },
     }));
 
     test.done();
@@ -172,27 +172,27 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
     new route53.AaaaRecord(stack, 'AAAA', {
       zone,
       recordName: 'www',
-      target: route53.AddressRecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
+      target: route53.RecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "AAAA",
+      Name: 'www.myzone.',
+      Type: 'AAAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -201,35 +201,35 @@ export = {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     const target: route53.IAliasRecordTarget = {
       bind: () => {
         return {
           hostedZoneId: 'Z2P70J7EXAMPLE',
-          dnsName: 'foo.example.com'
+          dnsName: 'foo.example.com',
         };
-      }
+      },
     };
 
     // WHEN
     new route53.AaaaRecord(zone, 'Alias', {
       zone,
-      target: route53.RecordTarget.fromAlias(target)
+      target: route53.RecordTarget.fromAlias(target),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Name: 'myzone.',
       HostedZoneId: {
-        Ref: 'HostedZoneDB99F866'
+        Ref: 'HostedZoneDB99F866',
       },
       Type: 'AAAA',
       AliasTarget: {
         HostedZoneId: 'Z2P70J7EXAMPLE',
         DNSName: 'foo.example.com',
-      }
+      },
     }));
 
     test.done();
@@ -240,7 +240,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -252,15 +252,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CNAME",
+      Name: 'www.myzone.',
+      Type: 'CNAME',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "hello"
+        'hello',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -270,27 +270,27 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
     new route53.TxtRecord(stack, 'TXT', {
       zone,
       recordName: 'www',
-      values: ['should be enclosed with double quotes']
+      values: ['should be enclosed with double quotes'],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "TXT",
+      Name: 'www.myzone.',
+      Type: 'TXT',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        '"should be enclosed with double quotes"'
+        '"should be enclosed with double quotes"',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -300,7 +300,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -311,21 +311,21 @@ export = {
         hostName: 'aws.com',
         port: 8080,
         priority: 10,
-        weight: 5
-      }]
+        weight: 5,
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "SRV",
+      Name: 'www.myzone.',
+      Type: 'SRV',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        '10 5 8080 aws.com'
+        '10 5 8080 aws.com',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -335,7 +335,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -345,21 +345,21 @@ export = {
       values: [{
         flag: 0,
         tag: route53.CaaTag.ISSUE,
-        value: 'ssl.com'
-      }]
+        value: 'ssl.com',
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "www.myzone.",
-      Type: "CAA",
+      Name: 'www.myzone.',
+      Type: 'CAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        '0 issue "ssl.com"'
+        '0 issue "ssl.com"',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -369,26 +369,54 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
     new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
       zone,
-      recordName: 'www', // should have no effect
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "myzone.",
-      Type: "CAA",
+      Name: 'myzone.',
+      Type: 'CAA',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        '0 issue "amazon.com"'
+        '0 issue "amazon.com"',
       ],
-      TTL: "1800"
+      TTL: '1800',
+    }));
+    test.done();
+  },
+
+  'CAA Amazon record with record name'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.CaaAmazonRecord(stack, 'CAAAmazon', {
+      zone,
+      recordName: 'www',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CAA',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '0 issue "amazon.com"',
+      ],
+      TTL: '1800',
     }));
     test.done();
   },
@@ -398,7 +426,7 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
@@ -407,21 +435,21 @@ export = {
       recordName: 'mail',
       values: [{
         hostName: 'workmail.aws',
-        priority: 10
-      }]
+        priority: 10,
+      }],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "mail.myzone.",
-      Type: "MX",
+      Name: 'mail.myzone.',
+      Type: 'MX',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        '10 workmail.aws'
+        '10 workmail.aws',
       ],
-      TTL: "1800"
+      TTL: '1800',
     }));
     test.done();
   },
@@ -431,28 +459,28 @@ export = {
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', {
-      zoneName: 'myzone'
+      zoneName: 'myzone',
     });
 
     // WHEN
     new route53.ZoneDelegationRecord(stack, 'NS', {
       zone,
       recordName: 'foo',
-      nameServers: ['ns-1777.awsdns-30.co.uk']
+      nameServers: ['ns-1777.awsdns-30.co.uk'],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: "foo.myzone.",
-      Type: "NS",
+      Name: 'foo.myzone.',
+      Type: 'NS',
       HostedZoneId: {
-        Ref: "HostedZoneDB99F866"
+        Ref: 'HostedZoneDB99F866',
       },
       ResourceRecords: [
-        "ns-1777.awsdns-30.co.uk."
+        'ns-1777.awsdns-30.co.uk.',
       ],
-      TTL: "172800"
+      TTL: '172800',
     }));
     test.done();
-  }
+  },
 };

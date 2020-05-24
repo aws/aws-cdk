@@ -1,8 +1,6 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -62,7 +60,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
-      type: "application",
+      type: 'application',
       securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });
@@ -70,7 +68,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
-      allowAllOutbound: false
+      allowAllOutbound: false,
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
@@ -79,37 +77,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   /**
-   * Enable access logging for this load balancer
-   */
-  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
-    this.setAttribute('access_logs.s3.enabled', 'true');
-    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
-    this.setAttribute('access_logs.s3.prefix', prefix);
-
-    const region = Stack.of(this).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error(`Region is required to enable ELBv2 access logging`);
-    }
-
-    const account = ELBV2_ACCOUNTS[region];
-    if (!account) {
-      throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
-    }
-
-    prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
-
-    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
-    this.node.addDependency(bucket);
-  }
-
-  /**
    * Add a new listener to this load balancer
    */
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     return new ApplicationListener(this, id, {
       loadBalancer: this,
-      ...props
+      ...props,
     });
   }
 
@@ -123,7 +96,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       namespace: 'AWS/ApplicationELB',
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
-      ...props
+      ...props,
     });
   }
 
@@ -136,7 +109,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveConnectionCount', {
       statistic: 'sum',
-      ...props
+      ...props,
     });
   }
 
@@ -150,7 +123,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ClientTLSNegotiationErrorCount', {
       statistic: 'sum',
-      ...props
+      ...props,
     });
   }
 
@@ -162,7 +135,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'sum',
-      ...props
+      ...props,
     });
   }
 
@@ -174,7 +147,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Fixed_Response_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -186,7 +159,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Redirect_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -199,7 +172,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Redirect_Url_Limit_Exceeded_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -213,7 +186,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricHttpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -228,7 +201,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -240,7 +213,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6ProcessedBytes', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -252,7 +225,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -265,7 +238,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewConnectionCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -277,7 +250,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -290,7 +263,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RejectedConnectionCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -304,7 +277,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -316,7 +289,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
     return this.metric('RuleEvaluations', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -328,7 +301,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetConnectionErrorCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -340,7 +313,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetResponseTime', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -354,7 +327,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetTLSNegotiationErrorCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -370,7 +343,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricElbAuthError(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthError', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -384,7 +357,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricElbAuthFailure(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthFailure', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -398,7 +371,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricElbAuthLatency(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthLatency', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -413,7 +386,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public metricElbAuthSuccess(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthSuccess', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 }
@@ -479,7 +452,9 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   readonly loadBalancerArn: string;
 
   /**
-   * The VPC this load balancer has been created in (if available)
+   * The VPC this load balancer has been created in (if available).
+   * If this interface is the result of an import call to fromApplicationLoadBalancerAttributes,
+   * the vpc attribute will be undefined unless specified in the optional properties of that method.
    */
   readonly vpc?: ec2.IVpc;
 
@@ -525,34 +500,16 @@ export interface ApplicationLoadBalancerAttributes {
    * @default true
    */
   readonly securityGroupAllowsAllOutbound?: boolean;
-}
 
-// https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: { [region: string]: string } = {
-  'us-east-1': '127311923021',
-  'us-east-2': '033677994240',
-  'us-west-1': '027434742980',
-  'us-west-2': '797873946194',
-  'ca-central-1': '985666609251',
-  'eu-central-1': '054676820928',
-  'eu-west-1': '156460612806',
-  'eu-west-2': '652711504416',
-  'eu-west-3': '009996457667',
-  'eu-north-1': '897822967062',
-  'ap-east-1': '754344448648',
-  'ap-northeast-1': '582318560864',
-  'ap-northeast-2': '600734575887',
-  'ap-northeast-3': '383597477331',
-  'ap-southeast-1': '114774131450',
-  'ap-southeast-2': '783225319266',
-  'ap-south-1': '718504428378',
-  'me-south-1': '076674570225',
-  'sa-east-1': '507241528517',
-  'us-gov-west-1': '048591011584',
-  'us-gov-east-1': '190560391635',
-  'cn-north-1': '638102146993',
-  'cn-northwest-1': '037604701340',
-};
+  /**
+   * The VPC this load balancer has been created in, if available
+   *
+   * @default - If the Load Balancer was imported and a VPC was not specified,
+   * the VPC is not available.
+   */
+  readonly vpc?: ec2.IVpc;
+
+}
 
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
@@ -571,25 +528,25 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   /**
    * VPC of the load balancer
    *
-   * Always undefined.
+   * Undefined if optional vpc is not specified.
    */
   public readonly vpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
-
+    this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound
-      })]
+        allowAllOutbound: props.securityGroupAllowsAllOutbound,
+      })],
     });
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     return new ApplicationListener(this, id, {
       loadBalancer: this,
-      ...props
+      ...props,
     });
   }
 

@@ -1,5 +1,5 @@
-import route53 = require('@aws-cdk/aws-route53');
-import s3 = require('@aws-cdk/aws-s3');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as s3 from '@aws-cdk/aws-s3';
 import {Stack, Token} from '@aws-cdk/core';
 import {RegionInfo} from '@aws-cdk/region-info';
 
@@ -17,7 +17,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       throw new Error([
         'Cannot use an S3 record alias in region-agnostic stacks.',
         'You must specify a specific region when you define the stack',
-        '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)'
+        '(see https://docs.aws.amazon.com/cdk/latest/guide/environments.html)',
       ].join(' '));
     }
 

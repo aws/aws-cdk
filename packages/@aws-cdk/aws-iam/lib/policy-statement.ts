@@ -1,16 +1,52 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
+
+const ensureArrayOrUndefined = (field: any) => {
+  if (field === undefined) {
+    return undefined;
+  }
+  if (typeof (field) !== 'string' && !Array.isArray(field)) {
+    throw new Error('Fields must be either a string or an array of strings');
+  }
+  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== 'string')) {
+    throw new Error('Fields must be either a string or an array of strings');
+  }
+  return Array.isArray(field) ? field : [field];
+};
 
 /**
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
+
+  /**
+   * Creates a new PolicyStatement based on the object provided.
+   * This will accept an object created from the `.toJSON()` call
+   * @param obj the PolicyStatement in object form.
+   */
+  public static fromJson(obj: any) {
+    return new PolicyStatement({
+      sid: obj.Sid,
+      actions: ensureArrayOrUndefined(obj.Action),
+      resources: ensureArrayOrUndefined(obj.Resource),
+      conditions: obj.Condition,
+      effect: obj.Effect,
+      notActions: ensureArrayOrUndefined(obj.NotAction),
+      notResources: ensureArrayOrUndefined(obj.NotResource),
+      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
+      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
+    });
+  }
+
   /**
    * Statement ID for this statement
    */
   public sid?: string;
+  /**
+   * Whether to allow or deny the actions in this statement
+   */
   public effect: Effect;
 
   private readonly action = new Array<any>();
@@ -20,6 +56,7 @@ export class PolicyStatement {
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
+  private principalConditionsJson?: string;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -29,6 +66,7 @@ export class PolicyStatement {
       }
     }
 
+    this.sid = props.sid;
     this.effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
@@ -46,16 +84,31 @@ export class PolicyStatement {
   // Actions
   //
 
+  /**
+   * Specify allowed actions into the "Action" section of the policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
+   *
+   * @param actions actions that will be allowed.
+   */
   public addActions(...actions: string[]) {
     if (actions.length > 0 && this.notAction.length > 0) {
-      throw new Error(`Cannot add 'Actions' to policy statement if 'NotActions' have been added`);
+      throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
     this.action.push(...actions);
   }
 
+  /**
+   * Explicitly allow all actions except the specified list of actions into the "NotAction" section
+   * of the policy document.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html
+   *
+   * @param notActions actions that will be denied. All other actions will be permitted.
+   */
   public addNotActions(...notActions: string[]) {
     if (notActions.length > 0 && this.action.length > 0) {
-      throw new Error(`Cannot add 'NotActions' to policy statement if 'Actions' have been added`);
+      throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
     this.notAction.push(...notActions);
   }
@@ -71,32 +124,56 @@ export class PolicyStatement {
     return Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0;
   }
 
+  /**
+   * Adds principals to the "Principal" section of a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
+   *
+   * @param principals IAM principals that will be added
+   */
   public addPrincipals(...principals: IPrincipal[]) {
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
-      throw new Error(`Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added`);
+      throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
+  /**
+   * Specify principals that is not allowed or denied access to the "NotPrincipal" section of
+   * a policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notprincipal.html
+   *
+   * @param notPrincipals IAM principals that will be denied access
+   */
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     if (Object.keys(notPrincipals).length > 0 && Object.keys(this.principal).length > 0) {
-      throw new Error(`Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added`);
+      throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this.notPrincipal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
+  /**
+   * Specify AWS account ID as the principal entity to the "Principal" section of a policy statement.
+   */
   public addAwsAccountPrincipal(accountId: string) {
     this.addPrincipals(new AccountPrincipal(accountId));
   }
 
+  /**
+   * Specify a principal using the ARN  identifier of the principal.
+   * You cannot specify IAM groups and instance profiles as principals.
+   *
+   * @param arn ARN identifier of AWS account, IAM user, or IAM role (i.e. arn:aws:iam::123456789012:user/user-name)
+   */
   public addArnPrincipal(arn: string) {
     this.addPrincipals(new ArnPrincipal(arn));
   }
@@ -111,18 +188,36 @@ export class PolicyStatement {
     this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+  /**
+   * Adds a federated identity provider such as Amazon Cognito to this policy statement.
+   *
+   * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com')
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  public addFederatedPrincipal(federated: any, conditions: Conditions) {
     this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
+  /**
+   * Adds an AWS account root user principal to this policy statement
+   */
   public addAccountRootPrincipal() {
     this.addPrincipals(new AccountRootPrincipal());
   }
 
+  /**
+   * Adds a canonical user ID principal to this policy document
+   *
+   * @param canonicalUserId unique identifier assigned by AWS for every account
+   */
   public addCanonicalUserPrincipal(canonicalUserId: string) {
     this.addPrincipals(new CanonicalUserPrincipal(canonicalUserId));
   }
 
+  /**
+   * Adds all identities in all accounts ("*") to this policy statement
+   */
   public addAnyPrincipal() {
     this.addPrincipals(new Anyone());
   }
@@ -131,16 +226,32 @@ export class PolicyStatement {
   // Resources
   //
 
+  /**
+   * Specify resources that this policy statement applies into the "Resource" section of
+   * this policy statement.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement applies to
+   */
   public addResources(...arns: string[]) {
     if (arns.length > 0 && this.notResource.length > 0) {
-      throw new Error(`Cannot add 'Resources' to policy statement if 'NotResources' have been added`);
+      throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
     this.resource.push(...arns);
   }
 
+  /**
+   * Specify resources that this policy statement will not apply to in the "NotResource" section
+   * of this policy statement. All resources except the specified list will be matched.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notresource.html
+   *
+   * @param arns Amazon Resource Names (ARNs) of the resources that this policy statement does not apply to
+   */
   public addNotResources(...arns: string[]) {
     if (arns.length > 0 && this.resource.length > 0) {
-      throw new Error(`Cannot add 'NotResources' to policy statement if 'Resources' have been added`);
+      throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
     this.notResource.push(...arns);
   }
@@ -166,14 +277,15 @@ export class PolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: any) {
-    this.condition[key] = value;
+  public addCondition(key: string, value: Condition) {
+    const existingValue = this.condition[key];
+    this.condition[key] = existingValue ? { ...existingValue, ...value } : value;
   }
 
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}) {
+  public addConditions(conditions: Conditions) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
@@ -186,6 +298,11 @@ export class PolicyStatement {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
+  /**
+   * JSON-ify the policy statement
+   *
+   * Used when JSON.stringify() is called
+   */
   public toStatementJson(): any {
     return noUndef({
       Action: _norm(this.action),
@@ -247,9 +364,12 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * String representation of this policy statement
+   */
   public toString() {
     return cdk.Token.asString(this, {
-      displayHint: 'PolicyStatement'
+      displayHint: 'PolicyStatement',
     });
   }
 
@@ -261,17 +381,99 @@ export class PolicyStatement {
   public toJSON() {
     return this.toStatementJson();
   }
+
+  /**
+   * Add a principal's conditions
+   *
+   * For convenience, principals have been modeled as both a principal
+   * and a set of conditions. This makes it possible to have a single
+   * object represent e.g. an "SNS Topic" (SNS service principal + aws:SourcArn
+   * condition) or an Organization member (* + aws:OrgId condition).
+   *
+   * However, when using multiple principals in the same policy statement,
+   * they must all have the same conditions or the OR samentics
+   * implied by a list of principals cannot be guaranteed (user needs to
+   * add multiple statements in that case).
+   */
+  private addPrincipalConditions(conditions: Conditions) {
+    // Stringifying the conditions is an easy way to do deep equality
+    const theseConditions = JSON.stringify(conditions);
+    if (this.principalConditionsJson === undefined) {
+      // First principal, anything goes
+      this.principalConditionsJson = theseConditions;
+    } else {
+      if (this.principalConditionsJson !== theseConditions) {
+        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
+      }
+    }
+    this.addConditions(conditions);
+  }
 }
 
+/**
+ * The Effect element of an IAM policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_effect.html
+ */
 export enum Effect {
+  /**
+   * Allows access to a resource in an IAM policy statement. By default, access to resources are denied.
+   */
   ALLOW = 'Allow',
+
+  /**
+   * Explicitly deny access to a resource. By default, all requests are denied implicitly.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+   */
   DENY = 'Deny',
 }
+
+/**
+ * Condition for when an IAM policy is in effect. Maps from the keys in a request's context to
+ * a string value or array of string values. See the Conditions interface for more details.
+ */
+export type Condition = any;
+
+// NOTE! We'd ideally like to type this as `Record<string, any>`, because the
+// API expects a map which can take either strings or lists of strings.
+//
+// However, if we were to change this right now, the Java bindings for CDK would
+// emit a type of `Map<String, Object>`, but the most common types people would
+// instantiate would be an `ImmutableMap<String, String>` which would not be
+// assignable to `Map<String, Object>`. The types don't have a built-in notion
+// of co-contravariance, you have to indicate that on the type. So jsii would first
+// need to emit the type as `Map<String, ? extends Object>`.
+//
+// Feature request in https://github.com/aws/jsii/issues/1517
+
+/**
+ * Conditions for when an IAM Policy is in effect, specified in the following structure:
+ *
+ * `{ "Operator": { "keyInRequestContext": "value" } }`
+ *
+ * The value can be either a single string value or an array of string values.
+ *
+ * For more information, including which operators are supported, see [the IAM
+ * documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+ */
+export type Conditions = Record<string, Condition>;
 
 /**
  * Interface for creating a policy statement
  */
 export interface PolicyStatementProps {
+  /**
+   * The Sid (statement ID) is an optional identifier that you provide for the
+   * policy statement. You can assign a Sid value to each statement in a
+   * statement array. In services that let you specify an ID element, such as
+   * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
+   * IAM, the Sid value must be unique within a JSON policy.
+   *
+   * @default - no sid
+   */
+  readonly sid?: string;
+
   /**
    * List of actions to add to the statement
    *
@@ -324,7 +526,7 @@ export interface PolicyStatementProps {
   /**
    * Whether to allow or deny the actions in this statement
    *
-   * @default - allow
+   * @default Effect.ALLOW
    */
   readonly effect?: Effect;
 }
@@ -337,4 +539,22 @@ function noUndef(x: any): any {
     }
   }
   return ret;
+}
+
+class JsonPrincipal extends PrincipalBase {
+  public readonly policyFragment: PrincipalPolicyFragment;
+
+  constructor(json: any = { }) {
+    super();
+
+    // special case: if principal is a string, turn it into an "AWS" principal
+    if (typeof(json) === 'string') {
+      json = { AWS: json };
+    }
+
+    this.policyFragment = {
+      principalJson: json,
+      conditions: {},
+    };
+  }
 }

@@ -1,16 +1,10 @@
 ## Continuous Integration / Continuous Delivery for CDK Applications
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
-> future breaking changes.**
->
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
+> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -47,11 +41,11 @@ The example below defines a *CDK App* that contains 3 stacks:
 #### `index.ts`
 
 ```typescript
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
-import cdk = require('@aws-cdk/core');
-import cicd = require('@aws-cdk/app-delivery');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as cdk from '@aws-cdk/core';
+import * as cicd from '@aws-cdk/app-delivery';
 
 const app = new cdk.App();
 

@@ -1,3 +1,4 @@
+import { Construct, Stack } from '@aws-cdk/core';
 import { IHostedZone } from './hosted-zone-ref';
 
 /**
@@ -49,10 +50,24 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return providedName;
   }
 
-  const suffix = `.${hostedZone.zoneName}`;
-  if (providedName.endsWith(suffix) || providedName === hostedZone.zoneName) {
+  const hostedZoneName =  hostedZone.zoneName.endsWith('.')
+    ? hostedZone.zoneName.substring(0, hostedZone.zoneName.length - 1)
+    : hostedZone.zoneName;
+
+  const suffix = `.${hostedZoneName}`;
+  if (providedName.endsWith(suffix) || providedName === hostedZoneName) {
     return `${providedName}.`;
   }
 
   return `${providedName}${suffix}.`;
+}
+
+export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): string {
+  return Stack.of(construct).formatArn({
+    account: '',
+    region: '',
+    service: 'route53',
+    resource: 'hostedzone',
+    resourceName: hostedZoneId,
+  });
 }

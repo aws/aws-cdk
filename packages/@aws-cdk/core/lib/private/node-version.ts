@@ -1,7 +1,7 @@
-import process = require('process');
+import * as process from 'process';
 
 // process.versions.node is like "12.3.1"
-const [strMajor, strMinor, strPatch, ] = process.versions.node.split('.');
+const [strMajor, strMinor, strPatch ] = process.versions.node.split('.');
 
 /**
  * The major version of the node runtime.

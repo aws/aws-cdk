@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import actions = require('../lib');
+import * as actions from '../lib';
 
 test('can use topic as alarm action', () => {
   // GIVEN
@@ -20,7 +20,7 @@ test('can use topic as alarm action', () => {
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
     metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Henk' }),
     evaluationPeriods: 3,
-    threshold: 100
+    threshold: 100,
   });
 
   // WHEN
@@ -29,7 +29,7 @@ test('can use topic as alarm action', () => {
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
     AlarmActions: [
-      { Ref: "Action62AD07C0" }
+      { Ref: 'Action62AD07C0' },
     ],
   });
 });

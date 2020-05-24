@@ -1,7 +1,7 @@
-import { IConstruct } from "./construct";
-import { Intrinsic } from "./private/intrinsic";
-import { IPostProcessor, IResolveContext } from "./resolvable";
-import { Stack } from "./stack";
+import { IConstruct } from './construct-compat';
+import { Intrinsic } from './private/intrinsic';
+import { IPostProcessor, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -35,7 +35,7 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
 export function ignoreEmpty(obj: any): any {
- return new PostResolveToken(obj, o => {
+  return new PostResolveToken(obj, o => {
     // undefined/null
     if (o == null) {
       return o;
@@ -91,4 +91,32 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
   public postProcess(o: any, _context: IResolveContext): any {
     return this.processor(o);
   }
+}
+
+/**
+ * @returns the list of stacks that lead from the top-level stack (non-nested) all the way to a nested stack.
+ */
+export function pathToTopLevelStack(s: Stack): Stack[] {
+  if (s.nestedStackParent) {
+    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+  } else {
+    return [ s ];
+  }
+}
+
+/**
+ * Given two arrays, returns the last common element or `undefined` if there
+ * isn't (arrays are foriegn).
+ */
+export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined {
+  let i = 0;
+  while (i < path1.length && i < path2.length) {
+    if (path1[i] !== path2[i]) {
+      break;
+    }
+
+    i++;
+  }
+
+  return path1[i - 1];
 }

@@ -34,7 +34,7 @@ export = {
     stack.node.setContext(key, 'not-a-list');
 
     test.throws(
-      () => stack.availabilityZones
+      () => stack.availabilityZones,
     );
 
     test.done();
@@ -46,7 +46,7 @@ export = {
       provider: 'ssm',
       props: {
         parameterName: 'foo',
-        anyStringParam: 'bar'
+        anyStringParam: 'bar',
       },
     });
 
@@ -56,8 +56,8 @@ export = {
         account: '12345',
         region: 'us-east-1',
         parameterName: 'foo',
-        anyStringParam: 'bar'
-      }
+        anyStringParam: 'bar',
+      },
     });
 
     const complexKey = ContextProvider.getKey(stack, {
@@ -66,7 +66,7 @@ export = {
         cidrBlock: '192.168.0.16',
         tags: { Name: 'MyVPC', Env: 'Preprod' },
         igw: false,
-      }
+      },
     });
     test.deepEqual(complexKey, {
       key: 'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC',
@@ -76,7 +76,7 @@ export = {
         cidrBlock: '192.168.0.16',
         tags: { Name: 'MyVPC', Env: 'Preprod' },
         igw: false,
-      }
+      },
     });
     test.done();
   },
@@ -93,7 +93,7 @@ export = {
           { key: 'key1', value: 'value1' },
           { key: 'key2', value: 'value2' },
         ],
-      }
+      },
     });
 
     // THEN
@@ -106,7 +106,7 @@ export = {
           { key: 'key1', value: 'value1' },
           { key: 'key2', value: 'value2' },
         ],
-      }
+      },
     });
 
     test.done();
@@ -140,8 +140,8 @@ export = {
   },
 
   'context provider errors are attached to tree'(test: Test) {
-    const contextProps = { provider: 'bloop' };
-    const contextKey = 'bloop:account=12345:region=us-east-1';  // Depends on the mangling algo
+    const contextProps = { provider: 'availability-zones' };
+    const contextKey = 'availability-zones:account=12345:region=us-east-1';  // Depends on the mangling algo
 
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
@@ -174,7 +174,7 @@ export = {
 function expectedContextKey(stack: Stack): string {
   const missing = ConstructNode.synth(stack.node).manifest.missing;
   if (!missing || missing.length !== 1) {
-    throw new Error(`Expecting assembly to include a single missing context report`);
+    throw new Error('Expecting assembly to include a single missing context report');
   }
   return missing[0].key;
 }

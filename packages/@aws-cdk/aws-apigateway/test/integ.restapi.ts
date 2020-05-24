@@ -1,6 +1,6 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import apigateway = require('../lib');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as apigateway from '../lib';
 
 class Test extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -16,14 +16,14 @@ class Test extends cdk.Stack {
         dataTraceEnabled: true,
         methodOptions: {
           '/api/appliances/GET': {
-            cachingEnabled: true
-          }
-        }
-      }
+            cachingEnabled: true,
+          },
+        },
+      },
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline(`exports.handler = ${handlerCode}`),
       handler: 'index.handler',
     });
@@ -49,7 +49,7 @@ class Test extends cdk.Stack {
         isBase64Encoded: false,
         statusCode: 200,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
       });
     }
 
@@ -61,8 +61,8 @@ class Test extends cdk.Stack {
       throttle: { rateLimit: 5 },
       quota: {
         limit: 10000,
-        period: apigateway.Period.MONTH
-      }
+        period: apigateway.Period.MONTH,
+      },
     });
     plan.addApiStage({
       stage: api.deploymentStage,
@@ -71,10 +71,10 @@ class Test extends cdk.Stack {
           method: getToysMethod,
           throttle: {
             rateLimit: 10,
-            burstLimit: 2
-          }
-        }
-      ]
+            burstLimit: 2,
+          },
+        },
+      ],
     });
   }
 }

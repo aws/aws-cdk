@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JsonFileLogDriver({
-        env: ['hello']
+        env: ['hello'],
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'json-file',
             Options: {
-              env: 'hello'
-            }
-          }
-        }
-      ]
+              env: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,29 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JsonFileLogDriver(),
-      memoryLimitMiB: 128
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'json-file'
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  "create a json-file log driver using json-file"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.jsonFile(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -78,10 +56,32 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'json-file',
-            Options: {}
-          }
-        }
-      ]
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'create a json-file log driver using json-file'(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.jsonFile(),
+      memoryLimitMiB: 128,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'json-file',
+            Options: {},
+          },
+        },
+      ],
     }));
 
     test.done();

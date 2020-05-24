@@ -1,10 +1,9 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import { Stack } from '@aws-cdk/core';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -248,9 +247,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromServerDeploymentGroupAttributes(
-      scope: cdk.Construct,
-      id: string,
-      attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+    scope: cdk.Construct,
+    id: string,
+    attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
@@ -278,7 +277,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${Stack.of(this).region}`);
+    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
@@ -350,19 +349,19 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
-            'PKG_CMD=apt-get',
+          'PKG_CMD=apt-get',
           'else',
-            'PKG=CMD=yum',
+          'PKG=CMD=yum',
           'fi',
           '$PKG_CMD update -y',
           '$PKG_CMD install -y ruby2.0',
           'if [ $? -ne 0 ]; then',
-            '$PKG_CMD install -y ruby',
+          '$PKG_CMD install -y ruby',
           'fi',
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/install . --region ${Stack.of(this).region}`,
+          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
           'chmod +x ./install',
           './install auto',
           'rm -fr $TMP_DIR',
@@ -371,7 +370,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       case ec2.OperatingSystemType.WINDOWS:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;
@@ -379,7 +378,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private loadBalancerInfo(loadBalancer?: LoadBalancer):
-      CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+  CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     if (!loadBalancer) {
       return undefined;
     }
@@ -395,13 +394,13 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         return {
           targetGroupInfoList: [
             { name: loadBalancer.name },
-          ]
+          ],
         };
     }
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.EC2TagSetProperty | undefined {
+  CfnDeploymentGroup.EC2TagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -417,7 +416,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   private onPremiseTagSet(tagSet?: InstanceTagSet):
-      CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
+  CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -425,15 +424,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     return {
       onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
         return {
-          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup) as
-            CfnDeploymentGroup.TagFilterProperty[],
+          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup),
         };
       }),
     };
   }
 
-  private tagGroup2TagsArray(tagGroup: InstanceTagGroup): any[] {
-    const tagsInGroup = [];
+  private tagGroup2TagsArray(tagGroup: InstanceTagGroup): CfnDeploymentGroup.TagFilterProperty[] {
+    const tagsInGroup = new Array<CfnDeploymentGroup.TagFilterProperty>();
     for (const tagKey in tagGroup) {
       if (tagGroup.hasOwnProperty(tagKey)) {
         const tagValues = tagGroup[tagKey];

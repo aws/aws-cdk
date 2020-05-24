@@ -1,11 +1,11 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { IAuthorizer } from './authorizer';
+import { Authorizer, IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { IRequestValidator } from './requestvalidator';
+import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -19,13 +19,21 @@ export interface MethodOptions {
 
   /**
    * Method authorization.
-   * @default None open access
+   * If the value is set of `Custom`, an `authorizer` must also be specified.
+   *
+   * If you're using one of the authorizers that are available via the {@link Authorizer} class, such as {@link Authorizer#token()},
+   * it is recommended that this option not be specified. The authorizer will take care of setting the correct authorization type.
+   * However, specifying an authorization type using this property that conflicts with what is expected by the {@link Authorizer}
+   * will result in an error.
+   *
+   * @default - open access unless `authorizer` is specified
    */
   readonly authorizationType?: AuthorizationType;
 
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
+   * If specified, the value of `authorizationType` must be set to `Custom`
    */
   readonly authorizer?: IAuthorizer;
 
@@ -44,7 +52,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  readonly methodResponses?: MethodResponse[]
+  readonly methodResponses?: MethodResponse[];
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -57,16 +65,65 @@ export interface MethodOptions {
   readonly requestParameters?: { [param: string]: boolean };
 
   /**
-   * The resources that are used for the response's content type. Specify request
-   * models as key-value pairs (string-to-string mapping), with a content type
-   * as the key and a Model resource name as the value
+   * The models which describe data structure of request payload. When
+   * combined with `requestValidator` or `requestValidatorOptions`, the service
+   * will validate the API request payload before it reaches the API's Integration (including proxies).
+   * Specify `requestModels` as key-value pairs, with a content type
+   * (e.g. `'application/json'`) as the key and an API Gateway Model as the value.
+   *
+   * @example
+   *
+   *     const userModel: apigateway.Model = api.addModel('UserModel', {
+   *         schema: {
+   *             type: apigateway.JsonSchemaType.OBJECT
+   *             properties: {
+   *                 userId: {
+   *                     type: apigateway.JsonSchema.STRING
+   *                 },
+   *                 name: {
+   *                     type: apigateway.JsonSchema.STRING
+   *                 }
+   *             },
+   *             required: ['userId']
+   *         }
+   *     });
+   *     api.root.addResource('user').addMethod('POST',
+   *         new apigateway.LambdaIntegration(userLambda), {
+   *             requestModels: {
+   *                 'application/json': userModel
+   *             }
+   *         }
+   *     );
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-request.html#setup-method-request-model
    */
   readonly requestModels?: { [param: string]: IModel };
 
   /**
    * The ID of the associated request validator.
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * Works together with `requestModels` or `requestParameters` to validate
+   * the request before it reaches integration like Lambda Proxy Integration.
+   * @default - No default validator
    */
   readonly requestValidator?: IRequestValidator;
+
+  /**
+   * A list of authorization scopes configured on the method. The scopes are used with
+   * a COGNITO_USER_POOLS authorizer to authorize the method invocation.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
+   * @default - no authorization scopes
+   */
+  readonly authorizationScopes?: string[];
+
+  /**
+   * Request validator options to create new validator
+   * Only one of `requestValidator` or `requestValidatorOptions` must be specified.
+   * Works together with `requestModels` or `requestParameters` to validate
+   * the request before it reaches integration like Lambda Proxy Integration.
+   * @default - No default validator
+   */
+  readonly requestValidatorOptions?: RequestValidatorOptions;
 }
 
 export interface MethodProps {
@@ -117,6 +174,20 @@ export class Method extends Resource {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
     const authorizer = options.authorizer || defaultMethodOptions.authorizer;
+    const authorizerId = authorizer?.authorizerId;
+
+    const authorizationTypeOption = options.authorizationType || defaultMethodOptions.authorizationType;
+    const authorizationType = authorizer?.authorizationType || authorizationTypeOption || AuthorizationType.NONE;
+
+    // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
+    if (authorizer?.authorizationType && authorizationTypeOption && authorizer?.authorizationType !== authorizationTypeOption) {
+      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${authorizationTypeOption} ` +
+        `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
+    }
+
+    if (Authorizer.isAuthorizer(authorizer)) {
+      authorizer._attachToApi(this.restApi);
+    }
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -124,13 +195,14 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
-      authorizerId: authorizer && authorizer.authorizerId,
+      authorizationType,
+      authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
-      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
+      requestValidatorId: this.requestValidatorId(options),
+      authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
@@ -192,15 +264,15 @@ export class Method extends Resource {
 
     let credentials;
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
+      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
+      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
+      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
     if (options.credentialsRole) {
@@ -265,11 +337,25 @@ export class Method extends Resource {
     const models: {[param: string]: string} = {};
     for (const contentType in requestModels) {
       if (requestModels.hasOwnProperty(contentType)) {
-          models[contentType] = requestModels[contentType].modelId;
+        models[contentType] = requestModels[contentType].modelId;
       }
     }
 
     return models;
+  }
+
+  private requestValidatorId(options: MethodOptions): string | undefined {
+    if (options.requestValidator && options.requestValidatorOptions) {
+      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
+    }
+
+    if (options.requestValidatorOptions) {
+      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      return validator.requestValidatorId;
+    }
+
+    // For backward compatibility
+    return options.requestValidator?.requestValidatorId;
   }
 }
 

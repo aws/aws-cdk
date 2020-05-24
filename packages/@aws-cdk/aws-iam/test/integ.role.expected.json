@@ -95,6 +95,28 @@
           "Version": "2012-10-17"
         }
       }
+    },
+    "TestRole3C1F30727": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:PrincipalOrgID": "o-1234"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
     }
   }
 }

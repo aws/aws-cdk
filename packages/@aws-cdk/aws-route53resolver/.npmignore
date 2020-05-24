@@ -14,9 +14,12 @@ coverage
 dist
 .LAST_BUILD
 .LAST_PACKAGE
-.jsii
 
 # Include .jsii
 !.jsii
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js
+jest.config.js

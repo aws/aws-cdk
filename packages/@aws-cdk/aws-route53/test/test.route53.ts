@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
@@ -12,12 +12,12 @@ export = {
       expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.public."
-            }
-          }
-        }
+              Name: 'test.public.',
+            },
+          },
+        },
       }));
       test.done();
     },
@@ -28,16 +28,16 @@ export = {
       expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.private.",
+              Name: 'test.private.',
               VPCs: [{
                 VPCId: { Ref: 'VPCB9E5F0B4' },
-                VPCRegion: 'bermuda-triangle'
-              }]
-            }
-          }
-        }
+                VPCRegion: 'bermuda-triangle',
+              }],
+            },
+          },
+        },
       }));
       test.done();
     },
@@ -50,23 +50,23 @@ export = {
       expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
-            Type: "AWS::Route53::HostedZone",
+            Type: 'AWS::Route53::HostedZone',
             Properties: {
-              Name: "test.private.",
+              Name: 'test.private.',
               VPCs: [{
                 VPCId: { Ref: 'VPC17DE2CF87' },
-                VPCRegion: 'bermuda-triangle'
+                VPCRegion: 'bermuda-triangle',
               },
               {
                 VPCId: { Ref: 'VPC2C1F0E711' },
-                VPCRegion: 'bermuda-triangle'
-              }]
-            }
-          }
-        }
+                VPCRegion: 'bermuda-triangle',
+              }],
+            },
+          },
+        },
       }));
       test.done();
-    }
+    },
   },
 
   'exporting and importing works'(test: Test) {
@@ -74,20 +74,20 @@ export = {
 
     const importedZone = HostedZone.fromHostedZoneAttributes(stack2, 'Imported', {
       hostedZoneId: 'hosted-zone-id',
-      zoneName: 'cdk.local'
+      zoneName: 'cdk.local',
     });
 
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
-      values: ['SeeThere']
+      values: ['SeeThere'],
     });
 
-    expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
-      HostedZoneId: "hosted-zone-id",
-      Name: "lookHere.cdk.local.",
-      ResourceRecords: [ "\"SeeThere\"" ],
-      Type: "TXT"
+    expect(stack2).to(haveResource('AWS::Route53::RecordSet', {
+      HostedZoneId: 'hosted-zone-id',
+      Name: 'lookHere.cdk.local.',
+      ResourceRecords: [ '"SeeThere"' ],
+      Type: 'TXT',
     }));
 
     test.done();
@@ -99,12 +99,12 @@ export = {
 
     // WHEN
     new HostedZone(stack, 'MyHostedZone', {
-      zoneName: 'zonename'
+      zoneName: 'zonename',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::HostedZone', {
-      Name: 'zonename.'
+      Name: 'zonename.',
     }));
     test.done();
   },
@@ -128,7 +128,7 @@ export = {
     // WHEN
     const zone = new HostedZone(stack, 'MyHostedZone', {
       zoneName: 'zonename',
-      vpcs: [ vpc1, vpc2 ]
+      vpcs: [ vpc1, vpc2 ],
     });
     zone.addVpc(vpc3);
 
@@ -137,29 +137,29 @@ export = {
       VPCs: [
         {
           VPCId: {
-            Ref: "VPC17DE2CF87"
+            Ref: 'VPC17DE2CF87',
           },
           VPCRegion: {
-            Ref: "AWS::Region"
-          }
+            Ref: 'AWS::Region',
+          },
         },
         {
           VPCId: {
-            Ref: "VPC2C1F0E711"
+            Ref: 'VPC2C1F0E711',
           },
           VPCRegion: {
-            Ref: "AWS::Region"
-          }
+            Ref: 'AWS::Region',
+          },
         },
         {
           VPCId: {
-            Ref: "VPC3CB5FCDA8"
+            Ref: 'VPC3CB5FCDA8',
           },
           VPCRegion: {
-            Ref: "AWS::Region"
-          }
-        }
-      ]
+            Ref: 'AWS::Region',
+          },
+        },
+      ],
     }));
     test.done();
   },
@@ -202,7 +202,7 @@ export = {
     // WHEN
     new PublicHostedZone(stack, 'MyHostedZone', {
       zoneName: 'protected.com',
-      caaAmazon: true
+      caaAmazon: true,
     });
 
     // THEN
@@ -210,11 +210,11 @@ export = {
       Type: 'CAA',
       Name: 'protected.com.',
       ResourceRecords: [
-        '0 issue "amazon.com"'
-      ]
+        '0 issue "amazon.com"',
+      ],
     }));
     test.done();
-  }
+  },
 };
 
 class TestApp {
@@ -225,7 +225,7 @@ class TestApp {
     const account = '123456789012';
     const region = 'bermuda-triangle';
     const context = {
-      [`availability-zones:${account}:${region}`]: `${region}-1a`
+      [`availability-zones:${account}:${region}`]: `${region}-1a`,
     };
     this.app = new cdk.App({ context });
     this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });

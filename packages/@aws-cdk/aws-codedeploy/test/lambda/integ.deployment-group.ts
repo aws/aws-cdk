@@ -1,33 +1,33 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/core');
-import codedeploy = require('../../lib');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import * as codedeploy from '../../lib';
 
-import path = require('path');
+import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 
-const handler = new lambda.Function(stack, `Handler`, {
+const handler = new lambda.Function(stack, 'Handler', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'handler')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10,
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 const version = handler.addVersion('1');
-const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
+const blueGreenAlias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'alias',
-  version
+  version,
 });
 
-const preHook = new lambda.Function(stack, `PreHook`, {
+const preHook = new lambda.Function(stack, 'PreHook', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'preHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
-const postHook = new lambda.Function(stack, `PostHook`, {
+const postHook = new lambda.Function(stack, 'PostHook', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'postHook')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 
 new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
@@ -38,11 +38,11 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       threshold: 1,
       evaluationPeriods: 1,
-      metric: blueGreenAlias.metricErrors()
-    })
+      metric: blueGreenAlias.metricErrors(),
+    }),
   ],
   preHook,
-  postHook
+  postHook,
 });
 
 app.synth();

@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -83,7 +83,13 @@
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -117,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -174,7 +180,13 @@
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "VpcPublicSubnet2NATGateway9182C01D": {
@@ -208,16 +220,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-servicediscovery-integ/Vpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -270,16 +282,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-servicediscovery-integ/Vpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-servicediscovery-integ/Vpc/PrivateSubnet2"
           }
         ]
       }

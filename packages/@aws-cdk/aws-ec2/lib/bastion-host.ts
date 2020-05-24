@@ -1,12 +1,14 @@
-import { IPrincipal, IRole, PolicyStatement } from "@aws-cdk/aws-iam";
-import { CfnOutput, Construct, Stack } from "@aws-cdk/core";
-import { AmazonLinuxGeneration, AmazonLinuxImage, InstanceClass, InstanceSize, InstanceType } from ".";
-import { Connections } from "./connections";
-import { IInstance, Instance } from "./instance";
-import { IPeer } from "./peer";
-import { Port } from "./port";
-import { ISecurityGroup } from "./security-group";
-import { IVpc, SubnetSelection, SubnetType } from "./vpc";
+import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
+import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
+import { Connections } from './connections';
+import { IInstance, Instance } from './instance';
+import { IMachineImage, MachineImage } from './machine-image';
+import { IPeer } from './peer';
+import { Port } from './port';
+import { ISecurityGroup } from './security-group';
+import { BlockDevice } from './volume';
+import { IVpc, SubnetSelection } from './vpc';
 
 /**
  * Properties of the bastion host
@@ -56,6 +58,27 @@ export interface BastionHostLinuxProps {
    */
   readonly instanceType?: InstanceType;
 
+  /**
+   * The machine image to use
+   *
+   * @default - An Amazon Linux 2 image which is kept up-to-date automatically (the instance
+   * may be replaced on every deployment).
+   */
+  readonly machineImage?: IMachineImage;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
 }
 
 /**
@@ -121,20 +144,22 @@ export class BastionHostLinux extends Construct implements IInstance {
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
+
     this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
       securityGroup: props.securityGroup,
-      instanceName: props.instanceName || 'BastionHost',
-      instanceType: props.instanceType || InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-      machineImage: new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      vpcSubnets: props.subnetSelection || { subnetType: SubnetType.PRIVATE },
+      instanceName: props.instanceName ?? 'BastionHost',
+      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      vpcSubnets: props.subnetSelection ?? {},
+      blockDevices: props.blockDevices ?? undefined,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
         'ssmmessages:*',
         'ssm:UpdateInstanceInformation',
-        'ec2messages:*'
+        'ec2messages:*',
       ],
       resources: ['*'],
     }));
@@ -163,8 +188,8 @@ export class BastionHostLinux extends Construct implements IInstance {
    * called, you should use SSM Session Manager to connect to the instance.
    */
   public allowSshAccessFrom(...peer: IPeer[]): void {
-      peer.forEach(p => {
-        this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
-      });
+    peer.forEach(p => {
+      this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { ScalingInterval } from "./types";
+import { ScalingInterval } from './types';
 
 export interface CompleteScalingInterval {
   readonly lower: number;
@@ -100,7 +100,7 @@ function makeGapsUndefined(intervals: CompleteScalingInterval[]) {
     intervals.push({
       lower: last(intervals).upper,
       upper: Infinity,
-      change: undefined
+      change: undefined,
     });
   }
 
@@ -110,7 +110,7 @@ function makeGapsUndefined(intervals: CompleteScalingInterval[]) {
       intervals.splice(i, 0, {
         lower: intervals[i - 1].upper,
         upper: intervals[i].lower,
-        change: undefined
+        change: undefined,
       });
     } else {
       i++;
@@ -225,6 +225,6 @@ export function findAlarmThresholds(intervals: CompleteScalingInterval[]): Alarm
 
   return {
     lowerAlarmIntervalIndex: middleIndex - 1,
-    upperAlarmIntervalIndex: middleIndex
+    upperAlarmIntervalIndex: middleIndex,
   };
 }

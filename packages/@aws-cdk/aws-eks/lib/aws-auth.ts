@@ -1,9 +1,12 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Lazy, Stack } from '@aws-cdk/core';
-import { Mapping } from './aws-auth-mapping';
+import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';
 
+/**
+ * Configuration props for the AwsAuth construct.
+ */
 export interface AwsAuthProps {
   /**
    * The EKS cluster to apply this configuration to.
@@ -20,8 +23,8 @@ export interface AwsAuthProps {
  */
 export class AwsAuth extends Construct {
   private readonly stack: Stack;
-  private readonly roleMappings = new Array<{ role: iam.IRole, mapping: Mapping }>();
-  private readonly userMappings = new Array<{ user: iam.IUser, mapping: Mapping }>();
+  private readonly roleMappings = new Array<{ role: iam.IRole, mapping: AwsAuthMapping }>();
+  private readonly userMappings = new Array<{ user: iam.IUser, mapping: AwsAuthMapping }>();
   private readonly accounts = new Array<string>();
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
@@ -33,19 +36,19 @@ export class AwsAuth extends Construct {
       cluster: props.cluster,
       manifest: [
         {
-          apiVersion: "v1",
-          kind: "ConfigMap",
+          apiVersion: 'v1',
+          kind: 'ConfigMap',
           metadata: {
-            name: "aws-auth",
-            namespace: "kube-system"
+            name: 'aws-auth',
+            namespace: 'kube-system',
           },
           data: {
             mapRoles: this.synthesizeMapRoles(),
             mapUsers: this.synthesizeMapUsers(),
             mapAccounts: this.synthesizeMapAccounts(),
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 
@@ -59,7 +62,7 @@ export class AwsAuth extends Construct {
   public addMastersRole(role: iam.IRole, username?: string) {
     this.addRoleMapping(role, {
       username,
-      groups: [ 'system:masters' ]
+      groups: [ 'system:masters' ],
     });
   }
 
@@ -69,7 +72,7 @@ export class AwsAuth extends Construct {
    * @param role The IAM role to map
    * @param mapping Mapping to k8s user name and groups
    */
-  public addRoleMapping(role: iam.IRole, mapping: Mapping) {
+  public addRoleMapping(role: iam.IRole, mapping: AwsAuthMapping) {
     this.roleMappings.push({ role, mapping });
   }
 
@@ -79,7 +82,7 @@ export class AwsAuth extends Construct {
    * @param user The IAM user to map
    * @param mapping Mapping to k8s user name and groups
    */
-  public addUserMapping(user: iam.IUser, mapping: Mapping) {
+  public addUserMapping(user: iam.IUser, mapping: AwsAuthMapping) {
     this.userMappings.push({ user, mapping });
   }
 
@@ -95,9 +98,9 @@ export class AwsAuth extends Construct {
     return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
-        username: m.mapping.username,
-        groups: m.mapping.groups
-      })))
+        username: m.mapping.username ?? m.role.roleArn,
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
@@ -105,15 +108,15 @@ export class AwsAuth extends Construct {
     return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
-        username: m.mapping.username,
-        groups: m.mapping.groups
-      })))
+        username: m.mapping.username ?? m.user.userArn,
+        groups: m.mapping.groups,
+      }))),
     });
   }
 
   private synthesizeMapAccounts() {
     return Lazy.anyValue({
-      produce: () => this.stack.toJsonString(this.accounts)
+      produce: () => this.stack.toJsonString(this.accounts),
     });
   }
 }

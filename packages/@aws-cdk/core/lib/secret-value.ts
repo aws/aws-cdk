@@ -36,7 +36,11 @@ export class SecretValue extends Intrinsic {
    */
   public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = { }): SecretValue {
     if (!secretId) {
-      throw new Error(`secretId cannot be empty`);
+      throw new Error('secretId cannot be empty');
+    }
+
+    if (!secretId.startsWith('arn:') && secretId.includes(':')) {
+      throw new Error(`secret id "${secretId}" is not an ARN but contains ":"`);
     }
 
     const parts = [
@@ -44,7 +48,7 @@ export class SecretValue extends Intrinsic {
       'SecretString',
       options.jsonField      || '',
       options.versionStage || '',
-      options.versionId    || ''
+      options.versionId    || '',
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
@@ -87,7 +91,7 @@ export class SecretValue extends Intrinsic {
    */
   public static cfnParameter(param: CfnParameter) {
     if (!param.noEcho) {
-      throw new Error(`CloudFormation parameter must be configured with "NoEcho"`);
+      throw new Error('CloudFormation parameter must be configured with "NoEcho"');
     }
 
     return new SecretValue(param.value);

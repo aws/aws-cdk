@@ -19,3 +19,6 @@ dist
 !core
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js

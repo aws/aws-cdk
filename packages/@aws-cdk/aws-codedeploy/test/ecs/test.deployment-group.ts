@@ -1,10 +1,9 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import codedeploy = require('../../lib');
-import { EcsDeploymentConfig } from '../../lib';
+import * as codedeploy from '../../lib';
 
 export = {
-  "CodeDeploy ECS DeploymentGroup": {
+  'CodeDeploy ECS DeploymentGroup': {
     'imported with fromEcsDeploymentGroupAttributes': {
       'defaults the Deployment Config to AllAtOnce'(test: Test) {
         const stack = new cdk.Stack();
@@ -15,7 +14,7 @@ export = {
           deploymentGroupName: 'EcsDeploymentGroup',
         });
 
-        test.equal(importedGroup.deploymentConfig, EcsDeploymentConfig.ALL_AT_ONCE);
+        test.equal(importedGroup.deploymentConfig, codedeploy.EcsDeploymentConfig.ALL_AT_ONCE);
 
         test.done();
       },

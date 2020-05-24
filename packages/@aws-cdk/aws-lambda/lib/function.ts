@@ -1,13 +1,15 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
 import { Code, CodeConfig } from './code';
+import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetention } from './log-retention';
@@ -21,43 +23,28 @@ export enum Tracing {
    * Lambda will respect any tracing header it receives from an upstream service.
    * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
    */
-  ACTIVE = "Active",
+  ACTIVE = 'Active',
   /**
    * Lambda will only trace the request from an upstream service
    * if it contains a tracing header with "sampled=1"
    */
-  PASS_THROUGH = "PassThrough",
+  PASS_THROUGH = 'PassThrough',
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = "Disabled"
+  DISABLED = 'Disabled'
 }
 
-export interface FunctionProps {
-  /**
-   * The source code of your Lambda function. You can point to a file in an
-   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
-   * code as inline text.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A description of the function.
    *
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The name of the function (within your source code) that Lambda calls to
-   * start running your code. For more information, see the Handler property
-   * in the AWS Lambda Developer Guide.
-   *
-   * NOTE: If you specify your source code as inline text by specifying the
-   * ZipFile property within the Code property, specify index.function_name as
-   * the handler.
-   */
-  readonly handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -77,13 +64,6 @@ export interface FunctionProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
-
-  /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   */
-  readonly runtime: Runtime;
 
   /**
    * A name for the function.
@@ -119,6 +99,12 @@ export interface FunctionProps {
    * It controls the permissions that the function will have. The Role must
    * be assumable by the 'lambda.amazonaws.com' service principal.
    *
+   * The default Role automatically has permissions granted for Lambda execution. If you
+   * provide a Role, you must add the relevant AWS managed policies yourself.
+   *
+   * The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole" and
+   * "service-role/AWSLambdaVPCAccessExecutionRole".
+   *
    * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
@@ -139,20 +125,37 @@ export interface FunctionProps {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * What security group to associate with the Lambda's network interfaces.
+   * This property is being deprecated, consider using securityGroups instead.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * Use securityGroups property instead.
+   * Function constructor will throw an error if both are specified.
+   *
+   * @default - If the function is placed within a VPC and a security group is
+   * not specified, either by this or securityGroups prop, a dedicated security
+   * group will be created for this function.
+   *
+   * @deprecated - This property is deprecated, use securityGroups instead
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The list of security groups to associate with the Lambda's network interfaces.
    *
    * Only used if 'vpc' is supplied.
    *
    * @default - If the function is placed within a VPC and a security group is
-   * not specified, a dedicated security group will be created for this
-   * function.
+   * not specified, either by this or securityGroup prop, a dedicated security
+   * group will be created for this function.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -215,9 +218,9 @@ export interface FunctionProps {
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
    * this property, unsetting it doesn't remove the log retention policy. To
-   * remove the retention policy, set the value to `Infinity`.
+   * remove the retention policy, set the value to `INFINITE`.
    *
-   * @default - Logs never expire.
+   * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
 
@@ -228,6 +231,41 @@ export interface FunctionProps {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * Options for the `lambda.Version` resource automatically created by the
+   * `fn.currentVersion` method.
+   * @default - default options as described in `VersionOptions`
+   */
+  readonly currentVersionOptions?: VersionOptions;
+}
+
+export interface FunctionProps extends FunctionOptions {
+  /**
+   * The runtime environment for the Lambda function that you are uploading.
+   * For valid values, see the Runtime property in the AWS Lambda Developer
+   * Guide.
+   */
+  readonly runtime: Runtime;
+
+  /**
+   * The source code of your Lambda function. You can point to a file in an
+   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
+   * code as inline text.
+   */
+  readonly code: Code;
+
+  /**
+   * The name of the method within your code that Lambda calls to execute
+   * your function. The format includes the file name. It can also include
+   * namespaces and other qualifiers, depending on the runtime.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   *
+   * NOTE: If you specify your source code as inline text by specifying the
+   * ZipFile property within the Code property, specify index.function_name as
+   * the handler.
+   */
+  readonly handler: string;
 }
 
 /**
@@ -242,6 +280,28 @@ export interface FunctionProps {
  * library.
  */
 export class Function extends FunctionBase {
+
+  /**
+   * Returns a `lambda.Version` which represents the current version of this
+   * Lambda function. A new version will be created every time the function's
+   * configuration changes.
+   *
+   * You can specify options for this version using the `currentVersionOptions`
+   * prop when initializing the `lambda.Function`.
+   */
+  public get currentVersion(): Version {
+    if (this._currentVersion) {
+      return this._currentVersion;
+    }
+
+    this._currentVersion = new Version(this, 'CurrentVersion', {
+      lambda: this,
+      ...this.currentVersionOptions,
+    });
+
+    return this._currentVersion;
+  }
+
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -271,15 +331,15 @@ export class Function extends FunctionBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [attrs.securityGroup]
+            securityGroups: [attrs.securityGroup],
           });
         } else if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)],
           });
         }
       }
@@ -295,7 +355,7 @@ export class Function extends FunctionBase {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
-      ...props
+      ...props,
     });
   }
   /**
@@ -383,37 +443,47 @@ export class Function extends FunctionBase {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterQueue?: sqs.IQueue;
+
   public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
 
+  private _logGroup?: logs.ILogGroup;
+
   /**
    * Environment variables for this function
    */
   private readonly environment: { [key: string]: string };
+
+  private readonly currentVersionOptions?: VersionOptions;
+  private _currentVersion?: Version;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
     });
 
-    this.environment = props.environment || { };
+    this.environment = props.environment || {};
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies
+      managedPolicies,
     });
     this.grantPrincipal = this.role;
 
@@ -421,15 +491,10 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const region = Stack.of(this).region;
-    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
-    if (isChina && props.environment && Object.keys(props.environment).length > 0) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
-    }
-
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
+
+    this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -438,7 +503,7 @@ export class Function extends FunctionBase {
         s3Bucket: code.s3Location && code.s3Location.bucketName,
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
-        zipFile: code.inlineCode
+        zipFile: code.inlineCode,
       },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
@@ -448,9 +513,9 @@ export class Function extends FunctionBase {
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(props),
+      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
-      reservedConcurrentExecutions: props.reservedConcurrentExecutions
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
     resource.node.addDependency(this.role);
@@ -475,14 +540,27 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      new LogRetention(this, 'LogRetention', {
+      const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
-        role: props.logRetentionRole
+        role: props.logRetentionRole,
       });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
+
+    // Event Invoke Config
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+      this.configureAsyncInvoke({
+        onFailure: props.onFailure,
+        onSuccess: props.onSuccess,
+        maxEventAge: props.maxEventAge,
+        retryAttempts: props.retryAttempts,
+      });
+    }
+
+    this.currentVersionOptions = props.currentVersionOptions;
   }
 
   /**
@@ -520,24 +598,80 @@ export class Function extends FunctionBase {
    * Add a new version for this Lambda
    *
    * If you want to deploy through CloudFormation and use aliases, you need to
-   * add a new version (with a new name) to your Lambda every time you want
-   * to deploy an update. An alias can then refer to the newly created Version.
+   * add a new version (with a new name) to your Lambda every time you want to
+   * deploy an update. An alias can then refer to the newly created Version.
    *
    * All versions should have distinct names, and you should not delete versions
    * as long as your Alias needs to refer to them.
    *
-   * @param name A unique name for this version
-   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda source code, or
-   *  omit to skip validation.
+   * @param name A unique name for this version.
+   * @param codeSha256 The SHA-256 hash of the most recently deployed Lambda
+   *  source code, or omit to skip validation.
    * @param description A description for this version.
+   * @param provisionedExecutions A provisioned concurrency configuration for a
+   * function's version.
+   * @param asyncInvokeConfig configuration for this version when it is invoked
+   * asynchronously.
    * @returns A new Version object.
+   *
+   * @deprecated This method will create an AWS::Lambda::Version resource which
+   * snapshots the AWS Lambda function *at the time of its creation* and it
+   * won't get updated when the function changes. Instead, use
+   * `this.currentVersion` to obtain a reference to a version resource that gets
+   * automatically recreated when the function configuration (or code) changes.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+  public addVersion(
+    name: string,
+    codeSha256?: string,
+    description?: string,
+    provisionedExecutions?: number,
+    asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
+
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
+      provisionedConcurrentExecutions: provisionedExecutions,
+      ...asyncInvokeConfig,
     });
+  }
+
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    if (!this._logGroup) {
+      const logretention = new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retention: logs.RetentionDays.INFINITE,
+      });
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+    }
+    return this._logGroup;
+  }
+
+  protected prepare() {
+    super.prepare();
+
+    // if we have a current version resource, override it's logical id
+    // so that it includes the hash of the function code and it's configuration.
+    if (this._currentVersion) {
+      const stack = Stack.of(this);
+      const cfn = this._currentVersion.node.defaultChild as CfnResource;
+      const originalLogicalId: string = stack.resolve(cfn.logicalId);
+
+      const hash = calculateFunctionHash(this);
+
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      cfn.overrideLogicalId(`${logicalId}${hash}`);
+    }
   }
 
   private renderEnvironment() {
@@ -545,9 +679,25 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    return {
-      variables: this.environment
-    };
+    // for backwards compatibility we do not sort environment variables in case
+    // _currentVersion is not defined. otherwise, this would have invalidated
+    // the template, and for example, may cause unneeded updates for nested
+    // stacks.
+    if (!this._currentVersion) {
+      return {
+        variables: this.environment,
+      };
+    }
+
+    // sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it).
+    const variables: { [key: string]: string } = { };
+    for (const key of Object.keys(this.environment).sort()) {
+      variables[key] = this.environment[key];
+    }
+
+    return { variables };
   }
 
   /**
@@ -558,22 +708,33 @@ export class Function extends FunctionBase {
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!props.vpc) { return undefined; }
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
-      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
     }
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-      allowAllOutbound: props.allowAllOutbound
-    });
+    let securityGroups: ec2.ISecurityGroup[];
 
-    this._connections = new ec2.Connections({ securityGroups: [securityGroup] });
+    if (props.securityGroup && props.securityGroups) {
+      throw new Error('Only one of the function props, securityGroup or securityGroups, is allowed');
+    }
+
+    if (props.securityGroups) {
+      securityGroups = props.securityGroups;
+    } else {
+      const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        allowAllOutbound: props.allowAllOutbound,
+      });
+      securityGroups = [securityGroup];
+    }
+
+    this._connections = new ec2.Connections({ securityGroups });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
@@ -593,11 +754,11 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: [securityGroup.securityGroupId]
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
 
-  private buildDeadLetterConfig(props: FunctionProps) {
+  private buildDeadLetterQueue(props: FunctionProps) {
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
@@ -607,17 +768,25 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14)
+      retentionPeriod: Duration.days(14),
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn]
+      resources: [deadLetterQueue.queueArn],
     }));
 
-    return {
-      targetArn: deadLetterQueue.queueArn
-    };
+    return deadLetterQueue;
+  }
+
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+    if (deadLetterQueue) {
+      return {
+        targetArn: deadLetterQueue.queueArn,
+      };
+    } else {
+      return undefined;
+    }
   }
 
   private buildTracingConfig(props: FunctionProps) {
@@ -627,11 +796,11 @@ export class Function extends FunctionBase {
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     return {
-      mode: props.tracing
+      mode: props.tracing,
     };
   }
 }
@@ -656,7 +825,7 @@ function extractNameFromArn(arn: string) {
 export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
   // mutually exclusive
   if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-    throw new Error(`lambda.Code must specify one of "inlineCode" or "s3Location" but not both`);
+    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
   }
 
   // if this is inline code, check that the runtime supports

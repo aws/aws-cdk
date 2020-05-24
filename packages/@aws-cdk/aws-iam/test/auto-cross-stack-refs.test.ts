@@ -1,7 +1,7 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
-import iam = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as iam from '../lib';
 
 describe('automatic cross-stack references', () => {
   test('automatic exports are created when attributes are referneced across stacks', () => {
@@ -28,25 +28,25 @@ describe('automatic cross-stack references', () => {
     expect(stackWithUser).toMatchTemplate({
       Resources: {
         User00B015A1: {
-          Type: "AWS::IAM::User",
+          Type: 'AWS::IAM::User',
           Properties: {
-            Groups: [ { "Fn::ImportValue": "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
-          }
-        }
-      }
+            Groups: [ { 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' } ],
+          },
+        },
+      },
     });
     expect(stackWithGroup).toMatchTemplate({
       Outputs: {
         ExportsOutputRefGroupC77FDACD8CF7DD5B: {
-          Value: { Ref: "GroupC77FDACD" },
-          Export: { Name: "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" }
-        }
+          Value: { Ref: 'GroupC77FDACD' },
+          Export: { Name: 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' },
+        },
       },
       Resources: {
         GroupC77FDACD: {
-          Type: "AWS::IAM::Group"
-        }
-      }
+          Type: 'AWS::IAM::Group',
+        },
+      },
     });
   });
 

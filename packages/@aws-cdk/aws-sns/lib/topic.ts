@@ -1,3 +1,4 @@
+import { IKey } from '@aws-cdk/aws-kms';
 import { Construct, Stack } from '@aws-cdk/core';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
@@ -23,6 +24,13 @@ export interface TopicProps {
    * @default Generated name
    */
   readonly topicName?: string;
+
+  /**
+   * A KMS Key, either managed by this CDK app, or imported.
+   *
+   * @default None
+   */
+  readonly masterKey?: IKey;
 }
 
 /**
@@ -30,6 +38,13 @@ export interface TopicProps {
  */
 export class Topic extends TopicBase {
 
+  /**
+   * Import an existing SNS topic provided an ARN
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
+   */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
@@ -53,6 +68,7 @@ export class Topic extends TopicBase {
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
+      kmsMasterKeyId: props.masterKey && props.masterKey.keyId,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

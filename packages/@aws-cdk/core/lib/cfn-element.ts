@@ -1,6 +1,6 @@
-import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from "./construct";
-import { Lazy } from "./lazy";
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct } from './construct-compat';
+import { Lazy } from './lazy';
 import { Token } from './token';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
@@ -58,10 +58,10 @@ export abstract class CfnElement extends Construct {
     this.stack = Stack.of(this);
 
     this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
-      displayHint: `${notTooLong(this.node.path)}.LogicalID`
+      displayHint: `${notTooLong(this.node.path)}.LogicalID`,
     });
 
-    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, this.logicalId, this.constructor);
+    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
   }
 
   /**
@@ -78,7 +78,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
+    const trace = this.node.metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
     if (!trace) {
       return [];
     }
@@ -159,5 +159,5 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./private/cfn-reference";
+import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';

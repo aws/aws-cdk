@@ -1,12 +1,18 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
-import certificatemanager = require('@aws-cdk/aws-certificatemanager');
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  CfnDistribution, CloudFrontWebDistribution, LambdaEdgeEventType, SecurityPolicyProtocol, SSLMethod,
-  ViewerCertificate, ViewerProtocolPolicy
+  CfnDistribution,
+  CloudFrontWebDistribution,
+  GeoRestriction,
+  LambdaEdgeEventType,
+  SecurityPolicyProtocol,
+  SSLMethod,
+  ViewerCertificate,
+  ViewerProtocolPolicy,
 } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -20,81 +26,81 @@ export = {
       originConfigs: [
         {
           originHeaders: {
-            "X-Custom-Header": "somevalue",
+            'X-Custom-Header': 'somevalue',
           },
           customOriginSource: {
-            domainName: "myorigin.com",
+            domainName: 'myorigin.com',
           },
           behaviors: [
             {
               isDefaultBehavior: true,
-            }
+            },
           ],
-        }
-      ]
+        },
+      ],
     });
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-            "Type": "AWS::CloudFront::Distribution",
-            "Properties": {
-              "DistributionConfig": {
-                "DefaultCacheBehavior": {
-                  "AllowedMethods": [
-                    "GET",
-                    "HEAD"
+        'Resources': {
+          'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+            'Type': 'AWS::CloudFront::Distribution',
+            'Properties': {
+              'DistributionConfig': {
+                'DefaultCacheBehavior': {
+                  'AllowedMethods': [
+                    'GET',
+                    'HEAD',
                   ],
-                  "CachedMethods": [
-                    "GET",
-                    "HEAD"
+                  'CachedMethods': [
+                    'GET',
+                    'HEAD',
                   ],
-                  "ForwardedValues": {
-                    "Cookies": {
-                      "Forward": "none"
+                  'ForwardedValues': {
+                    'Cookies': {
+                      'Forward': 'none',
                     },
-                    "QueryString": false
+                    'QueryString': false,
                   },
-                  "TargetOriginId": "origin1",
-                  "ViewerProtocolPolicy": "redirect-to-https",
-                  "Compress": true
+                  'TargetOriginId': 'origin1',
+                  'ViewerProtocolPolicy': 'redirect-to-https',
+                  'Compress': true,
                 },
-                "DefaultRootObject": "index.html",
-                "Enabled": true,
-                "HttpVersion": "http2",
-                "IPV6Enabled": true,
-                "Origins": [
+                'DefaultRootObject': 'index.html',
+                'Enabled': true,
+                'HttpVersion': 'http2',
+                'IPV6Enabled': true,
+                'Origins': [
                   {
-                    "CustomOriginConfig": {
-                      "HTTPPort": 80,
-                      "HTTPSPort": 443,
-                      "OriginKeepaliveTimeout": 5,
-                      "OriginProtocolPolicy": "https-only",
-                      "OriginReadTimeout": 30,
-                      "OriginSSLProtocols": [
-                        "TLSv1.2"
-                      ]
+                    'CustomOriginConfig': {
+                      'HTTPPort': 80,
+                      'HTTPSPort': 443,
+                      'OriginKeepaliveTimeout': 5,
+                      'OriginProtocolPolicy': 'https-only',
+                      'OriginReadTimeout': 30,
+                      'OriginSSLProtocols': [
+                        'TLSv1.2',
+                      ],
                     },
-                    "DomainName": "myorigin.com",
-                    "Id": "origin1",
-                    "OriginCustomHeaders": [
+                    'DomainName': 'myorigin.com',
+                    'Id': 'origin1',
+                    'OriginCustomHeaders': [
                       {
-                        "HeaderName": "X-Custom-Header",
-                        "HeaderValue": "somevalue"
-                      }
-                    ]
-                  }
+                        'HeaderName': 'X-Custom-Header',
+                        'HeaderValue': 'somevalue',
+                      },
+                    ],
+                  },
                 ],
-                "PriceClass": "PriceClass_100",
-                "ViewerCertificate": {
-                  "CloudFrontDefaultCertificate": true
-                }
-              }
-            }
-          }
-        }
-      }
+                'PriceClass': 'PriceClass_100',
+                'ViewerCertificate': {
+                  'CloudFrontDefaultCertificate': true,
+                },
+              },
+            },
+          },
+        },
+      },
     );
 
     test.done();
@@ -108,69 +114,69 @@ export = {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
           behaviors: [
             {
               isDefaultBehavior: true,
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "Bucket83908E77": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
         },
-        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-          "Type": "AWS::CloudFront::Distribution",
-          "Properties": {
-            "DistributionConfig": {
-              "DefaultRootObject": "index.html",
-              "Origins": [
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'DefaultRootObject': 'index.html',
+              'Origins': [
                 {
-                  "DomainName": {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "RegionalDomainName"
-                    ]
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
                   },
-                  "Id": "origin1",
-                  "S3OriginConfig": {}
-                }
-              ],
-              "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": true
-              },
-              "PriceClass": "PriceClass_100",
-              "DefaultCacheBehavior": {
-                "AllowedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "CachedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "TargetOriginId": "origin1",
-                "ViewerProtocolPolicy": "redirect-to-https",
-                "ForwardedValues": {
-                  "QueryString": false,
-                  "Cookies": { "Forward": "none" }
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
                 },
-                "Compress": true
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
               },
-              "Enabled": true,
-              "IPV6Enabled": true,
-              "HttpVersion": "http2"
-            }
-          }
-        }
-      }
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'redirect-to-https',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'Compress': true,
+              },
+              'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -183,73 +189,73 @@ export = {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
           behaviors: [
             {
               isDefaultBehavior: true,
-              trustedSigners: ["1234"],
+              trustedSigners: ['1234'],
             },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "Bucket83908E77": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
         },
-        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-          "Type": "AWS::CloudFront::Distribution",
-          "Properties": {
-            "DistributionConfig": {
-              "DefaultRootObject": "index.html",
-              "Origins": [
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'DefaultRootObject': 'index.html',
+              'Origins': [
                 {
-                  "DomainName": {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "RegionalDomainName"
-                    ]
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
                   },
-                  "Id": "origin1",
-                  "S3OriginConfig": {}
-                }
-              ],
-              "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": true
-              },
-              "PriceClass": "PriceClass_100",
-              "DefaultCacheBehavior": {
-                "AllowedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "CachedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "TargetOriginId": "origin1",
-                "ViewerProtocolPolicy": "redirect-to-https",
-                "ForwardedValues": {
-                  "QueryString": false,
-                  "Cookies": { "Forward": "none" }
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
                 },
-                "TrustedSigners": [
-                  "1234"
-                ],
-                "Compress": true
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
               },
-              "Enabled": true,
-              "IPV6Enabled": true,
-              "HttpVersion": "http2"
-            }
-          }
-        }
-      }
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'redirect-to-https',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'TrustedSigners': [
+                  '1234',
+                ],
+                'Compress': true,
+              },
+              'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -263,69 +269,69 @@ export = {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
           behaviors: [
             {
               isDefaultBehavior: true,
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "Bucket83908E77": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
         },
-        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-          "Type": "AWS::CloudFront::Distribution",
-          "Properties": {
-            "DistributionConfig": {
-              "DefaultRootObject": "index.html",
-              "Origins": [
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'DefaultRootObject': 'index.html',
+              'Origins': [
                 {
-                  "DomainName": {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "RegionalDomainName"
-                    ]
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
                   },
-                  "Id": "origin1",
-                  "S3OriginConfig": {}
-                }
-              ],
-              "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": true
-              },
-              "PriceClass": "PriceClass_100",
-              "DefaultCacheBehavior": {
-                "AllowedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "CachedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "TargetOriginId": "origin1",
-                "ViewerProtocolPolicy": "allow-all",
-                "ForwardedValues": {
-                  "QueryString": false,
-                  "Cookies": { "Forward": "none" }
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
                 },
-                "Compress": true
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
               },
-              "Enabled": true,
-              "IPV6Enabled": true,
-              "HttpVersion": "http2",
-            }
-          }
-        }
-      }
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'allow-all',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'Compress': true,
+              },
+              'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -338,70 +344,70 @@ export = {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
           behaviors: [
             {
               isDefaultBehavior: true,
-              compress: false
-            }
-          ]
-        }
-      ]
+              compress: false,
+            },
+          ],
+        },
+      ],
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "Bucket83908E77": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "UpdateReplacePolicy": "Retain",
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
         },
-        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-          "Type": "AWS::CloudFront::Distribution",
-          "Properties": {
-            "DistributionConfig": {
-              "DefaultRootObject": "index.html",
-              "Origins": [
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'DefaultRootObject': 'index.html',
+              'Origins': [
                 {
-                  "DomainName": {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "RegionalDomainName"
-                    ]
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
                   },
-                  "Id": "origin1",
-                  "S3OriginConfig": {}
-                }
-              ],
-              "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": true
-              },
-              "PriceClass": "PriceClass_100",
-              "DefaultCacheBehavior": {
-                "AllowedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "CachedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "TargetOriginId": "origin1",
-                "ViewerProtocolPolicy": "redirect-to-https",
-                "ForwardedValues": {
-                  "QueryString": false,
-                  "Cookies": { "Forward": "none" }
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
                 },
-                "Compress": false
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
               },
-              "Enabled": true,
-              "IPV6Enabled": true,
-              "HttpVersion": "http2"
-            }
-          }
-        }
-      }
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'redirect-to-https',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'Compress': false,
+              },
+              'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -414,47 +420,47 @@ export = {
       uuid: 'xxxx-xxxx-xxxx-xxxx',
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
           behaviors: [
             {
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.latestVersion
-              }]
-            }
-          ]
-        }
-      ]
+                lambdaFunction: lambdaFunction.latestVersion,
+              }],
+            },
+          ],
+        },
+      ],
     });
 
     expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-      "DistributionConfig": {
-        "DefaultCacheBehavior": {
-          "LambdaFunctionAssociations": [
+      'DistributionConfig': {
+        'DefaultCacheBehavior': {
+          'LambdaFunctionAssociations': [
             {
-              "EventType": "origin-request",
-              "LambdaFunctionARN": {
-                "Fn::Join": [
-                  "",
+              'EventType': 'origin-request',
+              'LambdaFunctionARN': {
+                'Fn::Join': [
+                  '',
                   [
-                    { "Fn::GetAtt": [ "SingletonLambdaxxxxxxxxxxxxxxxx69D4268A", "Arn" ] },
-                    ":$LATEST"
-                  ]
-                ]
-              }
-            }
+                    { 'Fn::GetAtt': [ 'SingletonLambdaxxxxxxxxxxxxxxxx69D4268A', 'Arn' ] },
+                    ':$LATEST',
+                  ],
+                ],
+              },
+            },
           ],
         },
-      }
+      },
     }));
 
     test.done();
@@ -468,11 +474,11 @@ export = {
       originConfigs: [
         {
           s3OriginSource: {
-            s3BucketSource: sourceBucket
+            s3BucketSource: sourceBucket,
           },
-          behaviors: [{ isDefaultBehavior: true }]
-        }
-      ]
+          behaviors: [{ isDefaultBehavior: true }],
+        },
+      ],
     });
 
     test.ok(distribution.node.defaultChild instanceof CfnDistribution);
@@ -484,8 +490,8 @@ export = {
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
 
     const originConfigs = [{
-        s3OriginSource: {s3BucketSource},
-        behaviors: [{ isDefaultBehavior: true }]
+      s3OriginSource: {s3BucketSource},
+      behaviors: [{ isDefaultBehavior: true }],
     }];
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -498,23 +504,23 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-      "DistributionConfig": {
-        "Aliases": ["www.example.com"],
-        "ViewerCertificate": {
-          "AcmCertificateArn": "acm_ref",
-          "SslSupportMethod": "sni-only"
-        }
-      }
+      'DistributionConfig': {
+        'Aliases': ['www.example.com'],
+        'ViewerCertificate': {
+          'AcmCertificateArn': 'acm_ref',
+          'SslSupportMethod': 'sni-only',
+        },
+      },
     }));
 
     expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-      "DistributionConfig": {
-        "Aliases": ["ftp.example.com"],
-        "ViewerCertificate": {
-          "AcmCertificateArn": "another_acm_ref",
-          "SslSupportMethod": "sni-only"
-        }
-      }
+      'DistributionConfig': {
+        'Aliases': ['ftp.example.com'],
+        'ViewerCertificate': {
+          'AcmCertificateArn': 'another_acm_ref',
+          'SslSupportMethod': 'sni-only',
+        },
+      },
     }));
     test.done();
   },
@@ -532,21 +538,21 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": [],
-            "ViewerCertificate": {
-              "AcmCertificateArn": {
-                "Ref": "cert56CA94EB"
+          'DistributionConfig': {
+            'Aliases': [],
+            'ViewerCertificate': {
+              'AcmCertificateArn': {
+                'Ref': 'cert56CA94EB',
               },
-              "SslSupportMethod": "sni-only"
-            }
-          }
+              'SslSupportMethod': 'sni-only',
+            },
+          },
         }));
 
         test.done();
@@ -556,25 +562,25 @@ export = {
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
         const certificate = certificatemanager.Certificate.fromCertificateArn(
-          stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+          stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
         );
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": [],
-            "ViewerCertificate": {
-              "AcmCertificateArn": "arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
-              "SslSupportMethod": "sni-only"
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': [],
+            'ViewerCertificate': {
+              'AcmCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+              'SslSupportMethod': 'sni-only',
+            },
+          },
         }));
 
         test.done();
@@ -590,26 +596,26 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate, {
             securityPolicy: SecurityPolicyProtocol.SSL_V3,
             sslMethod: SSLMethod.VIP,
-            aliases: ['example.com', 'www.example.com']
+            aliases: ['example.com', 'www.example.com'],
           }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": ["example.com", "www.example.com"],
-            "ViewerCertificate": {
-              "AcmCertificateArn": {
-                "Ref": "cert56CA94EB"
+          'DistributionConfig': {
+            'Aliases': ['example.com', 'www.example.com'],
+            'ViewerCertificate': {
+              'AcmCertificateArn': {
+                'Ref': 'cert56CA94EB',
               },
-              "MinimumProtocolVersion": "SSLv3",
-              "SslSupportMethod": "vip"
-            }
-          }
+              'MinimumProtocolVersion': 'SSLv3',
+              'SslSupportMethod': 'vip',
+            },
+          },
         }));
 
         test.done();
@@ -623,19 +629,19 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromIamCertificate('test'),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": [],
-            "ViewerCertificate": {
-              "IamCertificateId": "test",
-              "SslSupportMethod": "sni-only"
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': [],
+            'ViewerCertificate': {
+              'IamCertificateId': 'test',
+              'SslSupportMethod': 'sni-only',
+            },
+          },
         }));
 
         test.done();
@@ -647,24 +653,24 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
             securityPolicy: SecurityPolicyProtocol.TLS_V1,
             sslMethod: SSLMethod.VIP,
-            aliases: ['example.com']
+            aliases: ['example.com'],
           }),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": ["example.com"],
-            "ViewerCertificate": {
-              "IamCertificateId": "test",
-              "MinimumProtocolVersion": "TLSv1",
-              "SslSupportMethod": "vip"
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': ['example.com'],
+            'ViewerCertificate': {
+              'IamCertificateId': 'test',
+              'MinimumProtocolVersion': 'TLSv1',
+              'SslSupportMethod': 'vip',
+            },
+          },
         }));
 
         test.done();
@@ -678,18 +684,18 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate(),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": [],
-            "ViewerCertificate": {
-              "CloudFrontDefaultCertificate": true
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': [],
+            'ViewerCertificate': {
+              'CloudFrontDefaultCertificate': true,
+            },
+          },
         }));
 
         test.done();
@@ -701,18 +707,18 @@ export = {
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": ["example.com", "www.example.com"],
-            "ViewerCertificate": {
-              "CloudFrontDefaultCertificate": true
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': ['example.com', 'www.example.com'],
+            'ViewerCertificate': {
+              'CloudFrontDefaultCertificate': true,
+            },
+          },
         }));
 
         test.done();
@@ -727,7 +733,7 @@ export = {
           new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
             originConfigs: [{
               s3OriginSource: { s3BucketSource: sourceBucket },
-              behaviors: [{ isDefaultBehavior: true }]
+              behaviors: [{ isDefaultBehavior: true }],
             }],
             aliasConfiguration: {acmCertRef: 'test', names: ['ftp.example.com']},
             viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
@@ -744,11 +750,11 @@ export = {
           new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
             originConfigs: [{
               s3OriginSource: { s3BucketSource: sourceBucket },
-              behaviors: [{ isDefaultBehavior: true }]
+              behaviors: [{ isDefaultBehavior: true }],
             }],
             viewerCertificate: ViewerCertificate.fromIamCertificate('test', {
               securityPolicy: SecurityPolicyProtocol.TLS_V1_1_2016,
-              sslMethod: SSLMethod.VIP
+              sslMethod: SSLMethod.VIP,
             }),
           });
         }, /TLSv1.1_2016 is not compabtible with sslMethod vip./);
@@ -761,30 +767,290 @@ export = {
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
         const certificate = certificatemanager.Certificate.fromCertificateArn(
-          stack, 'cert', 'arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+          stack, 'cert', 'arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
         );
 
         new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
           originConfigs: [{
             s3OriginSource: { s3BucketSource: sourceBucket },
-            behaviors: [{ isDefaultBehavior: true }]
+            behaviors: [{ isDefaultBehavior: true }],
           }],
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
         expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
-          "DistributionConfig": {
-            "Aliases": [],
-            "ViewerCertificate": {
-              "AcmCertificateArn": "arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d",
-              "SslSupportMethod": "sni-only"
-            }
-          }
+          'DistributionConfig': {
+            'Aliases': [],
+            'ViewerCertificate': {
+              'AcmCertificateArn': 'arn:aws:acm:eu-west-3:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+              'SslSupportMethod': 'sni-only',
+            },
+          },
         }));
 
         test.done();
       },
-    }
+    },
   },
 
+  'edgelambda.amazonaws.com is added to the trust policy of lambda'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', { lambda: fn });
+
+    // WHEN
+    new CloudFrontWebDistribution(stack, 'MyDistribution', {
+      originConfigs: [
+        {
+          s3OriginSource: { s3BucketSource: sourceBucket },
+          behaviors : [
+            {
+              isDefaultBehavior: true, lambdaFunctionAssociations: [
+                {
+                  eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                  lambdaFunction: lambdaVersion,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        'Statement': [
+          {
+            'Action': 'sts:AssumeRole',
+            'Effect': 'Allow',
+            'Principal': {
+              'Service': 'lambda.amazonaws.com',
+            },
+          },
+          {
+            'Action': 'sts:AssumeRole',
+            'Effect': 'Allow',
+            'Principal': {
+              'Service': 'edgelambda.amazonaws.com',
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    }));
+    test.done();
+  },
+
+  'edgelambda.amazonaws.com is not added to lambda role for imported functions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const lambdaVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:my-version');
+
+    // WHEN
+    new CloudFrontWebDistribution(stack, 'MyDistribution', {
+      originConfigs: [
+        {
+          s3OriginSource: { s3BucketSource: sourceBucket },
+          behaviors : [
+            {
+              isDefaultBehavior: true, lambdaFunctionAssociations: [
+                {
+                  eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                  lambdaFunction: lambdaVersion,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).notTo(haveResourceLike('AWS::IAM::Role'));
+    test.done();
+  },
+
+  'geo restriction': {
+    'success' : {
+      'whitelist'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}],
+          }],
+          geoRestriction: GeoRestriction.whitelist('US', 'UK'),
+        });
+
+        expect(stack).toMatch({
+          'Resources': {
+            'Bucket83908E77': {
+              'Type': 'AWS::S3::Bucket',
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain',
+            },
+            'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+              'Type': 'AWS::CloudFront::Distribution',
+              'Properties': {
+                'DistributionConfig': {
+                  'DefaultRootObject': 'index.html',
+                  'Origins': [
+                    {
+                      'DomainName': {
+                        'Fn::GetAtt': [
+                          'Bucket83908E77',
+                          'RegionalDomainName',
+                        ],
+                      },
+                      'Id': 'origin1',
+                      'S3OriginConfig': {},
+                    },
+                  ],
+                  'ViewerCertificate': {
+                    'CloudFrontDefaultCertificate': true,
+                  },
+                  'PriceClass': 'PriceClass_100',
+                  'DefaultCacheBehavior': {
+                    'AllowedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'CachedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'TargetOriginId': 'origin1',
+                    'ViewerProtocolPolicy': 'redirect-to-https',
+                    'ForwardedValues': {
+                      'QueryString': false,
+                      'Cookies': {'Forward': 'none'},
+                    },
+                    'Compress': true,
+                  },
+                  'Enabled': true,
+                  'IPV6Enabled': true,
+                  'HttpVersion': 'http2',
+                  'Restrictions': {
+                    'GeoRestriction': {
+                      'Locations': ['US', 'UK'],
+                      'RestrictionType': 'whitelist',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        test.done();
+      },
+      'blacklist'(test: Test) {
+        const stack = new cdk.Stack();
+        const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+        new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+          originConfigs: [{
+            s3OriginSource: {s3BucketSource: sourceBucket},
+            behaviors: [{isDefaultBehavior: true}],
+          }],
+          geoRestriction: GeoRestriction.blacklist('US'),
+        });
+
+        expect(stack).toMatch({
+          'Resources': {
+            'Bucket83908E77': {
+              'Type': 'AWS::S3::Bucket',
+              'DeletionPolicy': 'Retain',
+              'UpdateReplacePolicy': 'Retain',
+            },
+            'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+              'Type': 'AWS::CloudFront::Distribution',
+              'Properties': {
+                'DistributionConfig': {
+                  'DefaultRootObject': 'index.html',
+                  'Origins': [
+                    {
+                      'DomainName': {
+                        'Fn::GetAtt': [
+                          'Bucket83908E77',
+                          'RegionalDomainName',
+                        ],
+                      },
+                      'Id': 'origin1',
+                      'S3OriginConfig': {},
+                    },
+                  ],
+                  'ViewerCertificate': {
+                    'CloudFrontDefaultCertificate': true,
+                  },
+                  'PriceClass': 'PriceClass_100',
+                  'DefaultCacheBehavior': {
+                    'AllowedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'CachedMethods': [
+                      'GET',
+                      'HEAD',
+                    ],
+                    'TargetOriginId': 'origin1',
+                    'ViewerProtocolPolicy': 'redirect-to-https',
+                    'ForwardedValues': {
+                      'QueryString': false,
+                      'Cookies': {'Forward': 'none'},
+                    },
+                    'Compress': true,
+                  },
+                  'Enabled': true,
+                  'IPV6Enabled': true,
+                  'HttpVersion': 'http2',
+                  'Restrictions': {
+                    'GeoRestriction': {
+                      'Locations': ['US'],
+                      'RestrictionType': 'blacklist',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        test.done();
+      },
+    },
+    'error': {
+      'throws if locations is empty array'(test: Test) {
+        test.throws(() => {
+          GeoRestriction.whitelist();
+        }, 'Should provide at least 1 location');
+
+        test.throws(() => {
+          GeoRestriction.blacklist();
+        }, 'Should provide at least 1 location');
+
+        test.done();
+      },
+      'throws if locations format is wrong'(test: Test) {
+        test.throws(() => {
+          GeoRestriction.whitelist('us');
+        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+
+        test.throws(() => {
+          GeoRestriction.blacklist('us');
+        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+
+        test.done();
+      },
+    },
+  },
 };

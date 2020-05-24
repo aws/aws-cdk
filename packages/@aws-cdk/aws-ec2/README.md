@@ -1,16 +1,20 @@
 ## Amazon EC2 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
+
+```ts nofixture
+import * as ec2 from '@aws-cdk/aws-ec2';
+```
 
 ## VPC
 
@@ -19,8 +23,6 @@ network partitioning. This is achieved by creating an instance of
 `Vpc`:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-
 const vpc = new ec2.Vpc(this, 'VPC');
 ```
 
@@ -86,6 +88,63 @@ itself to 2 Availability Zones.
 Therefore, to get the VPC to spread over 3 or more availability zones, you
 must specify the environment where the stack will be deployed.
 
+### Choosing subnets for resources
+
+When creating resources that create Elastic Network Interfaces (such as
+databases or instances), there is an option to choose which subnets to place
+them in. For example, a VPC endpoint by default is placed into a subnet in
+every availability zone, but you can override which subnets to use. The property
+is typically called one of `subnets`, `vpcSubnets` or `subnetSelection`.
+
+The example below will place the endpoint into two AZs (`us-east-1a` and `us-east-1c`),
+in Isolated subnets:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  subnets: {
+    subnetType: SubnetType.ISOLATED,
+    availabilityZones: ['us-east-1a', 'us-east-1c']
+  }
+});
+```
+
+You can also specify specific subnet objects for granular control:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  subnets: {
+    subnets: [subnet1, subnet2]
+  }
+});
+```
+
+Which subnets are selected is evaluated as follows:
+
+* `subnets`: if specific subnet objects are supplied, these are selected, and no other
+  logic is used.
+* `subnetType`/`subnetGroupName`: otherwise, a set of subnets is selected by
+  supplying either type or name:
+  * `subnetType` will select all subnets of the given type.
+  * `subnetGroupName` should be used to distinguish between multiple groups of subnets of
+    the same type (for example, you may want to separate your application instances and your
+    RDS instances into two distinct groups of Isolated subnets).
+  * If neither are given, the first available subnet group of a given type that
+    exists in the VPC will be used, in this order: Private, then Isolated, then Public.
+    In short: by default ENIs will preferentially be placed in subnets not connected to
+    the Internet.
+* `availabilityZones`/`onePerAz`: finally, some availability-zone based filtering may be done.
+  This filtering by availability zones will only be possible if the VPC has been created or
+  looked up in a non-environment agnostic stack (so account and region have been set and
+  availability zones have been looked up).
+  * `availabilityZones`: only the specific subnets from the selected subnet groups that are
+    in the given availability zones will be returned.
+  * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
+    types that do not allow creating two ENIs in the same availability zone).
+
 ### Using NAT instances
 
 By default, the `Vpc` construct will create NAT *gateways* for you, which
@@ -96,9 +155,24 @@ property, as follows:
 [using NAT instances](test/integ.nat-instances.lit.ts)
 
 The construct will automatically search for the most recent NAT gateway AMI.
-If you prefer to use a custom AMI, pass a `GenericLinuxImage` instance
-for the instance's `machineImage` parameter and configure the right AMI ID
-for the regions you want to deploy to.
+If you prefer to use a custom AMI, use `machineImage:
+MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
+regions you want to deploy to.
+
+By default, the NAT instances will route all traffic. To control what traffic
+gets routed, pass `allowAllTraffic: false` and access the
+`NatInstanceProvider.connections` member after having passed it to the VPC:
+
+```ts
+const provider = NatProvider.instance({
+  instanceType: /* ... */,
+  allowAllTraffic: false,
+});
+new Vpc(stack, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(Peer.ipv4('1.2.3.4/8'), Port.tcp(80));
+```
 
 ### Advanced Subnet Configuration
 
@@ -186,7 +260,6 @@ by setting the `reserved` subnetConfiguration property to true, as shown
 below:
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   natGateways: 1,
   subnetConfiguration: [
@@ -235,12 +308,6 @@ The CDK CLI will search for the specified VPC in the the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
-The import does assume that the VPC will be *symmetric*, i.e. that there are
-subnet groups that have a subnet in every Availability Zone that the VPC
-spreads over. VPCs with other layouts cannot currently be imported, and will
-either lead to an error on import, or when another construct tries to access
-the subnets.
-
 Subnet types will be determined from the `aws-cdk:subnet-type` tag on the
 subnet if it exists, or the presence of a route to an Internet Gateway
 otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
@@ -263,7 +330,7 @@ which you can add egress traffic rules.
 
 You can manipulate Security Groups directly:
 
-```ts
+```ts fixture=with-vpc
 const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
   vpc,
   description: 'Allow ssh access to ec2 instances',
@@ -281,7 +348,7 @@ have security groups, you have to add an **Egress** rule to one Security Group,
 and an **Ingress** rule to the other. The connections object will automatically
 take care of this for you:
 
-```ts
+```ts fixture=conns
 // Allow connections from anywhere
 loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
 
@@ -296,23 +363,23 @@ appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database'
 
 There are various classes that implement the connection peer part:
 
-```ts
+```ts fixture=conns
 // Simple connection peers
-let peer = ec2.Peer.ipv4("10.0.0.0/16");
-let peer = ec2.Peer.anyIpv4();
-let peer = ec2.Peer.ipv6("::0/0");
-let peer = ec2.Peer.anyIpv6();
-let peer = ec2.Peer.prefixList("pl-12345");
-fleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
+let peer = ec2.Peer.ipv4('10.0.0.0/16');
+peer = ec2.Peer.anyIpv4();
+peer = ec2.Peer.ipv6('::0/0');
+peer = ec2.Peer.anyIpv6();
+peer = ec2.Peer.prefixList('pl-12345');
+appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
 
-```ts
+```ts fixture=conns
 // These automatically create appropriate ingress and egress rules in both security groups
 fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
 
-fleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
+appFleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -342,12 +409,12 @@ If the object you're calling the peering method on has a default port associated
 
 For example:
 
-```ts
+```ts fixture=conns
 // Port implicit in listener
 listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
-fleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
+appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
 ## Machine Images (AMIs)
@@ -360,7 +427,7 @@ examples of things you might want to use:
 
 [example of creating images](test/example.images.lit.ts)
 
-> NOTE: The AMIs selected by `AmazonLinuxImage` or `LookupImage` will be cached in
+> NOTE: The AMIs selected by `MachineImage.lookup()` will be cached in
 > `cdk.context.json`, so that your AutoScalingGroup instances aren't replaced while
 > you are making unrelated changes to your CDK app.
 >
@@ -374,7 +441,7 @@ examples of things you might want to use:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
       ip: '1.2.3.4'
@@ -393,24 +460,27 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
 To create a VPC that can accept VPN connections, set `vpnGateway` to `true`:
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnGateway: true
 });
 ```
 
 VPN connections can then be added:
-```ts
+```ts fixture=with-vpc
 vpc.addVpnConnection('Dynamic', {
   ip: '1.2.3.4'
 });
 ```
 
-Routes will be propagated on the route tables associated with the private subnets.
+By default, routes will be propagated on the route tables associated with the private subnets. If no
+private subnets exists, isolated subnets are used. If no isolated subnets exists, public subnets are
+used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
 VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
-```ts
+
+```ts fixture=with-vpc
 // Across all tunnels in the account/region
-const allDataOut = VpnConnection.metricAllTunnelDataOut();
+const allDataOut = ec2.VpnConnection.metricAllTunnelDataOut();
 
 // For a specific vpn connection
 const vpnConnection = vpc.addVpnConnection('Dynamic', {
@@ -426,16 +496,58 @@ Endpoints are virtual devices. They are horizontally scaled, redundant, and high
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
+By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in, 
+use the `subnets` parameter as follows:
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  subnets: {
+    availabilityZones: ['us-east-1a', 'us-east-1c']
+  }
+});
+```
+
+Per the [AWS documentation](https://aws.amazon.com/premiumsupport/knowledge-center/interface-endpoint-availability-zone/), not all
+VPC endpoint services are available in all AZs. If you specify the parameter `lookupSupportedAzs`, CDK attempts to discover which
+AZs an endpoint service is available in, and will ensure the VPC endpoint is not placed in a subnet that doesn't match those AZs.
+These AZs will be stored in cdk.context.json.
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  lookupSupportedAzs: true
+});
+```
+
 ### Security groups for interface VPC endpoints
 By default, interface VPC endpoints create a new security group and traffic is **not**
 automatically allowed from the VPC CIDR.
 
 Use the `connections` object to allow traffic to flow to the endpoint:
-```ts
-myEndpoint.connections.allowDefaultPortFrom(...);
+
+```ts fixture=conns
+myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 ```
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
+
+## VPC endpoint services
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+
+```ts
+new VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
+  acceptanceRequired: true,
+  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+});
+```
 
 ## Bastion Hosts
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
@@ -443,18 +555,163 @@ You can use bastion hosts using a standard SSH connection targetting port 22 on 
 feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
 
 A default bastion host for use via SSM can be configured like:
-```ts
+```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
 ```
 
 If you want to connect from the internet using SSH, you need to place the host into a public subnet. You can then configure allowed source hosts.
-```ts
+```ts fixture=with-vpc
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
-  subnetSelection: { subnetType: SubnetType.PUBLIC },
+  subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
 });
-host.allowSshAccessFrom(Peer.ipv4('1.2.3.4/32'));
+host.allowSshAccessFrom(ec2.Peer.ipv4('1.2.3.4/32'));
 ```
 
 As there are no SSH public keys deployed on this machine, you need to use [EC2 Instance Connect](https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/)
 with the command `aws ec2-instance-connect send-ssh-public-key` to provide your SSH public key.
+
+EBS volume for the bastion host can be encrypted like:
+```ts
+    const host = new ec2.BastionHostLinux(stack, 'BastionHost', {
+      vpc,
+      blockDevices: [{
+        deviceName: 'EBSBastionHost',
+        volume: BlockDeviceVolume.ebs(10, {
+          encrypted: true,
+        }),
+      }],
+    });
+```
+
+
+## Block Devices
+
+To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
+root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
+size:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  // ...
+  blockDeviceMappings: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50),
+    },
+    {
+      deviceName: '/dev/sdm',
+      volume: ec2.BlockDeviceVolume.ebs(100),
+    },
+  ],
+});
+
+```
+
+## VPC Flow Logs
+VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
+
+By default a flow log will be created with CloudWatch Logs as the destination.
+
+You can create a flow log like this:
+
+```ts
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc)
+})
+```
+Or you can add a Flow Log to a VPC by using the addFlowLog method like this:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog');
+```
+
+You can also add multiple flow logs with different destinations.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLogS3', {
+  destination: ec2.FlowLogDestination.toS3()
+});
+
+vpc.addFlowLog('FlowLogCloudWatch', {
+  trafficType: ec2.FlowLogTrafficType.REJECT
+});
+```
+
+By default the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
+it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
+the log group. In the case of an S3 destination, it will create the S3 bucket.
+
+If you want to customize any of the destination resources you can provide your own as part of the `destination`.
+
+*CloudWatch Logs*
+```ts
+const logGroup = new logs.LogGroup(this, 'MyCustomLogGroup');
+
+const role = new iam.Role(this, 'MyCustomRole', {
+  assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+});
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toCloudWatchLogs(logGroup, role)
+});
+```
+
+*S3*
+```ts
+
+const bucket = new s3.Bucket(this, 'MyCustomBucket');
+
+new ec2.FlowLog(this, 'FlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toS3(bucket)
+});
+```
+
+## User Data
+User data enables you to run a script when your instances start up.  In order to configure these scripts you can add commands directly to the script
+ or you can use the UserData's convenience functions to aid in the creation of your script.
+
+A user data could be configured to run a script found in an asset through the following:
+```ts
+const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+  });
+const localPath = instance.userData.addS3DownloadCommand({
+  bucket:asset.bucket,
+  bucketKey:asset.s3ObjectKey,
+});
+instance.userData.addExecuteFileCommand({
+  filePath:localPath,
+  arguments: '--verbose -y'
+});
+asset.grantRead( instance.role );
+```
+
+## Importing existing subnet
+
+To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
+`Subnet.fromSubnetId()`. Only if you supply the subnet's Availability Zone
+and Route Table Ids when calling `Subnet.fromSubnetAttributes()` will you be
+able to use the CDK features that use these values (such as selecting one
+subnet per AZ).
+
+Importing an existing subnet looks like this:
+
+```ts
+// Supply all properties
+const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
+  subnetId: 's-1234',
+  availabilityZone: 'pub-az-4465',
+  routeTableId: 'rt-145'
+});
+
+// Supply only subnet id
+const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
+```

@@ -62,7 +62,7 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
 /**
  * The properties for the ScheduledFargateTask using a task definition.
  */
-export interface ScheduledFargateTaskDefinitionOptions extends ScheduledTaskBaseProps {
+export interface ScheduledFargateTaskDefinitionOptions {
   /**
    * The task definition to use for tasks in the service. Image or taskDefinition must be specified, but not both.
    *
@@ -103,7 +103,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id)
+        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id),
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');

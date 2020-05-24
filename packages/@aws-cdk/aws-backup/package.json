@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-backup",
-  "version": "1.16.1",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::Backup",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,15 +12,13 @@
         "packageId": "Amazon.CDK.AWS.Backup",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.backup",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "backup",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "backup"
         }
       },
       "python": {
@@ -50,7 +48,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Backup"
+    "cloudformation": "AWS::Backup",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -66,19 +65,42 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-efs": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-efs": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "maturity": "cfn-only",
+  "awscdkio": {
+    "announce": false
+  }
 }

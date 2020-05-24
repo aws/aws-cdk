@@ -1,6 +1,6 @@
-// import cxapi = require('@aws-cdk/cx-api');
+// import * as cxapi from '@aws-cdk/cx-api';
 import { IAspect } from './aspect';
-import { Construct, IConstruct } from './construct';
+import { Construct, IConstruct } from './construct-compat';
 import { ITaggable, TagManager } from './tag-manager';
 
 /**
@@ -73,7 +73,7 @@ abstract class TagBase implements IAspect {
 
   public visit(construct: IConstruct): void {
     if (TagManager.isTaggable(construct)) {
-        this.applyTag(construct);
+      this.applyTag(construct);
     }
   }
 
@@ -120,7 +120,7 @@ export class Tag extends TagBase {
         this.key,
         this.value,
         this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
-        this.props.applyToLaunchedInstances !== false
+        this.props.applyToLaunchedInstances !== false,
       );
     }
   }

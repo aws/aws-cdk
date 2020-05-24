@@ -20,3 +20,7 @@ dist
 
 # Include .jsii
 !.jsii
+
+tsconfig.json
+.eslintrc.js
+jest.config.js

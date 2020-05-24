@@ -1,5 +1,5 @@
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
-import certmgr = require('../lib');
+import * as certmgr from '../lib';
 
 class CertStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -11,7 +11,7 @@ class CertStack extends Stack {
     /// !hide
 
     new CfnOutput(this, 'Output', {
-      value: cert.certificateArn
+      value: cert.certificateArn,
     });
   }
 }

@@ -1,8 +1,8 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 
@@ -12,7 +12,7 @@ const application = codedeploy.EcsApplication.fromEcsApplicationName(stack, 'Cod
 
 const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'CodeDeployGroup', {
   application,
-  deploymentGroupName: 'IntegTestDeploymentGroup'
+  deploymentGroupName: 'IntegTestDeploymentGroup',
 });
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
@@ -43,9 +43,9 @@ deployStage.addAction(new cpactions.CodeDeployEcsDeployAction({
   containerImageInputs: [
     {
       input: sourceOutput,
-      taskDefinitionPlaceholder: 'PLACEHOLDER'
-    }
-  ]
+      taskDefinitionPlaceholder: 'PLACEHOLDER',
+    },
+  ],
 }));
 
 app.synth();

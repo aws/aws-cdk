@@ -1,4 +1,4 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
@@ -10,6 +10,26 @@ export enum GitHubTrigger {
   NONE = 'None',
   POLL = 'Poll',
   WEBHOOK = 'WebHook',
+}
+
+/**
+ * The CodePipeline variables emitted by GitHub source Action.
+ */
+export interface GitHubSourceVariables {
+  /** The name of the repository this action points to. */
+  readonly repositoryName: string;
+  /** The name of the branch this action tracks. */
+  readonly branchName: string;
+  /** The date the currently last commit on the tracked branch was authored, in ISO-8601 format. */
+  readonly authorDate: string;
+  /** The date the currently last commit on the tracked branch was committed, in ISO-8601 format. */
+  readonly committerDate: string;
+  /** The SHA1 hash of the currently last commit on the tracked branch. */
+  readonly commitId: string;
+  /** The message of the currently last commit on the tracked branch. */
+  readonly commitMessage: string;
+  /** The GitHub API URL of the currently last commit on the tracked branch. */
+  readonly commitUrl: string;
 }
 
 /**
@@ -79,8 +99,21 @@ export class GitHubSourceAction extends Action {
     this.props = props;
   }
 
+  /** The variables emitted by this action. */
+  public get variables(): GitHubSourceVariables {
+    return {
+      repositoryName: this.variableExpression('RepositoryName'),
+      branchName: this.variableExpression('BranchName'),
+      authorDate: this.variableExpression('AuthorDate'),
+      committerDate: this.variableExpression('CommitterDate'),
+      commitId: this.variableExpression('CommitId'),
+      commitMessage: this.variableExpression('CommitMessage'),
+      commitUrl: this.variableExpression('CommitUrl'),
+    };
+  }
+
   protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
       new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
@@ -104,7 +137,7 @@ export class GitHubSourceAction extends Action {
       configuration: {
         Owner: this.props.owner,
         Repo: this.props.repo,
-        Branch: this.props.branch || "master",
+        Branch: this.props.branch || 'master',
         OAuthToken: this.props.oauthToken.toString(),
         PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
       },

@@ -1,10 +1,10 @@
 ## AWS CodeDeploy Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -20,7 +20,7 @@ The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 
 const application = new codedeploy.ServerApplication(this, 'CodeDeployApplication', {
     applicationName: 'MyApplication', // optional property
@@ -106,7 +106,7 @@ with the `loadBalancer` property when creating a Deployment Group.
 With Classic Elastic Load Balancer, you provide it directly:
 
 ```ts
-import lb = require('@aws-cdk/aws-elasticloadbalancing');
+import * as lb from '@aws-cdk/aws-elasticloadbalancing';
 
 const elb = new lb.LoadBalancer(this, 'ELB', {
   // ...
@@ -125,7 +125,7 @@ With Application Load Balancer or Network Load Balancer,
 you provide a Target Group as the load balancer:
 
 ```ts
-import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as lbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
   // ...
@@ -178,7 +178,7 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
 To create a new CodeDeploy Application that deploys to a Lambda function:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 
 const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
     applicationName: 'MyApplication', // optional property
@@ -202,8 +202,8 @@ When you publish a new version of the function to your stack, CodeDeploy will se
 To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const myApplication = new codedeploy.LambdaApplication(..);
 const func = new lambda.Function(..);

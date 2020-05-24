@@ -64,7 +64,7 @@ export interface ScheduledEc2TaskImageOptions extends ScheduledTaskImageProps {
 /**
  * The properties for the ScheduledEc2Task using a task definition.
  */
-export interface ScheduledEc2TaskDefinitionOptions extends ScheduledTaskBaseProps {
+export interface ScheduledEc2TaskDefinitionOptions {
   /**
    * The task definition to use for tasks in the service. One of image or taskDefinition must be specified.
    *
@@ -107,7 +107,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id)
+        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id),
       });
     } else {
       throw new Error('You must specify a taskDefinition or image');

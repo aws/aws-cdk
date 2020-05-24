@@ -1,6 +1,6 @@
 // tslint:disable:no-console
-import SDK = require('aws-sdk');
-import AWS = require('aws-sdk-mock');
+import * as SDK from 'aws-sdk';
+import * as AWS from 'aws-sdk-mock';
 import { AwsApiProps } from '../../lib';
 import { handler } from '../../lib/aws-api-handler';
 
@@ -30,11 +30,11 @@ test('calls the SDK with the right parameters', async () => {
 
   expect(updateServiceMock).toHaveBeenCalledWith({
     service: 'cool-service',
-    forceNewDeployment: true
+    forceNewDeployment: true,
   }, expect.any(Function));
 
   expect(console.log).toHaveBeenLastCalledWith('Response: %j', {
-    success: true
+    success: true,
   });
 });
 
@@ -50,8 +50,8 @@ test('throws and logs in case of error', async () => {
 
 test('catches and logs error', async () => {
   const catchEvent: AwsApiProps = {
-   ...event,
-    catchErrorPattern: 'Invalid'
+    ...event,
+    catchErrorPattern: 'Invalid',
   };
 
   const updateServiceMock = jest.fn().mockRejectedValue({ code: 'Invalid' });

@@ -1,6 +1,6 @@
-import child_process = require("child_process");
-import colors = require('colors/safe');
-import { debug } from "./logging";
+import * as child_process from 'child_process';
+import * as colors from 'colors/safe';
+import { debug } from './logging';
 
 export interface ShellOptions extends child_process.SpawnOptions {
   quiet?: boolean;
@@ -16,7 +16,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   debug(`Executing ${colors.blue(renderCommandLine(command))}`);
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
+    stdio: [ 'ignore', 'pipe', 'inherit' ],
   });
 
   return new Promise<string>((resolve, reject) => {

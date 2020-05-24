@@ -1,6 +1,6 @@
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sqs from '@aws-cdk/aws-sqs';
 
 /**
  * Customize the SQS Queue Event Target
@@ -56,9 +56,9 @@ export class SqsQueue implements events.IRuleTarget {
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
       {
         conditions: {
-          ArnEquals: { "aws:SourceArn": rule.ruleArn }
-        }
-      })
+          ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+        },
+      }),
     );
 
     return {

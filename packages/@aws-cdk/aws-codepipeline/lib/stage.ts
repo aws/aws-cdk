@@ -1,11 +1,11 @@
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import { IAction, IPipeline, IStage } from "./action";
-import { Artifact } from "./artifact";
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import { IAction, IPipeline, IStage } from './action';
+import { Artifact } from './artifact';
 import { CfnPipeline } from './codepipeline.generated';
 import { FullActionDescriptor } from './full-action-descriptor';
 import { Pipeline, StageProps } from './pipeline';
-import validation = require('./validation');
+import * as validation from './validation';
 
 /**
  * A Stage in a Pipeline.
@@ -42,8 +42,12 @@ export class Stage implements IStage {
   /**
    * Get a duplicate of this stage's list of actions.
    */
-  public get actions(): FullActionDescriptor[] {
+  public get actionDescriptors(): FullActionDescriptor[] {
     return this._actions.slice();
+  }
+
+  public get actions(): IAction[] {
+    return this._actions.map(actionDescriptor => actionDescriptor.action);
   }
 
   public get pipeline(): IPipeline {
@@ -52,16 +56,17 @@ export class Stage implements IStage {
 
   public render(): CfnPipeline.StageDeclarationProperty {
     // first, assign names to output Artifacts who don't have one
-    for (const action of this.actions) {
+    for (const action of this._actions) {
       const outputArtifacts = action.outputs;
 
       const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
 
       for (const outputArtifact of outputArtifacts) {
         if (!outputArtifact.artifactName) {
-          const artifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
+          const unsanitizedArtifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
             ? ''
             : '_' + (unnamedOutputs.indexOf(outputArtifact) + 1));
+          const artifactName = sanitizeArtifactName(unsanitizedArtifactName);
           (outputArtifact as any)._setName(artifactName);
         }
       }
@@ -116,7 +121,7 @@ export class Stage implements IStage {
 
   private validateActions(): string[] {
     const ret = new Array<string>();
-    for (const action of this.actions) {
+    for (const action of this.actionDescriptors) {
       ret.push(...this.validateAction(action));
     }
     return ret;
@@ -125,9 +130,9 @@ export class Stage implements IStage {
   private validateAction(action: FullActionDescriptor): string[] {
     return validation.validateArtifactBounds('input', action.inputs, action.artifactBounds.minInputs,
       action.artifactBounds.maxInputs, action.category, action.provider)
-    .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
-      action.artifactBounds.maxOutputs, action.category, action.provider)
-    );
+      .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
+        action.artifactBounds.maxOutputs, action.category, action.provider),
+      );
   }
 
   private attachActionToPipeline(action: IAction): FullActionDescriptor {
@@ -153,6 +158,7 @@ export class Stage implements IStage {
       runOrder: action.runOrder,
       roleArn: action.role ? action.role.roleArn : undefined,
       region: action.region,
+      namespace: action.namespace,
     };
   }
 
@@ -161,4 +167,10 @@ export class Stage implements IStage {
       .filter(a => a.artifactName)
       .map(a => ({ name: a.artifactName! }));
   }
+}
+
+function sanitizeArtifactName(artifactName: string): string {
+  // strip out some characters that are legal in Stage and Action names,
+  // but not in Artifact names
+  return artifactName.replace(/[@.]/g, '');
 }

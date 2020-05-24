@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
@@ -55,7 +55,7 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
       resourceId: this.props.resourceId,
       role: this.props.role,
       minCapacity: props.minCapacity !== undefined ? props.minCapacity : 1,
-      maxCapacity: props.maxCapacity
+      maxCapacity: props.maxCapacity,
     });
   }
 

@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import codebuild = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as codebuild from '../lib';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -11,7 +11,8 @@ class TestStack extends cdk.Stack {
       reportBuildStatus: false,
     });
     new codebuild.Project(this, 'MyProject', {
-      source
+      source,
+      grantReportGroupPermissions: false,
     });
   }
 }

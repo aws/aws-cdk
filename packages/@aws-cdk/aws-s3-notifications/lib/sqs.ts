@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -17,8 +17,8 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
     this.queue.grantSendMessages(new iam.ServicePrincipal('s3.amazonaws.com', {
       conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn }
-      }
+        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+      },
     }));
 
     // if this queue is encrypted, we need to allow S3 to read messages since that's how
@@ -34,7 +34,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
     return {
       arn: this.queue.queueArn,
       type: s3.BucketNotificationDestinationType.QUEUE,
-      dependencies: [ this.queue ]
+      dependencies: [ this.queue ],
     };
   }
 

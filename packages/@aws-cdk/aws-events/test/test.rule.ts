@@ -1,8 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/core');
-import { CfnResource, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
@@ -18,15 +16,15 @@ export = {
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyRuleA44AB831": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-          "ScheduleExpression": "rate(10 minutes)",
-          "State": "ENABLED"
-        }
-        }
-      }
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'ScheduleExpression': 'rate(10 minutes)',
+            'State': 'ENABLED',
+          },
+        },
+      },
     });
     test.done();
   },
@@ -37,15 +35,15 @@ export = {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    new CfnResource(stack, 'Res', {
+    new cdk.CfnResource(stack, 'Res', {
       type: 'Test::Resource',
       properties: {
-        RuleName: rule.ruleName
-      }
+        RuleName: rule.ruleName,
+      },
     });
 
     expect(stack).to(haveResource('Test::Resource', {
-      RuleName: { Ref: 'MyRuleA44AB831' }
+      RuleName: { Ref: 'MyRuleA44AB831' },
     }));
 
     test.done();
@@ -63,7 +61,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
-    Name: 'PhysicalName'
+      Name: 'PhysicalName',
     }));
 
     test.done();
@@ -84,30 +82,30 @@ export = {
         resources: [ 'r1' ],
         source: [ 'src1', 'src2' ],
         time: [ 't1' ],
-        version: [ '0' ]
-      }
+        version: [ '0' ],
+      },
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyRuleA44AB831": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-          "EventPattern": {
-            account: [ 'account1', 'account2' ],
-            detail: { foo: [ 1, 2 ] },
-            'detail-type': [ 'detailType1' ],
-            id: [ 'id1', 'id2' ],
-            region: [ 'region1', 'region2', 'region3' ],
-            resources: [ 'r1' ],
-            source: [ 'src1', 'src2' ],
-            time: [ 't1' ],
-            version: [ '0' ]
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              account: [ 'account1', 'account2' ],
+              detail: { foo: [ 1, 2 ] },
+              'detail-type': [ 'detailType1' ],
+              id: [ 'id1', 'id2' ],
+              region: [ 'region1', 'region2', 'region3' ],
+              resources: [ 'r1' ],
+              source: [ 'src1', 'src2' ],
+              time: [ 't1' ],
+              version: [ '0' ],
+            },
+            'State': 'ENABLED',
           },
-          "State": "ENABLED"
-        }
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -128,8 +126,8 @@ export = {
     rule.addEventPattern({
       account: [ '12345' ],
       detail: {
-        foo: [ 'hello' ]
-      }
+        foo: [ 'hello' ],
+      },
     });
 
     rule.addEventPattern({
@@ -137,39 +135,39 @@ export = {
       detail: {
         foo: [ 'bar' ],
         goo: {
-          hello: [ 'world' ]
-        }
-      }
+          hello: [ 'world' ],
+        },
+      },
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "MyRuleA44AB831": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-          "EventPattern": {
-          "account": [
-            "12345"
-          ],
-          "detail": {
-            "foo": [
-            "hello",
-            "bar"
-            ],
-            "goo": {
-            "hello": [
-              "world"
-            ]
-            }
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'account': [
+                '12345',
+              ],
+              'detail': {
+                'foo': [
+                  'hello',
+                  'bar',
+                ],
+                'goo': {
+                  'hello': [
+                    'world',
+                  ],
+                },
+              },
+              'source': [
+                'aws.source',
+              ],
+            },
+            'State': 'ENABLED',
           },
-          "source": [
-            "aws.source"
-          ]
-          },
-          "State": "ENABLED"
-        }
-        }
-      }
+        },
+      },
     });
     test.done();
   },
@@ -180,8 +178,8 @@ export = {
       bind: () => ({
         id: '',
         arn: 'ARN1',
-        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
-      })
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      }),
     };
 
     const t2: IRuleTarget = {
@@ -189,7 +187,7 @@ export = {
         id: '',
         arn: 'ARN2',
         input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla')}`),
-      })
+      }),
     };
 
     const rule = new Rule(stack, 'EventRule', {
@@ -200,34 +198,34 @@ export = {
     rule.addTarget(t2);
 
     expect(stack).toMatch({
-      "Resources": {
-        "EventRule5A491D2C": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-          "ScheduleExpression": "rate(5 minutes)",
-          "State": "ENABLED",
-          "Targets": [
-          {
-            "Arn": "ARN1",
-            "Id": "Target0",
-            "KinesisParameters": {
-            "PartitionKeyPath": "partitionKeyPath"
-            }
+      'Resources': {
+        'EventRule5A491D2C': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'ScheduleExpression': 'rate(5 minutes)',
+            'State': 'ENABLED',
+            'Targets': [
+              {
+                'Arn': 'ARN1',
+                'Id': 'Target0',
+                'KinesisParameters': {
+                  'PartitionKeyPath': 'partitionKeyPath',
+                },
+              },
+              {
+                'Arn': 'ARN2',
+                'Id': 'Target1',
+                'InputTransformer': {
+                  'InputPathsMap': {
+                    'detail-bla': '$.detail.bla',
+                  },
+                  'InputTemplate': '"This is <detail-bla>"',
+                },
+              },
+            ],
           },
-          {
-            "Arn": "ARN2",
-            "Id": "Target1",
-            "InputTransformer": {
-            "InputPathsMap": {
-              "detail-bla": "$.detail.bla"
-            },
-            "InputTemplate": "\"This is <detail-bla>\""
-            },
-          }
-          ]
-        }
-        }
-      }
+        },
+      },
     });
     test.done();
   },
@@ -242,8 +240,8 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: '', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
-      })
+        id: '', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"'),
+      }),
     });
 
     // tokens are used here (FnConcat), but this is a text template so we
@@ -253,7 +251,7 @@ export = {
         id: '',
         arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
         input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
-      })
+      }),
     });
 
     // jsonTemplate can be used to format JSON documents with replacements
@@ -262,7 +260,7 @@ export = {
         id: '',
         arn: 'ARN3',
         input: RuleTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
-      })
+      }),
     });
 
     // tokens can also used for JSON templates.
@@ -271,49 +269,49 @@ export = {
         id: '',
         arn: 'ARN4',
         input: RuleTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
-      })
+      }),
     });
 
     expect(stack).toMatch({
-      "Resources": {
-        "EventRule5A491D2C": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-          "State": "ENABLED",
-          "ScheduleExpression": "rate(1 minute)",
-          "Targets": [
-            {
-              "Arn": "ARN2",
-              "Id": "Target0",
-              "Input": '"Hello, \\"world\\""',
-            },
-            {
-              "Arn": "ARN1",
-              "Id": "Target1",
-              "Input": "\"ab\"",
-              "KinesisParameters": {
-                "PartitionKeyPath": "partitionKeyPath"
-              }
-            },
-            {
-              "Arn": "ARN3",
-              "Id": "Target2",
-              "InputTransformer": {
-                "InputPathsMap": {
-                  "detail-bar": "$.detail.bar"
+      'Resources': {
+        'EventRule5A491D2C': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'State': 'ENABLED',
+            'ScheduleExpression': 'rate(1 minute)',
+            'Targets': [
+              {
+                'Arn': 'ARN2',
+                'Id': 'Target0',
+                'Input': '"Hello, \\"world\\""',
+              },
+              {
+                'Arn': 'ARN1',
+                'Id': 'Target1',
+                'Input': '"ab"',
+                'KinesisParameters': {
+                  'PartitionKeyPath': 'partitionKeyPath',
                 },
-                "InputTemplate": "{\"foo\":<detail-bar>}"
-              }
-            },
-            {
-              "Arn": "ARN4",
-              "Id": "Target3",
-              "Input": '"hello \\"world\\""'
-            }
-          ]
-        }
-        }
-      }
+              },
+              {
+                'Arn': 'ARN3',
+                'Id': 'Target2',
+                'InputTransformer': {
+                  'InputPathsMap': {
+                    'detail-bar': '$.detail.bar',
+                  },
+                  'InputTemplate': '{"foo":<detail-bar>}',
+                },
+              },
+              {
+                'Arn': 'ARN4',
+                'Id': 'Target3',
+                'Input': '"hello \\"world\\""',
+              },
+            ],
+          },
+        },
+      },
     });
 
     test.done();
@@ -328,7 +326,7 @@ export = {
     });
 
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new ServicePrincipal('nobody')
+      assumedBy: new iam.ServicePrincipal('nobody'),
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -337,18 +335,18 @@ export = {
         id: '',
         arn: 'ARN2',
         role,
-      })
+      }),
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-      "Targets": [
+      'Targets': [
         {
-          "Arn": "ARN2",
-          "Id": "Target0",
-          "RoleArn": {"Fn::GetAtt": ["SomeRole6DDC54DD", "Arn"]}
-        }
-      ]
+          'Arn': 'ARN2',
+          'Id': 'Target0',
+          'RoleArn': {'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn']},
+        },
+      ],
     }));
 
     test.done();
@@ -368,9 +366,9 @@ export = {
         return {
           id: '',
           arn: 'ARN1',
-          kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+          kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
         };
-      }
+      },
     };
 
     const rule = new Rule(stack, 'EventRule');
@@ -383,7 +381,7 @@ export = {
 
   'fromEventRuleArn'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
@@ -401,12 +399,12 @@ export = {
     // WHEN
     new Rule(stack, 'Rule', {
       schedule: Schedule.expression('foom'),
-      enabled: false
+      enabled: false,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
-      "State": "DISABLED"
+      'State': 'DISABLED',
     }));
 
     test.done();
@@ -417,7 +415,7 @@ export = {
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'Rule', {
       schedule: Schedule.expression('foom'),
-      enabled: false
+      enabled: false,
     });
     rule.addTarget(new SomeTarget());
     rule.addTarget(new SomeTarget());
@@ -426,20 +424,20 @@ export = {
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Targets: [
         {
-          "Arn": "ARN1",
-          "Id": "Target0",
-          "KinesisParameters": {
-            "PartitionKeyPath": "partitionKeyPath"
-          }
+          'Arn': 'ARN1',
+          'Id': 'Target0',
+          'KinesisParameters': {
+            'PartitionKeyPath': 'partitionKeyPath',
+          },
         },
         {
-          "Arn": "ARN1",
-          "Id": "Target1",
-          "KinesisParameters": {
-            "PartitionKeyPath": "partitionKeyPath"
-          }
-        }
-      ]
+          'Arn': 'ARN1',
+          'Id': 'Target1',
+          'KinesisParameters': {
+            'PartitionKeyPath': 'partitionKeyPath',
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -467,8 +465,8 @@ export = {
       bind: () => ({
         id: '',
         arn: 'ARN1',
-        sqsParameters: { messageGroupId: 'messageGroupId' }
-      })
+        sqsParameters: { messageGroupId: 'messageGroupId' },
+      }),
     };
 
     new Rule(stack, 'EventRule', {
@@ -479,13 +477,13 @@ export = {
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Targets: [
         {
-          "Arn": "ARN1",
-          "Id": "Target0",
-          "SqsParameters": {
-            "MessageGroupId": "messageGroupId"
-          }
-        }
-      ]
+          'Arn': 'ARN1',
+          'Id': 'Target0',
+          'SqsParameters': {
+            'MessageGroupId': 'messageGroupId',
+          },
+        },
+      ],
     }));
     test.done();
   },
@@ -498,7 +496,7 @@ export = {
     // WHEN
     new Rule(stack, 'MyRule', {
       eventPattern: {
-        detail: ['detail']
+        detail: ['detail'],
       },
       eventBus,
     });
@@ -506,8 +504,8 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventBusName: {
-        Ref: 'EventBus7B8748AA'
-      }
+        Ref: 'EventBus7B8748AA',
+      },
     }));
 
     test.done();
@@ -664,21 +662,21 @@ export = {
       rule.addTarget(new SomeTarget('T2', resource2));
 
       expect(sourceStack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "some-event",
+        'EventPattern': {
+          'source': [
+            'some-event',
           ],
         },
-        "State": "ENABLED",
-        "Targets": [
+        'State': 'ENABLED',
+        'Targets': [
           {
-            "Id": "T1",
-            "Arn": {
-              "Fn::Join": [
-                "",
+            'Id': 'T1',
+            'Arn': {
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
-                  { "Ref": "AWS::Partition" },
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
                   `:events:us-west-2:${targetAccount}:event-bus/default`,
                 ],
               ],
@@ -688,39 +686,39 @@ export = {
       }));
 
       expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "some-event",
+        'EventPattern': {
+          'source': [
+            'some-event',
           ],
         },
-        "State": "ENABLED",
-        "Targets": [
+        'State': 'ENABLED',
+        'Targets': [
           {
-            "Id": "T1",
-            "Arn": "ARN1",
+            'Id': 'T1',
+            'Arn': 'ARN1',
           },
         ],
       }));
       expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "some-event",
+        'EventPattern': {
+          'source': [
+            'some-event',
           ],
         },
-        "State": "ENABLED",
-        "Targets": [
+        'State': 'ENABLED',
+        'Targets': [
           {
-            "Id": "T2",
-            "Arn": "ARN1",
+            'Id': 'T2',
+            'Arn': 'ARN1',
           },
         ],
       }));
 
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
-        "Action": "events:PutEvents",
-        "StatementId": "MySid",
-        "Principal": sourceAccount,
+        'Action': 'events:PutEvents',
+        'StatementId': `Allow-account-${sourceAccount}`,
+        'Principal': sourceAccount,
       }));
 
       test.done();
@@ -754,16 +752,16 @@ export = {
       });
 
       expect(targetStack).to(haveResourceLike('AWS::Events::Rule', {
-        "EventPattern": {
-          "source": [
-            "some-event",
+        'EventPattern': {
+          'source': [
+            'some-event',
           ],
         },
-        "State": "ENABLED",
-        "Targets": [
+        'State': 'ENABLED',
+        'Targets': [
           {
-            "Id": "T",
-            "Arn": "ARN1",
+            'Id': 'T',
+            'Arn': 'ARN1',
           },
         ],
       }));

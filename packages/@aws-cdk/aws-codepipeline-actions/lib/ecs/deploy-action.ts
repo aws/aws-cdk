@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import ecs = require('@aws-cdk/aws-ecs');
-import iam = require('@aws-cdk/aws-iam');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
@@ -39,7 +39,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The ECS Service to deploy.
    */
-  readonly service: ecs.BaseService;
+  readonly service: ecs.IBaseService;
 }
 
 /**
@@ -55,14 +55,14 @@ export class EcsDeployAction extends Action {
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
-      resource: props.service
+      resource: props.service,
     });
 
     this.props = props;
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -74,7 +74,7 @@ export class EcsDeployAction extends Action {
         'ecs:RegisterTaskDefinition',
         'ecs:UpdateService',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -86,8 +86,8 @@ export class EcsDeployAction extends Action {
             'ec2.amazonaws.com',
             'ecs-tasks.amazonaws.com',
           ],
-        }
-      }
+        },
+      },
     }));
 
     options.bucket.grantRead(options.role);

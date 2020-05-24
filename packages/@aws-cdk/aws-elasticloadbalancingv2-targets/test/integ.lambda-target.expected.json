@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "TestStack/Stack/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
           }
         ]
       }
@@ -83,7 +83,13 @@
     "StackPublicSubnet1EIPBDAAB2A5": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc"
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
+          }
+        ]
       }
     },
     "StackPublicSubnet1NATGatewayD2E1ABF7": {
@@ -117,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "TestStack/Stack/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet2"
           }
         ]
       }
@@ -182,16 +188,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "TestStack/Stack/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet1"
           }
         ]
       }
@@ -244,16 +250,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "TestStack/Stack/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet2"
           }
         ]
       }
@@ -392,7 +398,6 @@
     "LBListenerTargetsGroup76EF81E8": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
-
         "Targets": [
           {
             "Id": {
@@ -404,7 +409,10 @@
           }
         ],
         "TargetType": "lambda"
-      }
+      },
+      "DependsOn": [
+        "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4"
+      ]
     },
     "FunServiceRole3CC876D7": {
       "Type": "AWS::IAM::Role",

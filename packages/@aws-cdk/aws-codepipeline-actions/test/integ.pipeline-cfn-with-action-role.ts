@@ -1,8 +1,8 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 
@@ -26,11 +26,11 @@ const sourceStage = {
 };
 
 const role = new iam.Role(stack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID)
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
 });
 role.addToPolicy(new iam.PolicyStatement({
   actions: ['sqs:*'],
-  resources: ['*']
+  resources: ['*'],
 }));
 const cfnStage = {
   stageName: 'CFN',
@@ -40,7 +40,7 @@ const cfnStage = {
       stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
       templatePath: sourceOutput.atPath('template.yml'),
       adminPermissions: false,
-      role
+      role,
     }),
   ],
 };

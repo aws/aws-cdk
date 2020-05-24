@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { ManagedRule, RuleProps } from './rule';
 
@@ -31,10 +31,10 @@ export class AccessKeysRotated extends ManagedRule {
       inputParameters: {
         ...props.maxAge
           ? {
-              maxAccessKeyAge: props.maxAge.toDays()
-            }
-          : {}
-        }
+            maxAccessKeyAge: props.maxAge.toDays(),
+          }
+          : {},
+      },
     });
   }
 }
@@ -77,8 +77,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       ...props,
       identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
       inputParameters: {
-        cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn })
-      }
+        cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn }),
+      },
     });
 
     this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? Stack.of(this).stackId : undefined);
@@ -86,8 +86,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')
-      ]
+        iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'),
+      ],
     });
   }
 }
@@ -123,8 +123,8 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       identifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK',
       inputParameters: props.topics && props.topics.reduce(
         (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
-        {}
-      )
+        {},
+      ),
     });
 
     this.scopeToResource('AWS::CloudFormation::Stack');

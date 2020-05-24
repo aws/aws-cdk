@@ -1,6 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 
-import { IGrantable, IPrincipal } from '@aws-cdk/aws-iam';
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
@@ -8,14 +7,15 @@ import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { IVpc, SubnetSelection } from './vpc';
+import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
  * Name tag constant
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable, IGrantable {
+export interface IInstance extends IResource, IConnectable, iam.IGrantable {
   /**
    * The instance's ID
    *
@@ -143,10 +143,9 @@ export interface InstanceProps {
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
    *
    * @example
-   *
-   *    const role = new iam.Role(this, 'MyRole', {
-   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
-   *    });
+   * const role = new iam.Role(this, 'MyRole', {
+   *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   * });
    *
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
@@ -168,6 +167,29 @@ export interface InstanceProps {
    * @default true
    */
   readonly sourceDestCheck?: boolean;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping of the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string
 }
 
 /**
@@ -193,7 +215,7 @@ export class Instance extends Resource implements IInstance {
   /**
    * The principal to grant permissions to
    */
-  public readonly grantPrincipal: IPrincipal;
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * UserData for the instance
@@ -240,7 +262,7 @@ export class Instance extends Resource implements IInstance {
     } else {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
-        allowAllOutbound: props.allowAllOutbound !== false
+        allowAllOutbound: props.allowAllOutbound !== false,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
@@ -248,17 +270,17 @@ export class Instance extends Resource implements IInstance {
     Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName]
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData || imageConfig.userData || UserData.forOperatingSystem(imageConfig.osType);
+    this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
@@ -269,10 +291,22 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        throw new Error('When specifying AZ there has to be exactly on subnet of the given type in this az');
+        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
-      subnet = subnets[0];
+      if (subnets.length > 0) {
+        subnet = subnets[0];
+      } else {
+        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+      }
+    }
+    if (!subnet) {
+      // We got here and we don't have a subnet because of validation errors.
+      // Invent one on the spot so the code below doesn't fail.
+      subnet = Subnet.fromSubnetAttributes(this, 'DummySubnet', {
+        subnetId: 's-notfound',
+        availabilityZone: 'az-notfound',
+      });
     }
 
     this.instance = new CfnInstance(this, 'Resource', {
@@ -285,6 +319,8 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
+      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
 
@@ -334,7 +370,7 @@ export class Instance extends Resource implements IInstance {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
-        }
+        },
       };
     }
   }

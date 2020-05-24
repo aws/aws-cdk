@@ -1,10 +1,10 @@
 import { expect } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import glue = require('../lib');
+import * as glue from '../lib';
 
 export = {
-  'default database creates a bucket to store the datbase'(test: Test) {
+  'default database does not create a bucket'(test: Test) {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
@@ -13,35 +13,18 @@ export = {
 
     expect(stack).toMatch({
       Resources: {
-        DatabaseBucket318AF64F: {
-          Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain",
-          UpdateReplacePolicy: "Retain"
-        },
         DatabaseB269D8BB: {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId',
             },
             DatabaseInput: {
-              LocationUri: {
-                "Fn::Join": [
-                  "",
-                  [
-                    "s3://",
-                    {
-                      Ref: "DatabaseBucket318AF64F"
-                    },
-                    "/test_database"
-                  ]
-                ]
-              },
-              Name: "test_database"
-            }
-          }
-        }
-      }
+              Name: 'test_database',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -52,7 +35,7 @@ export = {
 
     new glue.Database(stack, 'Database', {
       databaseName: 'test_database',
-      locationUri: 's3://my-uri/'
+      locationUri: 's3://my-uri/',
     });
 
     expect(stack).toMatch({
@@ -61,15 +44,15 @@ export = {
           Type: 'AWS::Glue::Database',
           Properties: {
             CatalogId: {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId',
             },
             DatabaseInput: {
               LocationUri: 's3://my-uri/',
-              Name: "test_database"
-            }
-          }
-        }
-      }
+              Name: 'test_database',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -89,5 +72,27 @@ export = {
       [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
     test.deepEqual(stack.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
     test.done();
-  }
+  },
+
+  'locationUri length must be >= 1'(test: Test) {
+    const stack = new Stack();
+    test.throws(() =>
+      new glue.Database(stack, 'Database', {
+        databaseName: 'test_database',
+        locationUri: '',
+      }),
+    );
+    test.done();
+  },
+
+  'locationUri length must be <= 1024'(test: Test) {
+    const stack = new Stack();
+    test.throws(() =>
+      new glue.Database(stack, 'Database', {
+        databaseName: 'test_database',
+        locationUri: 'a'.repeat(1025),
+      }),
+    );
+    test.done();
+  },
 };

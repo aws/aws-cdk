@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventBus } from '../lib';
@@ -13,7 +14,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {
-      Name: 'Bus'
+      Name: 'Bus',
     }));
 
     test.done();
@@ -25,12 +26,12 @@ export = {
 
     // WHEN
     new EventBus(stack, 'Bus', {
-      eventBusName: 'myEventBus'
+      eventBusName: 'myEventBus',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {
-      Name: 'myEventBus'
+      Name: 'myEventBus',
     }));
 
     test.done();
@@ -42,13 +43,13 @@ export = {
 
     // WHEN
     new EventBus(stack, 'Bus', {
-      eventSourceName: 'aws.partner/PartnerName/acct1/repo1'
+      eventSourceName: 'aws.partner/PartnerName/acct1/repo1',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {
       Name: 'aws.partner/PartnerName/acct1/repo1',
-      EventSourceName: 'aws.partner/PartnerName/acct1/repo1'
+      EventSourceName: 'aws.partner/PartnerName/acct1/repo1',
     }));
 
     test.done();
@@ -58,20 +59,20 @@ export = {
     // GIVEN
     const stack = new Stack();
     const bus = new EventBus(stack, 'Bus', {
-      eventBusName: 'myEventBus'
+      eventBusName: 'myEventBus',
     });
 
     // WHEN
     new CfnResource(stack, 'Res', {
       type: 'Test::Resource',
       properties: {
-        EventBusName: bus.eventBusName
-      }
+        EventBusName: bus.eventBusName,
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('Test::Resource', {
-      EventBusName: { Ref: 'BusEA82B648' }
+      EventBusName: { Ref: 'BusEA82B648' },
     }));
 
     test.done();
@@ -81,20 +82,20 @@ export = {
     // GIVEN
     const stack = new Stack();
     const bus = new EventBus(stack, 'Bus', {
-      eventBusName: 'myEventBus'
+      eventBusName: 'myEventBus',
     });
 
     // WHEN
     new CfnResource(stack, 'Res', {
       type: 'Test::Resource',
       properties: {
-        EventBusArn: bus.eventBusArn
-      }
+        EventBusArn: bus.eventBusArn,
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('Test::Resource', {
-      EventBusArn: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }
+      EventBusArn: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
     }));
 
     test.done();
@@ -106,7 +107,7 @@ export = {
 
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: 'default'
+      eventBusName: 'default',
     });
 
     // THEN
@@ -123,7 +124,7 @@ export = {
 
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: 'my/bus'
+      eventBusName: 'my/bus',
     });
 
     // THEN
@@ -141,7 +142,7 @@ export = {
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
       eventBusName: 'myBus',
-      eventSourceName: 'myBus'
+      eventSourceName: 'myBus',
     });
 
     // THEN
@@ -158,7 +159,7 @@ export = {
 
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: ''
+      eventBusName: '',
     });
 
     // THEN
@@ -175,7 +176,7 @@ export = {
 
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventSourceName: 'invalid-partner'
+      eventSourceName: 'invalid-partner',
     });
 
     // THEN
@@ -192,7 +193,7 @@ export = {
 
     // WHEN
     const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventSourceName: ''
+      eventSourceName: '',
     });
 
     // THEN
@@ -201,5 +202,37 @@ export = {
     }, /'eventSourceName' must satisfy: /);
 
     test.done();
-  }
+  },
+
+  'can grant PutEvents'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    EventBus.grantPutEvents(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    }));
+
+    test.done();
+  },
 };

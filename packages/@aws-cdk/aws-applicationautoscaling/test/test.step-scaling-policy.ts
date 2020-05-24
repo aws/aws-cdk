@@ -1,9 +1,9 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/core');
-import fc = require('fast-check');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
+import * as fc from 'fast-check';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { arbitrary_input_intervals, createScalableTarget } from './util';
 
 export = {
@@ -21,7 +21,7 @@ export = {
           && (upperThreshold === undefined || (upperThreshold > 0 && upperThreshold !== Infinity)),
           lowerThreshold,
           upperThreshold);
-      }
+      },
     ));
 
     test.done();
@@ -37,7 +37,7 @@ export = {
         return reportFalse(steps.every(step => {
           return step.MetricIntervalLowerBound! < step.MetricIntervalUpperBound!;
         }), steps, 'template', JSON.stringify(template, undefined, 2));
-      }
+      },
     ));
 
     test.done();
@@ -58,7 +58,7 @@ export = {
         }
 
         return true;
-      }
+      },
     ), { verbose: true });
 
     test.done();
@@ -80,7 +80,7 @@ export = {
             return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));
           }) !== undefined, step, intervals);
         });
-      }
+      },
     ));
 
     test.done();
@@ -95,7 +95,7 @@ export = {
         fc.pre(alarm !== undefined);
 
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.lowerPolicy, alarm);
-      }
+      },
     ));
 
     test.done();
@@ -110,7 +110,7 @@ export = {
         fc.pre(alarm !== undefined);
 
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.upperPolicy, alarm);
-      }
+      },
     ));
 
     test.done();
@@ -127,31 +127,31 @@ export = {
       scalingSteps: [
         { upper: 0, change: -1 },
         { lower: 100, change: +1 },
-        { lower: 500, change: +5 }
-      ]
+        { lower: 500, change: +5 },
+      ],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: "StepScaling",
+      PolicyType: 'StepScaling',
       ScalingTargetId: {
-        Ref: "Target3191CF44"
+        Ref: 'Target3191CF44',
       },
       StepScalingPolicyConfiguration: {
-        AdjustmentType: "ChangeInCapacity",
-        MetricAggregationType: "Average",
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Average',
         StepAdjustments: [
           {
             MetricIntervalUpperBound: 0,
-            ScalingAdjustment: -1
-          }
-        ]
-      }
+            ScalingAdjustment: -1,
+          },
+        ],
+      },
 
     }));
 
     test.done();
-  }
+  },
 };
 
 /**
@@ -163,7 +163,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
 
   target.scaleOnMetric('ScaleInterval', {
     metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Success' }),
-    scalingSteps: intervals
+    scalingSteps: intervals,
   });
 
   return new ScalingStackTemplate(SynthUtils.synthesize(stack).template);
@@ -228,7 +228,7 @@ function makeAbsolute(threshold: number, step: TemplateStep) {
   return concrete({
     MetricIntervalLowerBound: apply(step.MetricIntervalLowerBound, x => x + threshold),
     MetricIntervalUpperBound: apply(step.MetricIntervalUpperBound, x => x + threshold),
-    ScalingAdjustment: step.ScalingAdjustment
+    ScalingAdjustment: step.ScalingAdjustment,
   });
 }
 
@@ -241,7 +241,7 @@ function concrete(step: TemplateStep) {
   return {
     MetricIntervalLowerBound: ifUndefined(step.MetricIntervalLowerBound, -Infinity),
     MetricIntervalUpperBound: ifUndefined(step.MetricIntervalUpperBound, Infinity),
-    ScalingAdjustment: step.ScalingAdjustment
+    ScalingAdjustment: step.ScalingAdjustment,
   };
 }
 

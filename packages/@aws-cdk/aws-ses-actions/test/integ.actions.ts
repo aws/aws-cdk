@@ -1,10 +1,10 @@
-import kms = require('@aws-cdk/aws-kms');
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/core');
-import actions = require('../lib');
+import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
+import * as actions from '../lib';
 
 const app = new cdk.App();
 
@@ -15,7 +15,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_8_10
+  runtime: lambda.Runtime.NODEJS_10_X,
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');
@@ -23,30 +23,30 @@ const bucket = new s3.Bucket(stack, 'Bucket');
 const kmsKey = new kms.Key(stack, 'Key');
 
 const ruleSet = new ses.ReceiptRuleSet(stack, 'RuleSet', {
-  dropSpam: true
+  dropSpam: true,
 });
 
 const firstRule = ruleSet.addRule('FirstRule', {
   actions: [
     new actions.AddHeader({
       name: 'X-My-Header',
-      value: 'value'
+      value: 'value',
     }),
     new actions.Lambda({
       function: fn,
       invocationType: actions.LambdaInvocationType.REQUEST_RESPONSE,
-      topic
+      topic,
     }),
     new actions.S3({
       bucket,
       kmsKey,
       objectKeyPrefix: 'emails/',
-      topic
+      topic,
     }),
     new actions.Sns({
       encoding: actions.EmailEncoding.BASE64,
-      topic
-    })
+      topic,
+    }),
   ],
   receiptRuleName: 'FirstRule',
   recipients: ['cdk-ses-receipt-test@yopmail.com'],
@@ -57,13 +57,13 @@ const firstRule = ruleSet.addRule('FirstRule', {
 firstRule.addAction(new actions.Bounce({
   sender: 'cdk-ses-receipt-test@yopmail.com',
   template: actions.BounceTemplate.MESSAGE_CONTENT_REJECTED,
-  topic
+  topic,
 }));
 
 const secondRule = ruleSet.addRule('SecondRule');
 
 secondRule.addAction(new actions.Stop({
-  topic
+  topic,
 }));
 
 app.synth();

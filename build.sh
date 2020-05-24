@@ -60,6 +60,6 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
 
-/bin/bash scripts/check-api-compatibility.sh
+DOWNLOAD_LATEST=true /bin/bash scripts/check-api-compatibility.sh
 
 touch $BUILD_INDICATOR

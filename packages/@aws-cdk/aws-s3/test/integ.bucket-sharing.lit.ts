@@ -1,7 +1,7 @@
 /// !cdk-integ *
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/core');
-import s3 = require('../lib');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '../lib';
 
 const app = new cdk.App();
 
@@ -11,32 +11,32 @@ const app = new cdk.App();
  * Stack that defines the bucket
  */
 class Producer extends cdk.Stack {
-    public readonly myBucket: s3.Bucket;
+  public readonly myBucket: s3.Bucket;
 
-    constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
-        const bucket = new s3.Bucket(this, 'MyBucket', {
-          removalPolicy: cdk.RemovalPolicy.DESTROY
-        });
-        this.myBucket = bucket;
-    }
+    const bucket = new s3.Bucket(this, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    this.myBucket = bucket;
+  }
 }
 
 interface ConsumerProps extends cdk.StackProps {
-    userBucket: s3.IBucket;
+  userBucket: s3.IBucket;
 }
 
 /**
  * Stack that consumes the bucket
  */
 class Consumer extends cdk.Stack {
-    constructor(scope: cdk.App, id: string, props: ConsumerProps) {
-        super(scope, id, props);
+  constructor(scope: cdk.App, id: string, props: ConsumerProps) {
+    super(scope, id, props);
 
-        const user = new iam.User(this, 'MyUser');
-        props.userBucket.grantReadWrite(user);
-    }
+    const user = new iam.User(this, 'MyUser');
+    props.userBucket.grantReadWrite(user);
+  }
 }
 
 const producer = new Producer(app, 'ProducerStack');

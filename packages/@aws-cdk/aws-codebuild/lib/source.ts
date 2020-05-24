@@ -1,6 +1,6 @@
-import codecommit = require('@aws-cdk/aws-codecommit');
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
@@ -9,7 +9,7 @@ import {
   CODECOMMIT_SOURCE_TYPE,
   GITHUB_ENTERPRISE_SOURCE_TYPE,
   GITHUB_SOURCE_TYPE,
-  S3_SOURCE_TYPE
+  S3_SOURCE_TYPE,
 } from './source-types';
 
 /**
@@ -19,6 +19,13 @@ export interface SourceConfig {
   readonly sourceProperty: CfnProject.SourceProperty;
 
   readonly buildTriggers?: CfnProject.ProjectTriggersProperty;
+
+  /**
+   * `AWS::CodeBuild::Project.SourceVersion`
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
+   * @default the latest version
+   */
+  readonly sourceVersion?: string;
 }
 
 /**
@@ -88,7 +95,7 @@ export abstract class Source implements ISource {
       sourceProperty: {
         sourceIdentifier: this.identifier,
         type: this.type,
-      }
+      },
     };
   }
 }
@@ -103,6 +110,15 @@ interface GitSourceProps extends SourceProps {
    * then the full history is downloaded with each build of the project.
    */
   readonly cloneDepth?: number;
+
+  /**
+   * The commit ID, pull request ID, branch name, or tag name that corresponds to
+   * the version of the source code you want to build
+   *
+   * @example 'mybranch'
+   * @default the default branch's HEAD commit ID is used
+   */
+  readonly branchOrRef?: string;
 }
 
 /**
@@ -110,16 +126,19 @@ interface GitSourceProps extends SourceProps {
  */
 abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
+  private readonly branchOrRef?: string;
 
   protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
+    this.branchOrRef = props.branchOrRef;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
+      sourceVersion: this.branchOrRef,
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
@@ -458,10 +477,11 @@ abstract class ThirdPartyGitSource extends GitSource {
         ...superConfig.sourceProperty,
         reportBuildStatus: this.reportBuildStatus,
       },
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
-      }
+      },
     };
   }
 }
@@ -477,6 +497,7 @@ export interface CodeCommitSourceProps extends GitSourceProps {
  * CodeCommit Source definition for a CodeBuild project.
  */
 class CodeCommitSource extends GitSource {
+  public readonly badgeSupported = true;
   public readonly type = CODECOMMIT_SOURCE_TYPE;
   private readonly repo: codecommit.IRepository;
 
@@ -489,7 +510,7 @@ class CodeCommitSource extends GitSource {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codecommit:GitPull'],
-      resources: [this.repo.repositoryArn]
+      resources: [this.repo.repositoryArn],
     }));
 
     const superConfig = super.bind(_scope, project);
@@ -498,6 +519,7 @@ class CodeCommitSource extends GitSource {
         ...superConfig.sourceProperty,
         location: this.repo.repositoryCloneUrlHttp,
       },
+      sourceVersion: superConfig.sourceVersion,
     };
   }
 }
@@ -508,6 +530,13 @@ class CodeCommitSource extends GitSource {
 export interface S3SourceProps extends SourceProps {
   readonly bucket: s3.IBucket;
   readonly path: string;
+
+  /**
+   *  The version ID of the object that represents the build input ZIP file to use.
+   *
+   * @default latest
+   */
+  readonly version?: string;
 }
 
 /**
@@ -517,11 +546,13 @@ class S3Source extends Source {
   public readonly type = S3_SOURCE_TYPE;
   private readonly bucket: s3.IBucket;
   private readonly path: string;
+  private readonly version?: string;
 
   constructor(props: S3SourceProps) {
     super(props);
     this.bucket = props.bucket;
     this.path = props.path;
+    this.version = props.version;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -533,6 +564,7 @@ class S3Source extends Source {
         ...superConfig.sourceProperty,
         location: `${this.bucket.bucketName}/${this.path}`,
       },
+      sourceVersion: this.version,
     };
   }
 }
@@ -575,6 +607,7 @@ class GitHubSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -619,6 +652,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
         location: this.httpsCloneUrl,
         insecureSsl: this.ignoreSslErrors,
       },
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }
@@ -672,6 +706,7 @@ class BitBucketSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
       },
+      sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
   }

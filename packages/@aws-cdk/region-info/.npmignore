@@ -14,3 +14,7 @@ coverage
 !.jsii
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js
+jest.config.js

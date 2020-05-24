@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import servicediscovery = require('../lib');
+import * as servicediscovery from '../lib';
 
 export = {
   'Service for HTTP namespace with custom health check'(test: Test) {
@@ -18,35 +18,35 @@ export = {
       description: 'service description',
       customHealthCheck: {
         failureThreshold: 3,
-      }
+      },
     });
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::HttpNamespace",
+          Type: 'AWS::ServiceDiscovery::HttpNamespace',
           Properties: {
-            Name: "http"
+            Name: 'http',
           },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             HealthCheckCustomConfig: {
               FailureThreshold: 3,
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
-              ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -65,38 +65,38 @@ export = {
       description: 'service description',
       healthCheck: {
         type: servicediscovery.HealthCheckType.HTTP,
-        resourcePath: '/check'
-      }
+        resourcePath: '/check',
+      },
     });
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::HttpNamespace",
+          Type: 'AWS::ServiceDiscovery::HttpNamespace',
           Properties: {
-            Name: "http"
+            Name: 'http',
           },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             HealthCheckConfig: {
               FailureThreshold: 1,
-              ResourcePath: "/check",
-              Type: "HTTP"
+              ResourcePath: '/check',
+              Type: 'HTTP',
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
-              ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -115,50 +115,50 @@ export = {
       description: 'service description',
       customHealthCheck: {
         failureThreshold: 3,
-      }
+      },
     });
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
-          }
+            Name: 'dns',
+          },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
-            Description: "service description",
+            Description: 'service description',
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "A"
-                }
+                  Type: 'A',
+                },
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
-                ]
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id',
+                ],
               },
-              RoutingPolicy: "MULTIVALUE"
+              RoutingPolicy: 'MULTIVALUE',
             },
             HealthCheckCustomConfig: {
-              FailureThreshold: 3
+              FailureThreshold: 3,
             },
-            Name: "service",
+            Name: 'service',
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
-              ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -173,49 +173,49 @@ export = {
     });
 
     namespace.createService('MyService', {
-      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
     });
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
-          }
+            Name: 'dns',
+          },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "A"
+                  Type: 'A',
                 },
                 {
                   TTL: 60,
-                  Type: "AAAA"
-                }
+                  Type: 'AAAA',
+                },
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
-                ]
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id',
+                ],
               },
-              RoutingPolicy: "MULTIVALUE",
+              RoutingPolicy: 'MULTIVALUE',
             },
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
-              ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -230,45 +230,45 @@ export = {
     });
 
     namespace.createService('MyService', {
-      dnsRecordType: servicediscovery.DnsRecordType.CNAME
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME,
     });
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyNamespaceD0BB8558: {
-          Type: "AWS::ServiceDiscovery::PublicDnsNamespace",
+          Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
           Properties: {
-            Name: "dns"
-          }
+            Name: 'dns',
+          },
         },
         MyNamespaceMyService365E2470: {
-          Type: "AWS::ServiceDiscovery::Service",
+          Type: 'AWS::ServiceDiscovery::Service',
           Properties: {
             DnsConfig: {
               DnsRecords: [
                 {
                   TTL: 60,
-                  Type: "CNAME"
-                }
+                  Type: 'CNAME',
+                },
               ],
               NamespaceId: {
-                "Fn::GetAtt": [
-                  "MyNamespaceD0BB8558",
-                  "Id"
-                ]
+                'Fn::GetAtt': [
+                  'MyNamespaceD0BB8558',
+                  'Id',
+                ],
               },
-              RoutingPolicy: "WEIGHTED",
+              RoutingPolicy: 'WEIGHTED',
             },
             NamespaceId: {
-              "Fn::GetAtt": [
-                "MyNamespaceD0BB8558",
-                "Id"
-              ]
-            }
-          }
-        }
-      }
+              'Fn::GetAtt': [
+                'MyNamespaceD0BB8558',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -286,11 +286,11 @@ export = {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
-          resourcePath: '/'
+          resourcePath: '/',
         },
         customHealthCheck: {
-          failureThreshold: 1
-        }
+          failureThreshold: 1,
+        },
       });
     }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
 
@@ -303,7 +303,7 @@ export = {
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
-      vpc
+      vpc,
     });
 
     // THEN
@@ -311,11 +311,11 @@ export = {
       namespace.createService('MyService', {
         name: 'service',
         healthCheck: {
-          resourcePath: '/'
+          resourcePath: '/',
         },
         customHealthCheck: {
-          failureThreshold: 1
-        }
+          failureThreshold: 1,
+        },
       });
     }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
 
@@ -356,8 +356,8 @@ export = {
         name: 'service',
         healthCheck: {
           type: servicediscovery.HealthCheckType.TCP,
-          resourcePath: '/check'
-        }
+          resourcePath: '/check',
+        },
       });
     }, /`resourcePath`.+`TCP`/);
 
@@ -376,7 +376,7 @@ export = {
       namespace.createService('MyService', {
         name: 'service',
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
-        loadBalancer: true
+        loadBalancer: true,
       });
     }, /Must support `A` or `AAAA` records to register loadbalancers/);
 
@@ -395,7 +395,7 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         loadBalancer: true,
-        routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE
+        routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
     }, /Cannot register loadbalancers when routing policy is `Multivalue`./);
 
@@ -409,7 +409,7 @@ export = {
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'private',
-      vpc
+      vpc,
     });
 
     namespace.createService('MyService', {
@@ -419,33 +419,33 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
-      Name: "private"
+      Name: 'private',
     }));
 
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
-      Description: "service description",
+      Description: 'service description',
       DnsConfig: {
         DnsRecords: [
           {
             TTL: 60,
-            Type: "A"
-          }
+            Type: 'A',
+          },
         ],
         NamespaceId: {
-          "Fn::GetAtt": [
-            "MyNamespaceD0BB8558",
-            "Id"
-          ]
+          'Fn::GetAtt': [
+            'MyNamespaceD0BB8558',
+            'Id',
+          ],
         },
-        RoutingPolicy: "MULTIVALUE"
+        RoutingPolicy: 'MULTIVALUE',
       },
-      Name: "service",
+      Name: 'service',
       NamespaceId: {
-        "Fn::GetAtt": [
-          "MyNamespaceD0BB8558",
-          "Id"
-        ]
-      }
+        'Fn::GetAtt': [
+          'MyNamespaceD0BB8558',
+          'Id',
+        ],
+      },
     }));
 
     test.done();

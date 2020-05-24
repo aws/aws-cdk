@@ -25,7 +25,9 @@
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -95,6 +97,22 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
+                    "PipelineDeployPrepareChangesRoleD28C853C",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
                     "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
                     "Arn"
                   ]
@@ -106,8 +124,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
@@ -126,10 +144,16 @@
               }
             }
           ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
         }
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
       "Type": "AWS::KMS::Alias",
@@ -142,8 +166,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -681,6 +705,49 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
             {
               "Action": "*",
               "Effect": "Allow",

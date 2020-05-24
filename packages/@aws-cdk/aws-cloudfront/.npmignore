@@ -17,3 +17,6 @@ coverage
 *.snk
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js

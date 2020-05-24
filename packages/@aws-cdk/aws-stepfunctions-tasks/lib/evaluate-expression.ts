@@ -1,8 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/core');
-import path = require('path');
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
+import * as path from 'path';
 
 /**
  * Properties for EvaluateExpression
@@ -11,7 +11,7 @@ import path = require('path');
  */
 export interface EvaluateExpressionProps {
   /**
-   * The expression to evaluate. It must contain state paths.
+   * The expression to evaluate. The expression may contain state paths.
    *
    * @example '$.a + $.b'
    */
@@ -56,30 +56,30 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
 
-    if (!matches) {
-      throw new Error('No paths found in expression');
+    let expressionAttributeValues = {};
+    if (matches) {
+      expressionAttributeValues = matches.reduce(
+        (acc, m) => ({
+          ...acc,
+          [m]: sfn.Data.stringAt(m), // It's okay to always use `stringAt` here
+        }),
+        {},
+      );
     }
-
-    const expressionAttributeValues = matches.reduce(
-      (acc, m) => ({
-        ...acc,
-        [m]: sfn.Data.stringAt(m) // It's okay to always use `stringAt` here
-      }),
-      {}
-    );
 
     const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
 
+    const parameters: Event = {
+      expression: this.props.expression,
+      expressionAttributeValues,
+    };
     return {
       resourceArn: evalFn.functionArn,
       policyStatements: [new iam.PolicyStatement({
         resources: [evalFn.functionArn],
         actions: ['lambda:InvokeFunction'],
       })],
-      parameters: {
-        expression: this.props.expression,
-        expressionAttributeValues,
-      } as Event
+      parameters,
     };
   }
 }

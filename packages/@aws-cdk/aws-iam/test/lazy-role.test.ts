@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
-import cdk = require('@aws-cdk/core');
-import iam = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as iam from '../lib';
 
 describe('IAM lazy role', () => {
   test('creates no resource when unused', () => {
@@ -9,7 +9,7 @@ describe('IAM lazy role', () => {
 
     // WHEN
     new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     });
 
     // THEN
@@ -22,7 +22,7 @@ describe('IAM lazy role', () => {
 
     // WHEN
     const roleArn = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     }).roleArn;
 
     // THEN
@@ -33,9 +33,9 @@ describe('IAM lazy role', () => {
         Statement: [{
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Principal: { Service: 'test.service' }
-        }]
-      }
+          Principal: { Service: 'test.service' },
+        }],
+      },
     });
   });
 
@@ -45,7 +45,7 @@ describe('IAM lazy role', () => {
 
     // WHEN
     const role = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.service')
+      assumedBy: new iam.ServicePrincipal('test.service'),
     });
 
     // THEN

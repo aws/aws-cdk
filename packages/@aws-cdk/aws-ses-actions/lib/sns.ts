@@ -1,5 +1,5 @@
-import ses = require('@aws-cdk/aws-ses');
-import sns = require('@aws-cdk/aws-sns');
+import * as ses from '@aws-cdk/aws-ses';
+import * as sns from '@aws-cdk/aws-sns';
 
 /**
  * The type of email encoding to use for a SNS action.
@@ -44,8 +44,8 @@ export class Sns implements ses.IReceiptRuleAction {
     return {
       snsAction: {
         encoding: this.props.encoding,
-        topicArn: this.props.topic.topicArn
-      }
+        topicArn: this.props.topic.topicArn,
+      },
     };
   }
 }

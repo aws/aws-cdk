@@ -1,9 +1,9 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
-import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import ssm = require('@aws-cdk/aws-ssm');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as ssm from '@aws-cdk/aws-ssm';
 import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
@@ -40,6 +40,13 @@ export interface ClusterProps {
    * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
    */
   readonly capacity?: AddCapacityOptions;
+
+  /**
+   * If true CloudWatch Container Insights will be enabled for the cluster
+   *
+   * @default - Container Insights will be disabled for this cluser.
+   */
+  readonly containerInsights?: boolean;
 }
 
 /**
@@ -96,8 +103,12 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
+    const clusterSettings = containerInsights ? [{name: 'containerInsights', value: 'enabled'}] : undefined;
+
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
+      clusterSettings,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -114,7 +125,7 @@ export class Cluster extends Resource implements ICluster {
       : undefined;
 
     this._autoscalingGroup = props.capacity !== undefined
-      ? this.addCapacity("DefaultAutoScalingGroup", props.capacity)
+      ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
   }
 
@@ -125,7 +136,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
-      throw new Error("Can only add default namespace once.");
+      throw new Error('Can only add default namespace once.');
     }
 
     const namespaceType = options.type !== undefined
@@ -135,7 +146,7 @@ export class Cluster extends Resource implements ICluster {
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
-        vpc: this.vpc
+        vpc: this.vpc,
       }) :
       new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
@@ -203,18 +214,18 @@ export class Cluster extends Resource implements ICluster {
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        "ecs:CreateCluster",
-        "ecs:DeregisterContainerInstance",
-        "ecs:DiscoverPollEndpoint",
-        "ecs:Poll",
-        "ecs:RegisterContainerInstance",
-        "ecs:StartTelemetrySession",
-        "ecs:Submit*",
-        "ecr:GetAuthorizationToken",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        'ecs:CreateCluster',
+        'ecs:DeregisterContainerInstance',
+        'ecs:DiscoverPollEndpoint',
+        'ecs:Poll',
+        'ecs:RegisterContainerInstance',
+        'ecs:StartTelemetrySession',
+        'ecs:Submit*',
+        'ecr:GetAuthorizationToken',
+        'logs:CreateLogStream',
+        'logs:PutLogEvents',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
@@ -222,7 +233,7 @@ export class Cluster extends Resource implements ICluster {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTime: options.taskDrainTime
+        drainTime: options.taskDrainTime,
       });
     }
   }
@@ -267,8 +278,8 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
-      ...props
-    });
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -335,7 +346,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
+        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
         throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
@@ -353,13 +364,13 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -367,9 +378,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -424,13 +437,13 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     }
 
     // set the SSM parameter name
-    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "")
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "")
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : "")
-      + (this.hwType === AmiHardwareType.GPU ? "gpu/" : "")
-      + (this.hwType === AmiHardwareType.ARM ? "arm64/" : "")
-      + "recommended/image_id";
+    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
+      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
+      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + 'recommended/image_id';
   }
 
   /**
@@ -438,9 +451,11 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
-      osType: this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX
+      osType,
+      userData: ec2.UserData.forOperatingSystem(osType),
     };
   }
 }
@@ -582,11 +597,11 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: props.clusterName
+      resourceName: props.clusterName,
     });
 
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroups
+      securityGroups: props.securityGroups,
     });
   }
 

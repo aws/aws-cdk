@@ -1,7 +1,8 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
-  "version": "1.16.1",
+  "version": "0.0.0",
   "description": "Build a global dynamodb table",
+  "deprecated": "This module has been deprecated. Use @aws-cdk/aws-dynamodb.Table with replicationRegions instead",
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
   "repository": {
@@ -21,8 +22,7 @@
         "package": "software.amazon.awscdk.services.dynamodb.global",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dynamodb-global",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "dynamodb-global"
         }
       },
       "python": {
@@ -34,7 +34,6 @@
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       }
     }
@@ -47,25 +46,27 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "cfn2ts": "1.16.1",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "0.0.0"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-dynamodb": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "scripts": {
     "build": "cdk-build",
@@ -82,9 +83,13 @@
     "compat": "cdk-compat"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "stability": "experimental"
+  "stability": "deprecated",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "deprecated"
 }

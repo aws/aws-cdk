@@ -1,8 +1,8 @@
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/core');
-import targets = require('../../lib');
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as cdk from '@aws-cdk/core';
+import * as targets from '../../lib';
 
 interface MockActionProps extends codepipeline.ActionProperties {
   configuration?: any;
@@ -18,7 +18,7 @@ class MockAction implements codepipeline.IAction {
   }
 
   public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {
       configuration: this.configuration,
     };
@@ -45,12 +45,12 @@ pipeline.addStage({
     actionName: 'CodeCommit',
     category: codepipeline.ActionCategory.SOURCE,
     provider: 'CodeCommit',
-    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
+    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1 },
     configuration: {
       RepositoryName: repo.repositoryName,
       BranchName: 'master',
     },
-    outputs: [srcArtifact]})]
+    outputs: [srcArtifact]})],
 });
 pipeline.addStage({
   stageName: 'Build',
@@ -58,12 +58,12 @@ pipeline.addStage({
     actionName: 'Hello',
     category: codepipeline.ActionCategory.APPROVAL,
     provider: 'Manual',
-    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0, }})]
+    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0 }})],
 });
 
 new events.Rule(stack, 'rule', {
   schedule: events.Schedule.expression('rate(1 minute)'),
-  targets: [new targets.CodePipeline(pipeline)]
+  targets: [new targets.CodePipeline(pipeline)],
 });
 
 app.synth();

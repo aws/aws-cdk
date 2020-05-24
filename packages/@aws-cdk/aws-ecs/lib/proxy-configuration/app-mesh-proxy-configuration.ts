@@ -79,7 +79,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     super();
     if (props.properties) {
       if (!props.properties.ignoredUID && !props.properties.ignoredGID) {
-        throw new Error("At least one of ignoredUID or ignoredGID should be specified.");
+        throw new Error('At least one of ignoredUID or ignoredGID should be specified.');
       }
     }
   }
@@ -89,23 +89,23 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
    */
   public bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
     const configProps = this.props.properties;
-    const configType = "APPMESH";
+    const configType = 'APPMESH';
     return {
       containerName: this.props.containerName,
       proxyConfigurationProperties: renderProperties(configProps),
-      type: configType
+      type: configType,
     };
   }
 }
 
 function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinition.KeyValuePairProperty[] {
-  const ret = [];
+  const ret = new Array<CfnTaskDefinition.KeyValuePairProperty>();
   for (const [k, v] of Object.entries(props)) {
     const key = String(k);
     const value = String(v);
-    if (value !== "undefined" && value !== "") {
+    if (value !== 'undefined' && value !== '') {
       const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
-      ret.push({ ["name"]: capitalizedKey, ["value"]: value });
+      ret.push({ ['name']: capitalizedKey, ['value']: value });
     }
   }
   return ret;

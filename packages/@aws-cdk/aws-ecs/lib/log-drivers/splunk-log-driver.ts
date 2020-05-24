@@ -1,7 +1,7 @@
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -132,7 +132,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-token': this.props.token,
         'splunk-url': this.props.url,
         'splunk-source': this.props.source,
-        'splunk-sourceType': this.props.sourceType,
+        'splunk-sourcetype': this.props.sourceType,
         'splunk-index': this.props.index,
         'splunk-capath': this.props.caPath,
         'splunk-caname': this.props.caName,
@@ -141,7 +141,7 @@ export class SplunkLogDriver extends LogDriver {
         'splunk-verify-connection': this.props.verifyConnection,
         'splunk-gzip': this.props.gzip,
         'splunk-gzip-level': this.props.gzipLevel,
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

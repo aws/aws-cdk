@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import apigateway = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as apigateway from '../lib';
 
 class Test extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

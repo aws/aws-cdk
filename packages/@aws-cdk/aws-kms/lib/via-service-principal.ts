@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 
 /**
  * A principal to allow access to a key if it's being used through another AWS service

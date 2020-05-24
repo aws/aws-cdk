@@ -1,5 +1,5 @@
-import impl = require('./diff');
-import types = require('./diff/types');
+import * as impl from './diff';
+import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
@@ -65,14 +65,14 @@ export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplat
 
   // Copy "replaced" states from `diffWithReplacements` to `theDiff`.
   diffWithReplacements.resources
-      .filter(r => isReplacement(r!.changeImpact))
-      .forEachDifference((logicalId, downstreamReplacement) => {
-    const resource = theDiff.resources.get(logicalId);
+    .filter(r => isReplacement(r!.changeImpact))
+    .forEachDifference((logicalId, downstreamReplacement) => {
+      const resource = theDiff.resources.get(logicalId);
 
-    if (resource.changeImpact !== downstreamReplacement.changeImpact) {
-      propagatePropertyReplacement(downstreamReplacement, resource);
-    }
-  });
+      if (resource.changeImpact !== downstreamReplacement.changeImpact) {
+        propagatePropertyReplacement(downstreamReplacement, resource);
+      }
+    });
 
   return theDiff;
 }

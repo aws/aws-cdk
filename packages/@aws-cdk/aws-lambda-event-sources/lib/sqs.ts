@@ -1,5 +1,5 @@
-import lambda = require('@aws-cdk/aws-lambda');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sqs from '@aws-cdk/aws-sqs';
 
 export interface SqsEventSourceProps {
   /**
@@ -18,6 +18,8 @@ export interface SqsEventSourceProps {
  * Use an Amazon SQS queue as an event source for AWS Lambda.
  */
 export class SqsEventSource implements lambda.IEventSource {
+  private _eventSourceMappingId?: string = undefined;
+
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
       throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize})`);
@@ -25,11 +27,22 @@ export class SqsEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
+    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
       eventSourceArn: this.queue.queueArn,
     });
+    this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
     this.queue.grantConsumeMessages(target);
+  }
+
+  /**
+   * The identifier for this EventSourceMapping
+   */
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error('SqsEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingId;
   }
 }

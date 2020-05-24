@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { Duration, Lazy } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import appscaling = require('../lib');
+import * as appscaling from '../lib';
 import { createScalableTarget } from './util';
 
 export = {
@@ -40,8 +40,8 @@ export = {
       serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       scalableDimension: 'test:TestCount',
       resourceId: 'test:this/test',
-      minCapacity: Lazy.numberValue({ produce: () => 10 }),
-      maxCapacity: Lazy.numberValue({ produce: () => 1 }),
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 10 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
     });
 
     // THEN: no exception
@@ -63,7 +63,7 @@ export = {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.rate(Duration.minutes(1)),
+      schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
       maxCapacity: 50,
       minCapacity: 1,
     });
@@ -74,14 +74,84 @@ export = {
         {
           ScalableTargetAction: {
             MaxCapacity: 50,
-            MinCapacity: 1
+            MinCapacity: 1,
           },
-          Schedule: "rate(1 minute)",
-          ScheduledActionName: "ScaleUp"
-        }
-      ]
+          Schedule: 'rate(1 minute)',
+          ScheduledActionName: 'ScaleUp',
+        },
+      ],
     }));
 
     test.done();
-  }
+  },
+
+  'step scaling on MathExpression'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Metric', {
+      metric: new cloudwatch.MathExpression({
+        expression: 'a',
+        usingMetrics: {
+          a: new cloudwatch.Metric({
+            namespace: 'Test',
+            metricName: 'Metric',
+          }),
+        },
+      }),
+      adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+      scalingSteps: [
+        { change: -1, lower: 0, upper: 49 },
+        { change: 0, lower: 50, upper: 99 },
+        { change: 1, lower: 100 },
+      ],
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::CloudWatch::Alarm', {
+      Period: 60,
+    }));
+
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'LessThanOrEqualToThreshold',
+      EvaluationPeriods: 1,
+      Metrics: [
+        {
+          Expression: 'a',
+          Id: 'expr_1',
+        },
+        {
+          Id: 'a',
+          MetricStat: {
+            Metric: {
+              MetricName: 'Metric',
+              Namespace: 'Test',
+            },
+            Period: 300,
+            Stat: 'Average',
+          },
+          ReturnData: false,
+        },
+      ],
+      Threshold: 49,
+    }));
+
+    test.done();
+  },
+
+  'test service namespace enum'(test: Test) {
+    test.equals(appscaling.ServiceNamespace.APPSTREAM, 'appstream');
+    test.equals(appscaling.ServiceNamespace.COMPREHEND, 'comprehend');
+    test.equals(appscaling.ServiceNamespace.CUSTOM_RESOURCE, 'custom-resource');
+    test.equals(appscaling.ServiceNamespace.DYNAMODB, 'dynamodb');
+    test.equals(appscaling.ServiceNamespace.EC2, 'ec2');
+    test.equals(appscaling.ServiceNamespace.ECS, 'ecs');
+    test.equals(appscaling.ServiceNamespace.ELASTIC_MAP_REDUCE, 'elasticmapreduce');
+    test.equals(appscaling.ServiceNamespace.LAMBDA, 'lambda');
+    test.equals(appscaling.ServiceNamespace.RDS, 'rds');
+    test.equals(appscaling.ServiceNamespace.SAGEMAKER, 'sagemaker');
+    test.done();
+  },
 };

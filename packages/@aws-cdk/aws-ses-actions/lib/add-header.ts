@@ -1,4 +1,4 @@
-import ses = require('@aws-cdk/aws-ses');
+import * as ses from '@aws-cdk/aws-ses';
 
 /**
  * Construction properties for a add header action.
@@ -44,8 +44,8 @@ export class AddHeader implements ses.IReceiptRuleAction {
     return {
       addHeaderAction: {
         headerName: this.name,
-        headerValue: this.value
-      }
+        headerValue: this.value,
+      },
     };
   }
 }

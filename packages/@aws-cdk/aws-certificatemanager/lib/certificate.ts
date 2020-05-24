@@ -2,6 +2,9 @@ import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
+/**
+ * Represents a certificate in AWS Certificate Manager
+ */
 export interface ICertificate extends IResource {
   /**
    * The certificate's ARN
@@ -106,7 +109,7 @@ export class Certificate extends Resource implements ICertificate {
       let validationDomain = props.validationDomains && props.validationDomains[domainName];
       if (validationDomain === undefined) {
         if (Token.isUnresolved(domainName)) {
-          throw new Error(`When using Tokens for domain names, 'validationDomains' needs to be supplied`);
+          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
         }
         validationDomain = apexDomain(domainName);
       }

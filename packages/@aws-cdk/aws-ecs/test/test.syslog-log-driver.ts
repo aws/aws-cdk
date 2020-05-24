@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.SyslogLogDriver({
-        tag: 'hello'
+        tag: 'hello',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'syslog',
             Options: {
-              tag: 'hello'
-            }
-          }
-        }
-      ]
+              tag: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,29 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.SyslogLogDriver(),
-      memoryLimitMiB: 128
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'syslog'
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  "create a syslog log driver using syslog"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.syslog(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -78,10 +56,32 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'syslog',
-            Options: {}
-          }
-        }
-      ]
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'create a syslog log driver using syslog'(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.syslog(),
+      memoryLimitMiB: 128,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'syslog',
+            Options: {},
+          },
+        },
+      ],
     }));
 
     test.done();

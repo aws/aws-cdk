@@ -1,12 +1,11 @@
 // tslint:disable: max-line-length
 
 import { expect, haveResource } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
-import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/core');
-import { App, CfnParameter, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import ssm = require('../lib');
+import * as ssm from '../lib';
 
 export = {
   'creating a String SSM Parameter'(test: Test) {
@@ -28,6 +27,26 @@ export = {
       Name: 'FooParameter',
       Type: 'String',
       Value: 'Foo',
+    }));
+    test.done();
+  },
+
+  'expect String SSM Parameter to have tier properly set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ssm.StringParameter(stack, 'Parameter', {
+      allowedPattern: '.*',
+      description: 'The value Foo',
+      parameterName: 'FooParameter',
+      stringValue: 'Foo',
+      tier: ssm.ParameterTier.ADVANCED,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SSM::Parameter', {
+      Tier: 'Advanced',
     }));
     test.done();
   },
@@ -79,6 +98,120 @@ export = {
     test.done();
   },
 
+  'String SSM Parameter throws on long descriptions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringParameter(stack, 'Parameter', {
+        stringValue: 'Foo',
+        description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.',
+      });
+    }, /Description cannot be longer than 1024 characters./);
+
+    test.done();
+  },
+
+  'String SSM Parameter throws on long names'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringParameter(stack, 'Parameter', {
+        stringValue: 'Foo',
+        parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.',
+      });
+    }, /Name cannot be longer than 2048 characters./);
+
+    test.done();
+  },
+
+  'StringList SSM Parameter throws on long descriptions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringListParameter(stack, 'Parameter', {
+        stringListValue: ['Foo', 'Bar'],
+        description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.',
+      });
+    }, /Description cannot be longer than 1024 characters./);
+
+    test.done();
+  },
+
+  'StringList SSM Parameter throws on long names'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new ssm.StringListParameter(stack, 'Parameter', {
+        stringListValue: ['Foo', 'Bar'],
+        parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.',
+      });
+    }, /Name cannot be longer than 2048 characters./);
+
+    test.done();
+  },
+
   'StringList SSM Parameter values cannot contain commas'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -126,8 +259,8 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':parameter/',
-        { Ref: 'Parameter9E1B4FBA' }
-      ]]
+        { Ref: 'Parameter9E1B4FBA' },
+      ]],
     });
     test.done();
   },
@@ -144,7 +277,7 @@ export = {
 
     test.throws(() => new ssm.StringListParameter(stack, 'myParam2', {
       stringListValue: [ 'foo', 'bar' ],
-      parameterName: 'path/to/parameter2'
+      parameterName: 'path/to/parameter2',
     }), /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
 
     test.done();
@@ -152,7 +285,7 @@ export = {
 
   'StringParameter.fromStringParameterName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
@@ -166,7 +299,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -174,22 +307,22 @@ export = {
     expect(stack).toMatch({
       Parameters: {
         MyParamNameParameter: {
-          Type: "AWS::SSM::Parameter::Value<String>",
-          Default: "MyParamName"
-        }
-      }
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'MyParamName',
+        },
+      },
     });
     test.done();
   },
 
   'StringParameter.fromStringParameterAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
-      version: 2
+      version: 2,
     });
 
     // THEN
@@ -201,7 +334,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -211,12 +344,12 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
-      version: 2
+      version: 2,
     });
 
     // THEN
@@ -228,7 +361,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
@@ -238,7 +371,7 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantRead'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -248,7 +381,7 @@ export = {
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
       version: 2,
-      encryptionKey: key
+      encryptionKey: key,
     });
     param.grantRead(role);
 
@@ -259,14 +392,14 @@ export = {
           {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
           },
           {
             Action: [
               'ssm:DescribeParameters',
               'ssm:GetParameters',
               'ssm:GetParameter',
-              'ssm:GetParameterHistory'
+              'ssm:GetParameterHistory',
             ],
             Effect: 'Allow',
             Resource: {
@@ -275,23 +408,23 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
-                  ':parameter/MyParamName'
-                ]
-              ]
-            }
-          }
+                  ':parameter/MyParamName',
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -300,7 +433,7 @@ export = {
 
   'StringParameter.fromSecureStringParameterAttributes with encryption key creates the correct policy for grantWrite'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'CustomKey', 'arn:aws:kms:us-east-1:123456789012:key/xyz');
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -310,7 +443,7 @@ export = {
     const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
       parameterName: 'MyParamName',
       version: 2,
-      encryptionKey: key
+      encryptionKey: key,
     });
     param.grantWrite(role);
 
@@ -322,10 +455,10 @@ export = {
             Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
-              'kms:GenerateDataKey*'
+              'kms:GenerateDataKey*',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz'
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
           },
           {
             Action: 'ssm:PutParameter',
@@ -336,23 +469,23 @@ export = {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition'
+                    Ref: 'AWS::Partition',
                   },
                   ':ssm:',
                   {
-                    Ref: 'AWS::Region'
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId'
+                    Ref: 'AWS::AccountId',
                   },
-                  ':parameter/MyParamName'
-                ]
-              ]
-            }
-          }
+                  ':parameter/MyParamName',
+                ],
+              ],
+            },
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
     }));
 
@@ -361,7 +494,7 @@ export = {
 
   'StringListParameter.fromName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // WHEN
     const param = ssm.StringListParameter.fromStringListParameterName(stack, 'MyParamName', 'MyParamName');
@@ -375,7 +508,7 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']]
+        ':parameter/MyParamName']],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
@@ -385,8 +518,8 @@ export = {
 
   'fromLookup will use the SSM context provider to read value during synthesis'(test: Test) {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
     // WHEN
     const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
@@ -399,10 +532,10 @@ export = {
         props: {
           account: '12344',
           region: 'us-east-1',
-          parameterName: 'my-param-name'
+          parameterName: 'my-param-name',
         },
-        provider: 'ssm'
-      }
+        provider: 'ssm',
+      },
     ]);
     test.done();
   },
@@ -411,7 +544,7 @@ export = {
 
     'returns a token that represents the SSM parameter value'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
@@ -420,10 +553,10 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
-          }
-        }
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name',
+          },
+        },
       });
       test.deepEqual(stack.resolve(value), { Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter' });
       test.done();
@@ -431,7 +564,7 @@ export = {
 
     'de-dup based on parameter name'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
@@ -443,21 +576,21 @@ export = {
       expect(stack).toMatch({
         Parameters: {
           SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name"
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name',
           },
           SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: "AWS::SSM::Parameter::Value<String>",
-            Default: "my-param-name-2"
-          }
-        }
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'my-param-name-2',
+          },
+        },
       });
       test.done();
     },
 
     'can query actual SSM Parameter Names, multiple times'(test: Test) {
       // GIVEN
-      const stack = new Stack();
+      const stack = new cdk.Stack();
 
       // WHEN
       ssm.StringParameter.valueForStringParameter(stack, '/my/param/name');
@@ -468,8 +601,8 @@ export = {
   },
 
   'rendering of parameter arns'(test: Test) {
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam'] ] };
     const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
     const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' } ] ] };
@@ -519,8 +652,8 @@ export = {
 
   'if parameterName is a token separator must be specified'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     let i = 0;
 
     // WHEN
@@ -538,8 +671,8 @@ export = {
 
   'fails if name is a token and no explicit separator'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const param = new CfnParameter(stack, 'param');
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'param');
     let i = 0;
 
     // THEN
@@ -553,7 +686,7 @@ export = {
 
   'fails if simpleName is wrong based on a concrete physical name'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
     let i = 0;
 
     // THEN
@@ -564,10 +697,10 @@ export = {
 
   'fails if parameterName is undefined and simpleName is "false"'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new cdk.Stack();
 
     // THEN
     test.throws(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' }), /If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
     test.done();
-  }
+  },
 };

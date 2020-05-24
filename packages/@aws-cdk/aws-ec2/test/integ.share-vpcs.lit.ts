@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/core');
-import ec2 = require("../lib");
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '../lib';
 
 const app = new cdk.App();
 
@@ -46,7 +46,7 @@ class Stack2 extends cdk.Stack {
 
     // Pass the VPC to a construct that needs it
     new ConstructThatTakesAVpc(this, 'Construct', {
-      vpc: props.vpc
+      vpc: props.vpc,
     });
   }
 }

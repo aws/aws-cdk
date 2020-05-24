@@ -1,6 +1,6 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { singletonEventRole } from './util';
 
 /**
@@ -20,8 +20,9 @@ export interface CodePipelineTargetOptions {
  * Allows the pipeline to be used as a CloudWatch event rule target.
  */
 export class CodePipeline implements events.IRuleTarget {
-  constructor(private readonly pipeline: codepipeline.IPipeline,
-              private readonly options: CodePipelineTargetOptions = {}) {
+  constructor(
+    private readonly pipeline: codepipeline.IPipeline,
+    private readonly options: CodePipelineTargetOptions = {}) {
   }
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {

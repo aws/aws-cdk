@@ -1,4 +1,4 @@
-import reflect = require('jsii-reflect');
+import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
@@ -25,7 +25,7 @@ eventsLinter.add({
   message: `'onXxx()' methods should also be defined on construct interface`,
   eval: e => {
     for (const method of e.ctx.directEventMethods.concat(e.ctx.cloudTrailEventMethods)) {
-      e.assert(!e.ctx.interfaceType || e.ctx.interfaceType.allMethods.some(m => m.name === method.name), `${e.ctx.fqn}.${method.name}`);
+      e.assert(!e.ctx.interfaceType || e.ctx.interfaceType.allMethods.filter(m => !m.protected).some(m => m.name === method.name), `${e.ctx.fqn}.${method.name}`);
     }
   }
 });
@@ -51,6 +51,10 @@ eventsLinter.add({
   message: `all 'onXxx()' methods should have the CloudWatch Events signature (id: string, options: events.OnEventOptions = {}) => events.Rule`,
   eval: e => {
     for (const method of e.ctx.directEventMethods) {
+      // give slack to protected methods like "onSynthesize", "onPrepare", ...
+      if (method.protected) {
+        continue;
+      }
       e.assertSignature(method, {
         parameters: [
           { type: 'string' },
@@ -63,7 +67,7 @@ eventsLinter.add({
 });
 
 function isDirectEventMethod(m: reflect.Method) {
-  return m.name.startsWith('on') && ! m.name.startsWith('onCloudTrail');
+  return !m.protected && m.name.startsWith('on') && ! m.name.startsWith('onCloudTrail');
 }
 
 function isCloudTrailEventMethod(m: reflect.Method) {

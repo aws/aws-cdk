@@ -1,5 +1,5 @@
-import iam = require('@aws-cdk/aws-iam');
-import sfn = require('@aws-cdk/aws-stepfunctions');
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
@@ -11,6 +11,8 @@ export interface StartExecutionProps {
    * The JSON input for the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - No input
    */
   readonly input?: { [key: string]: any };
 
@@ -18,6 +20,8 @@ export interface StartExecutionProps {
    * The name of the execution, same as that of StartExecution.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
+   *
+   * @default - None
    */
   readonly name?: string;
 
@@ -45,7 +49,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
       sfn.ServiceIntegrationPattern.SYNC,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -60,13 +64,13 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn("states", "startExecution", this.integrationPattern),
+      resourceArn: getResourceArn('states', 'startExecution', this.integrationPattern),
       policyStatements: this.createScopedAccessPolicy(task),
       parameters: {
         Input: this.props.input,
         StateMachineArn: this.stateMachine.stateMachineArn,
-        Name: this.props.name
-      }
+        Name: this.props.name,
+      },
     };
   }
 
@@ -83,15 +87,21 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.stateMachine.stateMachineArn]
-      })
+        resources: [this.stateMachine.stateMachineArn],
+      }),
     ];
 
     // Step Functions use Cloud Watch managed rules to deal with synchronous tasks.
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: ['*']
+        // https://docs.aws.amazon.com/step-functions/latest/dg/concept-create-iam-advanced.html#concept-create-iam-advanced-execution
+        resources: [stack.formatArn({
+          service: 'states',
+          resource: 'execution',
+          sep: ':',
+          resourceName: `${stack.parseArn(this.stateMachine.stateMachineArn, ':').resourceName}*`,
+        })],
       }));
 
       policyStatements.push(new iam.PolicyStatement({
@@ -99,8 +109,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule'
-        })]
+          resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule',
+        })],
       }));
     }
 

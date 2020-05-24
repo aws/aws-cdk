@@ -1,61 +1,65 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
 
+/**
+ * Represents the Wait state which delays a state machine from continuing for a specified time
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-wait-state.html
+ */
 export class WaitTime {
-    /**
-     * Wait a fixed amount of time.
-     */
-    public static duration(duration: cdk.Duration) { return new WaitTime({ Seconds: duration.toSeconds() }); }
+  /**
+   * Wait a fixed amount of time.
+   */
+  public static duration(duration: cdk.Duration) { return new WaitTime({ Seconds: duration.toSeconds() }); }
 
-    /**
-     * Wait until the given ISO8601 timestamp
-     *
-     * @example 2016-03-14T01:59:00Z
-     */
-    public static timestamp(timestamp: string) { return new WaitTime({ Timestamp: timestamp }); }
+  /**
+   * Wait until the given ISO8601 timestamp
+   *
+   * @example 2016-03-14T01:59:00Z
+   */
+  public static timestamp(timestamp: string) { return new WaitTime({ Timestamp: timestamp }); }
 
-    /**
-     * Wait for a number of seconds stored in the state object.
-     *
-     * @example $.waitSeconds
-     */
-    public static secondsPath(path: string) { return new WaitTime({ SecondsPath: path }); }
+  /**
+   * Wait for a number of seconds stored in the state object.
+   *
+   * @example $.waitSeconds
+   */
+  public static secondsPath(path: string) { return new WaitTime({ SecondsPath: path }); }
 
-    /**
-     * Wait until a timestamp found in the state object.
-     *
-     * @example $.waitTimestamp
-     */
-    public static timestampPath(path: string) { return new WaitTime({ TimestampPath: path }); }
+  /**
+   * Wait until a timestamp found in the state object.
+   *
+   * @example $.waitTimestamp
+   */
+  public static timestampPath(path: string) { return new WaitTime({ TimestampPath: path }); }
 
-    private constructor(private readonly json: any) { }
+  private constructor(private readonly json: any) { }
 
-    /**
-     * @internal
-     */
-    public get _json() {
-        return this.json;
-    }
+  /**
+   * @internal
+   */
+  public get _json() {
+    return this.json;
+  }
 }
 
 /**
  * Properties for defining a Wait state
  */
 export interface WaitProps {
-    /**
-     * An optional description for this state
-     *
-     * @default No comment
-     */
-    readonly comment?: string;
+  /**
+   * An optional description for this state
+   *
+   * @default No comment
+   */
+  readonly comment?: string;
 
-    /**
-     * Wait duration.
-     */
-    readonly time: WaitTime;
+  /**
+   * Wait duration.
+   */
+  readonly time: WaitTime;
 }
 
 /**
@@ -64,34 +68,34 @@ export interface WaitProps {
  * A Wait state can be used to delay execution of the state machine for a while.
  */
 export class Wait extends State implements INextable {
-    public readonly endStates: INextable[];
+  public readonly endStates: INextable[];
 
-    private readonly time: WaitTime;
+  private readonly time: WaitTime;
 
-    constructor(scope: cdk.Construct, id: string, props: WaitProps) {
-        super(scope, id, props);
+  constructor(scope: cdk.Construct, id: string, props: WaitProps) {
+    super(scope, id, props);
 
-        this.time = props.time;
-        this.endStates = [this];
-    }
+    this.time = props.time;
+    this.endStates = [this];
+  }
 
-    /**
-     * Continue normal execution with the given state
-     */
-    public next(next: IChainable): Chain {
-        super.makeNext(next.startState);
-        return Chain.sequence(this, next);
-    }
+  /**
+   * Continue normal execution with the given state
+   */
+  public next(next: IChainable): Chain {
+    super.makeNext(next.startState);
+    return Chain.sequence(this, next);
+  }
 
-    /**
-     * Return the Amazon States Language object for this state
-     */
-    public toStateJson(): object {
-        return {
-            Type: StateType.WAIT,
-            Comment: this.comment,
-            ...this.time._json,
-            ...this.renderNextEnd(),
-        };
-    }
+  /**
+   * Return the Amazon States Language object for this state
+   */
+  public toStateJson(): object {
+    return {
+      Type: StateType.WAIT,
+      Comment: this.comment,
+      ...this.time._json,
+      ...this.renderNextEnd(),
+    };
+  }
 }

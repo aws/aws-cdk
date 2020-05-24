@@ -1,6 +1,6 @@
 /// !cdk-integ *
 
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';
@@ -21,13 +21,13 @@ class TestStack extends Stack {
 
     const file2 = new S3File(this, 'file2', {
       bucket,
-      contents: file2Contents
+      contents: file2Contents,
     });
 
     new S3Assert(this, 'assert-file', {
       bucket,
       objectKey: file2.objectKey,
-      expectedContent: file2Contents
+      expectedContent: file2Contents,
     });
 
     // delay file2 updates so we can test async assertions

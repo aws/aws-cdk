@@ -4,7 +4,7 @@ namespace %name.PascalCased%
 {
     public class %name.PascalCased%Stack : Stack
     {
-        public %name.PascalCased%Stack(Construct parent, string id, IStackProps props) : base(parent, id, props)
+        internal %name.PascalCased%Stack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
             // The code that defines your stack goes here
         }

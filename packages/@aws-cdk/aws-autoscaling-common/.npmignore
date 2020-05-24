@@ -19,3 +19,6 @@ lambda/*.sh
 *.snk
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js

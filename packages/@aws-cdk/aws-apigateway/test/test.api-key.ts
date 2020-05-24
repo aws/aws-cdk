@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { Test } from "nodeunit";
-import apigateway = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import { Test } from 'nodeunit';
+import * as apigateway from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -27,7 +27,7 @@ export = {
     // WHEN
     new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api]
+      resources: [api],
     });
 
     // THEN
@@ -35,12 +35,12 @@ export = {
       CustomerId: 'test-customer',
       StageKeys: [
         {
-          RestApiId: { Ref: "testapiD6451F70" },
-          StageName: { Ref: "testapiDeploymentStagetest5869DF71" }
-        }
-      ]
+          RestApiId: { Ref: 'testapiD6451F70' },
+          StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
+        },
+      ],
     }));
 
     test.done();
-  }
+  },
 };

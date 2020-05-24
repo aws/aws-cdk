@@ -1,4 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { IConstruct } from '@aws-cdk/core';
 import { CfnRule } from './events.generated';
 import { RuleTargetInput } from './input';
@@ -40,6 +40,12 @@ export interface RuleTargetConfig {
    * Role to use to invoke this event target
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Parameters used when the rule invokes Amazon AWS Batch Job/Queue
+   * @default no parameters set
+   */
+  readonly batchParameters?: CfnRule.BatchParametersProperty;
 
   /**
    * The Amazon ECS task definition and task count to use, if the event target

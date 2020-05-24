@@ -1,4 +1,4 @@
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 /**
  * An IP address that is a target for load balancing.
@@ -60,7 +60,7 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
   private attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.IP,
-      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone }
+      targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone },
     };
   }
 }

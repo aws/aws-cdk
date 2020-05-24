@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -68,6 +68,6 @@ export class LambdaDeploymentConfig {
 function deploymentConfig(name: string): ILambdaDeploymentConfig {
   return {
     deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name)
+    deploymentConfigArn: arnForDeploymentConfig(name),
   };
 }

@@ -1,4 +1,7 @@
 {
   "app": "node app.js",
-  "versionReporting": false
+  "versionReporting": false,
+  "context": {
+    "aws-cdk:enableDiffNoFail": "true"
+  }
 }

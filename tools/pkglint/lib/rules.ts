@@ -1,16 +1,17 @@
-import caseUtils = require('case');
-import fs = require('fs');
-import path = require('path');
-import semver = require('semver');
+import * as caseUtils from 'case';
+import * as fs from 'fs';
+import * as glob from 'glob';
+import * as path from 'path';
+import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
   fileShouldBe, fileShouldContain,
+  fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
-  monoRepoVersion,
 } from './util';
 
 // tslint:disable-next-line: no-var-requires
@@ -130,6 +131,9 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
+    if (pkg.packageName === '@aws-cdk/core') {
+      return;
+    }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
 
@@ -162,7 +166,130 @@ export class ReadmeFile extends ValidationRule {
 }
 
 /**
- * There must be a stability setting, and that the appropriate banner is present in the README.md file.
+ * All packages must have a "maturity" declaration.
+ *
+ * The banner in the README must match the package maturity.
+ *
+ * As a way to seed the settings, if 'maturity' is missing but can
+ * be auto-derived from 'stability', that will be the fix (otherwise
+ * there is no fix).
+ */
+export class MaturitySetting extends ValidationRule {
+  public readonly name = 'package-info/maturity';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    let maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability as string | undefined;
+    if (!maturity) {
+      let fix;
+      if (stability && ['stable', 'deprecated'].includes(stability)) {
+        // We can autofix!
+        fix = () => pkg.json.maturity = stability;
+        maturity = stability;
+      }
+
+      pkg.report({
+        ruleName: this.name,
+        message: `Package is missing "maturity" setting (expected one of ${Object.keys(MATURITY_TO_STABILITY)})`,
+        fix,
+      });
+    }
+
+    if (pkg.json.deprecated && maturity !== 'deprecated') {
+      pkg.report({
+        ruleName: this.name,
+        message: `Package is deprecated, but is marked with maturity "${maturity}"`,
+        fix: () => pkg.json.maturity = 'deprecated',
+      });
+      maturity = 'deprecated';
+    }
+
+    if (maturity) {
+      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels(pkg));
+    }
+  }
+
+  private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    const badge = this.readmeBadge(maturity, levelsPresent);
+    if (!badge) {
+      // Somehow, we don't have a badge for this stability level
+      return;
+    }
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    if (!badgeRegex.test(readmeContent)) {
+      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
+      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: `Missing stability banner for ${maturity} in README.md file`,
+        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+      });
+    }
+  }
+
+  private readmeBadge(maturity: string, levelsPresent: string[]) {
+    const bannerContents = levelsPresent
+      .map(level => fs.readFileSync(path.join(__dirname, 'banners', `${level}.${maturity}.md`), { encoding: 'utf-8' }).trim())
+      .join('\n\n')
+      .trim();
+
+    const bannerLines = bannerContents.split('\n').map(s => s.trimRight());
+
+    return [
+      '<!--BEGIN STABILITY BANNER-->',
+      '---',
+      '',
+      ...bannerLines,
+      '',
+      '---',
+      '<!--END STABILITY BANNER-->',
+      '',
+    ].join('\n');
+  }
+
+  private determinePackageLevels(pkg: PackageJson): string[] {
+    // Used to determine L1 by the presence of a .generated.ts file, but that depends
+    // on the source having been built. Much more robust to look at the build INSTRUCTIONS
+    // to see if this package has L1s.
+    const hasL1 = !!pkg.json['cdk-build']?.cloudformation;
+
+    const libFiles = glob.sync('lib/*.ts');
+    const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
+
+    return [
+      ...hasL1 ? ['l1'] : [],
+      // If we don't have L1, then at least always paste in the L2 banner
+      ...hasL2 || !hasL1 ? ['l2'] : [],
+    ];
+  }
+}
+
+const MATURITY_TO_STABILITY: Record<string, string> = {
+  'cfn-only': 'experimental',
+  'experimental': 'experimental',
+  'developer-preview': 'experimental',
+  'stable': 'stable',
+  'deprecated': 'deprecated',
+};
+
+/**
+ * There must be a stability setting, and it must match the package maturity.
+ *
+ * Maturity setting is leading here (as there are more options than the
+ * stability setting), but the stability setting must be present for `jsii`
+ * to properly read and encode it into the assembly.
  */
 export class StabilitySetting extends ValidationRule {
   public readonly name = 'package-info/stability';
@@ -173,95 +300,16 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
-    let stability = pkg.json.stability;
-    switch (stability) {
-      case 'experimental':
-      case 'stable':
-      case 'deprecated':
-        if (pkg.json.deprecated && stability !== 'deprecated') {
-          pkg.report({
-            ruleName: this.name,
-            message: `Package is deprecated, but is marked with stability "${stability}"`,
-            fix: () => pkg.json.stability = 'deprecated',
-          });
-          stability = 'deprecated';
-        }
-        break;
-      default:
-        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
-        pkg.report({
-          ruleName: this.name,
-          message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
-          fix: () => pkg.json.stability = defaultStability,
-        });
-        stability = defaultStability;
-    }
-    this.validateReadmeHasBanner(pkg, stability);
-  }
+    const maturity = pkg.json.maturity as string | undefined;
+    const stability = pkg.json.stability as string | undefined;
 
-  private validateReadmeHasBanner(pkg: PackageJson, stability: string) {
-    const badge = this.readmeBadge(stability);
-    if (!badge) {
-      // Somehow, we don't have a badge for this stability level
-      return;
-    }
-    const readmeFile = path.join(pkg.packageRoot, 'README.md');
-    if (!fs.existsSync(readmeFile)) {
-      // Presence of the file is asserted by another rule
-      return;
-    }
-    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
-    if (!badgeRegex.test(readmeContent)) {
-      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
-      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+    const expectedStability = maturity ? MATURITY_TO_STABILITY[maturity] : undefined;
+    if (!stability || (expectedStability && stability !== expectedStability)) {
       pkg.report({
         ruleName: this.name,
-        message: `Missing stability banner for ${stability} in README.md file`,
-        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+        message: `stability is '${stability}', but based on maturity is expected to be '${expectedStability}'`,
+        fix: expectedStability ? (() => pkg.json.stability = expectedStability) : undefined,
       });
-    }
-  }
-
-  private readmeBadge(stability: string) {
-    switch (stability) {
-      case 'deprecated':
-        return _div(
-          { label: 'Deprecated', color: 'critical' },
-          'This API may emit warnings. Backward compatibility is not guaranteed.',
-        );
-      case 'experimental':
-        return _div(
-          { label: 'Experimental', color: 'important' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
-          '',
-          'This API is still under active development and subject to non-backward',
-          'compatible changes or removal in any future version. Use of the API is not recommended in production',
-          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
-        );
-      case 'stable':
-        return _div(
-          { label: 'Stable', color: 'success' },
-        );
-      default:
-        return undefined;
-    }
-
-    function _div(badge: { label: string, color: string }, ...messages: string[]) {
-      return [
-        '<!--BEGIN STABILITY BANNER-->',
-        '',
-        '---',
-        '',
-        `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
-        '',
-        ...messages.map(message => `> ${message}`.trimRight()),
-        '',
-        '---',
-        '<!--END STABILITY BANNER-->',
-        '',
-      ].join('\n');
     }
   }
 }
@@ -298,17 +346,6 @@ export class CDKKeywords extends ValidationRule {
         fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
       });
     }
-  }
-}
-
-export class DeveloperPreviewVersionLabels extends ValidationRule {
-  public readonly name = 'jsii/developer-preview-version-label';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
   }
 }
 
@@ -381,7 +418,7 @@ export class CDKPackage extends ValidationRule {
 }
 
 export class NoTsBuildInfo extends ValidationRule {
-  public readonly name = 'no-tsc-build-info';
+  public readonly name = 'npmignore/tsbuildinfo';
 
   public validate(pkg: PackageJson): void {
     // skip private packages
@@ -392,6 +429,32 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTsConfig extends ValidationRule {
+  public readonly name = 'npmignore/tsconfig';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.json');
+  }
+}
+
+export class IncludeJsiiInNpmTarball extends ValidationRule {
+  public readonly name = 'npmignore/jsii-included';
+
+  public validate(pkg: PackageJson): void {
+    // only jsii modules
+    if (!isJSII(pkg)) { return; }
+
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    fileShouldNotContain(this.name, pkg, '.npmignore', '.jsii');
+    fileShouldContain(this.name, pkg, '.npmignore', '!.jsii'); // make sure .jsii is included
   }
 }
 
@@ -480,7 +543,8 @@ function cdkModuleName(name: string) {
       isLegacyCdkPkg ? 'cdk'
         : isCdkPkg ? 'core'
           : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : `cdk-${name}`,
+            : name.startsWith('cdk-') ? name
+              : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -640,17 +704,51 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
 }
 
 /**
- * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges).
+ * Check that dependencies on @aws-cdk/ packages use point versions (not version ranges)
+ * and that they are also defined in `peerDependencies`.
  */
 export class MustDependonCdkByPointVersions extends ValidationRule {
   public readonly name = 'dependencies/cdk-point-dependencies';
 
   public validate(pkg: PackageJson): void {
-    const expectedVersion = monoRepoVersion();
+    // yes, ugly, but we have a bunch of references to other files in the repo.
+    // we use the root package.json to determine what should be the version
+    // across the repo: in local builds, this should be 0.0.0 and in CI builds
+    // this would be the actual version of the repo after it's been aligned
+    // using scripts/align-version.sh
+    const expectedVersion = require('../../../package.json').version;
+    const ignore = [
+      '@aws-cdk/cloudformation-diff',
+      '@aws-cdk/cfnspec',
+      '@aws-cdk/cdk-assets-schema',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/region-info'
+    ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
-      if (isCdkModuleName(depName) && depVersion !== expectedVersion) {
+      if (!isCdkModuleName(depName) || ignore.includes(depName)) {
+        continue;
+      }
 
+      const peerDep = pkg.peerDependencies[depName];
+      if (!peerDep) {
+        pkg.report({
+          ruleName: this.name,
+          message: `dependency ${depName} must also appear in peerDependencies`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (peerDep !== expectedVersion) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peer dependency ${depName} should have the version ${expectedVersion}`,
+          fix: () => pkg.addPeerDependency(depName, expectedVersion)
+        });
+      }
+
+      if (depVersion !== expectedVersion) {
         pkg.report({
           ruleName: this.name,
           message: `dependency ${depName}: dependency version must be ${expectedVersion}`,
@@ -688,36 +786,6 @@ export class NpmIgnoreForJsiiModules extends ValidationRule {
 }
 
 /**
- * nodeunit and @types/nodeunit must appear in devDependencies if
- * the test script uses "nodeunit"
- */
-export class GlobalDevDependencies extends ValidationRule {
-  public readonly name = 'dependencies/global-dev';
-
-  public validate(pkg: PackageJson): void {
-
-    const deps = [
-      'typescript',
-      'tslint',
-      'nodeunit',
-      '@types/nodeunit',
-      // '@types/node', // we tend to get @types/node 12.x from transitive closures now, it breaks builds.
-      'nyc'
-    ];
-
-    for (const dep of deps) {
-      if (pkg.getDevDependency(dep)) {
-        pkg.report({
-          ruleName: this.name,
-          message: `devDependency ${dep} is defined at the repo level`,
-          fix: () => pkg.removeDevDependency(dep)
-        });
-      }
-    }
-  }
-}
-
-/**
  * Must use 'cdk-watch' command
  */
 export class MustUseCDKWatch extends ValidationRule {
@@ -746,7 +814,7 @@ export class MustUseCDKTest extends ValidationRule {
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
   }
 }
 
@@ -757,7 +825,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.3.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
   }
 }
 
@@ -857,7 +925,7 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
   public prepare(pkg: PackageJson): void {
-    this.ourPackages[pkg.json.name] = `^${pkg.json.version}`;
+    this.ourPackages[pkg.json.name] = pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
     this.recordDeps(pkg.json.devDependencies);
   }
@@ -949,33 +1017,6 @@ export class Cfn2Ts extends ValidationRule {
   }
 }
 
-export class JestCoverageTarget extends ValidationRule {
-  public readonly name = 'jest-coverage-target';
-
-  public validate(pkg: PackageJson) {
-    if (pkg.json.jest) {
-      // We enforce the key exists, but the value is just a default
-      const defaults: { [key: string]: number } = {
-        branches: 80,
-        statements: 80
-      };
-      for (const key of Object.keys(defaults)) {
-        const deepPath = ['coverageThreshold', 'global', key];
-        const setting = deepGet(pkg.json.jest, deepPath);
-        if (setting == null) {
-          pkg.report({
-            ruleName: this.name,
-            message: `When jest is used, jest.coverageThreshold.global.${key} must be set`,
-            fix: () => {
-              deepSet(pkg.json.jest, deepPath, defaults[key]);
-            },
-          });
-        }
-      }
-    }
-  }
-}
-
 /**
  * Packages inside JSII packages (typically used for embedding Lambda handles)
  * must only have dev dependencies and their node_modules must have been
@@ -1060,6 +1101,144 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
   }
 }
 
+export class ConstructsDependency extends ValidationRule {
+  public readonly name = 'constructs/dependency';
+
+  public validate(pkg: PackageJson) {
+    const REQUIRED_VERSION = '^3.0.2';
+
+    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDevDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+    }
+
+    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+      pkg.report({
+        ruleName: this.name,
+        message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
+        fix: () => {
+          pkg.addDependency('constructs', REQUIRED_VERSION);
+        }
+      });
+
+      if (!pkg.peerDependencies.constructs || pkg.peerDependencies.constructs !== REQUIRED_VERSION) {
+        pkg.report({
+          ruleName: this.name,
+          message: `"constructs" must have a version requirement ${REQUIRED_VERSION} in peerDependencies`,
+          fix: () => {
+            pkg.addPeerDependency('constructs', REQUIRED_VERSION);
+          }
+        });
+      }
+    }
+  }
+}
+
+/**
+ * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
+ * and actually causes the @awscdkio twitter account to be blocked.
+ *
+ * https://github.com/construct-catalog/catalog/issues/24
+ * https://github.com/construct-catalog/catalog/pull/22
+ */
+export class DoNotAnnounceInCatalog extends ValidationRule {
+  public readonly name = 'catalog/no-announce';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    if (pkg.json.awscdkio?.announce !== false) {
+      pkg.report({
+        ruleName: this.name,
+        message:  `missing "awscdkio.announce: false" in package.json`,
+        fix: () => {
+          pkg.json.awscdkio = pkg.json.awscdkio ?? { };
+          pkg.json.awscdkio.announce = false;
+        }
+      });
+    }
+  }
+}
+
+export class EslintSetup extends ValidationRule {
+  public readonly name = 'package-info/eslint';
+
+  public validate(pkg: PackageJson) {
+    const eslintrcFilename = '.eslintrc.js';
+    if (!fs.existsSync(eslintrcFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a .eslintrc.js file at the root of the package',
+        fix: () => {
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
+          fs.writeFileSync(
+            eslintrcFilename,
+            [
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
+              "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
+              'module.exports = baseConfig;'
+            ].join('\n') + '\n'
+          );
+        }
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
+    fileShouldContain(this.name, pkg, '.npmignore', '.eslintrc.js');
+  }
+}
+
+export class JestSetup extends ValidationRule {
+  public readonly name = 'package-info/jest.config';
+
+  public validate(pkg: PackageJson): void {
+    const cdkBuild = pkg.json['cdk-build'] || {};
+
+    // check whether the package.json contains the "jest" key,
+    // which we no longer use
+    if (pkg.json.jest) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Using Jest is set through a flag in the "cdk-build" key in package.json, the "jest" key is ignored',
+        fix: () => {
+          delete pkg.json.jest;
+          cdkBuild.jest = true;
+          pkg.json['cdk-build'] = cdkBuild;
+        },
+      });
+    }
+
+    // this rule should only be enforced for packages that use Jest for testing
+    if (!cdkBuild.jest) {
+      return;
+    }
+
+    const jestConfigFilename = 'jest.config.js';
+    if (!fs.existsSync(jestConfigFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a jest.config.js file at the root of the package',
+        fix: () => {
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
+          fs.writeFileSync(
+            jestConfigFilename,
+            [
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/jest.config');`,
+              'module.exports = baseConfig;',
+            ].join('\n') + '\n',
+          );
+        },
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
+    fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -1105,4 +1284,12 @@ function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
   return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+}
+
+function repoRoot(dir: string) {
+  let root = dir;
+  for (let i = 0; i < 50 && !fs.existsSync(path.join(root, 'yarn.lock')); i++) {
+    root = path.dirname(root);
+  }
+  return root;
 }

@@ -1,7 +1,7 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/core');
-import cpactions = require('../lib');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as cpactions from '../lib';
 
 const app = new cdk.App();
 
@@ -34,7 +34,12 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
           actionName: 'DeployAction',
           input: sourceOutput,
           bucket: deployBucket,
-        })
+          accessControl: s3.BucketAccessControl.PUBLIC_READ,
+          cacheControl: [
+            cpactions.CacheControl.setPublic(),
+            cpactions.CacheControl.maxAge(cdk.Duration.hours(12)),
+          ],
+        }),
       ],
     },
   ],

@@ -1,7 +1,7 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-labels: status/needs-triage
+labels: needs-triage
 ---
 
 <!-- NOTE:📕 If there is an issue regarding developer guide, please create an issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->
@@ -10,7 +10,7 @@ labels: status/needs-triage
 
 <!--
 ⚠️ Important Information
-For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk). This repository's issues are intended for feature requests and bug reports.
+For support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/tagged/aws-cdk). This repository's issues are intended for feature requests and bug reports.
 -->
 
 ### The Question

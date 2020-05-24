@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import apigateway = require('../lib');
+import * as apigateway from '../lib';
 
 export = {
   'minimal setup'(test: Test) {
@@ -17,10 +17,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        IntegrationHttpMethod: "GET",
-        Type: "HTTP_PROXY",
-        Uri: "http://foo/bar"
-      }
+        IntegrationHttpMethod: 'GET',
+        Type: 'HTTP_PROXY',
+        Uri: 'http://foo/bar',
+      },
     }));
 
     test.done();
@@ -36,8 +36,8 @@ export = {
       httpMethod: 'POST',
       proxy: false,
       options: {
-        cacheNamespace: 'hey'
-      }
+        cacheNamespace: 'hey',
+      },
     });
 
     api.root.addMethod('GET', integ);
@@ -45,13 +45,13 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        CacheNamespace: "hey",
-        IntegrationHttpMethod: "POST",
-        Type: "HTTP",
-        Uri: "http://foo/bar"
-      }
+        CacheNamespace: 'hey',
+        IntegrationHttpMethod: 'POST',
+        Type: 'HTTP',
+        Uri: 'http://foo/bar',
+      },
     }));
 
     test.done();
-  }
+  },
 };

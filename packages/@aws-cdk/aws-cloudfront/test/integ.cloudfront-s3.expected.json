@@ -1,9 +1,9 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "BucketPolicyE9A3008A": {
       "Type": "AWS::S3::BucketPolicy",
@@ -15,15 +15,25 @@
           "Statement": [
             {
               "Action": [
-                "s3:Get*",
+                "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
-                "CanonicalUser": {
-                  "Fn::GetAtt": [
-                    "OAI",
-                    "S3CanonicalUserId"
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::cloudfront:user/CloudFront Origin Access Identity ",
+                      {
+                        "Ref": "OAI"
+                      }
+                    ]
                   ]
                 }
               },
@@ -59,7 +69,7 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Allows CloudFront to reach to the bucket!"
+          "Comment": "Allows CloudFront to reach the bucket!"
         }
       }
     },
@@ -76,6 +86,7 @@
               "GET",
               "HEAD"
             ],
+            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -83,8 +94,7 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https",
-            "Compress": true
+            "ViewerProtocolPolicy": "redirect-to-https"
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,

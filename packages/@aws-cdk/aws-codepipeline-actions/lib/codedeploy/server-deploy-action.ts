@@ -1,6 +1,6 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import iam = require('@aws-cdk/aws-iam');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
@@ -37,13 +37,13 @@ export class CodeDeployServerDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision']
+      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
     }));
 
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -53,7 +53,7 @@ export class CodeDeployServerDeployAction extends Action {
 
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig']
+      actions: ['codedeploy:GetDeploymentConfig'],
     }));
 
     // grant the ASG Role permissions to read from the Pipeline Bucket

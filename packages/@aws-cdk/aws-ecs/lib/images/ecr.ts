@@ -1,4 +1,4 @@
-import ecr = require('@aws-cdk/aws-ecr');
+import * as ecr from '@aws-cdk/aws-ecr';
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
@@ -29,7 +29,7 @@ export class EcrImage extends ContainerImage {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
     return {
-      imageName: this.imageName
+      imageName: this.imageName,
     };
   }
 }

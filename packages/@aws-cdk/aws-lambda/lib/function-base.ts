@@ -1,12 +1,15 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
-import iam = require('@aws-cdk/aws-iam');
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { AliasOptions } from './alias';
+import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
+import { addAlias } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -38,6 +41,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The `$LATEST` version of this function.
+   *
+   * Note that this is reference to a non-specific AWS Lambda version, which
+   * means the function this version refers to can return different results in
+   * different invocations.
+   *
+   * To obtain a reference to an explicit version which references the current
+   * function configuration, use `lambdaFunction.currentVersion` instead.
    */
   readonly latestVersion: IVersion;
 
@@ -97,6 +107,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   addEventSource(source: IEventSource): void;
+
+  /**
+   * Configures options for asynchronous invocation.
+   */
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 }
 
 /**
@@ -229,7 +244,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   }
 
   public get latestVersion(): IVersion {
-    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    // Dynamic to avoid infinite recursion when creating the LatestVersion instance...
     return new LatestVersion(this);
   }
 
@@ -245,7 +260,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
     return new EventSourceMapping(this, id, {
       target: this,
-      ...options
+      ...options,
     });
   }
 
@@ -268,6 +283,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
+
+          return { statementAdded: true, policyDependable: this.node.findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
       },
@@ -290,6 +307,17 @@ export abstract class FunctionBase extends Resource implements IFunction {
     source.bind(this);
   }
 
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`);
+    }
+
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this,
+      ...options,
+    });
+  }
+
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
@@ -300,11 +328,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
     }
 
@@ -315,10 +343,30 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
 export abstract class QualifiedFunctionBase extends FunctionBase {
   public abstract readonly lambda: IFunction;
+
   public readonly permissionsNode = this.node;
+
+  /**
+   * The qualifier of the version or alias of this function.
+   * A qualifier is the identifier that's appended to a version or alias ARN.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunctionConfiguration.html#API_GetFunctionConfiguration_RequestParameters
+   */
+  protected abstract readonly qualifier: string;
 
   public get latestVersion() {
     return this.lambda.latestVersion;
+  }
+
+  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+    if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
+      throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
+    }
+
+    new EventInvokeConfig(this, 'EventInvokeConfig', {
+      function: this.lambda,
+      qualifier: this.qualifier,
+      ...options,
+    });
   }
 }
 
@@ -355,5 +403,9 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get role() {
     return this.lambda.role;
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }

@@ -1,4 +1,4 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { Action } from '../action';
 
@@ -62,7 +62,7 @@ export class AlexaSkillDeployAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {
       configuration: {
         ClientId: this.props.clientId,

@@ -1,25 +1,25 @@
 import '@aws-cdk/assert/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
     const stack = new Stack();
 
     new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com')
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
     expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
-             Version: '2012-10-17' } } } } });
+           Version: '2012-10-17' } } } } });
   });
 
   test('a role can grant PassRole permissions', () => {
@@ -36,12 +36,12 @@ describe('IAM role', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: "iam:PassRole",
-            Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] }
-          }
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+          },
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17',
       },
     });
   });
@@ -61,16 +61,16 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": "SomeSecret" }
+              StringEquals: { 'sts:ExternalId': 'SomeSecret' },
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
-          }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     });
   });
 
@@ -89,16 +89,16 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": "SomeSecret" }
+              StringEquals: { 'sts:ExternalId': 'SomeSecret' },
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
-          }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     });
   });
 
@@ -117,16 +117,16 @@ describe('IAM role', () => {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
+            Action: 'sts:AssumeRole',
             Condition: {
-              StringEquals: { "sts:ExternalId": ["SomeSecret", "AnotherSecret"] }
+              StringEquals: { 'sts:ExternalId': ['SomeSecret', 'AnotherSecret'] },
             },
-            Effect: "Allow",
-            Principal: { Service: "sns.amazonaws.com" }
-          }
+            Effect: 'Allow',
+            Principal: { Service: 'sns.amazonaws.com' },
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     });
   });
 
@@ -144,19 +144,19 @@ describe('IAM role', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: "service:myaction",
-            Effect: "Allow",
-            Resource: "myresource"
-          }
+            Action: 'service:myaction',
+            Effect: 'Allow',
+            Resource: 'myresource',
+          },
         ],
-        Version: "2012-10-17"
+        Version: '2012-10-17',
       },
-      PolicyName: "MyRoleDefaultPolicyA36BE1DD",
+      PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
       Roles: [
         {
-          Ref: "MyRoleF48FFE04"
-        }
-      ]
+          Ref: 'MyRoleF48FFE04',
+        },
+      ],
     });
 
   });
@@ -166,20 +166,20 @@ describe('IAM role', () => {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
+      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ],
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     expect(stack).toMatchTemplate({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
-         Properties:
+           Properties:
           { AssumeRolePolicyDocument:
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: { Service: 'test.service' } } ],
-             Version: '2012-10-17' },
+           Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
 
   });
@@ -195,18 +195,18 @@ describe('IAM role', () => {
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
+        Version: '2012-10-17',
         Statement: [
           {
-            Principal: { Federated: "foo" },
+            Principal: { Federated: 'foo' },
             Condition: {
-              StringEquals: { key: "value" }
+              StringEquals: { key: 'value' },
             },
-            Action: "sts:AssumeSomething",
-            Effect: "Allow",
-          }
+            Action: 'sts:AssumeSomething',
+            Effect: 'Allow',
+          },
         ],
-      }
+      },
     });
   });
 
@@ -218,23 +218,23 @@ describe('IAM role', () => {
       expect(stack).toMatchTemplate({
         Resources: {
           MyRoleF48FFE04: {
-          Type: "AWS::IAM::Role",
-          Properties: {
-            AssumeRolePolicyDocument: {
-            Statement: [
-              {
-              Action: "sts:AssumeRole",
-              Effect: "Allow",
-              Principal: {
-                Service: "sns.amazonaws.com"
-              }
-              }
-            ],
-            Version: "2012-10-17"
-            }
-          }
-          }
-        }
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Statement: [
+                  {
+                    Action: 'sts:AssumeRole',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'sns.amazonaws.com',
+                    },
+                  },
+                ],
+                Version: '2012-10-17',
+              },
+            },
+          },
+        },
       });
     });
 
@@ -244,7 +244,7 @@ describe('IAM role', () => {
       new Role(stack, 'MyRole', { maxSessionDuration: Duration.seconds(3700), assumedBy: new ServicePrincipal('sns.amazonaws.com') });
 
       expect(stack).toHaveResource('AWS::IAM::Role', {
-        MaxSessionDuration: 3700
+        MaxSessionDuration: 3700,
       });
     });
 
@@ -272,24 +272,24 @@ describe('IAM role', () => {
     new Role(stack, 'MyRole', {
       assumedBy: new CompositePrincipal(
         new ServicePrincipal('boom.amazonaws.test'),
-        new ArnPrincipal('1111111')
-      )
+        new ArnPrincipal('1111111'),
+      ),
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
             Principal: {
-              Service: "boom.amazonaws.test",
-              AWS: "1111111"
-            }
-          }
+              Service: 'boom.amazonaws.test',
+              AWS: '1111111',
+            },
+          },
         ],
-        Version: "2012-10-17"
-      }
+        Version: '2012-10-17',
+      },
     });
   });
 
@@ -306,17 +306,104 @@ describe('IAM role', () => {
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       PermissionsBoundary: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:",
+            'arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition',
             },
-            ":iam::aws:policy/managed-policy"
-          ]
-        ]
-      }
+            ':iam::aws:policy/managed-policy',
+          ],
+        ],
+      },
     });
+  });
+
+  test('Principal-* in an AssumeRolePolicyDocument gets translated to { "AWS": "*" }', () => {
+    // The docs say that "Principal: *" and "Principal: { AWS: * }" are equivalent
+    // (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html)
+    // but in practice CreateRole errors out if you use "Principal: *" in an AssumeRolePolicyDocument:
+    // An error occurred (MalformedPolicyDocument) when calling the CreateRole operation: AssumeRolepolicy contained an invalid principal: "STAR":"*".
+
+    // Make sure that we handle this case specially.
+    const stack = new Stack();
+    new Role(stack, 'Role', {
+      assumedBy: new AnyPrincipal(),
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { AWS: '*' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('can have a description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: 'This is a role description.',
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+           Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+           Version: '2012-10-17' },
+          Description: 'This is a role description.' } } } });
+  });
+
+  test('should not have an empty description', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      description: '',
+    });
+
+    expect(stack).toMatchTemplate({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+           Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+           Version: '2012-10-17' }} } } });
+  });
+
+  test('description can only be 1000 characters long', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new Role(stack, 'MyRole', {
+        assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+        description: '1000+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
+        nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
+        massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
+        imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. \
+        Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, \
+        eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus \
+        varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. \
+        Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
+        sem neque sed ipsum.',
+      });
+    }).toThrow(/Role description must be no longer than 1000 characters./);
   });
 });

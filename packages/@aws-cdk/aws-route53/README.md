@@ -1,10 +1,10 @@
 ## Amazon Route53 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -12,7 +12,7 @@
 To add a public hosted zone:
 
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'fully.qualified.domain.com'
@@ -24,8 +24,8 @@ To add a private hosted zone, use `PrivateHostedZone`. Note that
 VPC you're configuring for private hosted zones.
 
 ```ts
-import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 
@@ -41,7 +41,7 @@ Additional VPCs can be added with `zone.addVpc()`.
 
 To add a TXT record to your zone:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.TxtRecord(this, 'TXTRecord', {
   zone: myZone,
@@ -59,22 +59,22 @@ new route53.TxtRecord(this, 'TXTRecord', {
 
 To add a A record to your zone:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
+import * as route53 from '@aws-cdk/aws-route53';
 
 new route53.ARecord(this, 'ARecord', {
   zone: myZone,
-  target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
 });
 ```
 
 To add a AAAA record pointing to a CloudFront distribution:
 ```ts
-import route53 = require('@aws-cdk/aws-route53');
-import targets = require('@aws-cdk/aws-route53-targets');
+import * as route53 from '@aws-cdk/aws-route53';
+import * as targets from '@aws-cdk/aws-route53-targets';
 
 new route53.AaaaRecord(this, 'Alias', {
   zone: myZone,
-  target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
 });
 ```
 
@@ -88,7 +88,7 @@ allowed to issue certificates for a domain to Amazon only.
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
 ```ts
-const zone = HostedZone.import(this, 'MyZone', {
+const zone = HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
   zoneName: 'example.com',
   hostedZoneId: 'ZOJJZC49E0EPZ',
 });

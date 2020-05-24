@@ -1,6 +1,7 @@
-import fs = require('fs-extra');
-import path = require('path');
-import yargs = require('yargs');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as yargs from 'yargs';
+import * as yarnCling from 'yarn-cling';
 import { shell } from '../lib/os';
 import { Timers } from '../lib/timer';
 
@@ -17,7 +18,7 @@ async function main() {
       type: 'string',
       desc: 'Specify a different jsii-pacmak executable',
       default: require.resolve('jsii-pacmak/bin/jsii-pacmak'),
-      defaultDescription: 'jsii-pacmak provided by node dependencies'
+      defaultDescription: 'jsii-pacmak provided by node dependencies',
     })
     .argv;
 
@@ -29,6 +30,15 @@ async function main() {
   if (pkg.private) {
     process.stdout.write('No packaging for private modules.\n');
     return;
+  }
+
+  // If we need to shrinkwrap this, do so now.
+  const packageOptions = pkg['cdk-package'] ?? {};
+  if (packageOptions.shrinkWrap) {
+    await yarnCling.generateShrinkwrap({
+      packageJsonFile: 'package.json',
+      outputFile: 'npm-shrinkwrap.json',
+    });
   }
 
   if (pkg.jsii) {

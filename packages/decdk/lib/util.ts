@@ -1,7 +1,7 @@
-import fs = require('fs-extra');
-import jsiiReflect = require('jsii-reflect');
-import path = require('path');
-import YAML = require('yaml');
+import * as fs from 'fs-extra';
+import * as jsiiReflect from 'jsii-reflect';
+import * as path from 'path';
+import * as YAML from 'yaml';
 
 /**
  * Reads a YAML/JSON template file.

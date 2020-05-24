@@ -16,3 +16,6 @@ dist
 *.snk
 
 *.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js

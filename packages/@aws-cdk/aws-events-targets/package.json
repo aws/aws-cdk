@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-events-targets",
-  "version": "1.16.1",
+  "version": "0.0.0",
   "description": "Event targets for AWS CloudWatch Events",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,8 +11,7 @@
         "package": "software.amazon.awscdk.services.events.targets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "events-targets",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "events-targets"
         }
       },
       "dotnet": {
@@ -20,7 +19,6 @@
         "packageId": "Amazon.CDK.AWS.Events.Targets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
-        "versionSuffix": "-devpreview",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -50,26 +48,14 @@
   },
   "cdk-build": {
     "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json"
-    ]
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
+      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json && rm -f lib/sdk-api-metadata.d.ts"
     ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 30,
-        "statements": 80
-      }
-    }
+    "jest": true
   },
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib",
+    "constructs",
     "cloudwatch",
     "events"
   ],
@@ -80,48 +66,50 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "1.16.1",
-    "@aws-cdk/aws-codecommit": "1.16.1",
-    "aws-sdk": "^2.573.0",
-    "aws-sdk-mock": "^4.5.0",
-    "cdk-build-tools": "1.16.1",
-    "cdk-integ-tools": "1.16.1",
-    "jest": "^24.9.0",
-    "pkglint": "1.16.1"
+    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
+    "aws-sdk": "^2.681.0",
+    "aws-sdk-mock": "^5.1.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "jest": "^25.5.4",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-codebuild": "1.16.1",
-    "@aws-cdk/aws-codepipeline": "1.16.1",
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-ecs": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/aws-stepfunctions": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.16.1",
-    "@aws-cdk/aws-codebuild": "1.16.1",
-    "@aws-cdk/aws-codepipeline": "1.16.1",
-    "@aws-cdk/aws-ec2": "1.16.1",
-    "@aws-cdk/aws-ecs": "1.16.1",
-    "@aws-cdk/aws-events": "1.16.1",
-    "@aws-cdk/aws-iam": "1.16.1",
-    "@aws-cdk/aws-lambda": "1.16.1",
-    "@aws-cdk/aws-sns": "1.16.1",
-    "@aws-cdk/aws-sns-subscriptions": "1.16.1",
-    "@aws-cdk/aws-sqs": "1.16.1",
-    "@aws-cdk/aws-stepfunctions": "1.16.1",
-    "@aws-cdk/core": "1.16.1"
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {
@@ -134,5 +122,9 @@
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
     ]
-  }
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

@@ -1,8 +1,8 @@
 import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as events from '@aws-cdk/aws-events';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
-import targets = require('../../lib');
+import * as targets from '../../lib';
 
 test('sqs queue as an event rule target', () => {
   // GIVEN
@@ -21,49 +21,49 @@ test('sqs queue as an event rule target', () => {
       Statement: [
         {
           Action: [
-            "sqs:SendMessage",
-            "sqs:GetQueueAttributes",
-            "sqs:GetQueueUrl"
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
           ],
           Condition: {
             ArnEquals: {
-              "aws:SourceArn": {
-                "Fn::GetAtt": [
-                  "MyRuleA44AB831",
-                  "Arn"
-                ]
-              }
-            }
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'MyRuleA44AB831',
+                  'Arn',
+                ],
+              },
+            },
           },
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
-            ]
-          }
-        }
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17',
     },
-    Queues: [{ Ref: "MyQueueE6CA6235" }]
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
   }));
 
   cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: "rate(1 hour)",
-    State: "ENABLED",
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
     Targets: [
       {
         Arn: {
-          "Fn::GetAtt": [
-            "MyQueueE6CA6235",
-            "Arn"
-          ]
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
         },
-        Id: "Target0"
-      }
-    ]
+        Id: 'Target0',
+      },
+    ],
   }));
 });
 
@@ -86,58 +86,58 @@ test('multiple uses of a queue as a target results in multi policy statement bec
       Statement: [
         {
           Action: [
-            "sqs:SendMessage",
-            "sqs:GetQueueAttributes",
-            "sqs:GetQueueUrl"
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
           ],
           Condition: {
             ArnEquals: {
-              "aws:SourceArn": {
-                "Fn::GetAtt": [
-                  "Rule071281D88",
-                  "Arn"
-                ]
-              }
-            }
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'Rule071281D88',
+                  'Arn',
+                ],
+              },
+            },
           },
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
-            ]
-          }
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
         },
         {
           Action: [
-            "sqs:SendMessage",
-            "sqs:GetQueueAttributes",
-            "sqs:GetQueueUrl"
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
           ],
           Condition: {
             ArnEquals: {
-              "aws:SourceArn": {
-                "Fn::GetAtt": [
-                  "Rule136483A30",
-                  "Arn"
-                ]
-              }
-            }
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'Rule136483A30',
+                  'Arn',
+                ],
+              },
+            },
           },
-          Effect: "Allow",
-          Principal: { Service: "events.amazonaws.com" },
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            "Fn::GetAtt": [
-              "MyQueueE6CA6235",
-              "Arn"
-            ]
-          }
-        }
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
       ],
-      Version: "2012-10-17"
+      Version: '2012-10-17',
     },
-    Queues: [{ Ref: "MyQueueE6CA6235" }]
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
   }));
 });
 
@@ -162,21 +162,21 @@ test('fifo queues are synthesized correctly', () => {
   }));
 
   cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
-    ScheduleExpression: "rate(1 hour)",
-    State: "ENABLED",
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
     Targets: [
       {
         Arn: {
-          "Fn::GetAtt": [
-            "MyQueueE6CA6235",
-            "Arn"
-          ]
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
         },
-        Id: "Target0",
+        Id: 'Target0',
         SqsParameters: {
-          MessageGroupId: "MyMessageGroupId",
-        }
-      }
-    ]
+          MessageGroupId: 'MyMessageGroupId',
+        },
+      },
+    ],
   }));
 });

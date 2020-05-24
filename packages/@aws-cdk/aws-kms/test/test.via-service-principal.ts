@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
+import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
-import kms = require('../lib');
+import * as kms from '../lib';
 
 export = {
   'Via service, any principal'(test: Test) {
@@ -8,7 +8,7 @@ export = {
     const statement = new iam.PolicyStatement({
       actions: ['abc:call'],
       principals: [new kms.ViaServicePrincipal('bla.amazonaws.com')],
-      resources: ['*']
+      resources: ['*'],
     });
 
     // THEN
@@ -17,7 +17,7 @@ export = {
       Condition: { StringEquals: { 'kms:ViaService': 'bla.amazonaws.com' } },
       Effect: 'Allow',
       Principal: '*',
-      Resource: '*'
+      Resource: '*',
     });
 
     test.done();
@@ -28,7 +28,7 @@ export = {
     const statement = new iam.PolicyStatement({
       actions: ['abc:call'],
       principals: [new kms.ViaServicePrincipal('bla.amazonaws.com', new iam.OrganizationPrincipal('o-1234'))],
-      resources: ['*']
+      resources: ['*'],
     });
 
     // THEN
@@ -37,12 +37,12 @@ export = {
       Condition: {
         StringEquals: {
           'kms:ViaService': 'bla.amazonaws.com',
-          'aws:PrincipalOrgID': 'o-1234'
-        }
+          'aws:PrincipalOrgID': 'o-1234',
+        },
       },
       Effect: 'Allow',
       Principal: '*',
-      Resource: '*'
+      Resource: '*',
     });
 
     test.done();

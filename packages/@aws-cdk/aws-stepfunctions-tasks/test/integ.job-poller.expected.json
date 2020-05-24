@@ -69,7 +69,10 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "StateMachineRoleB840431D"
+      ]
     }
   }
 }

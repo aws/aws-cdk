@@ -1,6 +1,6 @@
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import sns = require('@aws-cdk/aws-sns');
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -16,14 +16,14 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
       actions: ['sns:Publish'],
       resources: [this.topic.topicArn],
       conditions: {
-        ArnLike: { "aws:SourceArn": bucket.bucketArn }
-      }
+        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+      },
     }));
 
     return {
       arn: this.topic.topicArn,
       type: s3.BucketNotificationDestinationType.TOPIC,
-      dependencies: [ this.topic ] // make sure the topic policy resource is created before the notification config
+      dependencies: [ this.topic ], // make sure the topic policy resource is created before the notification config
     };
   }
 }

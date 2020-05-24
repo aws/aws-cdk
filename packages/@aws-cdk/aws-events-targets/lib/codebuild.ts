@@ -1,6 +1,6 @@
-import codebuild = require('@aws-cdk/aws-codebuild');
-import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { singletonEventRole } from './util';
 
 /**
@@ -23,7 +23,7 @@ export interface CodeBuildProjectProps {
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(
     private readonly project: codebuild.IProject,
-    private readonly props: CodeBuildProjectProps = {}
+    private readonly props: CodeBuildProjectProps = {},
   ) {}
 
   /**
@@ -36,11 +36,11 @@ export class CodeBuildProject implements events.IRuleTarget {
       role: singletonEventRole(this.project, [
         new iam.PolicyStatement({
           actions: ['codebuild:StartBuild'],
-          resources: [this.project.projectArn]
-        })
+          resources: [this.project.projectArn],
+        }),
       ]),
       input: this.props.event,
-      targetResource: this.project
+      targetResource: this.project,
     };
   }
 }

@@ -1,5 +1,5 @@
-import { Token } from "@aws-cdk/core";
-import { Connections, IConnectable } from "./connections";
+import { Token } from '@aws-cdk/core';
+import { Connections, IConnectable } from './connections';
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -27,7 +27,17 @@ export interface IPeer extends IConnectable {
 }
 
 /**
- * Factories for static connection peer
+ * Peer object factories (to be used in Security Group management)
+ *
+ * The static methods on this object can be used to create peer objects
+ * which represent a connection partner in Security Group rules.
+ *
+ * Use this object if you need to represent connection partners using plain IP
+ * addresses, or a prefix list ID.
+ *
+ * If you want to address a connection partner by Security Group, you can just
+ * use the Security Group (or the construct that contains a Security Group)
+ * directly, as it already implements `IPeer`.
  */
 export class Peer {
   /**
@@ -112,7 +122,7 @@ class CidrIPv4 implements IPeer {
  */
 class AnyIPv4 extends CidrIPv4 {
   constructor() {
-    super("0.0.0.0/0");
+    super('0.0.0.0/0');
   }
 }
 
@@ -159,7 +169,7 @@ class CidrIPv6 implements IPeer {
  */
 class AnyIPv6 extends CidrIPv6 {
   constructor() {
-    super("::0/0");
+    super('::/0');
   }
 }
 
