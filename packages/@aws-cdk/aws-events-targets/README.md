@@ -22,6 +22,7 @@ Currently supported are:
 * Start a StepFunctions state machine
 * Queue a Batch job
 * Make an AWS API call
+* Put a record to a Kinesis stream
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 CloudWatch Events.
