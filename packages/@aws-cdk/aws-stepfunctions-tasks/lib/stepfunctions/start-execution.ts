@@ -55,7 +55,6 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      // TODO clean this error up
       throw new Error('Task Token is required in `input` for callback. Use Context.taskToken to set the token.');
     }
 
