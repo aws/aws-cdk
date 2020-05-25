@@ -7,11 +7,20 @@ import { DefaultStackSynthesizer } from './default-synthesizer';
  * Construction properties of {@link BootstraplessSynthesizer}.
  */
 export interface BootstraplessSynthesizerProps {
-  /** The deploy Role ARN to use. */
-  readonly deployRoleArn: string;
+  /**
+   * The deploy Role ARN to use.
+   *
+   * @default - No deploy role (use CLI credentials)
+   *
+   */
+  readonly deployRoleArn?: string;
 
-  /** The CFN execution Role ARN to use. */
-  readonly cloudFormationExecutionRoleArn: string;
+  /**
+   * The CFN execution Role ARN to use.
+   *
+   * @default - No CloudFormation role (use CLI credentials)
+   */
+  readonly cloudFormationExecutionRoleArn?: string;
 }
 
 /**
