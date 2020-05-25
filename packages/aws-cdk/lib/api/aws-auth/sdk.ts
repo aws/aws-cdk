@@ -193,7 +193,7 @@ function makeDetailedException(e: Error): Error {
   // message with one that's more likely to help users, and tell them the most probable
   // fix (bootstrapping). The underlying service call failure will be appended below.
   if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
-    e.message = 'Could not assume role in target account (did you bootstrap the environment?)';
+    e.message = 'Could not assume role in target account (did you bootstrap the environment with the right \'--trust\'s?)';
   }
 
   // Replace the message on this error with a concatenation of all inner error messages.
