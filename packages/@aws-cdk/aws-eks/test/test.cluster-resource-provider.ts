@@ -100,6 +100,7 @@ export = {
           Arn: 'arn:cluster-arn',
           CertificateAuthorityData: 'certificateAuthority-data',
           OpenIdConnectIssuerUrl: undefined,
+          OpenIdConnectIssuer: undefined,
         },
       });
       test.done();
@@ -422,6 +423,7 @@ export = {
             Arn: 'arn:cluster-arn',
             CertificateAuthorityData: 'certificateAuthority-data',
             OpenIdConnectIssuerUrl: undefined,
+            OpenIdConnectIssuer: undefined,
           },
         });
         test.done();
