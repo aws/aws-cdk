@@ -1,9 +1,9 @@
 import * as semver from 'semver';
 import { DockerImageAsset } from './docker-image-asset';
-import { FileAsset, FileAssetPackaging } from './file-asset';
+import { FileAsset } from './file-asset';
 import { ManifestFile } from './manifest-schema';
 import { loadMyPackageJson } from './private/my-package-json';
-import { assertIsObject, expectKey, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
+import { assertIsObject, expectKey, isFileAssetPackaging, isMapOf, isObjectAnd, isString } from './private/schema-helpers';
 
 const PACKAGE_VERSION = loadMyPackageJson().version;
 
@@ -101,13 +101,4 @@ function isDockerImageAsset(entry: object): DockerImageAsset {
   }));
 
   return entry;
-}
-
-function isFileAssetPackaging(value: unknown): FileAssetPackaging {
-  const strValue = isString(value);
-  const validValues = Object.keys(FileAssetPackaging);
-  if (!validValues.includes(strValue)) {
-    throw new Error(`"${strValue}" is not a valid FileAssetPackaging value (one of ${validValues.join(', ')})`);
-  }
-  return value as any;
 }
