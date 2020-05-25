@@ -1,6 +1,6 @@
 image: jsii/superchain
 tasks:
-  - init: yarn build --skip-test --no-bail
+  - init: scripts/init-vscode && yarn build --skip-test --no-bail
 
 vscode:
   extensions:
