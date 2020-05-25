@@ -3,20 +3,10 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { LambdaInvoke } from '../../lib';
 
-/*
- * Creates a state machine with a task state to invoke a Lambda function
- * The state machine creates a couple of Lambdas that pass results forward
- * and into a Choice state that validates the output.
- *
- * Stack verification steps:
- * The generated State Machine can be executed from the CLI (or Step Functions console)
- * and runs with an execution status of `Succeeded`.
- *
- * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
- * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
- */
+export const STACK_NAME = 'aws-stepfunctions-tasks-lambda-invoke-integ';
+
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-lambda-invoke-integ');
+const stack = new cdk.Stack(app, STACK_NAME);
 
 const submitJobLambda = new Function(stack, 'submitJobLambda', {
   code: Code.fromInline(`exports.handler = async () => {

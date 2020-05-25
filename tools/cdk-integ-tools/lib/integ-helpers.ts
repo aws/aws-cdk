@@ -36,7 +36,9 @@ export class IntegrationTests {
 
   public async discover(): Promise<IntegrationTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
+    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') &&
+                                path.basename(fileName).endsWith('.js') &&
+                                !path.basename(fileName).endsWith('.verify.js'));
     return await this.request(integs);
   }
 
@@ -69,6 +71,8 @@ export class IntegrationTest {
   private readonly expectedFilePath: string;
   private readonly cdkContextPath: string;
   private readonly sourceFilePath: string;
+  private readonly verifyFileName: string;
+  private readonly verifyFilePath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
     const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
@@ -76,6 +80,8 @@ export class IntegrationTest {
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
     this.sourceFilePath = path.join(this.directory, this.name);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
+    this.verifyFileName = baseName + '.verify.js';
+    this.verifyFilePath = path.join(this.directory, this.verifyFileName);
   }
 
   public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean, env?: any } = { }): Promise<any> {
@@ -112,6 +118,19 @@ export class IntegrationTest {
 
   public hasExpected(): boolean {
     return fs.existsSync(this.expectedFilePath);
+  }
+
+  public hasVerify(): boolean {
+    return fs.existsSync(this.verifyFilePath);
+  }
+
+  public async runVerify(options: { json?: boolean, context?: any, verbose?: boolean, env?: any } = { }) {
+    return exec(['jest', this.verifyFileName, '--testMatch', '**/?(*.)+(verify).js', '--coverage=false'], {
+      cwd: this.directory,
+      json: options.json,
+      verbose: options.verbose,
+      env: options.env,
+    });
   }
 
   /**

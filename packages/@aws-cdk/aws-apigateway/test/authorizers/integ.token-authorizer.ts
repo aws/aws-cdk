@@ -3,15 +3,10 @@ import { App, Stack } from '@aws-cdk/core';
 import * as path from 'path';
 import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
 
-/*
- * Stack verification steps:
- * * `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
- * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>` should return 403
- * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
- */
+export const STACK_NAME = 'TokenAuthorizerInteg';
 
 const app = new App();
-const stack = new Stack(app, 'TokenAuthorizerInteg');
+const stack = new Stack(app, STACK_NAME);
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,

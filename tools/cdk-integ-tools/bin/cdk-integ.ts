@@ -40,6 +40,16 @@ async function main() {
         // Note: no "context" and "env", so use default user settings!
       });
 
+      if (test.hasVerify()) {
+        console.error('Running verification tests');
+        await test.runVerify({
+          verbose: argv.verbose,
+          env: {
+            AWS_SDK_LOAD_CONFIG: 'true', // Read region from AWS CLI config file
+          },
+        });
+      }
+
       console.error('Success! Writing out reference synth.');
 
       // If this all worked, write the new expectation file

@@ -179,21 +179,13 @@ If you are working on a new feature that is using previously unused CloudFormati
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
-To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
-deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
-The steps here are usually AWS CLI commands but they need not be.
-
-```ts
-/*
- * Stack verification steps:
- * * <step-1>
- * * <step-2>
- */
-```
+To the extent possible, include a runtime verification test that will run after the integration
+test successfuly deployed the stack. The test file must be named `integ.<integ-test-name>.verify.ts`
+and will be run by Jest.
 
 Examples:
-* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.token-authorizer.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts#L6)
+* [integ.invoke.verify.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-stepfunctions-tasks/test/lambda/integ.invoke.verify.ts)
+* [integ.token-authorizer.verify.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.verify.ts)
 
 ### Step 4: Commit
 
