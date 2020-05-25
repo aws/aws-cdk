@@ -179,7 +179,7 @@ function isFunction(x: any): x is (...args: any[]) => any {
 function makeDetailedException(e: Error): Error {
   // This is the super-generic "something's wrong" error that the JS SDK wraps other errors in.
   // https://github.com/aws/aws-sdk-js/blob/f0ac2e53457c7512883d0677013eacaad6cd8a19/lib/event_listeners.js#L84
-  if (e.message.startsWith('Missing credentials in config')) {
+  if (typeof e.message === 'string' && e.message.startsWith('Missing credentials in config')) {
     const original = (e as any).originalError;
     if (original) {
       // When the SDK does a 'util.copy', they lose the Error-ness of the inner error
