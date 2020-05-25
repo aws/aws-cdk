@@ -17,6 +17,26 @@ interface ResourceMetadata {
   constructPath: string;
 }
 
+export interface StackActivityMonitorProps {
+  /**
+   * Total number of resources to update
+   *
+   * Used to calculate a progress bar.
+   *
+   * @default - No progress reporting.
+   */
+  readonly resourcesTotal?: number;
+
+  /**
+   * Whether 'verbose' was requested in the CLI
+   *
+   * If verbose is requested, we'll always use the full history printer.
+   *
+   * @default - Use value from logging.isVerbose
+   */
+  readonly verbose?: boolean;
+}
+
 export class StackActivityMonitor {
   private active = false;
   private activity: { [eventId: string]: StackActivity } = { };
@@ -47,20 +67,21 @@ export class StackActivityMonitor {
     private readonly cfn: aws.CloudFormation,
     private readonly stackName: string,
     private readonly stack: cxapi.CloudFormationStackArtifact,
-    resourcesTotal?: number) {
+    options: StackActivityMonitorProps = {}) {
 
     const stream = process.stderr;
 
     const props: PrinterProps = {
       resourceTypeColumnWidth: calcMaxResourceTypeLength(this.stack.template),
-      resourcesTotal,
+      resourcesTotal: options.resourcesTotal,
       stream,
     };
 
     const isWindows = process.platform === 'win32';
+    const verbose = options.verbose ?? isVerbose;
     const fancyOutputAvailable = !isWindows && stream.isTTY;
 
-    this.printer = process.env.CDK_FANCY_MONITOR && fancyOutputAvailable
+    this.printer = fancyOutputAvailable && !verbose
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
   }
