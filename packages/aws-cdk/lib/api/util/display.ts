@@ -1,8 +1,7 @@
+import * as wrapAnsi from 'wrap-ansi';
+
 /**
  * A class representing rewritable display lines
- *
- * FIXME: Should take terminal width and nonprintable chars into account
- * to avoid horizontal overflow. We'll add that at some point.
  */
 export class RewritableBlock {
   private lastHeight = 0;
@@ -11,7 +10,7 @@ export class RewritableBlock {
   }
 
   public displayLines(lines: string[]) {
-    lines = expandNewlines(lines);
+    lines = terminalWrap(this.stream.columns, expandNewlines(lines));
 
     this.stream.write(cursorUp(this.lastHeight));
     for (const line of lines) {
@@ -44,8 +43,22 @@ function cll() {
   return ESC + '[K';
 }
 
+function terminalWrap(width: number | undefined, lines: string[]) {
+  if (width === undefined) { return lines; }
+
+  const ret = new Array<string>();
+  for (const line of lines) {
+    ret.push(...wrapAnsi(line, width - 1, {
+      hard: true,
+      trim: true,
+      wordWrap: false,
+    }));
+  }
+  return ret;
+}
+
 /**
- * Make sure there are no hidden newlines in the given strings
+ * Make sure there are no hidden newlines in the gin strings
  */
 function expandNewlines(lines: string[]): string[] {
   const ret = new Array<string>();

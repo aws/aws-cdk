@@ -49,12 +49,18 @@ export class StackActivityMonitor {
     private readonly stack: cxapi.CloudFormationStackArtifact,
     resourcesTotal?: number) {
 
+    const stream = process.stderr;
+
     const props: PrinterProps = {
       resourceTypeColumnWidth: calcMaxResourceTypeLength(this.stack.template),
       resourcesTotal,
+      stream,
     };
 
-    this.printer = process.env.CDK_FANCY_MONITOR
+    const isWindows = process.platform === 'win32';
+    const fancyOutputAvailable = !isWindows && stream.isTTY;
+
+    this.printer = process.env.CDK_FANCY_MONITOR && fancyOutputAvailable
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
   }
@@ -212,12 +218,20 @@ function calcMaxResourceTypeLength(template: any) {
 }
 
 interface PrinterProps {
+  /**
+   * Total resources to deploy
+   */
   readonly resourcesTotal?: number
 
   /**
    * The with of the "resource type" column.
    */
   readonly resourceTypeColumnWidth: number;
+
+  /**
+   * Stream to write to
+   */
+  readonly stream: NodeJS.WriteStream;
 }
 
 abstract class ActivityPrinterBase {
@@ -256,6 +270,8 @@ abstract class ActivityPrinterBase {
 
   protected readonly failures = new Array<StackActivity>();
 
+  protected readonly stream: NodeJS.WriteStream;
+
   constructor(protected readonly props: PrinterProps) {
     // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
     // counted yet. This makes it line up with the amount of events we expect.
@@ -263,6 +279,8 @@ abstract class ActivityPrinterBase {
 
     // How many digits does this number take to represent?
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
+
+    this.stream = props.stream;
   }
 
   public addActivity(activity: StackActivity) {
@@ -372,7 +390,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     const logicalId = resourceName !== e.LogicalResourceId ? `(${e.LogicalResourceId}) ` : '';
 
-    process.stderr.write(util.format(' %s | %s | %s | %s | %s %s%s%s\n',
+    this.stream.write(util.format(' %s | %s | %s | %s | %s %s%s%s\n',
       this.progress(),
       new Date(e.Timestamp).toLocaleTimeString(),
       color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
@@ -408,7 +426,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     }
 
     if (Object.keys(this.resourcesInProgress).length > 0) {
-      process.stderr.write(util.format('%s Currently in progress: %s\n',
+      this.stream.write(util.format('%s Currently in progress: %s\n',
         this.progress(),
         colors.bold(Object.keys(this.resourcesInProgress).join(', '))));
     }
@@ -441,7 +459,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public readonly updateSleep: number = 2_000;
 
   private oldVerbose: boolean = false;
-  private block = new RewritableBlock(process.stderr);
+  private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
     super(props);
