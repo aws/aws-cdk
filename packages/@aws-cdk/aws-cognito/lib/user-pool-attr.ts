@@ -17,7 +17,7 @@ export interface RequiredAttributes {
   readonly birthdate?: boolean;
 
   /**
-   * Whether theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
+   * Whether the user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
    * @default false
    */
   readonly email?: boolean;
