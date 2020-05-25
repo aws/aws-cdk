@@ -309,6 +309,8 @@ initCommandLine()
   })
   .catch(err => {
     error(err.message);
-    debug(err.stack);
+    if (err.stack) {
+      debug(err.stack);
+    }
     process.exitCode = 1;
   });
