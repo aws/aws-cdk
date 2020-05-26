@@ -1,4 +1,5 @@
 ## AWS Batch Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -15,15 +16,15 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-AWS Batch is a batch processing tool for efficiently running hundreds of thousands computing jobs in AWS. Batch can dynamically provision different types of compute resources based on your resource requirements for batch jobs submitted. Batch simplifies the planning, scheduling, and executions of your batch workloads across a full range of compute services like [Amazon EC2](https://aws.amazon.com/ec2/) and [Spot Resources](https://aws.amazon.com/ec2/spot/).
+AWS Batch is a batch processing tool for efficiently running hundreds of thousands computing jobs in AWS. Batch can dynamically provision different types of compute resources based on the resource requirements of submitted jobs.
 
 AWS Batch simplifies the planning, scheduling, and executions of your batch workloads across a full range of compute services like [Amazon EC2](https://aws.amazon.com/ec2/) and [Spot Resources](https://aws.amazon.com/ec2/spot/).
 
 Batch achieves this by utilizing queue processing of batch job requests. To successfully submit a job for execution, you need the following resources:
 
 1. [Job Definition](#job-definition) - *Group various job properties (container image, resource requirements, env variables...) into a single definition. These definitions are used at job submission time.*
-2. [Compute Environment](#compute-environment) - *the execution runtime of submitted jobs*
-3. [Job Queue](#job-queue) - *the queue where batch jobs can be submitted to via AWS SDK/CL. Each job queue is associated with (at least) one compute environment.*
+2. [Compute Environment](#compute-environment) - *the execution runtime of submitted batch jobs*
+3. [Job Queue](#job-queue) - *the queue where batch jobs can be submitted to via AWS SDK/CLI*
 
 For more information on **AWS Batch** visit the [AWS Docs for Batch](https://docs.aws.amazon.com/batch/index.html).
 
@@ -36,7 +37,7 @@ In **MANAGED** mode, AWS will handle the provisioning of compute resources to ac
 Below is an example of each available type of compute environment:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'VPC');
+const defaultVpc = new ec2.Vpc(this, 'VPC');
 
 // default is managed
 const awsManagedEnvironment = new batch.ComputeEnvironment(stack, 'AWS-Managed-Compute-Env', {
@@ -92,81 +93,129 @@ In this situation, Batch will allocate **Job A** to compute resource #1 because 
 
 The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for the remaining job to be handled in larger containers regardless of vCPU requirement and costs.
 
-### Advanced Compute Environment Configuration
+### Launch template support
 
-By default, CDK will use the the `optimal` instance type family to choose compute resource types that best match your job requirements. However, you can configure what instance types to provision, and the structure of those instances when assigned to your compute environment. Specifying an advanced compute environment could look like this:
-
-```ts
-const computeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
-  computeEnvironmentName: 'Memory-Optimized-Environment',
-  // AWS Batch should manage provisioning new compute resources
-  managed: false,
-
-  // Enables the environment for accepting Batch Job assignments by AWS Batch
-  enabled: true,
-
-  // Allocate incoming jobs to any available instance regardless of best vCPU fit
-  allocationStrategy: batch.AllocationStrategy.BEST_FIT_PROGRESSIVE,
-
-  computeResources: {
-    // Pay full-price for all provisioned resources
-    type: batch.ComputeResourceType.ON_DEMAND,
-
-    // Uses AWS recommended AMIs for GPU-based workloads
-    image: new ecs.EcsOptimizedAmi({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      hardwareType: ecs.AmiHardwareType.GPU,
-    }),
-
-    // 'ec2KeyPair' specifies the name of the related EC2 KeyPair for SSH access
-    ec2KeyPair: 'dev',
-
-    // 'instanceRole' defines the privileges the job will have when running
-    instanceRole: new iam.Role(stack, 'compute-env-instance-role', {
-      assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-    }),
-
-    // Only pick `p3.2xlarge` or `p3.8xlarge` instances to provision
-    instanceTypes: [
-      ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE8),
-    ],
-
-    // At most, provision up to 40 vCPUs worth of instances. For example, 5x p3.8xlarge => 40 vCPU
-    maxvCpus: 40,
-
-    // 'minvCpus' specifies our required minimal vCPU availability when no jobs exists
-    minvCpus: 8,
-
-### Usage
 Simply define your Launch Template:
 ```typescript
-    const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
-      launchTemplateName: 'extra-storage-template',
-      launchTemplateData: {
-        blockDeviceMappings: [
-          {
-            deviceName: '/dev/xvdcz',
-            ebs: {
-              encrypted: true,
-              volumeSize: 100,
-              volumeType: 'gp2'
-            }
-          }
-        ]
+const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateName: 'extra-storage-template',
+  launchTemplateData: {
+    blockDeviceMappings: [
+      {
+        deviceName: '/dev/xvdcz',
+        ebs: {
+          encrypted: true,
+          volumeSize: 100,
+          volumeType: 'gp2'
+        }
       }
-    });
+    ]
+  }
+});
 ```
+
 and use it:
 
 ```typescript
-    const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
-      computeResources: {
-        launchTemplate: {
-          launchTemplateName: myLaunchTemplate.launchTemplateName as string, //or simply use an existing template name
-        },
-        vpc,
-      },
-      computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
-    });
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    launchTemplate: {
+      launchTemplateName: myLaunchTemplate.launchTemplateName as string, //or simply use an existing template name
+    },
+    vpc,
+  },
+  computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+});
+```
+
+### Importing an existing Compute Environment
+
+To import an existing batch compute environment, call `ComputeEnvironment.fromComputeEnvironmentArn()`.
+
+Below is an example:
+
+```ts
+const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imported-compute-env', 'arn:aws:batch:us-east-1:555555555555:compute-environment/My-Compute-Env');
+```
+
+## Job Queue
+
+Jobs are always submitted to a specific queue. This means that you have to create a queue before you can start submitting jobs. Each queue is mapped to at least one (and no more than three) compute environment. When the job is scheduled for execution, AWS Batch will select the compute environment based on ordinal priority and available capacity in each environment.
+
+```ts
+const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
+  computeEnvironments: [
+    {
+      // Defines a collection of compute resources to handle assigned batch jobs
+      computeEnvironment,
+      // Order determines the allocation order for jobs (i.e. Lower means higher preferance for job assignment)
+      order: 1,
+    },
+  ],
+});
+```
+
+### Priorty-Based Queue Example
+
+Sometimes you might have jobs that are more important than others, and when submitted, should take precedence over the existing jobs. To achieve this, you can create a priority based execution strategy, by assigning each queue its own priority:
+
+```ts
+const highPrioQueue = new batch.JobQueue(stack, 'JobQueue', {
+  computeEnvironments: sharedComputeEnvs,
+  priority: 2,
+});
+
+const lowPrioQueue = new batch.JobQueue(stack, 'JobQueue', {
+  computeEnvironments: sharedComputeEnvs,
+  priority: 1,
+});
+```
+
+By making sure to use the same compute environments between both job queues, we will give precedence to the `highPrioQueue` for the assigning of jobs to available compute environments.
+
+### Importing an existing Job Queue
+
+To import an existing batch job queue, call `JobQueue.fromJobQueueArn()`.
+
+Below is an example:
+
+```ts
+const jobQueue = batch.JobQueue.fromJobQueueArn(this, 'imported-job-queue', 'arn:aws:batch:us-east-1:555555555555:job-queue/High-Prio-Queue');
+```
+
+## Job Definition
+
+A Batch Job definition helps AWS Batch understand important details about how to run your application in the scope of a Batch Job. This involves key information like resource requirements, what containers to run, how the compute environment should be prepared, and more. Below is a simple example of how to create a job definition:
+
+```ts
+const repo = ecr.Repository.fromRepositoryName(stack, 'batch-job-repo', 'todo-list');
+
+new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
+  container: {
+    image: new ecs.EcrImage(repo, 'latest'),
+  },
+});
+```
+
+### Using a local Docker project
+
+Below is an example of how you can create a Batch Job Definition from a local Docker application.
+
+```ts
+new batch.JobDefinition(stack, 'batch-job-def-from-local', {
+  container: {
+    // todo-list is a directory containing a Dockerfile to build the application
+    image: ecs.ContainerImage.fromAsset('../todo-list'),
+  },
+});
+```
+
+### Importing an existing Job Definition
+
+To import an existing batch job definition, call `JobDefinition.fromJobDefinitionArn()`.
+
+Below is an example:
+
+```ts
+const job = batch.JobDefinition.fromJobDefinitionArn(this, 'imported-job-definition', 'arn:aws:batch:us-east-1:555555555555:job-definition/my-job-definition');
 ```
