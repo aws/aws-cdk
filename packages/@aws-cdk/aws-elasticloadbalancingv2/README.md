@@ -64,16 +64,17 @@ updated to allow the network traffic.
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. Path- and host-based conditions are supported. For example, the
-following will route requests to the indicated AutoScalingGroup only if the
-requested host in the request is either for `example.com/ok` or
-`example.com/path`:
+HTTP request. For example, the following will route requests to the indicated
+AutoScalingGroup only if the requested host in the request is either for
+`example.com/ok` or `example.com/path`:
 
 ```ts
 listener.addTargets('Example.Com Fleet', {
   priority: 10,
-  pathPatterns: ['/ok', '/path'],
-  hostHeader: 'example.com',
+  conditions: [
+    ListenerCondition.hostHeaders(['example.com']),
+    ListenerCondition.pathPatterns(['/ok', '/path']),
+  ],
   port: 8080,
   targets: [asg]
 });
@@ -126,8 +127,10 @@ Here's an example of serving a fixed response at the `/ok` URL:
 
 ```ts
 listener.addAction('Fixed', {
-  pathPatterns: ['/ok'],
   priority: 10,
+  conditions: [
+    ListenerCondition.pathPatterns(['/ok']),
+  ],
   action: ListenerAction.fixedResponse(200, {
     contentType: elbv2.ContentType.TEXT_PLAIN,
     messageBody: 'OK',
