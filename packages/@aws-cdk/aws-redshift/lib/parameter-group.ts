@@ -2,14 +2,6 @@ import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnClusterParameterGroup } from './redshift.generated';
 
 /**
- * Possible Parameter Group Families
- * used for defining {@link ClusterParameterGroupProps.family}.
- * > At this time, redshift-1.0 is the only version of the Amazon Redshift engine.
- * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
- */
-const REDSHIFT_1_0 = 'redshift-1.0';
-
-/**
  * A parameter group
  */
 export interface IClusterParameterGroup extends IResource {
@@ -35,14 +27,6 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
  * Properties for a parameter group
  */
 export interface ClusterParameterGroupProps {
-  /**
-   * The version of the Amazon Redshift engine to which the parameters in the parameter group apply.
-   * see https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html
-   *
-   * @default REDSHIFT_1_0
-   */
-  readonly family?: string;
-
   /**
    * Description for this parameter group
    *
@@ -80,13 +64,9 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
-    if (props.family && props.family !== REDSHIFT_1_0) {
-      throw new Error(`Only ${REDSHIFT_1_0} is supported for PrameterGroupFamily at this time!`);
-    }
-
     const resource = new CfnClusterParameterGroup(this, 'Resource', {
-      description: props.description || `Cluster parameter group for ${props.family}`,
-      parameterGroupFamily: props.family ? props.family : REDSHIFT_1_0,
+      description: props.description || 'Cluster parameter group for family redshift-1.0',
+      parameterGroupFamily: 'redshift-1.0',
       parameters: Object.entries(props.parameters).map(([name, value]) => {
         return {parameterName: name, parameterValue: value};
       }),
