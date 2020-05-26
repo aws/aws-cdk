@@ -71,6 +71,8 @@ export interface CrossRegionSupportStackProps {
    * @example '012345678901'
    */
   readonly account: string;
+
+  readonly synthesizer: cdk.IStackSynthesizer | undefined;
 }
 
 /**
@@ -90,6 +92,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
         region: props.region,
         account: props.account,
       },
+      synthesizer: props.synthesizer,
     });
 
     const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default');
