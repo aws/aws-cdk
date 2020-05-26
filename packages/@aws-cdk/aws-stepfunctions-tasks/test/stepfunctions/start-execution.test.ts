@@ -78,7 +78,8 @@ test('Execute State Machine - Run Job', () => {
     },
     End: true,
     Parameters: {
-      StateMachineArn: {
+      'Input.$': '$',
+      'StateMachineArn': {
         Ref: 'ChildStateMachine9133117F',
       },
     },

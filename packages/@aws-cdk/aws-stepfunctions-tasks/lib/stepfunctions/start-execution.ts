@@ -17,7 +17,7 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html
    *
-   * @default - No input
+   * @default - The state input (JSON path '$')
    */
   readonly input?: sfn.TaskInput;
 
@@ -67,7 +67,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
         integrationResourceArn('states', 'startExecution', this.integrationPattern) +
         (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB ? ':2' : ''),
       Parameters: sfn.FieldUtils.renderObject({
-        Input: this.props.input?.value,
+        Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromDataAt('$').value,
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
       }),
