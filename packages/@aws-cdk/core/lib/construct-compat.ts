@@ -91,7 +91,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected onValidate(): string[] {
     return this.validate();
@@ -132,7 +132,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected validate(): string[] {
     return [];
