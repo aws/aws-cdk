@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+    "AWS::ImageBuilder::Image": {
+      "patch": {
+        "description": "Removes 'OutputResources' attribute as it specifies an undefined Type 'OutputResources'",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/OutputResources"
+          }
+        ]
+      }
+    }
+  }
+}
