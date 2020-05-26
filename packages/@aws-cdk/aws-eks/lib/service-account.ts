@@ -1,5 +1,5 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { CfnJson, Construct  } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -34,7 +34,6 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
  * Service Account
  */
 export class ServiceAccount extends Construct implements IPrincipal {
-
   /**
    * The role which is linked to the service account.
    */
@@ -61,15 +60,25 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
-    this.role = new Role(this, 'Role', {
-      assumedBy: new OpenIdConnectPrincipal(cluster.openIdConnectProvider),
+    /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
+    * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
+    */
+    const conditions = new CfnJson(this, 'ConditionJson', {
+      value: {
+        [`${cluster.clusterOpenIdConnectIssuer}:aud`]: 'sts.amazonaws.com',
+        [`${cluster.clusterOpenIdConnectIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
+      },
     });
+    const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+      StringEquals: conditions,
+    });
+    this.role = new Role(this, 'Role', { assumedBy: principal });
 
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addResource('ServiceAccount', {
+    cluster.addResource(`${id}ServiceAccountResource`, {
       apiVersion: 'v1',
       kind: 'ServiceAccount',
       metadata: {
