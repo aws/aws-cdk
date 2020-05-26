@@ -1,3 +1,5 @@
+import { FileAssetPackaging } from '../file-asset';
+
 /**
  * Validate that a given key is of a given type in an object
  *
@@ -51,4 +53,13 @@ export function isObjectAnd<A>(p: (x: object) => A): (x: unknown) => A {
 
 export function assertIsObject(x: unknown): asserts x is object {
   if (typeof x !== 'object' || x === null) { throw new Error(`Expected a map, got '${x}'`); }
+}
+
+export function isFileAssetPackaging(x: unknown): FileAssetPackaging {
+  const str = isString(x);
+  const validValues = Object.values(FileAssetPackaging) as string[]; // Explicit cast needed because this is a string-valued enum
+  if (!validValues.includes(str)) {
+    throw new Error(`Expected a FileAssetPackaging (one of ${validValues.map(v => `'${v}'`).join(', ')}), got '${str}'`);
+  }
+  return x as any;
 }
