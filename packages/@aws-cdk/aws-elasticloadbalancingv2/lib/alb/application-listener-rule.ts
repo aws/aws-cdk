@@ -4,6 +4,7 @@ import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
+import { ListenerCondition } from './conditions';
 
 /**
  * Basic properties for defining a rule on a listener
@@ -59,6 +60,15 @@ export interface BaseApplicationListenerRuleProps {
   readonly redirectResponse?: RedirectResponse;
 
   /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerCondition[];
+
+  /**
    * Rule applies if the requested host matches the indicated host
    *
    * May contain up to three '*' wildcards.
@@ -66,6 +76,7 @@ export interface BaseApplicationListenerRuleProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
    * @default - No host condition.
+   * @deprecated Use `conditions` instead.
    */
   readonly hostHeader?: string;
 
@@ -74,7 +85,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
-   * @deprecated Use `pathPatterns` instead.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPattern?: string;
 
@@ -85,6 +96,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path conditions.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
 }
@@ -187,7 +199,8 @@ export class ApplicationListenerRule extends cdk.Construct {
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: {[key: string]: string[] | undefined} = {};
+  private readonly conditions: ListenerCondition[];
+  private readonly legacyConditions: {[key: string]: string[]} = {};
 
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
@@ -195,9 +208,11 @@ export class ApplicationListenerRule extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
+    this.conditions = props.conditions || [];
+
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
-    if (!props.hostHeader && !hasPathPatterns) {
-      throw new Error('At least one of \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
+    if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
+      throw new Error('At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
@@ -248,9 +263,25 @@ export class ApplicationListenerRule extends cdk.Construct {
 
   /**
    * Add a non-standard condition to this rule
+   *
+   * If the condition conflicts with an already set condition, it will be overwritten by the one you specified.
+   *
+   * @deprecated use `addCondition` instead.
    */
   public setCondition(field: string, values: string[] | undefined) {
-    this.conditions[field] = values;
+    if (values === undefined) {
+      delete this.legacyConditions[field];
+      return;
+    }
+
+    this.legacyConditions[field] = values;
+  }
+
+  /**
+   * Add a non-standard condition to this rule
+   */
+  public addCondition(condition: ListenerCondition) {
+    this.conditions.push(condition);
   }
 
   /**
@@ -322,20 +353,28 @@ export class ApplicationListenerRule extends cdk.Construct {
     if (this.action === undefined) {
       return ['Listener rule needs at least one action'];
     }
+
+    const legacyConditionFields = Object.keys(this.legacyConditions);
+    if (legacyConditionFields.length === 0 && this.conditions.length === 0) {
+      return ['Listener rule needs at least one condition'];
+    }
+
     return [];
   }
 
   /**
    * Render the conditions for this rule
    */
-  private renderConditions() {
-    const ret = new Array<{ field: string, values: string[] }>();
-    for (const [field, values] of Object.entries(this.conditions)) {
-      if (values !== undefined) {
-        ret.push({ field, values });
-      }
-    }
-    return ret;
+  private renderConditions(): any {
+    const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
+      return { field, values };
+    });
+    const conditions = this.conditions.map(condition => condition.renderRawCondition());
+
+    return [
+      ...legacyConditions,
+      ...conditions,
+    ];
   }
 }
 

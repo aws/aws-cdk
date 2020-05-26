@@ -290,3 +290,44 @@ test('fromEc2Instance', () => {
     },
   });
 });
+
+test('fromDynamoDbTable', () => {
+  // GIVEN
+  const newTable = new dynamodb.Table(stack, 'New', {
+    partitionKey: {
+      name: 'id',
+      type: dynamodb.AttributeType.STRING,
+    },
+  });
+  const existingTable = dynamodb.Table.fromTableArn(stack, 'Existing', 'arn:aws:dynamodb:eu-west-1:123456789012:table/existing');
+
+  // WHEN
+  plan.addSelection('Selection', {
+    resources: [
+      BackupResource.fromDynamoDbTable(newTable),
+      BackupResource.fromDynamoDbTable(existingTable),
+    ],
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          'PlanSelectionRole6D10F4B7',
+          'Arn',
+        ],
+      },
+      Resources: [
+        {
+          'Fn::GetAtt': [
+            'New8A81B073',
+            'Arn',
+          ],
+        },
+        'arn:aws:dynamodb:eu-west-1:123456789012:table/existing',
+      ],
+      SelectionName: 'Selection',
+    },
+  });
+});
