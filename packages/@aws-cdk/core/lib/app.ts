@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, ConstructNode } from './construct-compat';
+import { Construct, ConstructNode, IConstruct } from './construct-compat';
 import { prepareApp } from './private/prepare-app';
 import { collectRuntimeInformation } from './private/runtime-info';
 import { TreeMetadata } from './private/tree-metadata';
@@ -87,9 +87,33 @@ export class App extends Construct {
     return APP_SYMBOL in obj;
   }
 
+  /**
+   * Return the root App of the given Construct
+   *
+   * Throws if the construct is not in an App.
+   */
+  public static of(construct: IConstruct): App {
+    const root = construct.node.root;
+    if (!App.isApp(root)) {
+      throw new Error(`Construct '${construct.node.path}' should be created under an 'App'`);
+    }
+    return root;
+  }
+
+  /**
+   * Accessor for a field that's private to App
+   *
+   * Get the Cloud Assembly output directory.
+   *
+   * @experimental
+   */
+  public static outdirOf(obj: App): string {
+    return obj.assemblyBuilder.outdir;
+  }
+
+  private readonly assemblyBuilder: cxapi.CloudAssemblyBuilder;
   private _assembly?: cxapi.CloudAssembly;
   private readonly runtimeInfo: boolean;
-  private readonly outdir?: string;
 
   /**
    * Initializes a CDK application.
@@ -112,7 +136,11 @@ export class App extends Construct {
 
     // both are reverse logic
     this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
-    this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
+
+    // Need to determine fixed output directory already, because we must know where
+    // to write sub-assemblies (which must happen before we actually get to this app's
+    // synthesize() phase).
+    this.assemblyBuilder = new cxapi.CloudAssemblyBuilder(props.outdir ?? process.env[cxapi.OUTDIR_ENV]);
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
@@ -140,7 +168,7 @@ export class App extends Construct {
     }
 
     const assembly = ConstructNode.synth(this.node, {
-      outdir: this.outdir,
+      builder: this.assemblyBuilder,
       runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined,
     });
 

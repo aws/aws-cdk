@@ -72,6 +72,18 @@ export function makeUniqueId(components: string[]) {
 }
 
 /**
+ * makeUniqueId, specialized for Stack names
+ *
+ * Stack names may contain '-', so we allow that character if the stack name
+ * has only one component. Otherwise we fall back to the regular "makeUniqueId"
+ * behavior.
+ */
+export function makeStackName(components: string[]) {
+  if (components.length === 1) { return components[0]; }
+  return makeUniqueId(components);
+}
+
+/**
  * Take a hash of the given path.
  *
  * The hash is limited in size.

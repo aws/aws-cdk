@@ -9,7 +9,7 @@ import { Environment } from './environment';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
-import { makeUniqueId } from './private/uniqueid';
+import { makeStackName, makeUniqueId } from './private/uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -27,8 +27,40 @@ export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
    *
-   * @default - The `default-account` and `default-region` context parameters will be
-   * used. If they are undefined, it will not be possible to deploy the stack.
+   * Set the `region`/`account` fields of `env` to either a concrete value to
+   * select the indicated environment (recommended for production stacks), or
+   * to the values of environment variables
+   * `CDK_DEFAULT_REGION`/`CDK_DEFAULT_ACCOUNT` to let the target environment
+   * depend on the AWS credentials/configuration that the CDK CLI is executed
+   * under (recommended for development stacks).
+   *
+   * If the `Stack` is instantiated inside a `Stage` construct, any undefined
+   * `region`/`account` fields from `env` will default to the same field on
+   * the encompassing `Stage`, if configured there.
+   *
+   * If either of `region`/`account` is not set nor inherited from `Stage`,
+   * the Stack will be *environment-agnostic*.
+   *
+   * Environment-agnostic stacks can be deployed to any environment, may not be
+   * able to take advantage of all features of the CDK. For example, they will
+   * not be able to use environmental context lookups, will not automatically
+   * translate Service Principals to the right format based on the environment's
+   * AWS partition, and other such enhancements.
+   *
+   * @example
+   *
+   * // Use a concrete account and region to deploy this stack to
+   * new MyStack(app, 'Stack1', {
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
+   *
+   * // Use the CLI's current credentials to determine the target environment
+   * new MyStack(app, 'Stack2', {
+   *   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+   * });
+   *
+   * @default - The environment of the containing `Stage` if available, otherwise create
+   * the stack will be environment-agnostic.
    */
   readonly env?: Environment;
 
@@ -265,7 +297,7 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.description = props.description;
     }
 
-    this._stackName = props.stackName !== undefined ? props.stackName : this.generateUniqueId();
+    this._stackName = props.stackName !== undefined ? props.stackName : this.generateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -278,7 +310,7 @@ export class Stack extends Construct implements ITaggable {
     // applied under a feature flag which is applied automatically for new
     // projects created using `cdk init`.
     this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
-      ? this.generateUniqueId()
+      ? this.generateStackName()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
@@ -697,6 +729,8 @@ export class Stack extends Construct implements ITaggable {
   }
 
   protected synthesize(session: ISynthesisSession): void {
+    super.synthesize(session);
+
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -781,12 +815,15 @@ export class Stack extends Construct implements ITaggable {
    */
   private parseEnvironment(env: Environment = {}) {
     // if an environment property is explicitly specified when the stack is
-    // created, it will be used. if not, use tokens for account and region but
-    // they do not need to be scoped, the only situation in which
-    // export/fn::importvalue would work if { Ref: "AWS::AccountId" } is the
-    // same for provider and consumer anyway.
-    const account = env.account || Aws.ACCOUNT_ID;
-    const region  = env.region  || Aws.REGION;
+    // created, it will be used. if not, use tokens for account and region.
+    //
+    // (They do not need to be anchored to any construct like resource attributes
+    // are, because we'll never Export/Fn::ImportValue them -- the only situation
+    // in which Export/Fn::ImportValue would work is if the value are the same
+    // between producer and consumer anyway, so we can just assume that they are).
+    const containingStage = Stage.of(this);
+    const account = env.account ?? containingStage?.account ?? Aws.ACCOUNT_ID;
+    const region  = env.region  ?? containingStage?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
@@ -818,24 +855,36 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Calculcate the stack name based on the construct path
+   * Calculate the stack name based on the construct path
+   *
+   * Generally this looks a lot like how logical IDs are calculated.
+   * The stack name is calculated based on the construct root path,
+   * as follows:
+   *
+   * - Path is calculated with respect to containing App or Stage (if any)
+   * - If the path is one component long just use that component, otherwise
+   *   combine them with a hash.
+   *
+   * Since the hash is quite ugly and we'd like to avoid it if possible -- but
+   * we can't anymore in the general case since it has been written into legacy
+   * stacks. The introduction of Stages makes it possible to make this nicer however.
+   * When a Stack is nested inside a Stage, we use the path components below the
+   * Stage, and prefix the path components of the Stage before it.
    */
-  private generateUniqueId() {
-    // In tests, it's possible for this stack to be the root object, in which case
-    // we need to use it as part of the root path.
-    const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];
+  private generateStackName() {
+    const container = closestStackContainer(this);
+    const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => c.node.id);
 
-    // Special case, if rootPath is length 1 then just use ID (backwards compatibility)
-    // otherwise use a unique stack name (including hash). This logic is already
-    // in makeUniqueId, *however* makeUniqueId will also strip dashes from the name,
-    // which *are* allowed and also used, so we short-circuit it.
-    if (ids.length === 1) {
-      // Could be empty in a unit test, so just pretend it's named "Stack" then
-      return ids[0] || 'Stack';
+    const containerName = Stage.isStage(container) ? `${container.stageName}-` : '';
+
+    // In unit tests our Stack (which is the only component) may not have an
+    // id, so in that case just pretend it's "Stack".
+    if (ids.length === 1 && !ids[0]) {
+      ids[0] = 'Stack';
     }
 
-    return makeUniqueId(ids);
+    return `${containerName}${makeStackName(ids)}`;
   }
 }
 
@@ -922,9 +971,11 @@ import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
 import { prepareApp } from './private/prepare-app';
+import { closestStackContainer, rootPathTo } from './private/scopes';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 

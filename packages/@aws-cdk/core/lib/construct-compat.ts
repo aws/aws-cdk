@@ -120,10 +120,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * @param session The synthesis session.
    */
   protected onSynthesize(session: constructs.ISynthesisSession): void {
-    this.synthesize({
-      outdir: session.outdir,
-      assembly: session.assembly!,
-    });
+    this.synthesize(session as ISynthesisSession);
   }
 
   /**
@@ -159,9 +156,12 @@ export class Construct extends constructs.Construct implements IConstruct {
    * as they participate in synthesizing the cloud assembly.
    *
    * @param session The synthesis session.
+   * @deprecated - Use and override onSynthesize() instead.
    */
   protected synthesize(session: ISynthesisSession): void {
-    ignore(session);
+    for (const child of this.node.children) {
+      child.node.host.synthesize(session);
+    }
   }
 }
 
@@ -195,6 +195,13 @@ export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
    * @default false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Synthesize into the given builder
+   *
+   * @default - Construct a new builder
+   */
+  readonly builder?: cxapi.CloudAssemblyBuilder;
 }
 
 /**
@@ -226,16 +233,24 @@ export class ConstructNode {
    * @param options Synthesis options.
    */
   public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
+    // We used to defer to `Node.synthesize()` here from the `constructs` library,
+    // but we don't do that anymore. Synthesis is deprecated from that library,
+    // and the implementation found there is not amenable to the kind of extension that we need.
 
-    root._actualNode.synthesize({
+    // The three holy phases of synthesis: prepare, validate and synthesize
+    ConstructNode.prepare(root);
+
+    const skipValidation = options.skipValidation ?? false;
+    if (!skipValidation) {
+      ConstructNode.validateAndThrow(root);
+    }
+
+    // Do a synthesis, rely on nodes in the tree to carry the recursion forward
+    const builder = options.builder ?? new cxapi.CloudAssemblyBuilder(options.outdir);
+    root.host.synthesize({
       outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder,
-      },
+      assembly: builder,
     });
-
     return builder.buildAssembly(options);
   }
 
@@ -258,11 +273,33 @@ export class ConstructNode {
   }
 
   /**
+   * Validate the node and if there are any errors, throw them
+   */
+  private static validateAndThrow(root: ConstructNode) {
+    const errors = ConstructNode.validate(root);
+    if (errors.length > 0) {
+      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+    }
+  }
+
+  /**
    * @internal
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The actual Construct associated with this tree Node
+   *
+   * Exists because children are stored as `IConstruct`, and this is the only
+   * way to get the children as Construct instances.
+   *
+   * @experimental
+   */
+  public readonly host: ISpecialConstructMethods;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host as unknown as ISpecialConstructMethods;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -504,6 +541,27 @@ export interface Dependency {
   readonly target: IConstruct;
 }
 
-function ignore(_x: any) {
-  return;
+/**
+ * Interface which provides access to special methods of Construct
+ *
+ * @experimental
+ */
+export interface ISpecialConstructMethods extends IConstruct {
+  /**
+   * Method that gets called when a construct should synthesize itself to an assembly
+   *
+   * This is 'synthesize' instead of 'onSynthesize' because this method is
+   * better typed, and 'onSynthesize' will be deprecated from the 'constructs' library.
+   */
+  synthesize(session: ISynthesisSession): void;
+
+  /**
+   * Method that gets called to validate a construct
+   */
+  onValidate(): string[];
+
+  /**
+   * Method that gets called to prepare a construct
+   */
+  onPrepare(): void;
 }

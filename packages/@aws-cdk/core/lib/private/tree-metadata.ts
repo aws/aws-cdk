@@ -21,6 +21,8 @@ export class TreeMetadata extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession) {
+    super.synthesize(session);
+
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
