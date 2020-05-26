@@ -505,7 +505,8 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     });
 
     // Add a progress bar at the bottom
-    const prog = this.progressBar(60);
+    const progressWidth = Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRSSBAR_WIDTH);
+    const prog = this.progressBar(progressWidth);
     if (prog) {
       lines.push('', '  ' + prog);
     }
@@ -567,6 +568,8 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
 const FULL_BLOCK = '█';
 const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
+const MAX_PROGRSSBAR_WIDTH = 60;
+const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
 
 function colorFromStatusResult(status?: string) {
   if (!status) {

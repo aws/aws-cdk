@@ -9,8 +9,13 @@ export class RewritableBlock {
   constructor(private readonly stream: NodeJS.WriteStream) {
   }
 
+  public get width() {
+    // Might get changed if the user resizes the terminal
+    return this.stream.columns;
+  }
+
   public displayLines(lines: string[]) {
-    lines = terminalWrap(this.stream.columns, expandNewlines(lines));
+    lines = terminalWrap(this.width, expandNewlines(lines));
 
     this.stream.write(cursorUp(this.lastHeight));
     for (const line of lines) {
@@ -52,7 +57,7 @@ function terminalWrap(width: number | undefined, lines: string[]) {
       hard: true,
       trim: true,
       wordWrap: false,
-    }));
+    }).split('\n'));
   }
   return ret;
 }
