@@ -608,6 +608,88 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+## Volumes
+
+Whereas Block Devices are created, and automatically associated, with a specific instance when that instance is created. Volumes allow you to create a block device that can be attached to, or detached from, any instance at any time. Some types of Volumes can also be attached to multiple instances at the same time to allow you to have shared storage between those instances. A notable restriction is that a Volume can only be attached to instances in the same availability zone as the Volume itself.
+
+The following demonstrates how to create a 500 GiB encrypted Volume in the `us-west-2a` availability zone, and give a role the ability to attach that Volume to a specific instance:
+
+```ts
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+const role = new iam.Role(stack, 'SomeRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+const volume = new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-west-2a',
+  size: cdk.Size.gibibytes(500),
+  encrypted: true,
+});
+
+volume.grantAttachVolume(role, [instance]);
+```
+
+### Instances Attaching Volumes to Themselves
+
+If you need to grant an instance the ability to attach/detach an EBS volume to/from itself, then using `grantAttachVolume` and `grantDetachVolume` as outlined above
+will lead to an unresolvable circular reference between the instance role and the instance. To securely provide this grant we recommend conditioning the grant
+on a unique resource tag as follows:
+
+```ts
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+const volume = new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-west-2a',
+  size: cdk.Size.gibibytes(500),
+  encrypted: true,
+});
+
+// Restrict the grant to only attach to instances with a specific Tag value.
+// Note: The volume must have the tag as well.
+const tagValue: string = 'uniqueTagValue_1234';
+cdk.Tag.add(instance, 'VolumeGrant', tagValue);
+cdk.Tag.add(volume, 'VolumeGrant', tagValue);
+const attachGrant: iam.Grant = volume.grantAttachVolume(instance);
+attachGrant.principalStatement!.addCondition(
+    'ForAnyValue:StringEquals', { 'ec2:ResourceTag/VolumeGrant': tagValue }
+);
+```
+
+### Attaching Volumes
+
+The Amazon EC2 documentation for
+[Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) and
+[Windows Instances](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-volumes.html) contains information on how
+to attach and detach your Volumes to/from instances, and how to format them for use.
+
+The following is a sample skeleton of a script that can be used to attach a Volume to the Linux instance that it is running on:
+
+```bash
+# The volume ID of the EBS Volume
+EBS_VOL_ID=vol-1234
+# The AWS Region that the instance and volume are within
+AWS_REGION=us-west-2
+# The device to mount the volume to; change this as you wish.
+TARGET_DEV=/dev/xvdz
+
+# Use the EC2 metadata service v2 to retrieve the instance-id of this instance.
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 30" 2> /dev/null)
+INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id 2> /dev/null)
+
+# Attach the volume
+aws --region ${AWS_REGION} ec2 attach-volume --volume-id ${EBS_VOL_ID} --instance-id ${INSTANCE_ID} --device ${TARGET_DEV}
+
+# Wait until the volume has attached
+while ! test -e ${TARGET_DEV}
+do
+    sleep 1
+done
+
+# The volume is attached, next you will need to mount it and possibly format it for use.
+```
+
 ## VPC Flow Logs
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html).
 
