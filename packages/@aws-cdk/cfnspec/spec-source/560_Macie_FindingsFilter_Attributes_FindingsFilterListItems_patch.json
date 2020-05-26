@@ -2,7 +2,7 @@
   "ResourceTypes": {
     "AWS::Macie::FindingsFilter": {
       "patch": {
-        "description": "Removes 'FindingsFilterListItems' attribute as it specifies an undefined type 'FindingsFilterListItem'",
+        "description": "Replaces 'FindingsFilterListItems' attribute to be an array of JSON values as it is (currently) not defined in the spec",
         "operations": [
           {
             "op": "remove",

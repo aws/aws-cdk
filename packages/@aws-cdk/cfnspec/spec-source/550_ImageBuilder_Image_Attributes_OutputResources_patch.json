@@ -2,15 +2,16 @@
   "ResourceTypes": {
     "AWS::ImageBuilder::Image": {
       "patch": {
-        "description": "Removes 'OutputResources' attribute as it specifies an undefined Type 'OutputResources'",
+        "description": "Replaces 'OutputResources' attribute type to be an array of Strings as it is (currently) not defined in the spec",
         "operations": [
           {
-            "op": "remove",
-            "path": "/Attributes/OutputResources/Type"
+            "op": "replace",
+            "path": "/Attributes/OutputResources/Type",
+            "value": "List"
           },
           {
             "op": "add",
-            "path": "/Attributes/OutputResources/PrimitiveType",
+            "path": "/Attributes/OutputResources/PrimitiveItemType",
             "value": "String"
           }
         ]
