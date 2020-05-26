@@ -526,7 +526,7 @@ With services account you can provide Kubernetes Pods access to AWS resources.
 
 ```ts
 // add service account
-const sa = cluster.addServiceAccount('MyServiceAccount', {});
+const sa = cluster.addServiceAccount('MyServiceAccount');
 
 const bucket = new Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
