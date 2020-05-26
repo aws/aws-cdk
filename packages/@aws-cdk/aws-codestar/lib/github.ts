@@ -40,9 +40,31 @@ export interface GitHubRepositoryProps {
   readonly key: string;
   /**
    * The object version of the ZIP file, if versioning is enabled for the Amazon S3 bucket
+   *
    * @default - not specified
    */
   readonly version?: string;
+  /**
+   * Indicates whether to enable issues for the GitHub repository. You can use GitHub issues to track information
+   * and bugs for your repository.
+   *
+   * @default false
+   */
+  readonly enableIssues?: boolean;
+  /**
+   * Indicates whether the GitHub repository is a private repository. If so, you choose who can see and commit to
+   * this repository.
+   *
+   * @default false
+   */
+  readonly private?: boolean;
+  /**
+   * A comment or description about the new repository. This description is displayed in GitHub after the repository
+   * is created.
+   *
+   * @default - no description
+   */
+  readonly description?: string;
 }
 
 /**
@@ -68,6 +90,9 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
           key: props.key,
         },
       },
+      enableIssues: props.enableIssues ?? false,
+      isPrivate: props.private ?? false,
+      repositoryDescription: props.description,
     });
     this.repository = resource.ref;
   }
