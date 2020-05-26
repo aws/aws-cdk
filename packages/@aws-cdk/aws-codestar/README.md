@@ -11,6 +11,19 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+
+## Github Repository
+
+To create a new Github Repository and commit the assets from S3 bucket into the repository after it is created
+
 ```ts
-import * as codestar from '@aws-cdk/aws-codestar';
+new GithubRepository(stack, 'GithubRepo', {
+  owner: 'foo',
+  name: 'bar',
+  accessToken: cdk.SecretValue.secretsManager('my-github-token', {
+    jsonField: 'token',
+  }),
+  bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
+  key: 'import.zip',
+});
 ```

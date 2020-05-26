@@ -1,6 +1,31 @@
 import '@aws-cdk/assert/jest';
-import {} from '../lib';
+import { Bucket } from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import { GithubRepository } from '../lib';
 
-test('No tests are specified for this package', () => {
-  expect(true).toBe(true);
+test('create', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'GithubDemo');
+
+  new GithubRepository(stack, 'GithubRepo', {
+    owner: 'foo',
+    name: 'bar',
+    accessToken: cdk.SecretValue.secretsManager('my-github-token', {
+      jsonField: 'token',
+    }),
+    bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
+    key: 'import.zip',
+  });
+
+  expect(stack).toHaveResource('AWS::CodeStar::GitHubRepository', {
+    RepositoryAccessToken: '{{resolve:secretsmanager:my-github-token:SecretString:token::}}',
+    RepositoryName: 'bar',
+    RepositoryOwner: 'foo',
+    Code: {
+      S3: {
+        Bucket: 'bucket-name',
+        Key: 'import.zip'
+      }
+    }
+  });
 });

@@ -1,0 +1,18 @@
+{
+  "Resources": {
+    "GithubRepo2AECAAC9": {
+      "Type": "AWS::CodeStar::GitHubRepository",
+      "Properties": {
+        "RepositoryAccessToken": "{{resolve:secretsmanager:my-github-token:SecretString:token::}}",
+        "RepositoryName": "bar",
+        "RepositoryOwner": "foo",
+        "Code": {
+          "S3": {
+            "Bucket": "bucket-name",
+            "Key": "import.zip"
+          }
+        }
+      }
+    }
+  }
+}
