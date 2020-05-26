@@ -274,6 +274,26 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test('parameters can be selected from the input with a path', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Pass(stack, 'Pass', {
+      parameters: {
+        input: stepfunctions.Data.stringAt('$.myField'),
+      },
+    });
+
+    // WHEN
+    const taskState = task.toStateJson();
+
+    // THEN
+    expect(taskState).toEqual({ End: true,
+      Parameters:
+      { 'input.$': '$.myField'},
+      Type: 'Pass',
+    });
+  }),
+
   test('State machines must depend on their roles', () => {
     // GIVEN
     const stack = new cdk.Stack();
