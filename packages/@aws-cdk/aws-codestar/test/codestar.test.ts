@@ -10,7 +10,7 @@ test('create', () => {
   new GitHubRepository(stack, 'GitHubRepo', {
     owner: 'foo',
     gitHubRepositoryName: 'bar',
-    accessToken: cdk.SecretValue.secretsManager('my-GitHub-token', {
+    accessToken: cdk.SecretValue.secretsManager('my-github-token', {
       jsonField: 'token',
     }),
     bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
@@ -18,7 +18,7 @@ test('create', () => {
   });
 
   expect(stack).toHaveResource('AWS::CodeStar::GitHubRepository', {
-    RepositoryAccessToken: '{{resolve:secretsmanager:my-GitHub-token:SecretString:token::}}',
+    RepositoryAccessToken: '{{resolve:secretsmanager:my-github-token:SecretString:token::}}',
     RepositoryName: 'bar',
     RepositoryOwner: 'foo',
     Code: {

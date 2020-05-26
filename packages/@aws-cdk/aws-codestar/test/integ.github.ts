@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'GitHubDemo');
 new GitHubRepository(stack, 'GitHubRepo', {
   owner: 'foo',
   gitHubRepositoryName: 'bar',
-  accessToken: cdk.SecretValue.secretsManager('my-GitHub-token', {
+  accessToken: cdk.SecretValue.secretsManager('my-github-token', {
     jsonField: 'token',
   }),
   bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),

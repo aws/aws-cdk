@@ -18,7 +18,7 @@
 To create a new Github Repository and commit the assets from S3 bucket into the repository after it is created
 
 ```ts
-new GithubRepository(stack, 'GithubRepo', {
+new GitHubRepository(stack, 'GitHubRepo', {
   owner: 'foo',
   name: 'bar',
   accessToken: cdk.SecretValue.secretsManager('my-github-token', {
