@@ -8,7 +8,16 @@ import * as url from 'url';
 let client: aws.IAM;
 
 function iam() {
-  if (!client) { client = new aws.IAM(); }
+  if (!client) {
+    // China regions share same IAM endpoint, https://docs.amazonaws.cn/en_us/general/latest/gr/iam-service.html
+    if (process.env.AWS_REGION && process.env.AWS_REGION.startsWith('cn-')) {
+      client = new aws.IAM({
+        region: 'cn-north-1',
+      });
+    } else {
+      client = new aws.IAM();
+    }
+  }
   return client;
 }
 
