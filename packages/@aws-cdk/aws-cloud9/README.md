@@ -49,3 +49,17 @@ const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
 new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
 ```
 
+Specify `repositories` to clone AWS Codecommit repositories into the environment
+
+```ts
+new cloud9.Ec2Environment(stack, 'C9Env', {
+  vpc,
+  repositories: [
+    {
+      repository: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo'),
+      path: '/foo',
+    },
+  ],
+});
+
+```
