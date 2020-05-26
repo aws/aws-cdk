@@ -27,6 +27,8 @@ export interface BundlingOptions {
    *
    * @example ['npm', 'install']
    *
+   * @see https://docs.docker.com/engine/reference/run/
+   *
    * @default - run the command defined in the image
    */
   readonly command?: string[];
