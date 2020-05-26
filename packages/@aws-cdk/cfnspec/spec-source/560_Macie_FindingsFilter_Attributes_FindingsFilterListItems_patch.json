@@ -6,7 +6,12 @@
         "operations": [
           {
             "op": "remove",
-            "path": "/Attributes/FindingsFilterListItems"
+            "path": "/Attributes/FindingsFilterListItems/ItemType"
+          },
+          {
+            "op": "add",
+            "path": "/Attributes/FindingsFilterListItems/PrimitiveItemType",
+            "value": "Json"
           }
         ]
       }
