@@ -13,9 +13,9 @@
 ---
 <!--END STABILITY BANNER-->
 
-## Github Repository
+## GitHub Repository
 
-To create a new Github Repository and commit the assets from S3 bucket into the repository after it is created
+To create a new GitHub Repository and commit the assets from S3 bucket into the repository after it is created
 
 ```ts
 new GitHubRepository(stack, 'GitHubRepo', {
