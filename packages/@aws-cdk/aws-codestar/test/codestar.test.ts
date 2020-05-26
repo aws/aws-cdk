@@ -1,16 +1,16 @@
 import '@aws-cdk/assert/jest';
 import { Bucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { GithubRepository } from '../lib';
+import { GitHubRepository } from '../lib';
 
 test('create', () => {
   const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'GithubDemo');
+  const stack = new cdk.Stack(app, 'GitHubDemo');
 
-  new GithubRepository(stack, 'GithubRepo', {
+  new GitHubRepository(stack, 'GitHubRepo', {
     owner: 'foo',
-    name: 'bar',
-    accessToken: cdk.SecretValue.secretsManager('my-github-token', {
+    gitHubRepositoryName: 'bar',
+    accessToken: cdk.SecretValue.secretsManager('my-GitHub-token', {
       jsonField: 'token',
     }),
     bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
@@ -18,14 +18,14 @@ test('create', () => {
   });
 
   expect(stack).toHaveResource('AWS::CodeStar::GitHubRepository', {
-    RepositoryAccessToken: '{{resolve:secretsmanager:my-github-token:SecretString:token::}}',
+    RepositoryAccessToken: '{{resolve:secretsmanager:my-GitHub-token:SecretString:token::}}',
     RepositoryName: 'bar',
     RepositoryOwner: 'foo',
     Code: {
       S3: {
         Bucket: 'bucket-name',
-        Key: 'import.zip'
-      }
-    }
+        Key: 'import.zip',
+      },
+    },
   });
 });

@@ -3,9 +3,20 @@ import * as cdk from '@aws-cdk/core';
 import * as codestar from './codestar.generated';
 
 /**
- * Properties of GithubRepository
+ * GitHubRepository resource interface
  */
-export interface GithubRepositoryProps {
+export interface IGitHubRepository extends cdk.IResource {
+  /**
+   * a string combination of the repository owner and the repository name,
+   * such as `my-GitHub-account/my-GitHub-repo`.
+   */
+  readonly repository: string
+}
+
+/**
+ * Properties of GitHubRepository
+ */
+export interface GitHubRepositoryProps {
   /**
    * The GitHub user name for the owner of the GitHub repository to be created. If this
    * repository should be owned by a GitHub organization, provide its name
@@ -14,7 +25,7 @@ export interface GithubRepositoryProps {
   /**
    * The name of the repository you want to create in GitHub with AWS CloudFormation stack creation
    */
-  readonly name: string;
+  readonly gitHubRepositoryName: string;
   /**
    * The GitHub user's personal access token for the GitHub repository
    */
@@ -35,20 +46,21 @@ export interface GithubRepositoryProps {
 }
 
 /**
- * The GithubRepository resource
+ * The GitHubRepository resource
+ * @resource AWS::CodeStar::GitHubRepository
  */
-export class GithubRepository extends cdk.Construct {
+export class GitHubRepository extends cdk.Resource implements IGitHubRepository {
   /**
    * a string combination of the repository owner and the repository name,
-   * such as `my-github-account/my-github-repo`.
+   * such as `my-GitHub-account/my-GitHub-repo`.
    */
   public readonly repository: string;
-  constructor(scope: cdk.Construct, id: string, props: GithubRepositoryProps) {
+  constructor(scope: cdk.Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
 
-    const resource = new codestar.CfnGitHubRepository(this, 'GithubRepo', {
+    const resource = new codestar.CfnGitHubRepository(this, 'GitHubRepo', {
       repositoryOwner: props.owner,
-      repositoryName: props.name,
+      repositoryName: props.gitHubRepositoryName,
       repositoryAccessToken: props.accessToken.toString(),
       code: {
         s3: {

@@ -1,9 +1,9 @@
 {
   "Resources": {
-    "GithubRepo2AECAAC9": {
+    "GitHubRepoD2761255": {
       "Type": "AWS::CodeStar::GitHubRepository",
       "Properties": {
-        "RepositoryAccessToken": "{{resolve:secretsmanager:my-github-token:SecretString:token::}}",
+        "RepositoryAccessToken": "{{resolve:secretsmanager:my-GitHub-token:SecretString:token::}}",
         "RepositoryName": "bar",
         "RepositoryOwner": "foo",
         "Code": {
