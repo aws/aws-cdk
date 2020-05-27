@@ -234,7 +234,7 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 ### Step 5: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Request on GitHub. A reviewer will be later assigned to this Pull Request.
+* Submit a Pull Request on GitHub. A reviewer will later be assigned by the maintainers.
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
