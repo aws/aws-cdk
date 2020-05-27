@@ -510,8 +510,6 @@ export class Cluster extends Resource implements ICluster {
    * @param options options for creating a new nodegroup
    */
   public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
-    // initialize the awsAuth for this cluster
-    this._awsAuth = this._awsAuth ?? this.awsAuth;
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
@@ -636,6 +634,21 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuer(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuer;
+  }
+
+  /**
    * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
    * to link this cluster to AWS IAM.
    *
@@ -708,7 +721,7 @@ export class Cluster extends Resource implements ICluster {
    * @param id the id of this service account
    * @param options service account options
    */
-  public addServiceAccount(id: string, options: ServiceAccountOptions) {
+  public addServiceAccount(id: string, options: ServiceAccountOptions = { }) {
     return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
