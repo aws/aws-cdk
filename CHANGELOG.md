@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [1.42.0](https://github.com/aws/aws-cdk/compare/v1.40.0...v1.42.0) (2020-05-27)
+## [1.42.0](https://github.com/aws/aws-cdk/compare/v1.41.0...v1.42.0) (2020-05-27)
 
 
 ### ⚠ BREAKING CHANGES
@@ -15,7 +15,6 @@ can no longer be used to configure all S3 data events or all Lambda data
 events. Two new APIs `logAllS3DataEvents()` and
 `logAllLambdaDataEvents()` have been introduced to achieve this.
 * **cloudtrail:** The property `snsTopic` is now of the type `ITopic`.
-## End Commit Message
 
 ### Features
 
@@ -45,8 +44,6 @@ events. Two new APIs `logAllS3DataEvents()` and
 * **eks:** unable to add multiple service accounts ([#8122](https://github.com/aws/aws-cdk/issues/8122)) ([524440c](https://github.com/aws/aws-cdk/commit/524440c5454d15276c92581a08d4ee7cad1790eb))
 * **events:** cannot use the same target account for 2 cross-account event sources ([#8068](https://github.com/aws/aws-cdk/issues/8068)) ([395c07c](https://github.com/aws/aws-cdk/commit/395c07c0cac7739743fc71d71fddd8880b608ead)), closes [#8010](https://github.com/aws/aws-cdk/issues/8010)
 * **lambda-nodejs:** build fails on Windows ([#8140](https://github.com/aws/aws-cdk/issues/8140)) ([04490b1](https://github.com/aws/aws-cdk/commit/04490b134a05ec34523541a3ca282ba8957a7964)), closes [#8107](https://github.com/aws/aws-cdk/issues/8107)
-
-
 * **cloudtrail:** better typed event selector apis ([#8097](https://github.com/aws/aws-cdk/issues/8097)) ([0028778](https://github.com/aws/aws-cdk/commit/0028778c0f00f2faa8dad25345cd17f311fad5da))
 
 ## [1.41.0](https://github.com/aws/aws-cdk/compare/v1.40.0...v1.41.0) (2020-05-21)
