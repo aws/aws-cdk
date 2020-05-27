@@ -18,7 +18,7 @@ export interface IGitHubRepository extends cdk.IResource {
 }
 
 /**
- * Properties of GitHubRepository
+ * Construction properties of {@link GitHubRepository}.
  */
 export interface GitHubRepositoryProps {
   /**
