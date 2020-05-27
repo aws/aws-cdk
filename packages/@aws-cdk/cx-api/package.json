@@ -53,7 +53,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.2",
+    "@types/jest": "^25.2.3",
     "@types/mock-fs": "^4.10.0",
     "@types/semver": "^7.2.0",
     "cdk-build-tools": "0.0.0",
@@ -101,6 +101,9 @@
       "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.runtime",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.account",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.serviceName",
       "props-default-doc:@aws-cdk/cx-api.AwsCloudFormationStackProperties.parameters",
       "docs-public-apis:@aws-cdk/cx-api.ContainerImageAssetMetadataEntry",
       "docs-public-apis:@aws-cdk/cx-api.FileAssetMetadataEntry",
