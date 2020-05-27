@@ -1,3 +1,4 @@
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
@@ -20,7 +21,6 @@ export interface IEc2Environment extends cdk.IResource {
    * @attribute environmentE2Arn
    */
   readonly ec2EnvironmentArn: string;
-
 }
 
 /**
@@ -67,38 +67,21 @@ export interface Ec2EnvironmentProps {
    *
    * @default - do not clone any repository
    */
-  readonly clonedRepositories?: Cloud9Repository[];
+  // readonly clonedRepositories?: Cloud9Repository[];
+  readonly clonedRepositories?: CloneRepositoryConfig[];
 }
 
 /**
- * Repository provider
+ * The configuration for repository cloning
  */
-export enum Cloud9RepositoryProvider {
+export interface CloneRepositoryConfig {
   /**
-   * AWS CodeCommit
+   * The URL of the git repository
    */
-  AWS_CODECOMMIT
-}
-
-/**
- * The interface of the codecommit repository for Cloud9 environment
- */
-export interface Cloud9Repository {
-  /**
-   * Repository provider
-   * @default AWS_CODECOMMIT
-   */
-  readonly provider?: Cloud9RepositoryProvider;
+  readonly repositoryUrl: string;
 
   /**
-   * Repository URL
-   */
-  readonly url: string;
-
-  /**
-   * The path within the development environment's default file system location to clone the AWS CodeCommit
-   * repository into. For example, `/REPOSITORY_NAME` would clone the repository into the
-   * `/home/USER_NAME/environment/REPOSITORY_NAME` directory in the environment.
+   * The target path of the cloud9 environment to clone the repository to
    */
   readonly clonePath: string;
 }
@@ -167,7 +150,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
       repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
-        repositoryUrl: r.url,
+        repositoryUrl: r.repositoryUrl,
         pathComponent: r.clonePath,
       })) : undefined,
     });
@@ -175,5 +158,20 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
     this.ec2EnvironmentName = c9env.getAtt('Name').toString();
     this.ideUrl = `https://${this.stack.region}.console.aws.amazon.com/cloud9/ide/${this.environmentId}`;
+  }
+}
+
+/**
+ * The class with static methods generating `CloneRepositoryConfig` for different repository providers
+ */
+export class CloneRepository {
+  /**
+   * import repository to cloud9 environment from AWS CodeCommit
+   */
+  public static fromCodeCommit(repository: codecommit.IRepository, path: string): CloneRepositoryConfig {
+    return {
+      repositoryUrl: repository.repositoryCloneUrlHttp,
+      clonePath: path,
+    };
   }
 }

@@ -71,13 +71,12 @@ test('throw error when subnetSelection not specified and the provided VPC has no
 
 test('can use CodeCommit repositories', () => {
   // WHEN
+  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     clonedRepositories: [
-      {
-        url: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo').repositoryCloneUrlHttp,
-        clonePath: '/foo',
-      },
+      cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
     ],
   });
   // THEN

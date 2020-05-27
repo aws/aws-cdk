@@ -20,11 +20,9 @@ export class Cloud9Env extends cdk.Stack {
     // create a cloud9 ec2 environment in a new VPC
     const c9env = new cloud9.Ec2Environment(this, 'C9Env', {
       vpc,
+      // clone repositories into the environment
       clonedRepositories: [
-        {
-          url: repo.repositoryCloneUrlHttp,
-          clonePath: '/foo',
-        },
+        cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
       ],
     });
     new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
