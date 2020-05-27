@@ -81,17 +81,26 @@ export class Arn {
    */
   public static format(components: ArnComponents, stack?: Stack): string {
     const requiredComponents: Array<keyof ArnComponents> = ['partition', 'region', 'account'];
+    let definedComponents: Required<Omit<ArnComponents, 'resourceName' | 'sep'>>;
     if (!stack) {
       for (const rc of requiredComponents) {
         if (components[rc] === undefined) {
-          throw new Error(`Stack must be defined if "${rc}" component is undefined`);
+          throw new Error(`Stack must be defined if "${rc}" ARN component is undefined`);
         }
       }
+      definedComponents = components as Required<ArnComponents>;
+    } else {
+      definedComponents = {
+        ...components,
+        partition: components.partition ?? stack.partition,
+        region: components.region ?? stack.region,
+        account: components.account ?? stack.account,
+      };
     }
 
-    const partition = components.partition ?? stack!.partition;
-    const region = components.region ?? stack!.region;
-    const account = components.account ?? stack!.account;
+    const partition = definedComponents.partition;
+    const region = definedComponents.region;
+    const account = definedComponents.account;
     const sep = components.sep ?? '/';
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
