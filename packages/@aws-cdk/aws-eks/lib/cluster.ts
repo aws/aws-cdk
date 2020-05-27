@@ -52,6 +52,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   * @attribute
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 }
 
 /**
@@ -83,6 +95,16 @@ export interface ClusterAttributes {
    * The certificate-authority-data for your cluster.
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 
   /**
    * The security groups associated with this cluster.
@@ -300,6 +322,16 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  public readonly clusterEncryptionConfigKeyArn: string;
+
+  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -414,6 +446,8 @@ export class Cluster extends Resource implements ICluster {
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
+    this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -990,6 +1024,8 @@ export interface AutoScalingGroupOptions {
 class ImportedCluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
   public readonly clusterCertificateAuthorityData: string;
+  public readonly clusterSecurityGroupId: string;
+  public readonly clusterEncryptionConfigKeyArn: string;
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
@@ -1003,6 +1039,8 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
+    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
