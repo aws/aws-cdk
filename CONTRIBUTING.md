@@ -77,7 +77,8 @@ you need to have the following SDKs and tools locally:
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
-- [Java OpenJDK 8](http://openjdk.java.net/install/)
+- [Java OpenJDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [Apache Maven](http://maven.apache.org/install.html)
 - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
 - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
 - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
@@ -89,6 +90,13 @@ $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 $ yarn install
 $ yarn build
+```
+
+If you get compiler errors when building, a common cause is globally installed tools like tslint and typescript. Try uninstalling them.
+
+```
+npm uninstall -g tslint
+npm uninstall -g typescript
 ```
 
 Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
@@ -197,7 +205,7 @@ Examples:
 
 ### Step 4: Commit
 
-Create a commit with the proposed change changes:
+Create a commit with the proposed changes:
 
 * Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or

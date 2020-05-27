@@ -509,14 +509,13 @@ Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/la
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.RunGlueJobTask(jobName, {
-    arguments: {
-      key: 'value',
-    },
-    timeout: cdk.Duration.minutes(30),
-    notifyDelayAfter: cdk.Duration.minutes(5),
-  }),
+new GlueStartJobRun(stack, 'Task', {
+  jobName: 'my-glue-job',
+  arguments: {
+    key: 'value',
+  },
+  timeout: cdk.Duration.minutes(30),
+  notifyDelayAfter: cdk.Duration.minutes(5),
 });
 ```
 

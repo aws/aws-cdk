@@ -1114,9 +1114,9 @@ export class Table extends TableBase {
    * @param nonKeyAttributes a list of non-key attribute names
    */
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 20) {
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 100) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 20');
+      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 100');
     }
 
     // store all non-key attributes
