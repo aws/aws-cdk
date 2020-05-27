@@ -29,6 +29,8 @@ export class BucketPolicy extends Resource {
    */
   public readonly document = new PolicyDocument();
 
+  private resource: CfnBucketPolicy;
+
   constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
 
@@ -36,13 +38,22 @@ export class BucketPolicy extends Resource {
       throw new Error('Bucket doesn\'t have a bucketName defined');
     }
 
-    const resource = new CfnBucketPolicy(this, 'Resource', {
+    this.resource = new CfnBucketPolicy(this, 'Resource', {
       bucket: props.bucket.bucketName,
       policyDocument: this.document,
     });
 
     if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
+      this.resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
+
+  /**
+   * Sets the removal policy for the BucketPolicy.
+   * @param removalPolicy the RemovalPolicy to set.
+   */
+  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
+    this.resource.applyRemovalPolicy(removalPolicy);
+  }
+
 }

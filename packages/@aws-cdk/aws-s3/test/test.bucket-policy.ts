@@ -39,7 +39,7 @@ export = {
     test.done();
   },
 
-  'when specifying a removalPolicy'(test: Test) {
+  'when specifying a removalPolicy at creation'(test: Test) {
     const stack = new Stack();
 
     const myBucket = new s3.Bucket(stack, 'MyBucket');
@@ -60,6 +60,49 @@ export = {
           'UpdateReplacePolicy': 'Retain',
         },
         'MyBucketPolicy0AFEFDBE': {
+          'Type': 'AWS::S3::BucketPolicy',
+          'Properties': {
+            'Bucket': {
+              'Ref': 'MyBucketF68F3FF0',
+            },
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 's3:GetObject*',
+                  'Effect': 'Allow',
+                  'Resource': { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'when specifying a removalPolicy after creation'(test: Test) {
+    const stack = new Stack();
+
+    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    myBucket.addToResourcePolicy(new PolicyStatement({
+      resources: [myBucket.bucketArn],
+      actions: ['s3:GetObject*'],
+    }));
+    myBucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+        'MyBucketPolicyE7FBAC7B': {
           'Type': 'AWS::S3::BucketPolicy',
           'Properties': {
             'Bucket': {
