@@ -160,7 +160,7 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
     }
   }
   packageJson.bundledDependencies = packageJson.bundledDependencies?.filter((dep: string) => !spuriousBundledDeps.has(dep));
-  for (const toRemove of spuriousBundledDeps) {
+  for (const toRemove of Array.from(spuriousBundledDeps)) {
     delete packageJson.dependencies[toRemove];
     changed = true;
   }
