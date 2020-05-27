@@ -1,4 +1,3 @@
-import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
@@ -68,23 +67,40 @@ export interface Ec2EnvironmentProps {
    *
    * @default - do not clone any repository
    */
-  readonly repositories?: IRepository[];
+  readonly clonedRepositories?: Cloud9Repository[];
+}
+
+/**
+ * Repository provider
+ */
+export enum Cloud9RepositoryProvider {
+  /**
+   * AWS CodeCommit
+   */
+  AWS_CODECOMMIT
 }
 
 /**
  * The interface of the codecommit repository for Cloud9 environment
  */
-export interface IRepository {
+export interface Cloud9Repository {
   /**
-   * AWS CodeCommit repository
+   * Repository provider
+   * @default AWS_CODECOMMIT
    */
-  readonly repository: codecommit.IRepository,
+  readonly provider?: Cloud9RepositoryProvider;
+
+  /**
+   * Repository URL
+   */
+  readonly url: string;
+
   /**
    * The path within the development environment's default file system location to clone the AWS CodeCommit
    * repository into. For example, `/REPOSITORY_NAME` would clone the repository into the
    * `/home/USER_NAME/environment/REPOSITORY_NAME` directory in the environment.
    */
-  readonly path: string;
+  readonly clonePath: string;
 }
 
 /**
@@ -150,9 +166,9 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       description: props.description,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
-      repositories: props.repositories ? props.repositories.map(r => ({
-        repositoryUrl: r.repository.repositoryCloneUrlHttp,
-        pathComponent: r.path,
+      repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
+        repositoryUrl: r.url,
+        pathComponent: r.clonePath,
       })) : undefined,
     });
     this.environmentId = c9env.ref;

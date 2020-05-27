@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -69,19 +69,19 @@ test('throw error when subnetSelection not specified and the provided VPC has no
   }).toThrow(/no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection/);
 });
 
-test('imoprt codecommit repo', () => {
+test('can use CodeCommit repositories', () => {
   // WHEN
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    repositories: [
+    clonedRepositories: [
       {
-        repository: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo'),
-        path: '/foo',
+        url: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo').repositoryCloneUrlHttp,
+        clonePath: '/foo',
       },
     ],
   });
   // THEN
-  expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2', {
+  expectCDK(stack).to(haveResourceLike('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: 't2.micro',
     Repositories: [
       {
@@ -104,8 +104,5 @@ test('imoprt codecommit repo', () => {
         },
       },
     ],
-    SubnetId: {
-      Ref: 'VPCPublicSubnet1SubnetB4246D30',
-    },
   }));
 });

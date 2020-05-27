@@ -61,5 +61,4 @@ new cloud9.Ec2Environment(stack, 'C9Env', {
     },
   ],
 });
-
 ```
