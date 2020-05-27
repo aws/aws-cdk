@@ -131,11 +131,18 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      const updateResponse = await this.eks.updateClusterConfig({
+      const config: aws.EKS.UpdateClusterConfigRequest = {
         name: this.clusterName,
         logging: this.newProps.logging,
-        resourcesVpcConfig: this.newProps.resourcesVpcConfig,
-      });
+      };
+      if (updates.updateAccess) {
+        config.resourcesVpcConfig = {
+          endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
+          endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
+          publicAccessCidrs: this.newProps.resourcesVpcConfig.publicAccessCidrs,
+        }
+      }
+      const updateResponse = await this.eks.updateClusterConfig(config);
 
       return { EksUpdateId: updateResponse.update?.id };
     }
