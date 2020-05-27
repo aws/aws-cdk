@@ -34,8 +34,8 @@ export class HttpApiMapping extends Resource implements IApiMapping {
   /**
    * import from API ID
    */
-  public static fromApiId(scope: Construct, id: string, apiMappingId: string): IApiMapping {
-    class Import extends Resource implements IApiMapping {
+  public static fromApiId(scope: Construct, id: string, apiMappingId: string): IHttpApiMapping {
+    class Import extends Resource implements IHttpApiMapping {
       public readonly apiMappingId = apiMappingId;
     }
     return new Import(scope, id);
