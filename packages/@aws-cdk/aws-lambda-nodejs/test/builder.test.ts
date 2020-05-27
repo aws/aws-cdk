@@ -20,6 +20,10 @@ jest.mock('child_process', () => ({
   }),
 }));
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 test('calls docker with the correct args', () => {
   const builder = new Builder({
     entry: '/project/folder/entry.ts',
@@ -56,6 +60,24 @@ test('calls docker with the correct args', () => {
     '--no-source-maps',
     '--cache-dir', '/cache',
   ]);
+});
+
+test('with Windows paths', () => {
+  const builder = new Builder({
+    entry: 'C:\\my-project\\lib\\entry.ts',
+    global: 'handler',
+    outDir: '/out-dir',
+    cacheDir: '/cache-dir',
+    nodeDockerTag: 'lts-alpine',
+    nodeVersion: '12',
+    projectRoot: 'C:\\my-project',
+  });
+  builder.build();
+
+  // docker run
+  expect(spawnSync).toHaveBeenCalledWith('docker', expect.arrayContaining([
+    'parcel', 'build', expect.stringContaining('/lib/entry.ts'),
+  ]));
 });
 
 test('throws in case of error', () => {
