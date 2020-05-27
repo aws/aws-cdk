@@ -16,16 +16,16 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.4.1",
+    "@jsii/spec": "^1.5.0",
     "camelcase": "^6.0.0",
     "colors": "^1.4.0",
     "fs-extra": "^8.1.0",
-    "jsii-reflect": "^1.4.1",
+    "jsii-reflect": "^1.5.0",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/yargs": "^15.0.4",
+    "@types/yargs": "^15.0.5",
     "tslint": "^5.20.1",
     "typescript": "~3.8.3"
   },
@@ -45,6 +45,6 @@
     "cdk"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   }
 }

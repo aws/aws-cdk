@@ -22,6 +22,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ## Table Of Contents
 
 - [Task](#task)
+- [Paths](#paths)
+  - [InputPath](#inputpath)
+  - [OutputPath](#outputpath)
+  - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
 - [Batch](#batch)
@@ -61,6 +65,79 @@ actions, and coordinate executions directly from the Amazon States Language in
 Step Functions. You can directly call and pass parameters to the APIs of those
 services.
 
+## Paths
+
+In the Amazon States Language, a [path](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html) is a string beginning with `$` that you
+can use to identify components within JSON text.
+
+Learn more about input and output processing in Step Functions [here](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html)
+
+### InputPath
+
+Both `InputPath` and `Parameters` fields provide a way to manipulate JSON as it
+moves through your workflow. AWS Step Functions applies the `InputPath` field first,
+and then the `Parameters` field. You can first filter your raw input to a selection
+you want using InputPath, and then apply Parameters to manipulate that input
+further, or add new values. If you don't specify an `InputPath`, a default value
+of `$` will be used.
+
+The following example provides the field named `input` as the input to the `Task`
+state that runs a Lambda function.
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda),
+  inputPath: '$.input'
+});
+```
+
+### OutputPath
+
+Tasks also allow you to select a portion of the state output to pass to the next
+state. This enables you to filter out unwanted information, and pass only the
+portion of the JSON that you care about. If you don't specify an `OutputPath`,
+a default value of `$` will be used. This passes the entire JSON node to the next
+state.
+
+The [response](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html#API_Invoke_ResponseSyntax) from a Lambda function includes the response from the function
+as well as other metadata.
+
+The following example assigns the output from the Task to a field named `result`
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda),
+  outputPath: '$.Payload.result'
+});
+```
+
+### ResultPath
+
+The output of a state can be a copy of its input, the result it produces (for
+example, output from a Task state’s Lambda function), or a combination of its
+input and result. Use [`ResultPath`](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html) to control which combination of these is
+passed to the state output. If you don't specify an `ResultPath`, a default
+value of `$` will be used.
+
+The following example adds the item from calling DynamoDB's `getItem` API to the state
+input and passes it to the next state.
+
+```ts
+new sfn.Task(this, 'PutItem', {
+  task: tasks.CallDynamoDB.getItem({
+    item: {
+      MessageId: new tasks.DynamoAttributeValue().withS('12345'),
+    },
+    tableName: 'my-table',
+  }),
+  resultPath: `$.Item`
+});
+```
+
+⚠️ The `OutputPath` is computed after applying `ResultPath`. All service integrations
+return metadata as part of their response. When using `ResultPath`, it's not possible to
+merge a subset of the task output to the input.
+
 ## Task parameters from the state JSON
 
 Most tasks take parameters. Parameter values can either be static, supplied directly
@@ -69,8 +146,19 @@ in the state machine's execution (either as its input or an output of a prior st
 Parameter values available at runtime can be specified via the `Data` class,
 using methods such as `Data.stringAt()`.
 
-If so, the value is taken from the indicated location in the state JSON,
-similar to (for example) `inputPath`.
+The following example provides the field named `input` as the input to the Lambda function
+and invokes it asynchronously.
+
+```ts
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+  task: new tasks.RunLambdaTask(submitJobLambda, {
+    payload: sfn.Data.StringAt('$.input'),
+    invocationType: tasks.InvocationType.EVENT,
+  }),
+});
+```
+
+Each service integration has its own set of parameters that can be supplied.
 
 ## Evaluate Expression
 
@@ -127,7 +215,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import batch = require('@aws-cdk/aws-batch');
+import * as batch from '@aws-cdk/aws-batch';
 
 const batchQueue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [
@@ -241,7 +329,7 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
 ```ts
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
 
 // See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
 
@@ -421,14 +509,13 @@ Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/la
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.RunGlueJobTask(jobName, {
-    arguments: {
-      key: 'value',
-    },
-    timeout: cdk.Duration.minutes(30),
-    notifyDelayAfter: cdk.Duration.minutes(5),
-  }),
+new GlueStartJobRun(stack, 'Task', {
+  jobName: 'my-glue-job',
+  arguments: {
+    key: 'value',
+  },
+  timeout: cdk.Duration.minutes(30),
+  notifyDelayAfter: cdk.Duration.minutes(5),
 });
 ```
 
@@ -444,7 +531,24 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
-new sfn.Task(this, 'Invoke with state input');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const myLambda = new lambda.Function(this, 'my sample lambda', {
+  code: Code.fromInline(`exports.handler = async () => {
+    return {
+      statusCode: '200',
+      body: 'hello, world!'
+    };
+  };`),
+  runtime: Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+});
+
+new tasks.LambdaInvoke(this, 'Invoke with state input', {
+  lambdaFunction: myLambda,
+});
 ```
 
 When a function is invoked, the Lambda service sends  [these response
@@ -457,16 +561,15 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
-new sfn.Task(this, 'Invoke with empty object as payload', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    payload: sfn.TaskInput.fromObject({})
-  }),
+new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
+  lambdaFunction: myLambda,
+  payload: sfn.TaskInput.fromObject({}),
 });
 
-new sfn.Task(this, 'Invoke with payload field in the state input', {
-  task: new tasks.RunLambdaTask(myOtherLambda, {
-    payload: sfn.TaskInput.fromDataAt('$.Payload'),
-  }),
+// use the output of myLambda as input
+new tasks.LambdaInvoke(this, 'Invoke with payload field in the state input', {
+  lambdaFunction: myOtherLambda,
+  payload: sfn.TaskInput.fromDataAt('$.Payload'),
 });
 ```
 
@@ -474,10 +577,9 @@ The following snippet invokes a Lambda and sets the task output to only include
 the Lambda function response.
 
 ```ts
-new sfn.Task(this, 'Invoke and set function response as task output', {
-  task: new tasks.RunLambdaTask(myLambda, {
-    payload: sfn.TaskInput.fromDataAt('$'),
-  }),
+new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
+  lambdaFunction: myLambda,
+  payload: sfn.TaskInput.fromDataAt('$'),
   outputPath: '$.Payload',
 });
 ```
@@ -493,15 +595,14 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
-  const task = new sfn.Task(stack, 'Invoke with callback', {
-    task: new tasks.RunLambdaTask(myLambda, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      payload: {
-        token: sfn.Context.taskToken,
-        input: sfn.TaskInput.fromDataAt('$.someField'),
-      }
-    })
-  });
+new tasks.LambdaInvoke(stack, 'Invoke with callback', {
+  lambdaFunction: myLambda,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  payload: sfn.TaskInput.fromObject({
+    token: sfn.Context.taskToken,
+    input: sfn.Data.stringAt('$.someField'),
+  }),
+});
 ```
 
 ⚠️ The task will pause until it receives that task token back with a `SendTaskSuccess` or `SendTaskFailure`
@@ -588,29 +689,29 @@ Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 // ...
 
 const topic = new sns.Topic(this, 'Topic');
 
 // Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Publish1', {
-    task: new tasks.PublishToTopic(topic, {
-        integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-        message: TaskInput.fromDataAt('$.state.message'),
-    })
+const task1 = new tasks.SnsPublish(this, 'Publish1', {
+  topic,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  message: sfn.TaskInput.fromDataAt('$.state.message'),
 });
 
 // Combine a field from the execution data with
 // a literal object.
-const task2 = new sfn.Task(this, 'Publish2', {
-    task: new tasks.PublishToTopic(topic, {
-        message: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        })
-    })
+const task2 = new tasks.SnsPublish(this, 'Publish2', {
+  topic,
+  message: sfn.TaskInput.fromObject({
+    field1: 'somedata',
+    field2: sfn.Data.stringAt('$.field2'),
+  })
 });
 ```
 
@@ -652,31 +753,27 @@ You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueServi
 to send a message to an SQS queue.
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sqs from '@aws-cdk/aws-sqs';
 
 // ...
 
-const queue = new sns.Queue(this, 'Queue');
+const queue = new sqs.Queue(this, 'Queue');
 
 // Use a field from the execution data as message.
-const task1 = new sfn.Task(this, 'Send1', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromDataAt('$.message'),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
+const task1 = new tasks.SqsSendMessage(this, 'Send1', {
+  queue,
+  messageBody: sfn.TaskInput.fromDataAt('$.message'),
 });
 
 // Combine a field from the execution data with
 // a literal object.
-const task2 = new sfn.Task(this, 'Send2', {
-    task: new tasks.SendToQueue(queue, {
-        messageBody: TaskInput.fromObject({
-            field1: 'somedata',
-            field2: Data.stringAt('$.field2'),
-        }),
-        // Only for FIFO queues
-        messageGroupId: '1234'
-    })
+const task2 = new tasks.SqsSendMessage(this, 'Send2', {
+  queue,
+  messageBody: sfn.TaskInput.fromObject({
+    field1: 'somedata',
+    field2: sfn.Data.stringAt('$.field2'),
+  }),
 });
 ```

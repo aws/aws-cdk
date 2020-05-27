@@ -12,7 +12,7 @@
 Here is a minimal deployable DynamoDB table definition:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
@@ -47,7 +47,7 @@ DynamoDB supports two billing modes:
 * PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
@@ -78,7 +78,7 @@ https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure
 You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 const globalTable = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
@@ -88,3 +88,53 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 
 When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
 selected regions.
+
+### Encryption
+
+All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
+* AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).
+* AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS chages apply).
+* Customer managed CMK - You have full control over the KMS key used to encrypt the DynamoDB Table (AWS KMS charges apply).
+
+Creating a Table encrypted with a customer managed CMK:
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.CUSTOMER_MANAGED,
+});
+
+// You can access the CMK that was added to the stack on your behalf by the Table construct via:
+const tableEncryptionKey = table.encryptionKey;
+```
+
+You can also supply your own key:
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+import kms = require('@aws-cdk/aws-kms');
+
+const encryptionKey = new kms.Key(stack, 'Key', {
+  enableKeyRotation: true
+});
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.CUSTOMER_MANAGED,
+  encryptionKey, // This will be exposed as table.encryptionKey
+});
+```
+
+In order to use the AWS managed CMK instead, change the code to:
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const table = new dynamodb.Table(stack, 'MyTable', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  encryption: TableEncryption.AWS_MANAGED,
+});
+
+// In this case, the CMK _cannot_ be accessed through table.encryptionKey.
+```

@@ -32,6 +32,15 @@ export class CloudFormationStack {
     }
   }
 
+  /**
+   * Return a copy of the given stack that does not exist
+   *
+   * It's a little silly that it needs arguments to do that, but there we go.
+   */
+  public static doesNotExist(cfn: CloudFormation, stackName: string) {
+    return new CloudFormationStack(cfn, stackName);
+  }
+
   private _template: any;
 
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
@@ -114,6 +123,13 @@ export class CloudFormationStack {
    */
   public get parameterNames(): string[] {
     return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
+  }
+
+  /**
+   * Return the termination protection of the stack
+   */
+  public get terminationProtection(): boolean | undefined {
+    return this.stack?.EnableTerminationProtection;
   }
 
   private assertExists() {

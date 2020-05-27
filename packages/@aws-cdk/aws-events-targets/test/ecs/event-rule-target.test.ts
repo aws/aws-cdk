@@ -73,7 +73,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
+  const target = new targets.EcsTask({
     cluster,
     taskDefinition,
     taskCount: 1,
@@ -81,9 +81,11 @@ test('Can use Fargate taskdef as EventRule target', () => {
       containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }],
-  }));
+  });
+  rule.addTarget(target);
 
   // THEN
+  expect(target.securityGroup).toBeDefined(); // Generated security groups should be accessible.
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
@@ -254,6 +256,99 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
         Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
         RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
         Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('throws an error if both securityGroup and securityGroups is specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+  const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      securityGroup,
+      securityGroups: [securityGroup],
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', 'yay'],
+      }],
+    }));
+  }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
+});
+
+test('uses multiple security groups', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+  const securityGroups = [
+    new ec2.SecurityGroup(stack, 'SecurityGroupA', { vpc }),
+    new ec2.SecurityGroup(stack, 'SecurityGroupB', { vpc }),
+  ];
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    securityGroups,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }],
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              AssignPublicIp: 'DISABLED',
+              SecurityGroups: [
+                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId']},
+                {'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId']},
+              ],
+              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A'}],
+            },
+          },
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        Id: 'Target0',
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
       },
     ],
   });

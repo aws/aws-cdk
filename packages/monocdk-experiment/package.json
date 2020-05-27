@@ -45,7 +45,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "jsii": "^1.4.1",
+    "jsii": "^1.5.0",
     "constructs": "^3.0.2",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
@@ -178,6 +178,7 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/cdk-assets-schema": "0.0.0",
+    "@aws-cdk/cloudformation-include": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -192,13 +193,17 @@
     "@aws-cdk/aws-resourcegroups": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
     "@aws-cdk/aws-ce": "0.0.0",
-    "@aws-cdk/aws-synthetics": "0.0.0"
+    "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2-actions": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-imagebuilder": "0.0.0",
+    "@aws-cdk/aws-macie": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   }
 }

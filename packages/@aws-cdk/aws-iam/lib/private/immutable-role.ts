@@ -1,9 +1,9 @@
-import { Construct, DependableTrait } from '@aws-cdk/core';
+import { ConcreteDependable, Construct, DependableTrait } from '@aws-cdk/core';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
-import { IPrincipal } from '../principals';
+import { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
 import { IRole } from '../role';
 
 /**
@@ -44,9 +44,13 @@ export class ImmutableRole extends Construct implements IRole {
     // do nothing
   }
 
-  public addToPolicy(_statement: PolicyStatement): boolean {
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // Not really added, but for the purposes of consumer code pretend that it was.
-    return true;
+    return { statementAdded: true, policyDependable: new ConcreteDependable() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {

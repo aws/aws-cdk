@@ -18,7 +18,7 @@ Add a CloudTrail construct - for ease of setting up CloudTrail logging in your a
 Example usage:
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
@@ -43,7 +43,7 @@ For example, to log to CloudWatch Logs
 
 ```ts
 
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true
@@ -51,34 +51,35 @@ const trail = new cloudtrail.Trail(this, 'CloudTrail', {
 ```
 
 This creates the same setup as above - but also logs events to a created CloudWatch Log stream.
-By default, the created log group has a retention period of 365 Days, but this is also configurable.
+By default, the created log group has a retention period of 365 Days, but this is also configurable
+via the `cloudWatchLogsRetention` property. If you would like to specify the log group explicitly,
+use the `cloudwatchLogGroup` property.
 
 For using CloudTrail event selector to log specific S3 events,
 you can use the `CloudTrailProps` configuration object.
 Example:
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
 // Adds an event selector to the bucket magic-bucket.
 // By default, this includes management events and all operations (Read + Write)
-trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]);
+trail.logAllS3DataEvents();
 
-// Adds an event selector to the bucket foo, with a specific configuration
-trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
-  includeManagementEvents: false,
-  readWriteType: ReadWriteType.ALL,
-});
+// Adds an event selector to the bucket foo
+trail.addS3EventSelector([{
+  bucket: fooBucket // 'fooBucket' is of type s3.IBucket
+}]);
 ```
 
 For using CloudTrail event selector to log events about Lambda
 functions, you can use `addLambdaEventSelector`.
 
 ```ts
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {
@@ -88,8 +89,37 @@ const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {
 });
 
 // Add an event selector to log data events for all functions in the account.
-trail.addLambdaEventSelector(["arn:aws:lambda"]);
+trail.logAllLambdaDataEvents();
 
 // Add an event selector to log data events for the provided Lambda functions.
 trail.addLambdaEventSelector([lambdaFunction.functionArn]);
+```
+
+Using the `Trail.onEvent()` API, an EventBridge rule can be created that gets triggered for
+every event logged in CloudTrail.
+To only use the events that are of interest, either from a particular service, specific account or
+time range, they can be filtered down using the APIs available in `aws-events`. The following code
+filters events for S3 from a specific AWS account and triggers a lambda function. See [Events delivered via
+CloudTrail](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#events-for-services-not-listed)
+to learn more about the event structure for events from CloudTrail.
+
+```ts
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as eventTargets from '@aws-cdk/aws-events-targets';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const myFunctionHandler = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset('resource/myfunction');
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+});
+
+const eventRule = Trail.onEvent(this, 'MyCloudWatchEvent', {
+  target: new eventTargets.LambdaFunction(myFunctionHandler),
+});
+
+eventRule.addEventPattern({
+  account: '123456789012',
+  source: 'aws.s3',
+});
 ```

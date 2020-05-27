@@ -18,6 +18,7 @@ class EksClusterStack extends TestStack {
     const cluster = new eks.Cluster(this, 'Cluster', {
       mastersRole,
       defaultCapacity: 2,
+      version: '1.16',
     });
 
     // // fargate profile for resources in the "default" namespace
@@ -64,6 +65,9 @@ class EksClusterStack extends TestStack {
     // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
     cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
     cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+
+    // add a service account connected to a IAM role
+    cluster.addServiceAccount('MyServiceAccount');
 
     new CfnOutput(this, 'ClusterEndpoint', { value: cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: cluster.clusterArn });
