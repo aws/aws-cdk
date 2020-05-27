@@ -1005,12 +1005,8 @@ export class Cfn2Ts extends ValidationRule {
   public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) {
-      return;
-    }
-
-    if (!isAWS(pkg)) {
-      return;
+    if (!isJSII(pkg) || !isAWS(pkg)) {
+      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
