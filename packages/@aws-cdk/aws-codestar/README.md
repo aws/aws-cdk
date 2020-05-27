@@ -22,12 +22,12 @@ import * as codestar from '@aws-cdk/aws-codestar';
 import * as s3 from '@aws-cdk/aws-s3'
 
 new codestar.GitHubRepository(stack, 'GitHubRepo', {
-  owner: 'foo',
-  name: 'bar',
+  owner: 'owner-name',
+  repositoryName: 'my-new-repo',
   accessToken: cdk.SecretValue.secretsManager('my-github-token', {
     jsonField: 'token',
   }),
-  bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
-  key: 'import.zip',
+  contentsBucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
+  contentsKey: 'import.zip',
 });
 ```
