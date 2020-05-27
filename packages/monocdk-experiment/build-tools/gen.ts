@@ -189,7 +189,11 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     const libDir = path.join(LIB_ROOT, library.shortName);
     await transformPackage(library, packageJson.jsii.targets, libDir, libraries);
 
-    indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
+    if (library.shortName === 'core') {
+      indexStatements.push(`export * from './${library.shortName}';`);
+    } else {
+      indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
+    }
   }
 
   await fs.writeFile(path.join(LIB_ROOT, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
@@ -213,13 +217,21 @@ async function transformPackage(
     { encoding: 'utf8' },
   );
 
-  await fs.writeJson(
-    path.join(destination, '.jsiirc.json'),
-    {
-      targets: transformTargets(config, library.packageJson.jsii.targets),
-    },
-    { spaces: 2 },
-  );
+  if (library.shortName !== 'core') {
+    await fs.writeJson(
+      path.join(destination, '.jsiirc.json'),
+      {
+        targets: transformTargets(config, library.packageJson.jsii.targets),
+      },
+      { spaces: 2 },
+    );
+
+    await fs.writeFile(
+      path.resolve(LIB_ROOT, '..', `${library.shortName}.ts`),
+      `export * from './lib/${library.shortName}';\n`,
+      { encoding: 'utf8' },
+    );
+  }
 }
 
 function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: PackageJson['jsii']['targets']): PackageJson['jsii']['targets'] {

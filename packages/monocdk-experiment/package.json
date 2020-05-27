@@ -23,6 +23,9 @@
     "watch": "cdk-watch",
     "compat": "cdk-compat"
   },
+  "awslint": {
+    "exclude": ["*:*"]
+  },
   "cdk-build": {
     "eslint": {
       "disable": true

@@ -40,8 +40,8 @@ new s3.Bucket(stack, 'TestBucket');
 Alternatively, you can use "barrel" imports:
 
 ```ts
-import { App, Stack } from 'monocdk-experiment/lib/core';
-import { Bucket } from 'monocdk-experiment/lib/aws-s3';
+import { App, Stack } from 'monocdk-experiment';
+import { Bucket } from 'monocdk-experiment/aws-s3';
 
 const app = new App();
 const stack = new Stack(app, 'MonoCDK-Stack');

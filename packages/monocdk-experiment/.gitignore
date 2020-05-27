@@ -12,3 +12,6 @@ dist
 .LAST_BUILD
 *.snk
 !.eslintrc.js
+
+# Ignore barrel import entry points
+/*.ts
