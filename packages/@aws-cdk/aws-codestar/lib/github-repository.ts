@@ -1,4 +1,4 @@
-import { IBucket } from '@aws-cdk/aws-s3';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as codestar from './codestar.generated';
 
@@ -7,10 +7,14 @@ import * as codestar from './codestar.generated';
  */
 export interface IGitHubRepository extends cdk.IResource {
   /**
-   * a string combination of the repository owner and the repository name,
-   * such as `my-GitHub-account/my-GitHub-repo`.
+   * the repository owner
    */
-  readonly repository: string
+  readonly owner: string
+
+  /**
+   * the repository name
+   */
+  readonly repo: string
 }
 
 /**
@@ -22,42 +26,50 @@ export interface GitHubRepositoryProps {
    * repository should be owned by a GitHub organization, provide its name
    */
   readonly owner: string;
+
   /**
    * The name of the repository you want to create in GitHub with AWS CloudFormation stack creation
    */
-  readonly gitHubRepositoryName: string;
+  readonly repositoryName: string;
+
   /**
    * The GitHub user's personal access token for the GitHub repository
    */
   readonly accessToken: cdk.SecretValue;
+
   /**
    * The name of the Amazon S3 bucket that contains the ZIP file with the content to be committed to the new repository
    */
-  readonly bucket: IBucket;
+  readonly contentsBucket: s3.IBucket;
+
   /**
    * The S3 object key or file name for the ZIP file
    */
-  readonly key: string;
+  readonly contentsKey: string;
+
   /**
    * The object version of the ZIP file, if versioning is enabled for the Amazon S3 bucket
    *
    * @default - not specified
    */
-  readonly version?: string;
+  readonly contentsS3Version?: string;
+
   /**
    * Indicates whether to enable issues for the GitHub repository. You can use GitHub issues to track information
    * and bugs for your repository.
    *
-   * @default false
+   * @default true
    */
   readonly enableIssues?: boolean;
+
   /**
    * Indicates whether the GitHub repository is a private repository. If so, you choose who can see and commit to
    * this repository.
    *
-   * @default false
+   * @default Visibility.PUBLIC
    */
-  readonly private?: boolean;
+  readonly visibility?: Visibility;
+
   /**
    * A comment or description about the new repository. This description is displayed in GitHub after the repository
    * is created.
@@ -69,31 +81,45 @@ export interface GitHubRepositoryProps {
 
 /**
  * The GitHubRepository resource
- * @resource AWS::CodeStar::GitHubRepository
  */
 export class GitHubRepository extends cdk.Resource implements IGitHubRepository {
-  /**
-   * a string combination of the repository owner and the repository name,
-   * such as `my-GitHub-account/my-GitHub-repo`.
-   */
-  public readonly repository: string;
+
+  public readonly owner: string;
+  public readonly repo: string;
+
   constructor(scope: cdk.Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
 
-    const resource = new codestar.CfnGitHubRepository(this, 'GitHubRepo', {
+    const resource = new codestar.CfnGitHubRepository(this, 'Resource', {
       repositoryOwner: props.owner,
-      repositoryName: props.gitHubRepositoryName,
+      repositoryName: props.repositoryName,
       repositoryAccessToken: props.accessToken.toString(),
       code: {
         s3: {
-          bucket: props.bucket.bucketName,
-          key: props.key,
+          bucket: props.contentsBucket.bucketName,
+          key: props.contentsKey,
         },
       },
       enableIssues: props.enableIssues ?? false,
-      isPrivate: props.private ?? false,
+      isPrivate: props.visibility === Visibility.PRIVATE ? true : false,
       repositoryDescription: props.description,
     });
-    this.repository = resource.ref;
+
+    this.owner = cdk.Fn.select(0, cdk.Fn.split('/', resource.ref));
+    this.repo = cdk.Fn.select(1, cdk.Fn.split('/', resource.ref));
   }
+}
+
+/**
+ * Visibility of the GitHubRepository
+ */
+export enum Visibility {
+  /**
+   * private repository
+   */
+  PRIVATE,
+  /**
+   * public repository
+   */
+  PUBLIC,
 }

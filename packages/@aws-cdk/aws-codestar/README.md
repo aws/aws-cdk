@@ -18,13 +18,16 @@
 To create a new GitHub Repository and commit the assets from S3 bucket into the repository after it is created:
 
 ```ts
-new GitHubRepository(stack, 'GitHubRepo', {
+import * as codestar from '@aws-cdk/aws-codestar';
+import * as s3 from '@aws-cdk/aws-s3'
+
+new codestar.GitHubRepository(stack, 'GitHubRepo', {
   owner: 'foo',
   name: 'bar',
   accessToken: cdk.SecretValue.secretsManager('my-github-token', {
     jsonField: 'token',
   }),
-  bucket: Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
+  bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket-name'),
   key: 'import.zip',
 });
 ```
