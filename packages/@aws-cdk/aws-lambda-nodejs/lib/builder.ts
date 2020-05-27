@@ -119,11 +119,11 @@ export class Builder {
         '-v', `${path.resolve(this.options.outDir)}:${containerOutDir}`,
         ...(this.options.cacheDir ? ['-v', `${path.resolve(this.options.cacheDir)}:${containerCacheDir}`] : []),
         ...flatten(Object.entries(this.options.environment || {}).map(([k, v]) => ['--env', `${k}=${v}`])),
-        '-w', path.dirname(containerEntryPath),
+        '-w', path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
         'parcel-bundler',
       ];
       const parcelArgs = [
-        'parcel', 'build', containerEntryPath,
+        'parcel', 'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
         '--out-dir', containerOutDir,
         '--out-file', 'index.js',
         '--global', this.options.global,

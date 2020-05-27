@@ -62,6 +62,24 @@ test('calls docker with the correct args', () => {
   ]);
 });
 
+test('with Windows paths', () => {
+  const builder = new Builder({
+    entry: 'C:\\my-project\\lib\\entry.ts',
+    global: 'handler',
+    outDir: '/out-dir',
+    cacheDir: '/cache-dir',
+    nodeDockerTag: 'lts-alpine',
+    nodeVersion: '12',
+    projectRoot: 'C:\\my-project',
+  });
+  builder.build();
+
+  // docker run
+  expect(spawnSync).toHaveBeenCalledWith('docker', expect.arrayContaining([
+    'parcel', 'build', expect.stringContaining('/lib/entry.ts'),
+  ]));
+});
+
 test('with env vars', () => {
   const builder = new Builder({
     entry: '/project/folder/entry.ts',
