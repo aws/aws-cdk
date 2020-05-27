@@ -14,7 +14,7 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
 });
 
 const trail = new cloudtrail.Trail(stack, 'Trail');
-trail.addLambdaEventSelector([lambdaFunction.functionArn]);
-trail.addS3EventSelector([bucket.arnForObjects('')]);
+trail.addLambdaEventSelector([lambdaFunction]);
+trail.addS3EventSelector([{bucket}]);
 
 app.synth();
