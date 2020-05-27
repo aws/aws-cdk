@@ -205,7 +205,8 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * The policy to apply to the resource.
+   * The policy that will be added to the execution role of the Lambda function
+   * implementing this custom resource provider.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.
