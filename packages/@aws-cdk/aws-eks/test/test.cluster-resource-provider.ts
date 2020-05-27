@@ -99,6 +99,8 @@ export = {
           Endpoint: 'http://endpoint',
           Arn: 'arn:cluster-arn',
           CertificateAuthorityData: 'certificateAuthority-data',
+          OpenIdConnectIssuerUrl: undefined,
+          OpenIdConnectIssuer: undefined,
         },
       });
       test.done();
@@ -420,6 +422,8 @@ export = {
             Endpoint: 'http://endpoint',
             Arn: 'arn:cluster-arn',
             CertificateAuthorityData: 'certificateAuthority-data',
+            OpenIdConnectIssuerUrl: undefined,
+            OpenIdConnectIssuer: undefined,
           },
         });
         test.done();
