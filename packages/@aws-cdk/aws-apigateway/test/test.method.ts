@@ -882,4 +882,38 @@ export = {
 
     test.done();
   },
+
+  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'test-api');
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.ok(method.restApi);
+    test.ok(method.api);
+    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+
+    test.done();
+  },
+
+  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
+      restApiId: 'test-rest-api-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
+    test.ok(method.api);
+
+    test.done();
+  },
 };

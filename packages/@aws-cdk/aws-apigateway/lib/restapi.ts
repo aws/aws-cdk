@@ -197,7 +197,12 @@ export interface SpecRestApiProps extends RestApiOptions {
   readonly apiDefinition: ApiDefinition;
 }
 
-abstract class RestApiBase extends Resource implements IRestApi {
+/**
+ * Abstract class that allow for further configuration of a API Gateway RestApi,
+ * such as Resources, Methods, Stages and Deployments.
+ * @experimental
+ */
+export abstract class MutableRestApi extends Resource implements IRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -209,6 +214,12 @@ abstract class RestApiBase extends Resource implements IRestApi {
    * @attribute
    */
   public abstract readonly restApiRootResourceId: string;
+
+  /**
+   * Represents the root resource of this API endpoint ('/').
+   * Resources and Methods are added to this resource.
+   */
+  public abstract readonly root: IResource;
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -316,6 +327,16 @@ abstract class RestApiBase extends Resource implements IRestApi {
     });
   }
 
+  /**
+   * Internal API used by `Method` to keep an inventory of methods at the API
+   * level for validation purposes.
+   *
+   * @internal
+   */
+  public _attachMethod(method: Method) {
+    ignore(method);
+  }
+
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -371,7 +392,7 @@ abstract class RestApiBase extends Resource implements IRestApi {
  *
  * @resource AWS::ApiGateway::RestApi
  */
-export class SpecRestApi extends RestApiBase {
+export class SpecRestApi extends MutableRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -383,6 +404,8 @@ export class SpecRestApi extends RestApiBase {
    * @attribute
    */
   public readonly restApiRootResourceId: string;
+
+  public readonly root: IResource;
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
@@ -398,6 +421,7 @@ export class SpecRestApi extends RestApiBase {
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
+    this.root = new RootResource(this, props, this.restApiRootResourceId);
 
     this.configureDeployment(props);
     if (props.domainName) {
@@ -412,6 +436,21 @@ export class SpecRestApi extends RestApiBase {
 }
 
 /**
+ * Attributes that can be specified when importing a RestApi
+ */
+export interface RestApiAttributes {
+  /**
+   * The ID of the API Gateway RestApi.
+   */
+  readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  readonly rootResourceId: string;
+}
+
+/**
  * Represents a REST API in Amazon API Gateway.
  *
  * Use `addResource` and `addMethod` to configure the API model.
@@ -419,10 +458,27 @@ export class SpecRestApi extends RestApiBase {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends RestApiBase implements IRestApi {
+export class RestApi extends MutableRestApi {
+  /**
+   * Import an existing RestApi.
+   */
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
     class Import extends Resource implements IRestApi {
       public readonly restApiId = restApiId;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing RestApi that can be configured with additional Methods and Resources.
+   * @experimental
+   */
+  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): MutableRestApi {
+    class Import extends MutableRestApi {
+      public readonly restApiId = attrs.restApiId;
+      public readonly restApiRootResourceId = attrs.rootResourceId;
+      public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
     }
 
     return new Import(scope, id);
@@ -613,26 +669,47 @@ export enum EndpointType {
 
 class RootResource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
+  public readonly api: MutableRestApi;
   public readonly resourceId: string;
   public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
   public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
-  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+  private readonly _restApi?: RestApi;
+
+  constructor(api: MutableRestApi, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
 
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
     this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions;
-    this.restApi = api;
+    this.api = api;
     this.resourceId = resourceId;
     this.path = '/';
+
+    if (api instanceof RestApi) {
+      this._restApi = api;
+    }
 
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
   }
+
+  /**
+   * Get the RestApi associated with this Resource.
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    if (!this._restApi) {
+      throw new Error('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead');
+    }
+    return this._restApi;
+  }
+}
+
+function ignore(_x: any) {
+  return;
 }

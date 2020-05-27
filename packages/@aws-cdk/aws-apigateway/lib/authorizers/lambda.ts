@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
-import { RestApi } from '../restapi';
+import { IRestApi } from '../restapi';
 
 /**
  * Base properties for all lambda authorizers
@@ -83,7 +83,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Attaches this authorizer to a specific REST API.
    * @internal
    */
-  public _attachToApi(restApi: RestApi) {
+  public _attachToApi(restApi: IRestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
       throw new Error('Cannot attach authorizer to two different rest APIs');
     }

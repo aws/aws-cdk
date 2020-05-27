@@ -7,7 +7,7 @@ import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
-import { RestApi } from './restapi';
+import { IRestApi, RestApi } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
@@ -159,13 +159,16 @@ export class Method extends Resource {
 
   public readonly httpMethod: string;
   public readonly resource: IResource;
-  public readonly restApi: RestApi;
+  /**
+   * The API Gateway RestApi associated with this method.
+   */
+  public readonly api: IRestApi;
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;
-    this.restApi = props.resource.restApi;
+    this.api = props.resource.api;
     this.httpMethod = props.httpMethod.toUpperCase();
 
     validateHttpMethod(this.httpMethod);
@@ -186,12 +189,12 @@ export class Method extends Resource {
     }
 
     if (Authorizer.isAuthorizer(authorizer)) {
-      authorizer._attachToApi(this.restApi);
+      authorizer._attachToApi(this.api);
     }
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
-      restApiId: this.restApi.restApiId,
+      restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
@@ -209,13 +212,21 @@ export class Method extends Resource {
 
     this.methodId = resource.ref;
 
-    props.resource.restApi._attachMethod(this);
+    props.resource.api._attachMethod(this);
 
-    const deployment = props.resource.restApi.latestDeployment;
+    const deployment = props.resource.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ method: methodProps });
     }
+  }
+
+  /**
+   * The RestApi associated with this Method
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    return this.resource.restApi;
   }
 
   /**
