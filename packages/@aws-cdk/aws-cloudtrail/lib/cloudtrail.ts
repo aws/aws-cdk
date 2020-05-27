@@ -63,11 +63,18 @@ export interface TrailProps {
   readonly sendToCloudWatchLogs?: boolean;
 
   /**
-   * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
+   * How long to retain logs in CloudWatchLogs.
+   * Ignored if sendToCloudWatchLogs is false or if cloudWatchLogGroup is set.
    *
-   *  @default logs.RetentionDays.OneYear
+   *  @default logs.RetentionDays.ONE_YEAR
    */
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
+   * @default - a new log group is created and used.
+   */
+  readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -171,6 +178,12 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
+  /**
+   * The CloudWatch log group to which CloudTrail events are sent.
+   * `undefined` if `sendToCloudWatchLogs` property is false.
+   */
+  public readonly logGroup?: logs.ILogGroup;
+
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
 
@@ -200,19 +213,22 @@ export class Trail extends Resource {
       },
     }));
 
-    let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
 
     if (props.sendToCloudWatchLogs) {
-      logGroup = new logs.CfnLogGroup(this, 'LogGroup', {
-        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR,
-      });
+      if (props.cloudWatchLogGroup) {
+        this.logGroup = props.cloudWatchLogGroup;
+      } else {
+        this.logGroup = new logs.LogGroup(this, 'LogGroup', {
+          retention: props.cloudWatchLogsRetention ?? logs.RetentionDays.ONE_YEAR,
+        });
+      }
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
       logsRole.addToPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [logGroup.attrArn],
+        resources: [this.logGroup.logGroupArn],
       }));
     }
 
@@ -234,8 +250,8 @@ export class Trail extends Resource {
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
-      cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
+      cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
+      cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors,
     });
