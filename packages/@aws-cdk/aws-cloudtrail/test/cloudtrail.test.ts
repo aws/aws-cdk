@@ -2,7 +2,7 @@ import { ABSENT, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { RetentionDays } from '@aws-cdk/aws-logs';
+import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { ReadWriteType, Trail } from '../lib';
@@ -176,7 +176,7 @@ describe('cloudtrail', () => {
               Effect: 'Allow',
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
-                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
+                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroup2BE67F87', 'Arn'],
               },
             }],
           },
@@ -204,6 +204,44 @@ describe('cloudtrail', () => {
         });
         const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         expect(trail.DependsOn).toEqual([logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
+      });
+
+      test('enabled and with custom log group', () => {
+        const stack = getTestStack();
+        const cloudWatchLogGroup = new LogGroup(stack, 'MyLogGroup', {
+          retention: RetentionDays.FIVE_DAYS,
+        });
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          sendToCloudWatchLogs: true,
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
+          cloudWatchLogGroup,
+        });
+
+        expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+          RetentionInDays: 5,
+        });
+
+        expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+          CloudWatchLogsLogGroupArn: stack.resolve(cloudWatchLogGroup.logGroupArn),
+        });
+
+        expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [{
+              Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
+            }],
+          },
+        });
+      });
+
+      test('disabled', () => {
+        const stack = getTestStack();
+        const t = new Trail(stack, 'MyAmazingCloudTrail', {
+          sendToCloudWatchLogs: false,
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
+        });
+        expect(t.logGroup).toBeUndefined();
+        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
       });
     });
 
@@ -358,6 +396,39 @@ describe('cloudtrail', () => {
             },
           ],
         });
+      });
+    });
+  });
+
+  describe('onEvent', () => {
+    test('add an event rule', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      Trail.onEvent(stack, 'DoEvents', {
+        target: {
+          bind: () => ({
+            id: '',
+            arn: 'arn',
+          }),
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Events::Rule', {
+        EventPattern: {
+          'detail-type': [
+            'AWS API Call via CloudTrail',
+          ],
+        },
+        State: 'ENABLED',
+        Targets: [
+          {
+            Arn: 'arn',
+            Id: 'Target0',
+          },
+        ],
       });
     });
   });

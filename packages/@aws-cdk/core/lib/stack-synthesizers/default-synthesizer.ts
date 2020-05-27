@@ -140,11 +140,11 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
    */
   public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
-  private stack?: Stack;
+  private _stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
-  private deployRoleArn?: string;
-  private cloudFormationExecutionRoleArn?: string;
+  private _deployRoleArn?: string;
+  private _cloudFormationExecutionRoleArn?: string;
   private assetPublishingRoleArn?: string;
 
   private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
@@ -154,7 +154,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   }
 
   public bind(stack: Stack): void {
-    this.stack = stack;
+    this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
 
@@ -176,8 +176,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     // tslint:disable:max-line-length
     this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
-    this.deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
-    this.cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
+    this._deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+    this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN);
     // tslint:enable:max-line-length
   }
@@ -259,11 +259,35 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     const artifactId = this.writeAssetManifest(session);
 
     addStackArtifactToAssembly(session, this.stack, {
-      assumeRoleArn: this.deployRoleArn,
-      cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
+      assumeRoleArn: this._deployRoleArn,
+      cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: 1,
     }, [artifactId]);
+  }
+
+  /**
+   * Returns the ARN of the deploy Role.
+   */
+  public get deployRoleArn(): string {
+    if (!this._deployRoleArn) {
+      throw new Error('deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+    }
+    return this._deployRoleArn;
+  }
+
+  /**
+   * Returns the ARN of the CFN execution Role.
+   */
+  public get cloudFormationExecutionRoleArn(): string {
+    if (!this._cloudFormationExecutionRoleArn) {
+      throw new Error('cloudFormationExecutionRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+    }
+    return this._cloudFormationExecutionRoleArn;
+  }
+
+  protected get stack(): Stack | undefined {
+    return this._stack;
   }
 
   /**
