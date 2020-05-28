@@ -248,7 +248,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls === undefined) {
         callbackUrls = [ 'https://example.com' ];
       } else if (callbackUrls.length === 0) {
-        throw new Error('callbackUrl must be specified when codeGrant or implicitGrant OAuth flows are enabled.');
+        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
     }
 
@@ -309,7 +309,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return oAuthFlows;
   }
 
-  private configureOAuthScopes(oAuth?: OAuthSettings): string[] | undefined {
+  private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
     const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
       OAuthScope.COGNITO_ADMIN ];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));

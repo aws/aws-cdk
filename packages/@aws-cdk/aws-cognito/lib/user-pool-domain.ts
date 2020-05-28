@@ -144,8 +144,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   /**
    * The URL to the sign in page in this domain using a specific UserPoolClient
    * @param client [disable-awslint:ref-via-interface] the user pool client that the UI will use to interact with the UserPool
-   * @param redirectUri the URI to redirect to after sign in. This URI must be one specified in the `callbackUrl`
-   * property under `oAuth` with the specified client.
+   * @param options options to customize the behaviour of this method.
    */
   public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;

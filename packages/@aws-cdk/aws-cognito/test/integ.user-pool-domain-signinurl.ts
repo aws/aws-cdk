@@ -25,5 +25,7 @@ const client = userpool.addClient('UserPoolClient', {
 });
 
 new CfnOutput(stack, 'SignInUrl', {
-  value: domain.signInUrl(client, 'https://example.com'),
+  value: domain.signInUrl(client, {
+    redirectUri: 'https://example.com',
+  }),
 });

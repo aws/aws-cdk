@@ -184,14 +184,14 @@ describe('User Pool Client', () => {
         flows: { implicitCodeGrant: true },
         callbackUrls: [],
       },
-    })).toThrow(/callbackUrl must be specified/);
+    })).toThrow(/callbackUrl must not be empty/);
 
     expect(() => pool.addClient('Client3', {
       oAuth: {
         flows: { authorizationCodeGrant: true },
         callbackUrls: [],
       },
-    })).toThrow(/callbackUrl must be specified/);
+    })).toThrow(/callbackUrl must not be empty/);
 
     expect(() => pool.addClient('Client4', {
       oAuth: {

@@ -451,3 +451,27 @@ Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-p
 The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
 hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
 Console](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html#cognito-user-pools-create-an-app-integration).
+
+```ts
+const userpool = new UserPool(this, 'UserPool', {
+  // ...
+});
+const client = userpool.addClient('Client', {
+  // ...
+  oAuth: {
+    flows: {
+      implicitCodeGrant: true,
+    },
+    callbackUrls: [
+      'https://myapp.com/home',
+      'https://myapp.com/users',
+    ]
+  }
+})
+const domain = userpool.addDomain('Domain', {
+  // ...
+});
+const signInUrl = domain.signInUrl(client, {
+  redirectUrl: 'https://myapp.com/home', // must be a URL configured under 'callbackUrls' with the client
+})
+```
