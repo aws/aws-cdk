@@ -101,17 +101,12 @@ export class App extends Construct {
   }
 
   /**
-   * Accessor for a field that's private to App
-   *
-   * Get the Cloud Assembly output directory.
+   * The Cloud Assembly builder that is being used for this App
    *
    * @experimental
    */
-  public static outdirOf(obj: App): string {
-    return obj.assemblyBuilder.outdir;
-  }
+  public readonly assemblyBuilder: cxapi.CloudAssemblyBuilder;
 
-  private readonly assemblyBuilder: cxapi.CloudAssemblyBuilder;
   private _assembly?: cxapi.CloudAssembly;
   private readonly runtimeInfo: boolean;
 

@@ -128,7 +128,7 @@ export class Stage extends Construct {
     }
 
     // Get the final output directory
-    const outdir = path.join(App.outdirOf(App.of(this)), this.assemblyArtifactId);
+    const outdir = path.join(App.of(this).assemblyBuilder.outdir, this.assemblyArtifactId);
 
     const builder = new cxapi.CloudAssemblyBuilder(outdir);
     for (const child of this.node.children) {

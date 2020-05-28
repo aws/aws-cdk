@@ -13,7 +13,7 @@ export = {
   },
 
   'tearDown'(cb: () => void) {
-    rimraf(App.outdirOf(app));
+    rimraf(app.assemblyBuilder.outdir);
     cb();
   },
 
