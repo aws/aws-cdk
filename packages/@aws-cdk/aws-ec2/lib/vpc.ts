@@ -56,6 +56,9 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
+/**
+ * An abstract internet gateway
+ */
 export interface IInternetGateway {
   /**
    * Identifier for this IGW
@@ -101,7 +104,7 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
-  
+
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
@@ -1119,7 +1122,7 @@ export class Vpc extends VpcBase {
   /**
    * Internet Gateway for the VPC
    */
-  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
+  public readonly internetGateway: IInternetGateway = { internetGatewayId: '' };
 
   /*
    * Identifier for the VPN gateway
@@ -1213,7 +1216,7 @@ export class Vpc extends VpcBase {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
 
-      this.internetGateway = { internetGatewayId: igw.ref }
+      this.internetGateway = { internetGatewayId: igw.ref };
 
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
@@ -1763,7 +1766,9 @@ class ImportedVpc extends VpcBase {
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
   public readonly vpnGatewayId?: string;
-  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
+  public get internetGateway(): IInternetGateway {
+    throw new Error('Cannot access \'internetGateway\' of an imported VPC.');
+  }
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
@@ -1803,7 +1808,9 @@ class LookedUpVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
-  public readonly internetGateway: IInternetGateway = { internetGatewayId: "" };
+  public get internetGateway(): IInternetGateway {
+    throw new Error('Cannot access \'internetGateway\' of a looked-up VPC.');
+  }
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {

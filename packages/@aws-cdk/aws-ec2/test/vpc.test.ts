@@ -180,11 +180,11 @@ nodeunitShim({
           }
         ]
       });
-      (vpc.isolatedSubnets[0] as Subnet).addRoute("TheRoute", {
+      (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
         routerId: vpc.internetGateway.internetGatewayId,
         routerType: RouterType.GATEWAY,
-        destinationCidrBlock: "8.8.8.8/32",
-      })
+        destinationCidrBlock: '8.8.8.8/32',
+      });
       expect(stack).to(haveResource('AWS::EC2::InternetGateway'));
       expect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '8.8.8.8/32',
