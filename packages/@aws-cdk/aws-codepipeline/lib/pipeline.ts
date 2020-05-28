@@ -749,31 +749,70 @@ export class Pipeline extends PipelineBase {
   private validateArtifacts(): string[] {
     const ret = new Array<string>();
 
-    const outputArtifactNames = new Set<string>();
-    for (const stage of this._stages) {
-      const sortedActions = stage.actionDescriptors.sort((a1, a2) => a1.runOrder - a2.runOrder);
+    interface PipelineLocation {
+      stageIndex: number;
+      stageName: string;
+      action: FullActionDescriptor;
+    }
 
-      for (const action of sortedActions) {
-        // start with inputs
-        const inputArtifacts = action.inputs;
-        for (const inputArtifact of inputArtifacts) {
-          if (!inputArtifact.artifactName) {
-            ret.push(`Action '${action.actionName}' has an unnamed input Artifact that's not used as an output`);
-          } else if (!outputArtifactNames.has(inputArtifact.artifactName)) {
-            ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
-          }
-        }
+    /**
+     * Returns whether a is before or the same order as b
+     */
+    function beforeOrEqual(a: PipelineLocation, b: PipelineLocation) {
+      if (a.stageIndex !== b.stageIndex) { return a.stageIndex < b.stageIndex; }
+      return a.action.runOrder <= b.action.runOrder;
+    }
 
-        // then process outputs by adding them to the Set
-        const outputArtifacts = action.outputs;
-        for (const outputArtifact of outputArtifacts) {
+    function renderLoc(loc: PipelineLocation) {
+      // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
+      return `stage ${loc.stageIndex + 1} ('${loc.stageName}') action ${loc.action.runOrder} ('${loc.action.actionName}')`;
+    }
+
+    const producer: Record<string, PipelineLocation> = {};
+    const firstConsumer: Record<string, PipelineLocation> = {};
+
+    for (const [stageIndex, stage] of enumerate(this._stages)) {
+      // For every output artifact, get the producer
+      for (const action of stage.actionDescriptors) {
+        const thisLocation = { stageIndex, action, stageName: stage.stageName };
+
+        for (const outputArtifact of action.outputs) {
           // output Artifacts always have a name set
-          if (outputArtifactNames.has(outputArtifact.artifactName!)) {
-            ret.push(`Artifact '${outputArtifact.artifactName}' has been used as an output more than once`);
-          } else {
-            outputArtifactNames.add(outputArtifact.artifactName!);
+          const name = outputArtifact.artifactName!;
+          if (producer[name]) {
+            ret.push(`Artifact '${name}' is used as an output by both '${producer[name].action.actionName}' and '${action.actionName}'. Every artifact can only be produced once.`);
+            continue;
+          }
+
+          producer[name] = thisLocation;
+        }
+
+        // For every input artifact, get the first consumer
+        for (const inputArtifact of action.inputs) {
+          const name = inputArtifact.artifactName;
+          if (!name) {
+            ret.push(`Action '${action.actionName}' has an unnamed input Artifact (probably not used as an output in this pipeline)`);
+            continue;
+          }
+
+          if (!firstConsumer[name] || beforeOrEqual(thisLocation, firstConsumer[name])) {
+            firstConsumer[name] = thisLocation;
           }
         }
+      }
+    }
+
+    // Now validate that every input artifact is produced before it's
+    // being consumed.
+    for (const [artifactName, consumerLoc] of Object.entries(firstConsumer)) {
+      const producerLoc = producer[artifactName];
+      if (!producerLoc) {
+        ret.push(`Artifact '${artifactName}' is used as an input by '${consumerLoc.action.actionName}', but is not being produced in this pipeline`);
+        continue;
+      }
+
+      if (beforeOrEqual(consumerLoc, producerLoc)) {
+        ret.push(`Artifact '${artifactName}' is being produced at ${renderLoc(producerLoc)} but first consumed before that, at ${renderLoc(consumerLoc)}`);
       }
     }
 
@@ -873,4 +912,12 @@ interface CrossRegionInfo {
   readonly artifactBucket: s3.IBucket;
 
   readonly region?: string;
+}
+
+function enumerate<A>(xs: A[]): Array<[number, A]> {
+  const ret = new Array<[number, A]>();
+  for (let i = 0; i < xs.length; i++) {
+    ret.push([i, xs[i]]);
+  }
+  return ret;
 }
