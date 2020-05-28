@@ -147,7 +147,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    * @param redirectUri the URI to redirect to after sign in. This URI must be one specified in the `callbackUrl`
    * property under `oAuth` with the specified client.
    */
-  public signInUrl(client: UserPoolClient, redirectUri: string): string {
+  public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;
     if (client.oAuthFlows.authorizationCodeGrant) {
       responseType = 'code';
@@ -156,6 +156,23 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else {
       throw new Error('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled');
     }
-    return `${this.baseUrl()}/login?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${redirectUri}`;
+    const path = options.signInPath ?? '/login';
+    return `${this.baseUrl()}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;
   }
+}
+
+/**
+ * Options to customize the behaviour of `signInUrl()`
+ */
+export interface SignInUrlOptions {
+  /**
+   * Where to redirect to after sign in
+   */
+  readonly redirectUri: string;
+
+  /**
+   * The path in the URI where the sign-in page is located
+   * @default '/login'
+   */
+  readonly signInPath?: string;
 }
