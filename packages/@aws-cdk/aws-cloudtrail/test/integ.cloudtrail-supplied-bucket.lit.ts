@@ -37,7 +37,7 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
 
 const trail = new cloudtrail.Trail(stack, 'Trail', {bucket: Trailbucket});
 
-trail.addLambdaEventSelector([lambdaFunction.functionArn]);
-trail.addS3EventSelector([bucket.arnForObjects('')]);
+trail.addLambdaEventSelector([lambdaFunction]);
+trail.addS3EventSelector([{bucket}]);
 
 app.synth();
