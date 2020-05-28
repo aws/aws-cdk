@@ -37,6 +37,34 @@ class TestHandler(unittest.TestCase):
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
+    def test_create_no_delete(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Delete": "false"
+        })
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
+    def test_update_no_delete(self):
+        invoke_handler("Update", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Delete": "false"
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, physical_id="<physical-id>")
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
     def test_create_update_multiple_sources(self):
         invoke_handler("Create", {
             "SourceBucketNames": ["<source-bucket1>", "<source-bucket2>"],
