@@ -1,4 +1,4 @@
-import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -404,6 +404,43 @@ export = nodeunit.testCase({
         },
       ),
     );
+    test.done();
+  },
+
+  'allows overriding the ChangeSet and Execute action names'(test: nodeunit.Test) {
+    const stack = getTestStack();
+    const selfUpdatingPipeline = createSelfUpdatingStack(stack);
+    selfUpdatingPipeline.pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new PipelineDeployStackAction({
+          input: selfUpdatingPipeline.synthesizedApp,
+          adminPermissions: true,
+          stack,
+          createChangeSetActionName: 'Prepare',
+          executeChangeSetActionName: 'Deploy',
+        }),
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {},
+        {},
+        {
+          Name: 'Deploy',
+          Actions: [
+            {
+              Name: 'Prepare',
+            },
+            {
+              Name: 'Deploy',
+            },
+          ],
+        },
+      ],
+    }));
+
     test.done();
   },
 });
