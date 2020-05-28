@@ -487,12 +487,22 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   }
 
   public print(): void {
+    const lines = [];
+
+    // Add a progress bar at the top
+    const progressWidth = Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRESSBAR_WIDTH);
+    const prog = this.progressBar(progressWidth);
+    if (prog) {
+      lines.push('  ' + prog, '');
+    }
+
     // Normally we'd only print "resources in progress", but it's also useful
-    // to keep an eye on the failures, so add those in.
+    // to keep an eye on the failures and know about the specific errors asquickly
+    // as possible (while the stack is still rolling back), so add those in.
     const toPrint: StackActivity[] = [...this.failures, ...Object.values(this.resourcesInProgress)];
     toPrint.sort((a, b) => a.event.Timestamp.getTime() - b.event.Timestamp.getTime());
 
-    const lines = toPrint.map(res => {
+    lines.push(...toPrint.map(res => {
       const color = colorFromStatusActivity(res.event.ResourceStatus);
       const resourceName = res.metadata?.constructPath ?? res.event.LogicalResourceId ?? '';
 
@@ -502,14 +512,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
         padRight(this.props.resourceTypeColumnWidth, res.event.ResourceType || ''),
         color(colors.bold(shorten(40, resourceName))),
         this.failureReasonOnNextLine(res));
-    });
-
-    // Add a progress bar at the bottom
-    const progressWidth = Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRSSBAR_WIDTH);
-    const prog = this.progressBar(progressWidth);
-    if (prog) {
-      lines.push('', '  ' + prog);
-    }
+    }));
 
     this.block.displayLines(lines);
   }
@@ -568,7 +571,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
 const FULL_BLOCK = '█';
 const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
-const MAX_PROGRSSBAR_WIDTH = 60;
+const MAX_PROGRESSBAR_WIDTH = 60;
 const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
 
 function colorFromStatusResult(status?: string) {
