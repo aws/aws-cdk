@@ -11,10 +11,13 @@ coverage
 .nycrc
 
 # Build gear
+build-tools
 dist
 .LAST_BUILD
 .LAST_PACKAGE
-.jsii
 
 tsconfig.json
 *.tsbuildinfo
+
+!.jsii
+.eslintrc.js
