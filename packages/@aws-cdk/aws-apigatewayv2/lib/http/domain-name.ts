@@ -2,21 +2,24 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 import { DomainNameAttributes,  IDomainName, IStage } from '../common';
+import { HttpStage } from './stage';
 
 /**
- * Options used when configuring custom domain
+ * Options for DomainMapping
  */
-export interface DomainNameOptions {
+export interface DomainMappingOptions  {
   /**
-   * The custom domain name for your API. Uppercase letters are not supported.
+   * The domain name for the mapping
    */
-  readonly domainName: string;
-
+  readonly domainName: DomainName;
   /**
-   * The reference to an AWS-managed certificate for use by the regional
-   * endpoint for the domain name.
+   * The API mapping key
    */
-  readonly certificate: ICertificate;
+  readonly mappingKey: string;
+  /**
+   * The API Stage
+   */
+  readonly stage?: HttpStage;
 }
 
 /**

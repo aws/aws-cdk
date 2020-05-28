@@ -4,6 +4,16 @@ import { IApiMapping, IDomainName, IStage } from '../common';
 import { IHttpApi } from '../http/api';
 
 /**
+ * Represents a Route for an HTTP API.
+ */
+export interface IHttpApiMapping extends IApiMapping {
+  /**
+   * The HTTP API associated with this API mapping.
+   */
+  // readonly httpApi: IHttpApi;
+}
+
+/**
  * Properties used to create the HttpApiMapping resource
  */
 export interface HttpApiMappingProps {
@@ -30,7 +40,7 @@ export interface HttpApiMappingProps {
  * Create a new API mapping for API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
-export class HttpApiMapping extends Resource implements IApiMapping {
+export class HttpApiMapping extends Resource implements IHttpApiMapping {
   /**
    * import from API ID
    */

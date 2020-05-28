@@ -2,6 +2,7 @@ import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from '../apigatewayv2.generated';
 import { CommonStageOptions, IStage } from '../common';
 import { IHttpApi } from './api';
+import { DomainMappingOptions } from './domain-name';
 
 const DEFAULT_STAGE_NAME = '$default';
 
@@ -9,6 +10,7 @@ const DEFAULT_STAGE_NAME = '$default';
  * Options to create a new stage for an HTTP API.
  */
 export interface HttpStageOptions extends CommonStageOptions {
+  readonly domainMapping?: DomainMappingOptions;
 }
 
 /**

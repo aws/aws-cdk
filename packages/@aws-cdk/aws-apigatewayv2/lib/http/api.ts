@@ -1,7 +1,7 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
-import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { HttpApiMapping } from './api-mapping';
-import { AddDomainNameOptions, DomainName, DomainNameOptions } from './domain-name';
+import { CfnApi, CfnApiMapping, CfnApiProps } from '../apigatewayv2.generated';
+// import { HttpApiMapping } from './api-mapping';
+import { AddDomainNameOptions, DomainMappingOptions, DomainName } from './domain-name';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -46,12 +46,14 @@ export interface HttpApiProps {
    */
   readonly corsPreflight?: CorsPreflightOptions;
 
-  /**
-   * Configure a custom domain name and map it to this API.
-   *
-   * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
-   */
-  readonly domainName?: DomainNameOptions;
+  // /**
+  //  * Configure a custom domain name and map it to this API.
+  //  *
+  //  * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
+  //  */
+  // readonly domainName?: DomainNameOptions;
+
+  readonly defaultDomainMapping?: DomainMappingOptions;
 }
 
 /**
@@ -182,9 +184,30 @@ export class HttpApi extends Resource implements IHttpApi {
       });
     }
 
-    if (props?.domainName) {
-      this.addDomainName(props.domainName);
+    // if (props?.domainName) {
+    //   this.addDomainName(props.domainName);
+    // }
+
+    if (props?.defaultDomainMapping) {
+      this.addDomainMapping(props.defaultDomainMapping);
+      // const mappingKey = props.defaultDomainMapping.mappingKey;
+      // const dn = this.addDomainName(props.defaultDomainMapping.domain);
+      // const stage = props.defaultDomainMapping.domain.stage ?? this.defaultStage!;
+      // // create the mapping
+      // const mapping = new CfnApiMapping(this, `${dn.domainName}${mappingKey}`, {
+      //   apiId: this.httpApiId,
+      //   domainName: dn.domainName,
+      //   stage: stage.stageName,
+      //   apiMappingKey: mappingKey,
+      // });
+      // const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
+      //   api: this,
+      //   domainName: dn,
+      //   stage,
+      // });
+      // mapping.node.addDependency(stage);
     }
+
   }
 
   /**
@@ -199,10 +222,14 @@ export class HttpApi extends Resource implements IHttpApi {
    * Add a new stage.
    */
   public addStage(id: string, options: HttpStageOptions): HttpStage {
-    return new HttpStage(this, id, {
+    const stage = new HttpStage(this, id, {
       httpApi: this,
       ...options,
     });
+    if (options.domainMapping) {
+      this.addDomainMapping(options.domainMapping);
+    }
+    return stage;
   }
 
   /**
@@ -227,18 +254,32 @@ export class HttpApi extends Resource implements IHttpApi {
       certificate: options.certificate,
     });
 
-    const stage = options.stage ?? this.defaultStage!;
+    // const stage = options.stage ?? this.defaultStage!;
 
-    const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
-      api: this,
-      domainName: dn,
-      stage,
-    });
-    mapping.node.addDependency(stage);
+    // const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
+    //   api: this,
+    //   domainName: dn,
+    //   stage,
+    // });
+    // mapping.node.addDependency(stage);
 
     this._domainName = dn;
 
     return dn;
+  }
+
+  public addDomainMapping(options: DomainMappingOptions) {
+    const mappingKey = options.mappingKey;
+    // const dn = this.addDomainName(options);
+    const stage = options.stage ?? this.defaultStage!;
+    // create the mapping
+    const mapping = new CfnApiMapping(this, `${options.domainName}${mappingKey}`, {
+      apiId: this.httpApiId,
+      domainName: options.domainName.domainName,
+      stage: stage.stageName,
+      apiMappingKey: mappingKey,
+    });
+    mapping.node.addDependency(options.domainName, stage);
   }
 
   /**

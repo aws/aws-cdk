@@ -33,11 +33,15 @@ describe('DomainName', () => {
   test('creates DomainName correctly with domainName property', () => {
 
     const stack = new Stack();
+    const dn = new DomainName(stack, 'DomainName', {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainName: 'example.com',
+    });
     const api = new HttpApi(stack, 'Api', {
       createDefaultStage: true,
-      domainName: {
-        certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-        domainName,
+      defaultDomainMapping: {
+        domainName: dn,
+        mappingKey: 'prod',
       },
     });
 

@@ -1,5 +1,17 @@
 {
   "Resources": {
+    "DNFDC76583": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": "demo.pahud.dev",
+        "DomainNameConfigurations": [
+          {
+            "CertificateArn": "arn:aws:acm:ap-northeast-1:903779448426:certificate/293cf875-ca98-4c2e-a797-e1cf6df2553c",
+            "EndpointType": "REGIONAL"
+          }
+        ]
+      }
+    },
     "HttpProxyApiD0217C67": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
@@ -49,26 +61,18 @@
         "AutoDeploy": true
       }
     },
-    "HttpProxyApiDomainNameexamplecomF06AED2B": {
-      "Type": "AWS::ApiGatewayV2::DomainName",
-      "Properties": {
-        "DomainName": "example.com",
-        "DomainNameConfigurations": [{
-          "CertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate",
-          "EndpointType": "REGIONAL"
-        }]
-      }
-    },
-    "HttpProxyApiexamplecomdefaultMappingF8992CBF": {
+    "HttpProxyApiinteghttpproxyDNprod7F9D8BB4": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
           "Ref": "HttpProxyApiD0217C67"
         },
-        "DomainName": "example.com",
-        "Stage": "$default"
+        "DomainName": "demo.pahud.dev",
+        "Stage": "$default",
+        "ApiMappingKey": "prod"
       },
       "DependsOn": [
+        "DNFDC76583",
         "HttpProxyApiDefaultStageA88F9DE3"
       ]
     }
@@ -77,16 +81,16 @@
     "RegionalDomainName": {
       "Value": {
         "Fn::GetAtt": [
-          "HttpProxyApiDomainNameexamplecomF06AED2B",
+          "DNFDC76583",
           "RegionalDomainName"
         ]
       }
     },
     "DomainName": {
-      "Value": "example.com"
+      "Value": "demo.pahud.dev"
     },
     "CustomUDomainURL": {
-      "Value": "https://example.com"
+      "Value": "https://demo.pahud.dev"
     },
     "Endpoint": {
       "Value": {
@@ -108,6 +112,11 @@
             "/"
           ]
         ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region"
       }
     }
   }

@@ -5,7 +5,7 @@ import { IResource } from '@aws-cdk/core';
  */
 export interface IApiMapping extends IResource {
   /**
-   * ID of the HttpApiMapping
+   * ID of the api mapping
    * @attribute
    */
   readonly apiMappingId: string;
