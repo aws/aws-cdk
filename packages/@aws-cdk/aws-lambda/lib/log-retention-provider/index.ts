@@ -3,6 +3,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 
+// Ensure we do not run into throttling issues when deploying stack(s) with a lot of Lambdas.
+const retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
+
 /**
  * Creates a log group and doesn't throw if it exists.
  *
@@ -10,7 +13,7 @@ import * as AWS from 'aws-sdk';
  */
 async function createLogGroupSafe(logGroupName: string) {
   try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions});
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -26,7 +29,7 @@ async function createLogGroupSafe(logGroupName: string) {
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
 async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions});
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
