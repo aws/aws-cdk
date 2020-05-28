@@ -604,3 +604,21 @@ test('deployment allows custom role to be supplied', () => {
     },
   });
 });
+
+test('deploy without deleting missing files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    deleteMissingFiles: false
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    'DeleteMissingFiles': false
+  });
+});

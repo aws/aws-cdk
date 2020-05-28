@@ -38,6 +38,13 @@ class TestBucketDeployment extends cdk.Stack {
       contentType: 'text/html',
       metadata: { A: 'aaa', B: 'bbb', C: 'ccc' },
     });
+
+    new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      deleteMissingFiles: false
+    });
+
   }
 }
 
