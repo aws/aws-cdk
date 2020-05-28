@@ -1,16 +1,20 @@
 // tslint:disable no-console
 import { StepFunctions } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import * as https from 'https';
-import * as url from 'url';
+import { respond } from './http';
 
-const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::StateMachineProvider::CREATE_FAILED';
-const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::StateMachineProvider::MISSING_PHYSICAL_ID';
+export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::StateMachineProvider::CREATE_FAILED';
+
+interface Output {
+  PhysicalResourceId?: string;
+  Data?: { [Key: string]: any; };
+  NoEcho?: boolean;
+}
 
 interface ExecutionResult {
   ExecutionArn: string;
   Input: AWSLambda.CloudFormationCustomResourceEvent & { PhysicalResourceId?: string };
   Name: string;
-  Output?: AWSLambda.CloudFormationCustomResourceResponse;
+  Output?: Output;
   StartDate: number;
   StateMachineArn: string;
   Status: 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'TIMED_OUT' | 'ABORTED';
@@ -22,18 +26,7 @@ interface FailedExecutionEvent {
   Cause: string;
 }
 
-interface CloudFormationResponse {
-  StackId: string;
-  RequestId: string;
-  PhysicalResourceId?: string;
-  LogicalResourceId: string;
-  ResponseURL: string;
-  Data?: any;
-  NoEcho?: boolean;
-  Reason?: string;
-}
-
-export async function cfnResponseSuccess(event: ExecutionResult, _context: AWSLambda.Context) {
+export async function cfnResponseSuccess(event: ExecutionResult) {
   console.log('Event: %j', event);
   await respond('SUCCESS', {
     ...event.Input,
@@ -43,7 +36,7 @@ export async function cfnResponseSuccess(event: ExecutionResult, _context: AWSLa
   });
 }
 
-export async function cfnResponseFailed(event: FailedExecutionEvent, _context: AWSLambda.Context) {
+export async function cfnResponseFailed(event: FailedExecutionEvent) {
   console.log('Event: %j', event);
 
   const parsedCause = JSON.parse(event.Cause);
@@ -53,7 +46,7 @@ export async function cfnResponseFailed(event: FailedExecutionEvent, _context: A
   };
   console.log('Execution result: %j', executionResult);
 
-  let physicalResourceId = executionResult.Output?.PhysicalResourceId;
+  let physicalResourceId = executionResult.Output?.PhysicalResourceId ?? executionResult.Input.PhysicalResourceId;
   if (!physicalResourceId) {
     // special case: if CREATE fails, which usually implies, we usually don't
     // have a physical resource id. in this case, the subsequent DELETE
@@ -75,7 +68,7 @@ export async function cfnResponseFailed(event: FailedExecutionEvent, _context: A
   });
 }
 
-export async function startExecution(event: AWSLambda.CloudFormationCustomResourceEvent, _context: AWSLambda.Context) {
+export async function startExecution(event: AWSLambda.CloudFormationCustomResourceEvent) {
   try {
     console.log('Event: %j', event);
 
@@ -104,40 +97,4 @@ export async function startExecution(event: AWSLambda.CloudFormationCustomResour
       Reason: err.message,
     });
   }
-}
-
-function respond(status: 'SUCCESS' | 'FAILED', event: CloudFormationResponse) {
-  const json: AWSLambda.CloudFormationCustomResourceResponse = {
-    Status: status,
-    Reason: event.Reason ?? status,
-    PhysicalResourceId: event.PhysicalResourceId || MISSING_PHYSICAL_ID_MARKER,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId,
-    NoEcho: event.NoEcho ?? false,
-    Data: event.Data,
-  };
-
-  console.log('Responding: %j', json);
-
-  const responseBody = JSON.stringify(json);
-
-  const parsedUrl = url.parse(event.ResponseURL);
-  const requestOptions = {
-    hostname: parsedUrl.hostname,
-    path: parsedUrl.path,
-    method: 'PUT',
-    headers: { 'content-type': '', 'content-length': responseBody.length },
-  };
-
-  return new Promise((resolve, reject) => {
-    try {
-      const request = https.request(requestOptions, resolve);
-      request.on('error', reject);
-      request.write(responseBody);
-      request.end();
-    } catch (e) {
-      reject(e);
-    }
-  });
 }
