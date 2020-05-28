@@ -7,8 +7,8 @@ export class Cloud9Env extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', {
-      maxAzs: 3,
+    const vpc = new ec2.Vpc(this, 'VPC', {
+      maxAzs: 2,
       natGateways: 1,
     });
 
