@@ -818,6 +818,35 @@ test('addClient', () => {
   });
 });
 
+test('addDomain', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const userpool = new UserPool(stack, 'Pool');
+  userpool.addDomain('UserPoolDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpooldomain',
+    },
+  });
+  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+  imported.addDomain('UserPoolImportedDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpoolimporteddomain',
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpooldomain',
+    UserPoolId: stack.resolve(userpool.userPoolId),
+  });
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpoolimporteddomain',
+    UserPoolId: stack.resolve(imported.userPoolId),
+  });
+});
+
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
