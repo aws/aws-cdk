@@ -43,6 +43,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
@@ -319,7 +320,7 @@ All packages in the repo use a standard base configuration found at [eslintrc.js
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
-extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). 
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 #### pkglint
 
@@ -901,6 +902,24 @@ To debug your CDK application along with the CDK repository,
 
 6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
 7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
+
+### Run a CDK unit test in the debugger
+
+If you want to run the VSCode debugger on unit tests of the CDK project
+itself, do the following:
+
+1. Set a breakpoint inside your unit test.
+2. In your terminal, depending on the type of test, run either:
+
+```
+# (For tests names test.xxx.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/nodeunit -t 'TESTNAME'
+
+# (For tests names xxxx.test.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
+```
+
+3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
 
 ## Related Repositories
 
