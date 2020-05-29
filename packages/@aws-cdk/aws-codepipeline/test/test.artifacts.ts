@@ -46,7 +46,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' has an unnamed input Artifact (probably not used as an output in this pipeline)");
+      test.equal(error.message, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
       test.done();
     },
@@ -82,7 +82,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Artifact 'named' is used as an input by 'Build', but is not being produced in this pipeline");
+      test.equal(error.message, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
       test.done();
     },
@@ -119,7 +119,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Artifact 'Artifact_Source_Source' is used as an output by both 'Source' and 'Build'. Every artifact can only be produced once.");
+      test.equal(error.message, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
       test.done();
     },
@@ -221,7 +221,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Artifact 'buildOutput1' is being produced at stage 2 ('Build') action 3 ('build1') but first consumed before that, at stage 2 ('Build') action 2 ('build2')");
+      test.equal(error.message, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
       test.done();
     },

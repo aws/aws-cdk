@@ -749,70 +749,49 @@ export class Pipeline extends PipelineBase {
   private validateArtifacts(): string[] {
     const ret = new Array<string>();
 
-    interface PipelineLocation {
-      stageIndex: number;
-      stageName: string;
-      action: FullActionDescriptor;
-    }
-
-    /**
-     * Returns whether a is before or the same order as b
-     */
-    function beforeOrEqual(a: PipelineLocation, b: PipelineLocation) {
-      if (a.stageIndex !== b.stageIndex) { return a.stageIndex < b.stageIndex; }
-      return a.action.runOrder <= b.action.runOrder;
-    }
-
-    function renderLoc(loc: PipelineLocation) {
-      // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
-      return `stage ${loc.stageIndex + 1} ('${loc.stageName}') action ${loc.action.runOrder} ('${loc.action.actionName}')`;
-    }
-
-    const producer: Record<string, PipelineLocation> = {};
-    const firstConsumer: Record<string, PipelineLocation> = {};
+    const producers: Record<string, PipelineLocation> = {};
+    const firstConsumers: Record<string, PipelineLocation> = {};
 
     for (const [stageIndex, stage] of enumerate(this._stages)) {
       // For every output artifact, get the producer
       for (const action of stage.actionDescriptors) {
-        const thisLocation = { stageIndex, action, stageName: stage.stageName };
+        const actionLoc = new PipelineLocation(stageIndex, stage, action);
 
         for (const outputArtifact of action.outputs) {
           // output Artifacts always have a name set
           const name = outputArtifact.artifactName!;
-          if (producer[name]) {
-            ret.push(`Artifact '${name}' is used as an output by both '${producer[name].action.actionName}' and '${action.actionName}'. Every artifact can only be produced once.`);
+          if (producers[name]) {
+            ret.push(`Both Actions '${producers[name].actionName}' and '${action.actionName}' are producting Artifact '${name}'. Every artifact can only be produced once.`);
             continue;
           }
 
-          producer[name] = thisLocation;
+          producers[name] = actionLoc;
         }
 
         // For every input artifact, get the first consumer
         for (const inputArtifact of action.inputs) {
           const name = inputArtifact.artifactName;
           if (!name) {
-            ret.push(`Action '${action.actionName}' has an unnamed input Artifact (probably not used as an output in this pipeline)`);
+            ret.push(`Action '${action.actionName}' is using an unnamed input Artifact, which is not being produced in this pipeline`);
             continue;
           }
 
-          if (!firstConsumer[name] || beforeOrEqual(thisLocation, firstConsumer[name])) {
-            firstConsumer[name] = thisLocation;
-          }
+          firstConsumers[name] = firstConsumers[name] ? firstConsumers[name].first(actionLoc) : actionLoc;
         }
       }
     }
 
     // Now validate that every input artifact is produced before it's
     // being consumed.
-    for (const [artifactName, consumerLoc] of Object.entries(firstConsumer)) {
-      const producerLoc = producer[artifactName];
+    for (const [artifactName, consumerLoc] of Object.entries(firstConsumers)) {
+      const producerLoc = producers[artifactName];
       if (!producerLoc) {
-        ret.push(`Artifact '${artifactName}' is used as an input by '${consumerLoc.action.actionName}', but is not being produced in this pipeline`);
+        ret.push(`Action '${consumerLoc.actionName}' is using input Artifact '${artifactName}', which is not being produced in this pipeline`);
         continue;
       }
 
-      if (beforeOrEqual(consumerLoc, producerLoc)) {
-        ret.push(`Artifact '${artifactName}' is being produced at ${renderLoc(producerLoc)} but first consumed before that, at ${renderLoc(consumerLoc)}`);
+      if (consumerLoc.beforeOrEqual(producerLoc)) {
+        ret.push(`${consumerLoc} is consuming input Artifact '${artifactName}' before it is being produced at ${producerLoc}`);
       }
     }
 
@@ -920,4 +899,37 @@ function enumerate<A>(xs: A[]): Array<[number, A]> {
     ret.push([i, xs[i]]);
   }
   return ret;
+}
+
+class PipelineLocation {
+  constructor(private readonly stageIndex: number, private readonly stage: IStage, private readonly action: FullActionDescriptor) {
+  }
+
+  public get stageName() {
+    return this.stage.stageName;
+  }
+
+  public get actionName() {
+    return this.action.actionName;
+  }
+
+  /**
+   * Returns whether a is before or the same order as b
+   */
+  public beforeOrEqual(rhs: PipelineLocation) {
+    if (this.stageIndex !== rhs.stageIndex) { return rhs.stageIndex < rhs.stageIndex; }
+    return this.action.runOrder <= rhs.action.runOrder;
+  }
+
+  /**
+   * Returns the first location between this and the other one
+   */
+  public first(rhs: PipelineLocation) {
+    return this.beforeOrEqual(rhs) ? this : rhs;
+  }
+
+  public toString() {
+    // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
+    return `Stage ${this.stageIndex + 1} Action ${this.action.runOrder} ('${this.stageName}'/'${this.actionName}')`;
+  }
 }
