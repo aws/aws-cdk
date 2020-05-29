@@ -1,5 +1,5 @@
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IManagedPolicy, ManagedPolicy, Role, RoleProps, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 
 /**
  * Properties for defining a Lambda Role
