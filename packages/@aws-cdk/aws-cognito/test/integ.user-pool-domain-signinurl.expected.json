@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "myuserpoolsmsRole0E16FDD9": {
+    "UserPoolsmsRole4EA729DD": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -9,7 +9,7 @@
               "Action": "sts:AssumeRole",
               "Condition": {
                 "StringEquals": {
-                  "sts:ExternalId": "integuserpoolsignuplinkmyuserpoolA8374994"
+                  "sts:ExternalId": "integuserpooldomainsigninurlUserPool1325E89F"
                 }
               },
               "Effect": "Allow",
@@ -37,63 +37,52 @@
         ]
       }
     },
-    "myuserpool01998219": {
+    "UserPool6BA7E5F2": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
         "AdminCreateUserConfig": {
-          "AllowAdminCreateUserOnly": false
+          "AllowAdminCreateUserOnly": true
         },
-        "AutoVerifiedAttributes": [
-          "email",
-          "phone_number"
-        ],
-        "Policies": {
-          "PasswordPolicy": {
-            "MinimumLength": 8,
-            "RequireLowercase": false,
-            "RequireNumbers": false,
-            "RequireSymbols": false,
-            "RequireUppercase": false
-          }
-        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
         "SmsConfiguration": {
-          "ExternalId": "integuserpoolsignuplinkmyuserpoolA8374994",
+          "ExternalId": "integuserpooldomainsigninurlUserPool1325E89F",
           "SnsCallerArn": {
             "Fn::GetAtt": [
-              "myuserpoolsmsRole0E16FDD9",
+              "UserPoolsmsRole4EA729DD",
               "Arn"
             ]
           }
         },
-        "SmsVerificationMessage": "integ-test: Account verification code is {####}",
-        "UserPoolName": "MyUserPool",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
         "VerificationMessageTemplate": {
-          "DefaultEmailOption": "CONFIRM_WITH_LINK",
-          "EmailMessageByLink": "integ-test: Verify by clicking on {##Verify Email##}",
-          "EmailSubjectByLink": "integ-test: Verify your account",
-          "SmsMessage": "integ-test: Account verification code is {####}"
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}"
         }
       }
     },
-    "myuserpoolmyuserpooldomainEE1E11AF": {
+    "UserPoolDomainD0EA232A": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "integ-user-pool-signup-link",
+        "Domain": "cdk-integ-user-pool-domain",
         "UserPoolId": {
-          "Ref": "myuserpool01998219"
+          "Ref": "UserPool6BA7E5F2"
         }
       }
     },
-    "myuserpoolclient8A58A3E4": {
+    "UserPoolUserPoolClient40176907": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {
-          "Ref": "myuserpool01998219"
+          "Ref": "UserPool6BA7E5F2"
         },
         "AllowedOAuthFlows": [
           "implicit",
           "code"
         ],
+        "AllowedOAuthFlowsUserPoolClient": true,
         "AllowedOAuthScopes": [
           "profile",
           "phone",
@@ -104,8 +93,6 @@
         "CallbackURLs": [
           "https://example.com"
         ],
-        "ClientName": "signup-test",
-        "GenerateSecret": false,
         "SupportedIdentityProviders": [
           "COGNITO"
         ]
@@ -113,14 +100,26 @@
     }
   },
   "Outputs": {
-    "userpoolid": {
+    "SignInUrl": {
       "Value": {
-        "Ref": "myuserpool01998219"
-      }
-    },
-    "clientid": {
-      "Value": {
-        "Ref": "myuserpoolclient8A58A3E4"
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "UserPoolDomainD0EA232A"
+            },
+            ".auth.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazoncognito.com/login?client_id=",
+            {
+              "Ref": "UserPoolUserPoolClient40176907"
+            },
+            "&response_type=code&redirect_uri=https://example.com"
+          ]
+        ]
       }
     }
   }

@@ -83,8 +83,25 @@
         "UserPoolId": {
           "Ref": "myuserpool01998219"
         },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
         "ClientName": "signup-test",
-        "GenerateSecret": false
+        "GenerateSecret": false,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
       }
     }
   },
