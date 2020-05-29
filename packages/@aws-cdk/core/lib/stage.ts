@@ -4,8 +4,7 @@ import * as path from 'path';
 import { App } from './app';
 import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { Environment } from './environment';
-import { closestStackContainer, rootPathTo } from './private/scopes';
-import { makeStackName } from './private/uniqueid';
+import { containingAssembler } from './private/scopes';
 
 /**
  * Properties for a Stage
@@ -50,7 +49,7 @@ export interface StageProps {
    *
    * Stack names can be overridden at the Stack level.
    *
-   * @default - Automatically calculated from construct path
+   * @default - Same as the construct id
    */
   readonly stageName?: string;
 }
@@ -66,15 +65,6 @@ export interface StageProps {
  * environments.
  */
 export class Stage extends Construct {
-
-  /**
-   * Artifact ID of embedded assembly
-   *
-   * Derived from the construct path.
-   */
-  private get assemblyArtifactId() {
-    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
-  }
   /**
    * Return the containing Stage object of a construct, if available
    */
@@ -161,14 +151,25 @@ export class Stage extends Construct {
 
   /**
    * Calculate default stage name
+   *
+   * Use enclosing stages' names and current id only. This gives the best
+   * defaults results when creating Stages as part of a Pipeline construct.
    */
   private generateStageName(): string {
-    const container = closestStackContainer(this);
-    const rootPath = rootPathTo(this, container);
+    const container = containingAssembler(this);
 
     const containerName = Stage.isStage(container) ? `${container.stageName}-` : '';
 
-    return `${containerName}${makeStackName(rootPath.map(c => c.node.id))}`;
+    return `${containerName}${this.node.id}`;
+  }
+
+  /**
+   * Artifact ID of embedded assembly
+   *
+   * Derived from the construct path.
+   */
+  private get assemblyArtifactId() {
+    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 }
 

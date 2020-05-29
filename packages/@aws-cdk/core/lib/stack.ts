@@ -309,8 +309,12 @@ export class Stack extends Construct implements ITaggable {
     // the same name. however, this behavior is breaking for 1.x so it's only
     // applied under a feature flag which is applied automatically for new
     // projects created using `cdk init`.
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
-      ? this.generateStackName()
+    //
+    // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
+    // people only have to flip one flag.
+    // tslint:disable-next-line: max-line-length
+    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+      ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
@@ -857,6 +861,9 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Calculate the stack name based on the construct path
    *
+   * The stack name is the name under which we'll deploy the stack,
+   * and incorporates containing Stage names by default.
+   *
    * Generally this looks a lot like how logical IDs are calculated.
    * The stack name is calculated based on the construct root path,
    * as follows:
@@ -872,11 +879,28 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const container = closestStackContainer(this);
-    const rootPath = rootPathTo(this, container);
-    const ids = rootPath.map(c => c.node.id);
+    const container = containingAssembler(this);
 
     const containerName = Stage.isStage(container) ? `${container.stageName}-` : '';
+
+    return `${containerName}${this.generateStackId(container)}`;
+  }
+
+  /**
+   * The artifact ID for this stack
+   *
+   * Stack artifact ID is unique within the App's Cloud Assembly.
+   */
+  private generateStackArtifactId() {
+    return this.generateStackId(this.node.root);
+  }
+
+  /**
+   * Generate an ID with respect to the given container construct.
+   */
+  private generateStackId(container: IConstruct | undefined) {
+    const rootPath = rootPathTo(this, container);
+    const ids = rootPath.map(c => c.node.id);
 
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
@@ -884,7 +908,7 @@ export class Stack extends Construct implements ITaggable {
       ids[0] = 'Stack';
     }
 
-    return `${containerName}${makeStackName(ids)}`;
+    return makeStackName(ids);
   }
 }
 
@@ -971,7 +995,7 @@ import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
 import { prepareApp } from './private/prepare-app';
-import { closestStackContainer, rootPathTo } from './private/scopes';
+import { containingAssembler, rootPathTo } from './private/scopes';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';

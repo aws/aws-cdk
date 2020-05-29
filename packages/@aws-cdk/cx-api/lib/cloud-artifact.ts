@@ -90,7 +90,7 @@ export class CloudArtifact {
     if (this._deps) { return this._deps; }
 
     this._deps = this._dependencyIDs.map(id => {
-      const dep = this.assembly.artifacts.find(a => a.id === id);
+      const dep = this.assembly.tryGetArtifact(id);
       if (!dep) {
         throw new Error(`Artifact ${this.id} depends on non-existing artifact ${id}`);
       }

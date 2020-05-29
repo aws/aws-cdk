@@ -1,6 +1,6 @@
 import { CfnResource } from './cfn-resource';
+import { containingAssembler, describeAssembler, findLastCommonElement, pathToTopLevelStack } from './private/scopes';
 import { Stack } from './stack';
-import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
 
 type Element = CfnResource | Stack;
 
@@ -29,11 +29,17 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   }
 
   const sourceStack = Stack.of(source);
+  const sourceAssembler = containingAssembler(sourceStack);
   const targetStack = Stack.of(target);
+  const targetAssembler = containingAssembler(targetStack);
+
+  if (sourceAssembler !== targetAssembler) {
+    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeAssembler(sourceAssembler)}) to '${target.node.path}' (in ${describeAssembler(targetAssembler)}): dependency cannot cross stage boundaries`);
+  }
 
   // find the deepest common stack between the two elements
-  const sourcePath = pathToRoot(sourceStack);
-  const targetPath = pathToRoot(targetStack);
+  const sourcePath = pathToTopLevelStack(sourceStack);
+  const targetPath = pathToTopLevelStack(targetStack);
   const commonStack = findLastCommonElement(sourcePath, targetPath);
 
   // if there is no common stack, then define an assembly-level dependency

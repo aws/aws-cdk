@@ -75,6 +75,20 @@ export = {
 
     test.done();
   },
+
+  'Can not have dependencies to stacks outside the embedded asm'(test: Test) {
+    // GIVEN
+    const stack1 = new BogusStack(app, 'Stack1');
+    const stage = new Stage(app, 'MyStage');
+    const stack2 = new BogusStack(stage, 'Stack2');
+
+    // WHEN
+    test.throws(() => {
+      stack2.addDependency(stack1);
+    }, /dependency cannot cross stage boundaries/);
+
+    test.done();
+  },
 };
 
 /**

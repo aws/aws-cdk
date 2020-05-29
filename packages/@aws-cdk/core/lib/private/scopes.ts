@@ -1,5 +1,6 @@
 import { App } from '../app';
 import { IConstruct } from '../construct-compat';
+import { Stack } from '../stack';
 import { Stage } from '../stage';
 
 /**
@@ -18,12 +19,12 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
 }
 
 /**
- * Return the closests stack container
+ * Return the closest containing construct that produces an assembly
  *
- * A "stack container" is an App or Stage.
+ * A construct that produces an assembly is either an App or Stage.
  */
-export function closestStackContainer(construct: IConstruct): IConstruct | undefined {
-  const stage =  Stage.of(construct);
+export function containingAssembler(construct: IConstruct): App | Stage | undefined {
+  const stage = Stage.of(construct);
   if (stage) { return stage; }
 
   // Would have used App.of() here, but that will throw if no App is found.
@@ -32,4 +33,41 @@ export function closestStackContainer(construct: IConstruct): IConstruct | undef
 
   // We have to leave this option open for unit tests that don't have Apps
   return undefined;
+}
+
+/**
+ * Return a string representation of the given assembler, for use in error messages
+ */
+export function describeAssembler(assembler: App | Stage | undefined): string {
+  if (assembler === undefined) { return 'an unrooted construct tree'; }
+  if (Stage.isStage(assembler)) { return `Stage '${assembler.stageName}'`; }
+  return 'the App';
+}
+
+/**
+ * @returns the list of stacks that lead from the top-level stack (non-nested) all the way to a nested stack.
+ */
+export function pathToTopLevelStack(s: Stack): Stack[] {
+  if (s.nestedStackParent) {
+    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+  } else {
+    return [ s ];
+  }
+}
+
+/**
+ * Given two arrays, returns the last common element or `undefined` if there
+ * isn't (arrays are foriegn).
+ */
+export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined {
+  let i = 0;
+  while (i < path1.length && i < path2.length) {
+    if (path1[i] !== path2[i]) {
+      break;
+    }
+
+    i++;
+  }
+
+  return path1[i - 1];
 }

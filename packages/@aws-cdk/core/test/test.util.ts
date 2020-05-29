@@ -1,6 +1,7 @@
 import { Test, testCase } from 'nodeunit';
 import { CfnResource, Construct, Stack } from '../lib';
-import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
+import { findLastCommonElement, pathToTopLevelStack } from '../lib/private/scopes';
+import { capitalizePropertyNames, filterUndefined, ignoreEmpty } from '../lib/util';
 
 export = testCase({
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {

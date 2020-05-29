@@ -69,6 +69,8 @@ export class CloudAssembly {
   /**
    * Returns a CloudFormation stack artifact from this assembly.
    *
+   * Will only search the current assembly.
+   *
    * @param stackName the name of the CloudFormation stack.
    * @throws if there is no stack artifact by that name
    * @throws if there is more than one stack with the same stack name. You can
@@ -256,6 +258,25 @@ export class CloudAssemblyBuilder {
     fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
 
     return new CloudAssembly(this.outdir);
+  }
+
+  /**
+   * Begin an embedded assembly in this assembly
+   *
+   * If dirName is not given, it will default to artifactId.
+   */
+  public openEmbeddedAssembly(artifactId: string, dirName?: string) {
+    const directoryName = dirName ?? artifactId;
+    const innerAsmDir = path.join(this.outdir, directoryName);
+
+    // WHEN
+    this.addArtifact(artifactId, {
+      type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+      properties: {
+        directoryName,
+      } as cxschema.EmbeddedCloudAssemblyProperties,
+    });
+    return new CloudAssemblyBuilder(innerAsmDir);
   }
 }
 
