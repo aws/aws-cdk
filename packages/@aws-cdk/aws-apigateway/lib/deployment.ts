@@ -1,7 +1,7 @@
 import { CfnResource, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import { CfnDeployment } from './apigateway.generated';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi, SpecRestApi } from './restapi';
 
 export interface DeploymentProps  {
   /**
@@ -155,7 +155,7 @@ class LatestDeploymentResource extends CfnDeployment {
    * add via `addToLogicalId`.
    */
   protected prepare() {
-    if (this.api instanceof RestApi) { // Ignore IRestApi that are imported
+    if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
 
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
       const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
