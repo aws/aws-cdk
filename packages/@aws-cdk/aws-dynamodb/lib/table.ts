@@ -412,7 +412,7 @@ export interface ITable extends IResource {
 export interface TableAttributes {
   /**
    * The ARN of the dynamodb table.
-   * One of this, or {@link tabeName}, is required.
+   * One of this, or {@link tableName}, is required.
    *
    * @default - no table arn
    */
@@ -420,7 +420,7 @@ export interface TableAttributes {
 
   /**
    * The table name of the dynamodb table.
-   * One of this, or {@link tabeArn}, is required.
+   * One of this, or {@link tableArn}, is required.
    *
    * @default - no table name
    */
@@ -439,6 +439,28 @@ export interface TableAttributes {
    * @default - no key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The name of the global indexes set for this Table.
+   * Note that you need to set either this property,
+   * or {@link localIndexes},
+   * if you want methods like grantReadData()
+   * to grant permissions for indexes as well as the table itself.
+   *
+   * @default - no global indexes
+   */
+  readonly globalIndexes?: string[];
+
+  /**
+   * The name of the local indexes set for this Table.
+   * Note that you need to set either this property,
+   * or {@link globalIndexes},
+   * if you want methods like grantReadData()
+   * to grant permissions for indexes as well as the table itself.
+   *
+   * @default - no local indexes
+   */
+  readonly localIndexes?: string[];
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -682,7 +704,7 @@ abstract class TableBase extends Resource implements ITable {
   private combinedGrant(
     grantee: iam.IGrantable,
     opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
-  ) {
+  ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
         Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
@@ -773,6 +795,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+        (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -780,10 +804,6 @@ export class Table extends TableBase {
         this.tableName = tableName;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
-      }
-
-      protected get hasIndex(): boolean {
-        return false;
       }
     }
 
@@ -1114,9 +1134,9 @@ export class Table extends TableBase {
    * @param nonKeyAttributes a list of non-key attribute names
    */
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
-    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 20) {
+    if (this.nonKeyAttributes.size + nonKeyAttributes.length > 100) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 20');
+      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 100');
     }
 
     // store all non-key attributes
