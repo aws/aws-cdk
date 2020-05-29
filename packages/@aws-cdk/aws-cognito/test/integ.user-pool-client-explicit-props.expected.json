@@ -79,8 +79,7 @@
           "email",
           "openid",
           "profile",
-          "aws.cognito.signin.user.admin",
-          "my-resource-server/my-scope"
+          "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
           "https://redirect-here.myapp.com"

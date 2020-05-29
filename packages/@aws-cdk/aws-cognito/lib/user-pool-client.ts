@@ -47,22 +47,22 @@ export interface OAuthSettings {
   /**
    * OAuth flows that are allowed with this client.
    * @see - the 'Allowed OAuth Flows' section at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
-   * @default - all OAuth flows disabled
+   * @default {authorizationCodeGrant:true,implicitCodeGrant:true}
    */
-  readonly flows: OAuthFlows;
+  readonly flows?: OAuthFlows;
 
   /**
    * List of allowed redirect URLs for the identity providers.
-   * @default - no callback URLs
+   * @default - ['https://example.com'] if either authorizationCodeGrant or implicitCodeGrant flows are enabled, no callback URLs otherwise.
    */
   readonly callbackUrls?: string[];
 
   /**
    * OAuth scopes that are allowed with this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
-   * @default - no OAuth scopes are configured.
+   * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
    */
-  readonly scopes: OAuthScope[];
+  readonly scopes?: OAuthScope[];
 }
 
 /**
@@ -236,6 +236,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
+  /**
+   * The OAuth flows enabled for this client.
+   */
+  public readonly oAuthFlows: OAuthFlows;
   private readonly _userPoolClientName?: string;
 
   /*
@@ -249,14 +253,28 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
+    this.oAuthFlows = props.oAuth?.flows ?? {
+      implicitCodeGrant: true,
+      authorizationCodeGrant: true,
+    };
+
+    let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
+    if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
+      if (callbackUrls === undefined) {
+        callbackUrls = [ 'https://example.com' ];
+      } else if (callbackUrls.length === 0) {
+        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
+      }
+    }
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: this.configureAuthFlows(props),
-      allowedOAuthFlows: this.configureOAuthFlows(props.oAuth),
+      allowedOAuthFlows: this.configureOAuthFlows(),
       allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
-      callbackUrLs: (props.oAuth?.callbackUrls && props.oAuth?.callbackUrls.length > 0) ? props.oAuth?.callbackUrls : undefined,
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
       allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
@@ -291,20 +309,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return authFlows;
   }
 
-  private configureOAuthFlows(oAuth?: OAuthSettings): string[] | undefined {
-    if (oAuth?.flows.authorizationCodeGrant || oAuth?.flows.implicitCodeGrant) {
-      if (oAuth?.callbackUrls === undefined || oAuth?.callbackUrls.length === 0) {
-        throw new Error('callbackUrl must be specified when codeGrant or implicitGrant OAuth flows are enabled.');
-      }
-      if (oAuth?.flows.clientCredentials) {
-        throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
-      }
+  private configureOAuthFlows(): string[] | undefined {
+    if ((this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) && this.oAuthFlows.clientCredentials) {
+      throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
     }
-
     const oAuthFlows: string[] = [];
-    if (oAuth?.flows.clientCredentials) { oAuthFlows.push('client_credentials'); }
-    if (oAuth?.flows.implicitCodeGrant) { oAuthFlows.push('implicit'); }
-    if (oAuth?.flows.authorizationCodeGrant) { oAuthFlows.push('code'); }
+    if (this.oAuthFlows.clientCredentials) { oAuthFlows.push('client_credentials'); }
+    if (this.oAuthFlows.implicitCodeGrant) { oAuthFlows.push('implicit'); }
+    if (this.oAuthFlows.authorizationCodeGrant) { oAuthFlows.push('code'); }
 
     if (oAuthFlows.length === 0) {
       return undefined;
@@ -312,16 +324,15 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return oAuthFlows;
   }
 
-  private configureOAuthScopes(oAuth?: OAuthSettings): string[] | undefined {
-    const oAuthScopes = new Set(oAuth?.scopes.map((x) => x.scopeName));
+  private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
+    const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN ];
+    const scopeNames = new Set(scopes.map((x) => x.scopeName));
     const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
-    if (autoOpenIdScopes.reduce((agg, s) => agg || oAuthScopes.has(s.scopeName), false)) {
-      oAuthScopes.add(OAuthScope.OPENID.scopeName);
+    if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
+      scopeNames.add(OAuthScope.OPENID.scopeName);
     }
-    if (oAuthScopes.size > 0) {
-      return Array.from(oAuthScopes);
-    }
-    return undefined;
+    return Array.from(scopeNames);
   }
 
   private configurePreventUserExistenceErrors(prevent?: boolean): string | undefined {
