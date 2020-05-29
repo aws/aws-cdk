@@ -73,12 +73,11 @@
           "implicit",
           "code"
         ],
-        "AllowedOAuthFlowsUserPoolClient": true,
         "AllowedOAuthScopes": [
-          "email",
-          "phone",
-          "openid",
           "profile",
+          "phone",
+          "email",
+          "openid",
           "aws.cognito.signin.user.admin"
         ],
         "CallbackURLs": [
@@ -114,6 +113,30 @@
           "client_secret": "amzn-client-secret",
           "authorize_scopes": "profile"
         }
+      }
+    }
+  },
+  "Outputs": {
+    "SignInLink": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "pooldomain430FA744"
+            },
+            ".auth.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazoncognito.com/login?client_id=",
+            {
+              "Ref": "poolclient2623294C"
+            },
+            "&response_type=code&redirect_uri=https://example.com"
+          ]
+        ]
       }
     }
   }

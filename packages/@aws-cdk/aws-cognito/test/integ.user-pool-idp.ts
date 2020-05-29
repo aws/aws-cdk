@@ -1,8 +1,10 @@
-import { App, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolIdentityProvider } from '../lib';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { UserPool, UserPoolIdentityProvider } from '../lib';
 
 /*
- * Stack verification steps - TBD
+ * Stack verification steps
+ * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'Login with Amazon' link shows up.
+ * * If you plug in valid 'Login with Amazon' credentials, the federated log in should work.
  */
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-idp');
@@ -15,28 +17,18 @@ const provider = UserPoolIdentityProvider.amazon(stack, 'amazon', {
   clientSecret: 'amzn-client-secret',
 });
 
-userpool.addClient('client', {
-  oAuth: {
-    flows: {
-      implicitCodeGrant: true,
-      authorizationCodeGrant: true,
-    },
-    scopes: [
-      OAuthScope.EMAIL,
-      OAuthScope.PHONE,
-      OAuthScope.OPENID,
-      OAuthScope.PROFILE,
-      OAuthScope.COGNITO_ADMIN,
-    ],
-    callbackUrls: [
-      'https://example.com',
-    ],
-  },
+const client = userpool.addClient('client', {
   identityProviders: [ provider ],
 });
 
-userpool.addDomain('domain', {
+const domain = userpool.addDomain('domain', {
   cognitoDomain: {
     domainPrefix: 'nija-test-pool',
   },
+});
+
+new CfnOutput(stack, 'SignInLink', {
+  value: domain.signInUrl(client, {
+    redirectUri: 'https://example.com',
+  }),
 });
