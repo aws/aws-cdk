@@ -280,7 +280,7 @@ new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 new YourStack(app, `${stackPrefix}-termination-protection`, {
-  terminationProtection: true,
+  terminationProtection: process.env.NO_TERMINATION_PROTECTION ? false : true,
 });
 
 app.synth();
