@@ -66,13 +66,12 @@ const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
 // Adds an event selector to the bucket magic-bucket.
 // By default, this includes management events and all operations (Read + Write)
-trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]);
+trail.logAllS3DataEvents();
 
-// Adds an event selector to the bucket foo, with a specific configuration
-trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
-  includeManagementEvents: false,
-  readWriteType: ReadWriteType.ALL,
-});
+// Adds an event selector to the bucket foo
+trail.addS3EventSelector([{
+  bucket: fooBucket // 'fooBucket' is of type s3.IBucket
+}]);
 ```
 
 For using CloudTrail event selector to log events about Lambda
@@ -90,7 +89,7 @@ const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {
 });
 
 // Add an event selector to log data events for all functions in the account.
-trail.addLambdaEventSelector(["arn:aws:lambda"]);
+trail.logAllLambdaDataEvents();
 
 // Add an event selector to log data events for the provided Lambda functions.
 trail.addLambdaEventSelector([lambdaFunction.functionArn]);
