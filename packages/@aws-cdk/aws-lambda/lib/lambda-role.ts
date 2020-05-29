@@ -1,5 +1,5 @@
 import { IManagedPolicy, ManagedPolicy, Role, RoleProps, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct} from '@aws-cdk/core';
 
 /**
  * Properties for defining a Lambda Role
@@ -42,7 +42,7 @@ export interface LambdaRoleProps extends Omit<RoleProps, 'assumedBy'> {
    *
    * @default false
    */
-  readonly xrayDaemonWriteAccess: boolean;
+  readonly xrayDaemonWriteAccess?: boolean;
 
 }
 

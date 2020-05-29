@@ -9,6 +9,7 @@ import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { LambdaRole } from './lambda-role';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -471,19 +472,8 @@ export class Function extends FunctionBase {
 
     this.environment = props.environment || {};
 
-    const managedPolicies = new Array<iam.IManagedPolicy>();
-
-    // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
-
-    if (props.vpc) {
-      // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
-    }
-
-    this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies,
+    this.role = props.role || new LambdaRole(this, 'ServiceRole', {
+      vpcExecutionAccess: props.vpc !== undefined,
     });
     this.grantPrincipal = this.role;
 
