@@ -237,7 +237,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   // Update termination protection only if it has changed.
   const terminationProtection = stackArtifact.terminationProtection ?? false;
-  if (cloudFormationStack.terminationProtection !== terminationProtection) {
+  if (!!cloudFormationStack.terminationProtection !== terminationProtection) {
     debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
     await cfn.updateTerminationProtection({
       StackName: deployName,
@@ -399,8 +399,7 @@ async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormat
   }
 
   // Termination protection has been updated
-  const terminationProtection = deployStackOptions.stack.terminationProtection ?? false; // cast to boolean for comparison
-  if (terminationProtection !== cloudFormationStack.terminationProtection) {
+  if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);
     return false;
   }
