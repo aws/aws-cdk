@@ -2,7 +2,10 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
+  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+} from '@aws-cdk/core';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';
@@ -483,6 +486,7 @@ export class Pipeline extends PipelineBase {
         pipelineStackName: pipelineStack.stackName,
         region: actionRegion,
         account: pipelineAccount,
+        synthesizer: this.getCrossRegionSupportSynthesizer(),
       });
     }
 
@@ -490,6 +494,23 @@ export class Pipeline extends PipelineBase {
       stack: supportStack,
       replicationBucket: supportStack.replicationBucket,
     };
+  }
+
+  private getCrossRegionSupportSynthesizer(): IStackSynthesizer | undefined {
+    if (this.stack.synthesizer instanceof DefaultStackSynthesizer) {
+      // if we have the new synthesizer,
+      // we need a bootstrapless copy of it,
+      // because we don't want to require bootstrapping the environment
+      // of the pipeline account in this replication region
+      return new BootstraplessSynthesizer({
+        deployRoleArn: this.stack.synthesizer.deployRoleArn,
+        cloudFormationExecutionRoleArn: this.stack.synthesizer.cloudFormationExecutionRoleArn,
+      });
+    } else {
+      // any other synthesizer: just return undefined
+      // (ie., use the default based on the context settings)
+      return undefined;
+    }
   }
 
   private generateNameForDefaultBucketKeyAlias(): string {
