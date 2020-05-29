@@ -200,7 +200,6 @@ export interface SpecRestApiProps extends RestApiOptions {
 /**
  * Abstract class that allow for further configuration of a API Gateway RestApi,
  * such as Resources, Methods, Stages and Deployments.
- * @experimental
  */
 export abstract class MutableRestApi extends Resource implements IRestApi {
   /**
