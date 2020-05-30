@@ -66,9 +66,29 @@ const fn = new lambda.Function(this, 'MyFunction', {
 fn.role // the Role
 ```
 
-You can also provide your own IAM role. Provided IAM roles will not automatically
-be given permissions to execute the Lambda function. To provide a role and grant
-it appropriate permissions:
+You can also provide your own IAM role. Using the LambdaRole class automatically grants
+permission to execute the function. Additional parameters can be provided to grant
+permission to read Kinesis events, write to XRay, etc:
+
+```ts
+const myRole = new lambda.LambdaRole(this, 'Role', {
+  vpcExecutionAccess: true,
+  kinesisExecutionAccess: true,
+  dynamoDBExecutionAccess: true,
+  sqsQueueExecutionAccess: true,
+  xrayDaemonWriteAccess: true,
+});
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  role: myRole,
+```
+
+You can also provide your own IAM role for a high degree of control over function
+permissions. Provided IAM roles will not automatically be given permissions to
+execute the Lambda function. To provide a role and grant it appropriate permissions:
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -80,7 +100,12 @@ const fn = new lambda.Function(this, 'MyFunction', {
 
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
+myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaKinesisExecutionRole"));
+myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaDynamoDBExecutionRole"));
+myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaSQSQueueExecutionRole"));
+myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSXRayDaemonWriteAccess"));
 ```
+
 
 ### Versions and Aliases
 
