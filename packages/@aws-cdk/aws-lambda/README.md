@@ -86,16 +86,20 @@ const fn = new lambda.Function(this, 'MyFunction', {
   role: myRole,
 ```
 
-You can also provide your own IAM role for a high degree of control over function
-permissions. Provided IAM roles will not automatically be given permissions to
+You can also provide your own Role for a high degree of control over function
+permissions. A provided Role will not automatically be given permissions to
 execute the Lambda function. To provide a role and grant it appropriate permissions:
 
 ```ts
+const myRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com');
+});
+
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  role: myRole // user-provided role
+  role: myRole // user-provided Role
 });
 
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
