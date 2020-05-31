@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-gateway/MyVpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-gateway/MyVpc/PublicSubnet1"
           }
         ]
       }
@@ -91,16 +91,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc-gateway/MyVpc/IsolatedSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Isolated"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Isolated"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc-gateway/MyVpc/IsolatedSubnet1"
           }
         ]
       }

@@ -177,8 +177,8 @@ nodeunitShim({
           {
             subnetType: SubnetType.PUBLIC,
             name: 'public',
-          }
-        ]
+          },
+        ],
       });
       (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
         routerId: vpc.internetGateway.internetGatewayId,
@@ -188,7 +188,7 @@ nodeunitShim({
       expect(stack).to(haveResource('AWS::EC2::InternetGateway'));
       expect(stack).to(haveResourceLike('AWS::EC2::Route', {
         DestinationCidrBlock: '8.8.8.8/32',
-        GatewayId: { }
+        GatewayId: { },
       }));
       test.done();
     },

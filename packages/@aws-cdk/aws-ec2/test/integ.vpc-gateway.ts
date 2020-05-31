@@ -14,8 +14,8 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
     {
       subnetType: ec2.SubnetType.ISOLATED,
       name: 'Isolated',
-    }
-  ]
+    },
+  ],
 });
 
 (vpc.isolatedSubnets[0] as ec2.Subnet).addRoute('MyRoute', {

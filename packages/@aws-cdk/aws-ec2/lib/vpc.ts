@@ -1127,7 +1127,7 @@ export class Vpc extends VpcBase {
   /*
    * Identifier for the VPN gateway
    */
-  public readonly vpnGatewayId?: string;
+  public readonly vpnGatewayId: string | undefined;
 
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -1765,7 +1765,7 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly vpnGatewayId?: string;
+  public readonly vpnGatewayId: string | undefined;
   public get internetGateway(): IInternetGateway {
     throw new Error('Cannot access \'internetGateway\' of an imported VPC.');
   }
