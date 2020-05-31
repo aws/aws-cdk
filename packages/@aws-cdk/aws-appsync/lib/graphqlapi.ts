@@ -986,7 +986,7 @@ export class Assign {
    * Renders the assignment as a map element.
    */
   public putInMap(map: string): string {
-    return `$util.qr($${map}.put("${this.attr}", "${this.arg}"))`;
+    return `$util.qr($${map}.put("${this.attr}", ${this.arg}))`;
   }
 }
 
