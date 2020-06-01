@@ -17,7 +17,7 @@ export interface StandardAttributes {
   readonly birthdate?: StandardAttribute;
 
   /**
-   * Theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
+   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly email?: StandardAttribute;
