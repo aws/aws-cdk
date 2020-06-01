@@ -249,6 +249,16 @@ export interface SubnetSelection {
    * @default - Use all subnets in a selected group (all private subnets by default)
    */
   readonly subnets?: ISubnet[]
+
+  /**
+   * Filter out Subnets with 0 available IP addresses
+   *
+   * Usful to avoid deployments to IP exhausted subnets that are a part of the selected
+   * subnet group.
+   *
+   * @default false
+   */
+  readonly filterOutIpExhausted?: boolean;
 }
 
 /**
@@ -469,6 +479,10 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = retainOnePerAz(subnets);
     }
 
+    if (selection.filterOutIpExhausted) { // Filter out IP exhausted
+      subnets = retainOnlyIpAvailable(subnets);
+    }
+
     return subnets;
   }
 
@@ -530,18 +544,21 @@ abstract class VpcBase extends Resource implements IVpc {
         return {
           subnetType: SubnetType.PRIVATE,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones};
+          availabilityZones: placement.availabilityZones,
+          filterOutIpExhausted: placement.filterOutIpExhausted };
       }
       if (this.isolatedSubnets.length > 0) {
         return {
           subnetType: SubnetType.ISOLATED,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+          filterOutIpExhausted: placement.filterOutIpExhausted };
       }
       return {
         subnetType: SubnetType.PUBLIC,
         onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones };
+        availabilityZones: placement.availabilityZones,
+        filterOutIpExhausted: placement.filterOutIpExhausted };
     }
 
     return placement;
@@ -557,6 +574,14 @@ function retainOnePerAz(subnets: ISubnet[]): ISubnet[] {
   return subnets.filter(subnet => {
     if (azsSeen.has(subnet.availabilityZone)) { return false; }
     azsSeen.add(subnet.availabilityZone);
+    return true;
+  });
+}
+
+function retainOnlyIpAvailable(subnets: ISubnet[]): ISubnet[] {
+  return subnets.filter(subnet => {
+    if (subnet.availableIpAddressCount! === 0) { return false; } // Be optimistic if no count defined for backwards compat.
+
     return true;
   });
 }

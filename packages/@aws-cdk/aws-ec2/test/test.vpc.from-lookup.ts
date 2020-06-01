@@ -2,7 +2,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
+import { GenericLinuxImage, Instance, InstanceType, ISubnet, SubnetType, Vpc } from '../lib';
 
 export = {
   'Vpc.fromLookup()': {
@@ -99,6 +99,149 @@ export = {
       test.equal(vpc.publicSubnets.length, 2);
       test.equal(vpc.privateSubnets.length, 4);
       test.equal(vpc.isolatedSubnets.length, 0);
+
+      restoreContextProvider(previous);
+      test.done();
+    },
+
+    'populates subnet available ip count info'(test: Test) {
+      const previous = mockVpcContextProviderWith(test, {
+        vpcId: 'vpc-1234',
+        subnetGroups: [
+          {
+            name: 'Public',
+            type: cxapi.VpcSubnetGroupType.PUBLIC,
+            subnets: [
+              {
+                subnetId: 'pub-exh-sub-in-us-east-1a',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rt-123',
+                availableIpAddressCount: 0,
+              },
+              {
+                subnetId: 'pub-sub-in-us-east-1b',
+                availabilityZone: 'us-east-1b',
+                routeTableId: 'rt-123',
+              },
+            ],
+          },
+          {
+            name: 'Private',
+            type: cxapi.VpcSubnetGroupType.PRIVATE,
+            subnets: [
+              {
+                subnetId: 'pri-sub-1-in-us-east-1c',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: 'pri-exh-sub-2-in-us-east-1c',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+                availableIpAddressCount: 0,
+              },
+              {
+                subnetId: 'pri-ip-avail-sub-1-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+                availableIpAddressCount: 10,
+              },
+              {
+                subnetId: 'pri-sub-2-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+              },
+            ],
+          },
+        ],
+      }, options => {
+        test.deepEqual(options.filter, {
+          isDefault: 'true',
+        });
+
+        test.equal(options.subnetGroupNameTag, undefined);
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        isDefault: true,
+      });
+
+      test.deepEqual(vpc.availabilityZones, ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d']);
+      test.equal(vpc.publicSubnets.length, 2);
+      test.equal(vpc.privateSubnets.length, 4);
+      test.equal(vpc.isolatedSubnets.length, 0);
+
+      const filterSubnets = (subnets: ISubnet[], filterExpression: ((x: ISubnet) => boolean)) => subnets.filter(subnet => filterExpression(subnet));
+      const ipExhaustedSubnet = (subnet: ISubnet) => subnet.availableIpAddressCount! === 0;
+      const explicitlyIpAvailableSubnet = (subnet: ISubnet) => subnet.availableIpAddressCount! > 0;
+      const implicitlyIpAvailableSubnet = (subnet: ISubnet) => !ipExhaustedSubnet(subnet) && !explicitlyIpAvailableSubnet(subnet);
+
+      test.strictEqual(filterSubnets(vpc.publicSubnets, ipExhaustedSubnet).length, 1);
+      test.strictEqual(filterSubnets(vpc.publicSubnets, explicitlyIpAvailableSubnet).length, 0);
+      test.strictEqual(filterSubnets(vpc.publicSubnets, implicitlyIpAvailableSubnet).length, 1);
+      test.strictEqual(filterSubnets(vpc.privateSubnets, ipExhaustedSubnet).length, 1);
+      test.strictEqual(filterSubnets(vpc.privateSubnets, explicitlyIpAvailableSubnet).length, 1);
+      test.strictEqual(filterSubnets(vpc.privateSubnets, implicitlyIpAvailableSubnet).length, 2);
+
+      restoreContextProvider(previous);
+      test.done();
+    },
+
+    'filters out IP exhausted subnets'(test: Test) {
+      const exhaustedSubnetId: string = 'pri-exh-sub-2-in-us-east-1c';
+
+      const previous = mockVpcContextProviderWith(test, {
+        vpcId: 'vpc-1234',
+        subnetGroups: [
+          {
+            name: 'Private',
+            type: cxapi.VpcSubnetGroupType.PRIVATE,
+            subnets: [
+              {
+                subnetId: 'pri-sub-1-in-us-east-1c',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+              },
+              {
+                subnetId: exhaustedSubnetId,
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rt-123',
+                availableIpAddressCount: 0,
+              },
+              {
+                subnetId: 'pri-ip-avail-sub-1-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+                availableIpAddressCount: 10,
+              },
+              {
+                subnetId: 'pri-sub-2-in-us-east-1d',
+                availabilityZone: 'us-east-1d',
+                routeTableId: 'rt-123',
+              },
+            ],
+          },
+        ],
+      }, options => {
+        test.deepEqual(options.filter, {
+          isDefault: 'true',
+        });
+
+        test.equal(options.subnetGroupNameTag, undefined);
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        isDefault: true,
+      });
+
+      const { subnetIds } = vpc.selectSubnets({ filterOutIpExhausted: true });
+
+      test.equal(vpc.privateSubnets.length, 4);
+
+      test.equal(subnetIds.length, 3);
+      test.ok(!subnetIds.includes(exhaustedSubnetId));
 
       restoreContextProvider(previous);
       test.done();

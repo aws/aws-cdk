@@ -1079,6 +1079,30 @@ export = {
       test.done();
     },
 
+    'select non-lookup subnets with ip exhaustion filter'(test: Test) {
+      const isExpectedSubnet = (expectedSubnetIds: string[]) => (subnetId: string) => expectedSubnetIds.includes(subnetId);
+
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'VpcNetwork', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {name: 'lb', subnetType: SubnetType.PUBLIC },
+          {name: 'app', subnetType: SubnetType.PRIVATE },
+          {name: 'db', subnetType: SubnetType.PRIVATE },
+        ],
+      });
+      const privateSubnets = vpc.privateSubnets.map(subnet => subnet.subnetId);
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ filterOutIpExhausted: true });
+
+      // THEN
+      test.deepEqual(subnetIds.length, 2);
+      test.ok(subnetIds.every(isExpectedSubnet(privateSubnets)));
+      test.done();
+    },
+
     'select explicitly defined subnets'(test: Test) {
       // GIVEN
       const stack = getTestStack();
