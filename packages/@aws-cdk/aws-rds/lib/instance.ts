@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { CfnDeletionPolicy, Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
@@ -536,9 +536,9 @@ export interface DatabaseInstanceNewProps {
    * The CloudFormation policy to apply when the instance is removed from the
    * stack or replaced during an update.
    *
-   * @default RemovalPolicy.Retain
+   * @default - RemovalPolicy.SNAPSHOT (remove the resource, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Upper limit to which RDS can scale the storage in GiB(Gibibyte).
@@ -886,9 +886,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true,
-    });
+    applyInstanceDeletionPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -984,9 +982,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true,
-    });
+    applyInstanceDeletionPolicy(instance, props.removalPolicy);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1054,9 +1050,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    instance.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true,
-    });
+    applyInstanceDeletionPolicy(instance, props.removalPolicy);
 
     this.setLogRetention();
   }
@@ -1071,4 +1065,15 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
+}
+
+function applyInstanceDeletionPolicy(cfnDbInstance: CfnDBInstance, removalPolicy: RemovalPolicy | undefined): void {
+  if (!removalPolicy) {
+    // the default DeletionPolicy is 'Snapshot', which is fine,
+    // but we should also make it 'Snapshot' for UpdateReplace policy
+    cfnDbInstance.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
+  } else {
+    // just apply whatever removal policy the customer explicitly provided
+    cfnDbInstance.applyRemovalPolicy(removalPolicy);
+  }
 }
