@@ -80,6 +80,30 @@ test('with Windows paths', () => {
   ]));
 });
 
+test('with env vars', () => {
+  const builder = new Builder({
+    entry: '/project/folder/entry.ts',
+    global: 'handler',
+    outDir: '/out-dir',
+    cacheDir: '/cache-dir',
+    nodeDockerTag: 'lts-alpine',
+    nodeVersion: '12',
+    projectRoot: '/project',
+    environment: {
+      KEY1: 'VALUE1',
+      KEY2: 'VALUE2',
+    },
+  });
+  builder.build();
+
+  // docker run
+  expect(spawnSync).toHaveBeenCalledWith('docker', expect.arrayContaining([
+    'run',
+    '--env', 'KEY1=VALUE1',
+    '--env', 'KEY2=VALUE2',
+  ]));
+});
+
 test('throws in case of error', () => {
   const builder = new Builder({
     entry: '/project/folder/error',

@@ -1,5 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { CfnUserPoolDomain, UserPool, UserPoolClient, VerificationEmailStyle } from '../lib';
+import { UserPool, UserPoolClient, VerificationEmailStyle } from '../lib';
 
 /*
  * Stack verification steps:
@@ -41,10 +41,10 @@ const client = new UserPoolClient(stack, 'myuserpoolclient', {
   generateSecret: false,
 });
 
-// replace with L2 once Domain support is available
-new CfnUserPoolDomain(stack, 'myuserpooldomain', {
-  userPoolId: userpool.userPoolId,
-  domain: userpool.node.uniqueId,
+userpool.addDomain('myuserpooldomain', {
+  cognitoDomain: {
+    domainPrefix: 'integ-user-pool-signup-link',
+  },
 });
 
 new CfnOutput(stack, 'user-pool-id', {

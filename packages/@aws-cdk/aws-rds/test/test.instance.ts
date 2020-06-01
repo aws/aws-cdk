@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -105,13 +105,8 @@ export = {
           },
         ],
       },
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
-
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {

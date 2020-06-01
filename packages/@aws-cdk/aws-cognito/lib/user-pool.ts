@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
@@ -526,33 +526,52 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
-   * Create a user pool client.
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
    */
-  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+}
+
+abstract class UserPoolBase extends Resource implements IUserPool {
+  public abstract readonly userPoolId: string;
+  public abstract readonly userPoolArn: string;
+
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
 }
 
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends Resource implements IUserPool {
+export class UserPool extends UserPoolBase {
   /**
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends Resource implements IUserPool {
+    class Import extends UserPoolBase {
       public readonly userPoolId = userPoolId;
       public readonly userPoolArn = Stack.of(this).formatArn({
         service: 'cognito-idp',
         resource: 'userpool',
         resourceName: userPoolId,
       });
-
-      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
-        return new UserPoolClient(this, clientId, {
-          userPool: this,
-          ...options,
-        });
-      }
     }
     return new Import(scope, id);
   }
@@ -667,28 +686,6 @@ export class UserPool extends Resource implements IUserPool {
 
     this.addLambdaPermission(fn, operation.operationName);
     (this.triggers as any)[operation.operationName] = fn.functionArn;
-  }
-
-  /**
-   * Add a new app client to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
-   */
-  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
-    return new UserPoolClient(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Associate a domain to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
-   */
-  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
-    return new UserPoolDomain(this, id, {
-      userPool: this,
-      ...options,
-    });
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
