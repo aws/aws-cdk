@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
