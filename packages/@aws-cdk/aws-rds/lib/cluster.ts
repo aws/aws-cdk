@@ -354,6 +354,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds,
     });
+    if (props.removalPolicy === RemovalPolicy.RETAIN) {
+      subnetGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    }
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
       props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
