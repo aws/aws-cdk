@@ -36,6 +36,13 @@ export interface VpcSubnet {
    * @default - CIDR information not available
    */
   readonly cidr?: string;
+
+  /**
+   * Count of IP addresses still available in the subnet.
+   *
+   * @default - Available IP address count not available
+   */
+  readonly availableIpAddressCount?: number;
 }
 
 /**

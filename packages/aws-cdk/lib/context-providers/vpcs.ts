@@ -88,6 +88,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
         name,
         subnetId: subnet.SubnetId!,
         routeTableId,
+        availableIpAddressCount: subnet.AvailableIpAddressCount!,
       };
     });
 
@@ -232,6 +233,7 @@ function groupAsymmetricSubnets(subnets: Subnet[]): cxapi.VpcSubnetGroup[] {
         cidr: subnet.cidr,
         availabilityZone: subnet.az,
         routeTableId: subnet.routeTableId,
+        availableIpAddressCount: subnet.availableIpAddressCount!,
       })),
     };
   });
@@ -264,6 +266,7 @@ interface Subnet {
   name: string;
   routeTableId: string;
   subnetId: string;
+  availableIpAddressCount: number;
 }
 
 interface SubnetGroup {

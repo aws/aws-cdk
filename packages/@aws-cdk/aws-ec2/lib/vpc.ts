@@ -39,6 +39,11 @@ export interface ISubnet extends IResource {
   readonly routeTable: IRouteTable;
 
   /**
+   * Count of remaining IP addresses in the subnet
+   */
+  readonly availableIpAddressCount?: number;
+
+  /**
    * Associate a Network ACL with this subnet
    *
    * @param acl The Network ACL to associate
@@ -665,6 +670,13 @@ export interface SubnetAttributes {
    * @default - No route table information, cannot create VPC endpoints
    */
   readonly routeTableId?: string;
+
+  /**
+   * Count of remaining available IP addresses in the subnet
+   *
+   * @default - No available ip address count available
+   */
+  readonly availableIpAddressCount?: number;
 }
 
 /**
@@ -1800,6 +1812,7 @@ class LookedUpVpc extends VpcBase {
         availabilityZone: vpcSubnet.availabilityZone,
         subnetId: vpcSubnet.subnetId,
         routeTableId: vpcSubnet.routeTableId,
+        availableIpAddressCount: vpcSubnet.availableIpAddressCount!,
       }));
     }
     return ret;
@@ -1850,6 +1863,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
+  public readonly availableIpAddressCount?: number;
   private readonly _availabilityZone?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
@@ -1869,6 +1883,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!,
     };
+    this.availableIpAddressCount = attrs.availableIpAddressCount!;
   }
 
   public get availabilityZone(): string {
