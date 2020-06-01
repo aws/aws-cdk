@@ -781,11 +781,13 @@
         "Schema": [
           {
             "Name": "name",
-            "Required": true
+            "Required": true,
+            "Mutable": true
           },
           {
             "Name": "email",
-            "Required": true
+            "Required": true,
+            "Mutable": true
           },
           {
             "AttributeDataType": "String",

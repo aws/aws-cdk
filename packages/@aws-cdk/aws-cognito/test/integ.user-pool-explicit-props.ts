@@ -29,6 +29,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
   standardAttributes: {
     fullname: {
       required: true,
+      mutable: true,
     },
     email: {
       required: true,

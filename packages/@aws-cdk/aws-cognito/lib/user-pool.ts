@@ -2,7 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, RequiredAttributes, StandardAttributes } from './user-pool-attr';
+import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
@@ -456,15 +456,6 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @deprecated use {@link standardAttributes}
-   * @default - No required attributes.
-   */
-  readonly requiredAttributes?: RequiredAttributes;
-
-  /**
-   * The set of attributes that are required for every user in the user pool.
-   * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
-   *
    * @default - No standard attributes are required.
    */
   readonly standardAttributes?: StandardAttributes;
@@ -755,24 +746,24 @@ export class UserPool extends UserPoolBase {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.EMAIL); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.PREFERRED_USERNAME); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.EMAIL); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.EMAIL); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.EMAIL); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -857,37 +848,15 @@ export class UserPool extends UserPoolBase {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
     if (props.standardAttributes) {
-      const standardAttributes = props.standardAttributes;
-      const stdAttributes = Object.keys(standardAttributes)
-        .filter(
-          attrName =>
-            !!standardAttributes[attrName as keyof StandardAttributes],
-        ).filter(
-          attrName =>
-            standardAttributes[attrName as keyof StandardAttributes]!.required ||
-            standardAttributes[attrName as keyof StandardAttributes]!.mutable,
-        )
-        .map(attrName => ({
-          name: StandardAttributeMap[attrName as keyof StandardAttributes],
-          ...(standardAttributes[attrName as keyof StandardAttributes] || {}),
+      const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
+        .filter(([, attr]) => !!attr)
+        .map(([attrName, attr]) => ({
+          name: StandardAttributeMap[attrName],
+          mutable: attr.mutable ?? true,
+          required: attr.required ?? false,
         }));
 
       schema.push(...stdAttributes);
-    } else if (props.requiredAttributes) {
-      const requiredAttributes = props.requiredAttributes;
-      const requiredAttrs = Object.keys(requiredAttributes)
-        .filter(
-          attrName =>
-            !!requiredAttributes[attrName as keyof StandardAttributes],
-        )
-        .map(
-          attrName => ({
-            name: StandardAttributeMap[attrName as keyof StandardAttributes],
-            required: true,
-          }),
-        );
-
-      schema.push(...requiredAttrs);
     }
 
     if (props.customAttributes) {
@@ -931,7 +900,7 @@ export class UserPool extends UserPoolBase {
   }
 }
 
-const enum StandardAttribute {
+const enum StandardAttributeNames {
   ADDRESS = 'address',
   BIRTHDATE = 'birthdate',
   EMAIL = 'email',
@@ -951,27 +920,24 @@ const enum StandardAttribute {
   WEBSITE = 'website',
 }
 
-const StandardAttributeMap: Record<
-keyof StandardAttributes,
-StandardAttribute
-> = {
-  address: StandardAttribute.ADDRESS,
-  birthdate: StandardAttribute.BIRTHDATE,
-  email: StandardAttribute.EMAIL,
-  familyName: StandardAttribute.FAMILY_NAME,
-  gender: StandardAttribute.GENDER,
-  givenName: StandardAttribute.GIVEN_NAME,
-  locale: StandardAttribute.LOCALE,
-  middleName: StandardAttribute.MIDDLE_NAME,
-  fullname: StandardAttribute.NAME,
-  nickname: StandardAttribute.NICKNAME,
-  phoneNumber: StandardAttribute.PHONE_NUMBER,
-  profilePicture: StandardAttribute.PICTURE_URL,
-  preferredUsername: StandardAttribute.PREFERRED_USERNAME,
-  profilePage: StandardAttribute.PROFILE_URL,
-  timezone: StandardAttribute.TIMEZONE,
-  lastUpdateTime: StandardAttribute.LAST_UPDATE_TIME,
-  website: StandardAttribute.WEBSITE,
+const StandardAttributeMap: Record<keyof StandardAttributes, StandardAttributeNames> = {
+  address: StandardAttributeNames.ADDRESS,
+  birthdate: StandardAttributeNames.BIRTHDATE,
+  email: StandardAttributeNames.EMAIL,
+  familyName: StandardAttributeNames.FAMILY_NAME,
+  gender: StandardAttributeNames.GENDER,
+  givenName: StandardAttributeNames.GIVEN_NAME,
+  locale: StandardAttributeNames.LOCALE,
+  middleName: StandardAttributeNames.MIDDLE_NAME,
+  fullname: StandardAttributeNames.NAME,
+  nickname: StandardAttributeNames.NICKNAME,
+  phoneNumber: StandardAttributeNames.PHONE_NUMBER,
+  profilePicture: StandardAttributeNames.PICTURE_URL,
+  preferredUsername: StandardAttributeNames.PREFERRED_USERNAME,
+  profilePage: StandardAttributeNames.PROFILE_URL,
+  timezone: StandardAttributeNames.TIMEZONE,
+  lastUpdateTime: StandardAttributeNames.LAST_UPDATE_TIME,
+  website: StandardAttributeNames.WEBSITE,
 };
 
 function undefinedIfNoKeys(struct: object): object | undefined {

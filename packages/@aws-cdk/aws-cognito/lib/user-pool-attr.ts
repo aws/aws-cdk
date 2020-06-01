@@ -1,218 +1,108 @@
 /**
- * The set of standard attributes that can be marked as required.
- *
- * @deprecated use {@link StandardAttributes}
- * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
- */
-export interface RequiredAttributes {
-  /**
-   * Whether the user's postal address is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly address?: boolean;
-
-  /**
-   * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly birthdate?: boolean;
-
-  /**
-   * Whether theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly email?: boolean;
-
-  /**
-   * Whether the surname or last name of the user is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly familyName?: boolean;
-
-  /**
-   * Whether the user's gender is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly gender?: boolean;
-
-  /**
-   * Whether the user's first name or give name is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly givenName?: boolean;
-
-  /**
-   * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly locale?: boolean;
-
-  /**
-   * Whether the user's middle name is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly middleName?: boolean;
-
-  /**
-   * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
-   * @default - Attribute is not required
-   */
-  readonly fullname?: boolean;
-
-  /**
-   * Whether the user's nickname or casual name is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly nickname?: boolean;
-
-  /**
-   * Whether the user's telephone number is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly phoneNumber?: boolean;
-
-  /**
-   * Whether the URL to the user's profile picture is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly profilePicture?: boolean;
-
-  /**
-   * Whether the user's preffered username, different from the immutable user name, is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly preferredUsername?: boolean;
-
-  /**
-   * Whether the URL to the user's profile page is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly profilePage?: boolean;
-
-  /**
-   * Whether the user's time zone is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly timezone?: boolean;
-
-  /**
-   * Whether the time, the user's information was last updated, is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly lastUpdateTime?: boolean;
-
-  /**
-   * Whether the URL to the user's web page or blog is a required attribute.
-   * @default - Attribute is not required
-   */
-  readonly website?: boolean;
-}
-
-/**
  * The set of standard attributes that can be marked as required or mutable.
  *
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
 export interface StandardAttributes {
   /**
-   * Whether the user's postal address is a required attribute.
-   * @default - Attribute is not required
+   * The user's postal address is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly address?: StandardAttribute;
 
   /**
-   * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
-   * @default - Attribute is not required
+   * The user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly birthdate?: StandardAttribute;
 
   /**
-   * Whether the user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
-   * @default - Attribute is not required
+   * Theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly email?: StandardAttribute;
 
   /**
-   * Whether the surname or last name of the user is a required attribute.
-   * @default - Attribute is not required
+   * The surname or last name of the user is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly familyName?: StandardAttribute;
 
   /**
-   * Whether the user's gender is a required attribute.
-   * @default - Attribute is not required
+   * The user's gender is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly gender?: StandardAttribute;
 
   /**
-   * Whether the user's first name or give name is a required attribute.
-   * @default - Attribute is not required
+   * The user's first name or give name is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly givenName?: StandardAttribute;
 
   /**
-   * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
-   * @default - Attribute is not required
+   * The user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly locale?: StandardAttribute;
 
   /**
-   * Whether the user's middle name is a required attribute.
-   * @default - Attribute is not required
+   * The user's middle name is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly middleName?: StandardAttribute;
 
   /**
    * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
-   * @default - Attribute is not required
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly fullname?: StandardAttribute;
 
   /**
-   * Whether the user's nickname or casual name is a required attribute.
-   * @default - Attribute is not required
+   * The user's nickname or casual name is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly nickname?: StandardAttribute;
 
   /**
-   * Whether the user's telephone number is a required attribute.
-   * @default - Attribute is not required
+   * The user's telephone number is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly phoneNumber?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's profile picture is a required attribute.
-   * @default - Attribute is not required
+   * The URL to the user's profile picture is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly profilePicture?: StandardAttribute;
 
   /**
-   * Whether the user's preffered username, different from the immutable user name, is a required attribute.
-   * @default - Attribute is not required
+   * The user's preffered username, different from the immutable user name, is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly preferredUsername?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's profile page is a required attribute.
-   * @default - Attribute is not required
+   * The URL to the user's profile page is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly profilePage?: StandardAttribute;
 
   /**
-   * Whether the user's time zone is a required attribute.
-   * @default - Attribute is not required
+   * The user's time zone is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly timezone?: StandardAttribute;
 
   /**
-   * Whether the time, the user's information was last updated, is a required attribute.
-   * @default - Attribute is not required
+   * The time, the user's information was last updated, is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly lastUpdateTime?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's web page or blog is a required attribute.
-   * @default - Attribute is not required
+   * The URL to the user's web page or blog is a required attribute.
+   * @default - see the defaults under `StandardAttribute`
    */
   readonly website?: StandardAttribute;
 }
@@ -229,7 +119,7 @@ export interface StandardAttribute {
    * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
    * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
    *
-   * @default false
+   * @default true
    */
   readonly mutable?: boolean;
   /**

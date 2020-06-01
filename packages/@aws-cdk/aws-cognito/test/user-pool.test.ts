@@ -484,7 +484,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('required attributes', () => {
+  test('standard attributes default to mutable', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -506,10 +506,12 @@ describe('User Pool', () => {
         {
           Name: 'name',
           Required: true,
+          Mutable: true,
         },
         {
           Name: 'zoneinfo',
           Required: true,
+          Mutable: true,
         },
       ],
     });
@@ -521,6 +523,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
       standardAttributes: {
         fullname: {
           required: true,
@@ -533,8 +536,21 @@ describe('User Pool', () => {
       },
     });
 
+    new UserPool(stack, 'Pool1', {
+      userPoolName: 'Pool1',
+      standardAttributes: {
+        fullname: {
+          mutable: false,
+        },
+        timezone: {
+          mutable: false,
+        },
+      },
+    });
+
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
       Schema: [
         {
           Mutable: true,
@@ -548,34 +564,21 @@ describe('User Pool', () => {
         },
       ],
     });
-  });
 
-  test('schema is absent when standard attributes are specified but not required and not mutable', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'Pool1', {
-      userPoolName: 'Pool1',
-    });
-    new UserPool(stack, 'Pool2', {
-      userPoolName: 'Pool2',
-      standardAttributes: {
-        familyName: {
-          required: false,
-          mutable: false,
-        },
-      },
-    });
-
-    // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      Schema: ABSENT,
-    });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UserPoolName: 'Pool2',
-      Schema: ABSENT,
+      Schema: [
+        {
+          Name: 'name',
+          Required: false,
+          Mutable: false,
+        },
+        {
+          Name: 'zoneinfo',
+          Required: false,
+          Mutable: false,
+        },
+      ],
     });
   });
 
