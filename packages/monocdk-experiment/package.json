@@ -249,7 +249,7 @@
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.0.0",
     "pkglint": "0.0.0",
-    "ts-node": "^8.10.1",
+    "ts-node": "^8.10.2",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
