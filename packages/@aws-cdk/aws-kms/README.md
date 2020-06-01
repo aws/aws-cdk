@@ -55,6 +55,22 @@ Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 
+If a Key has an associated Alias, the Alias can be imported by name and used in place
+of the Key as a reference.
+
+```ts
+const myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/myKeyAlias');
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
+    bucketName: 'myEncryptedBucket',
+    encryption: BucketEncryption.KMS,
+    encryptionKey: myKeyAlias
+});
+```
+
+Note that calls to add policies, grants, or otherwise access the underlying properties of
+the Key on `myKeyAlias` will fail and throw an error; an imported Alias can only be used
+as a reference to the Key for a Construct (as above).
+
 ### Trust Account Identities
 
 KMS keys can be created to trust IAM policies. This is the default behavior in

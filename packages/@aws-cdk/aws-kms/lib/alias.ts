@@ -137,6 +137,22 @@ export class Alias extends AliasBase {
     return new _Alias(scope, id);
   }
 
+  /**
+   * Import an existing KMS Alias defined outside the CDK app, by the alias name. This Alias will not
+   * have a direct reference to the KMS Key, so addAlias and grant* methods are not supported.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
+   */
+  public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    class Import extends AliasBase {
+      public get aliasName() { return aliasName; }
+      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().'); }
+    }
+    return new Import(scope, id);
+  }
+
   public readonly aliasName: string;
   public readonly aliasTargetKey: IKey;
 
