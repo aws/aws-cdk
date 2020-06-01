@@ -54,6 +54,21 @@ test('NodejsFunction with .js handler', () => {
   }));
 });
 
+test('NodejsFunction with container env vars', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    containerEnvironment: {
+      KEY: 'VALUE',
+    },
+  });
+
+  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+    environment: {
+      KEY: 'VALUE',
+    },
+  }));
+});
+
 test('throws when entry is not js/ts', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'handler.py',

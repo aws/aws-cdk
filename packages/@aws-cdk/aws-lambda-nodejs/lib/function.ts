@@ -84,6 +84,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the closest path containing a .git folder
    */
   readonly projectRoot?: string;
+
+  /**
+   * The environment variables to pass to the container running Parcel.
+   *
+   * @default - no environment variables are passed to the container
+   */
+  readonly containerEnvironment?: { [key: string]: string; };
 }
 
 /**
@@ -119,6 +126,7 @@ export class NodejsFunction extends lambda.Function {
       nodeVersion: extractVersion(runtime),
       nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
       projectRoot: path.resolve(projectRoot),
+      environment: props.containerEnvironment,
     });
     builder.build();
 
