@@ -71,8 +71,16 @@ export interface CommonAutoScalingGroupProps {
    * SNS topic to send notifications about fleet changes
    *
    * @default - No fleet change notifications will be sent.
+   * @deprecated use `notifications`
    */
   readonly notificationsTopic?: sns.ITopic;
+
+  /**
+   * Configure autoscaling group to send notifications about fleet changes to an SNS topic(s)
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-notificationconfigurations
+   * @default - No fleet change notifications will be sent.
+   */
+  readonly notifications?: NotificationConfiguration[];
 
   /**
    * Whether the instances can initiate connections to anywhere by default
@@ -435,6 +443,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
+  private readonly notifications: NotificationConfiguration[] = [];
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
@@ -513,6 +522,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
 
+    if (props.notificationsTopic && props.notifications) {
+      throw new Error('Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+    }
+
+    if (props.notificationsTopic) {
+      this.notifications = [{
+        notificationsTopic: props.notificationsTopic,
+      }];
+    }
+
+    if (props.notifications) {
+      this.notifications = props.notifications.map(nc => ({
+        notificationsTopic: nc.notificationsTopic,
+        notificationTypes: nc.notificationTypes ?? NotificationTypes.ALL,
+      }));
+    }
+
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
@@ -522,17 +548,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
-      notificationConfigurations: !props.notificationsTopic ? undefined : [
-        {
-          topicArn: props.notificationsTopic.topicArn,
-          notificationTypes: [
-            'autoscaling:EC2_INSTANCE_LAUNCH',
-            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
-            'autoscaling:EC2_INSTANCE_TERMINATE',
-            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
-          ],
-        },
-      ],
+      notificationConfigurations: this.renderNotificationConfiguration(),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
@@ -667,6 +683,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
   }
+
+  private renderNotificationConfiguration(): CfnAutoScalingGroup.NotificationConfigurationProperty[] | undefined {
+    if (this.notifications.length === 0) {
+      return undefined;
+    }
+
+    return this.notifications.map(notification => ({
+      topicArn: notification.notificationsTopic.topicArn,
+      notificationTypes: notification.notificationTypes ? notification.notificationTypes._types : NotificationTypes.ALL._types,
+    }));
+  }
 }
 
 /**
@@ -691,6 +718,52 @@ export enum UpdateType {
   ROLLING_UPDATE = 'RollingUpdate',
 }
 
+/**
+ * AutoScalingGroup fleet change notifcations configurations.
+ * You can configure AutoScaling to send an SNS notification whenever your Auto Scaling group scales.
+ */
+export interface NotificationConfiguration {
+  /**
+   * SNS topic to send notifications about fleet scaling events
+   */
+  readonly notificationsTopic: sns.ITopic;
+
+  /**
+   * Which fleet scaling events triggers a notification
+   * @default all
+   */
+  readonly notificationTypes?: NotificationTypes;
+}
+
+/**
+ * Fleet scaling event notification type
+ */
+export enum NotificationType {
+  /**
+   * Notify when an instance was launced
+   */
+  INSTANCE_LAUNCH = 'autoscaling:EC2_INSTANCE_LAUNCH',
+
+  /**
+   * Notify when an instance was terminated
+   */
+  INSTANCE_TERMINATE = 'autoscaling:EC2_INSTANCE_TERMINATE',
+
+  /**
+   * Notify when an instance failed to terminate
+   */
+  INSTANCE_TERMINATE_ERROR = 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+
+  /**
+   * Notify when an instance failed to launch
+   */
+  INSTANCE_LAUNCH_ERROR =  'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+
+  /**
+   * Send a test notification to the topic
+   */
+  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION'
+}
 /**
  * Additional settings when a rolling update is selected
  */
@@ -764,6 +837,39 @@ export interface RollingUpdateConfiguration {
    * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
    */
   readonly suspendProcesses?: ScalingProcess[];
+}
+
+/**
+ * A group of notificationTypes, you can use one of the predefined groups, such as NotificationTypes.ERRORS
+ * or create a custome group by instantiating a `NotificationTypes` object, e.g: `new NotificationTypes(`NotificationType.INSTANCE_LAUNCH`)`.
+ */
+export class NotificationTypes {
+  /**
+   * Fleet scaling erros
+   */
+  public static readonly ERRORS = new NotificationTypes(NotificationType.INSTANCE_LAUNCH_ERROR, NotificationType.INSTANCE_TERMINATE_ERROR);
+
+  /**
+   * All fleet scaling events
+   */
+  public static readonly ALL = new NotificationTypes(NotificationType.INSTANCE_LAUNCH,
+    NotificationType.INSTANCE_LAUNCH_ERROR,
+    NotificationType.INSTANCE_TERMINATE,
+    NotificationType.INSTANCE_TERMINATE_ERROR);
+
+  /**
+   * Fleet scaling launch events
+   */
+  public static readonly LAUNCH_EVENTS = new NotificationTypes(NotificationType.INSTANCE_LAUNCH, NotificationType.INSTANCE_LAUNCH_ERROR);
+
+  /**
+   * @internal
+   */
+  public readonly _types: NotificationType[];
+
+  constructor(...types: NotificationType[]) {
+    this._types = types;
+  }
 }
 
 export enum ScalingProcess {

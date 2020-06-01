@@ -2,6 +2,7 @@ import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, Reso
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -1026,6 +1027,144 @@ export = {
     test.done();
   },
 
+  'throw if notification and notificationsTopics are both configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        notificationsTopic: topic,
+        notifications: [{
+          notificationsTopic: topic,
+        }],
+      });
+    }, 'Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+    test.done();
+  },
+
+  'allow configuring notifications'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      notifications: [
+        {
+          notificationsTopic: topic,
+          notificationTypes: autoscaling.NotificationTypes.ERRORS,
+        },
+        {
+          notificationsTopic: topic,
+          notificationTypes: new autoscaling.NotificationTypes(autoscaling.NotificationType.INSTANCE_TERMINATE),
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      NotificationConfigurations : [
+        {
+          TopicARN : { Ref : 'MyTopic86869434' },
+          NotificationTypes : [
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+          ],
+        },
+        {
+          TopicARN : { Ref : 'MyTopic86869434' },
+          NotificationTypes : [
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+          ],
+        },
+      ]},
+    ));
+
+    test.done();
+  },
+
+  'notificationTypes default includes all non test NotificationType'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      notifications: [
+        {
+          notificationsTopic: topic,
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      NotificationConfigurations : [
+        {
+          TopicARN : { Ref : 'MyTopic86869434' },
+          NotificationTypes : [
+            'autoscaling:EC2_INSTANCE_LAUNCH',
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+          ],
+        },
+      ]},
+    ));
+
+    test.done();
+  },
+
+  'setting notificationTopic configures all non test NotificationType'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      notificationsTopic: topic,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      NotificationConfigurations : [
+        {
+          TopicARN : { Ref : 'MyTopic86869434' },
+          NotificationTypes : [
+            'autoscaling:EC2_INSTANCE_LAUNCH',
+            'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+            'autoscaling:EC2_INSTANCE_TERMINATE',
+            'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+          ],
+        },
+      ]},
+    ));
+
+    test.done();
+  },
+
+  'NotificationTypes.ALL includes all non test NotificationType'(test: Test) {
+    test.deepEqual(Object.values(autoscaling.NotificationType).length - 1, autoscaling.NotificationTypes.ALL._types.length);
+    test.done();
+  },
 };
 
 function mockVpc(stack: cdk.Stack) {
