@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/core';
 import { QueueProps } from './index';
 
 export function validateProps(props: QueueProps) {
@@ -10,7 +11,7 @@ export function validateProps(props: QueueProps) {
 }
 
 function validateRange(label: string, value: number | undefined, minValue: number, maxValue: number, unit?: string) {
-  if (value === undefined) { return; }
+  if (value === undefined || Token.isUnresolved(value)) { return; }
   const unitSuffix = unit ? ` ${unit}` : '';
   if (value < minValue) { throw new Error(`${label} must be ${minValue}${unitSuffix} or more, but ${value} was provided`); }
   if (value > maxValue) { throw new Error(`${label} must be ${maxValue}${unitSuffix} of less, but ${value} was provided`); }
