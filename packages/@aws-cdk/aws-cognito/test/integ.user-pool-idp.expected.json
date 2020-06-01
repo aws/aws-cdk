@@ -84,10 +84,10 @@
           "https://example.com"
         ],
         "SupportedIdentityProviders": [
-          "COGNITO",
           {
             "Ref": "amazon2D32744A"
-          }
+          },
+          "COGNITO"
         ]
       }
     },

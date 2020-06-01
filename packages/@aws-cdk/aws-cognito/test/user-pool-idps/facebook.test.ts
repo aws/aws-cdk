@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolIdentityProvider } from '../../lib';
+import { UserPool, UserPoolIdentityProviderFacebook } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('facebook', () => {
@@ -10,7 +10,7 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'userpool');
 
       // WHEN
-      UserPoolIdentityProvider.facebook(stack, 'userpoolidp', {
+      new UserPoolIdentityProviderFacebook(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'fb-client-id',
         clientSecret: 'fb-client-secret',
@@ -33,7 +33,7 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'userpool');
 
       // WHEN
-      UserPoolIdentityProvider.facebook(stack, 'userpoolidp', {
+      new UserPoolIdentityProviderFacebook(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'fb-client-id',
         clientSecret: 'fb-client-secret',
@@ -51,6 +51,22 @@ describe('UserPoolIdentityProvider', () => {
           api_version: 'version1',
         },
       });
+    });
+
+    test('registered with user pool', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      const provider = new UserPoolIdentityProviderFacebook(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'fb-client-id',
+        clientSecret: 'fb-client-secret',
+      });
+
+      // THEN
+      expect(pool.identityProviders).toContain(provider);
     });
   });
 });

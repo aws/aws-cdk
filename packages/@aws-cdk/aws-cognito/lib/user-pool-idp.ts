@@ -1,4 +1,4 @@
-import { Construct, IResource } from '@aws-cdk/core';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import {
   UserPoolIdentityProviderAmazon,
   UserPoolIdentityProviderAmazonProps,
@@ -18,23 +18,33 @@ export interface IUserPoolIdentityProvider extends IResource {
 }
 
 /**
- * Options to integrate with the various social identity providers.
+ * User pool third-party identity providers
  */
 export class UserPoolIdentityProvider {
+
   /**
-   * Federate with 'Facebook Login'
-   * @see https://developers.facebook.com/docs/facebook-login/
+   * Import an existing UserPoolIdentityProvider
    */
-  public static facebook(scope: Construct, id: string, options: UserPoolIdentityProviderFacebookProps) {
-    return new UserPoolIdentityProviderFacebook(scope, id, options);
+  public static fromProviderName(scope: Construct, id: string, providerName: string): IUserPoolIdentityProvider {
+    class Import extends Resource implements IUserPoolIdentityProvider {
+      public readonly providerName: string = providerName;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
-   * Federate with 'Login with Amazon'
-   * @see https://developer.amazon.com/apps-and-games/login-with-amazon
+   * Federate login with 'Login with Amazon'
    */
-  public static amazon(scope: Construct, id: string, options: UserPoolIdentityProviderAmazonProps) {
-    return new UserPoolIdentityProviderAmazon(scope, id, options);
+  public static amazon(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
+    return new UserPoolIdentityProviderAmazon(scope, id, props);
+  }
+
+  /**
+   * Federate login with 'Facebook Login'
+   */
+  public static facebook(scope: Construct, id: string, props: UserPoolIdentityProviderFacebookProps) {
+    return new UserPoolIdentityProviderFacebook(scope, id, props);
   }
 
   private constructor() {}

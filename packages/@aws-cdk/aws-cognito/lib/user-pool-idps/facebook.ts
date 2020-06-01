@@ -1,17 +1,11 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
-import { IUserPool } from '../user-pool';
-import { IUserPoolIdentityProvider } from '../user-pool-idp';
+import { UserPoolIdentityProviderBase, UserPoolIdentityProviderProps } from './base';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider
  */
-export interface UserPoolIdentityProviderFacebookProps {
-  /**
-   * The user pool to which this construct provides identities.
-   */
-  readonly userPool: IUserPool;
-
+export interface UserPoolIdentityProviderFacebookProps extends UserPoolIdentityProviderProps {
   /**
    * The client id recognized by Facebook APIs.
    */
@@ -38,11 +32,11 @@ export interface UserPoolIdentityProviderFacebookProps {
  * Represents a identity provider that integrates with 'Facebook Login'
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-export class UserPoolIdentityProviderFacebook extends Resource implements IUserPoolIdentityProvider {
+export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBase {
   public readonly providerName: string;
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderFacebookProps) {
-    super(scope, id);
+    super(scope, id, props);
 
     const scopes = props.scopes ?? [ 'public_profile' ];
 

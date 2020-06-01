@@ -1,7 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * Types of authentication flow
@@ -147,6 +146,27 @@ export class OAuthScope {
 }
 
 /**
+ * Identity providers supported by the UserPoolClient
+ */
+export interface SupportedIdentityProviders {
+  /**
+   * Whether users can sign in directly as a user of the User Pool.
+   * @default true
+   */
+  readonly cognito?: boolean;
+  /**
+   * Whether users can sign in using 'Facebook Login'.
+   * @default false
+   */
+  readonly facebook?: boolean;
+  /**
+   * Whether users can sign in using 'Login With Amazon'.
+   * @default false
+   */
+  readonly amazon?: boolean;
+}
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -185,18 +205,13 @@ export interface UserPoolClientOptions {
   readonly preventUserExistenceErrors?: boolean;
 
   /**
-   * Whether users registered in the user pool should be able to sign in using this client.
-   * If this is set to `true` and `identityProviders` are set, the client will only allow sign in via
-   * third-party identity providers.
-   * @default true
+   * The list of identity providers that users should be able to use to sign in using this client.
+   *
+   * @default - supports all identity providers that are registered with the user pool. If the user pool and/or
+   * identity providers are imported, either specify this option explicitly or ensure that the identity providers are
+   * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
    */
-  readonly allowUserPoolIdentities?: boolean;
-
-  /**
-   * The list of federated identity providers that users should be able to use to sign in using this client.
-   * @default - no identity providers
-   */
-  readonly identityProviders?: IUserPoolIdentityProvider[];
+  readonly supportedIdentityProviders?: SupportedIdentityProviders;
 }
 
 /**
@@ -343,14 +358,19 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureIdentityProviders(props: UserPoolClientProps): string[] | undefined {
-    const providers: Set<string> = new Set();
-    if (props.allowUserPoolIdentities === undefined || props.allowUserPoolIdentities === true) {
-      providers.add('COGNITO');
+    let providers: string[];
+    if (!props.supportedIdentityProviders) {
+      const providerSet = new Set(props.userPool.identityProviders.map((p) => p.providerName));
+      providerSet.add('COGNITO');
+      providers = Array.from(providerSet);
+    } else {
+      providers = [];
+      const idps = props.supportedIdentityProviders;
+      if (idps.cognito === undefined || idps.cognito === true) { providers.push('COGNITO'); }
+      if (idps.facebook) { providers.push('Facebook'); }
+      if (idps.amazon) { providers.push('LoginWithAmazon'); }
     }
-    if (props.identityProviders) {
-      props.identityProviders.forEach((p) => providers.add(p.providerName));
-    }
-    if (providers.size === 0) { return undefined; }
+    if (providers.length === 0) { return undefined; }
     return Array.from(providers);
   }
 }

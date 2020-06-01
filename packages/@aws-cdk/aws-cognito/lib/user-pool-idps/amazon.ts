@@ -1,17 +1,11 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
-import { IUserPool } from '../user-pool';
-import { IUserPoolIdentityProvider } from '../user-pool-idp';
+import { UserPoolIdentityProviderBase, UserPoolIdentityProviderProps } from './base';
 
 /**
  * Properties to initialize UserPoolAmazonIdentityProvider
  */
-export interface UserPoolIdentityProviderAmazonProps {
-  /**
-   * The user pool to which this construct provides identities.
-   */
-  readonly userPool: IUserPool;
-
+export interface UserPoolIdentityProviderAmazonProps extends UserPoolIdentityProviderProps {
   /**
    * The client id recognized by 'Login with Amazon' APIs.
    * @see https://developer.amazon.com/docs/login-with-amazon/security-profile.html#client-identifier
@@ -34,11 +28,11 @@ export interface UserPoolIdentityProviderAmazonProps {
  * Represents a identity provider that integrates with 'Login with Amazon'
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
-export class UserPoolIdentityProviderAmazon extends Resource implements IUserPoolIdentityProvider {
+export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase {
   public readonly providerName: string;
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
-    super(scope, id);
+    super(scope, id, props);
 
     const scopes = props.scopes ?? [ 'profile' ];
 
