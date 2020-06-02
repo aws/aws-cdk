@@ -39,6 +39,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
+  neverRequireApproval?: boolean;
 }
 
 export function log(x: string) {
@@ -48,8 +49,10 @@ export function log(x: string) {
 export async function cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
   stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
+  const neverRequireApproval = options.neverRequireApproval ?? true;
+
   return await cdk(['deploy',
-    '--require-approval=never', // We never want a prompt in an unattended test
+    ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
     ...(options.options ?? []),
     ...fullStackName(stackNames)], options);
 }
