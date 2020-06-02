@@ -386,6 +386,20 @@ A convenience method for mapping a role to the `system:masters` group is also av
 cluster.awsAuth.addMastersRole(role)
 ```
 
+### Cluster Security Group
+
+When you create an Amazon EKS cluster, a
+[cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
+is automatically created as well. This security group is designed to allow
+all traffic from the control plane and managed node groups to flow freely
+between each other.
+
+The ID for that security group can be retrieved after creating the cluster.
+
+```ts
+const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
+```
+
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
