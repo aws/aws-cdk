@@ -10,8 +10,8 @@ export interface IListener {
 }
 
 export interface ListenerProps {
-  readonly accelerator?: IAccelerator;
-  readonly portRanges?: PortRange[];
+  readonly accelerator: IAccelerator;
+  readonly portRanges: PortRange[];
   readonly protocol?: AcceleratorProtocol;
   readonly clientAffinity?: ClientAffinity;
 }
@@ -40,7 +40,10 @@ export class Listener extends cdk.Resource implements IListener {
 
     const resource = new ga.CfnListener(this, 'Resource', {
       acceleratorArn: props.accelerator.acceleratorArn,
-      portRanges: props.portRanges,
+      portRanges: props.portRanges.map(m => ({
+        fromPort: m.fromPort,
+        toPort: m.toPort
+      })),
       protocol: props.protocol ?? AcceleratorProtocol.TCP,
       clientAffinity: props.clientAffinity ?? ClientAffinity.NONE,
     });

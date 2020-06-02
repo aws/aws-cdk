@@ -23,7 +23,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   public readonly acceleratorArn: string;
   public readonly dnsName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AcceleratorProps) {
+  constructor(scope: cdk.Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
 
     const resource = new ga.CfnAccelerator(this, 'Resource', {
