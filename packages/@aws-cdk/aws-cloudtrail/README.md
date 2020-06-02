@@ -51,7 +51,9 @@ const trail = new cloudtrail.Trail(this, 'CloudTrail', {
 ```
 
 This creates the same setup as above - but also logs events to a created CloudWatch Log stream.
-By default, the created log group has a retention period of 365 Days, but this is also configurable.
+By default, the created log group has a retention period of 365 Days, but this is also configurable
+via the `cloudWatchLogsRetention` property. If you would like to specify the log group explicitly,
+use the `cloudwatchLogGroup` property.
 
 For using CloudTrail event selector to log specific S3 events,
 you can use the `CloudTrailProps` configuration object.
@@ -64,13 +66,12 @@ const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
 // Adds an event selector to the bucket magic-bucket.
 // By default, this includes management events and all operations (Read + Write)
-trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]);
+trail.logAllS3DataEvents();
 
-// Adds an event selector to the bucket foo, with a specific configuration
-trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
-  includeManagementEvents: false,
-  readWriteType: ReadWriteType.ALL,
-});
+// Adds an event selector to the bucket foo
+trail.addS3EventSelector([{
+  bucket: fooBucket // 'fooBucket' is of type s3.IBucket
+}]);
 ```
 
 For using CloudTrail event selector to log events about Lambda
@@ -88,7 +89,7 @@ const lambdaFunction = new lambda.Function(stack, 'AnAmazingFunction', {
 });
 
 // Add an event selector to log data events for all functions in the account.
-trail.addLambdaEventSelector(["arn:aws:lambda"]);
+trail.logAllLambdaDataEvents();
 
 // Add an event selector to log data events for the provided Lambda functions.
 trail.addLambdaEventSelector([lambdaFunction.functionArn]);

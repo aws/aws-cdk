@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.42.1](https://github.com/aws/aws-cdk/compare/v1.42.0...v1.42.1) (2020-06-01)
+
+
+### Bug Fixes
+
+* **lambda:** `SingletonFunction.grantInvoke()` API fails with error 'No child with id' ([#8296](https://github.com/aws/aws-cdk/issues/8296)) ([b4e264c](https://github.com/aws/aws-cdk/commit/b4e264c024bc58053412be1343bed6458628f7cb)), closes [#8240](https://github.com/aws/aws-cdk/issues/8240)
+
+## [1.42.0](https://github.com/aws/aws-cdk/compare/v1.41.0...v1.42.0) (2020-05-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cloudtrail:** API signatures of `addS3EventSelectors` and
+`addLambdaEventSelectors` have changed. Their parameters are now
+strongly typed to accept `IBucket` and `IFunction` respectively.
+* **cloudtrail:** `addS3EventSelectors` and `addLambdaEventSelectors`
+can no longer be used to configure all S3 data events or all Lambda data
+events. Two new APIs `logAllS3DataEvents()` and
+`logAllLambdaDataEvents()` have been introduced to achieve this.
+* **cloudtrail:** The property `snsTopic` is now of the type `ITopic`.
+
+### Features
+
+* **cfnspec:** cloudformation spec v14.4.0 ([#8195](https://github.com/aws/aws-cdk/issues/8195)) ([99e7330](https://github.com/aws/aws-cdk/commit/99e7330fc5fc140964c47d8c6dbaee2b46b382e1))
+* **cloudtrail:** create cloudwatch event without needing to create a Trail ([#8076](https://github.com/aws/aws-cdk/issues/8076)) ([0567a23](https://github.com/aws/aws-cdk/commit/0567a2360ac713e3171c9a82767611174dadb6c6)), closes [#6716](https://github.com/aws/aws-cdk/issues/6716)
+* **cloudtrail:** user specified log group ([#8079](https://github.com/aws/aws-cdk/issues/8079)) ([0a3785b](https://github.com/aws/aws-cdk/commit/0a3785b7626633fcbdf26ab793c70f2bc017314b)), closes [#6162](https://github.com/aws/aws-cdk/issues/6162)
+* **codeguruprofiler:** ProfilingGroup ([#7895](https://github.com/aws/aws-cdk/issues/7895)) ([995088a](https://github.com/aws/aws-cdk/commit/995088abb00d9c75adbb65845998a8328bb5ba14))
+* **codepipeline:** use a special bootstrapless synthesizer for cross-region support Stacks ([#8091](https://github.com/aws/aws-cdk/issues/8091)) ([575f1db](https://github.com/aws/aws-cdk/commit/575f1db0474327c61c4ac626608c9f443ce231d2)), closes [#8082](https://github.com/aws/aws-cdk/issues/8082)
+* **cognito:** user pool - case sensitivity for sign in ([460394f](https://github.com/aws/aws-cdk/commit/460394f3dc4737cee80504d6c8ef106ecc3b67d5)), closes [#7988](https://github.com/aws/aws-cdk/issues/7988) [#7235](https://github.com/aws/aws-cdk/issues/7235)
+* **core:** CfnJson enables intrinsics in hash keys ([#8099](https://github.com/aws/aws-cdk/issues/8099)) ([195cd40](https://github.com/aws/aws-cdk/commit/195cd405d9f0869875de2ec78661aee3af2c7c7d)), closes [#8084](https://github.com/aws/aws-cdk/issues/8084)
+* **eks:** improve security using IRSA conditions ([#8084](https://github.com/aws/aws-cdk/issues/8084)) ([35a01a0](https://github.com/aws/aws-cdk/commit/35a01a079af40da291007da08af6690c9a81c101))
+* **elbv2:** Supports new types of listener rule conditions ([#7848](https://github.com/aws/aws-cdk/issues/7848)) ([3d30ffa](https://github.com/aws/aws-cdk/commit/3d30ffa38c51ae26686287e993af445ea3067766)), closes [#3888](https://github.com/aws/aws-cdk/issues/3888)
+* **secretsmanager:** adds grantWrite to Secret ([#7858](https://github.com/aws/aws-cdk/issues/7858)) ([3fed84b](https://github.com/aws/aws-cdk/commit/3fed84ba9eec3f53c662966e366aa629209b7bf5))
+* **sns:** add support for subscription DLQ in SNS ([383cdb8](https://github.com/aws/aws-cdk/commit/383cdb86effeafdf5d0767ed379b16b3d78a933b))
+* **stepfunctions:** new service integration classes for Lambda, SNS, and SQS ([#7946](https://github.com/aws/aws-cdk/issues/7946)) ([c038848](https://github.com/aws/aws-cdk/commit/c0388483524832ca7863de4ee9c472b8ab39de8e)), closes [#6715](https://github.com/aws/aws-cdk/issues/6715) [#6489](https://github.com/aws/aws-cdk/issues/6489)
+* **stepfunctions:** support paths in Pass state ([#8070](https://github.com/aws/aws-cdk/issues/8070)) ([86eac6a](https://github.com/aws/aws-cdk/commit/86eac6af074bf78a921c52d613eca0dd4a514a49)), closes [#7181](https://github.com/aws/aws-cdk/issues/7181)
+* **stepfunctions-tasks:** task for starting a job run in AWS Glue ([#8143](https://github.com/aws/aws-cdk/issues/8143)) ([a721e67](https://github.com/aws/aws-cdk/commit/a721e670cdc9888cd67ef1a24021004e18bfd23c))
+
+
+### Bug Fixes
+
+* **apigateway:** contextAccountId in AccessLogField incorrectly resolves to requestId ([7b89e80](https://github.com/aws/aws-cdk/commit/7b89e805c716fa73d41cc97fcb728634e7a59136)), closes [#7952](https://github.com/aws/aws-cdk/issues/7952) [#7951](https://github.com/aws/aws-cdk/issues/7951)
+* **autoscaling:** add noDevice as a volume type ([#7253](https://github.com/aws/aws-cdk/issues/7253)) ([751958b](https://github.com/aws/aws-cdk/commit/751958b69225fdfc52622781c618f5a77f881fb6)), closes [#7242](https://github.com/aws/aws-cdk/issues/7242)
+* **aws-eks:** kubectlEnabled: false conflicts with addNodegroup ([#8119](https://github.com/aws/aws-cdk/issues/8119)) ([8610889](https://github.com/aws/aws-cdk/commit/86108890a51443dc06ec6325038c7b19cbdaee76)), closes [#7993](https://github.com/aws/aws-cdk/issues/7993)
+* **cli:** paper cuts ([#8164](https://github.com/aws/aws-cdk/issues/8164)) ([af2ea60](https://github.com/aws/aws-cdk/commit/af2ea60e7ae4aaab17ddd10a9142e1809b4c8246))
+* **dynamodb:** the maximum number of nonKeyAttributes is 100, not 20 ([#8186](https://github.com/aws/aws-cdk/issues/8186)) ([0393528](https://github.com/aws/aws-cdk/commit/03935280f1addef392c9b4460737cce8bb2eb8c9)), closes [#8095](https://github.com/aws/aws-cdk/issues/8095)
+* **eks:** unable to add multiple service accounts ([#8122](https://github.com/aws/aws-cdk/issues/8122)) ([524440c](https://github.com/aws/aws-cdk/commit/524440c5454d15276c92581a08d4ee7cad1790eb))
+* **events:** cannot use the same target account for 2 cross-account event sources ([#8068](https://github.com/aws/aws-cdk/issues/8068)) ([395c07c](https://github.com/aws/aws-cdk/commit/395c07c0cac7739743fc71d71fddd8880b608ead)), closes [#8010](https://github.com/aws/aws-cdk/issues/8010)
+* **lambda-nodejs:** build fails on Windows ([#8140](https://github.com/aws/aws-cdk/issues/8140)) ([04490b1](https://github.com/aws/aws-cdk/commit/04490b134a05ec34523541a3ca282ba8957a7964)), closes [#8107](https://github.com/aws/aws-cdk/issues/8107)
+* **cloudtrail:** better typed event selector apis ([#8097](https://github.com/aws/aws-cdk/issues/8097)) ([0028778](https://github.com/aws/aws-cdk/commit/0028778c0f00f2faa8dad25345cd17f311fad5da))
+
+## [1.41.0](https://github.com/aws/aws-cdk/compare/v1.40.0...v1.41.0) (2020-05-21)
+
+
+### Features
+
+* **cloudtrail:** create cloudwatch event without needing to create a Trail ([#8076](https://github.com/aws/aws-cdk/issues/8076)) ([0567a23](https://github.com/aws/aws-cdk/commit/0567a2360ac713e3171c9a82767611174dadb6c6)), closes [#6716](https://github.com/aws/aws-cdk/issues/6716)
+* **cognito:** user pool - case sensitivity for sign in ([460394f](https://github.com/aws/aws-cdk/commit/460394f3dc4737cee80504d6c8ef106ecc3b67d5)), closes [#7988](https://github.com/aws/aws-cdk/issues/7988) [#7235](https://github.com/aws/aws-cdk/issues/7235)
+* **core:** CfnJson enables intrinsics in hash keys ([#8099](https://github.com/aws/aws-cdk/issues/8099)) ([195cd40](https://github.com/aws/aws-cdk/commit/195cd405d9f0869875de2ec78661aee3af2c7c7d)), closes [#8084](https://github.com/aws/aws-cdk/issues/8084)
+* **secretsmanager:** adds grantWrite to Secret ([#7858](https://github.com/aws/aws-cdk/issues/7858)) ([3fed84b](https://github.com/aws/aws-cdk/commit/3fed84ba9eec3f53c662966e366aa629209b7bf5))
+* **sns:** add support for subscription DLQ in SNS ([383cdb8](https://github.com/aws/aws-cdk/commit/383cdb86effeafdf5d0767ed379b16b3d78a933b))
+* **stepfunctions:** new service integration classes for Lambda, SNS, and SQS ([#7946](https://github.com/aws/aws-cdk/issues/7946)) ([c038848](https://github.com/aws/aws-cdk/commit/c0388483524832ca7863de4ee9c472b8ab39de8e)), closes [#6715](https://github.com/aws/aws-cdk/issues/6715) [#6489](https://github.com/aws/aws-cdk/issues/6489)
+
+
+### Bug Fixes
+
+* **apigateway:** contextAccountId in AccessLogField incorrectly resolves to requestId ([7b89e80](https://github.com/aws/aws-cdk/commit/7b89e805c716fa73d41cc97fcb728634e7a59136)), closes [#7952](https://github.com/aws/aws-cdk/issues/7952) [#7951](https://github.com/aws/aws-cdk/issues/7951)
+* **autoscaling:** add noDevice as a volume type ([#7253](https://github.com/aws/aws-cdk/issues/7253)) ([751958b](https://github.com/aws/aws-cdk/commit/751958b69225fdfc52622781c618f5a77f881fb6)), closes [#7242](https://github.com/aws/aws-cdk/issues/7242)
+
 ## [1.40.0](https://github.com/aws/aws-cdk/compare/v1.39.0...v1.40.0) (2020-05-20)
 
 
