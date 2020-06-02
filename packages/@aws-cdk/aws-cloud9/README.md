@@ -51,20 +51,15 @@ new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
 
 ### Cloning Repositories
 
-Specify `repositories` to clone AWS Codecommit repositories into the environment:
+Use `clonedRepositories` to clone AWS Codecommit repositories into the environment:
 
 ```ts
-const repo = new codecommit.Repository(this, 'Repo', {
-  repositoryName: 'foo',
-});
+  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
 
-const c9env = new cloud9.Ec2Environment(this, 'C9Env', {
-  vpc,
-  clonedRepositories: [
-    {
-      url: repo.repositoryCloneUrlHttp,
-      clonePath: '/foo',
-    },
-  ],
-});
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    clonedRepositories: [
+      cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
+    ],
+  });
 ```
