@@ -17,8 +17,8 @@ export class GlobalAcceleratorStack extends cdk.Stack {
         {
           fromPort: 80,
           toPort: 80,
-        }
-      ]
+        },
+      ],
     });
 
     const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc });
@@ -34,7 +34,7 @@ export class GlobalAcceleratorStack extends cdk.Stack {
       weight: 128,
     } );
 
-    new cdk.CfnOutput(this, 'GroupArn', { value: endpointGroup.EndpointGroupArn } );
+    new cdk.CfnOutput(this, 'GroupArn', { value: endpointGroup.endpointGroupArn } );
 
   }
 }

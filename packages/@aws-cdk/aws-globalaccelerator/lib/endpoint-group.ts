@@ -5,18 +5,18 @@ import { IListener } from './listener';
 /**
  * The interface of the EndpointGroup
  */
-export interface IEndpointGroup {
+export interface IEndpointGroup extends cdk.IResource {
   /**
    * EndpointGroup ARN
    * @attribute
    */
-  readonly EndpointGroupArn: string;
+  readonly endpointGroupArn: string;
 }
 
 /**
  * Opitons to add Endpoint
  */
-export interface EndpointConfigurationOptions {
+export interface EndpointConfigurationProps {
   /**
    * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint
    *
@@ -57,11 +57,22 @@ export interface LoadBalancer {
  */
 export interface LoadBalancerOptions {
   /**
-   * whether client IP address preservation is enabled
+   * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint.
+   * If the value is set to true, the client's IP address is preserved in the `X-Forwarded-For` request header
+   * as traffic travels to applications on the Application Load Balancer endpoint fronted by the accelerator.
+   *
+   * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/preserve-client-ip-address.html
+   *
+   * @defult true
    */
   readonly clientIpReservation?: boolean;
+
   /**
    * The weight associated with the endpoint
+   *
+   * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints-endpoint-weights.html
+   *
+   * @default 128
    */
   readonly weight?: number;
 }
@@ -70,6 +81,10 @@ export interface LoadBalancerOptions {
  * Property of the EndpointGroup
  */
 export interface EndpointGroupProps {
+  /**
+   * Name of the endpoint group
+   */
+  readonly endpointGroupName?: string;
   /**
    * The Amazon Resource Name (ARN) of the listener.
    */
@@ -83,8 +98,8 @@ export interface EndpointGroupProps {
 }
 
 export class EndpointConfiguration extends cdk.Construct {
-  public readonly props: EndpointConfigurationOptions;
-  constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationOptions) {
+  public readonly props: EndpointConfigurationProps;
+  constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationProps) {
     super(scope, id);
     this.props = props;
   }
@@ -98,24 +113,41 @@ export class EndpointConfiguration extends cdk.Construct {
   }
 }
 
+/**
+ * EndpointGroup construct
+ */
 export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
+  /**
+   * import from ARN
+   */
+  public static fromEndpointGroupArn(scope: cdk.Construct, id: string, endpointGroupArn: string): IEndpointGroup {
+    class Import extends cdk.Resource implements IEndpointGroup {
+      public readonly endpointGroupArn = endpointGroupArn;
+    }
+    return new Import(scope, id);
+  }
 
-  public readonly EndpointGroupArn: string;
+  public readonly endpointGroupArn: string;
+  /**
+   * @attribute
+   */
+  public readonly endpointGroupName: string;
   protected readonly endpoints = new Array<EndpointConfiguration>();
 
   constructor(scope: cdk.Construct, id: string, props: EndpointGroupProps) {
     super(scope, id);
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
-      listenerArn: props.listener.ListenerArn,
+      listenerArn: props.listener.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Stack.of(this).region,
       endpointConfigurations: cdk.Lazy.anyValue({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
     });
 
-    this.EndpointGroupArn = resource.attrEndpointGroupArn;
+    this.endpointGroupArn = resource.attrEndpointGroupArn;
+    this.endpointGroupName = props.endpointGroupName ?? resource.logicalId;
   }
 
-  public addEndpoint(id: string, endpoint: EndpointConfigurationOptions) {
+  public addEndpoint(id: string, endpoint: EndpointConfigurationProps) {
     return new EndpointConfiguration(this, id, endpoint);
   }
 
