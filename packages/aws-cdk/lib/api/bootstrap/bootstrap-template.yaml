@@ -106,7 +106,7 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                Fn::Sub: "${PublishingRole.Arn}"
+                Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
     Condition: CreateNewKey
   StagingBucket:
