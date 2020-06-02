@@ -13,6 +13,9 @@ export interface IEndpointGroup extends cdk.IResource {
   readonly endpointGroupArn: string;
 }
 
+/**
+ * Options for `addLoadBalancer`, `addElasticIpAddress` and `addEc2Instance` to add endpoints into the endpoint group
+ */
 export interface EndpointConfigurationOptions {
   /**
    * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint
@@ -34,10 +37,13 @@ export interface EndpointConfigurationOptions {
 
 /**
  * Properties to create EndpointConfiguration
+ *
  */
 export interface EndpointConfigurationProps extends EndpointConfigurationOptions {
   /**
    * The endopoint group reesource
+   *
+   * [disable-awslint:ref-via-interface]
    */
   readonly endpointGroup: EndpointGroup;
 
@@ -59,6 +65,9 @@ export interface LoadBalancer {
   readonly loadBalancerArn: string;
 }
 
+/**
+ * EC2 Instance interface
+ */
 export interface Ec2Instance  {
   /**
    * The id of the instance resource
@@ -77,31 +86,6 @@ export interface ElasticIpAddress {
 }
 
 /**
- * Options for addLoadBalancer(), addElasticIp() and addEc2Instance()
- */
-export interface EndpointOptions {
-  /**
-   * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint.
-   * If the value is set to true, the client's IP address is preserved in the `X-Forwarded-For` request header
-   * as traffic travels to applications on the Application Load Balancer endpoint fronted by the accelerator.
-   *
-   * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/preserve-client-ip-address.html
-   *
-   * @default true
-   */
-  readonly clientIpReservation?: boolean;
-
-  /**
-   * The weight associated with the endpoint
-   *
-   * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints-endpoint-weights.html
-   *
-   * @default 128
-   */
-  readonly weight?: number;
-}
-
-/**
  * Property of the EndpointGroup
  */
 export interface EndpointGroupProps {
@@ -111,10 +95,12 @@ export interface EndpointGroupProps {
    * @default - logical ID of the resource
    */
   readonly endpointGroupName?: string;
+
   /**
    * The Amazon Resource Name (ARN) of the listener.
    */
   readonly listener: IListener;
+
   /**
    * The AWS Region where the endpoint group is located.
    *
@@ -193,11 +179,11 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    * Add an endpoint
    */
   public addEndpoint(id: string, endpointId: string, props: EndpointConfigurationOptions =
-    {}) {
+  {}) {
     return new EndpointConfiguration(this, id, {
       endpointGroup: this,
       endpointId,
-      ...props
+      ...props,
     });
   }
 
@@ -208,7 +194,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     return new EndpointConfiguration(this, id, {
       endpointId: lb.loadBalancerArn,
       endpointGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -219,7 +205,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     return new EndpointConfiguration(this, id, {
       endpointId: eip.attrAllocationId,
       endpointGroup: this,
-      ...props
+      ...props,
     });
   }
 
@@ -230,7 +216,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     return new EndpointConfiguration(this, id, {
       endpointId: instance.instanceId,
       endpointGroup: this,
-      ...props
+      ...props,
     });
   }
 

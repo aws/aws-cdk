@@ -38,17 +38,17 @@ test('create listener', () => {
     AcceleratorArn: {
       'Fn::GetAtt': [
         'Accelerator8EB0B6B1',
-        'AcceleratorArn'
-      ]
+        'AcceleratorArn',
+      ],
     },
     PortRanges: [
       {
         FromPort: 80,
-        ToPort: 80
-      }
+        ToPort: 80,
+      },
     ],
     Protocol: 'TCP',
-    ClientAffinity: 'NONE'
+    ClientAffinity: 'NONE',
   }));
 });
 
@@ -72,14 +72,14 @@ test('create endpointgroup', () => {
   // THEN
   expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: {
-      Ref: 'AWS::Region'
+      Ref: 'AWS::Region',
     },
     ListenerArn: {
       'Fn::GetAtt': [
         'Listener828B0E81',
-        'ListenerArn'
-      ]
-    }
+        'ListenerArn',
+      ],
+    },
   }));
 });
 
@@ -111,10 +111,10 @@ test('addEndpoint', () => {
     EndpointConfigurations: [
       {
         EndpointId: {
-          Ref: 'InstanceC1063A87'
-        }
-      }
-    ]
+          Ref: 'InstanceC1063A87',
+        },
+      },
+    ],
   }));
 });
 
@@ -142,10 +142,10 @@ test('addLoadBalancer', () => {
     EndpointConfigurations: [
       {
         EndpointId: {
-          Ref: 'ALBAEE750D2'
-        }
-      }
-    ]
+          Ref: 'ALBAEE750D2',
+        },
+      },
+    ],
   }));
 });
 
@@ -175,11 +175,11 @@ test('addElasticIpAddress', () => {
         EndpointId: {
           'Fn::GetAtt': [
             'ElasticIpAddress',
-            'AllocationId'
-          ]
-        }
-      }
-    ]
+            'AllocationId',
+          ],
+        },
+      },
+    ],
   }));
 });
 
@@ -211,9 +211,9 @@ test('addEc2Instance', () => {
     EndpointConfigurations: [
       {
         EndpointId: {
-          Ref: 'InstanceC1063A87'
-        }
-      }
-    ]
+          Ref: 'InstanceC1063A87',
+        },
+      },
+    ],
   }));
 });
