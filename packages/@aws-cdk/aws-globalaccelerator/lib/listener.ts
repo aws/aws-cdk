@@ -2,13 +2,21 @@ import * as cdk from '@aws-cdk/core';
 import { IAccelerator } from './accelerator';
 import * as ga from './globalaccelerator.generated';
 
+/**
+ * Interface of the Listener
+ */
 export interface IListener extends cdk.IResource {
   /**
+   * The ARN of the listener
+   *
    * @attribute
    */
   readonly listenerArn: string;
 }
 
+/**
+ * construct properties for Listener
+ */
 export interface ListenerProps {
   /**
    * Name of the listener
@@ -16,20 +24,24 @@ export interface ListenerProps {
    * @default - logical ID of the resource
    */
   readonly listenerName?: string;
+
   /**
    * The accelerator for this listener
    */
   readonly accelerator: IAccelerator;
+
   /**
    * The list of port ranges for the connections from clients to the accelerator
    */
   readonly portRanges: PortRange[];
+
   /**
    * The protocol for the connections from clients to the accelerator
    *
    * @default TCP
    */
   readonly protocol?: ConnectionProtocol;
+
   /**
    * Client affinity to direct all requests from a user to the same endpoint
    *
@@ -85,6 +97,9 @@ export enum ClientAffinity {
   SOURCE_IP = 'SOURCE_IP',
 }
 
+/**
+ * The construct for the Listener
+ */
 export class Listener extends cdk.Resource implements IListener {
   /**
    * import from ARN
@@ -98,6 +113,8 @@ export class Listener extends cdk.Resource implements IListener {
 
   public readonly listenerArn: string;
   /**
+   * The name of the listener
+   *
    * @attribute
    */
   public readonly listenerName: string;

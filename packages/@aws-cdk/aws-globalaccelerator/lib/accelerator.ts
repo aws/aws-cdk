@@ -1,20 +1,42 @@
 import * as cdk from '@aws-cdk/core';
 import * as ga from './globalaccelerator.generated';
 
+/**
+ * The interface of the Accelerator
+ */
 export interface IAccelerator extends cdk.IResource {
   /**
+   * The ARN of the accelerator
+   *
    * @attribute
    */
   readonly acceleratorArn: string;
 
   /**
+   * The Domain Name System (DNS) name that Global Accelerator creates that points to your accelerator's static
+   * IP addresses.
+   *
    * @attribute
    */
   readonly dnsName: string;
 }
 
+/**
+ * Construct properties of the Accelerator
+ */
 export interface AcceleratorProps {
+  /**
+   * The name of the accelerator
+   *
+   * @default - resource ID
+   */
   readonly acceleratorName?: string;
+
+  /**
+   * Indicates whether the accelerator is enabled.
+   *
+   * @default true
+   */
   readonly enabled?: boolean;
 }
 
@@ -22,7 +44,14 @@ export interface AcceleratorProps {
  * Attributes required to import an existing accelerator to the stack
  */
 export interface AcceleratorAttributes {
+  /**
+   * The ARN of the accelerator
+   */
   readonly acceleratorArn: string;
+
+  /**
+   * The DNS name of the accelerator
+   */
   readonly dnsName: string;
 }
 
@@ -30,6 +59,9 @@ export interface AcceleratorAttributes {
  * The Accelerator construct
  */
 export class Accelerator extends cdk.Resource implements IAccelerator {
+  /**
+   * import from attributes
+   */
   public static fromAcceleratorAttributes(scope: cdk.Construct, id: string, attrs: AcceleratorAttributes ): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;

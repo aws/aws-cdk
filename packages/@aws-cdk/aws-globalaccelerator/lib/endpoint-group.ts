@@ -63,7 +63,7 @@ export interface LoadBalancerOptions {
    *
    * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/preserve-client-ip-address.html
    *
-   * @defult true
+   * @default true
    */
   readonly clientIpReservation?: boolean;
 
@@ -83,6 +83,8 @@ export interface LoadBalancerOptions {
 export interface EndpointGroupProps {
   /**
    * Name of the endpoint group
+   *
+   * @default - logical ID of the resource
    */
   readonly endpointGroupName?: string;
   /**
@@ -97,13 +99,22 @@ export interface EndpointGroupProps {
   readonly region?: string;
 }
 
+/**
+ * The class for endpoint configuration
+ */
 export class EndpointConfiguration extends cdk.Construct {
+  /**
+   * The property containing all the configuration to be rendered
+   */
   public readonly props: EndpointConfigurationProps;
   constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationProps) {
     super(scope, id);
     this.props = props;
   }
 
+  /**
+   * render the endpoint configuration for the endpoint group
+   */
   public renderEndpointConfiguration(): ga.CfnEndpointGroup.EndpointConfigurationProperty {
     return {
       clientIpPreservationEnabled: this.props.clientIpReservation,
@@ -129,9 +140,15 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
 
   public readonly endpointGroupArn: string;
   /**
+   *
+   * The name of the endpoint group
+   *
    * @attribute
    */
   public readonly endpointGroupName: string;
+  /**
+   * The array of the endpoints in this endpoint group
+   */
   protected readonly endpoints = new Array<EndpointConfiguration>();
 
   constructor(scope: cdk.Construct, id: string, props: EndpointGroupProps) {
@@ -147,10 +164,16 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     this.endpointGroupName = props.endpointGroupName ?? resource.logicalId;
   }
 
+  /**
+   * Add an endpoint
+   */
   public addEndpoint(id: string, endpoint: EndpointConfigurationProps) {
     return new EndpointConfiguration(this, id, endpoint);
   }
 
+  /**
+   * Add an Elastic Load Balancer as an endpoint in this endpoint group
+   */
   public addLoadBalancer(id: string, lb: LoadBalancer, ops: LoadBalancerOptions = {}) {
     return new EndpointConfiguration(this, id, {
       endpointId: lb.loadBalancerArn,
