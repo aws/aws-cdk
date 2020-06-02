@@ -41,7 +41,7 @@ export interface TrailProps {
    *
    * @param managementEvents the management configuration type to log
    *
-   * @default - Management events will not be logged.
+   * @default ReadWriteType.ALL
    */
   readonly managementEvents?: ReadWriteType;
 
@@ -131,7 +131,12 @@ export enum ReadWriteType {
   /**
    * All events
    */
-  ALL = 'All'
+  ALL = 'All',
+
+  /**
+   * No events
+   */
+  NONE = 'None',
 }
 
 /**
@@ -235,10 +240,17 @@ export class Trail extends Resource {
     }
 
     if (props.managementEvents) {
-      const managementEvent = {
-        includeManagementEvents: true,
-        readWriteType: props.managementEvents,
-      };
+      let managementEvent;
+      if (props.managementEvents === ReadWriteType.NONE) {
+        managementEvent = {
+          includeManagementEvents: false,
+        };
+      } else {
+        managementEvent = {
+          includeManagementEvents: true,
+          readWriteType: props.managementEvents,
+        };
+      }
       this.eventSelectors.push(managementEvent);
     }
 
