@@ -59,7 +59,7 @@ Use `clonedRepositories` to clone AWS Codecommit repositories into the environme
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     clonedRepositories: [
-      cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
+      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
   });
 ```
