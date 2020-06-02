@@ -46,7 +46,7 @@ test('Termination protection', async () => {
   await expect(cdkDestroy(stackName)).rejects.toThrow('exited with error');
 
   // Can update termination protection even though the change set doesn't contain changes
-  await cdkDeploy(stackName, { modEnv: { NO_TERMINATION_PROTECTION: 'TRUE' } });
+  await cdkDeploy(stackName, { modEnv: { TERMINATION_PROTECTION: 'FALSE' } });
   await cdkDestroy(stackName);
 });
 
