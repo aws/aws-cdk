@@ -19,7 +19,7 @@ export interface KinesisStreamProps {
    *
    * Must be a valid JSON text passed to the target stream.
    *
-   * @default the entire CloudWatch event
+   * @default - the entire CloudWatch event
    */
   readonly message?: events.RuleTargetInput;
 
