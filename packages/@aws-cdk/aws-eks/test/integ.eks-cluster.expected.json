@@ -2791,7 +2791,7 @@
       "Type": "String",
       "Description": "S3 key for asset version \"898cb8fe551e5efd77d0e305946c6fe8b31faaf47da39fda438dbefff108467c\""
     },
-    "AssetParameters898cb8fe551e5efd77d0e305946c6fe8b31faaf47da39fda438dbefff108467cArtifactHash5F906FBC": {
+    "AssetParameters898cb8fe551e5efd77d0e305946c6fe8b31faaf47da39fda438dbefff108467cArtifactHashC2EBE628": {
       "Type": "String",
       "Description": "Artifact hash for asset \"898cb8fe551e5efd77d0e305946c6fe8b31faaf47da39fda438dbefff108467c\""
     },
