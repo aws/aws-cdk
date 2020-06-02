@@ -706,8 +706,7 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Snapshot"
     },
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
@@ -725,9 +724,7 @@
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
         "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
         "VPCPrivateSubnet3DefaultRoute27F311AE"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      ]
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
@@ -745,9 +742,7 @@
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
         "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
         "VPCPrivateSubnet3DefaultRoute27F311AE"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      ]
     },
     "DatabaseRotationSingleUserSecurityGroupAC6E0E73": {
       "Type": "AWS::EC2::SecurityGroup",
