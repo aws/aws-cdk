@@ -120,21 +120,18 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         actions: ['s3:PutObject'],
         principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
         resources: [
-          `arn:aws:s3:::${bucket.bucketName.toString()}/${prefix ? prefix + '/' : ''}AWSLogs/${
-            Stack.of(this).account
-          }/*`,
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
       }),
     );
-
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetBucketAcl'],
         principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-        resources: [`arn:aws:s3:::${bucket.bucketName.toString()}`],
+        resources: [bucket.bucketArn],
       }),
     );
   }

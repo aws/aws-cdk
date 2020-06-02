@@ -121,8 +121,8 @@ export = {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', ['arn:aws:s3:::', { Ref: 'AccessLoggingBucketA6D88F29' },
-                '/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
             },
           },
           {
@@ -130,7 +130,7 @@ export = {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', ['arn:aws:s3:::', { Ref: 'AccessLoggingBucketA6D88F29' }]],
+              'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
             },
           },
         ],
@@ -194,8 +194,8 @@ export = {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', ['arn:aws:s3:::', { Ref: 'AccessLoggingBucketA6D88F29' },
-                '/prefix-of-access-logs/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
             },
           },
           {
@@ -203,7 +203,7 @@ export = {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', ['arn:aws:s3:::', { Ref: 'AccessLoggingBucketA6D88F29' }]],
+              'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
             },
           },
         ],
