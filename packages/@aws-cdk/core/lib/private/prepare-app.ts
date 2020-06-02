@@ -1,22 +1,29 @@
 import { ConstructOrder } from 'constructs';
 import { CfnResource } from '../cfn-resource';
-import { Construct, IConstruct } from '../construct-compat';
+import { IConstruct } from '../construct-compat';
+import { NestedStack } from '../nested-stack';
 import { Stack } from '../stack';
 import { resolveReferences } from './refs';
+import { allConstructsInAssembler, AssemblerConstruct } from './scopes';
 
 /**
- * Prepares the app for synthesis. This function is called by the root `prepare`
- * (normally this the App, but if a Stack is a root, it is called by the stack),
- * which means it's the last 'prepare' that executes.
+ * Prepares the cloud assembly for synthesis.
+ *
+ * This function is called by the construct that is going to produce the Cloud
+ * Assembly.
+ *
+ * (Normally this either the App or the Stage, but if a Stack is a root, it is
+ * called by the stack), which means it's the last 'prepare' that executes.
  *
  * It takes care of reifying cross-references between stacks (or nested stacks),
  * and of creating assets for nested stack templates.
  *
  * @param root The root of the construct tree.
  */
-export function prepareApp(root: Construct) {
-  if (root.node.scope) {
-    throw new Error('prepareApp must be called on the root node');
+export function stabilizeAutomaticReferences(root: AssemblerConstruct | Stack) {
+  // Exception for rootless stacks (in unit tests)
+  if (Stack.isStack(root) && root.node.scope) {
+    throw new Error('When calling prepareApp on a Stack, the Stack must be unscoped');
   }
 
   // apply dependencies between resources in depending subtrees
@@ -32,7 +39,7 @@ export function prepareApp(root: Construct) {
   }
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare it's template asset.
+  // from the head of this queue to prepare its template asset.
   const queue = findAllNestedStacks(root);
 
   while (true) {
@@ -59,18 +66,16 @@ function defineNestedStackAsset(nestedStack: Stack) {
   nested._prepareTemplateAsset();
 }
 
-function findAllNestedStacks(root: Construct) {
-  const result = new Array<Stack>();
+function findAllNestedStacks(root: AssemblerConstruct | Stack): Stack[] {
+  const constructs = Stack.isStack(root)
+    ? root.node.findAll(ConstructOrder.POSTORDER /* <== important */)
+    : allConstructsInAssembler(root, ConstructOrder.POSTORDER /* <== important */);
 
-  // create a list of all nested stacks in depth-first post order this means
-  // that we first prepare the leaves and then work our way up.
-  for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
-    if (Stack.isStack(stack) && stack.nested) {
-      result.push(stack);
-    }
+  return constructs.filter(isNestedStack);
+
+  function isNestedStack(c: IConstruct): c is NestedStack {
+    return Stack.isStack(c) && c.nested;
   }
-
-  return result;
 }
 
 /**

@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, ConstructNode, IConstruct } from './construct-compat';
-import { prepareApp } from './private/prepare-app';
+import { stabilizeAutomaticReferences } from './private/prepare-app';
 import { collectRuntimeInformation } from './private/runtime-info';
 import { TreeMetadata } from './private/tree-metadata';
 
@@ -171,9 +171,9 @@ export class App extends Construct {
     return assembly;
   }
 
-  protected prepare() {
-    super.prepare();
-    prepareApp(this);
+  protected onPrepare() {
+    super.onPrepare();
+    stabilizeAutomaticReferences(this);
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

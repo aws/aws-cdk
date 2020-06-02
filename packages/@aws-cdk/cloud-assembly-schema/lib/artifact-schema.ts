@@ -89,7 +89,7 @@ export interface TreeArtifactProperties {
  */
 export interface EmbeddedCloudAssemblyProperties  {
   /**
-   * Relative of the embedded Cloud Assembly's directory
+   * Relative path to the embedded Cloud Assembly
    */
   readonly directoryName: string;
 

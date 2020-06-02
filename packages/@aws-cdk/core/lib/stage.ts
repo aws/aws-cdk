@@ -1,9 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as path from 'path';
+import * as constructs from 'constructs';
 import { App } from './app';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct-compat';
 import { Environment } from './environment';
+import { stabilizeAutomaticReferences } from './private/prepare-app';
 import { containingAssembler } from './private/scopes';
 
 /**
@@ -76,7 +77,7 @@ export class Stage extends Construct {
    * Test whether the given construct is a Stage object
    */
   public static isStage(x: any ): x is Stage {
-    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
+    return x !== null && x instanceof Stage;
   }
 
   /**
@@ -102,8 +103,6 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
-
     this.region = props.env?.region;
     this.account = props.env?.account;
     this.stageName = props.stageName ?? this.generateStageName();
@@ -113,34 +112,45 @@ export class Stage extends Construct {
    * Synthesize this Stage to a Cloud Assembly
    */
   public synth(): cxapi.CloudAssembly {
-    if (this.assembly) {
-      return this.assembly;
-    }
+    if (!this.assembly) {
+      const builder = App.of(this).assemblyBuilder.openEmbeddedAssembly(this.assemblyArtifactId);
 
-    // Get the final output directory
-    const outdir = path.join(App.of(this).assemblyBuilder.outdir, this.assemblyArtifactId);
-
-    const builder = new cxapi.CloudAssemblyBuilder(outdir);
-    for (const child of this.node.children) {
-      child.node.host.synthesize({
-        outdir,
-        assembly: builder,
+      this.assembly = ConstructNode.synth(this.node, {
+        outdir: builder.outdir,
+        builder,
+        // Avoid infinite loop where synth is going to be called back
+        includeSelf: false,
       });
     }
 
-    this.assembly = builder.buildAssembly();
     return this.assembly;
+  }
+
+  /**
+   * Artifact ID of embedded assembly
+   *
+   * Derived from the construct path.
+   */
+  public get assemblyArtifactId() {
+    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+  }
+
+  protected onPrepare() {
+    super.onPrepare();
+    stabilizeAutomaticReferences(this);
   }
 
   /**
    * Synthesize this stage to a sub-cloud-assembly
    */
-  protected synthesize(session: ISynthesisSession): void {
+  protected onSynthesize(session: constructs.ISynthesisSession): void {
+    const sess = session as ISynthesisSession;
+
     // Force synthesis (or reuse the already synth'ed cloud assembly)
     this.synth();
 
     // Add to parent's manifest
-    session.assembly.addArtifact(this.assemblyArtifactId, {
+    sess.assembly.addArtifact(this.assemblyArtifactId, {
       type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
       properties: {
         directoryName: this.assemblyArtifactId,
@@ -162,15 +172,4 @@ export class Stage extends Construct {
 
     return `${containerName}${this.node.id}`;
   }
-
-  /**
-   * Artifact ID of embedded assembly
-   *
-   * Derived from the construct path.
-   */
-  private get assemblyArtifactId() {
-    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
-  }
 }
-
-const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');

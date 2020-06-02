@@ -1,7 +1,12 @@
 import { App } from '../app';
-import { IConstruct } from '../construct-compat';
+import { ConstructOrder, IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
+
+/**
+ * An AssemblER is a Construct that produces an AssemblY
+ */
+export type AssemblerConstruct = App | Stage;
 
 /**
  * Return the construct root path of the given construct relative to the given ancestor
@@ -23,7 +28,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  *
  * A construct that produces an assembly is either an App or Stage.
  */
-export function containingAssembler(construct: IConstruct): App | Stage | undefined {
+export function containingAssembler(construct: IConstruct): AssemblerConstruct | undefined {
   const stage = Stage.of(construct);
   if (stage) { return stage; }
 
@@ -38,10 +43,17 @@ export function containingAssembler(construct: IConstruct): App | Stage | undefi
 /**
  * Return a string representation of the given assembler, for use in error messages
  */
-export function describeAssembler(assembler: App | Stage | undefined): string {
+export function describeAssembler(assembler: AssemblerConstruct | undefined): string {
   if (assembler === undefined) { return 'an unrooted construct tree'; }
   if (Stage.isStage(assembler)) { return `Stage '${assembler.stageName}'`; }
   return 'the App';
+}
+
+/**
+ * Find all constructs in the given assembler scope which are not in a subassembler
+ */
+export function allConstructsInAssembler(scope: AssemblerConstruct, order: ConstructOrder): IConstruct[] {
+  return scope.node.findAll(order).filter(c => containingAssembler(c) === scope);
 }
 
 /**

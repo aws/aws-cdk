@@ -2,7 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { App, CfnResource, Construct, Stack, Stage } from '../lib';
+import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage } from '../lib';
+import { toCloudFormation } from './util';
 
 let app: App;
 
@@ -89,7 +90,103 @@ export = {
 
     test.done();
   },
+
+  'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
+    // GIVEN
+    let prepared = false;
+    const stage = new Stage(app, 'MyStage');
+    const stack = new BogusStack(stage, 'Stack');
+    class HazPrepare extends Construct {
+      protected prepare() {
+        prepared = true;
+      }
+    }
+    new HazPrepare(stack, 'Preparable');
+
+    // WHEN
+    stage.synth();
+
+    // THEN
+    test.equals(prepared, true);
+
+    test.done();
+  },
+
+  'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
+    // GIVEN
+    const stage = new Stage(app, 'MyStage');
+    const stack = new BogusStack(stage, 'Stack');
+
+    // WHEN
+    stack.node.applyAspect(new TouchingAspect());
+
+    // THEN
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Resource: {
+          Type: 'CDK::TEST::TOUCHED',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'Aspects do not apply inside a Stage'(test: Test) {
+    // GIVEN
+    const stage = new Stage(app, 'MyStage');
+    const stack = new BogusStack(stage, 'Stack');
+
+    // WHEN
+    app.node.applyAspect(new TouchingAspect());
+
+    // THEN
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Resource: {
+          Type: 'CDK::Test::Resource',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'Automatic dependencies inside a stage are available immediately after synth'(test: Test) {
+    // GIVEN
+    const stage = new Stage(app, 'MyStage');
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+
+    // WHEN
+    const resource1 = new CfnResource(stack1, 'Resource', {
+      type: 'CDK::Test::Resource',
+    });
+    new CfnResource(stack2, 'Resource', {
+      type: 'CDK::Test::Resource',
+      properties: {
+        OtherThing: resource1.ref,
+      },
+    });
+
+    const asm = stage.synth();
+
+    // THEN
+    test.deepEqual(
+      asm.getStackArtifact(stack2.artifactId).dependencies.map(d => d.id),
+      [stack1.artifactId]);
+
+    test.done();
+  },
 };
+
+class TouchingAspect implements IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof CfnResource) {
+      node.addOverride('Type', 'CDK::TEST::TOUCHED');
+    }
+  }
+}
 
 /**
  * rm -rf reimplementation, don't want to depend on an NPM package for this

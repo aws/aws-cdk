@@ -728,13 +728,11 @@ export class Stack extends Construct implements ITaggable {
     // if this stack is a roort (e.g. in unit tests), call `prepareApp` so that
     // we resolve cross-references and nested stack assets.
     if (!this.node.scope) {
-      prepareApp(this);
+      stabilizeAutomaticReferences(this);
     }
   }
 
   protected synthesize(session: ISynthesisSession): void {
-    super.synthesize(session);
-
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -994,7 +992,7 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
-import { prepareApp } from './private/prepare-app';
+import { stabilizeAutomaticReferences } from './private/prepare-app';
 import { containingAssembler, rootPathTo } from './private/scopes';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';

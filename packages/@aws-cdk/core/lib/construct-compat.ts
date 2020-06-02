@@ -7,7 +7,9 @@
  * There are pretty ugly hacks here, which mostly involve downcasting types to
  * adhere to legacy AWS CDK APIs.
  *
- * This file, in its entirety, is expected to be removed in v2.0.
+ * This file, in its entirety, was originally expected to be removed in v2.0,
+ * but we may have to re-evaluate that in light of lifecycle methods being
+ * moved back from `constructs` into AWS CDK.
  */
 
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -108,6 +110,8 @@ export class Construct extends constructs.Construct implements IConstruct {
    * understand the implications.
    */
   protected onPrepare(): void {
+    this._invokeAspects();
+    this.prepareChildren();
     this.prepare();
   }
 
@@ -150,18 +154,47 @@ export class Construct extends constructs.Construct implements IConstruct {
   }
 
   /**
+   * Prepare the children of this construct
+   */
+  protected prepareChildren() {
+    for (const child of this.node.children) {
+      (child as Construct).onPrepare();
+    }
+  }
+
+  /**
+   * Invoke aspects on this node and all of its children
+   *
+   * @internal
+   */
+  protected _invokeAspects(inheritedAspects?: IAspect[]) {
+    // Some of the state we want is private to the `constructs.Node` object.
+    const nodeAspects: IAspect[] = (constructs.Node.of(this) as any)._aspects;
+    const nodeInvoked: IAspect[] = (constructs.Node.of(this) as any).invokedAspects;
+
+    const allAspectsHere = [...inheritedAspects ?? [], ...nodeAspects];
+
+    for (const aspect of allAspectsHere) {
+      if (nodeInvoked.includes(aspect)) { continue; }
+      aspect.visit(this);
+      nodeInvoked.push(aspect);
+    }
+
+    for (const child of this.node.children) {
+      (child as Construct)._invokeAspects(allAspectsHere);
+    }
+  }
+
+  /**
    * Allows this construct to emit artifacts into the cloud assembly during synthesis.
    *
    * This method is usually implemented by framework-level constructs such as `Stack` and `Asset`
    * as they participate in synthesizing the cloud assembly.
    *
    * @param session The synthesis session.
-   * @deprecated - Use and override onSynthesize() instead.
    */
   protected synthesize(session: ISynthesisSession): void {
-    for (const child of this.node.children) {
-      child.node.host.synthesize(session);
-    }
+    Array.isArray(session);
   }
 }
 
@@ -202,6 +235,15 @@ export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
    * @default - Construct a new builder
    */
   readonly builder?: cxapi.CloudAssemblyBuilder;
+
+  /**
+   * Include the root construct in the synthesis
+   *
+   * Set to 'false' to avoid infinite loop.
+   *
+   * @default true
+   */
+  readonly includeSelf?: boolean;
 }
 
 /**
@@ -233,24 +275,8 @@ export class ConstructNode {
    * @param options Synthesis options.
    */
   public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    // We used to defer to `Node.synthesize()` here from the `constructs` library,
-    // but we don't do that anymore. Synthesis is deprecated from that library,
-    // and the implementation found there is not amenable to the kind of extension that we need.
-
-    // The three holy phases of synthesis: prepare, validate and synthesize
-    ConstructNode.prepare(root);
-
-    const skipValidation = options.skipValidation ?? false;
-    if (!skipValidation) {
-      ConstructNode.validateAndThrow(root);
-    }
-
-    // Do a synthesis, rely on nodes in the tree to carry the recursion forward
     const builder = options.builder ?? new cxapi.CloudAssemblyBuilder(options.outdir);
-    root.host.synthesize({
-      outdir: builder.outdir,
-      assembly: builder,
-    });
+    lifecycleModule().fullLifecycle(root.host, builder, !options.skipValidation, options.includeSelf ?? true);
     return builder.buildAssembly(options);
   }
 
@@ -259,7 +285,7 @@ export class ConstructNode {
    * @param node The root node
    */
   public static prepare(node: ConstructNode) {
-    return node._actualNode.prepare();
+    lifecycleModule().preparePhase(node.host);
   }
 
   /**
@@ -273,33 +299,11 @@ export class ConstructNode {
   }
 
   /**
-   * Validate the node and if there are any errors, throw them
-   */
-  private static validateAndThrow(root: ConstructNode) {
-    const errors = ConstructNode.validate(root);
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-    }
-  }
-
-  /**
    * @internal
    */
   public readonly _actualNode: constructs.Node;
 
-  /**
-   * The actual Construct associated with this tree Node
-   *
-   * Exists because children are stored as `IConstruct`, and this is the only
-   * way to get the children as Construct instances.
-   *
-   * @experimental
-   */
-  public readonly host: ISpecialConstructMethods;
-
-  constructor(host: Construct, scope: IConstruct, id: string) {
-    this.host = host as unknown as ISpecialConstructMethods;
+  constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -509,6 +513,7 @@ export class ConstructNode {
    * @experimental
    */
   public tryRemoveChild(childName: string): boolean { return this._actualNode.tryRemoveChild(childName); }
+
 }
 
 /**
@@ -541,27 +546,9 @@ export interface Dependency {
   readonly target: IConstruct;
 }
 
-/**
- * Interface which provides access to special methods of Construct
- *
- * @experimental
- */
-export interface ISpecialConstructMethods extends IConstruct {
-  /**
-   * Method that gets called when a construct should synthesize itself to an assembly
-   *
-   * This is 'synthesize' instead of 'onSynthesize' because this method is
-   * better typed, and 'onSynthesize' will be deprecated from the 'constructs' library.
-   */
-  synthesize(session: ISynthesisSession): void;
-
-  /**
-   * Method that gets called to validate a construct
-   */
-  onValidate(): string[];
-
-  /**
-   * Method that gets called to prepare a construct
-   */
-  onPrepare(): void;
+/* eslint-disable @typescript-eslint/no-require-imports */
+// This is a function because we want to import this module lazily, otherwise
+// we get into circular import errors.
+function lifecycleModule(): typeof import('./private/construct-lifecycle') {
+  return require('./private/construct-lifecycle');
 }
