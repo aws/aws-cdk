@@ -44,7 +44,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB49": {
+    "myapiDeployment92F2CB49eb6b0027bfbdb20b09988607569e06bd": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -60,7 +60,7 @@
           "Ref": "myapi4C7BF186"
         },
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB49"
+          "Ref": "myapiDeployment92F2CB49eb6b0027bfbdb20b09988607569e06bd"
         },
         "StageName": "prod"
       }
