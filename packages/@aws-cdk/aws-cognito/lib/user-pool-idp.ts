@@ -1,10 +1,4 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-import {
-  UserPoolIdentityProviderAmazon,
-  UserPoolIdentityProviderAmazonProps,
-  UserPoolIdentityProviderFacebook,
-  UserPoolIdentityProviderFacebookProps,
-} from './user-pool-idps';
 
 /**
  * Represents a UserPoolIdentityProvider
@@ -31,20 +25,6 @@ export class UserPoolIdentityProvider {
     }
 
     return new Import(scope, id);
-  }
-
-  /**
-   * Federate login with 'Login with Amazon'
-   */
-  public static amazon(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
-    return new UserPoolIdentityProviderAmazon(scope, id, props);
-  }
-
-  /**
-   * Federate login with 'Facebook Login'
-   */
-  public static facebook(scope: Construct, id: string, props: UserPoolIdentityProviderFacebookProps) {
-    return new UserPoolIdentityProviderFacebook(scope, id, props);
   }
 
   private constructor() {}

@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient, UserPoolIdentityProviderAmazon, UserPoolIdentityProviderFacebook } from '../lib';
+import { OAuthScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -370,16 +370,9 @@ describe('User Pool Client', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
-    new UserPoolIdentityProviderAmazon(stack, 'amznidp', {
-      userPool: pool,
-      clientId: 'amzn-client-id',
-      clientSecret: 'amzn-client-secret',
-    });
-    new UserPoolIdentityProviderFacebook(stack, 'fbidp', {
-      userPool: pool,
-      clientId: 'amzn-client-id',
-      clientSecret: 'amzn-client-secret',
-    });
+
+    const idp = UserPoolIdentityProvider.fromProviderName(stack, 'imported', 'userpool-idp');
+    pool.registerIdentityProvider(idp);
 
     // WHEN
     new UserPoolClient(stack, 'Client', {
@@ -389,50 +382,31 @@ describe('User Pool Client', () => {
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       SupportedIdentityProviders: [
-        { Ref: 'amznidp99BF1483' },
-        { Ref: 'fbidp86F36311' },
+        'userpool-idp',
         'COGNITO',
       ],
     });
   });
 
-  test('explicit supportedIdentityProviders', () => {
+  test('supportedIdentityProviders', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
     // WHEN
-    pool.addClient('DefaultExplicit', {
-      userPoolClientName: 'DefaultExplicit',
-      supportedIdentityProviders: {},
-    });
     pool.addClient('AllEnabled', {
       userPoolClientName: 'AllEnabled',
-      supportedIdentityProviders: {
-        amazon: true,
-        facebook: true,
-        cognito: true,
-      },
-    });
-    pool.addClient('CognitoDisabled', {
-      userPoolClientName: 'CognitoDisabled',
-      supportedIdentityProviders: {
-        cognito: false,
-      },
+      supportedIdentityProviders: [
+        UserPoolClientIdentityProvider.COGNITO,
+        UserPoolClientIdentityProvider.FACEBOOK,
+        UserPoolClientIdentityProvider.AMAZON,
+      ],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
-      ClientName: 'DefaultExplicit',
-      SupportedIdentityProviders: [ 'COGNITO' ],
-    });
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
       SupportedIdentityProviders: [ 'COGNITO', 'Facebook', 'LoginWithAmazon' ],
-    });
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
-      ClientName: 'CognitoDisabled',
-      SupportedIdentityProviders: ABSENT,
     });
   });
 });
