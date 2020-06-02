@@ -14,7 +14,6 @@ export interface EksUpdateId {
 
 export type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
 
-
 /**
  * Decodes encoded true/false values
  */

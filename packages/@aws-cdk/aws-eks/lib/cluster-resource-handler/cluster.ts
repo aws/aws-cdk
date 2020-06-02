@@ -140,7 +140,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig.publicAccessCidrs,
-        }
+        };
       }
       const updateResponse = await this.eks.updateClusterConfig(config);
 
