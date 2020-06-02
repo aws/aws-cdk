@@ -91,7 +91,7 @@
       "resource-attribute:@aws-cdk/aws-cloud9.Ec2Environment.environmentEc2Arn",
       "resource-attribute:@aws-cdk/aws-cloud9.Ec2Environment.environmentEc2Name",
       "props-physical-name:@aws-cdk/aws-cloud9.Ec2EnvironmentProps",
-      "docs-public-apis:@aws-cdk/aws-cloud9.CloneRepository.clonePath",
+      "docs-public-apis:@aws-cdk/aws-cloud9.CloneRepository.pathComponent",
       "docs-public-apis:@aws-cdk/aws-cloud9.CloneRepository.repositoryUrl"
     ]
   },

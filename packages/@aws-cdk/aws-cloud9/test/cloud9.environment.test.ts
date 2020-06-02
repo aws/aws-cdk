@@ -76,7 +76,7 @@ test('can use CodeCommit repositories', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     clonedRepositories: [
-      cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
+      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
   });
   // THEN
@@ -84,7 +84,7 @@ test('can use CodeCommit repositories', () => {
     InstanceType: 't2.micro',
     Repositories: [
       {
-        PathComponent: '/foo',
+        PathComponent: '/src',
         RepositoryUrl: {
           'Fn::Join': [
             '',

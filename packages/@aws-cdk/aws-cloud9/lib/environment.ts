@@ -136,7 +136,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
       repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
         repositoryUrl: r.repositoryUrl,
-        pathComponent: r.clonePath,
+        pathComponent: r.pathComponent,
       })) : undefined,
     });
     this.environmentId = c9env.ref;
@@ -152,13 +152,16 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
 export class CloneRepository {
   /**
    * import repository to cloud9 environment from AWS CodeCommit
+   *
+   * @param repository the codecommit repository to clone from
+   * @param path  the target path in cloud9 environment
    */
   public static fromCodeCommit(repository: codecommit.IRepository, path: string): CloneRepository {
     return {
       repositoryUrl: repository.repositoryCloneUrlHttp,
-      clonePath: path,
+      pathComponent: path,
     };
   }
 
-  private constructor(public readonly repositoryUrl: string, public readonly clonePath: string) {}
+  private constructor(public readonly repositoryUrl: string, public readonly pathComponent: string) {}
 }
