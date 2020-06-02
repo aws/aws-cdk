@@ -1,4 +1,4 @@
-import { ABSENT, countResources, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -144,6 +144,28 @@ export = {
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     }));
+
+    test.done();
+  },
+
+  "sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'"(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new DatabaseCluster(stack, 'Cluster', {
+      masterUser: { username: 'admin' },
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
