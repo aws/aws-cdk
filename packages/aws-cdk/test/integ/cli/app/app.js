@@ -107,7 +107,7 @@ class IamStack extends cdk.Stack {
     super(parent, id, props);
 
     new iam.Role(this, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
   }
 }
