@@ -81,6 +81,14 @@ export class SingletonFunction extends FunctionBase {
     down.node.addDependency(this.lambdaFunction);
   }
 
+  /**
+   * Returns the construct tree node that corresponds to the lambda function.
+   * @internal
+   */
+  protected _functionNode(): cdk.ConstructNode {
+    return this.lambdaFunction.node;
+  }
+
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
