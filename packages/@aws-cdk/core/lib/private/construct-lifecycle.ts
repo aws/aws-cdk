@@ -125,8 +125,6 @@ function invokeAspects(construct: IConstruct, inheritedAspects: IAspect[]) {
   }
 }
 
-const ALREADY_PREPARED_SYMBOL = Symbol();
-
 /**
  * Invoke aspects in the given construct tree
  *
@@ -138,13 +136,7 @@ function prepareConstructs(construct: IConstruct) {
     prepareConstructs(child);
   }
 
-  if (!(construct as any)[ALREADY_PREPARED_SYMBOL]) {
-    (construct as IProtectedConstructMethods).onPrepare();
-
-    Object.defineProperty(construct, ALREADY_PREPARED_SYMBOL, {
-      value: true,
-    });
-  }
+  (construct as IProtectedConstructMethods).onPrepare();
 }
 
 /**
