@@ -130,19 +130,20 @@ const ALREADY_PREPARED_SYMBOL = Symbol();
 /**
  * Invoke aspects in the given construct tree
  *
- * Constructs will not be prepared twice.
+ * Constructs will not be prepared twice. Children are prepared before
+ * parents.
  */
 function prepareConstructs(construct: IConstruct) {
+  for (const child of construct.node.children) {
+    prepareConstructs(child);
+  }
+
   if (!(construct as any)[ALREADY_PREPARED_SYMBOL]) {
     (construct as IProtectedConstructMethods).onPrepare();
 
     Object.defineProperty(construct, ALREADY_PREPARED_SYMBOL, {
       value: true,
     });
-  }
-
-  for (const child of construct.node.children) {
-    prepareConstructs(child);
   }
 }
 

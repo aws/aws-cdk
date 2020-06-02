@@ -172,7 +172,6 @@ export class App extends Construct {
   }
 
   protected prepare() {
-    super.prepare();
     stabilizeAutomaticReferences(this);
   }
 
