@@ -10,7 +10,7 @@ export interface KinesisStreamProps {
   /**
    * Partition Key Path for records sent to this stream
    *
-   * @default eventId as the partition key
+   * @default - eventId as the partition key
    */
   readonly partitionKeyPath?: string;
 
