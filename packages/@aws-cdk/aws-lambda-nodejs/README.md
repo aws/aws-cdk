@@ -41,6 +41,17 @@ new lambda.NodejsFunction(this, 'MyFunction', {
 
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
+Use the `containerEnvironment` prop to pass environments variables to the Docker container
+running Parcel:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  containerEnvironment: {
+    NODE_ENV: 'production',
+  },
+});
+```
+
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps`,
 `buildDir` and `cacheDir`.
