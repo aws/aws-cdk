@@ -171,8 +171,8 @@ export class App extends Construct {
     return assembly;
   }
 
-  protected onPrepare() {
-    super.onPrepare();
+  protected prepare() {
+    super.prepare();
     stabilizeAutomaticReferences(this);
   }
 

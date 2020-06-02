@@ -110,8 +110,6 @@ export class Construct extends constructs.Construct implements IConstruct {
    * understand the implications.
    */
   protected onPrepare(): void {
-    this._invokeAspects();
-    this.prepareChildren();
     this.prepare();
   }
 
@@ -151,38 +149,6 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   protected prepare(): void {
     return;
-  }
-
-  /**
-   * Prepare the children of this construct
-   */
-  protected prepareChildren() {
-    for (const child of this.node.children) {
-      (child as Construct).onPrepare();
-    }
-  }
-
-  /**
-   * Invoke aspects on this node and all of its children
-   *
-   * @internal
-   */
-  protected _invokeAspects(inheritedAspects?: IAspect[]) {
-    // Some of the state we want is private to the `constructs.Node` object.
-    const nodeAspects: IAspect[] = (constructs.Node.of(this) as any)._aspects;
-    const nodeInvoked: IAspect[] = (constructs.Node.of(this) as any).invokedAspects;
-
-    const allAspectsHere = [...inheritedAspects ?? [], ...nodeAspects];
-
-    for (const aspect of allAspectsHere) {
-      if (nodeInvoked.includes(aspect)) { continue; }
-      aspect.visit(this);
-      nodeInvoked.push(aspect);
-    }
-
-    for (const child of this.node.children) {
-      (child as Construct)._invokeAspects(allAspectsHere);
-    }
   }
 
   /**
@@ -513,7 +479,6 @@ export class ConstructNode {
    * @experimental
    */
   public tryRemoveChild(childName: string): boolean { return this._actualNode.tryRemoveChild(childName); }
-
 }
 
 /**

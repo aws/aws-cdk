@@ -73,8 +73,6 @@ export class AssetStaging extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession) {
-    super.synthesize(session);
-
     if (!this.relativePath) {
       return;
     }
