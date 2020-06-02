@@ -13,23 +13,13 @@ export interface IEndpointGroup extends cdk.IResource {
   readonly endpointGroupArn: string;
 }
 
-/**
- * Opitons to add Endpoint
- */
-export interface EndpointConfigurationProps {
+export interface EndpointConfigurationOptions {
   /**
    * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint
    *
    * @default true
    */
   readonly clientIpReservation?: boolean;
-
-  /**
-   * An ID for the endpoint. If the endpoint is a Network Load Balancer or Application Load Balancer,
-   * this is the Amazon Resource Name (ARN) of the resource. If the endpoint is an Elastic IP address,
-   * this is the Elastic IP address allocation ID. For EC2 instances, this is the EC2 instance ID.
-   */
-  readonly endpointId: string;
 
   /**
    * The weight associated with the endpoint. When you add weights to endpoints, you configure AWS Global Accelerator
@@ -43,6 +33,23 @@ export interface EndpointConfigurationProps {
 }
 
 /**
+ * Properties to create EndpointConfiguration
+ */
+export interface EndpointConfigurationProps extends EndpointConfigurationOptions {
+  /**
+   * The endopoint group reesource
+   */
+  readonly endpointGroup: EndpointGroup;
+
+  /**
+   * An ID for the endpoint. If the endpoint is a Network Load Balancer or Application Load Balancer,
+   * this is the Amazon Resource Name (ARN) of the resource. If the endpoint is an Elastic IP address,
+   * this is the Elastic IP address allocation ID. For EC2 instances, this is the EC2 instance ID.
+   */
+  readonly endpointId: string;
+}
+
+/**
  * LoadBalancer Interface
  */
 export interface LoadBalancer {
@@ -52,10 +59,27 @@ export interface LoadBalancer {
   readonly loadBalancerArn: string;
 }
 
+export interface Ec2Instance  {
+  /**
+   * The id of the instance resource
+   */
+  readonly instanceId: string;
+}
+
 /**
- * Options for addLoadBalancer()
+ * EIP Interface
  */
-export interface LoadBalancerOptions {
+export interface ElasticIpAddress {
+  /**
+   * allocation ID of the EIP resoruce
+   */
+  readonly attrAllocationId: string
+}
+
+/**
+ * Options for addLoadBalancer(), addElasticIp() and addEc2Instance()
+ */
+export interface EndpointOptions {
   /**
    * Indicates whether client IP address preservation is enabled for an Application Load Balancer endpoint.
    * If the value is set to true, the client's IP address is preserved in the `X-Forwarded-For` request header
@@ -110,6 +134,7 @@ export class EndpointConfiguration extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationProps) {
     super(scope, id);
     this.props = props;
+    props.endpointGroup._linkEndpoint(this);
   }
 
   /**
@@ -167,19 +192,54 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * Add an endpoint
    */
-  public addEndpoint(id: string, endpoint: EndpointConfigurationProps) {
-    return new EndpointConfiguration(this, id, endpoint);
+  public addEndpoint(id: string, endpointId: string, props: EndpointConfigurationOptions =
+    {}) {
+    return new EndpointConfiguration(this, id, {
+      endpointGroup: this,
+      endpointId,
+      ...props
+    });
   }
 
   /**
    * Add an Elastic Load Balancer as an endpoint in this endpoint group
    */
-  public addLoadBalancer(id: string, lb: LoadBalancer, ops: LoadBalancerOptions = {}) {
+  public addLoadBalancer(id: string, lb: LoadBalancer, props: EndpointConfigurationOptions = {}) {
     return new EndpointConfiguration(this, id, {
       endpointId: lb.loadBalancerArn,
-      clientIpReservation: ops.clientIpReservation,
-      weight: ops.weight,
+      endpointGroup: this,
+      ...props
     });
+  }
+
+  /**
+   * Add an EIP as an endpoint in this endpoint group
+   */
+  public addElasticIpAddress(id: string, eip: ElasticIpAddress, props: EndpointConfigurationOptions = {}) {
+    return new EndpointConfiguration(this, id, {
+      endpointId: eip.attrAllocationId,
+      endpointGroup: this,
+      ...props
+    });
+  }
+
+  /**
+   * Add an EC2 Instance as an endpoint in this endpoint group
+   */
+  public addEc2Instance(id: string, instance: Ec2Instance, props: EndpointConfigurationOptions = {}) {
+    return new EndpointConfiguration(this, id, {
+      endpointId: instance.instanceId,
+      endpointGroup: this,
+      ...props
+    });
+  }
+
+  /**
+   * Links a endpoint to this endpoint group
+   * @internal
+   */
+  public _linkEndpoint(endpoint: EndpointConfiguration) {
+    this.endpoints.push(endpoint);
   }
 
   private renderEndpoints() {
