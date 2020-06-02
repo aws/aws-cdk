@@ -14,6 +14,11 @@ import { IStackSynthesizer } from './types';
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
 /**
+ * The minimum bootstrap stack version required by this app.
+ */
+const MIN_BOOTSTRAP_STACK_VERSION = 2;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -289,7 +294,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
-      requiresBootstrapStackVersion: 1,
+      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
     }, [artifactId]);
   }
 
@@ -371,7 +376,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
         file: manifestFile,
-        requiresBootstrapStackVersion: 1,
+        requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       },
     });
 

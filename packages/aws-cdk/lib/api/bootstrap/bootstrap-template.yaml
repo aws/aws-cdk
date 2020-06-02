@@ -350,7 +350,7 @@ Outputs:
   BootstrapVersion:
     Description: The version of the bootstrap resources that are currently mastered
       in this stack
-    Value: '1'
+    Value: '2'
     Export:
       Name:
         Fn::Sub: CdkBootstrap-${Qualifier}-Version
