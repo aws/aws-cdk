@@ -2700,6 +2700,22 @@
         ]
       }
     },
+    "ClusterSecurityGroupId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster9EE0221C",
+          "ClusterSecurityGroupId"
+        ]
+      }
+    },
+    "ClusterEncryptionConfigKeyArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster9EE0221C",
+          "EncryptionConfigKeyArn"
+        ]
+      }
+    },
     "ClusterName": {
       "Value": {
         "Ref": "Cluster9EE0221C"
