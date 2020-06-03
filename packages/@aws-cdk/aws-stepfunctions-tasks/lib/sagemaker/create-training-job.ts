@@ -3,8 +3,16 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
-  S3DataType, StoppingCondition, VpcConfig  } from './sagemaker-task-base-types';
+import {
+  AlgorithmSpecification,
+  Channel,
+  InputMode,
+  OutputDataConfig,
+  ResourceConfig,
+  S3DataType,
+  StoppingCondition,
+  VpcConfig,
+} from './sagemaker-task-base-types';
 
 /**
  * Properties for creating an Amazon SageMaker training job
@@ -12,7 +20,6 @@ import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceC
  * @experimental
  */
 export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps {
-
   /**
    * Training Job Name.
    */
@@ -24,7 +31,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    *
    * See https://docs.aws.amazon.com/fr_fr/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createtrainingjob-perms
    *
-   * @default - a role with appropriate permissions will be created.
+   * @default - a role will be created.
    */
   readonly role?: iam.IRole;
 
@@ -40,7 +47,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    *
    * @default - No hyperparameters
    */
-  readonly hyperparameters?: {[key: string]: any};
+  readonly hyperparameters?: { [key: string]: any };
 
   /**
    *  Describes the various datasets (e.g. train, validation, test) and the Amazon S3 location where stored.
@@ -52,7 +59,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    *
    * @default - No tags
    */
-  readonly tags?: {[key: string]: string};
+  readonly tags?: { [key: string]: string };
 
   /**
    * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
@@ -87,7 +94,6 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
  * @experimental
  */
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -148,20 +154,19 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     };
 
     // check that either algorithm name or image is defined
-    if ((!props.algorithmSpecification.algorithmName) && (!props.algorithmSpecification.trainingImage)) {
+    if (!props.algorithmSpecification.algorithmName && !props.algorithmSpecification.trainingImage) {
       throw new Error('Must define either an algorithm name or training image URI in the algorithm specification');
     }
 
     // set the input mode to 'File' if not defined
-    this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
-      ( props.algorithmSpecification ) :
-      ( { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE } );
+    this.algorithmSpecification = props.algorithmSpecification.trainingInputMode
+      ? props.algorithmSpecification
+      : { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE };
 
     // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
-    this.inputDataConfig = props.inputDataConfig.map(config => {
+    this.inputDataConfig = props.inputDataConfig.map((config) => {
       if (!config.dataSource.s3DataSource.s3DataType) {
-        return Object.assign({}, config, { dataSource: { s3DataSource:
-                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
+        return Object.assign({}, config, { dataSource: { s3DataSource: { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
       } else {
         return config;
       }
@@ -170,8 +175,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     // add the security groups to the connections object
     if (props.vpcConfig) {
       this.vpc = props.vpcConfig.vpc;
-      this.subnets = (props.vpcConfig.subnets) ?
-        (this.vpc.selectSubnets(props.vpcConfig.subnets).subnetIds) : this.vpc.selectSubnets().subnetIds;
+      this.subnets = props.vpcConfig.subnets ? this.vpc.selectSubnets(props.vpcConfig.subnets).subnetIds : this.vpc.selectSubnets().subnetIds;
     }
 
     this.taskPolicies = this.makePolicyStatements();
@@ -207,87 +211,83 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   }
 
   public renderTask(): any {
-    return this.bind();
-  }
-
-  public bind(): any {
     return {
       Resource: integrationResourceArn('sagemaker', 'createTrainingJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
     };
   }
 
-  private renderParameters(): {[key: string]: any} {
+  private renderParameters(): { [key: string]: any } {
     return {
       TrainingJobName: this.props.trainingJobName,
       RoleArn: this._role!.roleArn,
-      ...(this.renderAlgorithmSpecification(this.algorithmSpecification)),
-      ...(this.renderInputDataConfig(this.inputDataConfig)),
-      ...(this.renderOutputDataConfig(this.props.outputDataConfig)),
-      ...(this.renderResourceConfig(this.resourceConfig)),
-      ...(this.renderStoppingCondition(this.stoppingCondition)),
-      ...(this.renderHyperparameters(this.props.hyperparameters)),
-      ...(this.renderTags(this.props.tags)),
-      ...(this.renderVpcConfig(this.props.vpcConfig)),
+      ...this.renderAlgorithmSpecification(this.algorithmSpecification),
+      ...this.renderInputDataConfig(this.inputDataConfig),
+      ...this.renderOutputDataConfig(this.props.outputDataConfig),
+      ...this.renderResourceConfig(this.resourceConfig),
+      ...this.renderStoppingCondition(this.stoppingCondition),
+      ...this.renderHyperparameters(this.props.hyperparameters),
+      ...this.renderTags(this.props.tags),
+      ...this.renderVpcConfig(this.props.vpcConfig),
     };
   }
 
-  private renderAlgorithmSpecification(spec: AlgorithmSpecification): {[key: string]: any} {
+  private renderAlgorithmSpecification(spec: AlgorithmSpecification): { [key: string]: any } {
     return {
       AlgorithmSpecification: {
         TrainingInputMode: spec.trainingInputMode,
-        ...(spec.trainingImage) ? { TrainingImage: spec.trainingImage.bind(this).imageUri } : {},
-        ...(spec.algorithmName) ? { AlgorithmName: spec.algorithmName } : {},
-        ...(spec.metricDefinitions) ?
-          { MetricDefinitions: spec.metricDefinitions
-            .map(metric => ({ Name: metric.name, Regex: metric.regex })) } : {},
+        ...(spec.trainingImage ? { TrainingImage: spec.trainingImage.bind(this).imageUri } : {}),
+        ...(spec.algorithmName ? { AlgorithmName: spec.algorithmName } : {}),
+        ...(spec.metricDefinitions
+          ? { MetricDefinitions: spec.metricDefinitions.map((metric) => ({ Name: metric.name, Regex: metric.regex })) }
+          : {}),
       },
     };
   }
 
-  private renderInputDataConfig(config: Channel[]): {[key: string]: any} {
+  private renderInputDataConfig(config: Channel[]): { [key: string]: any } {
     return {
-      InputDataConfig: config.map(channel => ({
+      InputDataConfig: config.map((channel) => ({
         ChannelName: channel.channelName,
         DataSource: {
           S3DataSource: {
             S3Uri: channel.dataSource.s3DataSource.s3Location.bind(this, { forReading: true }).uri,
             S3DataType: channel.dataSource.s3DataSource.s3DataType,
-            ...(channel.dataSource.s3DataSource.s3DataDistributionType) ?
-              { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType} : {},
-            ...(channel.dataSource.s3DataSource.attributeNames) ?
-              { AtttributeNames: channel.dataSource.s3DataSource.attributeNames } : {},
+            ...(channel.dataSource.s3DataSource.s3DataDistributionType
+              ? { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType }
+              : {}),
+            ...(channel.dataSource.s3DataSource.attributeNames ? { AtttributeNames: channel.dataSource.s3DataSource.attributeNames } : {}),
           },
         },
-        ...(channel.compressionType) ? { CompressionType: channel.compressionType } : {},
-        ...(channel.contentType) ? { ContentType: channel.contentType } : {},
-        ...(channel.inputMode) ? { InputMode: channel.inputMode } : {},
-        ...(channel.recordWrapperType) ? { RecordWrapperType: channel.recordWrapperType } : {},
+        ...(channel.compressionType ? { CompressionType: channel.compressionType } : {}),
+        ...(channel.contentType ? { ContentType: channel.contentType } : {}),
+        ...(channel.inputMode ? { InputMode: channel.inputMode } : {}),
+        ...(channel.recordWrapperType ? { RecordWrapperType: channel.recordWrapperType } : {}),
       })),
     };
   }
 
-  private renderOutputDataConfig(config: OutputDataConfig): {[key: string]: any} {
+  private renderOutputDataConfig(config: OutputDataConfig): { [key: string]: any } {
     return {
       OutputDataConfig: {
         S3OutputPath: config.s3OutputLocation.bind(this, { forWriting: true }).uri,
-        ...(config.encryptionKey) ? { KmsKeyId: config.encryptionKey.keyArn } : {},
+        ...(config.encryptionKey ? { KmsKeyId: config.encryptionKey.keyArn } : {}),
       },
     };
   }
 
-  private renderResourceConfig(config: ResourceConfig): {[key: string]: any} {
+  private renderResourceConfig(config: ResourceConfig): { [key: string]: any } {
     return {
       ResourceConfig: {
         InstanceCount: config.instanceCount,
         InstanceType: 'ml.' + config.instanceType,
         VolumeSizeInGB: config.volumeSizeInGB,
-        ...(config.volumeEncryptionKey) ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {},
+        ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },
     };
   }
 
-  private renderStoppingCondition(config: StoppingCondition): {[key: string]: any} {
+  private renderStoppingCondition(config: StoppingCondition): { [key: string]: any } {
     return {
       StoppingCondition: {
         MaxRuntimeInSeconds: config.maxRuntime && config.maxRuntime.toSeconds(),
@@ -295,56 +295,62 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     };
   }
 
-  private renderHyperparameters(params: {[key: string]: any} | undefined): {[key: string]: any} {
-    return (params) ? { HyperParameters: params } : {};
+  private renderHyperparameters(params: { [key: string]: any } | undefined): { [key: string]: any } {
+    return params ? { HyperParameters: params } : {};
   }
 
-  private renderTags(tags: {[key: string]: any} | undefined): {[key: string]: any} {
-    return (tags) ? { Tags: Object.keys(tags).map(key => ({ Key: key, Value: tags[key] })) } : {};
+  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
-  private renderVpcConfig(config: VpcConfig | undefined): {[key: string]: any} {
-    return (config) ? { VpcConfig: {
-      SecurityGroupIds: Lazy.listValue({ produce: () => (this.securityGroups.map(sg => (sg.securityGroupId))) }),
-      Subnets: this.subnets,
-    }} : {};
+  private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
+    return config
+      ? {
+        VpcConfig: {
+          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          Subnets: this.subnets,
+        },
+      }
+      : {};
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
     // set the sagemaker role or create new one
-    this._grantPrincipal = this._role = this.props.role || new iam.Role(this, 'SagemakerRole', {
-      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-      inlinePolicies: {
-        CreateTrainingJob: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: [
-                'cloudwatch:PutMetricData',
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-                'logs:CreateLogGroup',
-                'logs:DescribeLogStreams',
-                'ecr:GetAuthorizationToken',
-                ...this.props.vpcConfig
-                  ? [
-                    'ec2:CreateNetworkInterface',
-                    'ec2:CreateNetworkInterfacePermission',
-                    'ec2:DeleteNetworkInterface',
-                    'ec2:DeleteNetworkInterfacePermission',
-                    'ec2:DescribeNetworkInterfaces',
-                    'ec2:DescribeVpcs',
-                    'ec2:DescribeDhcpOptions',
-                    'ec2:DescribeSubnets',
-                    'ec2:DescribeSecurityGroups',
-                  ]
-                  : [],
-              ],
-              resources: ['*'], // Those permissions cannot be resource-scoped
-            }),
-          ],
-        }),
-      },
-    });
+    this._grantPrincipal = this._role =
+      this.props.role ||
+      new iam.Role(this, 'SagemakerRole', {
+        assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+        inlinePolicies: {
+          CreateTrainingJob: new iam.PolicyDocument({
+            statements: [
+              new iam.PolicyStatement({
+                actions: [
+                  'cloudwatch:PutMetricData',
+                  'logs:CreateLogStream',
+                  'logs:PutLogEvents',
+                  'logs:CreateLogGroup',
+                  'logs:DescribeLogStreams',
+                  'ecr:GetAuthorizationToken',
+                  ...(this.props.vpcConfig
+                    ? [
+                      'ec2:CreateNetworkInterface',
+                      'ec2:CreateNetworkInterfacePermission',
+                      'ec2:DeleteNetworkInterface',
+                      'ec2:DeleteNetworkInterfacePermission',
+                      'ec2:DescribeNetworkInterfaces',
+                      'ec2:DescribeVpcs',
+                      'ec2:DescribeDhcpOptions',
+                      'ec2:DescribeSubnets',
+                      'ec2:DescribeSecurityGroups',
+                    ]
+                    : []),
+                ],
+                resources: ['*'], // Those permissions cannot be resource-scoped
+              }),
+            ],
+          }),
+        },
+      });
 
     if (this.props.outputDataConfig.encryptionKey) {
       this.props.outputDataConfig.encryptionKey.grantEncrypt(this._role);
@@ -392,14 +398,18 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     ];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule',
+            }),
+          ],
+        }),
+      );
     }
 
     return policyStatements;

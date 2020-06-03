@@ -11,7 +11,7 @@ import { Construct, Duration } from '@aws-cdk/core';
  * Task to train a machine learning model using Amazon SageMaker
  * @experimental
  */
-export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}
+export interface ISageMakerTask extends iam.IGrantable {}
 
 /**
  * Specify the training algorithm and algorithm-specific metadata
