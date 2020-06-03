@@ -129,7 +129,7 @@ test('create complex transform job', () => {
       SOMEVAR: 'myvalue',
     },
     maxConcurrentTransforms: 3,
-    maxPayloadInMB: 100,
+    maxPayload: cdk.Size.mebibytes(100),
   });
 
   // THEN

@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, Size, Stack } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
@@ -11,7 +11,6 @@ import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformRe
  *  @experimental
  */
 export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
-
   /**
    * Training Job Name.
    */
@@ -36,7 +35,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
    *
    * @default - No environment variables
    */
-  readonly environment?: {[key: string]: string};
+  readonly environment?: { [key: string]: string };
 
   /**
    * Maximum number of parallel requests that can be sent to each instance in a transform job.
@@ -51,7 +50,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
    *
    * @default 6
    */
-  readonly maxPayloadInMB?: number;
+  readonly maxPayload?: Size;
 
   /**
    * Name of the model that you want to use for the transform job.
@@ -63,7 +62,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
    *
    * @default - No tags
    */
-  readonly tags?: {[key: string]: string};
+  readonly tags?: { [key: string]: string };
 
   /**
    * Dataset to be transformed and the Amazon S3 location where it is stored.
@@ -89,7 +88,6 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
  *  @experimental
  */
 export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -121,15 +119,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     }
 
     // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
-    this.transformInput = (props.transformInput.transformDataSource.s3DataSource.s3DataType) ? (props.transformInput) :
-      Object.assign({}, props.transformInput,
-        { transformDataSource:
-                    { s3DataSource:
-                        { ...props.transformInput.transformDataSource.s3DataSource,
-                          s3DataType: S3DataType.S3_PREFIX,
-                        },
-                    },
-        });
+    this.transformInput = props.transformInput.transformDataSource.s3DataSource.s3DataType
+      ? props.transformInput
+      : Object.assign({}, props.transformInput, {
+        transformDataSource: { s3DataSource: { ...props.transformInput.transformDataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
+      });
 
     // set the default value for the transform resources
     this.transformResources = props.transformResources || {
@@ -140,7 +134,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     this.taskPolicies = this.makePolicyStatements();
   }
 
-  public renderTask(): any {
+  protected renderTask(): any {
     return {
       Resource: integrationResourceArn('sagemaker', 'createTransformJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
@@ -159,64 +153,64 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return this._role;
   }
 
-  private renderParameters(): {[key: string]: any} {
+  private renderParameters(): { [key: string]: any } {
     return {
-      ...(this.props.batchStrategy) ? { BatchStrategy: this.props.batchStrategy } : {},
-      ...(this.renderEnvironment(this.props.environment)),
-      ...(this.props.maxConcurrentTransforms) ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {},
-      ...(this.props.maxPayloadInMB) ? { MaxPayloadInMB: this.props.maxPayloadInMB } : {},
+      ...(this.props.batchStrategy ? { BatchStrategy: this.props.batchStrategy } : {}),
+      ...this.renderEnvironment(this.props.environment),
+      ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
+      ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
       ModelName: this.props.modelName,
-      ...(this.renderTags(this.props.tags)),
-      ...(this.renderTransformInput(this.transformInput)),
+      ...this.renderTags(this.props.tags),
+      ...this.renderTransformInput(this.transformInput),
       TransformJobName: this.props.transformJobName,
-      ...(this.renderTransformOutput(this.props.transformOutput)),
-      ...(this.renderTransformResources(this.transformResources)),
+      ...this.renderTransformOutput(this.props.transformOutput),
+      ...this.renderTransformResources(this.transformResources),
     };
   }
 
-  private renderTransformInput(input: TransformInput): {[key: string]: any} {
+  private renderTransformInput(input: TransformInput): { [key: string]: any } {
     return {
       TransformInput: {
-        ...(input.compressionType) ? { CompressionType: input.compressionType } : {},
-        ...(input.contentType) ? { ContentType: input.contentType } : {},
+        ...(input.compressionType ? { CompressionType: input.compressionType } : {}),
+        ...(input.contentType ? { ContentType: input.contentType } : {}),
         DataSource: {
           S3DataSource: {
             S3Uri: input.transformDataSource.s3DataSource.s3Uri,
             S3DataType: input.transformDataSource.s3DataSource.s3DataType,
           },
         },
-        ...(input.splitType) ? { SplitType: input.splitType } : {},
+        ...(input.splitType ? { SplitType: input.splitType } : {}),
       },
     };
   }
 
-  private renderTransformOutput(output: TransformOutput): {[key: string]: any} {
+  private renderTransformOutput(output: TransformOutput): { [key: string]: any } {
     return {
       TransformOutput: {
         S3OutputPath: output.s3OutputPath,
-        ...(output.encryptionKey) ? { KmsKeyId: output.encryptionKey.keyArn } : {},
-        ...(output.accept) ? { Accept: output.accept } : {},
-        ...(output.assembleWith) ? { AssembleWith: output.assembleWith } : {},
+        ...(output.encryptionKey ? { KmsKeyId: output.encryptionKey.keyArn } : {}),
+        ...(output.accept ? { Accept: output.accept } : {}),
+        ...(output.assembleWith ? { AssembleWith: output.assembleWith } : {}),
       },
     };
   }
 
-  private renderTransformResources(resources: TransformResources): {[key: string]: any} {
+  private renderTransformResources(resources: TransformResources): { [key: string]: any } {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
         InstanceType: 'ml.' + resources.instanceType,
-        ...(resources.volumeKmsKeyId) ? { VolumeKmsKeyId: resources.volumeKmsKeyId.keyArn } : {},
+        ...(resources.volumeKmsKeyId ? { VolumeKmsKeyId: resources.volumeKmsKeyId.keyArn } : {}),
       },
     };
   }
 
-  private renderEnvironment(environment: {[key: string]: any} | undefined): {[key: string]: any} {
-    return (environment) ? { Environment: environment } : {};
+  private renderEnvironment(environment: { [key: string]: any } | undefined): { [key: string]: any } {
+    return environment ? { Environment: environment } : {};
   }
 
-  private renderTags(tags: {[key: string]: any} | undefined): {[key: string]: any} {
-    return (tags) ? { Tags: Object.keys(tags).map(key => ({ Key: key, Value: tags[key] })) } : {};
+  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {
@@ -226,9 +220,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     if (this._role === undefined) {
       this._role = new iam.Role(this, 'SagemakerTransformRole', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-        ],
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')],
       });
     }
 
@@ -236,11 +228,13 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob'],
-        resources: [stack.formatArn({
-          service: 'sagemaker',
-          resource: 'transform-job',
-          resourceName: '*',
-        })],
+        resources: [
+          stack.formatArn({
+            service: 'sagemaker',
+            resource: 'transform-job',
+            resourceName: '*',
+          }),
+        ],
       }),
       new iam.PolicyStatement({
         actions: ['sagemaker:ListTags'],
@@ -256,14 +250,18 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     ];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule',
-        }) ],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule',
+            }),
+          ],
+        }),
+      );
     }
 
     return policyStatements;
