@@ -1,27 +1,25 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as core from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
+import { Provider } from '../provider-framework';
 import { CfncliLayer } from './cfncli-layer';
 
 const CLOUDFORMATION_IAM_PATH = '/cloudformation/';
-const BUCKET_RESOURCE_PROVIDER = 's3://awscdk-cloudformation-resource-provider';
-const REGISTER_PROVIDER_RESOURCE_TYPE = 'Custom::AWSCDK-CloudFormation-ResourceTypeProvider';
-const HANDLER_DIR = path.join(__dirname, 'resource-provider-handler');
+const BUCKET_RESOURCE_PROVIDERS = 's3://awscdk-resource-type-providers';
+const REGISTER_PROVIDER_RESOURCE_TYPE = 'Custom::AWSCDK-ResourceTypeProvider';
+const HANDLER_DIR = path.join(__dirname, 'runtime');
 const HANDLER_RUNTIME = lambda.Runtime.PYTHON_3_7;
 
 /**
  * A IAM role used by CloudFormation when sending
- * resource provider's log and metrics to CloudWatch.
- *
- * @internal
+ * resource type provider's log and metrics to CloudWatch.
  */
 export class LogDeliveryRole extends iam.Role {
 
   constructor(scope: core.Construct, id: string, props?: iam.RoleProps) {
     super(scope, id, {
-      description: 'Role used by CloudFormation when sending resource provider\'s log and metrics to CloudWatch.',
+      description: 'Role used by CloudFormation when sending resource type provider\'s log and metrics to CloudWatch.',
       maxSessionDuration: core.Duration.hours(12),
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('cloudformation.amazonaws.com'),
@@ -54,21 +52,19 @@ export class LogDeliveryRole extends iam.Role {
 
 /**
  * A custom resource that handles adding a resource type to the CloudFormation registry.
- *
- * @internal
  */
-export class ResourceTypeProvider extends core.NestedStack {
+export class RegisterResourceTypeProvider extends core.NestedStack {
 
   public static getOrCreate(scope: core.Construct) {
     const stack = core.Stack.of(scope);
-    const uid = '@aws-cdk/aws-cloudformation.ResourceTypeProvider';
-    return stack.node.tryFindChild(uid) as ResourceTypeProvider || new ResourceTypeProvider(stack, uid);
+    const uid = '@aws-cdk/custom-resources.RegisterResourceTypeProvider';
+    return stack.node.tryFindChild(uid) as RegisterResourceTypeProvider || new RegisterResourceTypeProvider(stack, uid);
   }
 
   /**
    * The provider to use for custom resources.
    */
-  public readonly provider: cr.Provider;
+  public readonly provider: Provider;
 
   /**
    * The IAM roles used by the provider's lambda handlers.
@@ -126,7 +122,7 @@ export class ResourceTypeProvider extends core.NestedStack {
       resources: [ '*' ],
     }));
 
-    this.provider = new cr.Provider(this, 'Provider', {
+    this.provider = new Provider(this, 'Provider', {
       onEventHandler: onEvent,
       isCompleteHandler: isComplete,
       totalTimeout: core.Duration.hours(1),
@@ -147,7 +143,7 @@ export class ResourceTypeProvider extends core.NestedStack {
 /**
  * Properties for defining CloudFormation Resource Provider.
  */
-export interface ResourceProviderProps {
+export interface ResourceTypeProviderProps {
   /**
    * The name of the type being registered.
    */
@@ -202,11 +198,9 @@ export interface ResourceProviderProps {
 }
 
 /**
- * Construct for defining CloudFormation Resource Provider.
- * 
- * @internal
+ * Construct for defining a CloudFormation Resource Type Provider.
  */
-export class ResourceProvider extends core.Construct {
+export class ResourceTypeProvider extends core.Construct {
   /**
    * The name of the registered type.
    *
@@ -249,7 +243,7 @@ export class ResourceProvider extends core.Construct {
    */
   public readonly semanticVersion: string;
 
-  constructor(scope: core.Construct, id: string, props: ResourceProviderProps) {
+  constructor(scope: core.Construct, id: string, props: ResourceTypeProviderProps) {
     super(scope, id);
 
     let serviceToken = props.serviceToken;
@@ -260,7 +254,7 @@ export class ResourceProvider extends core.Construct {
     }
 
     if (!serviceToken) {
-      const provider = ResourceTypeProvider.getOrCreate(this);
+      const provider = RegisterResourceTypeProvider.getOrCreate(this);
       serviceToken = provider.serviceToken;
       logRole = provider.logRole;
     }
@@ -271,9 +265,9 @@ export class ResourceProvider extends core.Construct {
     const semanticVersion = props.semanticVersion || '0.1.0';
     const hypenatedName = props.typeName.replace(/::/g, '-').toLowerCase();
     const schemaHandlerPackage = props.schemaHandlerPackage
-      || `${BUCKET_RESOURCE_PROVIDER}/${hypenatedName}-${semanticVersion}.zip`;
+      || `${BUCKET_RESOURCE_PROVIDERS}/${hypenatedName}-${semanticVersion}.zip`;
 
-    const resource = new core.CustomResource(this, 'ResourceProvider', {
+    const resource = new core.CustomResource(this, 'ResourceTypeProvider', {
       serviceToken: serviceToken,
       resourceType: REGISTER_PROVIDER_RESOURCE_TYPE,
       properties: {

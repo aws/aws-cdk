@@ -1,9 +1,8 @@
+import * as crypto from 'crypto';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as core from '@aws-cdk/core';
-import * as crypto from 'crypto';
 
 const CFNCLI_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:665331858954:applications/lambda-layer-cfncli';
-
 const CFNCLI_APP_VERSION = '0.1.2';
 
 export interface CfncliLayerProps {

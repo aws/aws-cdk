@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 from rpdk.core.project import Project
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
+LOGGER.setLevel(logging.INFO)
 LOGGER.info('Dependency "boto" version: %s' % boto3.__version__)
 LOGGER.info('Dependency "cfn-cli" version: %s' % rpdk.core.__version__)
 
@@ -74,6 +74,7 @@ def remove_previous_versions(client, props, deregister_completely=False):
         deregister_arn = resource_type['Arn']
         if i == 0:
           if deregister_completely == True:
+            # strip out version id from arn
             deregister_arn = deregister_arn[:-9]
           else:
             deregister_arn = None
