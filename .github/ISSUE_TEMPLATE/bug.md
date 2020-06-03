@@ -33,6 +33,7 @@ what is the error message you are seeing?
 
   - **CLI Version      :**
   - **Framework Version:**
+  - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS               :**
   - **Language         :**
 
