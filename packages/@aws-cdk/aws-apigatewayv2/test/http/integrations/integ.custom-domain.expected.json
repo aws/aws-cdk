@@ -1,41 +1,163 @@
 {
   "Resources": {
+    "echohandlerServiceRole833A8F7A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            }
+          }],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [{
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            ]
+          ]
+        }]
+      }
+    },
+    "echohandler8F648AB2": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, headers: { \"content-type\": \"application/json\"  }, body: JSON.stringify(event) }; };"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "echohandlerServiceRole833A8F7A",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "echohandlerServiceRole833A8F7A"
+      ]
+    },
+    "echohandlerinteghttpproxyHttpProxyProdApiDefaultRoute20082F68PermissionBE86C6B3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpProxyProdApi368B6161"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "echohandlerinteghttpproxyHttpProxyBetaApiDefaultRouteC328B302Permission40FB964B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpProxyBetaApiBFB4DA5E"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
     "DNFDC76583": {
       "Type": "AWS::ApiGatewayV2::DomainName",
       "Properties": {
-        "DomainName": "demo.pahud.dev",
-        "DomainNameConfigurations": [
-          {
-            "CertificateArn": "arn:aws:acm:ap-northeast-1:903779448426:certificate/293cf875-ca98-4c2e-a797-e1cf6df2553c",
-            "EndpointType": "REGIONAL"
-          }
-        ]
+        "DomainName": "apigv2.demo.com",
+        "DomainNameConfigurations": [{
+          "CertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate",
+          "EndpointType": "REGIONAL"
+        }]
       }
     },
-    "HttpProxyApiD0217C67": {
+    "HttpProxyProdApi368B6161": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "HttpProxyApi",
+        "Name": "HttpProxyProdApi",
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850": {
+    "HttpProxyProdApiDefaultRouteDefaultRouteIntegration702F0DF7": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyApiD0217C67"
+          "Ref": "HttpProxyProdApi368B6161"
         },
-        "IntegrationType": "HTTP_PROXY",
-        "IntegrationMethod": "ANY",
-        "IntegrationUri": "https://upstream.com",
-        "PayloadFormatVersion": "1.0"
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
       }
     },
-    "HttpProxyApiDefaultRoute8AF66B5C": {
+    "HttpProxyProdApiDefaultRoute40EFC108": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyApiD0217C67"
+          "Ref": "HttpProxyProdApi368B6161"
         },
         "RouteKey": "$default",
         "Target": {
@@ -44,36 +166,128 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850"
+                "Ref": "HttpProxyProdApiDefaultRouteDefaultRouteIntegration702F0DF7"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyApiDefaultStageA88F9DE3": {
+    "HttpProxyProdApiDefaultStage0038B180": {
       "Type": "AWS::ApiGatewayV2::Stage",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyApiD0217C67"
+          "Ref": "HttpProxyProdApi368B6161"
         },
         "StageName": "$default",
         "AutoDeploy": true
       }
     },
-    "HttpProxyApiinteghttpproxyDNprod7F9D8BB4": {
+    "HttpProxyProdApiinteghttpproxyDNundefined52D0F7D7": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
-          "Ref": "HttpProxyApiD0217C67"
+          "Ref": "HttpProxyProdApi368B6161"
         },
-        "DomainName": "demo.pahud.dev",
-        "Stage": "$default",
-        "ApiMappingKey": "prod"
+        "DomainName": "apigv2.demo.com",
+        "Stage": "$default"
       },
       "DependsOn": [
         "DNFDC76583",
-        "HttpProxyApiDefaultStageA88F9DE3"
+        "HttpProxyProdApiDefaultStage0038B180"
+      ]
+    },
+    "HttpProxyProdApitesting225373A0": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "StageName": "testing",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyProdApiinteghttpproxyDNtestingFD46CE55": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "DomainName": "apigv2.demo.com",
+        "Stage": "testing",
+        "ApiMappingKey": "testing"
+      },
+      "DependsOn": [
+        "DNFDC76583",
+        "HttpProxyProdApitesting225373A0"
+      ]
+    },
+    "HttpProxyBetaApiBFB4DA5E": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "HttpProxyBetaApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "HttpProxyBetaApiDefaultRoute12DC547F": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyBetaApiDefaultStage4890F8A1": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyBetaApiinteghttpproxyDNbeta8D818B85": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "DomainName": "apigv2.demo.com",
+        "Stage": "$default",
+        "ApiMappingKey": "beta"
+      },
+      "DependsOn": [
+        "DNFDC76583",
+        "HttpProxyBetaApiDefaultStage4890F8A1"
       ]
     }
   },
@@ -87,19 +301,41 @@
       }
     },
     "DomainName": {
-      "Value": "demo.pahud.dev"
+      "Value": "apigv2.demo.com"
     },
     "CustomUDomainURL": {
-      "Value": "https://demo.pahud.dev"
+      "Value": "https://apigv2.demo.com"
     },
-    "Endpoint": {
+    "ProdApiEndpoint": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "https://",
             {
-              "Ref": "HttpProxyApiD0217C67"
+              "Ref": "HttpProxyProdApi368B6161"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "BetaApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpProxyBetaApiBFB4DA5E"
             },
             ".execute-api.",
             {

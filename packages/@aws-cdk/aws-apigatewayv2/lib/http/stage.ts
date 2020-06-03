@@ -10,6 +10,11 @@ const DEFAULT_STAGE_NAME = '$default';
  * Options to create a new stage for an HTTP API.
  */
 export interface HttpStageOptions extends CommonStageOptions {
+  /**
+   * The options for custom domain and api mapping
+   *
+   * @default - no custom domain and api mapping configuration
+   */
   readonly domainMapping?: DomainMappingOptions;
 }
 

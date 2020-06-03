@@ -7,11 +7,15 @@ export interface IDomainName extends IResource {
   /**
    * the logical ID of the domain name
    *
+   * @attribute
+   *
    */
   readonly domainNameId: string;
 
   /**
    * domain name string
+   *
+   * @attribute
    *
    */
   readonly domainName: string;

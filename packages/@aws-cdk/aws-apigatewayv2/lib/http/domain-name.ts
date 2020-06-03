@@ -2,7 +2,7 @@ import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 import { DomainNameAttributes,  IDomainName, IStage } from '../common';
-import { HttpStage } from './stage';
+// import { HttpStage } from './stage';
 
 /**
  * Options for DomainMapping
@@ -10,16 +10,23 @@ import { HttpStage } from './stage';
 export interface DomainMappingOptions  {
   /**
    * The domain name for the mapping
+   *
    */
-  readonly domainName: DomainName;
+  readonly domainName: IDomainName;
+
   /**
    * The API mapping key
+   *
+   * @default - empty key
    */
-  readonly mappingKey: string;
+  readonly mappingKey?: string;
+
   /**
    * The API Stage
+   *
+   * @default - the $default stage
    */
-  readonly stage?: HttpStage;
+  readonly stage?: IStage;
 }
 
 /**
@@ -74,16 +81,23 @@ export class DomainName extends Resource implements IDomainName {
 
   /**
    * the logical ID of the domain name
+   *
+   * @attribute
    */
   public readonly domainNameId: string;
+
   /**
    * The custom domain name for your API in Amazon API Gateway.
+   *
+   * @attribute
    */
   public readonly domainName: string;
+
   /**
    * The domain name associated with the regional endpoint for this custom domain name.
    */
   public readonly regionalDomainName: string;
+
   /**
    * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
    */

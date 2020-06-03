@@ -21,6 +21,7 @@
   - [Defining HTTP APIs](#defining-http-apis)
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
+  - [Custom Domain](#custom-domain)
 
 ## Introduction
 
@@ -141,48 +142,57 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 
 Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a single API stage. Use `HttpApiMapping` to map the your custom name to a specific stage. 
 
-The code snippet below configures a custom domain for your API and creates a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
+The code snippet below creates a custom domain and configures a default domain mapping for your API by creating a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
 
 ```ts
-const api = new HttpApi(stack, 'HttpProxyApi', {
-  defaultIntegration: new HttpProxyIntegration({ url }),
-  domainName: {
-    certificate: acmCertificateForExampleCom,
-    domainName: 'example.com',
-  }
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const domainName = 'example.com';
+
+const dn = new DomainName(stack, 'DN', {
+  domainName,
+  certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
+});
+
+const api = new HttpApi(stack, 'HttpProxyProdApi', {
+  defaultIntegration: new LambdaProxyIntegration({ handler }),
+  // https://${dn.domainName} goes to prodApi $default stage
+  defaultDomainMapping: {
+    domainName: dn,
+  },
 });
 ```
 
-To create a `HttpApiMapping` to a specific `Stage` other than the `$default`
+To create a new `Stage` with custom domain mapping:
 
 ```ts
-// create a new stage
-const beta = api.addStage('beta', {
+api.addStage('beta', {
   stageName: 'beta',
-});
-
-
-// create custom domain name with ACM certificate
-const domainName = new DomainName(stack, 'DomainName', {
-  domainName,
-  certificate,
-});
-
-// create the API mapping 
-new HttpApiMapping(stack, 'Mapping', {
-  api,
-  domainName,
-  stage: beta,
-});
+  autoDeploy: true,
+  // https://${dn.domainName}/beta goes to prodApi beta stage
+  domainMapping: {
+    domainName: dn,
+    mappingKey: 'beta',
+  },
+} );
 ```
 
-or simply
+You are allowed to create yet another 
 
 ```ts
-// create a custom domain name with API mapping to the beta stage
-api.addDomainName({
-  certificate,
-  domainName,
-  stage: beta,
+const apiDemo = new HttpApi(stack, 'DemoApi', {
+  defaultIntegration: new LambdaProxyIntegration({ handler }),
+  // https://${dn.domainName}/demo goes to apiDemo $default stage
+  defaultDomainMapping: {
+    domainName: dn,
+    mappingKey: 'demo',
+  },
 });
 ```
+
+The optional `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed to have one API mapping with empty `mappingKey`. In the sample above, the custom domain is associated with 3 API mapping resources across different APIs and Stages.
+
+|        API     |     Stage   |   URL  |
+| :------------: | :---------: | :----: |
+| api | $default  |   `https://${domainName}`  |
+| api | beta  |   `https://${domainName}/beta`  |
+| apiDemo | $default  |   `https://${domainName}/demo`  |

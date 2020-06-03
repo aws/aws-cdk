@@ -46,13 +46,11 @@ export interface HttpApiProps {
    */
   readonly corsPreflight?: CorsPreflightOptions;
 
-  // /**
-  //  * Configure a custom domain name and map it to this API.
-  //  *
-  //  * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
-  //  */
-  // readonly domainName?: DomainNameOptions;
-
+  /**
+   * Configure a custom domain with the API mapping resource to the HTTP API
+   *
+   * @default - no default domain mapping configured
+   */
   readonly defaultDomainMapping?: DomainMappingOptions;
 }
 
@@ -227,7 +225,10 @@ export class HttpApi extends Resource implements IHttpApi {
       ...options,
     });
     if (options.domainMapping) {
-      this.addDomainMapping(options.domainMapping);
+      this.addDomainMapping({
+        stage,
+        ...options.domainMapping,
+      });
     }
     return stage;
   }
@@ -268,6 +269,10 @@ export class HttpApi extends Resource implements IHttpApi {
     return dn;
   }
 
+  /**
+   * Create the `HttpApiMapping` resource with the custom domain and stage for the HTTP API
+   * @param options Options for domain name mapping
+   */
   public addDomainMapping(options: DomainMappingOptions) {
     const mappingKey = options.mappingKey;
     // const dn = this.addDomainName(options);

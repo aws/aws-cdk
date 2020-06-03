@@ -37,6 +37,16 @@ export interface HttpApiMappingProps {
 }
 
 /**
+ * The attributes used to import existing HttpApiMapping
+ */
+export interface HttpApiMappingAttributes {
+  /**
+   * The API mapping ID
+   */
+  readonly apiMappingId: string;
+}
+
+/**
  * Create a new API mapping for API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
@@ -44,9 +54,9 @@ export class HttpApiMapping extends Resource implements IHttpApiMapping {
   /**
    * import from API ID
    */
-  public static fromApiId(scope: Construct, id: string, apiMappingId: string): IHttpApiMapping {
+  public static fromHttpApiMappingAttributes(scope: Construct, id: string, attrs: HttpApiMappingAttributes): IHttpApiMapping {
     class Import extends Resource implements IHttpApiMapping {
-      public readonly apiMappingId = apiMappingId;
+      public readonly apiMappingId = attrs.apiMappingId;
     }
     return new Import(scope, id);
   }
