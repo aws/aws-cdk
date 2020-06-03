@@ -77,7 +77,7 @@ test('Task with all the parameters', () => {
       command: ['sudo', 'rm'],
       environment: { key: 'value' },
       instanceType: new ec2.InstanceType('MULTI'),
-      memory: 1024,
+      memory: cdk.Size.mebibytes(1024),
       gpuCount: 1,
       vcpus: 10,
     },

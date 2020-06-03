@@ -46,7 +46,7 @@ class RunBatchStack extends cdk.Stack {
       jobQueue: batchQueue,
       containerOverrides: {
         environment: { key: 'value' },
-        memory: 256,
+        memory: cdk.Size.mebibytes(256),
         vcpus: 1,
       },
       payload: sfn.TaskInput.fromObject({

@@ -2,7 +2,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Stack, withResolved } from '@aws-cdk/core';
+import { Construct, Size, Stack, withResolved } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -36,12 +36,11 @@ export interface BatchContainerOverrides {
   readonly instanceType?: ec2.InstanceType;
 
   /**
-   * The number of MiB of memory reserved for the job.
-   * This value overrides the value set in the job definition.
+   * Memory reserved for the job.
    *
-   * @default - No memory overrides
+   * @default - No memory overrides. The memory supplied in the job definition will be used.
    */
-  readonly memory?: number;
+  readonly memory?: Size;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -304,7 +303,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       Command: containerOverrides.command,
       Environment: environment,
       InstanceType: containerOverrides.instanceType?.toString(),
-      Memory: containerOverrides.memory,
+      Memory: containerOverrides.memory?.toMebibytes(),
       ResourceRequirements: resources,
       Vcpus: containerOverrides.vcpus,
     };
