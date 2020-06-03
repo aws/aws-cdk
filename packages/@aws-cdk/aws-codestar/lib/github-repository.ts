@@ -66,9 +66,9 @@ export interface GitHubRepositoryProps {
    * Indicates whether the GitHub repository is a private repository. If so, you choose who can see and commit to
    * this repository.
    *
-   * @default Visibility.PUBLIC
+   * @default RepositoryVisibility.PUBLIC
    */
-  readonly visibility?: Visibility;
+  readonly visibility?: RepositoryVisibility;
 
   /**
    * A comment or description about the new repository. This description is displayed in GitHub after the repository
@@ -98,10 +98,11 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
         s3: {
           bucket: props.contentsBucket.bucketName,
           key: props.contentsKey,
+          objectVersion: props.contentsS3Version,
         },
       },
-      enableIssues: props.enableIssues ?? false,
-      isPrivate: props.visibility === Visibility.PRIVATE ? true : false,
+      enableIssues: props.enableIssues ?? true,
+      isPrivate: props.visibility === RepositoryVisibility.PRIVATE ? true : false,
       repositoryDescription: props.description,
     });
 
@@ -113,7 +114,7 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
 /**
  * Visibility of the GitHubRepository
  */
-export enum Visibility {
+export enum RepositoryVisibility {
   /**
    * private repository
    */

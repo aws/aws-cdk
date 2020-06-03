@@ -22,8 +22,8 @@ import * as codestar from '@aws-cdk/aws-codestar';
 import * as s3 from '@aws-cdk/aws-s3'
 
 new codestar.GitHubRepository(stack, 'GitHubRepo', {
-  owner: 'owner-name',
-  repositoryName: 'my-new-repo',
+  owner: 'aws',
+  repositoryName: 'aws-cdk',
   accessToken: cdk.SecretValue.secretsManager('my-github-token', {
     jsonField: 'token',
   }),
