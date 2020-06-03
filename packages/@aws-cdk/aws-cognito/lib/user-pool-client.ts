@@ -146,6 +146,43 @@ export class OAuthScope {
 }
 
 /**
+ * Identity providers supported by the UserPoolClient
+ */
+export class UserPoolClientIdentityProvider {
+  /**
+   * Allow users to sign in using 'Facebook Login'.
+   * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
+   */
+  public static readonly FACEBOOK = new UserPoolClientIdentityProvider('Facebook');
+
+  /**
+   * Allow users to sign in using 'Login With Amazon'.
+   * A `UserPoolIdentityProviderAmazon` must be attached to the user pool.
+   */
+  public static readonly AMAZON = new UserPoolClientIdentityProvider('LoginWithAmazon');
+
+  /**
+   * Allow users to sign in directly as a user of the User Pool
+   */
+  public static readonly COGNITO = new UserPoolClientIdentityProvider('COGNITO');
+
+  /**
+   * Specify a provider not yet supported by the CDK.
+   * @param name name of the identity provider as recognized by CloudFormation property `SupportedIdentityProviders`
+   */
+  public static custom(name: string) {
+    return new UserPoolClientIdentityProvider(name);
+  }
+
+  /** The name of the identity provider as recognized by CloudFormation property `SupportedIdentityProviders` */
+  public readonly name: string;
+
+  private constructor(name: string) {
+    this.name = name;
+  }
+}
+
+/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -182,6 +219,15 @@ export interface UserPoolClientOptions {
    * @default true for new stacks
    */
   readonly preventUserExistenceErrors?: boolean;
+
+  /**
+   * The list of identity providers that users should be able to use to sign in using this client.
+   *
+   * @default - supports all identity providers that are registered with the user pool. If the user pool and/or
+   * identity providers are imported, either specify this option explicitly or ensure that the identity providers are
+   * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
+   */
+  readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
 }
 
 /**
@@ -262,7 +308,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
       allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
-      supportedIdentityProviders: [ 'COGNITO' ],
+      supportedIdentityProviders: this.configureIdentityProviders(props),
     });
 
     this.userPoolClientId = resource.ref;
@@ -325,5 +371,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       return undefined;
     }
     return prevent ? 'ENABLED' : 'LEGACY';
+  }
+
+  private configureIdentityProviders(props: UserPoolClientProps): string[] | undefined {
+    let providers: string[];
+    if (!props.supportedIdentityProviders) {
+      const providerSet = new Set(props.userPool.identityProviders.map((p) => p.providerName));
+      providerSet.add('COGNITO');
+      providers = Array.from(providerSet);
+    } else {
+      providers = props.supportedIdentityProviders.map((p) => p.name);
+    }
+    if (providers.length === 0) { return undefined; }
+    return Array.from(providers);
   }
 }

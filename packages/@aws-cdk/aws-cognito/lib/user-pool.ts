@@ -5,6 +5,7 @@ import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -526,6 +527,11 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
+   * Get all identity providers registered with this user pool.
+   */
+  readonly identityProviders: IUserPoolIdentityProvider[];
+
+  /**
    * Add a new app client to this user pool.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
    */
@@ -536,11 +542,17 @@ export interface IUserPool extends IResource {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
    */
   addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+
+  /**
+   * Register an identity provider with this user pool.
+   */
+  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
 }
 
 abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolId: string;
   public abstract readonly userPoolArn: string;
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
@@ -554,6 +566,10 @@ abstract class UserPoolBase extends Resource implements IUserPool {
       userPool: this,
       ...options,
     });
+  }
+
+  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
+    this.identityProviders.push(provider);
   }
 }
 

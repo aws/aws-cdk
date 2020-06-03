@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient } from '../lib';
+import { OAuthScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -363,6 +363,50 @@ describe('User Pool Client', () => {
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: ABSENT,
+    });
+  });
+
+  test('default supportedIdentityProviders', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    const idp = UserPoolIdentityProvider.fromProviderName(stack, 'imported', 'userpool-idp');
+    pool.registerIdentityProvider(idp);
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      SupportedIdentityProviders: [
+        'userpool-idp',
+        'COGNITO',
+      ],
+    });
+  });
+
+  test('supportedIdentityProviders', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('AllEnabled', {
+      userPoolClientName: 'AllEnabled',
+      supportedIdentityProviders: [
+        UserPoolClientIdentityProvider.COGNITO,
+        UserPoolClientIdentityProvider.FACEBOOK,
+        UserPoolClientIdentityProvider.AMAZON,
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'AllEnabled',
+      SupportedIdentityProviders: [ 'COGNITO', 'Facebook', 'LoginWithAmazon' ],
     });
   });
 });
