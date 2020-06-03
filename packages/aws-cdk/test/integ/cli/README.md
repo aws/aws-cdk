@@ -34,7 +34,7 @@ Compilation of the tests is done as part of the normal package build, at
 which point it is using the dependencies brought in by the containing
 `aws-cdk` package's `package.json`.
 
-When run in a non-develompent repo (as done during integ tests or canary runs),
+When run in a non-development repo (as done during integ tests or canary runs),
 the required dependencies are brought in just-in-time via `test-jest.sh`. Any
 new dependencies added for the tests should be added there as well. But, better
 yet, don't add any dependencies at all. You shouldn't need to, these tests
