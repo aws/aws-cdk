@@ -39,15 +39,15 @@ test('Two ways of shoing the version', async () => {
 });
 
 test('Termination protection', async () => {
-  await cdkDeploy('termination-protection');
+  const stackName = 'termination-protection';
+  await cdkDeploy(stackName);
 
   // Try a destroy that should fail
-  await expect(cdkDestroy('termination-protection')).rejects.toThrow('exited with error');
+  await expect(cdkDestroy(stackName)).rejects.toThrow('exited with error');
 
-  await cloudFormation('updateTerminationProtection', {
-    EnableTerminationProtection: false,
-    StackName: fullStackName('termination-protection'),
-  });
+  // Can update termination protection even though the change set doesn't contain changes
+  await cdkDeploy(stackName, { modEnv: { TERMINATION_PROTECTION: 'FALSE' } });
+  await cdkDestroy(stackName);
 });
 
 test('cdk synth', async () => {
