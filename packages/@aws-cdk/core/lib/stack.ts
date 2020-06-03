@@ -839,24 +839,60 @@ export class Stack extends Construct implements ITaggable {
   }
 }
 
-function merge(template: any, part: any) {
-  for (const section of Object.keys(part)) {
-    const src = part[section];
+function merge(template: any, fragment: any): void {
+  for (const section of Object.keys(fragment)) {
+    const src = fragment[section];
 
     // create top-level section if it doesn't exist
-    let dest = template[section];
+    const dest = template[section];
     if (!dest) {
-      template[section] = dest = src;
+      template[section] = src;
     } else {
-      // add all entities from source section to destination section
-      for (const id of Object.keys(src)) {
-        if (id in dest) {
-          throw new Error(`section '${section}' already contains '${id}'`);
-        }
-        dest[id] = src[id];
-      }
+      template[section] = mergeSection(section, dest, src);
     }
   }
+}
+
+function mergeSection(section: string, val1: any, val2: any): any {
+  switch (section) {
+    case 'Description':
+      return `${val1}\n${val2}`;
+    case 'AWSTemplateFormatVersion':
+      if (val1 != null && val2 != null && val1 !== val2) {
+        throw new Error(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
+      }
+      return val1 ?? val2;
+    case 'Resources':
+    case 'Conditions':
+    case 'Parameters':
+    case 'Outputs':
+    case 'Mappings':
+    case 'Metadata':
+    case 'Transform':
+      return mergeObjectsWithoutDuplicates(section, val1, val2);
+    default:
+      throw new Error(`CDK doesn't know how to merge two instances of the CFN template section '${section}' - ` +
+        'please remove one of them from your code');
+  }
+}
+
+function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): any {
+  if (typeof dest !== 'object') {
+    throw new Error(`Expecting ${JSON.stringify(dest)} to be an object`);
+  }
+  if (typeof src !== 'object') {
+    throw new Error(`Expecting ${JSON.stringify(src)} to be an object`);
+  }
+
+  // add all entities from source section to destination section
+  for (const id of Object.keys(src)) {
+    if (id in dest) {
+      throw new Error(`section '${section}' already contains '${id}'`);
+    }
+    dest[id] = src[id];
+  }
+
+  return dest;
 }
 
 /**

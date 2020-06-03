@@ -86,22 +86,31 @@ $ cdk list --app='node bin/main.js' --long
 ```
 
 #### `cdk synthesize`
-Synthesize the CDK app and outputs CloudFormation templates. If the application contains multiple stacks and no
-stack name is provided in the command-line arguments, the `--output` option is mandatory and a CloudFormation template
-will be generated in the output folder for each stack.
+Synthesizes the CDK app and produces a cloud assembly to a designated output (defaults to `cdk.out`)
 
-By default, templates are generated in YAML format. The `--json` option can be used to switch to JSON.
+Typically you don't interact directly with cloud assemblies. They are files that include everything
+needed to deploy your app to a cloud environment. For example, it includes an AWS CloudFormation
+template for each stack in your app, and a copy of any file assets or Docker images that you reference
+in your app.
+
+If your app contains a single stack or a stack is supplied as an argument to `cdk synth`, the CloudFormation template will also be displayed in the standard output (STDOUT) as `YAML`.
+
+If there are multiple stacks in your application, `cdk synth` will synthesize the cloud assembly to `cdk.out`.
 
 ```console
-$ # Generate the template for StackName and output it to STDOUT
-$ cdk synthesize --app='node bin/main.js' MyStackName
+$ # Synthesize cloud assembly for StackName and output the CloudFormation template to STDOUT
+$ cdk synth MyStackName
 
-$ # Generate the template for MyStackName and save it to template.yml
-$ cdk synth --app='node bin/main.js' MyStackName --output=template.yml
+$ # Synthesize cloud assembly for all the stacks and save them into cdk.out/
+$ cdk synth
 
-$ # Generate templates for all the stacks and save them into templates/
-$ cdk synth --app='node bin/main.js' --output=templates
+$ # Synthesize cloud assembly for StackName, but don't include dependencies
+$ cdk synth MyStackName --exclusively
 ```
+
+See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
+See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
+
 
 #### `cdk diff`
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently

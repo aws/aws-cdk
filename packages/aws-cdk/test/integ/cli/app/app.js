@@ -107,7 +107,7 @@ class IamStack extends cdk.Stack {
     super(parent, id, props);
 
     new iam.Role(this, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
   }
 }
@@ -280,7 +280,7 @@ new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 new YourStack(app, `${stackPrefix}-termination-protection`, {
-  terminationProtection: true,
+  terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
 });
 
 app.synth();

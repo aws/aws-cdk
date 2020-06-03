@@ -125,4 +125,67 @@ describe('User Pool Client', () => {
       },
     });
   });
+
+  describe('signInUrl', () => {
+    test('returns the expected URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+      const client = pool.addClient('Client', {
+        oAuth: {
+          callbackUrls: [ 'https://example.com' ],
+        },
+      });
+
+      // WHEN
+      const signInUrl = domain.signInUrl(client, {
+        redirectUri: 'https://example.com',
+      });
+
+      // THEN
+      expect(stack.resolve(signInUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com/login?client_id=',
+            { Ref: 'PoolClient8A3E5EB7' },
+            '&response_type=code&redirect_uri=https://example.com',
+          ],
+        ],
+      });
+    });
+
+    test('correctly uses the signInPath', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+      const client = pool.addClient('Client', {
+        oAuth: {
+          callbackUrls: [ 'https://example.com' ],
+        },
+      });
+
+      // WHEN
+      const signInUrl = domain.signInUrl(client, {
+        redirectUri: 'https://example.com',
+        signInPath: '/testsignin',
+      });
+
+      // THEN
+      expect(signInUrl).toMatch(/amazoncognito\.com\/testsignin\?/);
+    });
+  });
 });
