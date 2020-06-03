@@ -5,3 +5,4 @@ export const WAITER_STATE_MACHINE_ARN_ENV = 'WAITER_STATE_MACHINE_ARN';
 export const FRAMEWORK_ON_EVENT_HANDLER_NAME = 'onEvent';
 export const FRAMEWORK_IS_COMPLETE_HANDLER_NAME = 'isComplete';
 export const FRAMEWORK_ON_TIMEOUT_HANDLER_NAME = 'onTimeout';
+export const FRAMEWORK_HANDLER_TIMEOUT = 900000; // 15 minutes

@@ -2,6 +2,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 import * as https from 'https';
+import * as consts from './consts';
 
 async function defaultHttpRequest(options: https.RequestOptions, responseBody: string) {
   return new Promise((resolve, reject) => {
@@ -24,6 +25,8 @@ async function defaultStartExecution(req: AWS.StepFunctions.StartExecutionInput)
     sfn = new AWS.StepFunctions();
   }
 
+  sfn.config.update({httpOptions: { timeout: consts.FRAMEWORK_HANDLER_TIMEOUT }});
+
   return await sfn.startExecution(req).promise();
 }
 
@@ -31,6 +34,8 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
   if (!lambda) {
     lambda = new AWS.Lambda();
   }
+
+  lambda.config.update({httpOptions: { timeout: consts.FRAMEWORK_HANDLER_TIMEOUT }});
 
   return await lambda.invoke(req).promise();
 }
