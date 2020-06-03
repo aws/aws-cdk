@@ -27,7 +27,7 @@ falling prey to the [X/Y problem][2]!
   - **Module Version:** <!-- Version of the module in question -->
   - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS:** <!-- [all | Windows 10 | OSX Mojave | Ubuntu | etc... ] -->
-  - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
+  - **Language (Version):** <!-- [all | TypeScript (3.8.3) | Java (8)| Python (3.7.3) | etc... ] -->
 
 
 ### Other information
