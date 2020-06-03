@@ -1114,7 +1114,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   const gsiNonKeyAttributes: string[] = [];
-  for (let i = 0; i < 21; i++) {
+  for (let i = 0; i < 101; i++) {
     gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
   }
 
@@ -1124,7 +1124,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
     sortKey: GSI_SORT_KEY,
     projectionType: ProjectionType.INCLUDE,
     nonKeyAttributes: gsiNonKeyAttributes,
-  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
+  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 100/);
 });
 
 test('error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table', () => {
@@ -2180,6 +2180,63 @@ describe('import', () => {
           Version: '2012-10-17',
         },
         Roles: [stack.resolve(role.roleName)],
+      });
+    });
+
+    test('creates the correct index grant if indexes have been provided when importing', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        globalIndexes: ['global'],
+        localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
       });
     });
   });

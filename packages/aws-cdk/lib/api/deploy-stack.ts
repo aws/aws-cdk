@@ -173,6 +173,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
+  if (cloudFormationStack.stackStatus.isCreationFailure) {
+    debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
+    await cfn.deleteStack({ StackName: deployName }).promise();
+    const deletedStack = await waitForStack(cfn, deployName, false);
+    if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+      throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
+    }
+    // Update variable to mark that the stack does not exist anymore, but avoid
+    // doing an actual lookup in CloudFormation (which would be silly to do if
+    // we just deleted it).
+    cloudFormationStack = CloudFormationStack.doesNotExist(cfn, deployName);
+  }
+
   if (await canSkipDeploy(options, cloudFormationStack)) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     return {
@@ -199,15 +212,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
 
-  if (cloudFormationStack.stackStatus.isCreationFailure) {
-    debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
-    await cfn.deleteStack({ StackName: deployName }).promise();
-    const deletedStack = await waitForStack(cfn, deployName, false);
-    if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-      throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
-    }
-  }
-
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   const changeSetName = `CDK-${executionId}`;
@@ -230,6 +234,17 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
+
+  // Update termination protection only if it has changed.
+  const terminationProtection = stackArtifact.terminationProtection ?? false;
+  if (!!cloudFormationStack.terminationProtection !== terminationProtection) {
+    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
+    await cfn.updateTerminationProtection({
+      StackName: deployName,
+      EnableTerminationProtection: terminationProtection,
+    }).promise();
+    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
+  }
 
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
@@ -256,17 +271,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Stack %s has completed updating', deployName);
   } else {
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
-  }
-
-  // Update termination protection only if it has changed.
-  const terminationProtection = stackArtifact.terminationProtection ?? false;
-  if (cloudFormationStack.terminationProtection !== terminationProtection) {
-    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
-    await cfn.updateTerminationProtection({
-      StackName: deployName,
-      EnableTerminationProtection: terminationProtection,
-    }).promise();
-    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
   }
 
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
@@ -395,8 +399,7 @@ async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormat
   }
 
   // Termination protection has been updated
-  const terminationProtection = deployStackOptions.stack.terminationProtection ?? false; // cast to boolean for comparison
-  if (terminationProtection !== cloudFormationStack.terminationProtection) {
+  if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);
     return false;
   }
