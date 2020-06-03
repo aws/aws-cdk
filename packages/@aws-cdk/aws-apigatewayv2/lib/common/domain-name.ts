@@ -5,14 +5,6 @@ import { IResource } from '@aws-cdk/core';
  */
 export interface IDomainName extends IResource {
   /**
-   * the logical ID of the domain name
-   *
-   * @attribute
-   *
-   */
-  readonly domainNameId: string;
-
-  /**
    * domain name string
    *
    * @attribute
@@ -39,11 +31,6 @@ export interface IDomainName extends IResource {
  * custom domain name attributes
  */
 export interface DomainNameAttributes {
-  /**
-   * domain name logic ID
-   */
-  readonly domainNameId: string;
-
   /**
    * domain name string
    */

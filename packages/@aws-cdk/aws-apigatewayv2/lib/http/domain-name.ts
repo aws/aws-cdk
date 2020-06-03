@@ -71,7 +71,6 @@ export class DomainName extends Resource implements IDomainName {
    */
   public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
     class Import extends Resource implements IDomainName {
-      public readonly domainNameId = attrs.domainNameId;
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly domainName = attrs.domainName;

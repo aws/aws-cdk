@@ -95,13 +95,14 @@ describe('DomainName', () => {
     });
 
     const imported = DomainName.fromDomainNameAttributes(stack, 'dn', {
-      domainNameId: dn.domainNameId,
-      domainName: dn.domainNameId,
-      regionalDomainName: dn.regionalHostedZoneId,
+      domainName: dn.domainName,
+      regionalDomainName: dn.regionalDomainName,
       regionalHostedZoneId: dn.regionalHostedZoneId,
     });
 
-    expect(imported.domainNameId).toEqual(dn.domainNameId);
+    expect(imported.domainName).toEqual(dn.domainName);
+    expect(imported.regionalDomainName).toEqual(dn.regionalDomainName);
+    expect(imported.regionalHostedZoneId).toEqual(dn.regionalHostedZoneId);
 
   });
 
