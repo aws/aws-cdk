@@ -15,6 +15,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
 
     /// !show
+    const databaseEngine = rds.DatabaseInstanceEngine.ORACLE_SE1.withVersion('11.2');
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
       family: 'oracle-se1-11.2',
@@ -25,8 +26,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: databaseEngine,
       configurations: [
         {
           name: 'XMLDB',
@@ -44,9 +44,9 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: databaseEngine,
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',

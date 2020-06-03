@@ -1,4 +1,3 @@
-import { SecretRotationApplication } from '@aws-cdk/aws-secretsmanager';
 import { Test } from 'nodeunit';
 import { DatabaseClusterEngine } from '../lib';
 
@@ -8,7 +7,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA;
 
     // WHEN
-    const family = engine.parameterGroupFamily();
+    const family = engine.parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora5.6');
@@ -21,7 +20,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA_MYSQL;
 
     // WHEN
-    const family = engine.parameterGroupFamily();
+    const family = engine.parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora-mysql5.7');
@@ -34,7 +33,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA_POSTGRESQL;
 
     // WHEN
-    const family = engine.parameterGroupFamily();
+    const family = engine.parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora-postgresql11');
@@ -47,7 +46,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA;
 
     // WHEN
-    const family = engine.parameterGroupFamily('5.6.mysql_aurora.1.22.2');
+    const family = engine.withVersion('5.6.mysql_aurora.1.22.2').parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora5.6');
@@ -60,7 +59,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA_MYSQL;
 
     // WHEN
-    const family = engine.parameterGroupFamily('5.7.mysql_aurora.2.07.1');
+    const family = engine.withVersion('5.7.mysql_aurora.2.07.1').parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora-mysql5.7');
@@ -73,7 +72,7 @@ export = {
     const engine = DatabaseClusterEngine.AURORA_POSTGRESQL;
 
     // WHEN
-    const family = engine.parameterGroupFamily('11.6');
+    const family = engine.withVersion('11.6').parameterGroupFamily;
 
     // THEN
     test.equals(family, 'aurora-postgresql11');
@@ -82,29 +81,25 @@ export = {
   },
 
   'parameter group family'(test: Test) {
-    // WHEN
-    const engine1 = new DatabaseClusterEngine(
-      'no-parameter-group-family',
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
-    const engine2 = new DatabaseClusterEngine(
-      'aurora-postgresql',
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      [
-        { engineMajorVersion: '1.0', parameterGroupFamily: 'family-1'},
-        { engineMajorVersion: '2.0', parameterGroupFamily: 'family-2' },
-      ]);
+    const postgres = DatabaseClusterEngine.AURORA_POSTGRESQL;
 
-    // THEN
-    test.equals(engine1.parameterGroupFamily(), undefined);
-    test.equals(engine1.parameterGroupFamily('1'), undefined);
+    // the PostgreSQL engine knows about the following major versions: 9.6, 10 and 11
 
-    test.equals(engine2.parameterGroupFamily('3'), undefined);
-    test.equals(engine2.parameterGroupFamily('1'), undefined);
-    test.equals(engine2.parameterGroupFamily('1.1'), undefined);
-    test.equals(engine2.parameterGroupFamily('1.0'), 'family-1');
-    test.equals(engine2.parameterGroupFamily('2.0.2'), 'family-2');
+    test.throws(() => {
+      postgres.withVersion('8');
+    }, /No parameter group family found for database engine aurora-postgresql with version 8/);
+
+    test.throws(() => {
+      postgres.withVersion('9');
+    }, /No parameter group family found for database engine aurora-postgresql with version 9/);
+
+    test.throws(() => {
+      postgres.withVersion('9.7');
+    }, /No parameter group family found for database engine aurora-postgresql with version 9\.7/);
+
+    test.equals(postgres.withVersion('9.6').parameterGroupFamily, 'aurora-postgresql9.6');
+    test.equals(postgres.withVersion('9.6.1').parameterGroupFamily, 'aurora-postgresql9.6');
+    test.equals(postgres.withVersion('10.0').parameterGroupFamily, 'aurora-postgresql10');
 
     test.done();
   },

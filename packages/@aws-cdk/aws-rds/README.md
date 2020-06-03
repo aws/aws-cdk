@@ -1,4 +1,5 @@
 ## Amazon Relational Database Service Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -13,46 +14,83 @@
 ---
 <!--END STABILITY BANNER-->
 
-### Starting a Clustered Database
+```typescript
+import * as rds from '@aws-cdk/aws-rds';
+```
+
+### Starting a clustered database
 
 To set up a clustered database (like Aurora), define a `DatabaseCluster`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
-    engine: DatabaseClusterEngine.AURORA,
-    masterUser: {
-        username: 'clusteradmin'
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  masterUser: {
+    username: 'clusteradmin'
+  },
+  instanceProps: {
+    // optional, defaults to the engine's default instance type
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
     },
-    instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpcSubnets: {
-            subnetType: ec2.SubnetType.PUBLIC,
-        },
-        vpc
-    }
+    vpc
+  }
 });
 ```
+
+To use a specific version of the engine
+(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
+use instance methods on the passed `engine`:
+
+```typescript
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA.withVersion1dot17dot9(),
+  ...
+})
+```
+
+There's also a `.withVersion(string)` method,
+if the version you want to use doesn't have a separate method like `1.17.9` does above.
+See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html#cfn-rds-dbinstance-engineversion)
+for supported version for each engine type.
+
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
-### Starting an Instance Database
+### Starting an instance database
+
 To set up a instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
-const instance = new DatabaseInstance(stack, 'Instance', {
-    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-    masterUsername: 'syscdk',
-    vpc
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+  // optional, defaults to the engine's default instance type
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+  masterUsername: 'syscdk',
+  vpc
 });
 ```
+
 By default, the master password will be generated and stored in AWS Secrets Manager.
+
+You specify the engine version
+(which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine)
+the same as with cluster,
+by calling instance methods on the `engine`:
+
+```typescript
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.ORACLE_SE1.withVersion('19.0.0.0'),
+  ...
+});
+```
 
 To use the storage auto scaling option of RDS you can specify the maximum allocated storage.
 This is the upper limit to which RDS can automatically scale the storage. More info can be found
@@ -60,12 +98,13 @@ This is the upper limit to which RDS can automatically scale the storage. More i
 Example for max storage configuration:
 
 ```ts
-const instance = new DatabaseInstance(stack, 'Instance', {
-    engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-    masterUsername: 'syscdk',
-    vpc,
-    maxAllocatedStorage: 200
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.ORACLE_SE1,       
+  // optional, defaults to the engine's default instance type
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+  masterUsername: 'syscdk',
+  vpc,
+  maxAllocatedStorage: 200
 });
 ```
 
@@ -73,18 +112,18 @@ Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create a
 a source database respectively:
 
 ```ts
-new DatabaseInstanceFromSnapshot(stack, 'Instance', {
-    snapshotIdentifier: 'my-snapshot',
-    engine: rds.DatabaseInstanceEngine.POSTGRES,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
-    vpc
+new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+  snapshotIdentifier: 'my-snapshot',
+  engine: rds.DatabaseInstanceEngine.POSTGRES,     
+  // optional, defaults to the engine's default instance type
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
 });
 
-new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
-    sourceDatabaseInstance: sourceInstance,
-    engine: rds.DatabaseInstanceEngine.POSTGRES,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
-    vpc
+new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+  sourceDatabaseInstance: sourceInstance,
+  instanceType: rds.DatabaseInstanceEngine.POSTGRES.defaultInstanceType,
+  vpc,
 });
 ```
 
@@ -92,8 +131,8 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
-
 ### Instance events
+
 To define Amazon CloudWatch event rules for database instances, use the `onEvent`
 method:
 
@@ -123,7 +162,9 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
 ### Rotating credentials
+
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+
 ```ts
 instance.addRotationSingleUser(); // Will rotate automatically after 30 days
 ```
@@ -155,7 +196,9 @@ The rotation will start as soon as this user exists.
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
 ### Metrics
+
 Database instances expose metrics (`cloudwatch.Metric`):
+
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
@@ -182,11 +225,13 @@ data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postg
 The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported - 
 
 ```ts
+import * as s3 from '@aws-cdk/aws-s3';
+
 const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
-new DatabaseCluster(this, 'dbcluster', {
-    // ...
-    s3ImportBuckets: [ importBucket ],
-    s3ExportBuckets: [ exportBucket ]
+new rds.DatabaseCluster(this, 'dbcluster', {
+  // ...
+  s3ImportBuckets: [importBucket],
+  s3ExportBuckets: [exportBucket],
 });
 ```

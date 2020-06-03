@@ -645,6 +645,7 @@
         ],
         "EnablePerformanceInsights": true,
         "Engine": "oracle-se1",
+        "EngineVersion": "11.2",
         "Iops": 1000,
         "LicenseModel": "bring-your-own-license",
         "MasterUsername": {

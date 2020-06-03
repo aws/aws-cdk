@@ -11,8 +11,7 @@ export = {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.ORACLE_SE1.withVersion('11.2'),
       configurations: [
         {
           name: 'XMLDB',
@@ -42,8 +41,7 @@ export = {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.ORACLE_SE1.withVersion('11.2'),
       configurations: [
         {
           name: 'OEM',
@@ -100,8 +98,7 @@ export = {
 
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.ORACLE_SE1.withVersion('11.2'),
       configurations: [
         {
           name: 'OEM',

@@ -1,5 +1,7 @@
 export * from './cluster';
 export * from './cluster-ref';
+export * from './cluster-engine';
+export * from './instance-engine';
 export * from './props';
 export * from './parameter-group';
 export * from './database-secret';
