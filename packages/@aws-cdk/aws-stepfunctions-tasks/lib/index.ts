@@ -23,6 +23,7 @@ export * from './emr/emr-cancel-step';
 export * from './emr/emr-modify-instance-fleet-by-name';
 export * from './emr/emr-modify-instance-group-by-name';
 export * from './glue/run-glue-job-task';
+export * from './glue/start-job-run';
 export * from './batch/run-batch-job';
 export * from './batch/submit-job';
 export * from './dynamodb/call-dynamodb';
