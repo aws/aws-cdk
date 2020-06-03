@@ -85,6 +85,26 @@ export interface TreeArtifactProperties {
 }
 
 /**
+ * Artifact properties for embedded Cloud Assemblies
+ */
+export interface EmbeddedCloudAssemblyProperties  {
+  /**
+   * Relative path to the embedded Cloud Assembly
+   */
+  readonly directoryName: string;
+
+  /**
+   * Display name for the Cloud Assembly
+   *
+   * @default - The artifact ID
+   */
+  readonly displayName?: string;
+}
+
+/**
  * Properties for manifest artifacts
  */
-export type ArtifactProperties = AwsCloudFormationStackProperties | AssetManifestProperties | TreeArtifactProperties;
+export type ArtifactProperties = AwsCloudFormationStackProperties
+| AssetManifestProperties
+| TreeArtifactProperties
+| EmbeddedCloudAssemblyProperties;

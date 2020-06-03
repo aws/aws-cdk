@@ -1,3 +1,8 @@
+# Actually adding any artifact type will break the load() type signature  because I could have written
+# const x: A | B = Manifest.load();
+# and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
+change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
+
 removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingExternalId

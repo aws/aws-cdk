@@ -2,10 +2,10 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
+import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
-import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
-import { TreeCloudArtifact } from './tree-cloud-artifact';
 
 /**
  * The name of the root manifest file of the assembly.
@@ -68,6 +68,8 @@ export class CloudAssembly {
 
   /**
    * Returns a CloudFormation stack artifact from this assembly.
+   *
+   * Will only search the current assembly.
    *
    * @param stackName the name of the CloudFormation stack.
    * @throws if there is no stack artifact by that name
@@ -174,6 +176,13 @@ export class CloudAssembly {
  */
 export class CloudAssemblyBuilder {
   /**
+   * Turn the given optional output directory into a fixed output directory
+   */
+  public static determineOutputDirectory(outdir?: string) {
+    return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  }
+
+  /**
    * The root directory of the resulting cloud assembly.
    */
   public readonly outdir: string;
@@ -186,7 +195,7 @@ export class CloudAssemblyBuilder {
    * @param outdir The output directory, uses temporary directory if undefined
    */
   constructor(outdir?: string) {
-    this.outdir = outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+    this.outdir = CloudAssemblyBuilder.determineOutputDirectory(outdir);
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
@@ -198,7 +207,7 @@ export class CloudAssemblyBuilder {
         throw new Error(`${this.outdir} must be a directory`);
       }
     } else {
-      fs.mkdirSync(this.outdir);
+      fs.mkdirSync(this.outdir, { recursive: true });
     }
   }
 
@@ -251,6 +260,41 @@ export class CloudAssemblyBuilder {
     return new CloudAssembly(this.outdir);
   }
 
+  /**
+   * Begin an embedded assembly in this assembly
+   *
+   * If dirName is not given, it will default to artifactId.
+   */
+  public openEmbeddedAssembly(artifactId: string, dirName?: string) {
+    const directoryName = dirName ?? artifactId;
+    const innerAsmDir = path.join(this.outdir, directoryName);
+
+    // WHEN
+    this.addArtifact(artifactId, {
+      type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+      properties: {
+        directoryName,
+      } as cxschema.EmbeddedCloudAssemblyProperties,
+    });
+    return new CloudAssemblyBuilder(innerAsmDir);
+  }
+}
+
+/**
+ * Options for opening an embedded assembly
+ */
+export interface EmbeddedAssemblyOptions {
+  /**
+   * Identifier for this assembly
+   */
+  readonly id: string;
+
+  /**
+   * Display name for this assembly
+   *
+   * @default - Artifact ID is used as display name
+   */
+  readonly displayName?: string;
 }
 
 /**

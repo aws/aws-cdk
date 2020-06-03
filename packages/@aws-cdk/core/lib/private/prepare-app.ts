@@ -1,4 +1,5 @@
 import { ConstructOrder } from 'constructs';
+import { Assembly } from '../assembly';
 import { CfnResource } from '../cfn-resource';
 import { Construct, IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
@@ -15,8 +16,8 @@ import { resolveReferences } from './refs';
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: Construct) {
-  if (root.node.scope) {
-    throw new Error('prepareApp must be called on the root node');
+  if (root.node.scope && !Assembly.isAssembly(root)) {
+    throw new Error('prepareApp can only be called on an Assembly or a root construct');
   }
 
   // apply dependencies between resources in depending subtrees
@@ -32,7 +33,7 @@ export function prepareApp(root: Construct) {
   }
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare it's template asset.
+  // from the head of this queue to prepare its template asset.
   const queue = findAllNestedStacks(root);
 
   while (true) {
@@ -62,10 +63,20 @@ function defineNestedStackAsset(nestedStack: Stack) {
 function findAllNestedStacks(root: Construct) {
   const result = new Array<Stack>();
 
+  const includeStack = (stack: IConstruct): stack is Stack => {
+    if (!Stack.isStack(stack)) { return false; }
+    if (!stack.nested) { return false; }
+
+    // test: if we are not within an assembly, then include it.
+    if (!Assembly.of(stack)) { return true; }
+
+    return Assembly.of(stack) === root;
+  };
+
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
   for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
-    if (Stack.isStack(stack) && stack.nested) {
+    if (includeStack(stack)) {
       result.push(stack);
     }
   }
