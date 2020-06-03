@@ -2182,6 +2182,63 @@ describe('import', () => {
         Roles: [stack.resolve(role.roleName)],
       });
     });
+
+    test('creates the correct index grant if indexes have been provided when importing', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        globalIndexes: ['global'],
+        localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
   });
 });
 
