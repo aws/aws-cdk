@@ -2,13 +2,13 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Duration, Stack, withResolved } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Construct, Size, Stack, withResolved } from '@aws-cdk/core';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The overrides that should be sent to a container.
  */
-export interface ContainerOverrides {
+export interface BatchContainerOverrides {
   /**
    * The command to send to the container that overrides
    * the default command from the Docker image or the job definition.
@@ -36,12 +36,11 @@ export interface ContainerOverrides {
   readonly instanceType?: ec2.InstanceType;
 
   /**
-   * The number of MiB of memory reserved for the job.
-   * This value overrides the value set in the job definition.
+   * Memory reserved for the job.
    *
-   * @default - No memory overrides
+   * @default - No memory overrides. The memory supplied in the job definition will be used.
    */
-  readonly memory?: number;
+  readonly memory?: Size;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -65,7 +64,7 @@ export interface ContainerOverrides {
 /**
  * An object representing an AWS Batch job dependency.
  */
-export interface JobDependency {
+export interface BatchJobDependency {
   /**
    * The job ID of the AWS Batch job associated with this dependency.
    *
@@ -84,9 +83,8 @@ export interface JobDependency {
 /**
  * Properties for RunBatchJob
  *
- * @deprecated use `BatchSubmitJob`
  */
-export interface RunBatchJobProps {
+export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
   /**
    * The job definition used by this job.
    */
@@ -121,7 +119,7 @@ export interface RunBatchJobProps {
    *
    * @default - No container overrides
    */
-  readonly containerOverrides?: ContainerOverrides;
+  readonly containerOverrides?: BatchContainerOverrides;
 
   /**
    * A list of dependencies for the job.
@@ -131,14 +129,14 @@ export interface RunBatchJobProps {
    *
    * @default - No dependencies
    */
-  readonly dependsOn?: JobDependency[];
+  readonly dependsOn?: BatchJobDependency[];
 
   /**
-   * The payload to be passed as parametrs to the batch job
+   * The payload to be passed as parameters to the batch job
    *
    * @default - No parameters are passed
    */
-  readonly payload?: { [key: string]: any };
+  readonly payload?: sfn.TaskInput;
 
   /**
    * The number of times to move a job to the RUNNABLE status.
@@ -146,53 +144,32 @@ export interface RunBatchJobProps {
    * If the value of attempts is greater than one,
    * the job is retried on failure the same number of attempts as the value.
    *
-   * @default - 1
+   * @default 1
    */
   readonly attempts?: number;
-
-  /**
-   * The timeout configuration for this SubmitJob operation.
-   * The minimum value for the timeout is 60 seconds.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-timeout
-   *
-   * @default - No timeout
-   */
-  readonly timeout?: Duration;
-
-  /**
-   * The service integration pattern indicates different ways to call TerminateCluster.
-   *
-   * The valid value is either FIRE_AND_FORGET or SYNC.
-   *
-   * @default SYNC
-   */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
- * A Step Functions Task to run AWS Batch
+ * Task to submits an AWS Batch job from a job definition.
  *
- * @deprecated use `BatchSubmitJob`
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
  */
-export class RunBatchJob implements sfn.IStepFunctionsTask {
-  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+export class BatchSubmitJob extends sfn.TaskStateBase {
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
+    sfn.IntegrationPattern.REQUEST_RESPONSE,
+    sfn.IntegrationPattern.RUN_JOB,
+  ];
 
-  constructor(private readonly props: RunBatchJobProps) {
-    // validate integrationPattern
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
 
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
+  private readonly integrationPattern: sfn.IntegrationPattern;
 
-    if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
-      );
-    }
+  constructor(scope: Construct, id: string, private readonly props: BatchSubmitJobProps) {
+    super(scope, id, props);
+
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
+    validatePatternSupported(this.integrationPattern, BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
@@ -217,11 +194,11 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     // tslint:disable-next-line:no-unused-expression
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
-        throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+        throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);
       }
     });
 
-    // This is reuqired since environment variables must not start with AWS_BATCH;
+    // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
       Object.keys(props.containerOverrides.environment).forEach(key => {
@@ -232,22 +209,18 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         }
       });
     }
+
+    this.taskPolicies = this.configurePolicyStatements();
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  protected renderTask(): any {
     return {
-      resourceArn: getResourceArn(
-        'batch',
-        'submitJob',
-        this.integrationPattern,
-      ),
-      policyStatements: this.configurePolicyStatements(_task),
-      parameters: {
+      Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         JobDefinition: this.props.jobDefinition.jobDefinitionArn,
         JobName: this.props.jobName,
         JobQueue: this.props.jobQueue.jobQueueArn,
-        Parameters: this.props.payload,
-
+        Parameters: this.props.payload?.value,
         ArrayProperties:
           this.props.arraySize !== undefined
             ? { Size: this.props.arraySize }
@@ -272,18 +245,19 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         Timeout: this.props.timeout
           ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
           : undefined,
-      },
+      }),
+      TimeoutSeconds: undefined,
     };
   }
 
-  private configurePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
+  private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
       // Resource level access control for job-definition requires revision which batch does not support yet
       // Using the alternative permissions as mentioned here:
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
         resources: [
-          Stack.of(task).formatArn({
+          Stack.of(this).formatArn({
             service: 'batch',
             resource: 'job-definition',
             resourceName: '*',
@@ -294,7 +268,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       }),
       new iam.PolicyStatement({
         resources: [
-          Stack.of(task).formatArn({
+          Stack.of(this).formatArn({
             service: 'events',
             resource: 'rule/StepFunctionsGetEventsForBatchJobsRule',
           }),
@@ -304,7 +278,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     ];
   }
 
-  private configureContainerOverrides(containerOverrides: ContainerOverrides) {
+  private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
     let environment;
     if (containerOverrides.environment) {
       environment = Object.entries(containerOverrides.environment).map(
@@ -329,7 +303,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       Command: containerOverrides.command,
       Environment: environment,
       InstanceType: containerOverrides.instanceType?.toString(),
-      Memory: containerOverrides.memory,
+      Memory: containerOverrides.memory?.toMebibytes(),
       ResourceRequirements: resources,
       Vcpus: containerOverrides.vcpus,
     };
