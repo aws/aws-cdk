@@ -216,6 +216,7 @@ The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_Submit
 
 ```ts
 import * as batch from '@aws-cdk/aws-batch';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const batchQueue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [
@@ -234,12 +235,10 @@ const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
   },
 });
 
-const task = new sfn.Task(this, 'Submit Job', {
-  task: new tasks.RunBatchJob({
-    jobDefinition: batchJobDefinition,
-    jobName: 'MyJob',
-    jobQueue: batchQueue,
-  }),
+const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
+  jobDefinition: batchJobDefinition,
+  jobName: 'MyJob',
+  jobQueue: batchQueue,
 });
 ```
 
