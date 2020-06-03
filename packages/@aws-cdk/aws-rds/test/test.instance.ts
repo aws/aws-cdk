@@ -195,8 +195,9 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: rds.DatabaseInstanceEngine.oracleStandardEdition1({
+        engineVersion: '11.2',
+      }),
       configurations: [
         {
           name: 'XMLDB',
@@ -691,7 +692,7 @@ export = {
 
     // THEN
     tzSupportedEngines.forEach((engine) => {
-      test.ok(new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
         masterUsername: 'master',
@@ -701,7 +702,7 @@ export = {
     });
 
     tzUnsupportedEngines.forEach((engine) => {
-      test.throws(() => new rds.DatabaseInstance(stack, `${engine.name}-db`, {
+      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.SMALL),
         masterUsername: 'master',
