@@ -1,48 +1,51 @@
-import { IManagedPolicy, ManagedPolicy, Role, RoleProps, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IManagedPolicy, ManagedPolicy, Role, RoleProps, RolePropsBase, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct} from '@aws-cdk/core';
 
 /**
  * Properties for defining a Lambda Role
  */
-export interface LambdaRoleProps extends Omit<RoleProps, 'assumedBy'> {
+export interface LambdaRoleProps extends RolePropsBase {
   // We omit the assumedBy property because we know what it is for a Lambda Role
 
   /**
-   * Grants permission to manage elastic network interfaces to
-   * connect your function to a VPC.
+   * Grants permission to run the function in a VPC by
+   * adding the AWS Managed Policy "AWSLambdaVPCAccessExecutionRole" to the Role.
    *
    * @default false
    */
-  readonly vpcExecutionAccess?: boolean;
+  readonly allowVpcExecutionAccess?: boolean;
 
   /**
-   * Grants permission to read events from a Kinesis data stream or consumer.
+   * Grants permission to read events from a Kinesis data stream or consumer by
+   * adding the AWS Managed Policy "AWSLambdaKinesisExecutionRole" to the Role.
    *
    * @default false
    */
-  readonly kinesisExecutionAccess?: boolean;
+  readonly allowKinesisExecutionAccess?: boolean;
 
   /**
-   * Grants permission to read records from a DynamoDB stream.
+   * Grants permission to read records from a DynamoDB stream by
+   * adding the AWS Managed Policy "AWSLambdaDynamoDBExecutionRole" to the Role.
    *
    * @default false
    */
-  readonly dynamoDBExecutionAccess?: boolean;
+  readonly allowDynamoDBExecutionAccess?: boolean;
 
   /**
-   * Grants permission to read a message from an
-   * SQS queue.
+   * Grants permission to read a message from an SQS queue by
+   * adding the AWS Managed Policy "AWSLambdaSQSQueueExecutionRole" to the Role.
    *
    * @default false
    */
-  readonly sqsQueueExecutionAccess?: boolean;
+  readonly allowSqsQueueExecutionAccess?: boolean;
 
   /**
-   * Grants permission to upload trace data to X-Ray.
+   * Grants permission to upload trace data to X-Ray by
+   * adding the AWS Managed Policy "AWSXRayDaemonWriteAccess" to the Role.
    *
    * @default false
    */
-  readonly xrayDaemonWriteAccess?: boolean;
+  readonly allowXrayDaemonWriteAccess?: boolean;
 
 }
 
@@ -61,7 +64,7 @@ export class LambdaRole extends Role {
       - We add additional managed policies based on whether the function needs to run in a VPC,
         read Kinesis events, write to XRay, etc.
 
-    To do that, the LambdaRoleProps extend RoleProps, so they automatically stay in sync. We omit
+    To do that, the LambdaRoleProps extend RolePropsBase, so they automatically stay in sync. We omit
     the 'assumedBy' parameter because it isn't necessary, and we add new parameters for ease of
     adding additional policies to the Lambda function.
 
@@ -95,11 +98,11 @@ export class LambdaRole extends Role {
      * https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html
      */
     function getExecutionRoles(props: LambdaRoleProps) {
-      const vpcExecutionAccess = props.vpcExecutionAccess ?? false;
-      const kinesisExecutionAccess = props.kinesisExecutionAccess ?? false;
-      const dynamoDBExecutionAccess = props.dynamoDBExecutionAccess ?? false;
-      const sqsQueueExecutionAccess = props.sqsQueueExecutionAccess ?? false;
-      const xrayDaemonWriteAccess = props.xrayDaemonWriteAccess ?? false;
+      const vpcExecutionAccess = props.allowVpcExecutionAccess ?? false;
+      const kinesisExecutionAccess = props.allowKinesisExecutionAccess ?? false;
+      const dynamoDBExecutionAccess = props.allowDynamoDBExecutionAccess ?? false;
+      const sqsQueueExecutionAccess = props.allowSqsQueueExecutionAccess ?? false;
+      const xrayDaemonWriteAccess = props.allowXrayDaemonWriteAccess ?? false;
 
       const managedPolicies = new Array<IManagedPolicy>();
 

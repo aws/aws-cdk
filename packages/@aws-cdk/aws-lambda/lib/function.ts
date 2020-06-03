@@ -473,7 +473,7 @@ export class Function extends FunctionBase {
     this.environment = props.environment || {};
 
     this.role = props.role || new LambdaRole(this, 'ServiceRole', {
-      vpcExecutionAccess: props.vpc !== undefined,
+      allowVpcExecutionAccess: props.vpc !== undefined,
     });
     this.grantPrincipal = this.role;
 

@@ -13,7 +13,8 @@ import { AttachedPolicies } from './util';
 /**
  * Properties for defining an IAM Role
  */
-export interface RoleProps {
+export interface RoleProps extends RolePropsBase {
+
   /**
    * The IAM principal (i.e. `new ServicePrincipal('sns.amazonaws.com')`)
    * which can assume this role.
@@ -22,6 +23,12 @@ export interface RoleProps {
    * the `assumeRolePolicy` property.
    */
   readonly assumedBy: IPrincipal;
+}
+
+/**
+ * Base properties for defining an IAM Role
+ */
+export interface RolePropsBase {
 
   /**
    * ID that the role assumer needs to provide when assuming this role

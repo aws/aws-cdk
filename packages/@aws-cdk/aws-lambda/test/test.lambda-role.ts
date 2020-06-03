@@ -8,11 +8,11 @@ export = {
     const stack = new Stack();
 
     new LambdaRole(stack, 'Role', {
-      vpcExecutionAccess: true,
-      kinesisExecutionAccess: true,
-      dynamoDBExecutionAccess: true,
-      sqsQueueExecutionAccess: true,
-      xrayDaemonWriteAccess: true,
+      allowVpcExecutionAccess: true,
+      allowKinesisExecutionAccess: true,
+      allowDynamoDBExecutionAccess: true,
+      allowSqsQueueExecutionAccess: true,
+      allowXrayDaemonWriteAccess: true,
     });
 
     expect(stack).toMatch({
