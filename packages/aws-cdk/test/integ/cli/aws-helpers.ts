@@ -20,6 +20,7 @@ export let testEnv = async (): Promise<Env> => {
 
 export const cloudFormation = makeAwsCaller(AWS.CloudFormation);
 export const s3 = makeAwsCaller(AWS.S3);
+export const ecr = makeAwsCaller(AWS.ECR);
 export const sns = makeAwsCaller(AWS.SNS);
 export const iam = makeAwsCaller(AWS.IAM);
 export const lambda = makeAwsCaller(AWS.Lambda);
@@ -186,6 +187,10 @@ export async function emptyBucket(bucketName: string) {
       Quiet: false,
     },
   });
+}
+
+export async function deleteImageRepository(repositoryName: string) {
+  await ecr('deleteRepository', { repositoryName, force: true });
 }
 
 export async function deleteBucket(bucketName: string) {
