@@ -62,10 +62,12 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   }
 
   protected renderTask(): any {
+    // suffix of ':2' indicates that the output of the nested state machine should be JSON
+    // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
+    // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html
+    const suffix = this.integrationPattern === sfn.IntegrationPattern.RUN_JOB ? ':2' : '';
     return {
-      Resource:
-        integrationResourceArn('states', 'startExecution', this.integrationPattern) +
-        (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB ? ':2' : ''),
+      Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       Parameters: sfn.FieldUtils.renderObject({
         Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromDataAt('$').value,
         StateMachineArn: this.props.stateMachine.stateMachineArn,
