@@ -36,6 +36,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
+  - [Identity Providers](#identity-providers)
   - [App Clients](#app-clients)
   - [Domains](#domains)
 
@@ -334,6 +335,36 @@ const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-poo
   'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
 ```
 
+### Identity Providers
+
+Users that are part of a user pool can sign in either directly through a user pool, or federate through a third-party
+identity provider. Once configured, the Cognito backend will take care of integrating with the third-party provider.
+Read more about [Adding User Pool Sign-in Through a Third
+Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html).
+
+The following third-party identity providers are currentlhy supported in the CDK -
+
+* [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
+* [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+
+The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
+provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
+third-party identity provider.
+
+```ts
+const userpool = new UserPool(stack, 'Pool');
+
+const provider = new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
+  clientId: 'amzn-client-id',
+  clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+```
+
+In order to allow users to sign in with a third-party identity provider, the app client that faces the user should be
+configured to use the identity provider. See [App Clients](#app-clients) section to know more about App Clients.
+The identity providers should be configured on `identityProviders` property available on the `UserPoolClient` construct.
+
 ### App Clients
 
 An app is an entity within a user pool that has permission to call unauthenticated APIs (APIs that do not have an
@@ -417,6 +448,22 @@ pool.addClient('app-client', {
 });
 ```
 
+All identity providers created in the CDK app are automatically registered into the corresponding user pool. All app
+clients created in the CDK have all of the identity providers enabled by default. The 'Cognito' identity provider,
+that allows users to register and sign in directly with the Cognito user pool, is also enabled by default. 
+Alternatively, the list of supported identity providers for a client can be explicitly specified -
+
+```ts
+const pool = new UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  supportedIdentityProviders: [
+    UserPoolClientIdentityProvider.AMAZON,
+    UserPoolClientIdentityProvider.COGNITO,
+  ]
+});
+```
+
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
@@ -446,7 +493,7 @@ pool.addDomain('CustomDomain', {
 
 Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
-Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html)
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
 
 The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
 hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
