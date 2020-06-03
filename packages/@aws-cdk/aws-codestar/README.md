@@ -31,3 +31,7 @@ new codestar.GitHubRepository(stack, 'GitHubRepo', {
   contentsKey: 'import.zip',
 });
 ```
+
+## Update or Delete the GitHubRepository
+
+At this moment, updates to the `GitHubRepository` are not supported and the repository will not be deleted upon the deletion of the CloudFormation stack. You will need to update or delete the GitHub repository manually. 
