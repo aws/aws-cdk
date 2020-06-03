@@ -437,15 +437,15 @@ test('IAM diff', async () => {
 
   // Roughly check for a table like this:
   //
-  // ┌───┬─────────────────┬────────┬────────────────┬────────────────────────────┬───────────┐
-  // │   │ Resource        │ Effect │ Action         │ Principal                  │ Condition │
-  // ├───┼─────────────────┼────────┼────────────────┼────────────────────────────┼───────────┤
-  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazon.aws.com │           │
-  // └───┴─────────────────┴────────┴────────────────┴────────────────────────────┴───────────┘
+  // ┌───┬─────────────────┬────────┬────────────────┬────────────────────────────-──┬───────────┐
+  // │   │ Resource        │ Effect │ Action         │ Principal                     │ Condition │
+  // ├───┼─────────────────┼────────┼────────────────┼───────────────────────────────┼───────────┤
+  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.${AWS::URLSuffix} │           │
+  // └───┴─────────────────┴────────┴────────────────┴───────────────────────────────┴───────────┘
 
   expect(output).toContain('${SomeRole.Arn}');
   expect(output).toContain('sts:AssumeRole');
-  expect(output).toContain('ec2.amazon.aws.com');
+  expect(output).toContain('ec2.${AWS::URLSuffix}');
 });
 
 test('fast deploy', async () => {
