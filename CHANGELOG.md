@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.43.0](https://github.com/aws/aws-cdk/compare/v1.42.1...v1.43.0) (2020-06-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rds:** the default retention policy for RDS Cluster and DbInstance is now 'Snapshot'
+* **cognito:** OAuth flows `authorizationCodeGrant` and
+`implicitCodeGrant` in `UserPoolClient` are enabled by default.
+* **cognito:** `callbackUrl` property in `UserPoolClient` is now
+optional and has a default.
+* **cognito:** All OAuth scopes in a `UserPoolClient` are now enabled
+by default.
+
+### Features
+
+* **cfn-include:** add support for Conditions ([#8144](https://github.com/aws/aws-cdk/issues/8144)) ([33212d2](https://github.com/aws/aws-cdk/commit/33212d2c3adfc5a06ec4557787aea1b3cd1e8143))
+* **cognito:** addDomain() on an imported user pool ([#8123](https://github.com/aws/aws-cdk/issues/8123)) ([49c9f99](https://github.com/aws/aws-cdk/commit/49c9f99c4dfd73bf53a461a844a1d9b0c02d3761))
+* **cognito:** sign in url for a UserPoolDomain ([#8155](https://github.com/aws/aws-cdk/issues/8155)) ([e942936](https://github.com/aws/aws-cdk/commit/e94293675b0a9ebeb5876283d6a54427391469bd))
+* **cognito:** user pool identity provider with support for Facebook & Amazon ([#8134](https://github.com/aws/aws-cdk/issues/8134)) ([1ad919f](https://github.com/aws/aws-cdk/commit/1ad919fecf7cda45293efc3c0805b2eb5b49ed69))
+* **dynamodb:** allow providing indexes when importing a Table ([#8245](https://github.com/aws/aws-cdk/issues/8245)) ([9ee61eb](https://github.com/aws/aws-cdk/commit/9ee61eb96de54fcbb71e41a2db2c1c9ec6b7b8d9)), closes [#6392](https://github.com/aws/aws-cdk/issues/6392)
+* **events-targets:** kinesis stream as event rule target ([#8176](https://github.com/aws/aws-cdk/issues/8176)) ([21ebc2d](https://github.com/aws/aws-cdk/commit/21ebc2dfdcc202bac47083d4c7d06e1ae4df0709)), closes [#2997](https://github.com/aws/aws-cdk/issues/2997)
+* **lambda-nodejs:** allow passing env vars to container ([#8169](https://github.com/aws/aws-cdk/issues/8169)) ([1755cf2](https://github.com/aws/aws-cdk/commit/1755cf274b4da446272f109b55b20680beb34fe7)), closes [#8031](https://github.com/aws/aws-cdk/issues/8031)
+* **rds:** change the default retention policy of Cluster and DB Instance to Snapshot ([#8023](https://github.com/aws/aws-cdk/issues/8023)) ([2d83328](https://github.com/aws/aws-cdk/commit/2d833280be7a8550ab4a713e7213f1dd351f9767)), closes [#3298](https://github.com/aws/aws-cdk/issues/3298)
+* **redshift:** add initial L2 Redshift construct ([#5730](https://github.com/aws/aws-cdk/issues/5730)) ([703f0fa](https://github.com/aws/aws-cdk/commit/703f0fa6e2ba5e668d6a92200493d19d2af626c0)), closes [#5711](https://github.com/aws/aws-cdk/issues/5711)
+* **s3:** supports RemovalPolicy for BucketPolicy ([#8158](https://github.com/aws/aws-cdk/issues/8158)) ([cb71f34](https://github.com/aws/aws-cdk/commit/cb71f340343011a2a2de9758879a56e898b8e12c)), closes [#7415](https://github.com/aws/aws-cdk/issues/7415)
+* **stepfunctions-tasks:** start a nested state machine execution as a construct ([#8178](https://github.com/aws/aws-cdk/issues/8178)) ([3000dd5](https://github.com/aws/aws-cdk/commit/3000dd58cbe05cc483e30da6c8b18e9e3bf27e0f))
+* **stepfunctions-tasks:** task state construct to submit a job to AWS Batch ([#8115](https://github.com/aws/aws-cdk/issues/8115)) ([bc41cd5](https://github.com/aws/aws-cdk/commit/bc41cd5662314202c9bd8af87587990ad0b50282))
+
+
+### Bug Fixes
+
+* **apigateway:** deployment is not updated when OpenAPI definition is updated ([#8207](https://github.com/aws/aws-cdk/issues/8207)) ([d28c947](https://github.com/aws/aws-cdk/commit/d28c9473e0f480eba06e7dc9c260e4372501fc36)), closes [#8159](https://github.com/aws/aws-cdk/issues/8159)
+* **app-delivery:** could not use PipelineDeployStackAction more than once in a Stage ([#8217](https://github.com/aws/aws-cdk/issues/8217)) ([9a54447](https://github.com/aws/aws-cdk/commit/9a54447f2a7d7e3a5d31a57bb3b2e2b0555430a1)), closes [#3984](https://github.com/aws/aws-cdk/issues/3984) [#8183](https://github.com/aws/aws-cdk/issues/8183)
+* **cli:** termination protection not updated when change set has no changes ([#8275](https://github.com/aws/aws-cdk/issues/8275)) ([29d3145](https://github.com/aws/aws-cdk/commit/29d3145d1f4d7e17cd20f197d3c4955f48d07b37))
+* **codepipeline:** allow multiple CodeCommit source actions using events ([#8018](https://github.com/aws/aws-cdk/issues/8018)) ([103c144](https://github.com/aws/aws-cdk/commit/103c1449683ffc131b696faff8b16f0935a3c3f4)), closes [#7802](https://github.com/aws/aws-cdk/issues/7802)
+* **codepipeline:** correctly handle CODEBUILD_CLONE_REF in BitBucket source ([#7107](https://github.com/aws/aws-cdk/issues/7107)) ([ac001b8](https://github.com/aws/aws-cdk/commit/ac001b86bbff1801005cac1509e4480a30bf8f15))
+* **codepipeline:** unhelpful artifact validation messages ([#8256](https://github.com/aws/aws-cdk/issues/8256)) ([2a2406e](https://github.com/aws/aws-cdk/commit/2a2406e5cc16e3bcce4e355f54b31ca8a7c2ace6))
+* **core:** CFN version and description template sections were merged incorrectly ([#8251](https://github.com/aws/aws-cdk/issues/8251)) ([b7e328d](https://github.com/aws/aws-cdk/commit/b7e328da4e7720c27bd7e828ffe3d3ae9dc1d070)), closes [#8151](https://github.com/aws/aws-cdk/issues/8151)
+* **lambda:** `SingletonFunction.grantInvoke()` API fails with error 'No child with id' ([#8296](https://github.com/aws/aws-cdk/issues/8296)) ([a8b1815](https://github.com/aws/aws-cdk/commit/a8b1815f47b140b0fb06a3df0314c0fe28816fb6)), closes [#8240](https://github.com/aws/aws-cdk/issues/8240) [/github.com/aws/aws-cdk/commit/1819a6b5920bb22a60d09de870ea625455b90395#diff-73cb0d8933b87960893373bd263924e2](https://github.com/aws//github.com/aws/aws-cdk/commit/1819a6b5920bb22a60d09de870ea625455b90395/issues/diff-73cb0d8933b87960893373bd263924e2)
+* **rds:** cannot delete a stack with DbCluster set to 'Retain' ([#8110](https://github.com/aws/aws-cdk/issues/8110)) ([c2e534e](https://github.com/aws/aws-cdk/commit/c2e534ecab219be8cd8174b60da3b58072dcfd47)), closes [#5282](https://github.com/aws/aws-cdk/issues/5282)
+* **sqs:** unable to use CfnParameter 'valueAsNumber' to specify queue properties ([#8252](https://github.com/aws/aws-cdk/issues/8252)) ([8ec405f](https://github.com/aws/aws-cdk/commit/8ec405f5c016d0cbe1b9eeea6649e1e68f9b76e7)), closes [#7126](https://github.com/aws/aws-cdk/issues/7126)
+
 ## [1.42.1](https://github.com/aws/aws-cdk/compare/v1.42.0...v1.42.1) (2020-06-01)
 
 
