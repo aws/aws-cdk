@@ -92,29 +92,6 @@ test('deploy new style synthesis to new style bootstrap', async () => {
   });
 });
 
-test('deploy new style synthesis to new style bootstrap (with docker image)', async () => {
-  const bootstrapStackName = fullStackName('bootstrap-stack');
-
-  await cdk(['bootstrap',
-    '--toolkit-stack-name', bootstrapStackName,
-    '--qualifier', QUALIFIER,
-    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
-  ], {
-    modEnv: {
-      CDK_NEW_BOOTSTRAP: '1',
-    },
-  });
-
-  // Deploy stack that uses file assets
-  await cdkDeploy('docker', {
-    options: [
-      '--toolkit-stack-name', bootstrapStackName,
-      '--context', `@aws-cdk/core:bootstrapQualifier=${QUALIFIER}`,
-      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
-    ],
-  });
-});
-
 test('deploy old style synthesis to new style bootstrap', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
