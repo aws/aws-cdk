@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 
 /**
@@ -243,8 +243,8 @@ export interface UserVerificationConfig {
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
    *
-   * @default - 'Hello {username}, Your verification code is {####}' if VerificationEmailStyle.CODE is chosen,
-   * 'Hello {username}, Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * 'Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
   readonly emailBody?: string;
 
@@ -500,6 +500,13 @@ export interface UserPoolProps {
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
+
+  /**
+   * Whether sign-in aliases should be evaluated with case sensitivity.
+   * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
+   * @default true
+   */
+  readonly signInCaseSensitive?: boolean;
 }
 
 /**
@@ -519,33 +526,52 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
-   * Create a user pool client.
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
    */
-  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+}
+
+abstract class UserPoolBase extends Resource implements IUserPool {
+  public abstract readonly userPoolId: string;
+  public abstract readonly userPoolArn: string;
+
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
 }
 
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends Resource implements IUserPool {
+export class UserPool extends UserPoolBase {
   /**
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends Resource implements IUserPool {
+    class Import extends UserPoolBase {
       public readonly userPoolId = userPoolId;
       public readonly userPoolArn = Stack.of(this).formatArn({
         service: 'cognito-idp',
         resource: 'userpool',
         resourceName: userPoolId,
       });
-
-      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
-        return new UserPoolClient(this, clientId, {
-          userPool: this,
-          ...options,
-        });
-      }
     }
     return new Import(scope, id);
   }
@@ -637,6 +663,9 @@ export class UserPool extends Resource implements IUserPool {
         from: props.emailSettings?.from,
         replyToEmailAddress: props.emailSettings?.replyTo,
       }),
+      usernameConfiguration: undefinedIfNoKeys({
+        caseSensitive: props.signInCaseSensitive,
+      }),
     });
 
     this.userPoolId = userPool.ref;
@@ -659,28 +688,6 @@ export class UserPool extends Resource implements IUserPool {
     (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
-  /**
-   * Add a new app client to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
-   */
-  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
-    return new UserPoolClient(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Associate a domain to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
-   */
-  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
-    return new UserPoolDomain(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
@@ -690,7 +697,6 @@ export class UserPool extends Resource implements IUserPool {
   }
 
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
-    const USERNAME_TEMPLATE = '{username}';
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
 
@@ -699,7 +705,7 @@ export class UserPool extends Resource implements IUserPool {
     const smsMessage = props.userVerification?.smsMessage ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
 
     if (emailStyle === VerificationEmailStyle.CODE) {
-      const emailMessage = props.userVerification?.emailBody ?? `Hello ${USERNAME_TEMPLATE}, Your verification code is ${CODE_TEMPLATE}`;
+      const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
       if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
@@ -714,7 +720,7 @@ export class UserPool extends Resource implements IUserPool {
       };
     } else {
       const emailMessage = props.userVerification?.emailBody ??
-        `Hello ${USERNAME_TEMPLATE}, Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+        `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
       if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }

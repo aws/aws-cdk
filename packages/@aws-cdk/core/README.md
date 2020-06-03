@@ -426,14 +426,14 @@ export class Sum extends Construct {
     super(scope, id);
 
     const resourceType = 'Custom::Sum';
-    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
+    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
-      serviceToken: provider.serviceToken,
+      serviceToken: serviceToken,
       properties: {
         lhs: props.lhs,
         rhs: props.rhs
@@ -815,3 +815,41 @@ const stack = new Stack(app, 'StackName', {
 ```
 
 By default, termination protection is disabled.
+
+### CfnJson
+
+`CfnJson` allows you to postpone the resolution of a JSON blob from
+deployment-time. This is useful in cases where the CloudFormation JSON template
+cannot express a certain value.
+
+A common example is to use `CfnJson` in order to render a JSON map which needs
+to use intrinsic functions in keys. Since JSON map keys must be strings, it is
+impossible to use intrinsics in keys and `CfnJson` can help.
+
+The following example defines an IAM role which can only be assumed by
+principals that are tagged with a specific tag. 
+
+```ts
+const tagParam = new CfnParameter(this, 'TagName');
+
+const stringEquals = new CfnJson(this, 'ConditionJson', {
+  value: {
+    [`aws:PrincipalTag/${tagParam.valueAsString}`]: true
+  },
+});
+
+const principal = new AccountRootPrincipal().withConditions({
+  StringEquals: stringEquals,
+});
+
+new Role(this, 'MyRole', { assumedBy: principal });
+```
+
+**Explanation**: since in this example we pass the tag name through a parameter, it
+can only be resolved during deployment. The resolved value can be represented in
+the template through a `{ "Ref": "TagName" }`. However, since we want to use
+this value inside a [`aws:PrincipalTag/TAG-NAME`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principaltag)
+IAM operator, we need it in the *key* of a `StringEquals` condition. JSON keys
+*must be* strings, so to circumvent this limitation, we use `CfnJson`
+to "delay" the rendition of this template section to deploy-time. This means
+that the value of `StringEquals` in the template will be `{ "Fn::GetAtt": [ "ConditionJson", "Value" ] }`, and will only "expand" to the operator we synthesized during deployment.

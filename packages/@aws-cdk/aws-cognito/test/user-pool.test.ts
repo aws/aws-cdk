@@ -19,12 +19,12 @@ describe('User Pool', () => {
         AllowAdminCreateUserOnly: true,
         InviteMessageTemplate: ABSENT,
       },
-      EmailVerificationMessage: 'Hello {username}, Your verification code is {####}',
+      EmailVerificationMessage: 'The verification code to your new account is {####}',
       EmailVerificationSubject: 'Verify your new account',
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_CODE',
-        EmailMessage: 'Hello {username}, Your verification code is {####}',
+        EmailMessage: 'The verification code to your new account is {####}',
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
@@ -108,7 +108,7 @@ describe('User Pool', () => {
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
-        EmailMessageByLink: 'Hello {username}, Verify your account by clicking on {##Verify Email##}',
+        EmailMessageByLink: 'Verify your account by clicking on {##Verify Email##}',
         EmailSubjectByLink: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
@@ -454,6 +454,36 @@ describe('User Pool', () => {
     });
   });
 
+  test('sign in case sensitive is correctly picked up', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      signInCaseSensitive: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: {
+        CaseSensitive: false,
+      },
+    });
+  });
+
+  test('sign in case sensitive is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {});
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: ABSENT,
+    });
+  });
+
   test('required attributes', () => {
     // GIVEN
     const stack = new Stack();
@@ -784,6 +814,35 @@ test('addClient', () => {
   });
   expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
     ClientName: 'userpoolimportedclient',
+    UserPoolId: stack.resolve(imported.userPoolId),
+  });
+});
+
+test('addDomain', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const userpool = new UserPool(stack, 'Pool');
+  userpool.addDomain('UserPoolDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpooldomain',
+    },
+  });
+  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+  imported.addDomain('UserPoolImportedDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpoolimporteddomain',
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpooldomain',
+    UserPoolId: stack.resolve(userpool.userPoolId),
+  });
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpoolimporteddomain',
     UserPoolId: stack.resolve(imported.userPoolId),
   });
 });

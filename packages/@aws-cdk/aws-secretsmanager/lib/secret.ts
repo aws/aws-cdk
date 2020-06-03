@@ -42,6 +42,13 @@ export interface ISecret extends IResource {
   grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
+   * Grants writing the secret value to some role.
+   *
+   * @param grantee       the principal being granted permission.
+   */
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Adds a rotation schedule to the secret.
    */
   addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule;
@@ -53,7 +60,7 @@ export interface ISecret extends IResource {
    * automatically created upon the first call to `addToResourcePolicy`. If
    * the secret is imported, then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Denies the `DeleteSecret` action to all principals within the current
@@ -148,6 +155,25 @@ abstract class SecretBase extends Resource implements ISecret {
     return result;
   }
 
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    const result = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['secretsmanager:PutSecretValue'],
+      resourceArns: [this.secretArn],
+      scope: this,
+    });
+
+    if (this.encryptionKey) {
+      // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
+      this.encryptionKey.grantEncrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
+      );
+    }
+
+    return result;
+  }
+
   public get secretValue() {
     return this.secretValueFromJson('');
   }
@@ -163,14 +189,16 @@ abstract class SecretBase extends Resource implements ISecret {
     });
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new ResourcePolicy(this, 'Policy', { secret: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+    return { statementAdded: false };
   }
 
   public denyAccountRootDelete() {

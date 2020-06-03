@@ -148,6 +148,9 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
+A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
+check the capitalization of the alias when signing in. Default is true.
+
 ### Attributes
 
 Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
@@ -400,6 +403,20 @@ pool.addClient('app-client', {
 });
 ```
 
+An app client can be configured to prevent user existence errors. This
+instructs the Cognito authentication API to return generic authentication
+failure responses instead of an UserNotFoundException. By default, the flag
+is not set, which means different things for existing and new stacks. See the
+[documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html)
+for the full details on the behavior of this flag.
+
+```ts
+const pool = new UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  preventUserExistenceErrors: true,
+});
+```
+
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
@@ -429,4 +446,32 @@ pool.addDomain('CustomDomain', {
 
 Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
-Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
+Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html)
+
+The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
+hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
+Console](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html#cognito-user-pools-create-an-app-integration).
+
+```ts
+const userpool = new UserPool(this, 'UserPool', {
+  // ...
+});
+const client = userpool.addClient('Client', {
+  // ...
+  oAuth: {
+    flows: {
+      implicitCodeGrant: true,
+    },
+    callbackUrls: [
+      'https://myapp.com/home',
+      'https://myapp.com/users',
+    ]
+  }
+})
+const domain = userpool.addDomain('Domain', {
+  // ...
+});
+const signInUrl = domain.signInUrl(client, {
+  redirectUrl: 'https://myapp.com/home', // must be a URL configured under 'callbackUrls' with the client
+})
+```

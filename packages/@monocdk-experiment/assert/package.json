@@ -15,6 +15,7 @@
     "build+test": "npm run build && npm test"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./clone.sh"
     ],
@@ -28,14 +29,6 @@
       "disable": true
     }
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -43,11 +36,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^10.17.24",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.5.1",
+    "ts-jest": "^26.0.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
     "constructs": "^3.0.2"
@@ -71,7 +65,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "developer-preview"

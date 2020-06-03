@@ -1,14 +1,16 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
+import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
+import { ListenerCondition } from './conditions';
 
 /**
  * Basic properties for an ApplicationListener
@@ -53,9 +55,29 @@ export interface BaseApplicationListenerProps {
   /**
    * Default target groups to load balance to
    *
+   * All target groups will be load balanced to with equal weight and without
+   * stickiness. For a more complex configuration than that, use
+   * either `defaultAction` or `addAction()`.
+   *
+   * Cannot be specified together with `defaultAction`.
+   *
    * @default - None.
    */
   readonly defaultTargetGroups?: IApplicationTargetGroup[];
+
+  /**
+   * Default action to take for requests to this listener
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses.
+   *
+   * See the `ListenerAction` class for all options.
+   *
+   * Cannot be specified together with `defaultTargetGroups`.
+   *
+   * @default - None.
+   */
+  readonly defaultAction?: ListenerAction;
 
   /**
    * Allow anyone to connect to this listener
@@ -149,7 +171,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       defaultPort: ec2.Port.tcp(port),
     });
 
-    (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
+    if (props.defaultAction && props.defaultTargetGroups) {
+      throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
+    }
+
+    if (props.defaultAction) {
+      this.setDefaultAction(props.defaultAction);
+    }
+
+    if (props.defaultTargetGroups) {
+      this.setDefaultAction(ListenerAction.forward(props.defaultTargetGroups));
+    }
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
@@ -193,12 +225,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Load balance incoming requests to the given target groups.
+   * Perform the given default action on incoming requests
    *
-   * It's possible to add conditions to the TargetGroups added in this way.
-   * At least one TargetGroup must be added without conditions.
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   * At least one Action must be added without conditions (which becomes the
+   * default Action).
    */
-  public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
+  public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
@@ -211,13 +248,43 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
         priority: props.priority,
+        action: props.action,
+      });
+    } else {
+      // New default target with these targetgroups
+      this.setDefaultAction(props.action);
+    }
+  }
+
+  /**
+   * Load balance incoming requests to the given target groups.
+   *
+   * All target groups will be load balanced to with equal weight and without
+   * stickiness. For a more complex configuration than that, use `addAction()`.
+   *
+   * It's possible to add routing conditions to the TargetGroups added in this
+   * way. At least one TargetGroup must be added without conditions (which will
+   * become the default Action for this listener).
+   */
+  public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
+    checkAddRuleProps(props);
+
+    if (props.priority !== undefined) {
+      // New rule
+      //
+      // TargetGroup.registerListener is called inside ApplicationListenerRule.
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        conditions: props.conditions,
+        hostHeader: props.hostHeader,
+        pathPattern: props.pathPattern,
+        pathPatterns: props.pathPatterns,
+        priority: props.priority,
         targetGroups: props.targetGroups,
       });
     } else {
-      // New default target(s)
-      for (const targetGroup of props.targetGroups) {
-        this.addDefaultTargetGroup(targetGroup);
-      }
+      // New default target with these targetgroups
+      this.setDefaultAction(ListenerAction.forward(props.targetGroups));
     }
   }
 
@@ -225,7 +292,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Load balance incoming requests to the given load balancing targets.
    *
    * This method implicitly creates an ApplicationTargetGroup for the targets
-   * involved.
+   * involved, and a 'forward' action to route traffic to the given TargetGroup.
+   *
+   * If you want more control over the precise setup, create the TargetGroup
+   * and use `addAction` yourself.
    *
    * It's possible to add conditions to the targets added in this way. At least
    * one set of targets must be added without conditions.
@@ -251,6 +321,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     this.addTargetGroups(id, {
+      conditions: props.conditions,
       hostHeader: props.hostHeader,
       pathPattern: props.pathPattern,
       pathPatterns: props.pathPatterns,
@@ -263,6 +334,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Add a fixed response
+   *
+   * @deprecated Use `addAction()` instead
    */
   public addFixedResponse(id: string, props: AddFixedResponseProps) {
     checkAddRuleProps(props);
@@ -283,15 +356,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         ...props,
       });
     } else {
-      this._addDefaultAction({
-        fixedResponseConfig: fixedResponse,
-        type: 'fixed-response',
-      });
+      this.setDefaultAction(ListenerAction.fixedResponse(Token.asNumber(props.statusCode), {
+        contentType: props.contentType,
+        messageBody: props.messageBody,
+      }));
     }
   }
 
   /**
    * Add a redirect response
+   *
+   * @deprecated Use `addAction()` instead
    */
   public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
     checkAddRuleProps(props);
@@ -314,10 +389,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         ...props,
       });
     } else {
-      this._addDefaultAction({
-        redirectConfig: redirectResponse,
-        type: 'redirect',
-      });
+      this.setDefaultAction(ListenerAction.redirect({
+        host: props.host,
+        path: props.path,
+        port: props.port,
+        protocol: props.protocol,
+        query: props.query,
+        permanent: props.statusCode === 'HTTP_301',
+      }));
     }
   }
 
@@ -342,11 +421,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Add a default TargetGroup
+   * Wrapper for _setDefaultAction which does a type-safe bind
    */
-  private addDefaultTargetGroup(targetGroup: IApplicationTargetGroup) {
-    this._addDefaultTargetGroup(targetGroup);
-    targetGroup.registerListener(this);
+  private setDefaultAction(action: ListenerAction) {
+    action.bind(this, this);
+    this._setDefaultAction(action);
   }
 }
 
@@ -543,6 +622,15 @@ export interface AddRuleProps {
   readonly priority?: number;
 
   /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerCondition[];
+
+  /**
    * Rule applies if the requested host matches the indicated host
    *
    * May contain up to three '*' wildcards.
@@ -552,6 +640,7 @@ export interface AddRuleProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
    * @default No host condition
+   * @deprecated Use `conditions` instead.
    */
   readonly hostHeader?: string;
 
@@ -564,7 +653,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default No path condition
-   * @deprecated Use `pathPatterns` instead.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPattern?: string;
 
@@ -577,6 +666,7 @@ export interface AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    * @default - No path condition.
+   * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
 }
@@ -589,6 +679,16 @@ export interface AddApplicationTargetGroupsProps extends AddRuleProps {
    * Target groups to forward requests to
    */
   readonly targetGroups: IApplicationTargetGroup[];
+}
+
+/**
+ * Properties for adding a new action to a listener
+ */
+export interface AddApplicationActionProps extends AddRuleProps {
+  /**
+   * Action to perform
+   */
+  readonly action: ListenerAction;
 }
 
 /**
@@ -669,18 +769,26 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
 
 /**
  * Properties for adding a fixed response to a listener
+ *
+ * @deprecated Use `ApplicationListener.addAction` instead.
  */
 export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
 }
 
 /**
  * Properties for adding a redirect response to a listener
+ *
+ * @deprecated Use `ApplicationListener.addAction` instead.
  */
 export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse {
 }
 
 function checkAddRuleProps(props: AddRuleProps) {
-  if ((props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined) !== (props.priority !== undefined)) {
-    throw new Error('Setting \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
+  const conditionsCount = props.conditions?.length || 0;
+  const hasAnyConditions = conditionsCount !== 0 ||
+    props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+  const hasPriority = props.priority !== undefined;
+  if (hasAnyConditions !== hasPriority) {
+    throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
   }
 }
