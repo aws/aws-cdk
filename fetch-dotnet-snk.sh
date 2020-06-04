@@ -11,15 +11,14 @@ function echo_usage() {
     echo -e "\tDOTNET_STRONG_NAME_SECRET_ID=<The name (i.e. production/my/key) or ARN of the secret containing the .snk file.>"
 }
 
-if [ -z "${DOTNET_STRONG_NAME_ENABLED:-}" ]; then
-    echo "Environment variable DOTNET_STRONG_NAME_ENABLED is not set. Skipping strong-name signing."
+if [ "${DOTNET_STRONG_NAME_ENABLED:-false}" != "true" ]; then
+    echo "Environment variable DOTNET_STRONG_NAME_ENABLED is not set to true. Skipping strong-name signing."
     exit 0
 fi
 
 echo "Retrieving SNK..."
 
-apt update -y
-apt install jq -y
+yum install jq -y
 
 if [ -z "${DOTNET_STRONG_NAME_ROLE_ARN:-}" ]; then
     echo "Strong name signing is enabled, but DOTNET_STRONG_NAME_ROLE_ARN is not set."
