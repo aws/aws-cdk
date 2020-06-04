@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Size, Stack } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
+import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 
 /**
  * Properties for creating an Amazon SageMaker training job task
@@ -122,8 +122,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     this.transformInput = props.transformInput.transformDataSource.s3DataSource.s3DataType
       ? props.transformInput
       : Object.assign({}, props.transformInput, {
-        transformDataSource: { s3DataSource: { ...props.transformInput.transformDataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
-      });
+          transformDataSource: { s3DataSource: { ...props.transformInput.transformDataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
+        });
 
     // set the default value for the transform resources
     this.transformResources = props.transformResources || {
