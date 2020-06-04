@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Tag } from '@aws-cdk/core';
@@ -249,6 +249,49 @@ export = {
         ],
       },
     }));
+    test.done();
+  },
+
+  'multiple Fargate profiles added to a cluster are processed sequentially'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster');
+
+    // WHEN
+    cluster.addFargateProfile('MyProfile1', {
+      selectors: [ { namespace: 'namespace1' } ],
+    });
+    cluster.addFargateProfile('MyProfile2', {
+      selectors: [ { namespace: 'namespace2' } ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
+      Config: {
+        clusterName: { Ref: 'MyCluster8AD82BF8' },
+        podExecutionRoleArn: { 'Fn::GetAtt': [ 'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37', 'Arn' ] },
+        selectors: [ { namespace: 'namespace1' } ],
+      },
+    }));
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-FargateProfile', {
+      Properties: {
+        ServiceToken: { 'Fn::GetAtt': [
+          'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
+          'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
+        ]},
+        AssumeRoleArn: { 'Fn::GetAtt': [ 'MyClusterCreationRoleB5FA4FF3', 'Arn' ] },
+        Config: {
+          clusterName: { Ref: 'MyCluster8AD82BF8' },
+          podExecutionRoleArn: { 'Fn::GetAtt': [ 'MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn' ] },
+          selectors: [ { namespace: 'namespace2' } ],
+        },
+      },
+      DependsOn: [
+        'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',
+        'MyClusterfargateprofileMyProfile1879D501A',
+      ],
+    }, ResourcePart.CompleteDefinition));
+
     test.done();
   },
 };

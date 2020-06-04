@@ -757,6 +757,17 @@ export class Cluster extends Resource implements ICluster {
     return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
   }
 
+  protected prepare() {
+    // Fargate profiles must be created sequentially if more than one exists.
+    // See https://github.com/aws/aws-cdk/issues/6084
+    const fargateProfiles = this.node.children.filter(c => c instanceof FargateProfile);
+    if (fargateProfiles.length > 1) {
+      for (let i = 1; i < fargateProfiles.length; i++) {
+        fargateProfiles[i].node.addDependency(fargateProfiles[i - 1]);
+      }
+    }
+  }
+
   /**
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
    * already added.
