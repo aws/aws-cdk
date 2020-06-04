@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.44.0](https://github.com/aws/aws-cdk/compare/v1.43.0...v1.44.0) (2020-06-04)
+
+
+### Features
+
+* **ecs-patterns:** support min and max health percentage in queueprocessingservice ([#8312](https://github.com/aws/aws-cdk/issues/8312)) ([6da564d](https://github.com/aws/aws-cdk/commit/6da564d68c5195c88c5959b7375e2973c2b07676))
+
 ## [1.43.0](https://github.com/aws/aws-cdk/compare/v1.42.1...v1.43.0) (2020-06-03)
 
 
