@@ -274,7 +274,7 @@ export = {
         test.done();
       },
 
-      async '"roleArn" requires a replcement'(test: Test) {
+      async '"roleArn" requires a replacement'(test: Test) {
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           roleArn: 'new-arn',
         }, {
@@ -500,7 +500,104 @@ export = {
           test.done();
         },
       },
+
+      'logging or access change': {
+        async 'from undefined to partial logging enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: [ 'api' ],
+                  enabled: true,
+                },
+              ],
+            },
+          }, {
+            logging: undefined,
+          }));
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+            name: 'physical-resource-id',
+            logging: {
+              clusterLogging: [
+                {
+                  types: [ 'api' ],
+                  enabled: true,
+                },
+              ],
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+
+        async 'from partial vpc configuration to only private access enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            resourcesVpcConfig: {
+              securityGroupIds: [ '111111111' ],
+              endpointPrivateAccess: true,
+            },
+          }, {
+            resourcesVpcConfig: {
+              securityGroupIds: [ '111111111' ],
+            },
+          }));
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+            name: 'physical-resource-id',
+            resourcesVpcConfig: {
+              securityGroupIds: [ '111111111' ],
+              endpointPrivateAccess: true,
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+
+        async 'from undefined to both logging and access fully enabled'(test: Test) {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: [ '0.0.0.0/0' ],
+            },
+          }, {
+            logging: undefined,
+            resourcesVpcConfig: undefined,
+          }));
+
+          const resp = await handler.onEvent();
+          test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+            name: 'physical-resource-id',
+            logging: {
+              clusterLogging: [
+                {
+                  types: [ 'api', 'audit', 'authenticator', 'controllerManager', 'scheduler' ],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: [ '0.0.0.0/0' ],
+            },
+          });
+          test.equal(mocks.actualRequest.createClusterRequest, undefined);
+          test.done();
+        },
+      },
     },
   },
-
 };
