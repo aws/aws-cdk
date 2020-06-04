@@ -132,7 +132,7 @@ export class Stage extends Construct {
    * Derived from the construct path.
    */
   public get assemblyArtifactId() {
-    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+    return `stage-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
   protected onPrepare() {
