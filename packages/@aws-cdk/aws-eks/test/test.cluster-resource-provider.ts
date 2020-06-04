@@ -517,7 +517,7 @@ export = {
           }));
           const resp = await handler.onEvent();
           test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
-          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
             name: 'physical-resource-id',
             logging: {
               clusterLogging: [
@@ -535,21 +535,23 @@ export = {
         async 'from partial vpc configuration to only private access enabled'(test: Test) {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
             resourcesVpcConfig: {
-              securityGroupIds: [ '111111111' ],
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
               endpointPrivateAccess: true,
             },
           }, {
             resourcesVpcConfig: {
-              securityGroupIds: [ '111111111' ],
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
             },
           }));
           const resp = await handler.onEvent();
           test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
-          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
             name: 'physical-resource-id',
+            logging: undefined,
             resourcesVpcConfig: {
-              securityGroupIds: [ '111111111' ],
               endpointPrivateAccess: true,
+              endpointPublicAccess: undefined,
+              publicAccessCidrs: undefined,
             },
           });
           test.equal(mocks.actualRequest.createClusterRequest, undefined);
@@ -578,7 +580,7 @@ export = {
 
           const resp = await handler.onEvent();
           test.deepEqual(resp, { EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
-          test.deepEqual(mocks.actualRequest.updateClusterVersionRequest!, {
+          test.deepEqual(mocks.actualRequest.updateClusterConfigRequest!, {
             name: 'physical-resource-id',
             logging: {
               clusterLogging: [
