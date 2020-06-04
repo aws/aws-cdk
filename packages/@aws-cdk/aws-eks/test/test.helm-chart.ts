@@ -1,3 +1,4 @@
+import { Duration } from '@aws-cdk/core';
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
@@ -70,7 +71,18 @@ export = {
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: false}));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: false }));
+      test.done();
+    },
+    'should timeout only after 10 minutes'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', timeout: Duration.minutes(10) });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Timeout: 600 }));
       test.done();
     },
   },
