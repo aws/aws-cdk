@@ -1051,6 +1051,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
+      + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
   }
 
@@ -1115,6 +1116,11 @@ export enum NodeType {
    * GPU instances
    */
   GPU = 'GPU',
+
+  /**
+   * Inferentia instances
+   */
+  INFERENTIA = 'INFERENTIA',
 }
 
 /**
@@ -1161,7 +1167,10 @@ export enum MachineImageType {
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+const INFERENTIA_INSTANCETYPES = ['inf1'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+  INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+  NodeType.STANDARD;
 }
