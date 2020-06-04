@@ -222,21 +222,13 @@ export class ConstructNode {
 
   /**
    * Synthesizes a CloudAssembly from a construct tree.
-   * @param root The root of the construct tree.
+   * @param node The root of the construct tree.
    * @param options Synthesis options.
    */
-  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
-
-    root._actualNode.synthesize({
-      outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder,
-      },
-    });
-
-    return builder.buildAssembly(options);
+  public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const a: typeof import('./assembly') = require('./assembly');
+    return a.realSynth(node.root, options);
   }
 
   /**

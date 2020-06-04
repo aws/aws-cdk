@@ -72,6 +72,9 @@
                         },
                         {
                             "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/EmbeddedCloudAssemblyProperties"
                         }
                     ]
                 }
@@ -85,6 +88,7 @@
             "enum": [
                 "aws:cloudformation:stack",
                 "cdk:asset-manifest",
+                "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
             ],
@@ -329,6 +333,23 @@
             },
             "required": [
                 "file"
+            ]
+        },
+        "EmbeddedCloudAssemblyProperties": {
+            "description": "Artifact properties for embedded Cloud Assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative of the embedded Cloud Assembly's directory",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the Cloud Assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
             ]
         },
         "MissingContext": {
