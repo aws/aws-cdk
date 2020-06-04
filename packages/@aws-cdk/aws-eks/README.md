@@ -486,7 +486,8 @@ cluster.addChart('NginxIngress', {
 });
 ```
 
-Helm charts will be installed and updated using `helm upgrade --install`.
+Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
+are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster. The chart will exists as CloudFormation resource.
 
