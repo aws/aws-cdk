@@ -181,8 +181,15 @@ function parseIfCfnIntrinsic(object: any): any {
     }
     case 'Fn::If': {
       // Fn::If takes a 3-element list as its argument
+      // ToDo the first argument is the name of the condition,
+      // so we will need to retrieve the actual object from the template
+      // when we handle preserveLogicalIds=false
       const value = parseCfnValueToCdkValue(object[key]);
       return Fn.conditionIf(value[0], value[1], value[2]);
+    }
+    case 'Fn::Equals': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.conditionEquals(value[0], value[1]);
     }
     default:
       throw new Error(`Unsupported CloudFormation function '${key}'`);
