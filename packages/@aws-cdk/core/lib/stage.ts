@@ -76,7 +76,7 @@ export class Stage extends Construct {
   /**
    * Test whether the given construct is a Stage object
    */
-  public static isStage(x: any ): x is Stage {
+  public static isStage(x: any): x is Stage {
     return x !== null && x instanceof Stage;
   }
 
