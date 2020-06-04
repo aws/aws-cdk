@@ -54,7 +54,8 @@
     "cdk",
     "constructs",
     "cloudwatch",
-    "events"
+    "events",
+    "eventbridge"
   ],
   "author": {
     "name": "Amazon Web Services",
