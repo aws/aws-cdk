@@ -2,7 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
@@ -115,12 +115,14 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public logAccessLogs(bucket: IBucket, prefix?: string) {
     super.logAccessLogs(bucket, prefix);
 
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+        principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
@@ -130,7 +132,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetBucketAcl'],
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+        principals: [logsDeliveryServicePrincipal],
         resources: [bucket.bucketArn],
       }),
     );
