@@ -227,8 +227,8 @@ export class ConstructNode {
    */
   public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const a: typeof import('./assembly') = require('./assembly');
-    return a.realSynth(node.root, options);
+    const a: typeof import('././private/synthesis') = require('./private/synthesis');
+    return a.synthesize(node.root, options);
   }
 
   /**
