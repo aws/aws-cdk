@@ -178,7 +178,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "jsii-reflect": "^1.6.0",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
