@@ -136,6 +136,9 @@ export class ClusterResourceHandler extends ResourceHandler {
         logging: this.newProps.logging,
       };
       if (updates.updateAccess) {
+        // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
+        // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
+        // will fail, therefore we take only the access fields explicitly
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
@@ -206,6 +209,8 @@ export class ClusterResourceHandler extends ResourceHandler {
           Arn: cluster.arn,
           CertificateAuthorityData: cluster.certificateAuthority?.data,
           ClusterSecurityGroupId: cluster.resourcesVpcConfig?.clusterSecurityGroupId,
+          // We can safely return the first item from encryption configuration array, because it has a limit of 1 item
+          // https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#AmazonEKS-CreateCluster-request-encryptionConfig
           EncryptionConfigKeyArn: cluster.encryptionConfig?.shift()?.provider?.keyArn,
           OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer,
           OpenIdConnectIssuer: cluster.identity?.oidc?.issuer?.substring(8), // Strips off https:// from the issuer url
