@@ -320,7 +320,7 @@ export interface IFoo extends cdk.IConstruct, ISomething {
 
   // attributes
   readonly fooArn: string;
-  readonly fooBoo: string;
+  readonly fooBoo: string[];
 
   // security group connections (if applicable)
   readonly connections: ec2.Connections;
