@@ -5,6 +5,8 @@ import { getResourceArn } from './resource-arn-suffix';
 
 /**
  * Properties for StartExecution
+ *
+ * @deprecated - use 'StepFunctionsStartExecution'
  */
 export interface StartExecutionProps {
   /**
@@ -39,6 +41,8 @@ export interface StartExecutionProps {
  * A Step Functions Task to call StartExecution on another state machine.
  *
  * It supports three service integration patterns: FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+ *
+ * @deprecated - use 'StepFunctionsStartExecution'
  */
 export class StartExecution implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
