@@ -430,7 +430,7 @@ export = {
 
     'natGateways = 0 allows RESERVED PRIVATE subnets'(test: Test) {
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'VPC', {
+      new Vpc(stack, 'VPC', {
         cidr: '10.0.0.0/16',
         subnetConfiguration: [
           {
@@ -445,13 +445,11 @@ export = {
         ],
         natGateways: 0,
       });
-  
       expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
         Key: 'aws-cdk:subnet-name',
         Value: 'ingress',
       }])));
       test.done();
-  
     },
 
     'with mis-matched nat and subnet configs it throws'(test: Test) {
