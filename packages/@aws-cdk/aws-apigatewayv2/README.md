@@ -177,7 +177,7 @@ api.addStage('beta', {
 } );
 ```
 
-You are allowed to create yet another 
+The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
 const apiDemo = new HttpApi(stack, 'DemoApi', {
