@@ -33,3 +33,5 @@ cdk.context.json
 test/integ/cli/*.js
 test/integ/cli/*.d.ts
 !test/integ/cli-regression-patches/**/*
+
+.DS_Store
