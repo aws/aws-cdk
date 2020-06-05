@@ -140,7 +140,8 @@ export class Assembly extends Construct {
    * Derived from the construct path.
    */
   public get assemblyArtifactId() {
-    return `sub-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+    if (!this.node.path) { return ''; }
+    return `stage-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
   /**

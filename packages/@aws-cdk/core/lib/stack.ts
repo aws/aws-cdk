@@ -1041,7 +1041,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-export function makeStackName(components: string[]) {
+function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
   return makeUniqueId(components);
 }

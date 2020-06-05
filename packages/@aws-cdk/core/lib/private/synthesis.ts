@@ -2,122 +2,159 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Assembly } from '../assembly';
-import { Construct, ConstructOrder, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { prepareApp } from './prepare-app';
 import { collectRuntimeInformation } from './runtime-info';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-  const builder = Assembly.isAssembly(root)
-    ? root.assemblyBuilder
-    : new cxapi.CloudAssemblyBuilder(options.outdir);
+  // we start by calling "synth" on all nested assemblies (which will take care of all their children)
+  synthNestedAssemblies(root, options);
 
-  // okay, now we start by calling "synth" on all nested assemblies (which will take care of all their children)
-  for (const child of root.node.findAll(ConstructOrder.POSTORDER)) {
-    if (child === root) { continue; }
-    if (!Assembly.isAssembly(child)) { continue; }
-    if (Assembly.of(child) !== root) { continue; }
-    child.synth(options);
-  }
+  invokeAspects(root);
 
-  const inAssembly = (c: IConstruct) => {
-    // if the root is not an assembly (i.e. it's a stack in unit tests), then consider
-    // everything to be in an assembly
-    if (!Assembly.isAssembly(root)) {
-      return true;
-    }
-
-    // always include self
-    if (c === root) {
-      return true;
-    }
-
-    // if the child is an assembly, omit it
-    if (Assembly.isAssembly(c)) {
-      return false;
-    }
-
-    return Assembly.of(c) === root;
-  };
-
-  // find all child constructs within this assembly (sorted depth-first), and
-  // include direct nested assemblies, but do not include any constructs from
-  // nested assemblies as they will be covered by their assembly's synth()
-  // method.
-  const findChildren = () => root.node
-    .findAll(ConstructOrder.POSTORDER)
-    .filter(inAssembly);
-
-  const children = findChildren();
-
-  for (const child of children) {
-
-    // hackery to be able to access some private members with strong types (yack!)
-    const node = child.node._actualNode as unknown as Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
-      invokedAspects: constructs.IAspect[];
-      _aspects: constructs.IAspect[];
-    };
-
-    for (const aspect of node._aspects) {
-      if (node.invokedAspects.includes(aspect)) {
-        continue;
-      }
-
-      child.node.findAll(ConstructOrder.PREORDER)
-        .filter(c => inAssembly(c))
-        .forEach(c => aspect.visit(c));
-
-      node.invokedAspects.push(aspect);
-    }
-  }
-
-  // invoke "prepare" on all of the children in this assembly. this is mostly here for legacy purposes
-  // the framework itself does not use prepare anymore.
-  for (const child of findChildren()) {
-    (child as IProtectedConstructMethods).onPrepare();
-  }
+  // This is mostly here for legacy purposes as the framework itself does not use prepare anymore.
+  prepareTree(root);
 
   // resolve references
   prepareApp(root);
 
   // give all children an opportunity to validate now that we've finished prepare
   if (!options.skipValidation) {
-    const errors = new Array<ValidationError>();
-    for (const source of children) {
-      const messages = (source as IProtectedConstructMethods).onValidate();
-      for (const message of messages) {
-        errors.push({ message, source: source as Construct });
-      }
-    }
-
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-    }
+    validateTree(root);
   }
+
+  const builder = Assembly.isAssembly(root)
+    ? root.assemblyBuilder
+    : new cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
-  for (const child of children) {
-    (child as IProtectedConstructMethods).onSynthesize({
-      outdir: builder.outdir,
-      assembly: builder,
-    });
-  }
+  synthesizeChildren(root, builder);
 
   // Add this assembly to the parent assembly manifest (if we have one)
-  if (Assembly.isAssembly(root) && root.parentAssembly) {
-    root.parentAssembly.assemblyBuilder.addArtifact(root.assemblyArtifactId, {
-      type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
-      properties: {
-        directoryName: root.assemblyArtifactId,
-        displayName: root.node.path,
-      } as cxschema.EmbeddedCloudAssemblyProperties,
-    });
-
+  if (Assembly.isAssembly(root)) {
+    addToParentAssembly(root);
   }
 
   const runtimeInfo = root.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
   return builder.buildAssembly({ runtimeInfo });
+}
+
+/**
+ * Find Assemblies inside the construct and call 'synth' on them
+ *
+ * (They will in turn recurse again)
+ */
+function synthNestedAssemblies(root: IConstruct, options: SynthesisOptions) {
+  for (const child of root.node.children) {
+    if (Assembly.isAssembly(child)) {
+      child.synth(options);
+    } else {
+      synthNestedAssemblies(child, options);
+    }
+  }
+}
+
+/**
+ * Invoke aspects on the given construct tree.
+ *
+ * Aspects are not propagated across Assembly boundaries. The same Aspect will not be invoked
+ * twice for the same construct.
+ */
+function invokeAspects(root: IConstruct) {
+  recurse(root, []);
+
+  function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
+    // hackery to be able to access some private members with strong types (yack!)
+    const node: NodeWithPrivatesHangingOut = construct.node._actualNode as any;
+
+    const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
+
+    for (const aspect of allAspectsHere) {
+      if (node.invokedAspects.includes(aspect)) { continue; }
+      aspect.visit(construct);
+      node.invokedAspects.push(aspect);
+    }
+
+    for (const child of construct.node.children) {
+      if (!Assembly.isAssembly(child)) {
+        recurse(child, allAspectsHere);
+      }
+    }
+  }
+}
+
+/**
+ * Prepare all constructs in the given construct tree in post-order.
+ *
+ * Stop at Assembly boundaries.
+ */
+function prepareTree(root: IConstruct) {
+  visit(root, 'post', construct => {
+    (construct as IProtectedConstructMethods).onPrepare();
+  });
+}
+
+/**
+ * Synthesize children in post-order into the given builder
+ *
+ * Stop at Assembly boundaries.
+ */
+function synthesizeChildren(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
+  visit(root, 'post', construct => {
+    (construct as IProtectedConstructMethods).onSynthesize({
+      outdir: builder.outdir,
+      assembly: builder,
+    });
+  });
+}
+
+/**
+ * Validate all constructs in the given construct tree
+ */
+function validateTree(root: IConstruct) {
+  const errors = new Array<ValidationError>();
+
+  visit(root, 'pre', construct => {
+    for (const message of (construct as IProtectedConstructMethods).onValidate()) {
+      errors.push({ message, source: construct as Construct });
+    }
+  });
+
+  if (errors.length > 0) {
+    const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+    throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+  }
+}
+
+function addToParentAssembly(root: Assembly) {
+  if (!root.parentAssembly) { return; }
+
+  root.parentAssembly.assemblyBuilder.addArtifact(root.assemblyArtifactId, {
+    type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+    properties: {
+      directoryName: root.assemblyArtifactId,
+      displayName: root.node.path,
+    } as cxschema.EmbeddedCloudAssemblyProperties,
+  });
+}
+
+/**
+ * Visit the given construct tree in either pre or post order, stopping at Assemblies
+ */
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+  if (order === 'pre') {
+    cb(root);
+  }
+
+  for (const child of root.node.children) {
+    if (Assembly.isAssembly(child)) { continue; }
+    visit(child, order, cb);
+  }
+
+  if (order === 'post') {
+    cb(root);
+  }
 }
 
 /**
@@ -141,3 +178,13 @@ interface IProtectedConstructMethods extends IConstruct {
    */
   onPrepare(): void;
 }
+
+/**
+ * The constructs Node type, but with some aspects-related fields public.
+ *
+ * Hackery!
+ */
+type NodeWithPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
+  readonly invokedAspects: constructs.IAspect[];
+  readonly _aspects: constructs.IAspect[];
+};

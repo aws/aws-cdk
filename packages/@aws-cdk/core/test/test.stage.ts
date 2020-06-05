@@ -64,6 +64,22 @@ export = {
     test.done();
   },
 
+  'Can nest Stages inside other Stages'(test: Test) {
+    // WHEN
+    const outer = new Stage(app, 'Outer');
+    const inner = new Stage(outer, 'Inner');
+    const stack = new BogusStack(inner, 'Stack');
+
+    // WHEN
+    const appAsm = app.synth();
+    const outerAsm = embeddedAsm(appAsm, outer.assemblyArtifactId);
+    const innerAsm = embeddedAsm(outerAsm, inner.assemblyArtifactId);
+
+    test.ok(innerAsm.tryGetArtifact(stack.artifactId));
+
+    test.done();
+  },
+
   'Default stack name in Stage objects incorporates the Stage name and no hash'(test: Test) {
     // WHEN
     const stage = new Stage(app, 'MyStage');
@@ -212,6 +228,13 @@ class BogusStack extends Stack {
       type: 'CDK::Test::Resource',
     });
   }
+}
+
+function embeddedAsm(asm: cxapi.CloudAssembly, artifactId: string): cxapi.CloudAssembly {
+  const a = asm.tryGetArtifact(artifactId);
+  if (!a) { throw new Error(`No such artifact in CloudAssembly: '${artifactId}' (have: ${asm.artifacts.map(art => art.id)})`); }
+  if (!isEmbeddedCloudAssemblyArtifact(a)) { throw new Error(`Found artifact '${artifactId}' but it's not a Cloud Assembly!`); }
+  return a.embeddedAssembly;
 }
 
 function isEmbeddedCloudAssemblyArtifact(a: any): a is cxapi.EmbeddedCloudAssemblyArtifact {
