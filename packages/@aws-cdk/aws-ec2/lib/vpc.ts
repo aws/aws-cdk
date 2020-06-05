@@ -1901,11 +1901,12 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * They seem pointless but I see no reason to prevent it.
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
-  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE);
+  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
+  //here
   if (count === 0 && hasPrivateSubnets) {
     // tslint:disable-next-line:max-line-length
     throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
