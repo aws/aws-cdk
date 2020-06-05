@@ -25,3 +25,4 @@ tsconfig.json
 jest.config.js
 !lib/init-templates/**/jest.config.js
 !test/integ/cli/jest.config.js
+!test/integ/cli-regression-patches/**/*
