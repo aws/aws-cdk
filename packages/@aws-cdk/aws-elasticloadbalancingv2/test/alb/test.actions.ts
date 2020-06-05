@@ -182,4 +182,53 @@ export = {
 
     test.done();
   },
+
+  'Add Action with multiple Conditions'(test: Test) {
+    // GIVEN
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addAction('Action1', {
+      action: elbv2.ListenerAction.forward([group1]),
+    });
+
+    listener.addAction('Action2', {
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['example.com']),
+        elbv2.ListenerCondition.sourceIps(['1.1.1.1/32']),
+      ],
+      priority: 10,
+      action: elbv2.ListenerAction.forward([group2]),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          TargetGroupArn: { Ref: 'TargetGroup2D571E5D7' },
+          Type: 'forward',
+        },
+      ],
+      Conditions: [
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: [
+              'example.com',
+            ],
+          },
+        },
+        {
+          Field: 'source-ip',
+          SourceIpConfig: {
+            Values: [
+              '1.1.1.1/32',
+            ],
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
 };
