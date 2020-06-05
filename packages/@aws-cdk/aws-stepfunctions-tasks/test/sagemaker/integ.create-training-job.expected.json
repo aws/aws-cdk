@@ -304,7 +304,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":training-job/MyTrainingJob*"
+                    ":training-job/mytrainingjob*"
                   ]
                 ]
               }
@@ -343,6 +343,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -351,14 +357,14 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::sagemaker:createTrainingJob\",\"Parameters\":{\"TrainingJobName\":\"MyTrainingJob\",\"RoleArn\":\"",
+              ":states:::sagemaker:createTrainingJob\",\"Parameters\":{\"TrainingJobName\":\"mytrainingjob\",\"RoleArn\":\"",
               {
                 "Fn::GetAtt": [
                   "TrainTaskSagemakerRole0A9B1CDD",
                   "Arn"
                 ]
               },
-              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"GRADIENT_ASCENT\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
+              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"arn:aws:sagemaker:us-east-1:865070037744:algorithm/scikit-decision-trees-15423055-57b73412d2e93e9239e4e16f83298b8f\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
               {
                 "Ref": "AWS::Region"
               },
@@ -385,18 +391,19 @@
               "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}}}"
             ]
           ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
-          ]
         }
       },
       "DependsOn": [
         "StateMachineRoleDefaultPolicyDF1E6607",
         "StateMachineRoleB840431D"
       ]
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
     }
   }
 }
