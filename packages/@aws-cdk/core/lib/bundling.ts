@@ -1,5 +1,8 @@
 import { spawnSync } from 'child_process';
 
+export const BUNDLING_INPUT_DIR = '/asset-input';
+export const BUNDLING_OUTPUT_DIR = '/asset-output';
+
 /**
  * A Docker volume
  */

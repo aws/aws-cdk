@@ -1,4 +1,4 @@
-import * as assets from '@aws-cdk/aws-s3-assets';
+import { BundlingDockerImage } from '@aws-cdk/core';
 
 export interface LambdaRuntimeProps {
   /**
@@ -162,13 +162,13 @@ export class Runtime {
    *
    * @see https://hub.docker.com/r/lambci/lambda/
    */
-  public readonly bundlingDockerImage: assets.BundlingDockerImage;
+  public readonly bundlingDockerImage: BundlingDockerImage;
 
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
-    this.bundlingDockerImage = assets.BundlingDockerImage.fromRegistry(`lambci/lambda:build-${name}`);
+    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(`lambci/lambda:build-${name}`);
 
     Runtime.ALL.push(this);
   }

@@ -5,64 +5,8 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BundlingDockerImage, DockerVolume } from './bundling';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
-const BUNDLING_INPUT_DIR = '/asset-input';
-const BUNDLING_OUTPUT_DIR = '/asset-output';
-
-/**
- * Bundling options
- *
- * @experimental
- */
-export interface BundlingOptions {
-  /**
-   * The Docker image where the command will run.
-   */
-  readonly image: BundlingDockerImage;
-
-  /**
-   * The command to run in the container.
-   *
-   * @example ['npm', 'install']
-   *
-   * @see https://docs.docker.com/engine/reference/run/
-   *
-   * @default - run the command defined in the image
-   */
-  readonly command?: string[];
-
-  /**
-   * Additional Docker volumes to mount.
-   *
-   * @default - no additional volumes are mounted
-   */
-  readonly volumes?: DockerVolume[];
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default - no environment variables.
-   */
-  readonly environment?: { [key: string]: string; };
-
-  /**
-   * Working directory inside the container.
-   *
-   * @default /asset-input
-   */
-  readonly workingDirectory?: string;
-
-  /**
-   * Bundling directory. Subdirectories named after the asset unique id will be
-   * created in this directory and mounted at `/asset-output` in the container.
-   * Should be added to your `.gitignore`.
-   *
-   * @default ".bundle" under the current working directory
-   */
-  readonly bundleDirectory?: string;
-}
 
 export interface AssetOptions extends assets.CopyOptions {
   /**
@@ -96,11 +40,12 @@ export interface AssetOptions extends assets.CopyOptions {
    * The content at `/asset-output` will be zipped and used as the
    * final asset.
    *
-   * @default - asset path is zipped as is
+   * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
+   * archived into a .zip file and uploaded to S3 otherwise
    *
    * @experimental
    */
-  readonly bundling?: BundlingOptions;
+  readonly bundling?: cdk.BundlingOptions;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -118,7 +63,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements assets.IAsset {
+export class Asset extends cdk.Construct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -171,51 +116,15 @@ export class Asset extends cdk.Construct implements assets.IAsset {
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
-    // Bundling
-    let bundleAssetPath: string | undefined;
-    if (props.bundling) {
-      // Create the directory for the bundle in the current working directory
-      const bundlePath = path.join('./', props.bundling.bundleDirectory ?? '.bundle');
-      if (!fs.existsSync(bundlePath)) {
-        fs.mkdirSync(bundlePath);
-      }
-
-      bundleAssetPath = path.resolve(path.join(bundlePath, this.node.uniqueId));
-      if (!fs.existsSync(bundleAssetPath)) {
-        fs.mkdirSync(bundleAssetPath);
-      }
-
-      const volumes = [
-        {
-          hostPath: path.resolve(props.path),
-          containerPath: BUNDLING_INPUT_DIR,
-        },
-        {
-          hostPath: bundleAssetPath,
-          containerPath: BUNDLING_OUTPUT_DIR,
-        },
-        ...props.bundling.volumes ?? [],
-      ];
-
-      try {
-        props.bundling.image._run({
-          command: props.bundling.command,
-          volumes,
-          environment: props.bundling.environment,
-          workingDirectory: props.bundling.workingDirectory ?? BUNDLING_INPUT_DIR,
-        });
-      } catch (err) {
-        throw new Error(`Failed to run bundling Docker image for asset ${id}: ${err}`);
-      }
-    }
-
     // stage the asset source (conditionally).
-    const staging = new assets.Staging(this, 'Stage', {
-      ...props,
-      sourcePath: path.resolve(bundleAssetPath ?? props.path),
+    const staging = new cdk.AssetStaging(this, 'Stage', {
+      sourcePath: path.resolve(props.path),
+      exclude: props.exclude,
+      follow: assets.toSymlinkFollow(props.follow),
+      bundling: props.bundling,
     });
 
-    this.sourceHash = props.sourceHash || staging.sourceHash;
+    this.sourceHash = props.sourceHash ?? staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
@@ -242,7 +151,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
-    for (const reader of (props.readers || [])) {
+    for (const reader of (props.readers ?? [])) {
       this.grantRead(reader);
     }
   }

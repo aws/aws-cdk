@@ -1,4 +1,4 @@
-import { App, CfnOutput, Construct, FileSystem, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Construct, HashCalculation, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
 import * as lambda from '../lib';
 
@@ -25,9 +25,8 @@ class TestStack extends Stack {
               'pip install -r requirements.txt -t .',
             ].join(' && '),
           ],
+          hashCalculation: HashCalculation.SOURCE,
         },
-        // Python dependencies do not give a stable hash
-        sourceHash: FileSystem.fingerprint(assetPath),
       }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
