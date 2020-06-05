@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Lazy, Size, Stack } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
 
@@ -136,7 +136,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     this.resourceConfig = props.resourceConfig || {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
-      volumeSizeInGB: 10,
+      volumeSize: Size.gibibytes(10),
     };
 
     // set the stopping condition if not defined
@@ -272,7 +272,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       ResourceConfig: {
         InstanceCount: config.instanceCount,
         InstanceType: 'ml.' + config.instanceType,
-        VolumeSizeInGB: config.volumeSizeInGB,
+        VolumeSizeInGB: config.volumeSize.toGibibytes(),
         ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },
     };
@@ -297,11 +297,11 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
     return config
       ? {
-          VpcConfig: {
-            SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
-            Subnets: this.subnets,
-          },
-        }
+        VpcConfig: {
+          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          Subnets: this.subnets,
+        },
+      }
       : {};
   }
 
@@ -324,16 +324,16 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
                   'ecr:GetAuthorizationToken',
                   ...(this.props.vpcConfig
                     ? [
-                        'ec2:CreateNetworkInterface',
-                        'ec2:CreateNetworkInterfacePermission',
-                        'ec2:DeleteNetworkInterface',
-                        'ec2:DeleteNetworkInterfacePermission',
-                        'ec2:DescribeNetworkInterfaces',
-                        'ec2:DescribeVpcs',
-                        'ec2:DescribeDhcpOptions',
-                        'ec2:DescribeSubnets',
-                        'ec2:DescribeSecurityGroups',
-                      ]
+                      'ec2:CreateNetworkInterface',
+                      'ec2:CreateNetworkInterfacePermission',
+                      'ec2:DeleteNetworkInterface',
+                      'ec2:DeleteNetworkInterfacePermission',
+                      'ec2:DescribeNetworkInterfaces',
+                      'ec2:DescribeVpcs',
+                      'ec2:DescribeDhcpOptions',
+                      'ec2:DescribeSubnets',
+                      'ec2:DescribeSecurityGroups',
+                    ]
                     : []),
                 ],
                 resources: ['*'], // Those permissions cannot be resource-scoped

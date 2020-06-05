@@ -178,7 +178,7 @@ test('create complex training job', () => {
     resourceConfig: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSizeInGB: 50,
+      volumeSize: cdk.Size.gibibytes(50),
       volumeEncryptionKey: kmsKey,
     },
     stoppingCondition: {
@@ -317,7 +317,7 @@ test('pass param to training job', () => {
     resourceConfig: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSizeInGB: 50,
+      volumeSize: cdk.Size.gibibytes(50),
     },
     stoppingCondition: {
       maxRuntime: cdk.Duration.hours(1),

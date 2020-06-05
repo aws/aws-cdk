@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Construct, Duration, Size } from '@aws-cdk/core';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
@@ -230,7 +230,7 @@ export interface ResourceConfig {
    *
    * @default 10 GB EBS volume.
    */
-  readonly volumeSizeInGB: number;
+  readonly volumeSize: Size;
 }
 
 /**

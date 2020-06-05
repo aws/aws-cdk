@@ -122,8 +122,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     this.transformInput = props.transformInput.transformDataSource.s3DataSource.s3DataType
       ? props.transformInput
       : Object.assign({}, props.transformInput, {
-          transformDataSource: { s3DataSource: { ...props.transformInput.transformDataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
-        });
+        transformDataSource: { s3DataSource: { ...props.transformInput.transformDataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
+      });
 
     // set the default value for the transform resources
     this.transformResources = props.transformResources || {
