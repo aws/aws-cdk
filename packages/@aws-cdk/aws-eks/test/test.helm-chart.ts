@@ -1,5 +1,5 @@
-import { Duration } from '@aws-cdk/core';
 import { expect, haveResource } from '@aws-cdk/assert';
+import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
