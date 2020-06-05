@@ -1906,7 +1906,6 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
-  //here
   if (count === 0 && hasPrivateSubnets) {
     // tslint:disable-next-line:max-line-length
     throw new Error('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
