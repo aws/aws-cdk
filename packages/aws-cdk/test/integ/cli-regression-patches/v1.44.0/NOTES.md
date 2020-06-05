@@ -12,3 +12,7 @@ Patch notes:
 ```
 test.skip('deploy new style synthesis to new style bootstrap', async () => {
 ```
+
+There is a better mechanism for skipping certain tests by using `skip-tests.txt`,
+but that one is only available AFTER this release, so for this version we just replace
+source files.
