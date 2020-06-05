@@ -14,7 +14,7 @@ temp_dir=$(mktemp -d)
 
 function cleanup {
     rm -rf ${temp_dir}
-    # rm -rf ${integ_under_test}
+    rm -rf ${integ_under_test}
 }
 
 
