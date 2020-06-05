@@ -163,7 +163,7 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 });
 ```
 
-To create a new `Stage` with custom domain mapping:
+To associate a specifc `Stage` to a custom domain mapping -
 
 ```ts
 api.addStage('beta', {
