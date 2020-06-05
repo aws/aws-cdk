@@ -15,5 +15,3 @@ nyc.config.js
 .LAST_PACKAGE
 *.snk
 !.eslintrc.js
-
-.bundle

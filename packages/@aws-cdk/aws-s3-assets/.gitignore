@@ -16,5 +16,3 @@ nyc.config.js
 *.snk
 !.eslintrc.js
 !jest.config.js
-
-.bundle
