@@ -76,13 +76,13 @@ export interface BundlingOptions {
    *
    * @default BUNDLE
    */
-  readonly hashCalculation?: HashCalculation;
+  readonly hashCalculation?: AssetHashCalculation;
 }
 
 /**
  * Source hash calculation
  */
-export enum HashCalculation {
+export enum AssetHashCalculation {
   /**
    * Based on the content of the source path
    */
@@ -177,10 +177,10 @@ export class AssetStaging extends Construct {
         throw new Error(`Bundling did not produce any output. Check that your container writes content to ${BUNDLING_OUTPUT_DIR}.`);
       }
 
-      const hashCalculation = props.bundling.hashCalculation ?? HashCalculation.BUNDLE;
-      if (hashCalculation === HashCalculation.SOURCE) {
+      const hashCalculation = props.bundling.hashCalculation ?? AssetHashCalculation.BUNDLE;
+      if (hashCalculation === AssetHashCalculation.SOURCE) {
         this.sourceHash = this.fingerprint(this.sourcePath);
-      } else if (hashCalculation === HashCalculation.BUNDLE) {
+      } else if (hashCalculation === AssetHashCalculation.BUNDLE) {
         this.sourceHash = this.fingerprint(this.bundleDir);
       } else {
         throw new Error('Unknown source hash calculation.');
