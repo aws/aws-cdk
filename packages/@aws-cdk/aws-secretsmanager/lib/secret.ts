@@ -135,7 +135,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
     const result = iam.Grant.addToPrincipal({
       grantee,
-      actions: ['secretsmanager:GetSecretValue'],
+      actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
       resourceArns: [this.secretArn],
       scope: this,
     });
