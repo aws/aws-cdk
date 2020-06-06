@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.44.0](https://github.com/aws/aws-cdk/compare/v1.42.0...v1.44.0) (2020-06-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cognito:** OAuth flows `authorizationCodeGrant` and
+`implicitCodeGrant` in `UserPoolClient` are enabled by default.
+* **cognito:** `callbackUrl` property in `UserPoolClient` is now
+optional and has a default.
+* **cognito:** All OAuth scopes in a `UserPoolClient` are now enabled
+by default.
+
+### Features
+
+* **cognito:** addDomain() on an imported user pool ([#8123](https://github.com/aws/aws-cdk/issues/8123)) ([49c9f99](https://github.com/aws/aws-cdk/commit/49c9f99c4dfd73bf53a461a844a1d9b0c02d3761))
+* **cognito:** sign in url for a UserPoolDomain ([#8155](https://github.com/aws/aws-cdk/issues/8155)) ([e942936](https://github.com/aws/aws-cdk/commit/e94293675b0a9ebeb5876283d6a54427391469bd))
+* **dynamodb:** allow providing indexes when importing a Table ([#8245](https://github.com/aws/aws-cdk/issues/8245)) ([9ee61eb](https://github.com/aws/aws-cdk/commit/9ee61eb96de54fcbb71e41a2db2c1c9ec6b7b8d9)), closes [#6392](https://github.com/aws/aws-cdk/issues/6392)
+* **lambda-nodejs:** allow passing env vars to container ([#8169](https://github.com/aws/aws-cdk/issues/8169)) ([1755cf2](https://github.com/aws/aws-cdk/commit/1755cf274b4da446272f109b55b20680beb34fe7)), closes [#8031](https://github.com/aws/aws-cdk/issues/8031)
+* **redshift:** add initial L2 Redshift construct ([#5730](https://github.com/aws/aws-cdk/issues/5730)) ([703f0fa](https://github.com/aws/aws-cdk/commit/703f0fa6e2ba5e668d6a92200493d19d2af626c0)), closes [#5711](https://github.com/aws/aws-cdk/issues/5711)
+* **s3:** supports RemovalPolicy for BucketPolicy ([#8158](https://github.com/aws/aws-cdk/issues/8158)) ([cb71f34](https://github.com/aws/aws-cdk/commit/cb71f340343011a2a2de9758879a56e898b8e12c)), closes [#7415](https://github.com/aws/aws-cdk/issues/7415)
+
+
+### Bug Fixes
+
+* **apigateway:** deployment is not updated when OpenAPI definition is updated ([#8207](https://github.com/aws/aws-cdk/issues/8207)) ([d28c947](https://github.com/aws/aws-cdk/commit/d28c9473e0f480eba06e7dc9c260e4372501fc36)), closes [#8159](https://github.com/aws/aws-cdk/issues/8159)
+* **app-delivery:** could not use PipelineDeployStackAction more than once in a Stage ([#8217](https://github.com/aws/aws-cdk/issues/8217)) ([9a54447](https://github.com/aws/aws-cdk/commit/9a54447f2a7d7e3a5d31a57bb3b2e2b0555430a1)), closes [#3984](https://github.com/aws/aws-cdk/issues/3984) [#8183](https://github.com/aws/aws-cdk/issues/8183)
+* **codepipeline:** correctly handle CODEBUILD_CLONE_REF in BitBucket source ([#7107](https://github.com/aws/aws-cdk/issues/7107)) ([ac001b8](https://github.com/aws/aws-cdk/commit/ac001b86bbff1801005cac1509e4480a30bf8f15))
+* **codepipeline:** unhelpful artifact validation messages ([#8256](https://github.com/aws/aws-cdk/issues/8256)) ([2a2406e](https://github.com/aws/aws-cdk/commit/2a2406e5cc16e3bcce4e355f54b31ca8a7c2ace6))
+
 ## [1.43.0](https://github.com/aws/aws-cdk/compare/v1.42.0...v1.43.0) (2020-06-05)
 
 
