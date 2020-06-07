@@ -1,8 +1,8 @@
 import { ConstructOrder } from 'constructs';
-import { Assembly } from '../assembly';
 import { CfnResource } from '../cfn-resource';
 import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
+import { Stage } from '../stage';
 import { resolveReferences } from './refs';
 
 /**
@@ -16,7 +16,7 @@ import { resolveReferences } from './refs';
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: IConstruct) {
-  if (root.node.scope && !Assembly.isAssembly(root)) {
+  if (root.node.scope && !Stage.isStage(root)) {
     throw new Error('prepareApp can only be called on an Assembly or a root construct');
   }
 
@@ -68,9 +68,9 @@ function findAllNestedStacks(root: IConstruct) {
     if (!stack.nested) { return false; }
 
     // test: if we are not within an assembly, then include it.
-    if (!Assembly.of(stack)) { return true; }
+    if (!Stage.of(stack)) { return true; }
 
-    return Assembly.of(stack) === root;
+    return Stage.of(stack) === root;
   };
 
   // create a list of all nested stacks in depth-first post order this means

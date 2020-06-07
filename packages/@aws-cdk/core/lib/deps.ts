@@ -1,6 +1,6 @@
-import { Assembly } from './assembly';
 import { CfnResource } from './cfn-resource';
 import { Stack } from './stack';
+import { Stage } from './stage';
 import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
 
 type Element = CfnResource | Stack;
@@ -30,9 +30,9 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   }
 
   const sourceStack = Stack.of(source);
-  const sourceAssembly = Assembly.of(sourceStack);
+  const sourceAssembly = Stage.of(sourceStack);
   const targetStack = Stack.of(target);
-  const targetAssembly = Assembly.of(targetStack);
+  const targetAssembly = Stage.of(targetStack);
 
   if (sourceAssembly !== targetAssembly) {
     throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeAssembly(sourceAssembly)}) to '${target.node.path}' (in ${describeAssembly(targetAssembly)}): dependency cannot cross stage boundaries`);
@@ -99,8 +99,8 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
 /**
  * Return a string representation of the given assembler, for use in error messages
  */
-function describeAssembly(assembly: Assembly | undefined): string {
+function describeAssembly(assembly: Stage | undefined): string {
   if (!assembly) { return 'an unrooted construct tree'; }
-  if (!assembly.parentAssembly) { return 'the App'; }
+  if (!assembly.parentStage) { return 'the App'; }
   return `Stage '${assembly.node.path}'`;
 }
