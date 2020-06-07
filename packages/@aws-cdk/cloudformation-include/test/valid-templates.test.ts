@@ -232,6 +232,38 @@ describe('CDK Include', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
+  test('correctly parses Conditions and the Condition resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.condition).toBe(alwaysFalseCondition);
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('resource-attribute-condition.json'),
+    );
+  });
+
+  test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
+    const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
+
+    alwaysFalseCondition.expression = core.Fn.conditionEquals(1, 2);
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        "AlwaysFalseCond": {
+          "Fn::Equals": [1, 2],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Condition": "AlwaysFalseCond",
+        },
+      },
+    });
+  });
+
   test("throws an exception when encountering a Resource type it doesn't recognize", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
@@ -242,12 +274,6 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
     }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
-  });
-
-  test('throws an exception when encountering the Condition attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-condition.json');
-    }).toThrow(/The Condition resource attribute is not supported by cloudformation-include yet/);
   });
 
   test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {

@@ -2,8 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -157,6 +157,25 @@ describe('User Pool', () => {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
         emailBody: 'invalid email body {##Verify Email##}',
+      },
+    })).not.toThrow();
+  });
+
+  test('validation is skipped for email and sms messages when tokens', () => {
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'Parameter');
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        emailBody: parameter.valueAsString,
+      },
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        smsMessage: parameter.valueAsString,
       },
     })).not.toThrow();
   });
@@ -931,6 +950,21 @@ test('addDomain', () => {
     Domain: 'userpoolimporteddomain',
     UserPoolId: stack.resolve(imported.userPoolId),
   });
+});
+
+test('registered identity providers', () => {
+  // GIVEN
+  const stack = new Stack();
+  const userPool = new UserPool(stack, 'pool');
+  const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
+  const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
+
+  // WHEN
+  userPool.registerIdentityProvider(provider1);
+  userPool.registerIdentityProvider(provider2);
+
+  // THEN
+  expect(userPool.identityProviders).toEqual([provider1, provider2]);
 });
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
