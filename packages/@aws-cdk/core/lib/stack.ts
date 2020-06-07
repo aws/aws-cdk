@@ -725,7 +725,7 @@ export class Stack extends Construct implements ITaggable {
    * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
-    // if this stack is a roort (e.g. in unit tests), call `prepareApp` so that
+    // if this stack is a root (e.g. in unit tests), call `prepareApp` so that
     // we resolve cross-references and nested stack assets.
     if (!this.node.scope) {
       prepareApp(this);

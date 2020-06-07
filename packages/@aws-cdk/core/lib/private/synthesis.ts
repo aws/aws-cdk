@@ -23,13 +23,15 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
     validateTree(root);
   }
 
+  // in unit tests, we support creating free-standing stacks, so we create the
+  // assembly builder here.
   const builder = Assembly.isAssembly(root)
     ? root.assemblyBuilder
     : new cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
-  synthesizeChildren(root, builder);
+  synthesizeTree(root, builder);
 
   // Add this assembly to the parent assembly manifest (if we have one)
   if (Assembly.isAssembly(root)) {
@@ -66,7 +68,7 @@ function invokeAspects(root: IConstruct) {
 
   function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
     // hackery to be able to access some private members with strong types (yack!)
-    const node: NodeWithPrivatesHangingOut = construct.node._actualNode as any;
+    const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
 
     const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
 
@@ -90,9 +92,7 @@ function invokeAspects(root: IConstruct) {
  * Stop at Assembly boundaries.
  */
 function prepareTree(root: IConstruct) {
-  visit(root, 'post', construct => {
-    (construct as IProtectedConstructMethods).onPrepare();
-  });
+  visit(root, 'post', construct => construct.onPrepare());
 }
 
 /**
@@ -100,13 +100,11 @@ function prepareTree(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeChildren(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => {
-    (construct as IProtectedConstructMethods).onSynthesize({
-      outdir: builder.outdir,
-      assembly: builder,
-    });
-  });
+function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
+  visit(root, 'post', construct => construct.onSynthesize({
+    outdir: builder.outdir,
+    assembly: builder,
+  }));
 }
 
 /**
@@ -116,8 +114,8 @@ function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
   visit(root, 'pre', construct => {
-    for (const message of (construct as IProtectedConstructMethods).onValidate()) {
-      errors.push({ message, source: construct as Construct });
+    for (const message of construct.onValidate()) {
+      errors.push({ message, source: construct as unknown as Construct });
     }
   });
 
@@ -127,14 +125,18 @@ function validateTree(root: IConstruct) {
   }
 }
 
-function addToParentAssembly(root: Assembly) {
-  if (!root.parentAssembly) { return; }
+/**
+ * Adds an assembly to it's parent's assembly manifest (unless it's the root, and then this does nothing).
+ * @param assembly Assembly to add
+ */
+function addToParentAssembly(assembly: Assembly) {
+  if (!assembly.parentAssembly) { return; }
 
-  root.parentAssembly.assemblyBuilder.addArtifact(root.assemblyArtifactId, {
+  assembly.parentAssembly.assemblyBuilder.addArtifact(assembly.assemblyArtifactId, {
     type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
     properties: {
-      directoryName: root.assemblyArtifactId,
-      displayName: root.node.path,
+      directoryName: assembly.assemblyArtifactId,
+      displayName: assembly.node.path,
     } as cxschema.EmbeddedCloudAssemblyProperties,
   });
 }
@@ -142,9 +144,9 @@ function addToParentAssembly(root: Assembly) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
   if (order === 'pre') {
-    cb(root);
+    cb(root as IProtectedConstructMethods);
   }
 
   for (const child of root.node.children) {
@@ -153,7 +155,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   }
 
   if (order === 'post') {
-    cb(root);
+    cb(root as IProtectedConstructMethods);
   }
 }
 
@@ -184,7 +186,7 @@ interface IProtectedConstructMethods extends IConstruct {
  *
  * Hackery!
  */
-type NodeWithPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
+type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
   readonly invokedAspects: constructs.IAspect[];
   readonly _aspects: constructs.IAspect[];
 };
