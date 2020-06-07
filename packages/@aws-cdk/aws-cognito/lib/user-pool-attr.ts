@@ -1,3 +1,5 @@
+import { Token } from '@aws-cdk/core';
+
 /**
  * The set of standard attributes that can be marked as required.
  *
@@ -200,10 +202,10 @@ export class StringAttribute implements ICustomAttribute {
   private readonly mutable?: boolean;
 
   constructor(props: StringAttributeProps = {}) {
-    if (props.minLen && props.minLen < 0) {
+    if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
       throw new Error(`minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
-    if (props.maxLen && props.maxLen > 2048) {
+    if (props.maxLen && !Token.isUnresolved(props.maxLen) && props.maxLen > 2048) {
       throw new Error(`maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
     }
     this.minLen = props?.minLen;

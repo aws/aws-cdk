@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import { CfnParameter, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
@@ -103,6 +104,18 @@ describe('User Pool Attributes', () => {
         .toThrow(/minLen cannot be less than/);
       expect(() => new StringAttribute({ maxLen: 5000 }))
         .toThrow(/maxLen cannot be greater than/);
+    });
+
+    test('validation is skipped when minLen or maxLen are tokens', () => {
+      const stack = new Stack();
+      const parameter = new CfnParameter(stack, 'Parameter', {
+        type: 'Number',
+      });
+
+      expect(() => new StringAttribute({ minLen: parameter.valueAsNumber }))
+        .not.toThrow();
+      expect(() => new StringAttribute({ maxLen: parameter.valueAsNumber }))
+        .not.toThrow();
     });
   });
 
