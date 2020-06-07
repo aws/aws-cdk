@@ -74,7 +74,7 @@
                             "$ref": "#/definitions/TreeArtifactProperties"
                         },
                         {
-                            "$ref": "#/definitions/EmbeddedCloudAssemblyProperties"
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
                         }
                     ]
                 }
@@ -335,16 +335,16 @@
                 "file"
             ]
         },
-        "EmbeddedCloudAssemblyProperties": {
-            "description": "Artifact properties for embedded Cloud Assemblies",
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
             "type": "object",
             "properties": {
                 "directoryName": {
-                    "description": "Relative of the embedded Cloud Assembly's directory",
+                    "description": "Relative path to the nested cloud assembly",
                     "type": "string"
                 },
                 "displayName": {
-                    "description": "Display name for the Cloud Assembly (Default - The artifact ID)",
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
                     "type": "string"
                 }
             },
