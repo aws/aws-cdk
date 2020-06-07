@@ -30,12 +30,12 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   }
 
   const sourceStack = Stack.of(source);
-  const sourceAssembly = Stage.of(sourceStack);
   const targetStack = Stack.of(target);
-  const targetAssembly = Stage.of(targetStack);
 
-  if (sourceAssembly !== targetAssembly) {
-    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeAssembly(sourceAssembly)}) to '${target.node.path}' (in ${describeAssembly(targetAssembly)}): dependency cannot cross stage boundaries`);
+  const sourceStage = Stage.of(sourceStack);
+  const targetStage = Stage.of(targetStack);
+  if (sourceStage !== targetStage) {
+    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 
   // find the deepest common stack between the two elements
@@ -43,7 +43,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   const targetPath = pathToRoot(targetStack);
   const commonStack = findLastCommonElement(sourcePath, targetPath);
 
-  // if there is no common stack, then define an assembly-level dependency
+  // if there is no common stack, then define a assembly-level dependency
   // between the two top-level stacks
   if (!commonStack) {
     const topLevelSource = sourcePath[0]; // first path element is the top-level stack
@@ -99,7 +99,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
 /**
  * Return a string representation of the given assembler, for use in error messages
  */
-function describeAssembly(assembly: Stage | undefined): string {
+function describeStage(assembly: Stage | undefined): string {
   if (!assembly) { return 'an unrooted construct tree'; }
   if (!assembly.parentStage) { return 'the App'; }
   return `Stage '${assembly.node.path}'`;

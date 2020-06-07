@@ -17,7 +17,7 @@ import { resolveReferences } from './refs';
  */
 export function prepareApp(root: IConstruct) {
   if (root.node.scope && !Stage.isStage(root)) {
-    throw new Error('prepareApp can only be called on an Assembly or a root construct');
+    throw new Error('prepareApp can only be called on a stage or a root construct');
   }
 
   // apply dependencies between resources in depending subtrees
@@ -67,7 +67,7 @@ function findAllNestedStacks(root: IConstruct) {
     if (!Stack.isStack(stack)) { return false; }
     if (!stack.nested) { return false; }
 
-    // test: if we are not within an assembly, then include it.
+    // test: if we are not within a stage, then include it.
     if (!Stage.of(stack)) { return true; }
 
     return Stage.of(stack) === root;
