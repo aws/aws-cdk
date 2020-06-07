@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
@@ -722,10 +722,10 @@ export class UserPool extends UserPoolBase {
 
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
-      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
-      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
       }
       return {
@@ -737,7 +737,7 @@ export class UserPool extends UserPoolBase {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
