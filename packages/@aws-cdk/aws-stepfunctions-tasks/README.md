@@ -216,6 +216,7 @@ The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_Submit
 
 ```ts
 import * as batch from '@aws-cdk/aws-batch';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const batchQueue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [
@@ -234,12 +235,10 @@ const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
   },
 });
 
-const task = new sfn.Task(this, 'Submit Job', {
-  task: new tasks.RunBatchJob({
-    jobDefinition: batchJobDefinition,
-    jobName: 'MyJob',
-    jobQueue: batchQueue,
-  }),
+const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
+  jobDefinition: batchJobDefinition,
+  jobName: 'MyJob',
+  jobQueue: batchQueue,
 });
 ```
 
@@ -728,15 +727,14 @@ const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
 });
 
 // Include the state machine in a Task state with callback pattern
-const task = new sfn.Task(stack, 'ChildTask', {
-  task: new tasks.ExecuteStateMachine(child, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    input: {
-      token: sfn.Context.taskToken,
-      foo: 'bar'
-    },
-    name: 'MyExecutionName'
-  })
+const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+  stateMachine: child,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  input: sfn.TaskInput.fromObject({
+    token: sfn.Context.taskToken,
+    foo: 'bar'
+  }),
+  name: 'MyExecutionName'
 });
 
 // Define a second state machine with the Task state above
