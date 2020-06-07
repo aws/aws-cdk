@@ -59,8 +59,6 @@ export interface AssemblyProps {
  * You can then instantiate your subclass multiple times to model multiple
  * copies of your application which should be be deployed to different
  * environments.
- *
- * @experimental
  */
 export class Assembly extends Construct {
   /**
