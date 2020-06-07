@@ -25,7 +25,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     vpc,
   },
-  kmsKey,
+  storageEncryptionKey: kmsKey,
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
 });

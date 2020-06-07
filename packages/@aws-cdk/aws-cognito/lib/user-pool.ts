@@ -1,10 +1,11 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -526,33 +527,67 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
-   * Create a user pool client.
+   * Get all identity providers registered with this user pool.
    */
-  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
+  readonly identityProviders: IUserPoolIdentityProvider[];
+
+  /**
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+   */
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+
+  /**
+   * Register an identity provider with this user pool.
+   */
+  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+}
+
+abstract class UserPoolBase extends Resource implements IUserPool {
+  public abstract readonly userPoolId: string;
+  public abstract readonly userPoolArn: string;
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
+    this.identityProviders.push(provider);
+  }
 }
 
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends Resource implements IUserPool {
+export class UserPool extends UserPoolBase {
   /**
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends Resource implements IUserPool {
+    class Import extends UserPoolBase {
       public readonly userPoolId = userPoolId;
       public readonly userPoolArn = Stack.of(this).formatArn({
         service: 'cognito-idp',
         resource: 'userpool',
         resourceName: userPoolId,
       });
-
-      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
-        return new UserPoolClient(this, clientId, {
-          userPool: this,
-          ...options,
-        });
-      }
     }
     return new Import(scope, id);
   }
@@ -669,28 +704,6 @@ export class UserPool extends Resource implements IUserPool {
     (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
-  /**
-   * Add a new app client to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
-   */
-  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
-    return new UserPoolClient(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Associate a domain to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
-   */
-  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
-    return new UserPoolDomain(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
@@ -709,10 +722,10 @@ export class UserPool extends Resource implements IUserPool {
 
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
-      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
-      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
       }
       return {
@@ -724,7 +737,7 @@ export class UserPool extends Resource implements IUserPool {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
