@@ -115,7 +115,7 @@ export interface StandardAttributes {
 export interface StandardAttribute {
   /**
    * Specifies whether the value of the attribute can be changed.
-   * For any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to true.
+   * For any user pool attribute that's mapped to an identity provider attribute, this must be set to `true`.
    * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
    * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
    *

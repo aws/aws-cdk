@@ -456,7 +456,7 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @default - No standard attributes are required.
+   * @default - All standard attributes are optional and mutable.
    */
   readonly standardAttributes?: StandardAttributes;
 
@@ -746,24 +746,24 @@ export class UserPool extends UserPoolBase {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.phoneNumber); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.preferredUsername); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -851,7 +851,7 @@ export class UserPool extends UserPoolBase {
       const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
         .filter(([, attr]) => !!attr)
         .map(([attrName, attr]) => ({
-          name: StandardAttributeMap[attrName],
+          name: StandardAttributeNames[attrName],
           mutable: attr.mutable ?? true,
           required: attr.required ?? false,
         }));
@@ -860,9 +860,29 @@ export class UserPool extends UserPoolBase {
     }
 
     if (props.customAttributes) {
-      const customAttrs = Object.keys(props.customAttributes).map(attrName =>
-        this.renderAttribute(attrName, props.customAttributes![attrName]),
-      );
+      const customAttrs = Object.keys(props.customAttributes).map((attrName) => {
+        const attrConfig = props.customAttributes![attrName].bind();
+        const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
+          minValue: attrConfig.numberConstraints?.min?.toString(),
+          maxValue: attrConfig.numberConstraints?.max?.toString(),
+        };
+        const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
+          minLength: attrConfig.stringConstraints?.minLen?.toString(),
+          maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
+        };
+
+        return {
+          name: attrName,
+          attributeDataType: attrConfig.dataType,
+          numberAttributeConstraints: attrConfig.numberConstraints
+            ? numberConstraints
+            : undefined,
+          stringAttributeConstraints: attrConfig.stringConstraints
+            ? stringConstraints
+            : undefined,
+          mutable: attrConfig.mutable,
+        };
+      });
       schema.push(...customAttrs);
     }
 
@@ -871,73 +891,26 @@ export class UserPool extends UserPoolBase {
     }
     return schema;
   }
-
-  private renderAttribute(
-    name: string,
-    attribute: ICustomAttribute,
-  ): CfnUserPool.SchemaAttributeProperty {
-    const attrConfig = attribute.bind();
-    const numberConstraints: CfnUserPool.NumberAttributeConstraintsProperty = {
-      minValue: attrConfig.numberConstraints?.min?.toString(),
-      maxValue: attrConfig.numberConstraints?.max?.toString(),
-    };
-    const stringConstraints: CfnUserPool.StringAttributeConstraintsProperty = {
-      minLength: attrConfig.stringConstraints?.minLen?.toString(),
-      maxLength: attrConfig.stringConstraints?.maxLen?.toString(),
-    };
-
-    return {
-      name,
-      attributeDataType: attrConfig.dataType,
-      numberAttributeConstraints: attrConfig.numberConstraints
-        ? numberConstraints
-        : undefined,
-      stringAttributeConstraints: attrConfig.stringConstraints
-        ? stringConstraints
-        : undefined,
-      mutable: attrConfig.mutable,
-    };
-  }
 }
 
-const enum StandardAttributeNames {
-  ADDRESS = 'address',
-  BIRTHDATE = 'birthdate',
-  EMAIL = 'email',
-  FAMILY_NAME = 'family_name',
-  GENDER = 'gender',
-  GIVEN_NAME = 'given_name',
-  LOCALE = 'locale',
-  MIDDLE_NAME = 'middle_name',
-  NAME = 'name',
-  NICKNAME = 'nickname',
-  PHONE_NUMBER = 'phone_number',
-  PICTURE_URL = 'picture',
-  PREFERRED_USERNAME = 'preferred_username',
-  PROFILE_URL = 'profile',
-  TIMEZONE = 'zoneinfo',
-  LAST_UPDATE_TIME = 'updated_at',
-  WEBSITE = 'website',
-}
-
-const StandardAttributeMap: Record<keyof StandardAttributes, StandardAttributeNames> = {
-  address: StandardAttributeNames.ADDRESS,
-  birthdate: StandardAttributeNames.BIRTHDATE,
-  email: StandardAttributeNames.EMAIL,
-  familyName: StandardAttributeNames.FAMILY_NAME,
-  gender: StandardAttributeNames.GENDER,
-  givenName: StandardAttributeNames.GIVEN_NAME,
-  locale: StandardAttributeNames.LOCALE,
-  middleName: StandardAttributeNames.MIDDLE_NAME,
-  fullname: StandardAttributeNames.NAME,
-  nickname: StandardAttributeNames.NICKNAME,
-  phoneNumber: StandardAttributeNames.PHONE_NUMBER,
-  profilePicture: StandardAttributeNames.PICTURE_URL,
-  preferredUsername: StandardAttributeNames.PREFERRED_USERNAME,
-  profilePage: StandardAttributeNames.PROFILE_URL,
-  timezone: StandardAttributeNames.TIMEZONE,
-  lastUpdateTime: StandardAttributeNames.LAST_UPDATE_TIME,
-  website: StandardAttributeNames.WEBSITE,
+const StandardAttributeNames: Record<keyof StandardAttributes, string> = {
+  address: 'address',
+  birthdate: 'birthdate',
+  email: 'email',
+  familyName: 'family_name',
+  gender: 'gender',
+  givenName: 'given_name',
+  locale: 'locale',
+  middleName: 'middle_name',
+  fullname: 'name',
+  nickname: 'nickname',
+  phoneNumber: 'phone_number',
+  profilePicture: 'picture',
+  preferredUsername: 'preferred_username',
+  profilePage: 'profile',
+  timezone: 'zoneinfo',
+  lastUpdateTime: 'updated_at',
+  website: 'website',
 };
 
 function undefinedIfNoKeys(struct: object): object | undefined {

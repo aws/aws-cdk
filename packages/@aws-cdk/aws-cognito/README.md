@@ -161,8 +161,8 @@ attributes. Besides these, additional attributes can be further defined, and are
 Learn more on [attributes in Cognito's
 documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
 
-The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
-four optional attributes.
+The following code configures a user pool with two standard attributes (name and address) as required and mutable, and adds
+four custom attributes.
 
 ```ts
 new UserPool(this, 'myuserpool', {

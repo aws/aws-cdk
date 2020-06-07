@@ -582,6 +582,47 @@ describe('User Pool', () => {
     });
   });
 
+  test('schema is absent when attributes are not specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { userPoolName: 'Pool' });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
+      Schema: ABSENT,
+    });
+  });
+
+  test('optional mutable standardAttributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
+      standardAttributes: {
+        timezone: {
+          mutable: true,
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
+      Schema: [
+        {
+          Mutable: true,
+          Required: false,
+          Name: 'zoneinfo',
+        }
+      ]
+    });
+  });
+
   test('custom attributes with default constraints', () => {
     // GIVEN
     const stack = new Stack();
