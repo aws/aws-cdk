@@ -5,11 +5,12 @@ import * as core from '@aws-cdk/core';
 import { Provider } from '../provider-framework';
 import { CfncliLayer } from './cfncli-layer';
 
-const CLOUDFORMATION_IAM_PATH = '/cloudformation/';
-const BUCKET_RESOURCE_PROVIDERS = 's3://awscdk-resource-type-providers';
+const BUCKET_RESOURCE_PROVIDERS = 's3://awscdk-resource-types';
 const REGISTER_PROVIDER_RESOURCE_TYPE = 'Custom::AWSCDK-ResourceTypeProvider';
 const HANDLER_DIR = path.join(__dirname, 'runtime');
 const HANDLER_RUNTIME = lambda.Runtime.PYTHON_3_7;
+
+export const CLOUDFORMATION_IAM_PATH = '/cloudformation/';
 
 /**
  * A IAM role used by CloudFormation when sending
@@ -29,24 +30,18 @@ export class LogDeliveryRole extends iam.Role {
       ...props,
     });
 
-    this.addManagedPolicy(new iam.ManagedPolicy(this, `${id}Policy`, {
-      // managedPolicyName: 'LogDeliveryRolePolicy',
-      path: CLOUDFORMATION_IAM_PATH,
-      statements: [
-        new iam.PolicyStatement({
-          actions: [
-            'logs:CreateLogGroup',
-            'logs:CreateLogStream',
-            'logs:DescribeLogGroups',
-            'logs:DescribeLogStreams',
-            'logs:PutLogEvents',
-            'cloudwatch:ListMetrics',
-            'cloudwatch:PutMetricData',
-          ],
-          resources: [ '*' ],
-        }),
+    this.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:CreateLogGroup',
+        'logs:CreateLogStream',
+        'logs:DescribeLogGroups',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+        'cloudwatch:ListMetrics',
+        'cloudwatch:PutMetricData',
       ],
-    }))
+      resources: [ '*' ],
+    }));
   }
 }
 
@@ -91,7 +86,7 @@ export class RegisterResourceTypeProvider extends core.NestedStack {
     });
     onEvent.addToRolePolicy(new iam.PolicyStatement({
       actions: [ 'iam:PassRole' ],
-      resources: [ `arn:aws:iam::${this.account}:role/cloudformation*/*` ],
+      resources: [ `arn:aws:iam::${this.account}:role${CLOUDFORMATION_IAM_PATH}*` ],
     }));
     onEvent.addToRolePolicy(new iam.PolicyStatement({
       actions: [
