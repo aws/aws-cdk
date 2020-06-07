@@ -1,24 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage } from '../lib';
 
-let app: App;
-
 export = {
-  'setUp'(cb: () => void) {
-    app = new App();
-    cb();
-  },
-
-  'tearDown'(cb: () => void) {
-    rimraf(app.assemblyBuilder.outdir);
-    cb();
-  },
-
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
     // GIVEN
+    const app = new App();
     const stage = new Stage(app, 'Stage', {
       env: { account: 'account', region: 'region' },
     });
@@ -36,6 +23,7 @@ export = {
 
   'The Stage Assembly is in the app Assembly\'s manifest'(test: Test) {
     // WHEN
+    const app = new App();
     const stage = new Stage(app, 'Stage');
     new BogusStack(stage, 'Stack2');
 
@@ -50,6 +38,7 @@ export = {
 
   'Stacks in Stage are in a different cxasm than Stacks in App'(test: Test) {
     // WHEN
+    const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
     const stage = new Stage(app, 'Stage');
     const stack2 = new BogusStack(stage, 'Stack2');
@@ -66,6 +55,7 @@ export = {
 
   'Can nest Stages inside other Stages'(test: Test) {
     // WHEN
+    const app = new App();
     const outer = new Stage(app, 'Outer');
     const inner = new Stage(outer, 'Inner');
     const stack = new BogusStack(inner, 'Stack');
@@ -82,6 +72,7 @@ export = {
 
   'Default stack name in Stage objects incorporates the Stage name and no hash'(test: Test) {
     // WHEN
+    const app = new App();
     const stage = new Stage(app, 'MyStage');
     const stack = new BogusStack(stage, 'MyStack');
 
@@ -94,6 +85,7 @@ export = {
 
   'Can not have dependencies to stacks outside the embedded asm'(test: Test) {
     // GIVEN
+    const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
     const stage = new Stage(app, 'MyStage');
     const stack2 = new BogusStack(stage, 'Stack2');
@@ -108,6 +100,7 @@ export = {
 
   'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
     // GIVEN
+    const app = new App();
     let prepared = false;
     const stage = new Stage(app, 'MyStage');
     const stack = new BogusStack(stage, 'Stack');
@@ -129,6 +122,7 @@ export = {
 
   'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
     // GIVEN
+    const app = new App();
     const stage = new Stage(app, 'MyStage');
     const stack = new BogusStack(stage, 'Stack');
 
@@ -148,6 +142,7 @@ export = {
 
   'Aspects do not apply inside a Stage'(test: Test) {
     // GIVEN
+    const app = new App();
     const stage = new Stage(app, 'MyStage');
     new BogusStack(stage, 'Stack');
 
@@ -166,6 +161,7 @@ export = {
 
   'Automatic dependencies inside a stage are available immediately after synth'(test: Test) {
     // GIVEN
+    const app = new App();
     const stage = new Stage(app, 'MyStage');
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');
@@ -190,33 +186,77 @@ export = {
 
     test.done();
   },
+
+  'Assemblies can be deeply nested'(test: Test) {
+    // GIVEN
+    const app = new App({ runtimeInfo: false, treeMetadata: false });
+
+    const level1 = new Stage(app, 'StageLevel1');
+    const level2 = new Stage(level1, 'StageLevel2');
+    new Stage(level2, 'StageLevel3');
+
+    // WHEN
+    const rootAssembly = app.synth();
+
+    // THEN
+    test.deepEqual(rootAssembly.manifest.artifacts, {
+      'assembly-StageLevel1': {
+        type: 'cdk:cloud-assembly',
+        properties: {
+          directoryName: 'assembly-StageLevel1',
+          displayName: 'StageLevel1',
+        },
+      },
+    });
+
+    const assemblyLevel1 = embeddedAsm(rootAssembly, 'assembly-StageLevel1');
+    test.deepEqual(assemblyLevel1.manifest.artifacts, {
+      'assembly-StageLevel1-StageLevel2': {
+        type: 'cdk:cloud-assembly',
+        properties: {
+          directoryName: 'assembly-StageLevel1-StageLevel2',
+          displayName: 'StageLevel1/StageLevel2',
+        },
+      },
+    });
+
+    const assemblyLevel2 = embeddedAsm(assemblyLevel1, 'assembly-StageLevel1-StageLevel2');
+    test.deepEqual(assemblyLevel2.manifest.artifacts, {
+      'assembly-StageLevel1-StageLevel2-StageLevel3': {
+        type: 'cdk:cloud-assembly',
+        properties: {
+          directoryName: 'assembly-StageLevel1-StageLevel2-StageLevel3',
+          displayName: 'StageLevel1/StageLevel2/StageLevel3',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'assembly/stage name validation'(test: Test) {
+    const app = new App();
+
+    new Stage(app, 'abcd');
+    new Stage(app, 'abcd123');
+    new Stage(app, 'abcd123-588dfjjk');
+    new Stage(app, 'abcd123-588dfjjk.sss');
+    new Stage(app, 'abcd123-588dfjjk.sss_ajsid');
+
+    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid '), /invalid assembly name "abcd123-588dfjjk.sss_ajsid "/);
+    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo'), /invalid assembly name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
+    test.throws(() => new Stage(app, '&'), /invalid assembly name "&"/);
+    test.throws(() => new Stage(app, '45hello'), /invalid assembly name "45hello"/);
+    test.throws(() => new Stage(app, 'f'), /invalid assembly name "f"/);
+
+    test.done();
+  },
 };
 
 class TouchingAspect implements IAspect {
   public readonly visits = new Array<IConstruct>();
   public visit(node: IConstruct): void {
     this.visits.push(node);
-  }
-}
-
-/**
- * rm -rf reimplementation, don't want to depend on an NPM package for this
- */
-function rimraf(fsPath: string) {
-  try {
-    const isDir = fs.lstatSync(fsPath).isDirectory();
-
-    if (isDir) {
-      for (const file of fs.readdirSync(fsPath)) {
-        rimraf(path.join(fsPath, file));
-      }
-      fs.rmdirSync(fsPath);
-    } else {
-      fs.unlinkSync(fsPath);
-    }
-  } catch (e) {
-    // We will survive ENOENT
-    if (e.code !== 'ENOENT') { throw e; }
   }
 }
 

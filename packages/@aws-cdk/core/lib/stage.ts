@@ -37,17 +37,6 @@ export interface StageProps {
    * @default - The environments should be configured on the `Stack`s.
    */
   readonly env?: Environment;
-
-  /**
-   * Stage name
-   *
-   * Will be prepended to default Stack names of stacks in this Stage.
-   *
-   * Stack names can be overridden at the Stack level.
-   *
-   * @default - Same as the construct id
-   */
-  readonly stageName?: string;
 }
 
 /**
@@ -59,6 +48,8 @@ export interface StageProps {
  * You can then instantiate your subclass multiple times to model multiple
  * copies of your application which should be be deployed to different
  * environments.
+ *
+ * @experimental
  */
 export class Stage extends Assembly {
   /**
@@ -69,7 +60,6 @@ export class Stage extends Assembly {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id, {
       env: props.env,
-      assemblyName: props.stageName,
     });
 
     this.stageName = this.assemblyName;

@@ -8,17 +8,6 @@ import { synthesize } from './private/synthesis';
  */
 export interface AssemblyProps {
   /**
-   * Assembly name
-   *
-   * Will be prepended to default stack names of stacks defined under this assembly.
-   *
-   * Stack names can be overridden at the Stack level.
-   *
-   * @default - Same as the construct id
-   */
-  readonly assemblyName?: string;
-
-  /**
    * Default AWS environment (account/region) for `Stack`s in this `Stage`.
    *
    * Stacks defined inside this `Stage` with either `region` or `account` missing
@@ -60,25 +49,33 @@ export interface AssemblyProps {
 }
 
 /**
- * An application modeling unit consisting of Stacks that should be deployed together
+ * An abstract application modeling unit consisting of Stacks that should be
+ * deployed together.
  *
- * Derive a subclass of this construct and use it to model a single
- * instance of your application.
+ * Derive a subclass of `Stage` and use it to model a single instance of your
+ * application.
  *
  * You can then instantiate your subclass multiple times to model multiple
  * copies of your application which should be be deployed to different
  * environments.
+ *
+ * @experimental
  */
 export class Assembly extends Construct {
   /**
-   * Return the containing Stage object of a construct, if available
+   * Return the containing assembly of a construct, if available. If called on a
+   * nested assembly, returns its parent.
+   *
+   * @experimental
    */
   public static of(construct: IConstruct): Assembly | undefined {
     return construct.node.scopes.reverse().slice(1).find(Assembly.isAssembly);
   }
 
   /**
-   * Test whether the given construct is a Assembly object
+   * Test whether the given construct is an assembly.
+   *
+   * @experimental
    */
   public static isAssembly(x: any ): x is Assembly {
     return x !== null && x instanceof Assembly;
@@ -86,28 +83,37 @@ export class Assembly extends Construct {
 
   /**
    * The default region for all resources defined within this assembly.
+   *
+   * @experimental
    */
   public readonly region?: string;
 
   /**
    * The default account for all resources defined within this assembly.
+   *
+   * @experimental
    */
   public readonly account?: string;
 
   /**
-   * The Cloud Assembly builder that is being used for this App
+   * The cloud assembly builder that is being used for this App
    *
    * @experimental
    */
   public readonly assemblyBuilder: cxapi.CloudAssemblyBuilder;
 
   /**
-   * The name of the assembly.
+   * The name of the assembly. Based on names of the parent assemblies separated
+   * by hypens.
+   *
+   * @experimental
    */
   public readonly assemblyName: string;
 
   /**
    * The parent assembly or `undefined` if this is the app.
+   * *
+   * @experimental
    */
   public readonly parentAssembly?: Assembly;
 
@@ -118,6 +124,10 @@ export class Assembly extends Construct {
 
   constructor(scope: Construct, id: string, props: AssemblyProps = {}) {
     super(scope, id);
+
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
+      throw new Error(`invalid assembly name "${id}". Assembly name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+    }
 
     this.parentAssembly = Assembly.of(this);
 
@@ -131,17 +141,19 @@ export class Assembly extends Construct {
       ? this.parentAssembly.assemblyBuilder.openEmbeddedAssembly(this.assemblyArtifactId)
       : new cxapi.CloudAssemblyBuilder(props.outdir ?? process.env[cxapi.OUTDIR_ENV]);   // TODO: << should; come; from; app;
 
-    this.assemblyName = props.assemblyName ?? (this.parentAssembly?.assemblyName ? `${this.parentAssembly.assemblyName}-${id}` : id);
+    this.assemblyName = [ this.parentAssembly?.assemblyName, id ].filter(x => x).join('-');
   }
 
   /**
    * Artifact ID of embedded assembly
    *
    * Derived from the construct path.
+   *
+   * @experimental
    */
   public get assemblyArtifactId() {
     if (!this.node.path) { return ''; }
-    return `stage-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
+    return `assembly-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
   /**
