@@ -1,9 +1,16 @@
 #!/bin/bash
-# A number of tests have been written in TS/Jest, instead of bash.
-# This script runs them.
-
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
+
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+echo 'CLI Integration Tests'
+echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+current_version=$(node -p "require('${scriptdir}/../../../package.json').version")
+
+# This allows injecting different versions, not just the current one.
+# Useful when testing.
+export VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-${current_version}}
 
 cd $scriptdir
 
@@ -16,4 +23,4 @@ if ! npx --no-install jest --version; then
   npm install --prefix . jest aws-sdk
 fi
 
-npx jest --runInBand --verbose --setupFilesAfterEnv "$PWD/jest.setup.js" "$@"
+npx jest --runInBand --verbose "$@"

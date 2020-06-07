@@ -255,7 +255,7 @@ new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
 new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
 // Not included in wildcard
-new IamStack(app, `${stackPrefix}-iam-test`);
+new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
 new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
 

@@ -1,1 +1,5 @@
+removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
+removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
+removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingExternalId
+removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingRoleArn
 
