@@ -743,21 +743,6 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  /**
-   * Prepare stack
-   *
-   * Find all CloudFormation references and tell them we're consuming them.
-   *
-   * Find all dependencies as well and add the appropriate DependsOn fields.
-   */
-  protected prepare() {
-    // if this stack is a root (e.g. in unit tests), call `prepareApp` so that
-    // we resolve cross-references and nested stack assets.
-    if (!this.node.scope) {
-      prepareApp(this);
-    }
-  }
-
   protected synthesize(session: ISynthesisSession): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.

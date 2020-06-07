@@ -240,6 +240,9 @@ export class ConstructNode {
    * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p: typeof import('./private/prepare-app') = require('./private/prepare-app');
+    p.prepareApp(node.root); // resolve cross refs and nested stack assets.
     return node._actualNode.prepare();
   }
 
