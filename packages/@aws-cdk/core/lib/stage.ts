@@ -43,8 +43,13 @@ export interface StageProps {
   /**
    * The output directory into which to emit synthesized artifacts.
    *
-   * @default - If this value is _not_ set, considers the environment variable `CDK_OUTDIR`.
-   *            If `CDK_OUTDIR` is not defined, uses a temp directory.
+   * Can only be specified if this stage is the root stage (the app). If this is
+   * specified and this stage is nested within another stage, an error will be
+   * thrown.
+   *
+   * @default - for nested stages, outdir will be determined as a relative
+   * directory to the outdir of the app. For apps, if outdir is not specified, a
+   * temporary directory will be created.
    */
   readonly outdir?: string;
 }
@@ -98,8 +103,9 @@ export class Stage extends Construct {
    * The cloud assembly builder that is being used for this App
    *
    * @experimental
+   * @internal
    */
-  public readonly assemblyBuilder: cxapi.CloudAssemblyBuilder;
+  public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
 
   /**
    * The name of the stage. Based on names of the parent stages separated by
@@ -133,13 +139,7 @@ export class Stage extends Construct {
     this.region = props.env?.region;
     this.account = props.env?.account;
 
-    // Need to determine fixed output directory already, because we must know where
-    // to write sub-assemblies (which must happen before we actually get to this app's
-    // synthesize() phase).
-    this.assemblyBuilder = this.parentStage
-      ? this.parentStage.assemblyBuilder.createNestedAssembly(this.assemblyArtifactId)
-      : new cxapi.CloudAssemblyBuilder(props.outdir);
-
+    this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
   }
 
@@ -151,7 +151,7 @@ export class Stage extends Construct {
    *
    * @experimental
    */
-  public get assemblyArtifactId() {
+  public get artifactId() {
     if (!this.node.path) { return ''; }
     return `assembly-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
@@ -163,9 +163,8 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
-
     if (!this.assembly) {
+      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         runtimeInfo,
@@ -173,6 +172,20 @@ export class Stage extends Construct {
     }
 
     return this.assembly;
+  }
+
+  private createBuilder(outdir?: string) {
+    // cannot specify "outdir" if we are a nested stage
+    if (this.parentStage && outdir) {
+      throw new Error('"outdir" cannot be specified for nested stages');
+    }
+
+    // Need to determine fixed output directory already, because we must know where
+    // to write sub-assemblies (which must happen before we actually get to this app's
+    // synthesize() phase).
+    return this.parentStage
+      ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path)
+      : new cxapi.CloudAssemblyBuilder(outdir);
   }
 }
 

@@ -1,4 +1,3 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
@@ -25,17 +24,12 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
   const builder = Stage.isStage(root)
-    ? root.assemblyBuilder
+    ? root._assemblyBuilder
     : new cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder);
-
-  // Add this assembly to the parent assembly manifest (if we have one)
-  if (Stage.isStage(root)) {
-    addToParentAssembly(root);
-  }
 
   return builder.buildAssembly({
     runtimeInfo: options.runtimeInfo,
@@ -123,22 +117,6 @@ function validateTree(root: IConstruct) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
   }
-}
-
-/**
- * Adds an assembly to it's parent's assembly manifest (unless it's the root, and then this does nothing).
- * @param assembly Assembly to add
- */
-function addToParentAssembly(assembly: Stage) {
-  if (!assembly.parentStage) { return; }
-
-  assembly.parentStage.assemblyBuilder.addArtifact(assembly.assemblyArtifactId, {
-    type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
-    properties: {
-      directoryName: assembly.assemblyArtifactId,
-      displayName: assembly.node.path,
-    } as cxschema.NestedCloudAssemblyProperties,
-  });
 }
 
 /**
