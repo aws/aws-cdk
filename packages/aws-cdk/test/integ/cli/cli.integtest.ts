@@ -441,12 +441,12 @@ integTest('IAM diff', async () => {
   // ┌───┬─────────────────┬────────┬────────────────┬────────────────────────────-──┬───────────┐
   // │   │ Resource        │ Effect │ Action         │ Principal                     │ Condition │
   // ├───┼─────────────────┼────────┼────────────────┼───────────────────────────────┼───────────┤
-  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.${AWS::URLSuffix} │           │
+  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazonaws.com     │           │
   // └───┴─────────────────┴────────┴────────────────┴───────────────────────────────┴───────────┘
 
   expect(output).toContain('${SomeRole.Arn}');
   expect(output).toContain('sts:AssumeRole');
-  expect(output).toContain('ec2.${AWS::URLSuffix}');
+  expect(output).toContain('ec2.amazonaws.com');
 });
 
 integTest('fast deploy', async () => {
