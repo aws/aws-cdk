@@ -182,6 +182,8 @@ export enum ConstructOrder {
 
 /**
  * Options for synthesis.
+ *
+ * @deprecated use `app.synth()` or `stage.synth()` instead
  */
 export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   /**
@@ -224,6 +226,7 @@ export class ConstructNode {
    * Synthesizes a CloudAssembly from a construct tree.
    * @param node The root of the construct tree.
    * @param options Synthesis options.
+   * @deprecated Use `app.synth()` or `stage.synth()` instead
    */
   public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -234,6 +237,7 @@ export class ConstructNode {
   /**
    * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
    * @param node The root node
+   * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
     return node._actualNode.prepare();

@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from './construct-compat';
 import { Environment } from './environment';
+import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
 
 /**
@@ -163,8 +164,13 @@ export class Assembly extends Construct {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent calls will return the same assembly.
    */
   public synth(options: AssemblySynthesisOptions = { }): cxapi.CloudAssembly {
+    const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
+
     if (!this.assembly) {
-      this.assembly = synthesize(this, options);
+      this.assembly = synthesize(this, {
+        skipValidation: options.skipValidation,
+        runtimeInfo,
+      });
     }
 
     return this.assembly;

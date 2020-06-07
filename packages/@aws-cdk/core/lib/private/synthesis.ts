@@ -1,10 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { Assembly } from '../assembly';
+import { Assembly, AssemblySynthesisOptions } from '../assembly';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { prepareApp } from './prepare-app';
-import { collectRuntimeInformation } from './runtime-info';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -38,8 +37,9 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
     addToParentAssembly(root);
   }
 
-  const runtimeInfo = root.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
-  return builder.buildAssembly({ runtimeInfo });
+  return builder.buildAssembly({
+    runtimeInfo: options.runtimeInfo,
+  });
 }
 
 /**
@@ -47,7 +47,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  *
  * (They will in turn recurse again)
  */
-function synthNestedAssemblies(root: IConstruct, options: SynthesisOptions) {
+function synthNestedAssemblies(root: IConstruct, options: AssemblySynthesisOptions) {
   for (const child of root.node.children) {
     if (Assembly.isAssembly(child)) {
       child.synth(options);
