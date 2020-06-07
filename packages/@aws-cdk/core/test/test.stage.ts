@@ -27,10 +27,10 @@ export = {
     const stage = new Stage(app, 'Stage');
     new BogusStack(stage, 'Stack2');
 
-    // THEN -- app manifest contains an embedded cloud assembly
+    // THEN -- app manifest contains a nested cloud assembly
     const appAsm = app.synth();
 
-    const artifact = appAsm.artifacts.find(isEmbeddedCloudAssemblyArtifact);
+    const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
     test.ok(artifact);
 
     test.done();
@@ -62,8 +62,8 @@ export = {
 
     // WHEN
     const appAsm = app.synth();
-    const outerAsm = embeddedAsm(appAsm, outer.assemblyArtifactId);
-    const innerAsm = embeddedAsm(outerAsm, inner.assemblyArtifactId);
+    const outerAsm = appAsm.getNestedAssembly(outer.assemblyArtifactId);
+    const innerAsm = outerAsm.getNestedAssembly(inner.assemblyArtifactId);
 
     test.ok(innerAsm.tryGetArtifact(stack.artifactId));
 
@@ -83,7 +83,7 @@ export = {
     test.done();
   },
 
-  'Can not have dependencies to stacks outside the embedded asm'(test: Test) {
+  'Can not have dependencies to stacks outside the nested asm'(test: Test) {
     // GIVEN
     const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
@@ -209,7 +209,7 @@ export = {
       },
     });
 
-    const assemblyLevel1 = embeddedAsm(rootAssembly, 'assembly-StageLevel1');
+    const assemblyLevel1 = rootAssembly.getNestedAssembly('assembly-StageLevel1');
     test.deepEqual(assemblyLevel1.manifest.artifacts, {
       'assembly-StageLevel1-StageLevel2': {
         type: 'cdk:cloud-assembly',
@@ -220,7 +220,7 @@ export = {
       },
     });
 
-    const assemblyLevel2 = embeddedAsm(assemblyLevel1, 'assembly-StageLevel1-StageLevel2');
+    const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
     test.deepEqual(assemblyLevel2.manifest.artifacts, {
       'assembly-StageLevel1-StageLevel2-StageLevel3': {
         type: 'cdk:cloud-assembly',
@@ -268,15 +268,4 @@ class BogusStack extends Stack {
       type: 'CDK::Test::Resource',
     });
   }
-}
-
-function embeddedAsm(asm: cxapi.CloudAssembly, artifactId: string): cxapi.CloudAssembly {
-  const a = asm.tryGetArtifact(artifactId);
-  if (!a) { throw new Error(`No such artifact in CloudAssembly: '${artifactId}' (have: ${asm.artifacts.map(art => art.id)})`); }
-  if (!isEmbeddedCloudAssemblyArtifact(a)) { throw new Error(`Found artifact '${artifactId}' but it's not a Cloud Assembly!`); }
-  return a.embeddedAssembly;
-}
-
-function isEmbeddedCloudAssemblyArtifact(a: any): a is cxapi.EmbeddedCloudAssemblyArtifact {
-  return a instanceof cxapi.EmbeddedCloudAssemblyArtifact;
 }

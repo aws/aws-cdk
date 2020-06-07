@@ -1,6 +1,6 @@
-# Embedded Assemblies
+# Nested Assemblies
 
-For the CI/CD project we need to be able to a final, authoratative, immutable
+For the CI/CD project we need to be able to a final, authoritative, immutable
 rendition of part of the construct tree. This is a part of the application
 that we can ask the CI/CD system to deploy as a unit, and have it get a fighting
 chance of getting it right. This is because:
@@ -8,11 +8,11 @@ chance of getting it right. This is because:
 - The stacks will be known.
 - Their interdependencies will be known, and won't change anymore.
 
-To that end, we're introducing the concept of an "embedded cloud assembly".
+To that end, we're introducing the concept of an "nested cloud assembly".
 This is a part of the construct tree that is finalized independently of the
 rest, so that other constructs can reflect on it.
 
-Constructs of type `Stage` will produce embedded cloud assemblies.
+Constructs of type `Stage` will produce nested cloud assemblies.
 
 ## Restrictions
 

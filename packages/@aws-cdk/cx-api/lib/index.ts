@@ -7,7 +7,7 @@ export * from './cloud-artifact';
 export * from './artifacts/asset-manifest-artifact';
 export * from './artifacts/cloudformation-artifact';
 export * from './artifacts/tree-cloud-artifact';
-export * from './artifacts/embedded-cloud-assembly-artifact';
+export * from './artifacts/nested-cloud-assembly-artifact';
 export * from './cloud-assembly';
 export * from './assets';
 export * from './environment';

@@ -90,7 +90,7 @@ export class App extends Assembly {
    */
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
-      outdir: props.outdir,
+      outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
     });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

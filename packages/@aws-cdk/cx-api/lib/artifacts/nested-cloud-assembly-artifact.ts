@@ -6,7 +6,7 @@ import { CloudAssembly } from '../cloud-assembly';
 /**
  * Asset manifest is a description of a set of assets which need to be built and published
  */
-export class EmbeddedCloudAssemblyArtifact extends CloudArtifact {
+export class NestedCloudAssemblyArtifact extends CloudArtifact {
   /**
    * The relative directory name of the asset manifest
    */
@@ -20,30 +20,30 @@ export class EmbeddedCloudAssemblyArtifact extends CloudArtifact {
   /**
    * Cache for the inner assembly loading
    */
-  private _embeddedAssembly?: CloudAssembly;
+  private _nestedAssembly?: CloudAssembly;
 
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
 
-    const properties = (this.manifest.properties || {}) as cxschema.EmbeddedCloudAssemblyProperties;
+    const properties = (this.manifest.properties || {}) as cxschema.NestedCloudAssemblyProperties;
     this.directoryName = properties.directoryName;
     this.displayName = properties.displayName ?? name;
   }
 
   /**
-   * Full path to the Embedded Assembly
+   * Full path to the nested assembly directory
    */
   public get fullPath(): string {
     return path.join(this.assembly.directory, this.directoryName);
   }
 
   /**
-   * The embedded Assembly
+   * The nested Assembly
    */
-  public get embeddedAssembly(): CloudAssembly {
-    if (!this._embeddedAssembly) {
-      this._embeddedAssembly = new CloudAssembly(this.fullPath);
+  public get nestedAssembly(): CloudAssembly {
+    if (!this._nestedAssembly) {
+      this._nestedAssembly = new CloudAssembly(this.fullPath);
     }
-    return this._embeddedAssembly;
+    return this._nestedAssembly;
   }
 }

@@ -142,7 +142,7 @@ test('duplicate missing values with the same key are only reported once', () => 
   expect(assembly.manifest.missing!.length).toEqual(1);
 });
 
-test('write and read embedded Cloud Assembly artifact', () => {
+test('write and read nested cloud assembly artifact', () => {
   // GIVEN
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
   const session = new cxapi.CloudAssemblyBuilder(outdir);
@@ -152,18 +152,18 @@ test('write and read embedded Cloud Assembly artifact', () => {
 
   // WHEN
   session.addArtifact('Assembly', {
-    type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+    type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
     properties: {
       directoryName: 'hello',
-    } as cxschema.EmbeddedCloudAssemblyProperties,
+    } as cxschema.NestedCloudAssemblyProperties,
   });
   const asm = session.buildAssembly();
 
   // THEN
-  const art = asm.tryGetArtifact('Assembly') as cxapi.EmbeddedCloudAssemblyArtifact | undefined;
-  expect(art).toBeInstanceOf(cxapi.EmbeddedCloudAssemblyArtifact);
+  const art = asm.tryGetArtifact('Assembly') as cxapi.NestedCloudAssemblyArtifact | undefined;
+  expect(art).toBeInstanceOf(cxapi.NestedCloudAssemblyArtifact);
   expect(art?.fullPath).toEqual(path.join(outdir, 'hello'));
 
-  const embeddedAsm = art?.embeddedAssembly;
-  expect(embeddedAsm?.artifacts.length).toEqual(0);
+  const nested = art?.nestedAssembly;
+  expect(nested?.artifacts.length).toEqual(0);
 });

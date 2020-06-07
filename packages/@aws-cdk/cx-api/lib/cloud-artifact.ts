@@ -49,8 +49,8 @@ export class CloudArtifact {
         return new TreeCloudArtifact(assembly, id, artifact);
       case cxschema.ArtifactType.ASSET_MANIFEST:
         return new AssetManifestArtifact(assembly, id, artifact);
-      case cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY:
-        return new EmbeddedCloudAssemblyArtifact(assembly, id, artifact);
+      case cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY:
+        return new NestedCloudAssemblyArtifact(assembly, id, artifact);
       default:
         return undefined;
     }
@@ -147,5 +147,5 @@ export class CloudArtifact {
 // needs to be defined at the end to avoid a cyclic dependency
 import { AssetManifestArtifact } from './artifacts/asset-manifest-artifact';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
-import { EmbeddedCloudAssemblyArtifact } from './artifacts/embedded-cloud-assembly-artifact';
+import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';

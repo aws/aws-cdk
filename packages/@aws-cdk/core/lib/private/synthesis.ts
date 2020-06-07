@@ -133,11 +133,11 @@ function addToParentAssembly(assembly: Assembly) {
   if (!assembly.parentAssembly) { return; }
 
   assembly.parentAssembly.assemblyBuilder.addArtifact(assembly.assemblyArtifactId, {
-    type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+    type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
     properties: {
       directoryName: assembly.assemblyArtifactId,
       displayName: assembly.node.path,
-    } as cxschema.EmbeddedCloudAssemblyProperties,
+    } as cxschema.NestedCloudAssemblyProperties,
   });
 }
 

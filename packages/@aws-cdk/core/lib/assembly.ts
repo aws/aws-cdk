@@ -138,14 +138,15 @@ export class Assembly extends Construct {
     // to write sub-assemblies (which must happen before we actually get to this app's
     // synthesize() phase).
     this.assemblyBuilder = this.parentAssembly
-      ? this.parentAssembly.assemblyBuilder.openEmbeddedAssembly(this.assemblyArtifactId)
-      : new cxapi.CloudAssemblyBuilder(props.outdir ?? process.env[cxapi.OUTDIR_ENV]);   // TODO: << should; come; from; app;
+      ? this.parentAssembly.assemblyBuilder.createNestedAssembly(this.assemblyArtifactId)
+      : new cxapi.CloudAssemblyBuilder(props.outdir);
 
     this.assemblyName = [ this.parentAssembly?.assemblyName, id ].filter(x => x).join('-');
   }
 
   /**
-   * Artifact ID of embedded assembly
+   * Artifact ID of the assembly if it is a nested assembly. The root assembly
+   * (app) will return an empty string.
    *
    * Derived from the construct path.
    *

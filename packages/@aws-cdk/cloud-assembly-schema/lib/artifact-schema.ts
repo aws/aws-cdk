@@ -85,16 +85,16 @@ export interface TreeArtifactProperties {
 }
 
 /**
- * Artifact properties for embedded Cloud Assemblies
+ * Artifact properties for nested cloud assemblies
  */
-export interface EmbeddedCloudAssemblyProperties  {
+export interface NestedCloudAssemblyProperties  {
   /**
-   * Relative path to the embedded Cloud Assembly
+   * Relative path to the nested cloud assembly
    */
   readonly directoryName: string;
 
   /**
-   * Display name for the Cloud Assembly
+   * Display name for the cloud assembly
    *
    * @default - The artifact ID
    */
@@ -107,4 +107,4 @@ export interface EmbeddedCloudAssemblyProperties  {
 export type ArtifactProperties = AwsCloudFormationStackProperties
 | AssetManifestProperties
 | TreeArtifactProperties
-| EmbeddedCloudAssemblyProperties;
+| NestedCloudAssemblyProperties;

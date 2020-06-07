@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
+import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
@@ -119,6 +120,33 @@ export class CloudAssembly {
   }
 
   /**
+   * Returns a nested assembly artifact.
+   *
+   * @param artifactId The artifact ID of the nested assembly
+   */
+  public getNestedAssemblyArtifact(artifactId: string): NestedCloudAssemblyArtifact {
+    const artifact = this.tryGetArtifact(artifactId);
+    if (!artifact) {
+      throw new Error(`Unable to find artifact with id "${artifactId}"`);
+    }
+
+    if (!(artifact instanceof NestedCloudAssemblyArtifact)) {
+      throw new Error(`Found artifact '${artifactId}' but it's not a nested cloud assembly`);
+    }
+
+    return artifact;
+  }
+
+  /**
+   * Returns a nested assembly.
+   *
+   * @param artifactId The artifact ID of the nested assembly
+   */
+  public getNestedAssembly(artifactId: string): CloudAssembly {
+    return this.getNestedAssemblyArtifact(artifactId).nestedAssembly;
+  }
+
+  /**
    * Returns the tree metadata artifact from this assembly.
    * @throws if there is no metadata artifact by that name
    * @returns a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.
@@ -176,13 +204,6 @@ export class CloudAssembly {
  */
 export class CloudAssemblyBuilder {
   /**
-   * Turn the given optional output directory into a fixed output directory
-   */
-  public static determineOutputDirectory(outdir?: string) {
-    return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
-  }
-
-  /**
    * The root directory of the resulting cloud assembly.
    */
   public readonly outdir: string;
@@ -195,7 +216,7 @@ export class CloudAssemblyBuilder {
    * @param outdir The output directory, uses temporary directory if undefined
    */
   constructor(outdir?: string) {
-    this.outdir = CloudAssemblyBuilder.determineOutputDirectory(outdir);
+    this.outdir = determineOutputDirectory(outdir);
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
@@ -261,40 +282,21 @@ export class CloudAssemblyBuilder {
   }
 
   /**
-   * Begin an embedded assembly in this assembly
-   *
-   * If dirName is not given, it will default to artifactId.
+   * Creates a nested cloud assembly
    */
-  public openEmbeddedAssembly(artifactId: string, dirName?: string) {
-    const directoryName = dirName ?? artifactId;
+  public createNestedAssembly(artifactId: string) {
+    const directoryName = artifactId;
     const innerAsmDir = path.join(this.outdir, directoryName);
 
     // WHEN
     this.addArtifact(artifactId, {
-      type: cxschema.ArtifactType.EMBEDDED_CLOUD_ASSEMBLY,
+      type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
       properties: {
         directoryName,
-      } as cxschema.EmbeddedCloudAssemblyProperties,
+      } as cxschema.NestedCloudAssemblyProperties,
     });
     return new CloudAssemblyBuilder(innerAsmDir);
   }
-}
-
-/**
- * Options for opening an embedded assembly
- */
-export interface EmbeddedAssemblyOptions {
-  /**
-   * Identifier for this assembly
-   */
-  readonly id: string;
-
-  /**
-   * Display name for this assembly
-   *
-   * @default - Artifact ID is used as display name
-   */
-  readonly displayName?: string;
 }
 
 /**
@@ -384,4 +386,11 @@ function filterUndefined(obj: any): any {
 
 function ignore(_x: any) {
   return;
+}
+
+/**
+ * Turn the given optional output directory into a fixed output directory
+ */
+function determineOutputDirectory(outdir?: string) {
+  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
 }
