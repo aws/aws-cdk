@@ -637,8 +637,8 @@ describe('User Pool', () => {
           Mutable: true,
           Required: false,
           Name: 'zoneinfo',
-        }
-      ]
+        },
+      ],
     });
   });
 
