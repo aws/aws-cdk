@@ -18,6 +18,7 @@ export function rewriteLine(line: string) {
     }
   }
   return line
-    .replace(/(["'])@aws-cdk\/core(["'])/g, '$1monocdk-experiment$2')        // monocdk-experiment => monocdk-experiment
-    .replace(/(["'])@aws-cdk\/(.+)(["'])/g, '$1monocdk-experiment/$2$3');  // monocdk-experiment/foobar => monocdk-experiment/foobar;
+    .replace(/(["'])@aws-cdk\/assert(["'])/g, '$1@monocdk-experiment/assert$2') // @aws-cdk/assert  => @monocdk-experiment/assert
+    .replace(/(["'])@aws-cdk\/core(["'])/g, '$1monocdk-experiment$2')           // @aws-cdk/core    => monocdk-experiment
+    .replace(/(["'])@aws-cdk\/(.+)(["'])/g, '$1monocdk-experiment/$2$3');       // @aws-cdk/*       => monocdk-experiment/*;
 }

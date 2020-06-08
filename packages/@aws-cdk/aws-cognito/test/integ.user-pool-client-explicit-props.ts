@@ -27,8 +27,8 @@ userpool.addClient('myuserpoolclient', {
       OAuthScope.OPENID,
       OAuthScope.PROFILE,
       OAuthScope.COGNITO_ADMIN,
-      OAuthScope.custom('my-resource-server/my-scope'),
     ],
     callbackUrls: [ 'https://redirect-here.myapp.com' ],
   },
+  preventUserExistenceErrors: true,
 });
