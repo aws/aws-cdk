@@ -369,7 +369,7 @@ export = {
     test.equal(s3deploy.CacheControl.setPrivate().value, 'private');
     test.equal(s3deploy.CacheControl.proxyRevalidate().value, 'proxy-revalidate');
     test.equal(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value, 'max-age=60');
-    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-max-age=60');
+    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-maxage=60');
     test.equal(s3deploy.CacheControl.fromString('only-if-cached').value, 'only-if-cached');
 
     test.done();
