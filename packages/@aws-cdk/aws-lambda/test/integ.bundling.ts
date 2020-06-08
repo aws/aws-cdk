@@ -1,4 +1,4 @@
-import { App, AssetHashCalculation, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, AssetHashType, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
 import * as lambda from '../lib';
 
@@ -25,8 +25,8 @@ class TestStack extends Stack {
               'pip install -r requirements.txt -t .',
             ].join(' && '),
           ],
-          hashCalculation: AssetHashCalculation.SOURCE,
         },
+        assetHashType: AssetHashType.SOURCE,
       }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',

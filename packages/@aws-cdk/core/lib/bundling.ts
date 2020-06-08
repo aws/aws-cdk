@@ -4,35 +4,31 @@ export const BUNDLING_INPUT_DIR = '/asset-input';
 export const BUNDLING_OUTPUT_DIR = '/asset-output';
 
 /**
- * A Docker volume
+ * Bundling options
+ *
+ * @experimental
  */
-export interface DockerVolume {
+export interface BundlingOptions {
   /**
-   * The path to the file or directory on the host machine
+   * The Docker image where the command will run.
    */
-  readonly hostPath: string;
+  readonly image: BundlingDockerImage;
 
-  /**
-   * The path where the file or directory is mounted in the container
-   */
-  readonly containerPath: string;
-}
-
-/**
- * Docker run options
- */
-interface DockerRunOptions {
   /**
    * The command to run in the container.
+   *
+   * @example ['npm', 'install']
+   *
+   * @see https://docs.docker.com/engine/reference/run/
    *
    * @default - run the command defined in the image
    */
   readonly command?: string[];
 
   /**
-   * Docker volumes to mount.
+   * Additional Docker volumes to mount.
    *
-   * @default - no volumes are mounted
+   * @default - no additional volumes are mounted
    */
   readonly volumes?: DockerVolume[];
 
@@ -46,21 +42,9 @@ interface DockerRunOptions {
   /**
    * Working directory inside the container.
    *
-   * @default - image default
+   * @default /asset-input
    */
   readonly workingDirectory?: string;
-}
-
-/**
- * Docker build options
- */
-export interface DockerBuildOptions {
-  /**
-   * Build args
-   *
-   * @default - no build args
-   */
-  readonly buildArgs?: { [key: string]: string };
 }
 
 /**
@@ -128,6 +112,66 @@ export class BundlingDockerImage {
 
     exec('docker', dockerArgs);
   }
+}
+
+/**
+ * A Docker volume
+ */
+export interface DockerVolume {
+  /**
+   * The path to the file or directory on the host machine
+   */
+  readonly hostPath: string;
+
+  /**
+   * The path where the file or directory is mounted in the container
+   */
+  readonly containerPath: string;
+}
+
+/**
+ * Docker run options
+ */
+interface DockerRunOptions {
+  /**
+   * The command to run in the container.
+   *
+   * @default - run the command defined in the image
+   */
+  readonly command?: string[];
+
+  /**
+   * Docker volumes to mount.
+   *
+   * @default - no volumes are mounted
+   */
+  readonly volumes?: DockerVolume[];
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default - no environment variables.
+   */
+  readonly environment?: { [key: string]: string; };
+
+  /**
+   * Working directory inside the container.
+   *
+   * @default - image default
+   */
+  readonly workingDirectory?: string;
+}
+
+/**
+ * Docker build options
+ */
+export interface DockerBuildOptions {
+  /**
+   * Build args
+   *
+   * @default - no build args
+   */
+  readonly buildArgs?: { [key: string]: string };
 }
 
 function flatten(x: string[][]) {

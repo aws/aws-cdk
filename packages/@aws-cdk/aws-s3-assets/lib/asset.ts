@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AssetHashType } from '@aws-cdk/core';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -18,6 +19,25 @@ export interface AssetOptions extends assets.CopyOptions {
   readonly readers?: iam.IGrantable[];
 
   /**
+   * Specify a custom hash for this asset. If `assetHashType` is set it must
+   * be set to `AssetHashType.CUSTOM`.
+   *
+   * @default - based on `assetHashType`
+  */
+  readonly assetHash?: string;
+
+  /**
+   * Specifies the type of hash to calculate for this asset.
+   *
+   * If `assetHash` is configured, this option must be `undefined` or
+   * `AssetHashType.CUSTOM`.
+   *
+   * @default - the default is `AssetHashType.SOURCE`, but if `assetHash` is
+   * explicitly specified this value defaults to `AssetHashType.CUSTOM`.
+  */
+  readonly assetHashType?: cdk.AssetHashType;
+
+  /**
    * Custom source hash to use when identifying the specific version of the asset.
    *
    * NOTE: the source hash is used in order to identify a specific revision of the asset,
@@ -29,7 +49,7 @@ export interface AssetOptions extends assets.CopyOptions {
    * @default - automatically calculate source hash based on the contents
    * of the source file or directory.
    *
-   * @experimental
+   * @deprecated see `assetHash` and `assetHashType`
    */
   readonly sourceHash?: string;
 
@@ -116,15 +136,20 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
+    if ((props.assetHash || props.sourceHash) && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
+      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+    }
+
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
       sourcePath: path.resolve(props.path),
       exclude: props.exclude,
       follow: assets.toSymlinkFollow(props.follow),
       bundling: props.bundling,
+      assetHashType: props.assetHashType,
     });
 
-    this.sourceHash = props.sourceHash ?? staging.sourceHash;
+    this.sourceHash = props.assetHash ?? props.sourceHash ?? staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
