@@ -116,6 +116,10 @@ export class CfnResource extends CfnRefElement {
         deletionPolicy = CfnDeletionPolicy.RETAIN;
         break;
 
+      case RemovalPolicy.SNAPSHOT:
+        deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
+        break;
+
       default:
         throw new Error(`Invalid removal policy: ${policy}`);
     }
