@@ -63,7 +63,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  
+
 fn.role // the Role
 ```
 
@@ -314,16 +314,16 @@ new lambda.Function(this, 'Function', {
 ```
 Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
 
-Use `assets.BundlingDockerImage.fromRegistry(image)` to use an existing image or
-`assets.BundlingDockerImage.fromAsset(path)` to build a specific image:
+Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
+`cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
 
 ```ts
-import * as assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: assets.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },
