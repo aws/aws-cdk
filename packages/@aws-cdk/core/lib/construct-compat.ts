@@ -182,6 +182,8 @@ export enum ConstructOrder {
 
 /**
  * Options for synthesis.
+ *
+ * @deprecated use `app.synth()` or `stage.synth()` instead
  */
 export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   /**
@@ -222,28 +224,25 @@ export class ConstructNode {
 
   /**
    * Synthesizes a CloudAssembly from a construct tree.
-   * @param root The root of the construct tree.
+   * @param node The root of the construct tree.
    * @param options Synthesis options.
+   * @deprecated Use `app.synth()` or `stage.synth()` instead
    */
-  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
-
-    root._actualNode.synthesize({
-      outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder,
-      },
-    });
-
-    return builder.buildAssembly(options);
+  public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const a: typeof import('././private/synthesis') = require('./private/synthesis');
+    return a.synthesize(node.root, options);
   }
 
   /**
    * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
    * @param node The root node
+   * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p: typeof import('./private/prepare-app') = require('./private/prepare-app');
+    p.prepareApp(node.root); // resolve cross refs and nested stack assets.
     return node._actualNode.prepare();
   }
 

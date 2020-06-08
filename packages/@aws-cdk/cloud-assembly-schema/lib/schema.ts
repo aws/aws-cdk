@@ -25,6 +25,11 @@ export enum ArtifactType {
    * Manifest for all assets in the Cloud Assembly
    */
   ASSET_MANIFEST = 'cdk:asset-manifest',
+
+  /**
+   * Nested Cloud Assembly
+   */
+  NESTED_CLOUD_ASSEMBLY = 'cdk:cloud-assembly',
 }
 
 /**

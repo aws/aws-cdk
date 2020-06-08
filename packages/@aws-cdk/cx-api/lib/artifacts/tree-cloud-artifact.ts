@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { CloudArtifact } from './cloud-artifact';
-import { CloudAssembly } from './cloud-assembly';
+import { CloudArtifact } from '../cloud-artifact';
+import { CloudAssembly } from '../cloud-assembly';
 
 export class TreeCloudArtifact extends CloudArtifact {
   public readonly file: string;
