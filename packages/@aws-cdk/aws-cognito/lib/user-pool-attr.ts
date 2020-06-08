@@ -7,103 +7,103 @@ import { Token } from '@aws-cdk/core';
  */
 export interface StandardAttributes {
   /**
-   * The user's postal address is a required attribute.
+   * The user's postal address.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly address?: StandardAttribute;
 
   /**
-   * The user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
+   * The user's birthday, represented as an ISO 8601:2004 format.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly birthdate?: StandardAttribute;
 
   /**
-   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
+   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly email?: StandardAttribute;
 
   /**
-   * The surname or last name of the user is a required attribute.
+   * The surname or last name of the user.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly familyName?: StandardAttribute;
 
   /**
-   * The user's gender is a required attribute.
+   * The user's gender.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly gender?: StandardAttribute;
 
   /**
-   * The user's first name or give name is a required attribute.
+   * The user's first name or give name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly givenName?: StandardAttribute;
 
   /**
-   * The user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
+   * The user's locale, represented as a BCP47 [RFC5646] language tag.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly locale?: StandardAttribute;
 
   /**
-   * The user's middle name is a required attribute.
+   * The user's middle name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly middleName?: StandardAttribute;
 
   /**
-   * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
+   * The user's full name in displayable form, including all name parts, titles and suffixes.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly fullname?: StandardAttribute;
 
   /**
-   * The user's nickname or casual name is a required attribute.
+   * The user's nickname or casual name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly nickname?: StandardAttribute;
 
   /**
-   * The user's telephone number is a required attribute.
+   * The user's telephone number.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly phoneNumber?: StandardAttribute;
 
   /**
-   * The URL to the user's profile picture is a required attribute.
+   * The URL to the user's profile picture.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly profilePicture?: StandardAttribute;
 
   /**
-   * The user's preffered username, different from the immutable user name, is a required attribute.
+   * The user's preffered username, different from the immutable user name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly preferredUsername?: StandardAttribute;
 
   /**
-   * The URL to the user's profile page is a required attribute.
+   * The URL to the user's profile page.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly profilePage?: StandardAttribute;
 
   /**
-   * The user's time zone is a required attribute.
+   * The user's time zone.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly timezone?: StandardAttribute;
 
   /**
-   * The time, the user's information was last updated, is a required attribute.
+   * The time, the user's information was last updated.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly lastUpdateTime?: StandardAttribute;
 
   /**
-   * The URL to the user's web page or blog is a required attribute.
+   * The URL to the user's web page or blog.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly website?: StandardAttribute;
