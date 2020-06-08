@@ -151,7 +151,7 @@
               {
                 "Ref": "stage0661E4AC"
               },
-              "/*/{proxy+}"
+              "/*/*"
             ]
           ]
         }
@@ -188,7 +188,7 @@
               {
                 "Ref": "lambdarestapiF559E4F2"
               },
-              "/test-invoke-stage/*/{proxy+}"
+              "/test-invoke-stage/*/*"
             ]
           ]
         }

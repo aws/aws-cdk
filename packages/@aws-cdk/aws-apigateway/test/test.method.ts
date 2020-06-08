@@ -220,6 +220,52 @@ export = {
     test.done();
   },
 
+  '"methodArn" and "testMethodArn" replace path parameters with asterisks'(test: Test) {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api');
+    const petId = api.root.addResource('pets').addResource('{petId}');
+    const commentId = petId.addResource('comments').addResource('{commentId}');
+    const method = commentId.addMethod('GET');
+
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/',
+          { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+          '/GET/pets/*/comments/*',
+        ],
+      ],
+    });
+
+    test.deepEqual(stack.resolve(method.testMethodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/test-invoke-stage/GET/pets/*/comments/*',
+        ],
+      ],
+    });
+
+    test.done();
+  },
+
   'integration "credentialsRole" can be used to assume a role when calling backend'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
