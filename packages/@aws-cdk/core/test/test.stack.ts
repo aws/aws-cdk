@@ -524,7 +524,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      app.synth();
+      ConstructNode.prepare(app.node);
       // tslint:disable-next-line:max-line-length
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -541,7 +541,7 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.synth();
+    ConstructNode.prepare(app.node);
 
     // THEN
     test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
@@ -560,7 +560,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      app.synth();
+      ConstructNode.prepare(app.node);
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();

@@ -1,5 +1,4 @@
 import { ConstructOrder } from 'constructs';
-import { Assembly } from '../assembly';
 import { CfnResource } from '../cfn-resource';
 import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
