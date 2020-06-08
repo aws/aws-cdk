@@ -5,7 +5,6 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetHashType } from '@aws-cdk/core';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -23,7 +22,7 @@ export interface AssetOptions extends assets.CopyOptions {
    * be set to `AssetHashType.CUSTOM`.
    *
    * @default - based on `assetHashType`
-  */
+   */
   readonly assetHash?: string;
 
   /**
@@ -34,7 +33,7 @@ export interface AssetOptions extends assets.CopyOptions {
    *
    * @default - the default is `AssetHashType.SOURCE`, but if `assetHash` is
    * explicitly specified this value defaults to `AssetHashType.CUSTOM`.
-  */
+   */
   readonly assetHashType?: cdk.AssetHashType;
 
   /**
@@ -136,7 +135,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
-    if ((props.assetHash || props.sourceHash) && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
+    if ((props.assetHash || props.sourceHash) && props.assetHashType && props.assetHashType !== cdk.AssetHashType.CUSTOM) {
       throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
     }
 
