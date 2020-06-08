@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as path from 'path';
-import { CloudArtifact } from './cloud-artifact';
-import { CloudAssembly } from './cloud-assembly';
+import { CloudArtifact } from '../cloud-artifact';
+import { CloudAssembly } from '../cloud-assembly';
 
 /**
  * Asset manifest is a description of a set of assets which need to be built and published

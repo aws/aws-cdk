@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 scriptsdir=$(cd $(dirname $0) && pwd)
-packagedir=$(realpath ${scriptsdir}/..)
+packagedir=$(cd ${scriptsdir}/.. && pwd)
 
 # Output
 OUTPUT_DIR="${packagedir}/schema"
