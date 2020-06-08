@@ -149,7 +149,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
       assetHashType: props.assetHashType,
     });
 
-    this.sourceHash = props.assetHash ?? props.sourceHash ?? staging.sourceHash;
+    this.sourceHash = props.assetHash ?? props.sourceHash ?? staging.assetHash;
 
     this.assetPath = staging.stagedPath;
 

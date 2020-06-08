@@ -100,7 +100,7 @@ export = {
       'tree.json',
     ]);
 
-    test.equal(asset.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'); // Source based
+    test.equal(asset.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'); // Source based
 
     test.done();
   },
@@ -138,7 +138,7 @@ export = {
       assetHashType: AssetHashType.BUNDLE,
     });
 
-    test.equal(asset.sourceHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f')
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f')
 
     test.done();
   },

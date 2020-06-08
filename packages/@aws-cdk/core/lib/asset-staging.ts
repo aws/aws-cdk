@@ -19,7 +19,7 @@ export interface AssetStagingProps extends FingerprintOptions {
    * Bundle the asset by executing a command in a Docker container.
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
-   * The content at `/asset-output` will be zipped ans used as the
+   * The content at `/asset-output` will be zipped and used as the
    * final asset.
    *
    * @default - source is copied to staging directory
@@ -89,9 +89,16 @@ export class AssetStaging extends Construct {
   public readonly sourcePath: string;
 
   /**
-   * A cryptographic hash of the source document(s).
+   * A cryptographic hash of the asset.
+   *
+   * @deprecated see `assetHash`.
    */
   public readonly sourceHash: string;
+
+  /**
+   * A cryptographic hash of the asset.
+   */
+  public readonly assetHash: string;
 
   private readonly fingerprintOptions: FingerprintOptions;
 
@@ -141,9 +148,9 @@ export class AssetStaging extends Construct {
 
       const hashCalculation = props.assetHashType ?? AssetHashType.SOURCE;
       if (hashCalculation === AssetHashType.SOURCE || hashCalculation === AssetHashType.CUSTOM) {
-        this.sourceHash = this.fingerprint(this.sourcePath);
+        this.assetHash = this.fingerprint(this.sourcePath);
       } else if (hashCalculation === AssetHashType.BUNDLE) {
-        this.sourceHash = this.fingerprint(this.bundleDir);
+        this.assetHash = this.fingerprint(this.bundleDir);
       } else {
         throw new Error('Unknown source hash calculation.');
       }
@@ -157,14 +164,16 @@ export class AssetStaging extends Construct {
         this.stagedPath = this.relativePath; // always relative to outdir
       }
     } else { // No bundling
-      this.sourceHash = this.fingerprint(this.sourcePath);
+      this.assetHash = this.fingerprint(this.sourcePath);
       if (stagingDisabled) {
         this.stagedPath = this.sourcePath;
       } else {
-        this.relativePath = `asset.${this.sourceHash}${path.extname(this.sourcePath)}`;
+        this.relativePath = `asset.${this.assetHash}${path.extname(this.sourcePath)}`;
         this.stagedPath = this.relativePath; // always relative to outdir
       }
     }
+
+    this.sourceHash = this.assetHash;
   }
 
   protected synthesize(session: ISynthesisSession) {
