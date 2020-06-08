@@ -19,7 +19,8 @@ export interface AssetStagingProps extends FingerprintOptions {
    * Bundle the asset by executing a command in a Docker container.
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
-   * The content at `/asset-output` will used as the final asset.
+   * The content at `/asset-output` will be zipped ans used as the
+   * final asset.
    *
    * @default - source is copied to staging directory
    *
