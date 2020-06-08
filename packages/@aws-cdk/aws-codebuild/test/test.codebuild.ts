@@ -1575,6 +1575,73 @@ export = {
     },
   },
 
+  'GPU image': {
+    'AMAZON_LINUX_2_GPU': {
+      'has type GPU_CONTAINER and default ComputeType LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'Type': 'LINUX_GPU_CONTAINER',
+            'ComputeType': 'BUILD_GENERAL1_LARGE',
+          },
+        }));
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType SMALL'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              computeType: codebuild.ComputeType.SMALL,
+            },
+          });
+        }, /GPU images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_SMALL' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              computeType: codebuild.ComputeType.MEDIUM,
+            },
+          });
+        }, /GPU images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+
+        test.done();
+      },
+
+      'cannot be used in conjunction with ComputeType X2_LARGE'(test: Test) {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.PipelineProject(stack, 'Project', {
+            environment: {
+              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              computeType: codebuild.ComputeType.X2_LARGE,
+            },
+          });
+        }, /GPU images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+
+        test.done();
+      },
+    },
+  },
+
   'badge support test'(test: Test) {
     const stack = new cdk.Stack();
 

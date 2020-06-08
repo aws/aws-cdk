@@ -1218,6 +1218,31 @@ class ArmBuildImage implements IBuildImage {
   }
 }
 
+class GpuBuildImage implements IBuildImage {
+  public readonly type = 'LINUX_GPU_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly imageId: string;
+
+  constructor(imageId: string) {
+    this.imageId = imageId;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const ret = [];
+    if (buildEnvironment.computeType &&
+        buildEnvironment.computeType !== ComputeType.LARGE) {
+      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
+          `'${buildEnvironment.computeType}' was given`);
+    }
+    return ret;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return runScriptLinuxBuildSpec(entrypoint);
+  }
+}
+
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1272,6 +1297,14 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
   public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+
+  public static readonly STANDARD_1_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_2_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:2.0');
+  public static readonly STANDARD_3_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:3.0');
+  public static readonly STANDARD_4_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:4.0');
+  public static readonly AMAZON_LINUX_2_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
+  public static readonly AMAZON_LINUX_2_2_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
+  public static readonly AMAZON_LINUX_2_3_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1404,10 +1437,6 @@ export class LinuxBuildImage implements IBuildImage {
   public readonly secretsManagerCredentials?: secretsmanager.ISecret;
   public readonly repository?: ecr.IRepository;
 
-  private constructor(props: LinuxBuildImageProps) {
-    this.imageId = props.imageId;
-    this.imagePullPrincipalType = props.imagePullPrincipalType;
-    this.secretsManagerCredentials = props.secretsManagerCredentials;
     this.repository = props.repository;
   }
 
