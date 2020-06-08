@@ -39,6 +39,8 @@ const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret
 SecretsManager secret values can only be used in select set of properties. For the
 list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html).
 
+A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret will fail.
+
 ### Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to 
