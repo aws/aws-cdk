@@ -139,8 +139,8 @@ export class AssetStaging extends Construct {
         throw new Error(`Bundling did not produce any output. Check that your container writes content to ${BUNDLING_OUTPUT_DIR}.`);
       }
 
-      const hashCalculation = props.assetHashType ?? AssetHashType.BUNDLE;
-      if (hashCalculation === AssetHashType.SOURCE) {
+      const hashCalculation = props.assetHashType ?? AssetHashType.SOURCE;
+      if (hashCalculation === AssetHashType.SOURCE || hashCalculation === AssetHashType.CUSTOM) {
         this.sourceHash = this.fingerprint(this.sourcePath);
       } else if (hashCalculation === AssetHashType.BUNDLE) {
         this.sourceHash = this.fingerprint(this.bundleDir);
