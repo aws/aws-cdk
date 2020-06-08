@@ -1421,7 +1421,7 @@ interface ScalableAttributePair {
 
 /**
  * An inline policy that is logically bound to the source table of a DynamoDB Global Tables
- * "cluster“. This is here to ensure permissions are removed as part of (and not before) the
+ * "cluster". This is here to ensure permissions are removed as part of (and not before) the
  * CleanUp phase of a stack update, when a replica is removed (or the entire "cluster" gets
  * replaced).
  *
