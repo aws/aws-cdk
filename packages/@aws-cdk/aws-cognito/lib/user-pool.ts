@@ -1,10 +1,11 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
+import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -456,9 +457,9 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @default - No attributes are required.
+   * @default - All standard attributes are optional and mutable.
    */
-  readonly requiredAttributes?: RequiredAttributes;
+  readonly standardAttributes?: StandardAttributes;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
@@ -526,6 +527,11 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
+   * Get all identity providers registered with this user pool.
+   */
+  readonly identityProviders: IUserPoolIdentityProvider[];
+
+  /**
    * Add a new app client to this user pool.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
    */
@@ -536,11 +542,17 @@ export interface IUserPool extends IResource {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
    */
   addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+
+  /**
+   * Register an identity provider with this user pool.
+   */
+  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
 }
 
 abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolId: string;
   public abstract readonly userPoolArn: string;
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
@@ -554,6 +566,10 @@ abstract class UserPoolBase extends Resource implements IUserPool {
       userPool: this,
       ...options,
     });
+  }
+
+  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
+    this.identityProviders.push(provider);
   }
 }
 
@@ -706,10 +722,10 @@ export class UserPool extends UserPoolBase {
 
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
-      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
-      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
       }
       return {
@@ -721,7 +737,7 @@ export class UserPool extends UserPoolBase {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
@@ -746,24 +762,24 @@ export class UserPool extends UserPoolBase {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.phoneNumber); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.preferredUsername); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -847,30 +863,16 @@ export class UserPool extends UserPoolBase {
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
-    if (props.requiredAttributes) {
-      const stdAttributes: StandardAttribute[] = [];
+    if (props.standardAttributes) {
+      const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
+        .filter(([, attr]) => !!attr)
+        .map(([attrName, attr]) => ({
+          name: StandardAttributeNames[attrName],
+          mutable: attr.mutable ?? true,
+          required: attr.required ?? false,
+        }));
 
-      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
-      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
-      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
-      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
-      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
-      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
-      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
-      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
-      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
-      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
-      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
-      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
-      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
-      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
-      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
-      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
-      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
-
-      schema.push(...stdAttributes.map((attr) => {
-        return { name: attr, required: true };
-      }));
+      schema.push(...stdAttributes);
     }
 
     if (props.customAttributes) {
@@ -888,8 +890,12 @@ export class UserPool extends UserPoolBase {
         return {
           name: attrName,
           attributeDataType: attrConfig.dataType,
-          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
-          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
+          numberAttributeConstraints: attrConfig.numberConstraints
+            ? numberConstraints
+            : undefined,
+          stringAttributeConstraints: attrConfig.stringConstraints
+            ? stringConstraints
+            : undefined,
           mutable: attrConfig.mutable,
         };
       });
@@ -903,25 +909,25 @@ export class UserPool extends UserPoolBase {
   }
 }
 
-const enum StandardAttribute {
-  ADDRESS = 'address',
-  BIRTHDATE = 'birthdate',
-  EMAIL = 'email',
-  FAMILY_NAME = 'family_name',
-  GENDER = 'gender',
-  GIVEN_NAME = 'given_name',
-  LOCALE = 'locale',
-  MIDDLE_NAME = 'middle_name',
-  NAME = 'name',
-  NICKNAME = 'nickname',
-  PHONE_NUMBER = 'phone_number',
-  PICTURE_URL = 'picture',
-  PREFERRED_USERNAME = 'preferred_username',
-  PROFILE_URL = 'profile',
-  TIMEZONE = 'zoneinfo',
-  LAST_UPDATE_TIME = 'updated_at',
-  WEBSITE = 'website',
-}
+const StandardAttributeNames: Record<keyof StandardAttributes, string> = {
+  address: 'address',
+  birthdate: 'birthdate',
+  email: 'email',
+  familyName: 'family_name',
+  gender: 'gender',
+  givenName: 'given_name',
+  locale: 'locale',
+  middleName: 'middle_name',
+  fullname: 'name',
+  nickname: 'nickname',
+  phoneNumber: 'phone_number',
+  profilePicture: 'picture',
+  preferredUsername: 'preferred_username',
+  profilePage: 'profile',
+  timezone: 'zoneinfo',
+  lastUpdateTime: 'updated_at',
+  website: 'website',
+};
 
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
