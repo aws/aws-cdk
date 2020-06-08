@@ -503,15 +503,19 @@ describe('User Pool', () => {
     });
   });
 
-  test('required attributes', () => {
+  test('standard attributes default to mutable', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      requiredAttributes: {
-        fullname: true,
-        timezone: true,
+      standardAttributes: {
+        fullname: {
+          required: true,
+        },
+        timezone: {
+          required: true,
+        },
       },
     });
 
@@ -521,38 +525,120 @@ describe('User Pool', () => {
         {
           Name: 'name',
           Required: true,
+          Mutable: true,
         },
         {
           Name: 'zoneinfo',
           Required: true,
+          Mutable: true,
         },
       ],
     });
   });
 
-  test('schema is absent when required attributes are specified but as false', () => {
+  test('mutable standard attributes', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
+    new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
+      standardAttributes: {
+        fullname: {
+          required: true,
+          mutable: true,
+        },
+        timezone: {
+          required: true,
+          mutable: true,
+        },
+      },
+    });
+
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-    });
-    new UserPool(stack, 'Pool2', {
-      userPoolName: 'Pool2',
-      requiredAttributes: {
-        familyName: false,
+      standardAttributes: {
+        fullname: {
+          mutable: false,
+        },
+        timezone: {
+          mutable: false,
+        },
       },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
+      Schema: [
+        {
+          Mutable: true,
+          Name: 'name',
+          Required: true,
+        },
+        {
+          Mutable: true,
+          Name: 'zoneinfo',
+          Required: true,
+        },
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
+      Schema: [
+        {
+          Name: 'name',
+          Required: false,
+          Mutable: false,
+        },
+        {
+          Name: 'zoneinfo',
+          Required: false,
+          Mutable: false,
+        },
+      ],
+    });
+  });
+
+  test('schema is absent when attributes are not specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { userPoolName: 'Pool' });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
       Schema: ABSENT,
     });
+  });
+
+  test('optional mutable standardAttributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
+      standardAttributes: {
+        timezone: {
+          mutable: true,
+        },
+      },
+    });
+
+    // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UserPoolName: 'Pool2',
-      Schema: ABSENT,
+      UserPoolName: 'Pool',
+      Schema: [
+        {
+          Mutable: true,
+          Required: false,
+          Name: 'zoneinfo',
+        },
+      ],
     });
   });
 
