@@ -2,18 +2,16 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
-
-// Ensure we do not run into throttling issues when deploying stack(s) with a lot of Lambdas.
-const retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
+import { LogRetentionRetryOptions } from '../log-retention';
 
 /**
  * Creates a log group and doesn't throw if it exists.
  *
  * @param logGroupName the name of the log group to create
  */
-async function createLogGroupSafe(logGroupName: string) {
+async function createLogGroupSafe(logGroupName: string, retryOptions?: LogRetentionRetryOptions) {
   try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions});
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -28,8 +26,8 @@ async function createLogGroupSafe(logGroupName: string) {
  * @param logGroupName the name of the log group to create
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions});
+async function setRetentionPolicy(logGroupName: string, retryOptions?: LogRetentionRetryOptions, retentionInDays?: number) {
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
@@ -44,10 +42,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;
 
+    // Parse retry options for creating the target log group
+    const retryOptions = parseRetryOptions(event.ResourceProperties.LogRetentionRetryOptions);
+
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
-      await createLogGroupSafe(logGroupName);
-      await setRetentionPolicy(logGroupName, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      await createLogGroupSafe(logGroupName, retryOptions);
+      await setRetentionPolicy(logGroupName, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this function. The log
@@ -59,8 +60,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // same time. This can sometime result in an OperationAbortedException. To
         // avoid this and because this operation is not critical we catch all errors.
         try {
-          await createLogGroupSafe(`/aws/lambda/${context.functionName}`);
-          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, 1);
+          await createLogGroupSafe(`/aws/lambda/${context.functionName}`, retryOptions);
+          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, retryOptions, 1);
         } catch (e) {
           console.log(e);
         }
@@ -110,5 +111,20 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         reject(e);
       }
     });
+  }
+
+  function parseRetryOptions(rawOptions: any) {
+    const retryOptions: { maxRetries?: number, retryOptions?: { base?: number } } = {};
+    if (rawOptions) {
+      if (rawOptions.maxRetries) {
+        retryOptions.maxRetries = parseInt(rawOptions.maxRetries, 10);
+      }
+      if (rawOptions.base) {
+        retryOptions.retryOptions = {
+          base: parseInt(rawOptions.base, 10),
+        };
+      }
+    }
+    return retryOptions;
   }
 }

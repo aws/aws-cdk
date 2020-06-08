@@ -12,7 +12,7 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetention } from './log-retention';
+import { LogRetention, LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -231,6 +231,16 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * Retry options for creating CloudWatch log groups. Deploying many Lambdas
+   * with log retention resources may result in rate limit issues when creating
+   * CloudWatch Log groups. The retry options allow you to customize the retry
+   * options in order to successfully create these.
+   *
+   * @default - Default retry options of the AWS SDK.
+   */
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
    * Options for the `lambda.Version` resource automatically created by the
@@ -544,6 +554,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
+        logRetentionRetryOptions: props.logRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }

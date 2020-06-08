@@ -26,6 +26,31 @@ export interface LogRetentionProps {
    * @default - A new role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Retry options for managing CloudWatch log groups.
+   *
+   * @default - AWS SDK default retry options
+   */
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+}
+
+/**
+ * Retry options for managing CloudWatch log groups
+ */
+export interface LogRetentionRetryOptions {
+  /**
+   * The maximum amount of retries.
+   *
+   * @default - AWS SDK default
+   */
+  readonly maxRetries?: number;
+  /**
+   * The base number of milliseconds to use in the exponential backoff for operation retries.
+   *
+   * @default - AWS SDK default
+   */
+  readonly base?: number;
 }
 
 /**
@@ -69,6 +94,7 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
+        LogRetentionRetryOptions: props.logRetentionRetryOptions,
         RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention,
       },
     });
