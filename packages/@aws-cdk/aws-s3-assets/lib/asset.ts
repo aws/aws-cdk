@@ -145,7 +145,9 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
       exclude: props.exclude,
       follow: assets.toSymlinkFollow(props.follow),
       bundling: props.bundling,
-      assetHashType: props.assetHashType,
+      assetHashType: props.assetHashType ?? props.assetHash
+        ? cdk.AssetHashType.CUSTOM
+        : cdk.AssetHashType.SOURCE,
     });
 
     this.sourceHash = props.assetHash ?? props.sourceHash ?? staging.assetHash;

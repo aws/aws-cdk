@@ -323,6 +323,37 @@ describe('staging', () => {
   });
 });
 
+test('throws when specifying assetHash with incorrect assetHashType', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => new Asset(stack, 'MyAsset', {
+    path: SAMPLE_ASSET_DIR,
+    assetHash: 'my-custom-hash',
+    assetHashType: cdk.AssetHashType.SOURCE,
+  })).toThrow(/Cannot specify `source` for `assetHashType`/);
+});
+
+test('can use a custom hash', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new Asset(stack, 'MyAsset', {
+    path: SAMPLE_ASSET_DIR,
+    assetHash: 'my-custom-hash',
+  });
+
+  // THEN
+  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  expect(entry).toBeTruthy();
+
+  expect(stack.resolve(entry!.data)).toEqual(expect.objectContaining({
+    sourceHash: 'my-custom-hash',
+  }));
+});
+
 function mkdtempSync() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'assets.test'));
 }
