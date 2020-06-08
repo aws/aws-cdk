@@ -113,4 +113,32 @@ export = {
 
     test.done();
   },
+
+  'grantInvoke works correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+    });
+
+    // WHEN
+    const invokeResult = singleton.grantInvoke(new iam.ServicePrincipal('events.amazonaws.com'));
+    const statement = stack.resolve(invokeResult.resourceStatement);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'events.amazonaws.com',
+    }));
+    test.deepEqual(statement.action, [ 'lambda:InvokeFunction' ]);
+    test.deepEqual(statement.principal, { Service: [ 'events.amazonaws.com' ] });
+    test.deepEqual(statement.effect, 'Allow');
+    test.deepEqual(statement.resource, [{
+      'Fn::GetAtt': [ 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn' ],
+    }]);
+    test.done();
+  },
 };

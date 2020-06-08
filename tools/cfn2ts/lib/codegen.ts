@@ -266,10 +266,19 @@ export default class CodeGenerator {
     this.code.line('ret.node.addDependency(depResource);');
     this.code.closeBlock();
 
+    // handle Condition
+    this.code.line('// handle Condition');
+    this.code.openBlock('if (resourceAttributes.Condition)');
+    this.code.line('const condition = options.finder.findCondition(resourceAttributes.Condition);');
+    this.code.openBlock('if (!condition)');
+    this.code.line("throw new Error(`Resource '${id}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);");
+    this.code.closeBlock();
+    this.code.line('cfnOptions.condition = condition;');
+    this.code.closeBlock();
+
     // ToDo handle:
-    // 1. Condition
-    // 2. CreationPolicy
-    // 3. UpdatePolicy
+    // 1. CreationPolicy
+    // 2. UpdatePolicy
 
     this.code.line('return ret;');
     this.code.closeBlock();
