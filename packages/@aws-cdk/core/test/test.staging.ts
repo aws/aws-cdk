@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { App, AssetStaging, Stack } from '../lib';
+import { App, AssetStaging, AssetHashType, BundlingDockerImage, Stack } from '../lib';
 
 export = {
   'base case'(test: Test) {
@@ -72,6 +72,74 @@ export = {
     test.notEqual(withoutExtra.sourceHash, withExtra.sourceHash);
     test.deepEqual(withoutExtra.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(withExtra.sourceHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+    test.done();
+  },
+
+  'with bundling'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: ['touch', '/asset-output/test.txt'],
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f', // Bundle based
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+
+    test.equal(asset.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'); // Source based
+
+    test.done();
+  },
+
+  'bundling throws when /asset-ouput is empty'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // THEN
+    test.throws(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+      },
+    }), /Bundling did not produce any output/);
+
+    test.done();
+  },
+
+  'bundling with BUNDLE asset hash type'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: ['touch', '/asset-output/test.txt'],
+      },
+      assetHashType: AssetHashType.BUNDLE,
+    });
+
+    test.equal(asset.sourceHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f')
+
     test.done();
   },
 };
