@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { App, AssetStaging, AssetHashType, BundlingDockerImage, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
 export = {
   'base case'(test: Test) {
@@ -138,7 +138,7 @@ export = {
       assetHashType: AssetHashType.BUNDLE,
     });
 
-    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f')
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
 
     test.done();
   },
