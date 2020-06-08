@@ -29,7 +29,7 @@ export interface AssetStagingProps extends FingerprintOptions {
   readonly bundling?: BundlingOptions;
 
   /**
-   * How to calculate the source hash for this asset.
+   * How to calculate the hash for this asset.
    *
    * @default BUNDLE
    */
