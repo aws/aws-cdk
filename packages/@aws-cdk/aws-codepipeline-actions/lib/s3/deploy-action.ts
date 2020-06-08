@@ -32,7 +32,7 @@ export class CacheControl {
   /** The 'max-age' cache control directive. */
   public static maxAge(t: Duration) { return new CacheControl(`max-age: ${t.toSeconds()}`); }
   /** The 's-max-age' cache control directive. */
-  public static sMaxAge(t: Duration) { return new CacheControl(`s-max-age: ${t.toSeconds()}`); }
+  public static sMaxAge(t: Duration) { return new CacheControl(`s-maxage: ${t.toSeconds()}`); }
   /**
    * Allows you to create an arbitrary cache control directive,
    * in case our support is missing a method for a particular directive.
