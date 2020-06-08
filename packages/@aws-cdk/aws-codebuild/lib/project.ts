@@ -1437,6 +1437,10 @@ export class LinuxBuildImage implements IBuildImage {
   public readonly secretsManagerCredentials?: secretsmanager.ISecret;
   public readonly repository?: ecr.IRepository;
 
+    private constructor(props: LinuxBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
     this.repository = props.repository;
   }
 
