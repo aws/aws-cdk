@@ -208,7 +208,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:GetSecretValue',
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -271,7 +274,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:GetSecretValue',
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
           Condition: {
