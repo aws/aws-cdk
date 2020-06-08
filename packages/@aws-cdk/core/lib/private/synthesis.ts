@@ -1,8 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { Assembly, AssemblySynthesisOptions } from '../assembly';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { Stage, StageSynthesisOptions } from '../stage';
 import { prepareApp } from './prepare-app';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
@@ -24,18 +23,13 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
-  const builder = Assembly.isAssembly(root)
-    ? root.assemblyBuilder
+  const builder = Stage.isStage(root)
+    ? root._assemblyBuilder
     : new cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder);
-
-  // Add this assembly to the parent assembly manifest (if we have one)
-  if (Assembly.isAssembly(root)) {
-    addToParentAssembly(root);
-  }
 
   return builder.buildAssembly({
     runtimeInfo: options.runtimeInfo,
@@ -47,9 +41,9 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  *
  * (They will in turn recurse again)
  */
-function synthNestedAssemblies(root: IConstruct, options: AssemblySynthesisOptions) {
+function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
   for (const child of root.node.children) {
-    if (Assembly.isAssembly(child)) {
+    if (Stage.isStage(child)) {
       child.synth(options);
     } else {
       synthNestedAssemblies(child, options);
@@ -79,7 +73,7 @@ function invokeAspects(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Assembly.isAssembly(child)) {
+      if (!Stage.isStage(child)) {
         recurse(child, allAspectsHere);
       }
     }
@@ -126,22 +120,6 @@ function validateTree(root: IConstruct) {
 }
 
 /**
- * Adds an assembly to it's parent's assembly manifest (unless it's the root, and then this does nothing).
- * @param assembly Assembly to add
- */
-function addToParentAssembly(assembly: Assembly) {
-  if (!assembly.parentAssembly) { return; }
-
-  assembly.parentAssembly.assemblyBuilder.addArtifact(assembly.assemblyArtifactId, {
-    type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
-    properties: {
-      directoryName: assembly.assemblyArtifactId,
-      displayName: assembly.node.path,
-    } as cxschema.NestedCloudAssemblyProperties,
-  });
-}
-
-/**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
 function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
@@ -150,7 +128,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
   }
 
   for (const child of root.node.children) {
-    if (Assembly.isAssembly(child)) { continue; }
+    if (Stage.isStage(child)) { continue; }
     visit(child, order, cb);
   }
 

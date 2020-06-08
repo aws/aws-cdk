@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Assembly } from './assembly';
 import { TreeMetadata } from './private/tree-metadata';
+import { Stage } from './stage';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -74,7 +74,7 @@ export interface AppProps {
  *
  * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
-export class App extends Assembly {
+export class App extends Stage {
   /**
    * Checks if an object is an instance of the `App` class.
    * @returns `true` if `obj` is an `App`.
