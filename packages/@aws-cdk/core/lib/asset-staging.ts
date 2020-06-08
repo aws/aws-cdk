@@ -31,7 +31,7 @@ export interface AssetStagingProps extends FingerprintOptions {
   /**
    * How to calculate the hash for this asset.
    *
-   * @default BUNDLE
+   * @default AssetHashType.SOURCE
    */
   readonly assetHashType?: AssetHashType;
 }
