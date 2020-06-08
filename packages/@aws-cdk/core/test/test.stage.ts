@@ -15,8 +15,28 @@ export = {
     const stack2 = new Stack(stage, 'Stack2', { env: { account: 'tnuocca' } });
 
     // THEN
-    test.deepEqual([stack1.account, stack1.region], ['account', 'elsewhere']);
-    test.deepEqual([stack2.account, stack2.region], ['tnuocca', 'region']);
+    test.deepEqual(acctRegion(stack1), ['account', 'elsewhere']);
+    test.deepEqual(acctRegion(stack2), ['tnuocca', 'region']);
+
+    test.done();
+  },
+
+  'envs are inherited deeply'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const outer = new Stage(app, 'Stage', {
+      env: { account: 'account', region: 'region' },
+    });
+
+    // WHEN
+    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' }});
+    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' }});
+    const innerNeither = new Stage(outer, 'Neither');
+
+    // THEN
+    test.deepEqual(acctRegion(new Stack(innerAcct, 'Stack')), ['tnuocca', 'region']);
+    test.deepEqual(acctRegion(new Stack(innerRegion, 'Stack')), ['account', 'elsewhere']);
+    test.deepEqual(acctRegion(new Stack(innerNeither, 'Stack')), ['account', 'region']);
 
     test.done();
   },
@@ -277,4 +297,8 @@ class BogusStack extends Stack {
       type: 'CDK::Test::Resource',
     });
   }
+}
+
+function acctRegion(s: Stack) {
+  return [s.account, s.region];
 }
