@@ -39,7 +39,7 @@ export class ProviderAttribute {
    * Use this to specify an attribute from the identity provider that is not pre-defined in the CDK.
    * @param attributeName the attribute value string as recognized by the provider
    */
-  public static custom(attributeName: string): ProviderAttribute {
+  public static other(attributeName: string): ProviderAttribute {
     return new ProviderAttribute(attributeName);
   }
 

@@ -81,10 +81,10 @@ describe('UserPoolIdentityProvider', () => {
         clientSecret: 'fb-client-secret',
         attributeMapping: {
           givenName: ProviderAttribute.FACEBOOK_NAME,
-          address: ProviderAttribute.custom('fb-address'),
+          address: ProviderAttribute.other('fb-address'),
           custom: {
             customAttr1: ProviderAttribute.FACEBOOK_EMAIL,
-            customAttr2: ProviderAttribute.custom('fb-custom-attr'),
+            customAttr2: ProviderAttribute.other('fb-custom-attr'),
           },
         },
       });

@@ -379,7 +379,7 @@ new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
   // ...
   attributeMapping: {
     email: ProviderAttribute.AMAZON_EMAIL,
-    website: ProviderAttribute.custom('url'), // use custom() when an attribute is not pre-defined in the CDK
+    website: ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
     custom: {
       // custom user pool attributes go here
       uniqueId: ProviderAttribute.AMAZON_USER_ID,

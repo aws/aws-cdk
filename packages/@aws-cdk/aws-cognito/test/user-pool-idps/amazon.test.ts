@@ -79,10 +79,10 @@ describe('UserPoolIdentityProvider', () => {
         clientSecret: 'amzn-client-secret',
         attributeMapping: {
           givenName: ProviderAttribute.AMAZON_NAME,
-          address: ProviderAttribute.custom('amzn-address'),
+          address: ProviderAttribute.other('amzn-address'),
           custom: {
             customAttr1: ProviderAttribute.AMAZON_EMAIL,
-            customAttr2: ProviderAttribute.custom('amzn-custom-attr'),
+            customAttr2: ProviderAttribute.other('amzn-custom-attr'),
           },
         },
       });

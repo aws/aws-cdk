@@ -81,7 +81,7 @@ describe('UserPoolIdentityProvider', () => {
       const idp = new MyIdp(stack, 'MyIdp', {
         userPool: pool,
         attributeMapping: {
-          address: ProviderAttribute.custom('custom-provider-attr'),
+          address: ProviderAttribute.other('custom-provider-attr'),
         },
       });
 
