@@ -308,7 +308,7 @@ export function exactValue(expected: any): PropertyMatcher {
 /**
  * A matcher for a list that contains all of the given elements in any order
  */
-export function arrayContaining(...elements: any[]): PropertyMatcher {
+export function arrayWith(...elements: any[]): PropertyMatcher {
   if (elements.length === 0) { return anything(); }
 
   const ret = (value: any, inspection: InspectionFailure): boolean => {
