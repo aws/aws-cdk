@@ -2,6 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { AssetHashType, AssetOptions } from './assets';
 import { BUNDLING_INPUT_DIR, BUNDLING_OUTPUT_DIR, BundlingOptions } from './bundling';
 import { Construct, ISynthesisSession } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -9,51 +10,11 @@ import { FileSystem, FingerprintOptions } from './fs';
 /**
  * Initialization properties for `AssetStaging`.
  */
-export interface AssetStagingProps extends FingerprintOptions {
+export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
   /**
    * The source file or directory to copy from.
    */
   readonly sourcePath: string;
-
-  /**
-   * Bundle the asset by executing a command in a Docker container.
-   * The asset path will be mounted at `/asset-input`. The Docker
-   * container is responsible for putting content at `/asset-output`.
-   * The content at `/asset-output` will be zipped and used as the
-   * final asset.
-   *
-   * @default - source is copied to staging directory
-   *
-   * @experimental
-   */
-  readonly bundling?: BundlingOptions;
-
-  /**
-   * How to calculate the hash for this asset.
-   *
-   * @default AssetHashType.SOURCE
-   */
-  readonly assetHashType?: AssetHashType;
-}
-
-/**
- * Source hash calculation
- */
-export enum AssetHashType {
-  /**
-   * Based on the content of the source path
-   */
-  SOURCE = 'source',
-
-  /**
-   * Based on the content of the bundled path
-   */
-  BUNDLE = 'bundle',
-
-  /**
-   * Use a custom hash
-   */
-  CUSTOM = 'custom',
 }
 
 /**
@@ -109,68 +70,42 @@ export class AssetStaging extends Construct {
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
+    if (props.assetHash && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
+      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+    }
+
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
-    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-
     if (props.bundling) {
-      // Create temporary directory for bundling
-      this.bundleDir = fs.mkdtempSync(path.resolve(path.join(os.tmpdir(), 'cdk-asset-bundle-')));
+      this.bundleDir = this.bundle(props.bundling);
+    }
 
-      // Always mount input and output dir
-      const volumes = [
-        {
-          hostPath: this.sourcePath,
-          containerPath: BUNDLING_INPUT_DIR,
-        },
-        {
-          hostPath: this.bundleDir,
-          containerPath: BUNDLING_OUTPUT_DIR,
-        },
-        ...props.bundling.volumes ?? [],
-      ];
+    const hashCalculation = props.assetHash ? AssetHashType.CUSTOM : props.assetHashType ?? AssetHashType.SOURCE;
+    if (hashCalculation === AssetHashType.SOURCE) {
+      this.assetHash = this.fingerprint(props.sourcePath);
+    } else if (hashCalculation === AssetHashType.BUNDLE) {
+      if (!this.bundleDir) {
+        throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+      }
+      this.assetHash = this.fingerprint(this.bundleDir);
+    } else if (hashCalculation === AssetHashType.CUSTOM) {
+      if (!props.assetHash) {
+        throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
+      }
+      this.assetHash = props.assetHash;
+    } else {
+      throw new Error('Unknown asset hash type.');
+    }
 
-      try {
-        props.bundling.image._run({
-          command: props.bundling.command,
-          volumes,
-          environment: props.bundling.environment,
-          workingDirectory: props.bundling.workingDirectory ?? BUNDLING_INPUT_DIR,
-        });
-      } catch (err) {
-        throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
-      }
-
-      if (FileSystem.isEmpty(this.bundleDir)) {
-        throw new Error(`Bundling did not produce any output. Check that your container writes content to ${BUNDLING_OUTPUT_DIR}.`);
-      }
-
-      const hashCalculation = props.assetHashType ?? AssetHashType.SOURCE;
-      if (hashCalculation === AssetHashType.SOURCE || hashCalculation === AssetHashType.CUSTOM) {
-        this.assetHash = this.fingerprint(this.sourcePath);
-      } else if (hashCalculation === AssetHashType.BUNDLE) {
-        this.assetHash = this.fingerprint(this.bundleDir);
-      } else {
-        throw new Error('Unknown source hash calculation.');
-      }
-      if (stagingDisabled) {
-        this.stagedPath = this.bundleDir;
-      } else {
-        // Make relative path always bundle based. This way we move it
-        // in `synthesize()` to the staging directory only if the final
-        // bundled asset has changed and we can safely skip this otherwise.
-        this.relativePath = `asset.${this.fingerprint(this.bundleDir)}`;
-        this.stagedPath = this.relativePath; // always relative to outdir
-      }
-    } else { // No bundling
-      this.assetHash = this.fingerprint(this.sourcePath);
-      if (stagingDisabled) {
-        this.stagedPath = this.sourcePath;
-      } else {
-        this.relativePath = `asset.${this.assetHash}${path.extname(this.sourcePath)}`;
-        this.stagedPath = this.relativePath; // always relative to outdir
-      }
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled && this.bundleDir) {
+      this.stagedPath = this.bundleDir;
+    } else if (stagingDisabled) {
+      this.stagedPath = this.sourcePath;
+    } else {
+      this.relativePath = `asset.${this.assetHash}${path.extname(this.bundleDir ?? this.sourcePath)}`;
+      this.stagedPath = this.relativePath;
     }
 
     this.sourceHash = this.assetHash;
@@ -184,8 +119,7 @@ export class AssetStaging extends Construct {
 
     const targetPath = path.join(session.assembly.outdir, this.relativePath);
 
-    // Already staged. This also works with bundling because relative
-    // path is always bundle based when bundling
+    // Already staged
     if (fs.existsSync(targetPath)) {
       return;
     }
@@ -224,5 +158,40 @@ export class AssetStaging extends Construct {
 
   private fingerprint(fileOrDirectory: string) {
     return FileSystem.fingerprint(fileOrDirectory, this.fingerprintOptions);
+  }
+
+  private bundle(options: BundlingOptions): string {
+    // Create temporary directory for bundling
+    const bundleDir = fs.mkdtempSync(path.resolve(path.join(os.tmpdir(), 'cdk-asset-bundle-')));
+
+    // Always mount input and output dir
+    const volumes = [
+      {
+        hostPath: this.sourcePath,
+        containerPath: BUNDLING_INPUT_DIR,
+      },
+      {
+        hostPath: bundleDir,
+        containerPath: BUNDLING_OUTPUT_DIR,
+      },
+      ...options.volumes ?? [],
+    ];
+
+    try {
+      options.image._run({
+        command: options.command,
+        volumes,
+        environment: options.environment,
+        workingDirectory: options.workingDirectory ?? BUNDLING_INPUT_DIR,
+      });
+    } catch (err) {
+      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+    }
+
+    if (FileSystem.isEmpty(bundleDir)) {
+      throw new Error(`Bundling did not produce any output. Check that your container writes content to ${BUNDLING_OUTPUT_DIR}.`);
+    }
+
+    return bundleDir;
   }
 }

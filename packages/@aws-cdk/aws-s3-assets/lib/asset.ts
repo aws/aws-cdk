@@ -8,7 +8,7 @@ import * as path from 'path';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
-export interface AssetOptions extends assets.CopyOptions {
+export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -16,25 +16,6 @@ export interface AssetOptions extends assets.CopyOptions {
    * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
-
-  /**
-   * Specify a custom hash for this asset. If `assetHashType` is set it must
-   * be set to `AssetHashType.CUSTOM`.
-   *
-   * @default - based on `assetHashType`
-   */
-  readonly assetHash?: string;
-
-  /**
-   * Specifies the type of hash to calculate for this asset.
-   *
-   * If `assetHash` is configured, this option must be `undefined` or
-   * `AssetHashType.CUSTOM`.
-   *
-   * @default - the default is `AssetHashType.SOURCE`, but if `assetHash` is
-   * explicitly specified this value defaults to `AssetHashType.CUSTOM`.
-   */
-  readonly assetHashType?: cdk.AssetHashType;
 
   /**
    * Custom source hash to use when identifying the specific version of the asset.
@@ -130,27 +111,26 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
    */
   public readonly isZipArchive: boolean;
 
+  /** @deprecated see `assetHash` */
   public readonly sourceHash: string;
+
+  public readonly assetHash: string;
 
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
-
-    if ((props.assetHash || props.sourceHash) && props.assetHashType && props.assetHashType !== cdk.AssetHashType.CUSTOM) {
-      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
-    }
 
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
       sourcePath: path.resolve(props.path),
       exclude: props.exclude,
-      follow: assets.toSymlinkFollow(props.follow),
+      follow: toSymlinkFollow(props.follow),
+      assetHash: props.assetHash ?? props.sourceHash,
+      assetHashType: props.assetHashType,
       bundling: props.bundling,
-      assetHashType: props.assetHashType ?? props.assetHash
-        ? cdk.AssetHashType.CUSTOM
-        : cdk.AssetHashType.SOURCE,
     });
 
-    this.sourceHash = props.assetHash ?? props.sourceHash ?? staging.assetHash;
+    this.assetHash = staging.assetHash;
+    this.sourceHash = this.assetHash;
 
     this.assetPath = staging.stagedPath;
 
@@ -235,4 +215,19 @@ function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
+}
+
+function toSymlinkFollow(follow?: assets.FollowMode): cdk.SymlinkFollowMode | undefined {
+  if (!follow) {
+    return undefined;
+  }
+
+  switch (follow) {
+    case assets.FollowMode.NEVER: return cdk.SymlinkFollowMode.NEVER;
+    case assets.FollowMode.ALWAYS: return cdk.SymlinkFollowMode.ALWAYS;
+    case assets.FollowMode.BLOCK_EXTERNAL: return cdk.SymlinkFollowMode.BLOCK_EXTERNAL;
+    case assets.FollowMode.EXTERNAL: return cdk.SymlinkFollowMode.EXTERNAL;
+    default:
+      throw new Error(`unknown follow mode: ${follow}`);
+  }
 }

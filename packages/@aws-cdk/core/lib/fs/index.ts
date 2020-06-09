@@ -38,7 +38,7 @@ export class FileSystem {
   /**
    * Checks whether a directory is empty
    *
-   * @param dir The direcotry to check
+   * @param dir The directory to check
    */
   public static isEmpty(dir: string): boolean {
     return fs.readdirSync(dir).length === 0;
