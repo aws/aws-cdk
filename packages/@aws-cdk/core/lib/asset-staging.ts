@@ -70,10 +70,6 @@ export class AssetStaging extends Construct {
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
-    if (props.assetHash && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
-      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
-    }
-
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
@@ -81,6 +77,9 @@ export class AssetStaging extends Construct {
       this.bundleDir = this.bundle(props.bundling);
     }
 
+    if (props.assetHash && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
+      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+    }
     const hashType = props.assetHash ? AssetHashType.CUSTOM : props.assetHashType ?? AssetHashType.SOURCE;
     this.assetHash = this.calculateHash(hashType, props.assetHash);
 
@@ -176,24 +175,21 @@ export class AssetStaging extends Construct {
   }
 
   private calculateHash(hashType: AssetHashType, assetHash?: string): string {
-    if (hashType === AssetHashType.SOURCE) {
-      return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+    switch (hashType) {
+      case AssetHashType.SOURCE:
+        return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+      case AssetHashType.BUNDLE:
+        if (!this.bundleDir) {
+          throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+        }
+        return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
+      case AssetHashType.CUSTOM:
+        if (!assetHash) {
+          throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
+        }
+        return assetHash;
+      default:
+        throw new Error('Unknown asset hash type.');
     }
-
-    if (hashType === AssetHashType.BUNDLE) {
-      if (!this.bundleDir) {
-        throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
-      }
-      return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
-    }
-
-    if (hashType === AssetHashType.CUSTOM) {
-      if (!assetHash) {
-        throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
-      }
-      return assetHash;
-    }
-
-    throw new Error('Unknown asset hash type.');
   }
 }
