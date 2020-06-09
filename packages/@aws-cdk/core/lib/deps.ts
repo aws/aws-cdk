@@ -1,4 +1,3 @@
-import { Assembly } from './assembly';
 import { CfnResource } from './cfn-resource';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -31,13 +30,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   }
 
   const sourceStack = Stack.of(source);
-  const sourceAssembly = Assembly.of(sourceStack);
   const targetStack = Stack.of(target);
-  const targetAssembly = Assembly.of(targetStack);
-
-  if (sourceAssembly !== targetAssembly) {
-    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeAssembly(sourceAssembly)}) to '${target.node.path}' (in ${describeAssembly(targetAssembly)}): dependency cannot cross stage boundaries`);
-  }
 
   const sourceStage = Stage.of(sourceStack);
   const targetStage = Stage.of(targetStack);

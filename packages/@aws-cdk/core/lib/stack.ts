@@ -1059,7 +1059,6 @@ function makeStackName(components: string[]) {
 
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
-import { Assembly } from './assembly';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
