@@ -14,6 +14,11 @@ import { IStackSynthesizer } from './types';
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
 /**
+ * The minimum bootstrap stack version required by this app.
+ */
+const MIN_BOOTSTRAP_STACK_VERSION = 2;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -44,7 +49,7 @@ export interface DefaultStackSynthesizerProps {
   readonly imageAssetsRepositoryName?: string;
 
   /**
-   * The role to use to publish assets to this environment
+   * The role to use to publish file assets to the S3 bucket in this environment
    *
    * You must supply this if you have given a non-standard name to the publishing role.
    *
@@ -52,16 +57,36 @@ export interface DefaultStackSynthesizerProps {
    * be replaced with the values of qualifier and the stack's account and region,
    * respectively.
    *
-   * @default DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
+   * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN
    */
-  readonly assetPublishingRoleArn?: string;
+  readonly fileAssetPublishingRoleArn?: string;
 
   /**
-   * External ID to use when assuming role for asset publishing
+   * External ID to use when assuming role for file asset publishing
    *
    * @default - No external ID
    */
-  readonly assetPublishingExternalId?: string;
+  readonly fileAssetPublishingExternalId?: string;
+
+  /**
+   * The role to use to publish image assets to the ECR repository in this environment
+   *
+   * You must supply this if you have given a non-standard name to the publishing role.
+   *
+   * The placeholders `${Qualifier}`, `${AWS::AccountId}` and `${AWS::Region}` will
+   * be replaced with the values of qualifier and the stack's account and region,
+   * respectively.
+   *
+   * @default DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN
+   */
+  readonly imageAssetPublishingRoleArn?: string;
+
+  /**
+   * External ID to use when assuming role for image asset publishing
+   *
+   * @default - No external ID
+   */
+  readonly imageAssetPublishingExternalId?: string;
 
   /**
    * The role to assume to initiate a deployment in this environment
@@ -126,9 +151,14 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public static readonly DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
-   * Default asset publishing role ARN.
+   * Default asset publishing role ARN for file (S3) assets.
    */
-  public static readonly DEFAULT_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
+   * Default asset publishing role ARN for image (ECR) assets.
+   */
+  public static readonly DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default image assets repository name
@@ -145,7 +175,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private repositoryName?: string;
   private _deployRoleArn?: string;
   private _cloudFormationExecutionRoleArn?: string;
-  private assetPublishingRoleArn?: string;
+  private fileAssetPublishingRoleArn?: string;
+  private imageAssetPublishingRoleArn?: string;
 
   private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
   private readonly dockerImages: NonNullable<asset_schema.ManifestFile['dockerImages']> = {};
@@ -178,7 +209,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
     this._deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.assetPublishingRoleArn = specialize(this.props.assetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN);
+    this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
+    this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     // tslint:enable:max-line-length
   }
 
@@ -199,8 +231,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
           bucketName: this.bucketName,
           objectKey,
           region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.assetPublishingRoleArn,
-          assumeRoleExternalId: this.props.assetPublishingExternalId,
+          assumeRoleArn: this.fileAssetPublishingRoleArn,
+          assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
         },
       },
     };
@@ -237,8 +269,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
           repositoryName: this.repositoryName,
           imageTag,
           region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.assetPublishingRoleArn,
-          assumeRoleExternalId: this.props.assetPublishingExternalId,
+          assumeRoleArn: this.imageAssetPublishingRoleArn,
+          assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
         },
       },
     };
@@ -262,7 +294,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
-      requiresBootstrapStackVersion: 1,
+      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
     }, [artifactId]);
   }
 
@@ -344,7 +376,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       type: cxschema.ArtifactType.ASSET_MANIFEST,
       properties: {
         file: manifestFile,
-        requiresBootstrapStackVersion: 1,
+        requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       },
     });
 
