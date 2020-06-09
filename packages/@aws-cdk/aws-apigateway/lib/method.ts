@@ -5,6 +5,7 @@ import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
+import { RestApiBase } from './private/restapi-base';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { IRestApi, RestApi } from './restapi';
@@ -212,7 +213,9 @@ export class Method extends Resource {
 
     this.methodId = resource.ref;
 
-    props.resource.api._attachMethod(this);
+    if (RestApiBase.isRestApiBase(props.resource.api)) {
+      (props.resource.api as any)._attachMethod(this);
+    }
 
     const deployment = props.resource.api.latestDeployment;
     if (deployment) {
