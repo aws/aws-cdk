@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolIdentityProviderFacebook } from '../../lib';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderFacebook } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('facebook', () => {
@@ -67,6 +67,37 @@ describe('UserPoolIdentityProvider', () => {
 
       // THEN
       expect(pool.identityProviders).toContain(provider);
+    });
+
+    test('attribute mapping', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderFacebook(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'fb-client-id',
+        clientSecret: 'fb-client-secret',
+        attributeMapping: {
+          givenName: ProviderAttribute.FACEBOOK_NAME,
+          address: ProviderAttribute.other('fb-address'),
+          custom: {
+            customAttr1: ProviderAttribute.FACEBOOK_EMAIL,
+            customAttr2: ProviderAttribute.other('fb-custom-attr'),
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPoolIdentityProvider', {
+        AttributeMapping: {
+          given_name: 'name',
+          address: 'fb-address',
+          customAttr1: 'email',
+          customAttr2: 'fb-custom-attr',
+        },
+      });
     });
   });
 });
