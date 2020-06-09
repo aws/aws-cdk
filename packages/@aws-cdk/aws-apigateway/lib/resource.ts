@@ -4,7 +4,7 @@ import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions } from './method';
-import { MutableRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
   /**
@@ -27,7 +27,7 @@ export interface IResource extends IResourceBase {
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
-  readonly api: MutableRestApi;
+  readonly api: IRestApi;
 
   /**
    * The ID of the resource.
@@ -165,7 +165,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
    * @deprecated -  Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
    */
   public abstract readonly restApi: RestApi;
-  public abstract readonly api: MutableRestApi;
+  public abstract readonly api: IRestApi;
   public abstract readonly resourceId: string;
   public abstract readonly path: string;
   public abstract readonly defaultIntegration?: Integration;
@@ -364,14 +364,17 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return resource.resourceForPath(parts.join('/'));
   }
 
+  /**
+   * @deprecated - Throws error in some use cases that have been enabled since this deprecation notice. Use `RestApi.urlForPath()` instead.
+   */
   public get url(): string {
-    return this.api.urlForPath(this.path);
+    return this.restApi.urlForPath(this.path);
   }
 }
 
 export class Resource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly api: MutableRestApi;
+  public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
 

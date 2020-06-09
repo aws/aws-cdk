@@ -22,6 +22,28 @@ export interface IRestApi extends IResourceBase {
    * @attribute
    */
   readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   * @attribute
+   */
+  readonly restApiRootResourceId: string;
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * `undefined` when no deployment is configured.
+   */
+  readonly latestDeployment?: Deployment;
+
+  /**
+   * Represents the root resource ("/") of this API. Use it to define the API model:
+   *
+   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
+   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
+   *
+   */
+  readonly root: IResource;
 }
 
 /**
@@ -197,11 +219,7 @@ export interface SpecRestApiProps extends RestApiOptions {
   readonly apiDefinition: ApiDefinition;
 }
 
-/**
- * Abstract class that allow for further configuration of a API Gateway RestApi,
- * such as Resources, Methods, Stages and Deployments.
- */
-export abstract class MutableRestApi extends Resource implements IRestApi {
+abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -391,7 +409,7 @@ export abstract class MutableRestApi extends Resource implements IRestApi {
  *
  * @resource AWS::ApiGateway::RestApi
  */
-export class SpecRestApi extends MutableRestApi {
+export class SpecRestApi extends RestApiBase {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -457,13 +475,21 @@ export interface RestApiAttributes {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends MutableRestApi {
+export class RestApi extends RestApiBase {
   /**
    * Import an existing RestApi.
    */
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
     class Import extends Resource implements IRestApi {
       public readonly restApiId = restApiId;
+
+      public get root(): IResource {
+        throw new Error('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+      }
+
+      public get restApiRootResourceId(): string {
+        throw new Error('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+      }
     }
 
     return new Import(scope, id);
@@ -473,8 +499,8 @@ export class RestApi extends MutableRestApi {
    * Import an existing RestApi that can be configured with additional Methods and Resources.
    * @experimental
    */
-  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): MutableRestApi {
-    class Import extends MutableRestApi {
+  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
+    class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
@@ -483,25 +509,10 @@ export class RestApi extends MutableRestApi {
     return new Import(scope, id);
   }
 
-  /**
-   * The ID of this API Gateway RestApi.
-   */
   public readonly restApiId: string;
 
-  /**
-   * Represents the root resource ("/") of this API. Use it to define the API model:
-   *
-   *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
-   *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
-   *
-   */
   public readonly root: IResource;
 
-  /**
-   * The resource ID of the root resource.
-   *
-   * @attribute
-   */
   public readonly restApiRootResourceId: string;
 
   /**
@@ -668,7 +679,7 @@ export enum EndpointType {
 
 class RootResource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly api: MutableRestApi;
+  public readonly api: RestApiBase;
   public readonly resourceId: string;
   public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
@@ -677,7 +688,7 @@ class RootResource extends ResourceBase {
 
   private readonly _restApi?: RestApi;
 
-  constructor(api: MutableRestApi, props: ResourceOptions, resourceId: string) {
+  constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
 
     this.parentResource = undefined;
