@@ -32,20 +32,6 @@ export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
    * @deprecated see `assetHash` and `assetHashType`
    */
   readonly sourceHash?: string;
-
-  /**
-   * Bundle the asset by executing a command in a Docker container.
-   * The asset path will be mounted at `/asset-input`. The Docker
-   * container is responsible for putting content at `/asset-output`.
-   * The content at `/asset-output` will be zipped and used as the
-   * final asset.
-   *
-   * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
-   * archived into a .zip file and uploaded to S3 otherwise
-   *
-   * @experimental
-   */
-  readonly bundling?: cdk.BundlingOptions;
 }
 
 export interface AssetProps extends AssetOptions {
@@ -111,7 +97,11 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
    */
   public readonly isZipArchive: boolean;
 
-  /** @deprecated see `assetHash` */
+  /**
+   * A cryptographic hash of the asset.
+   *
+   * @deprecated see `assetHash`
+   */
   public readonly sourceHash: string;
 
   public readonly assetHash: string;
@@ -121,12 +111,9 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
+      ...props,
       sourcePath: path.resolve(props.path),
-      exclude: props.exclude,
       follow: toSymlinkFollow(props.follow),
-      assetHash: props.assetHash ?? props.sourceHash,
-      assetHashType: props.assetHashType,
-      bundling: props.bundling,
     });
 
     this.assetHash = staging.assetHash;
