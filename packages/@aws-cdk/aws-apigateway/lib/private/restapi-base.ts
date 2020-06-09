@@ -18,6 +18,13 @@ const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
+   * Checks if the given object is an instance of RestApiBase.
+   */
+  public static isRestApiBase(x: any): x is IRestApi {
+    return x !== null && typeof(x) === 'object' && RESTAPI_SYMBOL in x;
+  }
+
+  /**
    * API Gateway deployment that represents the latest changes of the API.
    * This resource will be automatically updated every time the REST API model changes.
    * This will be undefined if `deploy` is false.
@@ -34,12 +41,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return this._domainName;
   }
 
-  /**
-   * Checks if the given object is an instance of RestApiBase.
-   */
-  public static isRestApiBase(x: any): x is IRestApi {
-    return x !== null && typeof(x) === 'object' && RESTAPI_SYMBOL in x;
-  }
   /**
    * The ID of this API Gateway RestApi.
    */
