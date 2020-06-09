@@ -81,28 +81,12 @@ export class AssetStaging extends Construct {
       this.bundleDir = this.bundle(props.bundling);
     }
 
-    const hashCalculation = props.assetHash ? AssetHashType.CUSTOM : props.assetHashType ?? AssetHashType.SOURCE;
-    if (hashCalculation === AssetHashType.SOURCE) {
-      this.assetHash = this.fingerprint(props.sourcePath);
-    } else if (hashCalculation === AssetHashType.BUNDLE) {
-      if (!this.bundleDir) {
-        throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
-      }
-      this.assetHash = this.fingerprint(this.bundleDir);
-    } else if (hashCalculation === AssetHashType.CUSTOM) {
-      if (!props.assetHash) {
-        throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
-      }
-      this.assetHash = props.assetHash;
-    } else {
-      throw new Error('Unknown asset hash type.');
-    }
+    const hashType = props.assetHash ? AssetHashType.CUSTOM : props.assetHashType ?? AssetHashType.SOURCE;
+    this.assetHash = this.calculateHash(hashType, props.assetHash);
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-    if (stagingDisabled && this.bundleDir) {
-      this.stagedPath = this.bundleDir;
-    } else if (stagingDisabled) {
-      this.stagedPath = this.sourcePath;
+    if (stagingDisabled) {
+      this.stagedPath = this.bundleDir ?? this.sourcePath;
     } else {
       this.relativePath = `asset.${this.assetHash}${path.extname(this.bundleDir ?? this.sourcePath)}`;
       this.stagedPath = this.relativePath;
@@ -193,5 +177,27 @@ export class AssetStaging extends Construct {
     }
 
     return bundleDir;
+  }
+
+  private calculateHash(hashType: AssetHashType, assetHash?: string): string {
+    if (hashType === AssetHashType.SOURCE) {
+      return this.fingerprint(this.sourcePath);
+    }
+
+    if (hashType === AssetHashType.BUNDLE) {
+      if (!this.bundleDir) {
+        throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+      }
+      return this.fingerprint(this.bundleDir);
+    }
+
+    if (hashType === AssetHashType.CUSTOM) {
+      if (!assetHash) {
+        throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
+      }
+      return assetHash;
+    }
+
+    throw new Error('Unknown asset hash type.');
   }
 }
