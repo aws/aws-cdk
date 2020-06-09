@@ -433,7 +433,10 @@ export class Resource extends ResourceBase {
    * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
    */
   public get restApi(): RestApi {
-    return this.parentResource!.restApi;
+    if (!this.parentResource) {
+      throw new Error('parentResource was unexpectedly not defined');
+    }
+    return this.parentResource.restApi;
   }
 }
 
