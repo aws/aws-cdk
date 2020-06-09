@@ -347,14 +347,14 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"TrainTask\",\"States\":{\"TrainTask\":{\"End\":true,\"Parameters\":{\"TrainingJobName\":\"MyTrainingJob\",\"RoleArn\":\"",
+              "{\n  \"StartAt\": \"TrainTask\",\n  \"States\": {\n    \"TrainTask\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"TrainingJobName\": \"MyTrainingJob\",\n        \"RoleArn\": \"",
               {
                 "Fn::GetAtt": [
                   "TrainTaskSagemakerRole0A9B1CDD",
                   "Arn"
                 ]
               },
-              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"GRADIENT_ASCENT\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
+              "\",\n        \"AlgorithmSpecification\": {\n          \"TrainingInputMode\": \"File\",\n          \"AlgorithmName\": \"GRADIENT_ASCENT\"\n        },\n        \"InputDataConfig\": [\n          {\n            \"ChannelName\": \"InputData\",\n            \"DataSource\": {\n              \"S3DataSource\": {\n                \"S3Uri\": \"https://s3.",
               {
                 "Ref": "AWS::Region"
               },
@@ -366,7 +366,7 @@
               {
                 "Ref": "TrainingData3FDB6D34"
               },
-              "/data/\",\"S3DataType\":\"S3Prefix\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"https://s3.",
+              "/data/\",\n                \"S3DataType\": \"S3Prefix\"\n              }\n            }\n          }\n        ],\n        \"OutputDataConfig\": {\n          \"S3OutputPath\": \"https://s3.",
               {
                 "Ref": "AWS::Region"
               },
@@ -378,11 +378,11 @@
               {
                 "Ref": "TrainingData3FDB6D34"
               },
-              "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "/result/\"\n        },\n        \"ResourceConfig\": {\n          \"InstanceCount\": 1,\n          \"InstanceType\": \"ml.m4.xlarge\",\n          \"VolumeSizeInGB\": 10\n        },\n        \"StoppingCondition\": {\n          \"MaxRuntimeInSeconds\": 3600\n        }\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::sagemaker:createTrainingJob\"}}}"
+              ":states:::sagemaker:createTrainingJob\"\n    }\n  }\n}"
             ]
           ]
         },

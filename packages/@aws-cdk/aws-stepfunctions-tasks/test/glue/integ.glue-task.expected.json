@@ -237,11 +237,11 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"Glue Job Task\"},\"Glue Job Task\":{\"Next\":\"End Task\",\"Parameters\":{\"JobName\":\"My Glue Job\",\"Arguments\":{\"--enable-metrics\":\"true\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\n  \"StartAt\": \"Start Task\",\n  \"States\": {\n    \"Start Task\": {\n      \"Type\": \"Pass\",\n      \"Next\": \"Glue Job Task\"\n    },\n    \"Glue Job Task\": {\n      \"Next\": \"End Task\",\n      \"Parameters\": {\n        \"JobName\": \"My Glue Job\",\n        \"Arguments\": {\n          \"--enable-metrics\": \"true\"\n        }\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::glue:startJobRun.sync\"},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+              ":states:::glue:startJobRun.sync\"\n    },\n    \"End Task\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}"
             ]
           ]
         },

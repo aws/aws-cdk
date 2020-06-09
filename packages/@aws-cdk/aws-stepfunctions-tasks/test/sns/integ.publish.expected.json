@@ -114,15 +114,15 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\n  \"StartAt\": \"publish to SNS\",\n  \"States\": {\n    \"publish to SNS\": {\n      \"Next\": \"Final step\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::sns:publish\",\"Parameters\":{\"TopicArn\":\"",
+              ":states:::sns:publish\",\n      \"Parameters\": {\n        \"TopicArn\": \"",
               {
                 "Ref": "cooltopic4736778A"
               },
-              "\",\"Message\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\n        \"Message\": \"sending message over\"\n      }\n    },\n    \"Final step\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  },\n  \"TimeoutSeconds\": 30\n}"
             ]
           ]
         },

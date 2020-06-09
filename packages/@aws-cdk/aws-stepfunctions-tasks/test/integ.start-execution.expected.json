@@ -31,7 +31,7 @@
     "ChildDAB30558": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}",
+        "DefinitionString": "{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}",
         "RoleArn": {
           "Fn::GetAtt": [
             "ChildRole1E3E0EF5",
@@ -170,15 +170,15 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"Input\":{\"hello.$\":\"$.hello\"},\"StateMachineArn\":\"",
+              "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"Input\": {\n          \"hello.$\": \"$.hello\"\n        },\n        \"StateMachineArn\": \"",
               {
                 "Ref": "ChildDAB30558"
               },
-              "\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::states:startExecution.sync\"}}}"
+              ":states:::states:startExecution.sync\"\n    }\n  }\n}"
             ]
           ]
         },

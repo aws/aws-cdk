@@ -47,19 +47,19 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Submit Job\",\"States\":{\"Submit Job\":{\"Next\":\"Wait X Seconds\",\"Type\":\"Task\",\"Resource\":\"",
+              "{\n  \"StartAt\": \"Submit Job\",\n  \"States\": {\n    \"Submit Job\": {\n      \"Next\": \"Wait X Seconds\",\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Ref": "SubmitJobFB773A16"
               },
-              "\",\"ResultPath\":\"$.guid\"},\"Wait X Seconds\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.wait_time\",\"Next\":\"Get Job Status\"},\"Get Job Status\":{\"Next\":\"Job Complete?\",\"InputPath\":\"$.guid\",\"Type\":\"Task\",\"Resource\":\"",
+              "\",\n      \"ResultPath\": \"$.guid\"\n    },\n    \"Wait X Seconds\": {\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.wait_time\",\n      \"Next\": \"Get Job Status\"\n    },\n    \"Get Job Status\": {\n      \"Next\": \"Job Complete?\",\n      \"InputPath\": \"$.guid\",\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Ref": "CheckJob5FFC1D6F"
               },
-              "\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Get Final Job Status\"}],\"Default\":\"Wait X Seconds\"},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Get Final Job Status\":{\"End\":true,\"InputPath\":\"$.guid\",\"Type\":\"Task\",\"Resource\":\"",
+              "\",\n      \"ResultPath\": \"$.status\"\n    },\n    \"Job Complete?\": {\n      \"Type\": \"Choice\",\n      \"Choices\": [\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"FAILED\",\n          \"Next\": \"Job Failed\"\n        },\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"SUCCEEDED\",\n          \"Next\": \"Get Final Job Status\"\n        }\n      ],\n      \"Default\": \"Wait X Seconds\"\n    },\n    \"Job Failed\": {\n      \"Type\": \"Fail\",\n      \"Error\": \"DescribeJob returned FAILED\",\n      \"Cause\": \"AWS Batch Job Failed\"\n    },\n    \"Get Final Job Status\": {\n      \"End\": true,\n      \"InputPath\": \"$.guid\",\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Ref": "CheckJob5FFC1D6F"
               },
-              "\"}},\"TimeoutSeconds\":30}"
+              "\"\n    }\n  },\n  \"TimeoutSeconds\": 30\n}"
             ]
           ]
         },

@@ -171,23 +171,23 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Parameters\":{\"FunctionName\":\"",
+              "{\n  \"StartAt\": \"Invoke Handler\",\n  \"States\": {\n    \"Invoke Handler\": {\n      \"Next\": \"Check the job state\",\n      \"Parameters\": {\n        \"FunctionName\": \"",
               {
                 "Ref": "submitJobLambdaEFB00F3C"
               },
-              "\",\"Payload.$\":\"$\"},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\n        \"Payload.$\": \"$\"\n      },\n      \"OutputPath\": \"$.Payload\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\"},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Parameters\":{\"FunctionName\":\"",
+              ":states:::lambda:invoke\"\n    },\n    \"Check the job state\": {\n      \"Next\": \"Job Complete?\",\n      \"Parameters\": {\n        \"FunctionName\": \"",
               {
                 "Ref": "checkJobStateLambda4618B7B7"
               },
-              "\",\"Payload.$\":\"$\"},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\n        \"Payload.$\": \"$\"\n      },\n      \"OutputPath\": \"$.Payload\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              ":states:::lambda:invoke\"\n    },\n    \"Job Complete?\": {\n      \"Type\": \"Choice\",\n      \"Choices\": [\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"FAILED\",\n          \"Next\": \"Job Failed\"\n        },\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"SUCCEEDED\",\n          \"Next\": \"Final step\"\n        }\n      ]\n    },\n    \"Job Failed\": {\n      \"Type\": \"Fail\",\n      \"Error\": \"Received a status that was not 200\",\n      \"Cause\": \"Job Failed\"\n    },\n    \"Final step\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  },\n  \"TimeoutSeconds\": 30\n}"
             ]
           ]
         },

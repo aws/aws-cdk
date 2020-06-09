@@ -147,27 +147,27 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"PutItem\"},\"PutItem\":{\"Next\":\"GetItemAfterPut\",\"Parameters\":{\"Item\":{\"MessageId\":{\"S\":\"1234\"},\"Text\":{\"S.$\":\"$.bar\"},\"TotalCount\":{\"N\":\"18\"}},\"TableName\":\"Messages\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\n  \"StartAt\": \"Start\",\n  \"States\": {\n    \"Start\": {\n      \"Type\": \"Pass\",\n      \"Result\": {\n        \"bar\": \"SomeValue\"\n      },\n      \"Next\": \"PutItem\"\n    },\n    \"PutItem\": {\n      \"Next\": \"GetItemAfterPut\",\n      \"Parameters\": {\n        \"Item\": {\n          \"MessageId\": {\n            \"S\": \"1234\"\n          },\n          \"Text\": {\n            \"S.$\": \"$.bar\"\n          },\n          \"TotalCount\": {\n            \"N\": \"18\"\n          }\n        },\n        \"TableName\": \"Messages\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\"},\"GetItemAfterPut\":{\"Next\":\"UpdateItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ConsistentRead\":false},\"Type\":\"Task\",\"Resource\":\"arn:",
+              ":states:::dynamodb:putItem\"\n    },\n    \"GetItemAfterPut\": {\n      \"Next\": \"UpdateItem\",\n      \"Parameters\": {\n        \"Key\": {\n          \"MessageId\": {\n            \"S\": \"1234\"\n          }\n        },\n        \"TableName\": \"Messages\",\n        \"ConsistentRead\": false\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:getItem\"},\"UpdateItem\":{\"Next\":\"GetItemAfterUpdate\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ExpressionAttributeValues\":{\":val\":{\"N.$\":\"$.Item.TotalCount.N\"},\":rand\":{\"N\":\"24\"}},\"UpdateExpression\":\"SET TotalCount = :val + :rand\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              ":states:::dynamodb:getItem\"\n    },\n    \"UpdateItem\": {\n      \"Next\": \"GetItemAfterUpdate\",\n      \"Parameters\": {\n        \"Key\": {\n          \"MessageId\": {\n            \"S\": \"1234\"\n          }\n        },\n        \"TableName\": \"Messages\",\n        \"ExpressionAttributeValues\": {\n          \":val\": {\n            \"N.$\": \"$.Item.TotalCount.N\"\n          },\n          \":rand\": {\n            \"N\": \"24\"\n          }\n        },\n        \"UpdateExpression\": \"SET TotalCount = :val + :rand\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:updateItem\"},\"GetItemAfterUpdate\":{\"Next\":\"DeleteItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ConsistentRead\":false},\"OutputPath\":\"$.Item.TotalCount.N\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              ":states:::dynamodb:updateItem\"\n    },\n    \"GetItemAfterUpdate\": {\n      \"Next\": \"DeleteItem\",\n      \"Parameters\": {\n        \"Key\": {\n          \"MessageId\": {\n            \"S\": \"1234\"\n          }\n        },\n        \"TableName\": \"Messages\",\n        \"ConsistentRead\": false\n      },\n      \"OutputPath\": \"$.Item.TotalCount.N\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:getItem\"},\"DeleteItem\":{\"End\":true,\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              ":states:::dynamodb:getItem\"\n    },\n    \"DeleteItem\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"Key\": {\n          \"MessageId\": {\n            \"S\": \"1234\"\n          }\n        },\n        \"TableName\": \"Messages\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:deleteItem\",\"ResultPath\":null}}}"
+              ":states:::dynamodb:deleteItem\",\n      \"ResultPath\": null\n    }\n  }\n}"
             ]
           ]
         },

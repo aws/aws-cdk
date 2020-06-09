@@ -24,15 +24,15 @@ test('Eval with Node.js', () => {
     DefinitionString: {
       'Fn::Join': [
         '',
-        [
-          '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}},"Type":"Task","Resource":"',
+        [ // tslint:disable:max-line-length
+          "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"expression\": \"$.a + $.b\",\n        \"expressionAttributeValues\": {\n          \"$.a.$\": \"$.a\",\n          \"$.b.$\": \"$.b\"\n        }\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
           {
-            'Fn::GetAtt': [
-              'Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1',
-              'Arn',
-            ],
+            "Fn::GetAtt": [
+              "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+              "Arn"
+            ]
           },
-          '"}}}',
+          "\"\n    }\n  }\n}",
         ],
       ],
     },
@@ -58,15 +58,15 @@ test('expression does not contain paths', () => {
     DefinitionString: {
       'Fn::Join': [
         '',
-        [
-          '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"expression":"2 + 2",\"expressionAttributeValues\":{}},"Type":"Task","Resource":"',
+        [ // tslint:disable:max-line-length
+          "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"expression\": \"2 + 2\",\n        \"expressionAttributeValues\": {}\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
           {
             'Fn::GetAtt': [
               'Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1',
               'Arn',
             ],
           },
-          '"}}}',
+          "\"\n    }\n  }\n}",
         ],
       ],
     },

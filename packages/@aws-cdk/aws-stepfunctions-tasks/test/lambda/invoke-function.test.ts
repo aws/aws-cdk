@@ -26,9 +26,9 @@ test('Invoke lambda with function ARN', () => {
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': ['', [
-        '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+        "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Type\": \"Task\",\n      \"Resource\": \"",
         { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
-        '"}}}',
+        "\"\n    }\n  }\n}",
       ]],
     },
   });
@@ -48,9 +48,9 @@ test('Lambda function payload ends up in Parameters', () => {
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': ['', [
-        '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"foo.$":"$.bar"},"Type":"Task","Resource":"',
+        "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"foo.$\": \"$.bar\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
         { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
-        '"}}}',
+        "\"\n    }\n  }\n}",
       ]],
     },
   });

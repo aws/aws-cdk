@@ -31,7 +31,7 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null},\"final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}",
+        "DefinitionString": "{\n  \"StartAt\": \"my custom task\",\n  \"States\": {\n    \"my custom task\": {\n      \"Next\": \"final step\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:states:::dynamodb:putItem\",\n      \"Parameters\": {\n        \"TableName\": \"my-cool-table\",\n        \"Item\": {\n          \"id\": {\n            \"S\": \"my-entry\"\n          }\n        }\n      },\n      \"ResultPath\": null\n    },\n    \"final step\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  },\n  \"TimeoutSeconds\": 30\n}",
         "RoleArn": {
           "Fn::GetAtt": [
             "StateMachineRoleB840431D",

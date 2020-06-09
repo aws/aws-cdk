@@ -671,22 +671,22 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+              "{\n  \"StartAt\": \"Start\",\n  \"States\": {\n    \"Start\": {\n      \"Type\": \"Pass\",\n      \"Result\": {\n        \"SomeKey\": \"SomeValue\"\n      },\n      \"Next\": \"Run\"\n    },\n    \"Run\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"Cluster\": \"",
               {
                 "Fn::GetAtt": [
                   "FargateCluster7CCD5F93",
                   "Arn"
                 ]
               },
-              "\",\"TaskDefinition\":\"",
+              "\",\n        \"TaskDefinition\": \"",
               {
                 "Ref": "TaskDef54694570"
               },
-              "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\n        \"Overrides\": {\n          \"ContainerOverrides\": [\n            {\n              \"Name\": \"TheContainer\",\n              \"Environment\": [\n                {\n                  \"Name\": \"SOME_KEY\",\n                  \"Value.$\": \"$.SomeKey\"\n                }\n              ]\n            }\n          ]\n        },\n        \"LaunchType\": \"EC2\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::ecs:runTask.sync\"}}}"
+              ":states:::ecs:runTask.sync\"\n    }\n  }\n}"
             ]
           ]
         },

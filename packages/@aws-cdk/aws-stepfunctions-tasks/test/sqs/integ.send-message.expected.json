@@ -64,15 +64,15 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"send message to sqs\",\"States\":{\"send message to sqs\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\n  \"StartAt\": \"send message to sqs\",\n  \"States\": {\n    \"send message to sqs\": {\n      \"Next\": \"Final step\",\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::sqs:sendMessage\",\"Parameters\":{\"QueueUrl\":\"",
+              ":states:::sqs:sendMessage\",\n      \"Parameters\": {\n        \"QueueUrl\": \"",
               {
                 "Ref": "showmethemessages8D16BBDB"
               },
-              "\",\"MessageBody\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\n        \"MessageBody\": \"sending message over\"\n      }\n    },\n    \"Final step\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  },\n  \"TimeoutSeconds\": 30\n}"
             ]
           ]
         },

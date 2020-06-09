@@ -146,28 +146,28 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}},\"Type\":\"Task\",\"Resource\":\"",
+              "{\n  \"StartAt\": \"Sum\",\n  \"States\": {\n    \"Sum\": {\n      \"Next\": \"Multiply\",\n      \"Parameters\": {\n        \"expression\": \"$.a + $.b\",\n        \"expressionAttributeValues\": {\n          \"$.a.$\": \"$.a\",\n          \"$.b.$\": \"$.b\"\n        }\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Fn::GetAtt": [
                   "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
                   "Arn"
                 ]
               },
-              "\",\"ResultPath\":\"$.c\"},\"Multiply\":{\"Next\":\"Wait\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}},\"Type\":\"Task\",\"Resource\":\"",
+              "\",\n      \"ResultPath\": \"$.c\"\n    },\n    \"Multiply\": {\n      \"Next\": \"Wait\",\n      \"Parameters\": {\n        \"expression\": \"$.c * 2\",\n        \"expressionAttributeValues\": {\n          \"$.c.$\": \"$.c\"\n        }\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Fn::GetAtt": [
                   "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
                   "Arn"
                 ]
               },
-              "\",\"ResultPath\":\"$.d\"},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Parameters\":{\"expression\":\"(new Date()).toUTCString()\",\"expressionAttributeValues\":{}},\"Type\":\"Task\",\"Resource\":\"",
+              "\",\n      \"ResultPath\": \"$.d\"\n    },\n    \"Wait\": {\n      \"Type\": \"Wait\",\n      \"SecondsPath\": \"$.d\",\n      \"Next\": \"Now\"\n    },\n    \"Now\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"expression\": \"(new Date()).toUTCString()\",\n        \"expressionAttributeValues\": {}\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"",
               {
                 "Fn::GetAtt": [
                   "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
                   "Arn"
                 ]
               },
-              "\",\"ResultPath\":\"$.now\"}}}"
+              "\",\n      \"ResultPath\": \"$.now\"\n    }\n  }\n}"
             ]
           ]
         },

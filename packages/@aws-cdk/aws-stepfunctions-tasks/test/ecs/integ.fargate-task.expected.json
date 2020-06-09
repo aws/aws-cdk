@@ -256,14 +256,14 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+              "{\n  \"StartAt\": \"Start\",\n  \"States\": {\n    \"Start\": {\n      \"Type\": \"Pass\",\n      \"Result\": {\n        \"SomeKey\": \"SomeValue\"\n      },\n      \"Next\": \"FargateTask\"\n    },\n    \"FargateTask\": {\n      \"End\": true,\n      \"Parameters\": {\n        \"Cluster\": \"",
               {
                 "Fn::GetAtt": [
                   "FargateCluster7CCD5F93",
                   "Arn"
                 ]
               },
-              "\",\"TaskDefinition\":\"",
+              "\",\n        \"TaskDefinition\": \"",
               {
                 "Ref": "TaskDef54694570"
               },
@@ -274,11 +274,11 @@
                   "GroupId"
                 ]
               },
-              "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\"\n            ]\n          }\n        },\n        \"Overrides\": {\n          \"ContainerOverrides\": [\n            {\n              \"Name\": \"TheContainer\",\n              \"Environment\": [\n                {\n                  \"Name\": \"SOME_KEY\",\n                  \"Value.$\": \"$.SomeKey\"\n                }\n              ]\n            }\n          ]\n        },\n        \"LaunchType\": \"FARGATE\"\n      },\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::ecs:runTask.sync\"}}}"
+              ":states:::ecs:runTask.sync\"\n    }\n  }\n}"
             ]
           ]
         },

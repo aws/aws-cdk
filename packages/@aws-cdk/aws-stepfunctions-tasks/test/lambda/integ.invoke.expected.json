@@ -171,29 +171,29 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Check the job state\",\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              "{\n  \"StartAt\": \"Invoke Handler\",\n  \"States\": {\n    \"Invoke Handler\": {\n      \"Next\": \"Check the job state\",\n      \"Type\": \"Task\",\n      \"OutputPath\": \"$.Payload\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              ":states:::lambda:invoke\",\n      \"Parameters\": {\n        \"FunctionName\": \"",
               {
                 "Fn::GetAtt": [
                   "submitJobLambdaEFB00F3C",
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Check the job state\":{\"Next\":\"Job Complete?\",\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              "\",\n        \"Payload.$\": \"$\"\n      }\n    },\n    \"Check the job state\": {\n      \"Next\": \"Job Complete?\",\n      \"Type\": \"Task\",\n      \"OutputPath\": \"$.Payload\",\n      \"Resource\": \"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              ":states:::lambda:invoke\",\n      \"Parameters\": {\n        \"FunctionName\": \"",
               {
                 "Fn::GetAtt": [
                   "checkJobStateLambda4618B7B7",
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"Received a status that was not 200\",\"Cause\":\"Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+              "\",\n        \"Payload.$\": \"$\"\n      }\n    },\n    \"Job Complete?\": {\n      \"Type\": \"Choice\",\n      \"Choices\": [\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"FAILED\",\n          \"Next\": \"Job Failed\"\n        },\n        {\n          \"Variable\": \"$.status\",\n          \"StringEquals\": \"SUCCEEDED\",\n          \"Next\": \"Final step\"\n        }\n      ]\n    },\n    \"Job Failed\": {\n      \"Type\": \"Fail\",\n      \"Error\": \"Received a status that was not 200\",\n      \"Cause\": \"Job Failed\"\n    },\n    \"Final step\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  },\n  \"TimeoutSeconds\": 30\n}"
             ]
           ]
         },
