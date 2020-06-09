@@ -20,9 +20,6 @@ Running against a failing dist build:
 
 ## Adding tests
 
-Older tests were written in bash; new tests should be written in
-TypeScript/Jest, that is much more comfortable to write in.
-
 Even though tests are now written in TypeScript, this does not
 conceptually change their SUT! They are still testing the CLI via
 running it as a subprocess, they are NOT reaching directly into the CLI
@@ -34,8 +31,8 @@ Compilation of the tests is done as part of the normal package build, at
 which point it is using the dependencies brought in by the containing
 `aws-cdk` package's `package.json`.
 
-When run in a non-develompent repo (as done during integ tests or canary runs),
-the required dependencies are brought in just-in-time via `test-jest.sh`. Any
+When run in a non-development repo (as done during integ tests or canary runs),
+the required dependencies are brought in just-in-time via `test.sh`. Any
 new dependencies added for the tests should be added there as well. But, better
 yet, don't add any dependencies at all. You shouldn't need to, these tests
 are simple.
