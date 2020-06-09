@@ -18,9 +18,9 @@ test('Activity can be used in a Task', () => {
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': ['', [
-        "{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Type\": \"Task\",\n      \"Resource\": \"",
+        '{\n  \"StartAt\": \"Task\",\n  \"States\": {\n    \"Task\": {\n      \"End\": true,\n      \"Type\": \"Task\",\n      \"Resource\": \"',
         { Ref: 'Activity04690B0A' },
-        "\"\n    }\n  }\n}"
+        '\"\n    }\n  }\n}',
       ]],
     },
   });
