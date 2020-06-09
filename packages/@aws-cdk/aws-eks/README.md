@@ -400,6 +400,19 @@ The ID for that security group can be retrieved after creating the cluster.
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
+### Cluster Encryption Configuration
+
+When you create an Amazon EKS cluster, envelope encryption of
+Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled. The documentation
+on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
+can provide more details about the customer master key (CMK) that can be used for the encryption.
+
+The Amazon Resource Name (ARN) for that CMK can be retrieved.
+
+```ts
+const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
+```
+
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
