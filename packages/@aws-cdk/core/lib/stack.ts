@@ -743,21 +743,6 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  /**
-   * Prepare stack
-   *
-   * Find all CloudFormation references and tell them we're consuming them.
-   *
-   * Find all dependencies as well and add the appropriate DependsOn fields.
-   */
-  protected prepare() {
-    // if this stack is a root (e.g. in unit tests), call `prepareApp` so that
-    // we resolve cross-references and nested stack assets.
-    if (!this.node.scope) {
-      prepareApp(this);
-    }
-  }
-
   protected synthesize(session: ISynthesisSession): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
@@ -849,7 +834,7 @@ export class Stack extends Construct implements ITaggable {
     // are, because we'll never Export/Fn::ImportValue them -- the only situation
     // in which Export/Fn::ImportValue would work is if the value are the same
     // between producer and consumer anyway, so we can just assume that they are).
-    const containingAssembly = Assembly.of(this);
+    const containingAssembly = Stage.of(this);
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
     const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
 
@@ -903,8 +888,8 @@ export class Stack extends Construct implements ITaggable {
    * Stage, and prefix the path components of the Stage before it.
    */
   private generateStackName() {
-    const assembly  = Assembly.of(this);
-    const prefix = (assembly && assembly.assemblyName) ? `${assembly.assemblyName}-` : '';
+    const assembly  = Stage.of(this);
+    const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
     return `${prefix}${this.generateStackId(assembly)}`;
   }
 
@@ -1080,10 +1065,10 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
-import { prepareApp } from './private/prepare-app';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 

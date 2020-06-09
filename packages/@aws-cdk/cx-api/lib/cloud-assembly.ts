@@ -284,17 +284,18 @@ export class CloudAssemblyBuilder {
   /**
    * Creates a nested cloud assembly
    */
-  public createNestedAssembly(artifactId: string) {
+  public createNestedAssembly(artifactId: string, displayName: string) {
     const directoryName = artifactId;
     const innerAsmDir = path.join(this.outdir, directoryName);
 
-    // WHEN
     this.addArtifact(artifactId, {
       type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
       properties: {
         directoryName,
+        displayName,
       } as cxschema.NestedCloudAssemblyProperties,
     });
+
     return new CloudAssemblyBuilder(innerAsmDir);
   }
 }

@@ -15,8 +15,28 @@ export = {
     const stack2 = new Stack(stage, 'Stack2', { env: { account: 'tnuocca' } });
 
     // THEN
-    test.deepEqual([stack1.account, stack1.region], ['account', 'elsewhere']);
-    test.deepEqual([stack2.account, stack2.region], ['tnuocca', 'region']);
+    test.deepEqual(acctRegion(stack1), ['account', 'elsewhere']);
+    test.deepEqual(acctRegion(stack2), ['tnuocca', 'region']);
+
+    test.done();
+  },
+
+  'envs are inherited deeply'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const outer = new Stage(app, 'Stage', {
+      env: { account: 'account', region: 'region' },
+    });
+
+    // WHEN
+    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' }});
+    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' }});
+    const innerNeither = new Stage(outer, 'Neither');
+
+    // THEN
+    test.deepEqual(acctRegion(new Stack(innerAcct, 'Stack')), ['tnuocca', 'region']);
+    test.deepEqual(acctRegion(new Stack(innerRegion, 'Stack')), ['account', 'elsewhere']);
+    test.deepEqual(acctRegion(new Stack(innerNeither, 'Stack')), ['account', 'region']);
 
     test.done();
   },
@@ -62,8 +82,8 @@ export = {
 
     // WHEN
     const appAsm = app.synth();
-    const outerAsm = appAsm.getNestedAssembly(outer.assemblyArtifactId);
-    const innerAsm = outerAsm.getNestedAssembly(inner.assemblyArtifactId);
+    const outerAsm = appAsm.getNestedAssembly(outer.artifactId);
+    const innerAsm = outerAsm.getNestedAssembly(inner.artifactId);
 
     test.ok(innerAsm.tryGetArtifact(stack.artifactId));
 
@@ -234,7 +254,7 @@ export = {
     test.done();
   },
 
-  'assembly/stage name validation'(test: Test) {
+  'stage name validation'(test: Test) {
     const app = new App();
 
     new Stage(app, 'abcd');
@@ -243,12 +263,21 @@ export = {
     new Stage(app, 'abcd123-588dfjjk.sss');
     new Stage(app, 'abcd123-588dfjjk.sss_ajsid');
 
-    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid '), /invalid assembly name "abcd123-588dfjjk.sss_ajsid "/);
-    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo'), /invalid assembly name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
-    test.throws(() => new Stage(app, '&'), /invalid assembly name "&"/);
-    test.throws(() => new Stage(app, '45hello'), /invalid assembly name "45hello"/);
-    test.throws(() => new Stage(app, 'f'), /invalid assembly name "f"/);
+    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid '), /invalid stage name "abcd123-588dfjjk.sss_ajsid "/);
+    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo'), /invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
+    test.throws(() => new Stage(app, '&'), /invalid stage name "&"/);
+    test.throws(() => new Stage(app, '45hello'), /invalid stage name "45hello"/);
+    test.throws(() => new Stage(app, 'f'), /invalid stage name "f"/);
 
+    test.done();
+  },
+
+  'outdir cannot be specified for nested stages'(test: Test) {
+    // WHEN
+    const app = new App();
+
+    // THEN
+    test.throws(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' }), /"outdir" cannot be specified for nested stages/);
     test.done();
   },
 };
@@ -268,4 +297,8 @@ class BogusStack extends Stack {
       type: 'CDK::Test::Resource',
     });
   }
+}
+
+function acctRegion(s: Stack) {
+  return [s.account, s.region];
 }
