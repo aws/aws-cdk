@@ -9,7 +9,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 /**
  * Basic properties for ECS Tasks
  */
-export interface EcsRunTaskCommonProps {
+export interface EcsRunTaskCommonProps extends sfn.TaskStateBaseProps {
   /**
    * The topic to run the task on
    */
@@ -37,21 +37,20 @@ export interface EcsRunTaskCommonProps {
 /**
  * Construction properties for the BaseRunTaskProps
  */
-export interface EcsRunTaskStateBaseProps extends EcsRunTaskCommonProps, sfn.TaskStateBaseProps {
+export interface EcsRunTaskStateBaseProps extends EcsRunTaskCommonProps {
   /**
    * Additional parameters to pass to the base task
    *
    * @default - No additional parameters passed
    */
-  readonly parameters?: {[key: string]: any};
+  readonly parameters?: { [key: string]: any };
 }
 
 /**
  * Run a Task on ECS or Fargate
  */
-export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConnectable {
-
-  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+export abstract class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConnectable {
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -75,8 +74,7 @@ export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConne
 
     validatePatternSupported(this.integrationPattern, EcsRunTaskStateBase.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
+    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
       throw new Error('Task Token is required in `containerOverrides` for callback. Use Context.taskToken to set the token.');
     }
 
@@ -93,7 +91,7 @@ export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConne
     this.taskPolicies = this.makePolicyStatements();
   }
 
-  public renderTask(): any {
+  protected renderTask(): any {
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       this.securityGroup = this.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
@@ -116,8 +114,8 @@ export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConne
     vpc: ec2.IVpc,
     assignPublicIp?: boolean,
     subnetSelection?: ec2.SubnetSelection,
-    securityGroup?: ec2.ISecurityGroup) {
-
+    securityGroup?: ec2.ISecurityGroup,
+  ) {
     if (subnetSelection === undefined) {
       subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
@@ -149,19 +147,23 @@ export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConne
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
+        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map((r) => r.roleArn) }),
       }),
     ];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForECSTaskRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForECSTaskRule',
+            }),
+          ],
+        }),
+      );
     }
 
     return policyStatements;
@@ -179,7 +181,9 @@ export class EcsRunTaskStateBase extends sfn.TaskStateBase implements ec2.IConne
 }
 
 function renderOverrides(containerOverrides?: ContainerOverride[]) {
-  if (!containerOverrides) { return undefined; }
+  if (!containerOverrides) {
+    return undefined;
+  }
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
@@ -189,10 +193,12 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
       Cpu: override.cpu,
       Memory: override.memoryLimit,
       MemoryReservation: override.memoryReservation,
-      Environment: override.environment && override.environment.map(e => ({
-        Name: e.name,
-        Value: e.value,
-      })),
+      Environment:
+        override.environment &&
+        override.environment.map((e) => ({
+          Name: e.name,
+          Value: e.value,
+        })),
     });
   }
 

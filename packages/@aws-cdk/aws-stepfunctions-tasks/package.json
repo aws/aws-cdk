@@ -113,7 +113,10 @@
   "stability": "experimental",
   "maturity": "experimental",
   "awslint": {
-    "exclude": []
+    "exclude": [
+      "ref-via-interface:@aws-cdk/aws-stepfunctions-tasks.EcsEc2RunTaskProps.taskDefinition",
+      "ref-via-interface:@aws-cdk/aws-stepfunctions-tasks.EcsFargateRunTaskProps.taskDefinition"
+    ]
   },
   "awscdkio": {
     "announce": false
