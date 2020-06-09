@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { EmrCreateCluster } from '../emr-create-cluster';
+import { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
 
 /**
  * Render the KerberosAttributesProperty as JSON
@@ -270,5 +271,44 @@ export function BootstrapActionConfigToJson(property: EmrCreateCluster.Bootstrap
       Path: cdk.stringToCloudFormation(property.scriptBootstrapAction.path),
       Args: cdk.listMapper(cdk.stringToCloudFormation)(property.scriptBootstrapAction.args),
     },
+  };
+}
+
+/**
+ * Render the InstanceGroupModifyConfigProperty to JSON
+ *
+ * @param property
+ */
+export function InstanceGroupModifyConfigPropertyToJson(property: EmrModifyInstanceGroupByName.InstanceGroupModifyConfigProperty) {
+  return {
+    Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
+    EC2InstanceIdsToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.eC2InstanceIdsToTerminate),
+    InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
+    ShrinkPolicy: property.shrinkPolicy === undefined ? property.shrinkPolicy : ShrinkPolicyPropertyToJson(property.shrinkPolicy),
+  };
+}
+
+/**
+ * Render the ShrinkPolicyProperty to JSON
+ *
+ * @param property
+ */
+function ShrinkPolicyPropertyToJson(property: EmrModifyInstanceGroupByName.ShrinkPolicyProperty) {
+  return {
+    DecommissionTimeout: cdk.numberToCloudFormation(property.decommissionTimeout?.toSeconds()),
+    InstanceResizePolicy: property.instanceResizePolicy ? InstanceResizePolicyPropertyToJson(property.instanceResizePolicy) : undefined,
+  };
+}
+
+/**
+ * Render the InstanceResizePolicyProperty to JSON
+ *
+ * @param property
+ */
+function InstanceResizePolicyPropertyToJson(property: EmrModifyInstanceGroupByName.InstanceResizePolicyProperty) {
+  return {
+    InstancesToProtect: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToProtect),
+    InstancesToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToTerminate),
+    InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds()),
   };
 }

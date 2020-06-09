@@ -3,10 +3,10 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
-  InstancesConfigPropertyToJson,
-  BootstrapActionConfigToJson,
   ApplicationConfigPropertyToJson,
+  BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
+  InstancesConfigPropertyToJson,
   KerberosAttributesPropertyToJson,
 } from './private/cluster-utils';
 

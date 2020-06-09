@@ -41,7 +41,7 @@ export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
     ];
   }
 
-  public renderTask(): any {
+  protected renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
         sfn.IntegrationPattern.REQUEST_RESPONSE),
