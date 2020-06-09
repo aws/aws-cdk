@@ -37,6 +37,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [UpdateItem](#updateitem)
 - [ECS](#ecs)
   - [RunTask](#runtask)
+    - [EC2](#ec2)
+    - [Fargate](#fargate)
 - [EMR](#emr)
   - [Create Cluster](#create-cluster)
   - [Termination Protection](#termination-protection)
@@ -327,6 +329,31 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
+#### EC2
+
+The following example runs a job from a task definition on EC2
+
+```ts
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+  },],
+});
+```
+
 #### Fargate
 
 The following example runs a job from a task definition on Fargate
@@ -356,31 +383,6 @@ const runTask = new tasks.EcsFargateRunTask(stack, 'RunFargate', {
     containerName: 'TheContainer',
     environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
   }],
-});
-```
-
-#### EC2
-
-The following example runs a job from a task definition on EC2
-
-```ts
-const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-  compatibility: ecs.Compatibility.EC2,
-});
-
-taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromRegistry('foo/bar'),
-  memoryLimitMiB: 256,
-});
-
-const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
-  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  cluster,
-  taskDefinition,
-  containerOverrides: [{
-    containerName: 'TheContainer',
-    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
-  },],
 });
 ```
 
