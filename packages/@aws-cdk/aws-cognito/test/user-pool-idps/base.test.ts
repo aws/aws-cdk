@@ -34,7 +34,7 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'UserPool');
 
       // WHEN
-      const idp = new MyIdp(stack, 'MyIdp1', {
+      const idp = new MyIdp(stack, 'MyIdp', {
         userPool: pool,
         attributeMapping: {
           givenName: ProviderAttribute.FACEBOOK_NAME,
@@ -55,7 +55,7 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'UserPool');
 
       // WHEN
-      const idp = new MyIdp(stack, 'MyIdp1', {
+      const idp = new MyIdp(stack, 'MyIdp', {
         userPool: pool,
         attributeMapping: {
           custom: {
@@ -78,7 +78,7 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'UserPool');
 
       // WHEN
-      const idp = new MyIdp(stack, 'MyIdp1', {
+      const idp = new MyIdp(stack, 'MyIdp', {
         userPool: pool,
         attributeMapping: {
           address: ProviderAttribute.custom('custom-provider-attr'),
