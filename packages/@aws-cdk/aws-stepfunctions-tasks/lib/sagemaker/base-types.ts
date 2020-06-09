@@ -622,7 +622,7 @@ export interface TransformResources {
    *
    * @default - None
    */
-  readonly volumeKmsKeyId?: kms.IKey;
+  readonly volumeEncryptionKey?: kms.IKey;
 }
 
 /**

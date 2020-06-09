@@ -200,7 +200,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       TransformResources: {
         InstanceCount: resources.instanceCount,
         InstanceType: 'ml.' + resources.instanceType,
-        ...(resources.volumeKmsKeyId ? { VolumeKmsKeyId: resources.volumeKmsKeyId.keyArn } : {}),
+        ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };
   }

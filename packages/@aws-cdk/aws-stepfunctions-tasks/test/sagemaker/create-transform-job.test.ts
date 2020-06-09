@@ -119,7 +119,7 @@ test('create complex transform job', () => {
     transformResources: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeKmsKeyId: kmsKey,
+      volumeEncryptionKey: kmsKey,
     },
     tags: {
       Project: 'MyProject',
