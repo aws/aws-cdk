@@ -367,9 +367,26 @@ const provider = new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
 });
 ```
 
-In order to allow users to sign in with a third-party identity provider, the app client that faces the user should be
-configured to use the identity provider. See [App Clients](#app-clients) section to know more about App Clients.
-The identity providers should be configured on `identityProviders` property available on the `UserPoolClient` construct.
+Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
+attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
+User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
+
+The following code shows how different attributes provided by 'Login With Amazon' can be mapped to standard and custom
+user pool attributes.
+
+```ts
+new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
+  // ...
+  attributeMapping: {
+    email: ProviderAttribute.AMAZON_EMAIL,
+    website: ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
+    custom: {
+      // custom user pool attributes go here
+      uniqueId: ProviderAttribute.AMAZON_USER_ID,
+    }
+  }
+});
+```
 
 ### App Clients
 
@@ -456,7 +473,7 @@ pool.addClient('app-client', {
 
 All identity providers created in the CDK app are automatically registered into the corresponding user pool. All app
 clients created in the CDK have all of the identity providers enabled by default. The 'Cognito' identity provider,
-that allows users to register and sign in directly with the Cognito user pool, is also enabled by default. 
+that allows users to register and sign in directly with the Cognito user pool, is also enabled by default.
 Alternatively, the list of supported identity providers for a client can be explicitly specified -
 
 ```ts
