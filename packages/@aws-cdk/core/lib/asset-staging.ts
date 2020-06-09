@@ -77,11 +77,7 @@ export class AssetStaging extends Construct {
       this.bundleDir = this.bundle(props.bundling);
     }
 
-    if (props.assetHash && props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
-      throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
-    }
-    const hashType = props.assetHash ? AssetHashType.CUSTOM : props.assetHashType ?? AssetHashType.SOURCE;
-    this.assetHash = this.calculateHash(hashType, props.assetHash);
+    this.assetHash = this.calculateHash(props);
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
@@ -174,7 +170,20 @@ export class AssetStaging extends Construct {
     return bundleDir;
   }
 
-  private calculateHash(hashType: AssetHashType, assetHash?: string): string {
+  private calculateHash(props: AssetStagingProps): string {
+    let hashType: AssetHashType;
+
+    if (props.assetHash) {
+      if (props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
+        throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+      }
+      hashType = AssetHashType.CUSTOM;
+    } else if (props.assetHashType) {
+      hashType = props.assetHashType;
+    } else {
+      hashType = AssetHashType.SOURCE;
+    }
+
     switch (hashType) {
       case AssetHashType.SOURCE:
         return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
@@ -184,10 +193,10 @@ export class AssetStaging extends Construct {
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
       case AssetHashType.CUSTOM:
-        if (!assetHash) {
+        if (!props.assetHash) {
           throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
         }
-        return assetHash;
+        return props.assetHash;
       default:
         throw new Error('Unknown asset hash type.');
     }
