@@ -1,15 +1,16 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
 import { EmrCreateCluster } from './emr-create-cluster';
+import { integrationResourceArn } from '../private/task-utils';
+import { ConfigurationPropertyToJson } from './private/cluster-utils';
 
 /**
  * Properties for EmrModifyInstanceGroupByName
  *
  * @experimental
  */
-export interface EmrModifyInstanceGroupByNameProps {
+export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to update.
    */
@@ -35,28 +36,33 @@ export interface EmrModifyInstanceGroupByNameProps {
  *
  * @experimental
  */
-export class EmrModifyInstanceGroupByName implements sfn.IStepFunctionsTask {
+export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
 
-  constructor(private readonly props: EmrModifyInstanceGroupByNameProps) {}
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  constructor(scope: cdk.Construct, id: string, private readonly props: EmrModifyInstanceGroupByNameProps) {
+    super(scope, id, props);
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        actions: [
+          'elasticmapreduce:ModifyInstanceGroups',
+          'elasticmapreduce:ListInstanceGroups',
+        ],
+        resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+      }),
+    ];
+  }
+
+  protected renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'modifyInstanceGroupByName',
-        sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
-      policyStatements: [
-        new iam.PolicyStatement({
-          actions: [
-            'elasticmapreduce:ModifyInstanceGroups',
-            'elasticmapreduce:ListInstanceGroups',
-          ],
-          resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
-        }),
-      ],
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName',
+        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         InstanceGroupName: this.props.instanceGroupName,
         InstanceGroup: EmrModifyInstanceGroupByName.InstanceGroupModifyConfigPropertyToJson(this.props.instanceGroup),
-      },
+      }),
     };
   }
 }
@@ -188,7 +194,7 @@ export namespace EmrModifyInstanceGroupByName {
    */
   export function InstanceGroupModifyConfigPropertyToJson(property: InstanceGroupModifyConfigProperty) {
     return {
-      Configurations: cdk.listMapper(EmrCreateCluster.ConfigurationPropertyToJson)(property.configurations),
+      Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
       EC2InstanceIdsToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.eC2InstanceIdsToTerminate),
       InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
       ShrinkPolicy: (property.shrinkPolicy === undefined) ?

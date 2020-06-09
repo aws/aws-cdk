@@ -180,10 +180,9 @@ test('Create Cluster with Tags', () => {
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    tags: [{
-      key: 'Key',
-      value: 'Value',
-    }],
+    tags: {
+      key: 'value',
+    },
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -219,8 +218,8 @@ test('Create Cluster with Tags', () => {
         Ref: 'AutoScalingRole015ADA0A',
       },
       Tags: [{
-        Key: 'Key',
-        Value: 'Value',
+        Key: 'key',
+        Value: 'value',
       }],
     },
   });
@@ -660,7 +659,7 @@ test('Create Cluster with InstanceFleet', () => {
             ebsBlockDeviceConfigs: [{
               volumeSpecification: {
                 iops: 1,
-                sizeInGB: 1,
+                volumeSize: cdk.Size.gibibytes(1),
                 volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
               },
               volumesPerInstance: 1,
@@ -784,7 +783,7 @@ test('Create Cluster with InstanceGroup', () => {
                   key: 'Key',
                   value: 'Value',
                 }],
-                evalutionPeriods: 1,
+                evaluationPeriods: 1,
                 metricName: 'Name',
                 namespace: 'Namespace',
                 period: cdk.Duration.seconds(300),
@@ -811,7 +810,7 @@ test('Create Cluster with InstanceGroup', () => {
                   key: 'Key',
                   value: 'Value',
                 }],
-                evalutionPeriods: 1,
+                evaluationPeriods: 1,
                 metricName: 'Name',
                 namespace: 'Namespace',
                 period: cdk.Duration.seconds(sfn.Data.numberAt('$.CloudWatchPeriod')),
@@ -833,7 +832,7 @@ test('Create Cluster with InstanceGroup', () => {
           ebsBlockDeviceConfigs: [{
             volumeSpecification: {
               iops: 1,
-              sizeInGB: 1,
+              volumeSize: cdk.Size.gibibytes(1),
               volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
             },
             volumesPerInstance: 1,
