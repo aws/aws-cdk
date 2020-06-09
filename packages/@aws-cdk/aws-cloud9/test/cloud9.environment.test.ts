@@ -1,4 +1,5 @@
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
@@ -66,4 +67,41 @@ test('throw error when subnetSelection not specified and the provided VPC has no
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
     });
   }).toThrow(/no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection/);
+});
+
+test('can use CodeCommit repositories', () => {
+  // WHEN
+  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    clonedRepositories: [
+      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
+    ],
+  });
+  // THEN
+  expectCDK(stack).to(haveResourceLike('AWS::Cloud9::EnvironmentEC2', {
+    InstanceType: 't2.micro',
+    Repositories: [
+      {
+        PathComponent: '/src',
+        RepositoryUrl: {
+          'Fn::Join': [
+            '',
+            [
+              'https://git-codecommit.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+              '/v1/repos/foo',
+            ],
+          ],
+        },
+      },
+    ],
+  }));
 });
