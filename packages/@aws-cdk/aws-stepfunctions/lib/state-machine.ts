@@ -219,7 +219,7 @@ export class StateMachine extends StateMachineBase {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
-      definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
+      definitionString: Stack.of(this).toJsonString(graph.toGraphJson(), 2),
       loggingConfiguration,
     });
 

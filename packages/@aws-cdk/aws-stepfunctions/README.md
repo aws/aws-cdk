@@ -97,7 +97,8 @@ State machines execute using an IAM Role, which will automatically have all
 permissions added that are required to make all state machine tasks execute
 properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
-existing one as well.
+existing one as well.State definition will be generated with proper formatting
+inside generated cloudformation.
 
 ## Amazon States Language
 

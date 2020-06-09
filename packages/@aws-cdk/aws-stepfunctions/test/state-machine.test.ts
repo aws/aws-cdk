@@ -17,7 +17,7 @@ describe('State Machine', () => {
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
   }),
 
@@ -36,7 +36,7 @@ describe('State Machine', () => {
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
 
   }),
@@ -56,7 +56,7 @@ describe('State Machine', () => {
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'EXPRESS',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
 
   }),
@@ -79,7 +79,7 @@ describe('State Machine', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
       LoggingConfiguration: {
         Destinations: [{
           CloudWatchLogsLogGroup: {
