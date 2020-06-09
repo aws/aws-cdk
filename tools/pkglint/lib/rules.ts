@@ -1249,7 +1249,7 @@ function isJSII(pkg: PackageJson): boolean {
  * @param pkg
  */
 function isAWS(pkg: PackageJson): boolean {
-  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+  return pkg.json['cdk-build']?.cloudformation != null;
 }
 
 /**
