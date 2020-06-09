@@ -267,7 +267,7 @@
               {
                 "Ref": "TaskDef54694570"
               },
-              "\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"subnet-e19455ca\",\"subnet-e0c24797\",\"subnet-ccd77395\"],\"SecurityGroups\":[\"",
+              "\",\n        \"NetworkConfiguration\": {\n          \"AwsvpcConfiguration\": {\n            \"AssignPublicIp\": \"ENABLED\",\n            \"Subnets\": [\n              \"subnet-e19455ca\",\n              \"subnet-e0c24797\",\n              \"subnet-ccd77395\"\n            ],\n            \"SecurityGroups\": [\n              \"",
               {
                 "Fn::GetAtt": [
                   "FargateTaskSecurityGroup0BBB27CB",
