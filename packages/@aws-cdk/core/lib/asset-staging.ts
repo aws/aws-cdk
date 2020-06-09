@@ -140,10 +140,6 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private fingerprint(fileOrDirectory: string) {
-    return FileSystem.fingerprint(fileOrDirectory, this.fingerprintOptions);
-  }
-
   private bundle(options: BundlingOptions): string {
     // Create temporary directory for bundling
     const bundleDir = fs.mkdtempSync(path.resolve(path.join(os.tmpdir(), 'cdk-asset-bundle-')));
@@ -181,14 +177,14 @@ export class AssetStaging extends Construct {
 
   private calculateHash(hashType: AssetHashType, assetHash?: string): string {
     if (hashType === AssetHashType.SOURCE) {
-      return this.fingerprint(this.sourcePath);
+      return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
     }
 
     if (hashType === AssetHashType.BUNDLE) {
       if (!this.bundleDir) {
         throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
       }
-      return this.fingerprint(this.bundleDir);
+      return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
     }
 
     if (hashType === AssetHashType.CUSTOM) {
