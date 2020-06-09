@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolIdentityProviderAmazon } from '../../lib';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderAmazon } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('amazon', () => {
@@ -65,6 +65,37 @@ describe('UserPoolIdentityProvider', () => {
 
       // THEN
       expect(pool.identityProviders).toContain(provider);
+    });
+
+    test('attribute mapping', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderAmazon(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'amazn-client-id',
+        clientSecret: 'amzn-client-secret',
+        attributeMapping: {
+          givenName: ProviderAttribute.AMAZON_NAME,
+          address: ProviderAttribute.other('amzn-address'),
+          custom: {
+            customAttr1: ProviderAttribute.AMAZON_EMAIL,
+            customAttr2: ProviderAttribute.other('amzn-custom-attr'),
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPoolIdentityProvider', {
+        AttributeMapping: {
+          given_name: 'name',
+          address: 'amzn-address',
+          customAttr1: 'email',
+          customAttr2: 'amzn-custom-attr',
+        },
+      });
     });
   });
 });

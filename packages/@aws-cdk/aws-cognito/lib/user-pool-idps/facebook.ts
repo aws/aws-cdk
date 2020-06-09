@@ -50,6 +50,7 @@ export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBa
         authorize_scopes: scopes.join(','),
         api_version: props.apiVersion,
       },
+      attributeMapping: super.configureAttributeMapping(),
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);

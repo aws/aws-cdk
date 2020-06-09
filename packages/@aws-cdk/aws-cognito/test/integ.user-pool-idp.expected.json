@@ -108,6 +108,11 @@
         "UserPoolId": {
           "Ref": "pool056F3F7E"
         },
+        "AttributeMapping": {
+          "given_name": "name",
+          "email": "email",
+          "userId": "user_id"
+        },
         "ProviderDetails": {
           "client_id": "amzn-client-id",
           "client_secret": "amzn-client-secret",
