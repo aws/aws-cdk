@@ -114,6 +114,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
       ...props,
       sourcePath: path.resolve(props.path),
       follow: toSymlinkFollow(props.follow),
+      assetHash: props.assetHash ?? props.sourceHash,
     });
 
     this.assetHash = staging.assetHash;
