@@ -207,13 +207,20 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data,
-          ClusterSecurityGroupId: cluster.resourcesVpcConfig?.clusterSecurityGroupId,
+
+          // IMPORTANT: CFN expects that attributes will *always* have values,
+          // so return an empty string in case the value is not defined.
+          // Otherwise, CFN will throw with `Vendor response doesn't contain
+          // XXXX key`.
+
+          CertificateAuthorityData: cluster.certificateAuthority?.data ?? '',
+          ClusterSecurityGroupId: cluster.resourcesVpcConfig?.clusterSecurityGroupId ?? '',
+          OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer ?? '',
+          OpenIdConnectIssuer: cluster.identity?.oidc?.issuer?.substring(8) ?? '', // Strips off https:// from the issuer url
+
           // We can safely return the first item from encryption configuration array, because it has a limit of 1 item
           // https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#AmazonEKS-CreateCluster-request-encryptionConfig
-          EncryptionConfigKeyArn: cluster.encryptionConfig?.shift()?.provider?.keyArn,
-          OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer,
-          OpenIdConnectIssuer: cluster.identity?.oidc?.issuer?.substring(8), // Strips off https:// from the issuer url
+          EncryptionConfigKeyArn: cluster.encryptionConfig?.shift()?.provider?.keyArn ?? '',
         },
       };
     }

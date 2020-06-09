@@ -119,6 +119,13 @@ export class ClusterResource extends Construct {
       properties: {
         Config: props,
         AssumeRoleArn: this.creationRole.roleArn,
+
+        // IMPORTANT: increment this number when you add new attributes to the
+        // resource. Otherwise, CloudFormation will error with "Vendor response
+        // doesn't contain XXX key in object" (see #8276) by incrementing this
+        // number, you will effectively cause a "no-op update" to the cluster
+        // which will return the new set of attribute.
+        AttributesRevision: 2,
       },
     });
 
