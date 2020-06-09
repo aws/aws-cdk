@@ -16,6 +16,7 @@ export interface EcsRunTaskCommonProps extends sfn.TaskStateBaseProps {
   readonly cluster: ecs.ICluster;
 
   /**
+   * [disable-awslint:ref-via-interface]
    * Task Definition used for running tasks in the service.
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,

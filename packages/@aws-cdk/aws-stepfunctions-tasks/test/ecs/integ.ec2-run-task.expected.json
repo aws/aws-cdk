@@ -708,5 +708,12 @@
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
   }
 }

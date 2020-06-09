@@ -294,5 +294,12 @@
         "StateMachineRoleB840431D"
       ]
     }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
   }
 }

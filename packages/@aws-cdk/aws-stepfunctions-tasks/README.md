@@ -327,31 +327,60 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
+#### Fargate
+
+The following example runs a job from a task definition on Fargate
+
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
 
-new ecs.RunEcsFargateTask({
-  cluster,
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
-        {
-          name: 'CONTAINER_INPUT',
-          value: Data.stringAt('$.valueFromStateData'),
-        }
-      ]
-    }
-  ]
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
 });
 
-fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
 
-new sfn.Task(this, 'CallFargate', {
-  task: fargateTask
+const runTask = new tasks.EcsFargateRunTask(stack, 'RunFargate', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+  }],
+});
+```
+
+#### EC2
+
+The following example runs a job from a task definition on EC2
+
+```ts
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+  },],
 });
 ```
 

@@ -5,6 +5,16 @@ import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as tasks from '../../lib';
 
+/*
+ * Creates a state machine with a task state to run a job with ECS on Fargate
+ *
+ * Stack verification steps:
+ * The generated State Machine can be executed from the CLI (or Step Functions console)
+ * and runs with an execution status of `Succeeded`.
+ *
+ * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
+ * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
+ */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-integ', {
   env: {
@@ -53,8 +63,12 @@ const definition = new sfn.Pass(stack, 'Start', {
   }),
 );
 
-new sfn.StateMachine(stack, 'StateMachine', {
+const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition,
+});
+
+new cdk.CfnOutput(stack, 'stateMachineArn', {
+  value: sm.stateMachineArn,
 });
 
 app.synth();
