@@ -170,7 +170,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'TOKEN',
-      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
+      authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
@@ -232,7 +232,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'REQUEST',
-      authorizerUri: `arn:aws:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${props.handler.functionArn}/invocations`,
+      authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
@@ -247,4 +247,11 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
     this.setupPermissions();
   }
+}
+
+/**
+ * constructs the authorizerURIArn.
+ */
+function lambdaAuthorizerArn(handler: lambda.IFunction) {
+  return `arn:${Stack.of(handler).partition}:apigateway:${Stack.of(handler).region}:lambda:path/2015-03-31/functions/${handler.functionArn}/invocations`;
 }

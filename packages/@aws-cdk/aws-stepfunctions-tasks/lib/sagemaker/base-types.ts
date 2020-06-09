@@ -5,13 +5,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Construct, Duration, Size } from '@aws-cdk/core';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
  * @experimental
  */
-export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}
+export interface ISageMakerTask extends iam.IGrantable {}
 
 /**
  * Specify the training algorithm and algorithm-specific metadata
@@ -230,7 +230,7 @@ export interface ResourceConfig {
    *
    * @default 10 GB EBS volume.
    */
-  readonly volumeSizeInGB: number;
+  readonly volumeSize: Size;
 }
 
 /**
@@ -622,7 +622,7 @@ export interface TransformResources {
    *
    * @default - None
    */
-  readonly volumeKmsKeyId?: kms.Key;
+  readonly volumeEncryptionKey?: kms.IKey;
 }
 
 /**

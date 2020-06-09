@@ -242,7 +242,7 @@ export = {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      kmsKey: new kms.Key(stack, 'Key'),
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
     });
 
     // THEN

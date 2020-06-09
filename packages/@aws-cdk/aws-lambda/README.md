@@ -32,7 +32,8 @@ runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
-   filesystem which will be zipped and uploaded to S3 before deployment.
+   filesystem which will be zipped and uploaded to S3 before deployment. See also
+   [bundling asset code](#Bundling-Asset-Code).
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -62,7 +63,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  
+
 fn.role // the Role
 ```
 
@@ -286,6 +287,53 @@ number of times and with different properties. Using `SingletonFunction` here wi
 
 For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
 retention it seeks to manage.
+
+### Bundling Asset Code
+When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
+command in a Docker container. The asset path will be mounted at `/asset-input`. The
+Docker container is responsible for putting content at `/asset-output`. The content at
+`/asset-output` will be zipped and used as Lambda code.
+
+Example with Python:
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    bundling: {
+      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+      command: [
+        'bash', '-c', `
+        pip install -r requirements.txt -t /asset-output &&
+        rsync -r . /asset-output
+        `,
+      ],
+    },
+  }),
+  runtime: lambda.Runtime.PYTHON_3_6,
+  handler: 'index.handler',
+});
+```
+Runtimes expose a `bundlingDockerImage` property that points to the [lambci/lambda](https://hub.docker.com/r/lambci/lambda/) build image.
+
+Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
+`cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
+
+```ts
+import * as cdk from '@aws-cdk/core';
+
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset('/path/to/handler', {
+    bundling: {
+      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+        buildArgs: {
+          ARG1: 'value1',
+        },
+      }),
+      command: ['my', 'cool', 'command'],
+    },
+  }),
+  // ...
+});
+```
 
 ### Language-specific APIs
 Language-specific higher level constructs are provided in separate modules:

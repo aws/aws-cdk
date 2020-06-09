@@ -1,5 +1,7 @@
 /**
  * Common interface for all assets.
+ *
+ * @deprecated use `core.IAsset`
  */
 export interface IAsset {
   /**

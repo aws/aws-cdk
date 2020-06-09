@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import { CopyOptions, FingerprintOptions } from './options';
@@ -32,5 +33,14 @@ export class FileSystem {
    */
   public static fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
     return fingerprint(fileOrDirectory, options);
+  }
+
+  /**
+   * Checks whether a directory is empty
+   *
+   * @param dir The directory to check
+   */
+  public static isEmpty(dir: string): boolean {
+    return fs.readdirSync(dir).length === 0;
   }
 }

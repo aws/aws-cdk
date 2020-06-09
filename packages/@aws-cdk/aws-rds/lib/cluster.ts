@@ -88,19 +88,19 @@ export interface DatabaseClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Whether to enable storage encryption
+   * Whether to enable storage encryption.
    *
-   * @default false
+   * @default - true if storageEncryptionKey is provided, false otherwise
    */
   readonly storageEncrypted?: boolean
 
   /**
-   * The KMS key for storage encryption. If specified `storageEncrypted`
-   * will be set to `true`.
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
    *
-   * @default - default master key.
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
-  readonly kmsKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKey;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -369,7 +369,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
-        encryptionKey: props.masterUser.kmsKey,
+        encryptionKey: props.masterUser.encryptionKey,
       });
     }
 
@@ -460,8 +460,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
     // if removalPolicy was not specified,
