@@ -16,7 +16,7 @@ describe('State Machine', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-      StateMachineName: 'MyStateMachine',
+      StateMachineName: 'MyStateMachine', // tslint:disable-line max-line-length
       DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
   }),
@@ -35,7 +35,7 @@ describe('State Machine', () => {
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
-      StateMachineType: 'STANDARD',
+      StateMachineType: 'STANDARD', // tslint:disable-line max-line-length
       DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
 
@@ -55,7 +55,7 @@ describe('State Machine', () => {
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
-      StateMachineType: 'EXPRESS',
+      StateMachineType: 'EXPRESS', // tslint:disable-line max-line-length
       DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
     });
 
@@ -79,6 +79,7 @@ describe('State Machine', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+      // tslint:disable-line max-line-length
       DefinitionString: '{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"End\": true\n    }\n  }\n}',
       LoggingConfiguration: {
         Destinations: [{
