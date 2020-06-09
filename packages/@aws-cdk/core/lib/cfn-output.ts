@@ -69,9 +69,9 @@ export class CfnOutput extends CfnElement {
           Description: this._description,
           Value: this._value,
           Export: this._export != null ? { Name: this._export } : undefined,
-          Condition: this._condition ? this._condition.logicalId : undefined
-        }
-      }
+          Condition: this._condition ? this._condition.logicalId : undefined,
+        },
+      },
     };
   }
 }

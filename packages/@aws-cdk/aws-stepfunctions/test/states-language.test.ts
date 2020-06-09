@@ -14,8 +14,8 @@ describe('States Language', () => {
     expect(render(chain)).toStrictEqual({
       StartAt: 'Some State',
       States: {
-        'Some State': { Type: 'Pass', End: true }
-      }
+        'Some State': { Type: 'Pass', End: true },
+      },
     });
   }),
 
@@ -37,7 +37,7 @@ describe('States Language', () => {
       States: {
         'State One': { Type: 'Pass', Next: 'State Two' },
         'State Two': { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -56,7 +56,7 @@ describe('States Language', () => {
       States: {
         'State One': { Type: 'Pass', Next: 'State Two' },
         'State Two': { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -81,7 +81,7 @@ describe('States Language', () => {
         'State One': { Type: 'Pass', Next: 'State Two' },
         'State Two': { Type: 'Pass', Next: 'State Three' },
         'State Three': { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -92,7 +92,7 @@ describe('States Language', () => {
     const task1 = new stepfunctions.Pass(stack, 'State One');
     const task2 = new stepfunctions.Pass(stack, 'State Two');
     const task3 = new stepfunctions.Wait(stack, 'State Three', {
-      time: stepfunctions.WaitTime.duration(cdk.Duration.seconds(10))
+      time: stepfunctions.WaitTime.duration(cdk.Duration.seconds(10)),
     });
 
     // WHEN
@@ -107,7 +107,7 @@ describe('States Language', () => {
         'State One': { Type: 'Pass', Next: 'State Two' },
         'State Two': { Type: 'Pass', Next: 'State Three' },
         'State Three': { Type: 'Wait', End: true, Seconds: 10 },
-      }
+      },
     });
 
   }),
@@ -130,12 +130,12 @@ describe('States Language', () => {
           Choices: [
             { Variable: '$.branch', StringEquals: 'left', Next: 'Left Branch' },
             { Variable: '$.branch', StringEquals: 'right', Next: 'Right Branch' },
-          ]
+          ],
         },
         'Left Branch': { Type: 'Pass', Next: 'After' },
         'Right Branch': { Type: 'Pass', Next: 'After' },
         'After': { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -186,17 +186,17 @@ describe('States Language', () => {
               States: {
                 One: { Type: 'Pass', Next: 'Two' },
                 Two: { Type: 'Pass', End: true },
-              }
+              },
             },
             {
               StartAt: 'Three',
               States: {
-                Three: { Type: 'Pass', End: true }
-              }
-            }
-          ]
-        }
-      }
+                Three: { Type: 'Pass', End: true },
+              },
+            },
+          ],
+        },
+      },
     });
   }),
 
@@ -225,11 +225,11 @@ describe('States Language', () => {
                   Choices: [
                     { Variable: '$.branch', StringEquals: 'left', Next: 'Reusable1/Left Branch' },
                     { Variable: '$.branch', StringEquals: 'right', Next: 'Reusable1/Right Branch' },
-                  ]
+                  ],
                 },
                 'Reusable1/Left Branch': { Type: 'Pass', End: true },
                 'Reusable1/Right Branch': { Type: 'Pass', End: true },
-              }
+              },
             },
             {
               StartAt: 'Reusable2/Choice',
@@ -239,15 +239,15 @@ describe('States Language', () => {
                   Choices: [
                     { Variable: '$.branch', StringEquals: 'left', Next: 'Reusable2/Left Branch' },
                     { Variable: '$.branch', StringEquals: 'right', Next: 'Reusable2/Right Branch' },
-                  ]
+                  ],
                 },
                 'Reusable2/Left Branch': { Type: 'Pass', End: true },
                 'Reusable2/Right Branch': { Type: 'Pass', End: true },
-              }
+              },
             },
-          ]
-        }
-      }
+          ],
+        },
+      },
     });
   }),
 
@@ -270,11 +270,11 @@ describe('States Language', () => {
               States: {
                 'Hello: Task1': { Type: 'Task', Next: 'Hello: Task2', Resource: 'resource' },
                 'Hello: Task2': { Type: 'Task', End: true, Resource: 'resource' },
-              }
-            }
+              },
+            },
           ],
         },
-      }
+      },
     });
   }),
 
@@ -306,7 +306,7 @@ describe('States Language', () => {
         Yes: { Type: 'Pass', Next: 'Finally' },
         No: { Type: 'Fail', Error: 'Failure', Cause: 'Wrong branch' },
         Finally: { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -334,7 +334,7 @@ describe('States Language', () => {
         },
         Yes: { Type: 'Pass', Next: 'Finally' },
         Finally: { Type: 'Pass', End: true },
-      }
+      },
     });
 
   }),
@@ -355,7 +355,7 @@ describe('States Language', () => {
       States: {
         One: { Type: 'Pass', Next: 'Two' },
         Two: { Type: 'Pass', Next: 'One' },
-      }
+      },
     });
   }),
 
@@ -378,14 +378,14 @@ describe('States Language', () => {
           End: true,
           Catch: [
             { ErrorEquals: ['States.ALL'], Next: 'Failed' },
-          ]
+          ],
         },
         Failed: {
           Type: 'Fail',
           Error: 'DidNotWork',
           Cause: 'We got stuck',
-        }
-      }
+        },
+      },
     });
   }),
 
@@ -413,8 +413,8 @@ describe('States Language', () => {
           Type: 'Fail',
           Error: 'DidNotWork',
           Cause: 'We got stuck',
-        }
-      }
+        },
+      },
     });
   }),
 
@@ -449,15 +449,15 @@ describe('States Language', () => {
                   Resource: 'resource',
                   End: true,
                 },
-              }
-            }
+              },
+            },
           ],
           Catch: [
             { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
           ],
-          End: true
+          End: true,
         },
-        ErrorHandler: { Type: 'Pass', End: true }
+        ErrorHandler: { Type: 'Pass', End: true },
       },
     });
   }),
@@ -483,11 +483,11 @@ describe('States Language', () => {
           Next: 'Task2',
           Catch: [
             { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
-          ]
+          ],
         },
         Task2: { Type: 'Task', Resource: 'resource', End: true },
         ErrorHandler: { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -514,7 +514,7 @@ describe('States Language', () => {
         Task2: { Next: 'Task3', ...sharedTaskProps },
         Task3: { End: true, ...sharedTaskProps },
         ErrorHandler: { Type: 'Pass', End: true },
-      }
+      },
     });
   }),
 
@@ -556,7 +556,7 @@ describe('States Language', () => {
           Next: 'Task2',
           Catch: [
             { ErrorEquals: ['States.ALL'], Next: 'Failed' },
-          ]
+          ],
         },
         Task2: {
           Type: 'Task',
@@ -564,14 +564,14 @@ describe('States Language', () => {
           End: true,
           Catch: [
             { ErrorEquals: ['States.ALL'], Next: 'Failed' },
-          ]
+          ],
         },
         Failed: {
           Type: 'Fail',
           Error: 'DidNotWork',
           Cause: 'We got stuck',
-        }
-      }
+        },
+      },
     });
   }),
 
@@ -614,6 +614,78 @@ describe('States Language', () => {
     expect(() => new stepfunctions.Parallel(stack, 'Parallel')
       .branch(state1.next(state2))
       .branch(state2)).toThrow();
+  }),
+
+  describe('findReachableStates', () => {
+
+    test('Can retrieve possible states from initial state', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Pass(stack, 'State1');
+      const state2 = new stepfunctions.Pass(stack, 'State2');
+      const state3 = new stepfunctions.Pass(stack, 'State3');
+
+      const definition = state1
+        .next(state2)
+        .next(state3);
+
+      // WHEN
+      const states = stepfunctions.State.findReachableStates(definition.startState);
+
+      // THEN
+      expect(state1.id).toStrictEqual(states[0].id);
+      expect(state2.id).toStrictEqual(states[1].id);
+      expect(state3.id).toStrictEqual(states[2].id);
+    });
+
+    test('Does not retrieve unreachable states', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Pass(stack, 'State1');
+      const state2 = new stepfunctions.Pass(stack, 'State2');
+      const state3 = new stepfunctions.Pass(stack, 'State3');
+
+      state1.next(state2).next(state3);
+
+      // WHEN
+      const states = stepfunctions.State.findReachableStates(state2);
+
+      // THEN
+      expect(state2.id).toStrictEqual(states[0].id);
+      expect(state3.id).toStrictEqual(states[1].id);
+      expect(states.length).toStrictEqual(2);
+    });
+
+    test('Works with Choice and Parallel states', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const state1 = new stepfunctions.Choice(stack, 'MainChoice');
+      const stateCA = new stepfunctions.Pass(stack, 'StateA');
+      const stateCB = new stepfunctions.Pass(stack, 'StateB');
+      const statePA = new stepfunctions.Pass(stack, 'ParallelA');
+      const statePB = new stepfunctions.Pass(stack, 'ParallelB');
+      const state2 = new stepfunctions.Parallel(stack, 'RunParallel');
+      const state3 = new stepfunctions.Pass(stack, 'FinalState');
+      state2.branch(statePA);
+      state2.branch(statePB);
+      state1.when(stepfunctions.Condition.stringEquals('$.myInput', 'A' ), stateCA);
+      state1.when(stepfunctions.Condition.stringEquals('$.myInput', 'B'), stateCB);
+      stateCA.next(state2);
+      state2.next(state3);
+
+      const definition = state1.otherwise(stateCA);
+
+      // WHEN
+      const statesFromStateCB = stepfunctions.State.findReachableStates(stateCB);
+      const statesFromState1 = stepfunctions.State.findReachableStates(definition);
+
+      // THEN
+      const expectedFromState1 = [state1, stateCA, stateCB, state2, state3];
+      for (let i = 0; i < expectedFromState1.length; i++) {
+        expect(statesFromState1[i].id).toStrictEqual(expectedFromState1[i].id);
+      }
+      expect(statesFromStateCB[0].id).toStrictEqual(stateCB.id);
+    });
   });
 });
 
@@ -662,7 +734,7 @@ function render(sm: stepfunctions.IChainable) {
 class FakeTask implements stepfunctions.IStepFunctionsTask {
   public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'resource'
+      resourceArn: 'resource',
     };
   }
 }

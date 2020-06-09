@@ -1,11 +1,16 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
+/**
+ * Properties for an AWS CloudTrail trail
+ */
 export interface TrailProps {
   /**
    * For most services, events are recorded in the region where the action occurred.
@@ -36,7 +41,7 @@ export interface TrailProps {
    *
    * @param managementEvents the management configuration type to log
    *
-   * @default - Management events will not be logged.
+   * @default ReadWriteType.ALL
    */
   readonly managementEvents?: ReadWriteType;
 
@@ -60,11 +65,18 @@ export interface TrailProps {
   readonly sendToCloudWatchLogs?: boolean;
 
   /**
-   * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
+   * How long to retain logs in CloudWatchLogs.
+   * Ignored if sendToCloudWatchLogs is false or if cloudWatchLogGroup is set.
    *
-   *  @default logs.RetentionDays.OneYear
+   *  @default logs.RetentionDays.ONE_YEAR
    */
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
+   * @default - a new log group is created and used.
+   */
+  readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -72,11 +84,11 @@ export interface TrailProps {
    */
   readonly kmsKey?: kms.IKey;
 
-  /** The name of an Amazon SNS topic that is notified when new log files are published.
+  /** SNS topic that is notified when new log files are published.
    *
    * @default - No notifications.
    */
-  readonly snsTopic?: string; // TODO: fix to use L2 SNS
+  readonly snsTopic?: sns.ITopic;
 
   /**
    * The name of the trail. We recoomend customers do not set an explicit name.
@@ -95,13 +107,36 @@ export interface TrailProps {
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly bucket?: s3.IBucket
+  readonly bucket?: s3.IBucket;
 }
 
+/**
+ * Types of events that CloudTrail can log
+ */
 export enum ReadWriteType {
+  /**
+   * Read-only events include API operations that read your resources,
+   * but don't make changes.
+   * For example, read-only events include the Amazon EC2 DescribeSecurityGroups
+   * and DescribeSubnets API operations.
+   */
   READ_ONLY = 'ReadOnly',
+  /**
+   * Write-only events include API operations that modify (or might modify)
+   * your resources.
+   * For example, the Amazon EC2 RunInstances and TerminateInstances API
+   * operations modify your instances.
+   */
   WRITE_ONLY = 'WriteOnly',
-  ALL = 'All'
+  /**
+   * All events
+   */
+  ALL = 'All',
+
+  /**
+   * No events
+   */
+  NONE = 'None',
 }
 
 /**
@@ -120,14 +155,41 @@ export enum ReadWriteType {
 export class Trail extends Resource {
 
   /**
+   * Create an event rule for when an event is recorded by any Trail in the account.
+   *
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
+   */
+  public static onEvent(scope: Construct, id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = new events.Rule(scope, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail'],
+    });
+    return rule;
+  }
+
+  /**
+   * ARN of the CloudTrail trail
+   * i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail
    * @attribute
    */
   public readonly trailArn: string;
 
   /**
+   * ARN of the Amazon SNS topic that's associated with the CloudTrail trail,
+   * i.e. arn:aws:sns:us-east-2:123456789012:mySNSTopic
    * @attribute
    */
   public readonly trailSnsTopicArn: string;
+
+  /**
+   * The CloudWatch log group to which CloudTrail events are sent.
+   * `undefined` if `sendToCloudWatchLogs` property is false.
+   */
+  public readonly logGroup?: logs.ILogGroup;
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
@@ -149,36 +211,46 @@ export class Trail extends Resource {
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.arnForObjects(
-        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`
+        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`,
       )],
       actions: ['s3:PutObject'],
       principals: [cloudTrailPrincipal],
       conditions: {
-        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }
-      }
+        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+      },
     }));
 
-    let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
 
     if (props.sendToCloudWatchLogs) {
-      logGroup = new logs.CfnLogGroup(this, 'LogGroup', {
-        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
-      });
+      if (props.cloudWatchLogGroup) {
+        this.logGroup = props.cloudWatchLogGroup;
+      } else {
+        this.logGroup = new logs.LogGroup(this, 'LogGroup', {
+          retention: props.cloudWatchLogsRetention ?? logs.RetentionDays.ONE_YEAR,
+        });
+      }
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
       logsRole.addToPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [logGroup.attrArn],
+        resources: [this.logGroup.logGroupArn],
       }));
     }
 
     if (props.managementEvents) {
-      const managementEvent = {
-        includeManagementEvents: true,
-        readWriteType: props.managementEvents
-      };
+      let managementEvent;
+      if (props.managementEvents === ReadWriteType.NONE) {
+        managementEvent = {
+          includeManagementEvents: false,
+        };
+      } else {
+        managementEvent = {
+          includeManagementEvents: true,
+          readWriteType: props.managementEvents,
+        };
+      }
       this.eventSelectors.push(managementEvent);
     }
 
@@ -192,10 +264,10 @@ export class Trail extends Resource {
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
-      cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
-      snsTopicName: props.snsTopic,
-      eventSelectors: this.eventSelectors
+      cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
+      cloudWatchLogsRoleArn: logsRole?.roleArn,
+      snsTopicName: props.snsTopic?.topicName,
+      eventSelectors: this.eventSelectors,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -222,29 +294,85 @@ export class Trail extends Resource {
    * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
    * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
    *
+   * This method adds an Event Selector for filtering events that match either S3 or Lambda function operations.
+   *
+   * Data events: These events provide insight into the resource operations performed on or within a resource.
+   * These are also known as data plane operations.
+   *
+   * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
+   */
+  public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+    if (dataResourceValues.length > 250) {
+      throw new Error('A maximum of 250 data elements can be in one event selector');
+    }
+
+    if (this.eventSelectors.length > 5) {
+      throw new Error('A maximum of 5 event selectors are supported per trail.');
+    }
+
+    this.eventSelectors.push({
+      dataResources: [{
+        type: dataResourceType,
+        values: dataResourceValues,
+      }],
+      includeManagementEvents: options.includeManagementEvents,
+      readWriteType: options.readWriteType,
+    });
+  }
+
+  /**
+   * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
+   * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
+   *
+   * This method adds a Lambda Data Event Selector for filtering events that match Lambda function operations.
+   *
+   * Data events: These events provide insight into the resource operations performed on or within a resource.
+   * These are also known as data plane operations.
+   *
+   * @param handlers the list of lambda function handlers whose data events should be logged (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
+   */
+  public addLambdaEventSelector(handlers: lambda.IFunction[], options: AddEventSelectorOptions = {}) {
+    if (handlers.length === 0) { return; }
+    const dataResourceValues = handlers.map((h) => h.functionArn);
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, dataResourceValues, options);
+  }
+
+  /**
+   * Log all Lamda data events for all lambda functions the account.
+   * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
+   * @default false
+   */
+  public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ 'arn:aws:lambda' ], options);
+  }
+
+  /**
+   * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
+   * Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.
+   *
    * This method adds an S3 Data Event Selector for filtering events that match S3 operations.
    *
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
    *
-   * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
+   * @param s3Selector the list of S3 bucket with optional prefix to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
-    if (prefixes.length > 250) {
-      throw new Error('A maximum of 250 data elements can be in one event selector');
-    }
-    if (this.eventSelectors.length > 5) {
-      throw new Error('A maximum of 5 event selectors are supported per trail.');
-    }
-    this.eventSelectors.push({
-      includeManagementEvents: options.includeManagementEvents,
-      readWriteType: options.readWriteType,
-      dataResources: [{
-        type: 'AWS::S3::Object',
-        values: prefixes
-      }]
-    });
+  public addS3EventSelector(s3Selector: S3EventSelector[], options: AddEventSelectorOptions = {}) {
+    if (s3Selector.length === 0) { return; }
+    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
+    return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
+  }
+
+  /**
+   * Log all S3 data events for all objects for all buckets in the account.
+   * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
+   * @default false
+   */
+  public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [ 'arn:aws:s3:::' ], options);
   }
 
   /**
@@ -254,21 +382,18 @@ export class Trail extends Resource {
    * be captured from any one.
    *
    * Be sure to filter the event further down using an event pattern.
+   *
+   * @deprecated - use Trail.onEvent()
    */
   public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      detailType: ['AWS API Call via CloudTrail']
-    });
-    return rule;
+    return Trail.onEvent(this, id, options);
   }
 }
 
 /**
- * Options for adding an S3 event selector.
+ * Options for adding an event selector.
  */
-export interface AddS3EventSelectorOptions {
+export interface AddEventSelectorOptions {
   /**
    * Specifies whether to log read-only events, write-only events, or all events.
    *
@@ -282,6 +407,35 @@ export interface AddS3EventSelectorOptions {
    * @default true
    */
   readonly includeManagementEvents?: boolean;
+}
+
+/**
+ * Selecting an S3 bucket and an optional prefix to be logged for data events.
+ */
+export interface S3EventSelector {
+  /** S3 bucket */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * Data events for objects whose key matches this prefix will be logged.
+   * @default - all objects
+   */
+  readonly objectPrefix?: string;
+}
+
+/**
+ * Resource type for a data event
+ */
+export enum DataResourceType {
+  /**
+   * Data resource type for Lambda function
+   */
+  LAMBDA_FUNCTION = 'AWS::Lambda::Function',
+
+  /**
+   * Data resource type for S3 objects
+   */
+  S3_OBJECT = 'AWS::S3::Object',
 }
 
 interface EventSelector {

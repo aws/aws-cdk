@@ -10,25 +10,18 @@ const createEvent: OnEventRequest = {
   ResourceProperties: {
     TableName: 'my-table',
     Region: 'eu-west-2',
-    ServiceToken: 'token'
+    ServiceToken: 'token',
   },
   ServiceToken: 'token',
   ResponseURL: 'url',
   LogicalResourceId: 'logical-id',
   RequestId: 'request-id',
   StackId: 'stack-id',
-  ResourceType: 'resource-type'
+  ResourceType: 'resource-type',
 };
 
-beforeEach(done => {
-  process.env.USE_NORMAL_SDK = 'true';
-  done();
-});
-
-afterEach(done => {
-  delete process.env.USE_NORMAL_SDK;
+afterEach(() => {
   AWS.restore();
-  done();
 });
 
 test('on event', async () => {
@@ -43,14 +36,14 @@ test('on event', async () => {
     ReplicaUpdates: [
       {
         Create: {
-          RegionName: 'eu-west-2'
-        }
+          RegionName: 'eu-west-2',
+        },
       },
-    ]
+    ],
   });
 
   expect(data).toEqual({
-    PhysicalResourceId: 'eu-west-2'
+    PhysicalResourceId: 'eu-west-2',
   });
 });
 
@@ -67,13 +60,13 @@ test('on event does not call updateTable for Update requests', async () => {
   sinon.assert.notCalled(updateTableMock);
 
   expect(data).toEqual({
-    PhysicalResourceId: 'eu-west-2'
+    PhysicalResourceId: 'eu-west-2',
   });
 });
 
 test('is complete for create returns false without replicas', async () => {
   const describeTableMock = sinon.fake.resolves({
-    Table: {}
+    Table: {},
   });
 
   AWS.mock('DynamoDB', 'describeTable', describeTableMock);
@@ -89,10 +82,10 @@ test('is complete for create returns false when replica is not active', async ()
       Replicas: [
         {
           RegionName: 'eu-west-2',
-          ReplicaStatus: 'CREATING'
-        }
-      ]
-    }
+          ReplicaStatus: 'CREATING',
+        },
+      ],
+    },
   });
 
   AWS.mock('DynamoDB', 'describeTable', describeTableMock);
@@ -108,11 +101,11 @@ test('is complete for create returns false when table is not active', async () =
       Replicas: [
         {
           RegionName: 'eu-west-2',
-          ReplicaStatus: 'ACTIVE'
-        }
+          ReplicaStatus: 'ACTIVE',
+        },
       ],
       TableStatus: 'UPDATING',
-    }
+    },
   });
 
   AWS.mock('DynamoDB', 'describeTable', describeTableMock);
@@ -128,11 +121,11 @@ test('is complete for create returns true when replica is active', async () => {
       Replicas: [
         {
           RegionName: 'eu-west-2',
-          ReplicaStatus: 'ACTIVE'
-        }
+          ReplicaStatus: 'ACTIVE',
+        },
       ],
       TableStatus: 'ACTIVE',
-    }
+    },
   });
 
   AWS.mock('DynamoDB', 'describeTable', describeTableMock);
@@ -148,18 +141,18 @@ test('is complete for delete returns true when replica is gone', async () => {
       Replicas: [
         {
           RegionName: 'eu-west-1',
-          ReplicaStatus: 'ACTIVE'
-        }
+          ReplicaStatus: 'ACTIVE',
+        },
       ],
       TableStatus: 'ACTIVE',
-    }
+    },
   });
 
   AWS.mock('DynamoDB', 'describeTable', describeTableMock);
 
   const data = await isCompleteHandler({
     ...createEvent,
-    RequestType: 'Delete'
+    RequestType: 'Delete',
   });
 
   expect(data).toEqual({ IsComplete: true });

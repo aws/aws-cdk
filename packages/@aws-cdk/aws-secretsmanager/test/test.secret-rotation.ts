@@ -12,7 +12,7 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const target = new ec2.Connections({
       defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })]
+      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     });
 
     // WHEN
@@ -31,41 +31,41 @@ export = {
       GroupId: {
         'Fn::GetAtt': [
           'SecurityGroupDD263621',
-          'GroupId'
-        ]
+          'GroupId',
+        ],
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
           'SecretRotationSecurityGroup9985012B',
-          'GroupId'
-        ]
+          'GroupId',
+        ],
       },
-      ToPort: 3306
+      ToPort: 3306,
     }));
 
     expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
-        Ref: 'SecretA720EF05'
+        Ref: 'SecretA720EF05',
       },
       RotationLambdaARN: {
         'Fn::GetAtt': [
           'SecretRotationA9FFCFA9',
-          'Outputs.RotationLambdaARN'
-        ]
+          'Outputs.RotationLambdaARN',
+        ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30
-      }
+        AutomaticallyAfterDays: 30,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'SecretRotation/SecurityGroup'
+      GroupDescription: 'SecretRotation/SecurityGroup',
     }));
 
     expect(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser',
-        SemanticVersion: '1.1.3'
+        SemanticVersion: '1.1.3',
       },
       Parameters: {
         endpoint: {
@@ -74,37 +74,37 @@ export = {
             [
               'https://secretsmanager.',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               '.',
               {
-                Ref: 'AWS::URLSuffix'
-              }
-            ]
-          ]
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
         },
         functionName: 'SecretRotation',
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecurityGroup9985012B',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         vpcSubnetIds: {
           'Fn::Join': [
             '',
             [
               {
-                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
               },
               ',',
               {
-                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
               },
-            ]
-          ]
-        }
-      }
+            ],
+          ],
+        },
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SecretsManager::ResourcePolicy', {
@@ -120,25 +120,25 @@ export = {
                   [
                     'arn:',
                     {
-                      Ref: 'AWS::Partition'
+                      Ref: 'AWS::Partition',
                     },
                     ':iam::',
                     {
-                      Ref: 'AWS::AccountId'
+                      Ref: 'AWS::AccountId',
                     },
-                    ':root'
-                  ]
-                ]
-              }
+                    ':root',
+                  ],
+                ],
+              },
             },
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       SecretId: {
-        Ref: 'SecretA720EF05'
-      }
+        Ref: 'SecretA720EF05',
+      },
     }));
 
     test.done();
@@ -152,7 +152,7 @@ export = {
     const masterSecret = new secretsmanager.Secret(stack, 'MasterSecret');
     const target = new ec2.Connections({
       defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })]
+      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     });
 
     // WHEN
@@ -173,40 +173,40 @@ export = {
             [
               'https://secretsmanager.',
               {
-                Ref: 'AWS::Region'
+                Ref: 'AWS::Region',
               },
               '.',
               {
-                Ref: 'AWS::URLSuffix'
-              }
-            ]
-          ]
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
         },
         functionName: 'SecretRotation',
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
             'SecretRotationSecurityGroup9985012B',
-            'GroupId'
-          ]
+            'GroupId',
+          ],
         },
         vpcSubnetIds: {
           'Fn::Join': [
             '',
             [
               {
-                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
               },
               ',',
               {
-                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
               },
-            ]
-          ]
+            ],
+          ],
         },
         masterSecretArn: {
-          Ref: 'MasterSecretA11BF785'
-        }
-      }
+          Ref: 'MasterSecretA11BF785',
+        },
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SecretsManager::ResourcePolicy', {
@@ -222,25 +222,25 @@ export = {
                   [
                     'arn:',
                     {
-                      Ref: 'AWS::Partition'
+                      Ref: 'AWS::Partition',
                     },
                     ':iam::',
                     {
-                      Ref: 'AWS::AccountId'
+                      Ref: 'AWS::AccountId',
                     },
-                    ':root'
-                  ]
-                ]
-              }
+                    ':root',
+                  ],
+                ],
+              },
             },
-            Resource: '*'
-          }
+            Resource: '*',
+          },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       },
       SecretId: {
-        Ref: 'MasterSecretA11BF785'
-      }
+        Ref: 'MasterSecretA11BF785',
+      },
     }));
 
     test.done();
@@ -257,7 +257,7 @@ export = {
 
     // WHEN
     const target = new ec2.Connections({
-      securityGroups: [securityGroup]
+      securityGroups: [securityGroup],
     });
 
     // THEN
@@ -265,7 +265,7 @@ export = {
       secret,
       application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       vpc,
-      target
+      target,
     }), /`target`.+default port range/);
 
     test.done();
@@ -278,7 +278,7 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const target = new ec2.Connections({
       defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })]
+      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     });
 
     // THEN
@@ -286,7 +286,7 @@ export = {
       secret,
       application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       vpc,
-      target
+      target,
     }), /The `masterSecret` must be specified for application using the multi user scheme/);
 
     test.done();

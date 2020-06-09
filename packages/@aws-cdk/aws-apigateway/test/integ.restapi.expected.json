@@ -6,57 +6,6 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "myapiv1appliancesGET8FE872EC",
-        "myapiv1appliances507FEFF4",
-        "myapiv1booksGETC6B996D0",
-        "myapiv1booksPOST53E2832E",
-        "myapiv1books1D4BE6C1",
-        "myapiv113487378",
-        "myapiv1toysGET7348114D",
-        "myapiv1toysPOST55128058",
-        "myapiv1toysPUT59AFBBC2",
-        "myapiv1toysA55FCBC4"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "myapiDeploymentStagebeta96434BEB": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "myapi4C7BF186"
-        },
-        "CacheClusterEnabled": true,
-        "CacheClusterSize": "0.5",
-        "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
-        },
-        "Description": "beta stage",
-        "MethodSettings": [
-          {
-            "DataTraceEnabled": true,
-            "HttpMethod": "*",
-            "LoggingLevel": "INFO",
-            "ResourcePath": "/*"
-          },
-          {
-            "CachingEnabled": true,
-            "HttpMethod": "GET",
-            "ResourcePath": "/~1api~1appliances"
-          }
-        ],
-        "StageName": "beta"
-      }
-    },
     "myapiCloudWatchRole095452E5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -101,6 +50,57 @@
       "DependsOn": [
         "myapi4C7BF186"
       ]
+    },
+    "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "myapiv1appliancesGET8FE872EC",
+        "myapiv1appliances507FEFF4",
+        "myapiv1booksGETC6B996D0",
+        "myapiv1booksPOST53E2832E",
+        "myapiv1books1D4BE6C1",
+        "myapiv113487378",
+        "myapiv1toysGET7348114D",
+        "myapiv1toysPOST55128058",
+        "myapiv1toysPUT59AFBBC2",
+        "myapiv1toysA55FCBC4"
+      ],
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "myapiDeploymentStagebeta96434BEB": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "CacheClusterEnabled": true,
+        "CacheClusterSize": "0.5",
+        "DeploymentId": {
+          "Ref": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
+        },
+        "Description": "beta stage",
+        "MethodSettings": [
+          {
+            "DataTraceEnabled": true,
+            "HttpMethod": "*",
+            "LoggingLevel": "INFO",
+            "ResourcePath": "/*"
+          },
+          {
+            "CachingEnabled": true,
+            "HttpMethod": "GET",
+            "ResourcePath": "/~1api~1appliances"
+          }
+        ],
+        "StageName": "beta"
+      }
     },
     "myapiv113487378": {
       "Type": "AWS::ApiGateway::Resource",
@@ -649,7 +649,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event)\n            });\n        }"
+          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
         },
         "Handler": "index.handler",
         "Role": {

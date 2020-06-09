@@ -1,12 +1,11 @@
 import { schema } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import { upcaseFirst } from './util';
 
 const CORE = genspec.CORE_NAMESPACE;
+const CFN_PARSE = genspec.CFN_PARSE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
@@ -18,6 +17,15 @@ enum TreeAttributes {
 }
 
 interface Dictionary<T> { [key: string]: T; }
+
+export interface CodeGeneratorOptions {
+  /**
+   * How to import the core library.
+   *
+   * @default '@aws-cdk/core'
+   */
+  readonly coreImport?: string;
+}
 
 /**
  * Emits classes for all resource types
@@ -32,13 +40,14 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string, options: CodeGeneratorOptions = {}) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
+    const coreImport = options.coreImport ?? '@aws-cdk/core';
 
     const meta = {
       generated: new Date(),
-      fingerprint: spec.Fingerprint
+      fingerprint: spec.Fingerprint,
     };
 
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
@@ -48,27 +57,9 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
-  }
-
-  public async upToDate(outPath: string): Promise<boolean> {
-    const fullPath = path.join(outPath, this.outputFile);
-    if (!await fs.pathExists(fullPath)) {
-      return false;
-    }
-    const data = await fs.readFile(fullPath, { encoding: 'utf-8' });
-    const comment = data.match(/^\s*[/]{2}\s*@cfn2ts:meta@(.+)$/m);
-    if (comment) {
-      try {
-        const meta = JSON.parse(comment[1]);
-        if (meta.fingerprint === this.spec.Fingerprint) {
-          return true;
-        }
-      } catch {
-        return false;
-      }
-    }
-    return false;
+    this.code.line(`import * as ${CORE} from '${coreImport}';`);
+    // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
+    this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}cfn-parse';`);
   }
 
   public emitCode(): void {
@@ -137,6 +128,7 @@ export default class CodeGenerator {
     this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
+    this.emitFromCfnFactoryFunction(resourceContext, name, spec.Properties, conversionTable, false);
 
     return name;
   }
@@ -161,7 +153,7 @@ export default class CodeGenerator {
         propName,
         spec: propSpec,
         additionalDocs: quoteCode(additionalDocs)},
-      container
+      container,
       );
       propertyMap[propName] = newName;
     });
@@ -199,6 +191,10 @@ export default class CodeGenerator {
       this.code.line();
     }
 
+    //
+    // The class declaration representing this Resource
+    //
+
     this.docLink(spec.Documentation,
       `A CloudFormation \`${cfnName}\``,
       '',
@@ -224,6 +220,70 @@ export default class CodeGenerator {
     }
 
     //
+    // The static fromCloudFormation() method,
+    // used in the @aws-cdk/cloudformation-include module
+    //
+
+    this.code.line();
+    this.code.line('/**');
+    this.code.line(' * A factory method that creates a new instance of this class from an object');
+    this.code.line(' * containing the CloudFormation properties of this resource.');
+    this.code.line(' * Used in the @aws-cdk/cloudformation-include module.');
+    this.code.line(' *');
+    this.code.line(' * @experimental');
+    this.code.line(' */');
+    this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
+      `${resourceName.className}`);
+    this.code.line('resourceAttributes = resourceAttributes || {};');
+    if (propsType) {
+      // translate the template properties to CDK objects
+      this.code.line(`const resourceProperties = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Properties);`);
+      // translate to props, using a (module-private) factory function
+      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
+      // finally, instantiate the resource class
+      this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
+    } else {
+      // no props type - we simply instantiate the construct without the third argument
+      this.code.line(`const ret = new ${resourceName.className}(scope, id);`);
+    }
+    // handle all non-property attributes
+    // (retention policies, conditions, metadata, etc.)
+    this.code.line('const cfnOptions = ret.cfnOptions;');
+    this.code.line(`cfnOptions.deletionPolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.DeletionPolicy);`);
+    this.code.line(`cfnOptions.updateReplacePolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);`);
+    this.code.line(`cfnOptions.metadata = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Metadata);`);
+
+    // handle DependsOn
+    this.code.line('// handle DependsOn');
+    // DependsOn can be either a single string, or an array of strings
+    this.code.line('resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];');
+    this.code.line('const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ? resourceAttributes.DependsOn : [resourceAttributes.DependsOn];');
+    this.code.openBlock('for (const dep of dependencies)');
+    this.code.line('const depResource = options.finder.findResource(dep);');
+    this.code.openBlock('if (!depResource)');
+    this.code.line("throw new Error(`Resource '${id}' depends on '${dep}' that doesn't exist`);");
+    this.code.closeBlock();
+    this.code.line('ret.node.addDependency(depResource);');
+    this.code.closeBlock();
+
+    // handle Condition
+    this.code.line('// handle Condition');
+    this.code.openBlock('if (resourceAttributes.Condition)');
+    this.code.line('const condition = options.finder.findCondition(resourceAttributes.Condition);');
+    this.code.openBlock('if (!condition)');
+    this.code.line("throw new Error(`Resource '${id}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);");
+    this.code.closeBlock();
+    this.code.line('cfnOptions.condition = condition;');
+    this.code.closeBlock();
+
+    // ToDo handle:
+    // 1. CreationPolicy
+    // 2. UpdatePolicy
+
+    this.code.line('return ret;');
+    this.code.closeBlock();
+
+    //
     // Attributes
     //
 
@@ -244,7 +304,10 @@ export default class CodeGenerator {
       }
     }
 
-    // set class properties to match CloudFormation Properties spec
+    //
+    // Set class properties to match CloudFormation Properties spec
+    //
+
     let propMap;
     if (propsType) {
       propMap = this.emitPropsTypeProperties(resourceName, spec.Properties!, Container.Class);
@@ -469,6 +532,132 @@ export default class CodeGenerator {
   }
 
   /**
+   * Generates a function that converts from a pure CloudFormation value taken from a template
+   * to an instance of the given CDK struct.
+   * This involves changing the casing of the properties,
+   * from UpperCamelCase used by CloudFormation,
+   * to lowerCamelCase used by the CDK,
+   * and also translating things like IResolvable into strings, numbers or string arrays,
+   * depending on the type of the L1 property.
+   */
+  private emitFromCfnFactoryFunction(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>,
+    allowReturningIResolvable: boolean) {
+
+    const factoryName = genspec.fromCfnFactoryName(typeName);
+
+    this.code.line();
+    // Do not error out if this function is unused.
+    // Some types are declared in the CFN schema,
+    // but never used as types of properties,
+    // and in those cases this function will never be called.
+    this.code.line('// @ts-ignore TS6133');
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${typeName.fqn}` +
+      (allowReturningIResolvable ? ` | ${CORE}.IResolvable` : ''));
+
+    if (allowReturningIResolvable) {
+      this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
+      this.code.line('return properties;');
+      this.code.closeBlock();
+    }
+
+    this.code.line('properties = properties || {};');
+    // Generate the return object
+    this.code.indent('return {');
+    const self = this;
+
+    // class used for the visitor
+    class FromCloudFormationFactoryVisitor implements genspec.PropertyVisitor<string> {
+      constructor(
+        private readonly baseExpression: string,
+        private readonly optionalProperty: boolean,
+        private readonly cfnPropName: string,
+        private readonly depth: number = 1) {
+      }
+
+      public visitAtom(type: genspec.CodeName): string {
+        const specType = type.specName && self.spec.PropertyTypes[type.specName.fqn];
+        if (specType && !schema.isRecordType(specType)) {
+          return genspec.typeDispatch(resource, specType, this);
+        } else {
+          const optionalPreamble = this.optionalProperty
+            ? `${this.baseExpression} == null ? undefined : `
+            : '';
+          const suffix = schema.isTagPropertyName(this.cfnPropName)
+            // Properties that have names considered to denote tags
+            // have their type generated without a union with IResolvable.
+            // However, we can't possibly know that when generating the factory
+            // for that struct, and (in theory, at least)
+            // the same type can be used as the value of multiple properties,
+            // some of which do not have a tag-compatible name,
+            // so there is no way to pass allowReturningIResolvable=false correctly.
+            // Do the simple thing in that case, and just cast to any.
+            ? ' as any'
+            : '';
+          return `${optionalPreamble}${genspec.fromCfnFactoryName(type).fqn}(${this.baseExpression})${suffix}`;
+        }
+      }
+
+      public visitList(itemType: genspec.CodeName): string {
+        const arg = `prop${this.depth}`;
+        return itemType.className === 'string'
+          // an array of strings is a special case,
+          // because it might need to be encoded as a Token directly
+          // (and not an array of tokens), for example,
+          // when a Ref expression references a parameter of type CommaDelimitedList
+          ? `${CFN_PARSE}.FromCloudFormation.getStringArray(${this.baseExpression})`
+          : `${CFN_PARSE}.FromCloudFormation.getArray(${this.baseExpression}, (${arg}: any) => ` +
+            `${this.deeperCopy(arg).visitAtom(itemType)})`;
+      }
+
+      public visitMap(itemType: genspec.CodeName): string {
+        const arg = `prop${this.depth}`;
+        return `${CFN_PARSE}.FromCloudFormation.getMap(${this.baseExpression}, (${arg}: any) => ` +
+          `${this.deeperCopy(arg).visitAtom(itemType)})`;
+      }
+
+      public visitAtomUnion(_types: genspec.CodeName[]): string {
+        return this.baseExpression;
+      }
+
+      public visitListOrAtom(_scalarTypes: genspec.CodeName[], _itemTypes: genspec.CodeName[]): any {
+        return this.baseExpression;
+      }
+
+      public visitUnionList(_itemTypes: genspec.CodeName[]): string {
+        return this.baseExpression;
+      }
+
+      public visitUnionMap(_itemTypes: genspec.CodeName[]): string {
+        return this.baseExpression;
+      }
+
+      private deeperCopy(baseExpression: string): FromCloudFormationFactoryVisitor {
+        return new FromCloudFormationFactoryVisitor(baseExpression, false, this.cfnPropName, this.depth + 1);
+      }
+    }
+
+    Object.keys(nameConversionTable).forEach(cfnName => {
+      const propName = nameConversionTable[cfnName];
+      const propSpec = propSpecs[cfnName];
+
+      const simpleCfnPropAccessExpr = `properties.${cfnName}`;
+      const mapperExpression = genspec.typeDispatch<string>(resource, propSpec,
+        new FromCloudFormationFactoryVisitor(simpleCfnPropAccessExpr, !propSpec.Required, cfnName));
+
+      self.code.line(`${propName}: ${mapperExpression},`);
+    });
+    // close the return object brace
+    this.code.unindent('};');
+
+    // close the function brace
+    this.code.closeBlock();
+  }
+
+  /**
    * Emit a function that will validate whether the given property bag matches the schema of this complex type
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
@@ -625,6 +814,7 @@ export default class CodeGenerator {
     this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitFromCfnFactoryFunction(resourceContext, typeName, propTypeSpec.Properties, conversionTable, true);
   }
 
   /**

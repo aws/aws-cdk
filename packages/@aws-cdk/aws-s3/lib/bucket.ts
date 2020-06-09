@@ -73,7 +73,7 @@ export interface IBucket extends IResource {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  addToResourcePolicy(permission: iam.PolicyStatement): void;
+  addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The https URL of an S3 object. For example:
@@ -85,6 +85,16 @@ export interface IBucket extends IResource {
    * @returns an ObjectS3Url token
    */
   urlForObject(key?: string): string;
+
+  /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  s3UrlForObject(key?: string): string;
 
   /**
    * Returns an ARN that represents all objects within the bucket that match
@@ -340,7 +350,7 @@ abstract class BucketBase extends Resource implements IBucket {
         resources: {
           ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },
-      }
+      },
     });
     return rule;
   }
@@ -391,7 +401,7 @@ abstract class BucketBase extends Resource implements IBucket {
         eventName: [
           'CompleteMultipartUpload',
           'CopyObject',
-          'PutObject'
+          'PutObject',
         ],
         requestParameters: {
           bucketName: [ this.bucketName ],
@@ -408,14 +418,17 @@ abstract class BucketBase extends Resource implements IBucket {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: iam.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
   }
 
   /**
@@ -429,17 +442,20 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
-      }
-      components.push('/');
-      components.push(key);
-    }
+    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    return this.buildUrl(prefix, key);
+  }
 
-    return components.join('');
+  /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  public s3UrlForObject(key?: string): string {
+    return this.buildUrl('s3://', key);
   }
 
   /**
@@ -569,6 +585,24 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
+  private buildUrl(prefix: string, key?: string): string {
+    const components = [
+      prefix,
+      this.bucketName,
+    ];
+
+    if (key) {
+      // trim prepending '/'
+      if (typeof key === 'string' && key.startsWith('/')) {
+        key = key.substr(1);
+      }
+      components.push('/');
+      components.push(key);
+    }
+
+    return components.join('');
+  }
+
   private grant(
     grantee: iam.IGrantable,
     bucketActions: string[],
@@ -596,7 +630,7 @@ abstract class BucketBase extends Resource implements IBucket {
       });
     }
 
-    if (this.encryptionKey) {
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
@@ -648,12 +682,12 @@ export class BlockPublicAccess {
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
-    restrictPublicBuckets: true
+    restrictPublicBuckets: true,
   });
 
   public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
-    ignorePublicAcls: true
+    ignorePublicAcls: true,
   });
 
   public blockPublicAcls: boolean | undefined;
@@ -1215,7 +1249,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`
+        description: `Created by ${this.node.path}`,
       });
 
       const bucketEncryption = {
@@ -1223,10 +1257,10 @@ export class Bucket extends BucketBase {
           {
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
-              kmsMasterKeyId: encryptionKey.keyArn
-            }
-          }
-        ]
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
       };
       return { encryptionKey, bucketEncryption };
     }
@@ -1234,8 +1268,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+        ],
       };
 
       return { bucketEncryption };
@@ -1244,8 +1278,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+        ],
       };
       return { bucketEncryption };
     }
@@ -1278,16 +1312,16 @@ export class Bucket extends BucketBase {
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
-          transitionInDays: t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter.toDays(),
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
-          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
-        tagFilters: self.parseTagFilters(rule.tagFilters)
+        tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
       return x;
@@ -1318,7 +1352,7 @@ export class Bucket extends BucketBase {
       return {
         id: metric.id,
         prefix: metric.prefix,
-        tagFilters: self.parseTagFilters(metric.tagFilters)
+        tagFilters: self.parseTagFilters(metric.tagFilters),
       };
     }
   }
@@ -1337,7 +1371,7 @@ export class Bucket extends BucketBase {
         allowedHeaders: rule.allowedHeaders,
         allowedMethods: rule.allowedMethods,
         allowedOrigins: rule.allowedOrigins,
-        exposedHeaders: rule.exposedHeaders
+        exposedHeaders: rule.exposedHeaders,
       };
     }
   }
@@ -1349,7 +1383,7 @@ export class Bucket extends BucketBase {
 
     return Object.keys(tagFilters).map(tag => ({
       key: tag,
-      value: tagFilters[tag]
+      value: tagFilters[tag],
     }));
   }
 
@@ -1379,7 +1413,7 @@ export class Bucket extends BucketBase {
           replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
           replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
-        routingRuleCondition: rule.condition
+        routingRuleCondition: rule.condition,
       };
     }) : undefined;
 
@@ -1387,7 +1421,7 @@ export class Bucket extends BucketBase {
       indexDocument: props.websiteIndexDocument,
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
-      routingRules
+      routingRules,
     };
   }
 

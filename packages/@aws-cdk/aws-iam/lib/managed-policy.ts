@@ -112,7 +112,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
         region: '', // no region for managed policy
         account: Stack.of(scope).account, // Can this be something the user specifies?
         resource: 'policy',
-        resourceName: managedPolicyName
+        resourceName: managedPolicyName,
       });
     }
     return new Import(scope, id);
@@ -162,9 +162,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
             region: '', // no region for managed policy
             account: 'aws', // the account for a managed policy is 'aws'
             resource: 'policy',
-            resourceName: managedPolicyName
+            resourceName: managedPolicyName,
           });
-        }
+        },
       });
     }
     return new AwsManagedPolicy();
@@ -209,7 +209,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
     super(scope, id, {
-      physicalName: props.managedPolicyName
+      physicalName: props.managedPolicyName,
     });
 
     this.description = props.description || '';

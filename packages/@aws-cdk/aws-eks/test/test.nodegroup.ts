@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -19,29 +19,29 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C'
+        Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
         'Fn::GetAtt': [
           'NodegroupNodeGroupRole038A128B',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       Subnets: [
         {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
         },
         {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        }
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
       ],
       ForceUpdateEnabled: true,
       ScalingConfig: {
         DesiredSize: 2,
         MaxSize: 2,
-        MinSize: 1
-      }
-    }
+        MinSize: 1,
+      },
+    },
     ));
     test.done();
   },
@@ -55,8 +55,8 @@ export = {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ]
-      }
+        sourceSecurityGroups: [ new ec2.SecurityGroup(stack, 'SG', { vpc }) ],
+      },
     });
     // THEN
     expect(stack).to(haveResource('AWS::EKS::Nodegroup', {
@@ -66,12 +66,12 @@ export = {
           {
             'Fn::GetAtt': [
               'SGADB53937',
-              'GroupId'
-            ]
-          }
-        ]
+              'GroupId',
+            ],
+          },
+        ],
       },
-    }
+    },
     ));
     test.done();
   },
@@ -86,8 +86,20 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       ForceUpdateEnabled: false,
-    }
+    },
     ));
+    test.done();
+  },
+  'create nodegroups with kubectlEnabled is false'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 2 });
+    // add a extra nodegroup
+    cluster.addNodegroup('extra-ng');
+    // THEN
+    expect(stack).to(countResources('AWS::EKS::Nodegroup', 2));
     test.done();
   },
   'create nodegroup with instanceType provided'(test: Test) {
@@ -98,15 +110,15 @@ export = {
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: new ec2.InstanceType('m5.large')
+      instanceType: new ec2.InstanceType('m5.large'),
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       InstanceTypes: [
-        'm5.large'
+        'm5.large',
       ],
-    }
+    },
     ));
     test.done();
   },
@@ -120,15 +132,15 @@ export = {
       cluster,
       remoteAccess: {
         sshKeyName: 'foo',
-      }
+      },
     });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       RemoteAccess: {
-        Ec2SshKey: 'foo'
+        Ec2SshKey: 'foo',
       },
-    }
+    },
     ));
     test.done();
   },
@@ -150,10 +162,10 @@ export = {
       Outputs: {
         NodegroupName: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1'
-          }
-        }
-      }
+            'Fn::ImportValue': 'Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1',
+          },
+        },
+      },
     });
     test.done();
   },
@@ -168,29 +180,29 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C'
+        Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
         'Fn::GetAtt': [
           'ClusterNodegroupngNodeGroupRoleDA0D35DA',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       Subnets: [
         {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0'
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
         },
         {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        }
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
       ],
       ForceUpdateEnabled: true,
       ScalingConfig: {
         DesiredSize: 2,
         MaxSize: 2,
-        MinSize: 1
-      }
-    }
+        MinSize: 1,
+      },
+    },
     ));
     test.done();
   },

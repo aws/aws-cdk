@@ -78,6 +78,12 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
    */
   public readonly isCompleteHandler?: lambda.IFunction;
 
+  /**
+   * The service token to use in order to define custom resources that are
+   * backed by this provider.
+   */
+  public readonly serviceToken: string;
+
   private readonly entrypoint: lambda.Function;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
@@ -112,14 +118,16 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     }
 
     this.entrypoint = onEventFunction;
+    this.serviceToken = this.entrypoint.functionArn;
   }
 
   /**
    * Called by `CustomResource` which uses this provider.
+   * @deprecated use `provider.serviceToken` instead
    */
   public bind(_: Construct): cfn.CustomResourceProviderConfig {
     return {
-      serviceToken: this.entrypoint.functionArn
+      serviceToken: this.entrypoint.functionArn,
     };
   }
 

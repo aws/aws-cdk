@@ -16,14 +16,14 @@ test('Execute State Machine - Default - Fire and Forget', () => {
   const task = new sfn.Task(stack, 'ChildTask', {
     task: new tasks.StartExecution(child, {
       input: {
-        foo: 'bar'
+        foo: 'bar',
       },
-      name: 'myExecutionName'
-    })
+      name: 'myExecutionName',
+    }),
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -43,12 +43,12 @@ test('Execute State Machine - Default - Fire and Forget', () => {
     End: true,
     Parameters: {
       Input: {
-        foo: 'bar'
+        foo: 'bar',
       },
       Name: 'myExecutionName',
       StateMachineArn: {
-        Ref: 'ChildStateMachine9133117F'
-      }
+        Ref: 'ChildStateMachine9133117F',
+      },
     },
   });
 });
@@ -56,12 +56,12 @@ test('Execute State Machine - Default - Fire and Forget', () => {
 test('Execute State Machine - Sync', () => {
   const task = new sfn.Task(stack, 'ChildTask', {
     task: new tasks.StartExecution(child, {
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC
-    })
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    }),
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -81,9 +81,98 @@ test('Execute State Machine - Sync', () => {
     End: true,
     Parameters: {
       StateMachineArn: {
-        Ref: 'ChildStateMachine9133117F'
-      }
+        Ref: 'ChildStateMachine9133117F',
+      },
     },
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'ChildStateMachine9133117F',
+          },
+        },
+        {
+          Action: [
+            'states:DescribeExecution',
+            'states:StopExecution',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'ChildStateMachine9133117F',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForStepFunctionsExecutionRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [
+      {
+        Ref: 'ParentStateMachineRoleE902D002',
+      },
+    ],
   });
 });
 
@@ -92,13 +181,13 @@ test('Execute State Machine - Wait For Task Token', () => {
     task: new tasks.StartExecution(child, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       input: {
-        token: sfn.Context.taskToken
-      }
-    })
+        token: sfn.Context.taskToken,
+      },
+    }),
   });
 
   new sfn.StateMachine(stack, 'ParentStateMachine', {
-    definition: task
+    definition: task,
   });
 
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -118,11 +207,11 @@ test('Execute State Machine - Wait For Task Token', () => {
     End: true,
     Parameters: {
       Input: {
-        'token.$': '$$.Task.Token'
+        'token.$': '$$.Task.Token',
       },
       StateMachineArn: {
-        Ref: 'ChildStateMachine9133117F'
-      }
+        Ref: 'ChildStateMachine9133117F',
+      },
     },
   });
 });
@@ -132,7 +221,7 @@ test('Execute State Machine - Wait For Task Token - Missing Task Token', () => {
     new sfn.Task(stack, 'ChildTask', {
       task: new tasks.StartExecution(child, {
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      })
+      }),
     });
   }).toThrow('Task Token is missing in input (pass Context.taskToken somewhere in input');
 });

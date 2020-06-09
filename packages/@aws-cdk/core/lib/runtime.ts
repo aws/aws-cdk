@@ -51,7 +51,7 @@ function pad(x: number) {
 export function cfnTagToCloudFormation(x: any): any {
   return {
     Key: x.key,
-    Value: x.value
+    Value: x.value,
   };
 }
 
@@ -333,10 +333,10 @@ export function requiredValidator(x: any) {
  * @throws if the property ``name`` is not present in ``props``.
  */
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
-  if (!(name in props)) {
+  const value = props[name];
+  if (value == null) {
     throw new Error(`${context.toString()} is missing required property: ${name}`);
   }
-  const value = props[name];
   // Possibly add type-checking here...
   return value;
 }

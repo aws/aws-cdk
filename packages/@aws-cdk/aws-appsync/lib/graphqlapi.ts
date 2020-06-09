@@ -193,8 +193,15 @@ export class GraphQLApi extends Construct {
    * underlying CFN schema resource
    */
   public readonly schema: CfnGraphQLSchema;
+  /**
+   * the configured API key, if present
+   */
+  public get apiKey(): string | undefined {
+    return this._apiKey;
+  }
 
   private api: CfnGraphQLApi;
+  private _apiKey?: string;
 
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
@@ -214,7 +221,7 @@ export class GraphQLApi extends Construct {
           excludeVerboseContent: props.logConfig.excludeVerboseContent,
           fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
         },
-      }
+      },
     });
 
     this.apiId = this.api.attrApiId;
@@ -264,7 +271,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      table
+      table,
     });
   }
 
@@ -279,7 +286,7 @@ export class GraphQLApi extends Construct {
       api: this,
       description,
       name,
-      lambdaFunction
+      lambdaFunction,
     });
   }
 
@@ -310,7 +317,7 @@ export class GraphQLApi extends Construct {
         userPoolId: upConfig.userPool.userPoolId,
         awsRegion: upConfig.userPool.stack.region,
         defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
-      }
+      },
     };
   }
 
@@ -325,11 +332,12 @@ export class GraphQLApi extends Construct {
       }
       expires = Math.round(expires / 1000);
     }
-    new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+    const key = new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
       expires,
       description: akConfig.apiKeyDesc,
       apiId: this.apiId,
     });
+    this._apiKey = key.attrApiKey;
     return { authenticationType: 'API_KEY' };
   }
 }

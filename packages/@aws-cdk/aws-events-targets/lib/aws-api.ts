@@ -2,7 +2,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as path from 'path';
-import * as metadata from './sdk-api-metadata.json';
+import { metadata } from './sdk-api-metadata.generated';
 import { addLambdaPermission } from './util';
 
 /**
@@ -94,7 +94,7 @@ export class AwsApi implements events.IRuleTarget {
     } else {
       handler.addToRolePolicy(new iam.PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],
-        resources: ['*']
+        resources: ['*'],
       }));
     }
 

@@ -1,8 +1,3 @@
-### Commit Message
-COMMIT TITLE HERE (copy from PR title, keep in sync)
-
-COMMIT MESSAGE HERE
-### End Commit Message
 
 ----
 

@@ -39,7 +39,7 @@ test('manifest save', () => {
   const manifestFile = path.join(outdir, 'manifest.json');
 
   const assemblyManifest: AssemblyManifest = {
-    version: 'version'
+    version: 'version',
   };
 
   Manifest.save(assemblyManifest, manifestFile);
@@ -50,12 +50,12 @@ test('manifest save', () => {
 
 });
 
-test('cloud-assembly.json.schema is correct', () => {
+test('if this test fails, run "yarn update-schema"', () => {
 
   // when we compare schemas we ignore changes the
   // description that is generated from the ts docstrings.
   const docStringFields = [
-    'description'
+    'description',
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -105,7 +105,7 @@ test('manifest load fails on higher minor version', () => {
 
   if (newVersion) {
     const assemblyManifest: AssemblyManifest = {
-      version: newVersion
+      version: newVersion,
     };
 
     Manifest.save(assemblyManifest, manifestFile);
@@ -126,7 +126,7 @@ test('manifest load fails on higher patch version', () => {
 
   if (newVersion) {
     const assemblyManifest: AssemblyManifest = {
-      version: newVersion
+      version: newVersion,
     };
 
     Manifest.save(assemblyManifest, manifestFile);
@@ -167,7 +167,7 @@ test('can access random metadata', () => {
   expect(randomArray).toEqual(['42']);
   expect(randomNumber).toEqual(42);
   expect(randomMap).toEqual({
-    key: 'value'
+    key: 'value',
   });
 
   expect(randomMap).toBeTruthy();

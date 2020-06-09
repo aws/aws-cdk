@@ -15,7 +15,7 @@ export = {
       description: 'really cool rule',
       identifier: 'AWS_SUPER_COOL',
       inputParameters: {
-        key: 'value'
+        key: 'value',
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
       configRuleName: 'cool rule',
@@ -25,14 +25,14 @@ export = {
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
-        SourceIdentifier: 'AWS_SUPER_COOL'
+        SourceIdentifier: 'AWS_SUPER_COOL',
       },
       ConfigRuleName: 'cool rule',
       Description: 'really cool rule',
       InputParameters: {
-        key: 'value'
+        key: 'value',
       },
-      MaximumExecutionFrequency: 'Three_Hours'
+      MaximumExecutionFrequency: 'Three_Hours',
     }));
 
     test.done();
@@ -44,7 +44,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
@@ -52,12 +52,12 @@ export = {
       configurationChanges: true,
       description: 'really cool rule',
       inputParameters: {
-        key: 'value'
+        key: 'value',
       },
       lambdaFunction: fn,
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
       configRuleName: 'cool rule',
-      periodic: true
+      periodic: true,
     });
 
     // THEN
@@ -68,41 +68,41 @@ export = {
           SourceDetails: [
             {
               EventSource: 'aws.config',
-              MessageType: 'ConfigurationItemChangeNotification'
+              MessageType: 'ConfigurationItemChangeNotification',
             },
             {
               EventSource: 'aws.config',
-              MessageType: 'OversizedConfigurationItemChangeNotification'
+              MessageType: 'OversizedConfigurationItemChangeNotification',
             },
             {
               EventSource: 'aws.config',
               MaximumExecutionFrequency: 'Six_Hours',
-              MessageType: 'ScheduledNotification'
-            }
+              MessageType: 'ScheduledNotification',
+            },
           ],
           SourceIdentifier: {
             'Fn::GetAtt': [
               'Function76856677',
-              'Arn'
-            ]
-          }
+              'Arn',
+            ],
+          },
         },
         ConfigRuleName: 'cool rule',
         Description: 'really cool rule',
         InputParameters: {
-          key: 'value'
+          key: 'value',
         },
-        MaximumExecutionFrequency: 'Six_Hours'
+        MaximumExecutionFrequency: 'Six_Hours',
       },
       DependsOn: [
         'FunctionPermissionEC8FE997',
         'Function76856677',
-        'FunctionServiceRole675BB04A'
-      ]
+        'FunctionServiceRole675BB04A',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Principal: 'config.amazonaws.com'
+      Principal: 'config.amazonaws.com',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -113,11 +113,11 @@ export = {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
-              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-            ]
-          ]
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
         },
         {
           'Fn::Join': [
@@ -125,13 +125,13 @@ export = {
             [
               'arn:',
               {
-                Ref: 'AWS::Partition'
+                Ref: 'AWS::Partition',
               },
-              ':iam::aws:policy/service-role/AWSConfigRulesExecutionRole'
-            ]
-          ]
-        }
-      ]
+              ':iam::aws:policy/service-role/AWSConfigRulesExecutionRole',
+            ],
+          ],
+        },
+      ],
     }));
 
     test.done();
@@ -141,7 +141,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL'
+      identifier: 'AWS_SUPER_COOL',
     });
 
     // WHEN
@@ -152,9 +152,9 @@ export = {
       Scope: {
         ComplianceResourceId: 'i-1234',
         ComplianceResourceTypes: [
-          'AWS::EC2::Instance'
-        ]
-      }
+          'AWS::EC2::Instance',
+        ],
+      },
     }));
 
     test.done();
@@ -164,7 +164,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL'
+      identifier: 'AWS_SUPER_COOL',
     });
 
     // WHEN
@@ -175,9 +175,9 @@ export = {
       Scope: {
         ComplianceResourceTypes: [
           'AWS::S3::Bucket',
-          'AWS::CloudFormation::Stack'
-        ]
-      }
+          'AWS::CloudFormation::Stack',
+        ],
+      },
     }));
 
     test.done();
@@ -187,7 +187,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE'
+      identifier: 'RULE',
     });
 
     // WHEN
@@ -197,8 +197,8 @@ export = {
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
       Scope: {
         TagKey: 'key',
-        TagValue: 'value'
-      }
+        TagValue: 'value',
+      },
     }));
 
     test.done();
@@ -210,13 +210,13 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
     const rule = new config.CustomRule(stack, 'Rule', {
       lambdaFunction: fn,
-      periodic: true
+      periodic: true,
     });
 
     // THEN
@@ -231,12 +231,12 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // THEN
     test.throws(() => new config.CustomRule(stack, 'Rule', {
-      lambdaFunction: fn
+      lambdaFunction: fn,
     }), /`configurationChanges`.*`periodic`/);
 
     test.done();
@@ -246,38 +246,38 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE'
+      identifier: 'RULE',
     });
 
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     // WHEN
     rule.onComplianceChange('ComplianceChange', {
-      target: new targets.LambdaFunction(fn)
+      target: new targets.LambdaFunction(fn),
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventPattern: {
         'source': [
-          'aws.config'
+          'aws.config',
         ],
         'detail': {
           configRuleName: [
             {
-              Ref: 'Rule4C995B7F'
-            }
-          ]
+              Ref: 'Rule4C995B7F',
+            },
+          ],
         },
         'detail-type': [
-          'Config Rules Compliance Change'
-        ]
-      }
+          'Config Rules Compliance Change',
+        ],
+      },
     }));
 
     test.done();
-  }
+  },
 };

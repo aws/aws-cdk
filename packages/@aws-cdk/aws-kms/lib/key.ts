@@ -34,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -107,15 +107,16 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
-      if (allowNoOp) { return; }
+      if (allowNoOp) { return { statementAdded: false }; }
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 
   /**
@@ -175,7 +176,7 @@ abstract class KeyBase extends Resource implements IKey {
     return this.grant(grantee,
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -187,7 +188,7 @@ abstract class KeyBase extends Resource implements IKey {
       'kms:Decrypt',
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -370,7 +371,7 @@ export class Key extends KeyBase {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
 
   }
@@ -395,13 +396,13 @@ export class Key extends KeyBase {
       'kms:CancelKeyDeletion',
       'kms:GenerateDataKey',
       'kms:TagResource',
-      'kms:UntagResource'
+      'kms:UntagResource',
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions,
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
   }
 }

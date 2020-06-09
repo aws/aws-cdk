@@ -1,12 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
-import { allRouteTableIds } from './util';
-import { IVpc, SubnetSelection, SubnetType } from './vpc';
+import { allRouteTableIds, flatten } from './util';
+import { ISubnet, IVpc, SubnetSelection } from './vpc';
 
 /**
  * A VPC endpoint.
@@ -113,7 +114,21 @@ export interface GatewayVpcEndpointOptions {
   /**
    * Where to add endpoint routing.
    *
-   * @default private subnets
+   * By default, this endpoint will be routable from all subnets in the VPC.
+   * Specify a list of subnet selection objects here to be more specific.
+   *
+   * @default - All subnets in the VPC
+   * @example
+   *
+   * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
+   *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+   *   // Add only to ISOLATED subnets
+   *   subnets: [
+   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *   ]
+   * });
+   *
+   *
    */
   readonly subnets?: SubnetSelection[]
 }
@@ -166,8 +181,10 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
-    const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
+    const subnets: ISubnet[] = props.subnets
+      ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))
+      : [...props.vpc.privateSubnets, ...props.vpc.publicSubnets, ...props.vpc.isolatedSubnets];
+    const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
       throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
@@ -178,7 +195,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;
@@ -344,6 +361,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * Limit to only those availability zones where the endpoint service can be created
+   *
+   * Setting this to 'true' requires a lookup to be performed at synthesis time. Account
+   * and region must be set on the containing stack for this to work.
+   *
+   * @default false
+   */
+  readonly lookupSupportedAzs?: boolean;
 }
 
 /**
@@ -430,21 +457,37 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     super(scope, id);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     })];
 
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
-      securityGroups
+      securityGroups,
     });
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
-    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
-    const subnetIds = subnets.subnetIds;
+    const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
+    const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    let subnets;
+
+    // If we don't have an account/region, we will not be able to do filtering on AZs since
+    // they will be undefined
+    // Otherwise, we filter by AZ
+    const agnostic = (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.stack.region));
+
+    if (agnostic && lookupSupportedAzs) {
+      throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
+    } else if (!agnostic && lookupSupportedAzs) {
+      const availableAZs = this.availableAvailabilityZones(props.service.name);
+      subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
+    } else {
+      subnets = subnetSelection.subnets;
+    }
+    const subnetIds = subnets.map(s => s.subnetId);
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
@@ -453,13 +496,28 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
+  }
+
+  private availableAvailabilityZones(serviceName: string): string[] {
+    // Here we check what AZs the endpoint service is available in
+    // If for whatever reason we can't retrieve the AZs, and no context is set,
+    // we will fall back to all AZs
+    const availableAZs = ContextProvider.getValue(this, {
+      provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: this.stack.availabilityZones,
+      props: {serviceName},
+    }).value;
+    if (!Array.isArray(availableAZs)) {
+      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);
+    }
+    return availableAZs;
   }
 }
 

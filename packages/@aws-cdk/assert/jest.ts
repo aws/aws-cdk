@@ -41,12 +41,12 @@ expect.extend({
     if (pass) {
       return {
         pass,
-        message: () => 'Not ' + assertion.description
+        message: () => 'Not ' + assertion.description,
       };
     } else {
       return {
         pass,
-        message: () => assertion.description
+        message: () => assertion.description,
       };
     }
   },
@@ -76,7 +76,7 @@ expect.extend({
     props: HaveOutputProperties) {
 
     return applyAssertion(haveOutput(props), actual);
-  }
+  },
 });
 
 function applyAssertion(assertion: JestFriendlyAssertion<StackInspector>, actual: cxapi.CloudFormationStackArtifact | core.Stack) {

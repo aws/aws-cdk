@@ -6,6 +6,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export interface SendToQueueProps {
   /**
@@ -54,6 +56,8 @@ export interface SendToQueueProps {
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
 
@@ -64,7 +68,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
+      sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
@@ -83,7 +87,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       resourceArn: getResourceArn('sqs', 'sendMessage', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
-        resources: [this.queue.queueArn]
+        resources: [this.queue.queueArn],
       })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
@@ -91,7 +95,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
         DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
-      }
+      },
     };
   }
 }

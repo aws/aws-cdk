@@ -7,8 +7,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -151,9 +151,9 @@
                   "ApplicationName": "IntegTestDeployApp",
                   "DeploymentGroupName": "IntegTestDeploymentGroup",
                   "TaskDefinitionTemplateArtifact": "SourceOutput",
+                  "TaskDefinitionTemplatePath": "task-definition-test.json",
                   "AppSpecTemplateArtifact": "SourceOutput",
                   "AppSpecTemplatePath": "appspec-test.json",
-                  "TaskDefinitionTemplatePath": "task-definition-test.json",
                   "Image1ArtifactName": "SourceOutput",
                   "Image1ContainerName": "PLACEHOLDER"
                 },
@@ -423,7 +423,7 @@
                   "iam:PassedToService": [
                     "ecs-tasks.amazonaws.com"
                   ]
-               }
+                }
               },
               "Effect": "Allow",
               "Resource": "*"

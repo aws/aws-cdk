@@ -36,7 +36,8 @@ export abstract class Code {
   }
 
   /**
-   * Loads the function code from a local disk asset.
+   * Loads the function code from a local disk path.
+   *
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
@@ -128,8 +129,8 @@ export class S3Code extends Code {
       s3Location: {
         bucketName: this.bucketName,
         objectKey: this.key,
-        objectVersion: this.objectVersion
-      }
+        objectVersion: this.objectVersion,
+      },
     };
   }
 }
@@ -154,7 +155,7 @@ export class InlineCode extends Code {
 
   public bind(_scope: cdk.Construct): CodeConfig {
     return {
-      inlineCode: this.code
+      inlineCode: this.code,
     };
   }
 }
@@ -178,7 +179,7 @@ export class AssetCode extends Code {
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
-        ...this.options
+        ...this.options,
       });
     }
 
@@ -189,8 +190,8 @@ export class AssetCode extends Code {
     return {
       s3Location: {
         bucketName: this.asset.s3BucketName,
-        objectKey: this.asset.s3ObjectKey
-      }
+        objectKey: this.asset.s3ObjectKey,
+      },
     };
   }
 
@@ -273,7 +274,7 @@ export class CfnParametersCode extends Code {
       s3Location: {
         bucketName: this._bucketNameParam.valueAsString,
         objectKey: this._objectKeyParam.valueAsString,
-      }
+      },
     };
   }
 

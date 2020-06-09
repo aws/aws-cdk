@@ -5,7 +5,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 /**
@@ -134,7 +134,7 @@ export class User extends Resource implements IIdentity, IUser {
       service: 'iam',
       region: '',
       resource: 'user',
-      resourceName: userName
+      resourceName: userName,
     });
 
     class Import extends Resource implements IUser {
@@ -146,12 +146,16 @@ export class User extends Resource implements IIdentity, IUser {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
       public addToGroup(_group: IGroup): void {
@@ -211,7 +215,7 @@ export class User extends Resource implements IIdentity, IUser {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
-      loginProfile: this.parseLoginProfile(props)
+      loginProfile: this.parseLoginProfile(props),
     });
 
     this.userName = this.getResourceNameAttribute(user.ref);
@@ -258,21 +262,25 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @returns true
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToUser(this);
     }
 
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
         password: props.password.toString(),
-        passwordResetRequired: props.passwordResetRequired
+        passwordResetRequired: props.passwordResetRequired,
       };
     }
 

@@ -12,7 +12,7 @@ export = {
     stack.addFileAsset({
       fileName: 'file-name',
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
-      sourceHash: 'source-hash'
+      sourceHash: 'source-hash',
     });
 
     // THEN
@@ -32,21 +32,43 @@ export = {
       Parameters: {
         AssetParameterssourcehashS3BucketE6E91E3E: {
           Type: 'String',
-          Description: 'S3 bucket for asset "source-hash"'
+          Description: 'S3 bucket for asset "source-hash"',
         },
         AssetParameterssourcehashS3VersionKeyAC4157C3: {
           Type: 'String',
-          Description: 'S3 key for asset version "source-hash"'
+          Description: 'S3 key for asset version "source-hash"',
         },
         AssetParameterssourcehashArtifactHashADBAE418: {
           Type: 'String',
-          Description: 'Artifact hash for asset "source-hash"'
-        }
-      }
+          Description: 'Artifact hash for asset "source-hash"',
+        },
+      },
     });
 
     test.done();
+  },
 
+  'addFileAsset correctly sets object urls'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const assetLocation = stack.addFileAsset({
+      fileName: 'file-name',
+      packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      sourceHash: 'source-hash',
+    });
+
+    // THEN
+    const expectedS3UrlPrefix = 's3://';
+    const expectedHttpUrlPrefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+
+    test.equal(
+      assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, ''),
+      assetLocation.httpUrl.replace(expectedHttpUrlPrefix, ''),
+    );
+
+    test.done();
   },
 
   'addDockerImageAsset correctly sets metadata'(test: Test) {
@@ -57,7 +79,7 @@ export = {
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
       directoryName: 'directory-name',
-      repositoryName: 'repository-name'
+      repositoryName: 'repository-name',
     });
 
     // THEN
