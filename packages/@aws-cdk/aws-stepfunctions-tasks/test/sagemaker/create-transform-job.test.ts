@@ -5,6 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
+import { SageMakerCreateTransformJob } from '../../lib/sagemaker/create-transform-job';
 
 let stack: cdk.Stack;
 let role: iam.Role;
@@ -22,7 +23,7 @@ beforeEach(() => {
 
 test('create basic transform job', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',
     modelName: 'MyModelName',
     transformInput: {
@@ -35,7 +36,7 @@ test('create basic transform job', () => {
     transformOutput: {
       s3OutputPath: 's3://outputbucket/prefix',
     },
-  }) });
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -77,8 +78,8 @@ test('create basic transform job', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    new SageMakerCreateTransformJob(stack, 'TransformTask', {
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       transformJobName: 'MyTransformJob',
       modelName: 'MyModelName',
       transformInput: {
@@ -91,17 +92,17 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       transformOutput: {
         s3OutputPath: 's3://outputbucket/prefix',
       },
-    }) });
-  }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+    });
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });
 
 test('create complex transform job', () => {
   // WHEN
   const kmsKey = new kms.Key(stack, 'Key');
-  const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',
     modelName: 'MyModelName',
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     role,
     transformInput: {
       transformDataSource: {
@@ -118,7 +119,7 @@ test('create complex transform job', () => {
     transformResources: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeKmsKeyId: kmsKey,
+      volumeEncryptionKey: kmsKey,
     },
     tags: {
       Project: 'MyProject',
@@ -128,8 +129,8 @@ test('create complex transform job', () => {
       SOMEVAR: 'myvalue',
     },
     maxConcurrentTransforms: 3,
-    maxPayloadInMB: 100,
-  }) });
+    maxPayload: cdk.Size.mebibytes(100),
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -182,7 +183,7 @@ test('create complex transform job', () => {
 
 test('pass param to transform job', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: sfn.Data.stringAt('$.TransformJobName'),
     modelName: sfn.Data.stringAt('$.ModelName'),
     role,
@@ -201,7 +202,7 @@ test('pass param to transform job', () => {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
     },
-  }) });
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
