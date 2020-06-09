@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import { toSymlinkFollow } from './compat';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -203,19 +204,4 @@ function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
-}
-
-function toSymlinkFollow(follow?: assets.FollowMode): cdk.SymlinkFollowMode | undefined {
-  if (!follow) {
-    return undefined;
-  }
-
-  switch (follow) {
-    case assets.FollowMode.NEVER: return cdk.SymlinkFollowMode.NEVER;
-    case assets.FollowMode.ALWAYS: return cdk.SymlinkFollowMode.ALWAYS;
-    case assets.FollowMode.BLOCK_EXTERNAL: return cdk.SymlinkFollowMode.BLOCK_EXTERNAL;
-    case assets.FollowMode.EXTERNAL: return cdk.SymlinkFollowMode.EXTERNAL;
-    default:
-      throw new Error(`unknown follow mode: ${follow}`);
-  }
 }
