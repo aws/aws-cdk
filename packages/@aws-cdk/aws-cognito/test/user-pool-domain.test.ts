@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Stack } from '@aws-cdk/core';
+import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';
 
 describe('User Pool Client', () => {
@@ -90,6 +90,17 @@ describe('User Pool Client', () => {
     expect(() => pool.addDomain('Domain3', {
       cognitoDomain: { domainPrefix: 'dómäin-prefix' },
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
+  });
+
+  test('does not fail when domainPrefix is a token', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    const parameter = new CfnParameter(stack, 'Paraeter');
+
+    expect(() => pool.addDomain('Domain', {
+      cognitoDomain: { domainPrefix: parameter.valueAsString },
+    })).not.toThrow();
   });
 
   test('custom resource is added when cloudFrontDistribution method is called', () => {
