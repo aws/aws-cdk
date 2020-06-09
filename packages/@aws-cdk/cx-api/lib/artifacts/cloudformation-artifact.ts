@@ -1,16 +1,11 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CloudArtifact } from './cloud-artifact';
-import { CloudAssembly } from './cloud-assembly';
-import { Environment, EnvironmentUtils } from './environment';
+import { CloudArtifact } from '../cloud-artifact';
+import { CloudAssembly } from '../cloud-assembly';
+import { Environment, EnvironmentUtils } from '../environment';
 
 export class CloudFormationStackArtifact extends CloudArtifact {
-  /**
-   * The CloudFormation template for this stack.
-   */
-  public readonly template: any;
-
   /**
    * The file name of the template.
    */
@@ -87,6 +82,8 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly terminationProtection?: boolean;
 
+  private _template: any | undefined;
+
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
@@ -107,7 +104,6 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.terminationProtection = properties.terminationProtection;
 
     this.stackName = properties.stackName || artifactId;
-    this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId
@@ -116,5 +112,15 @@ export class CloudFormationStackArtifact extends CloudArtifact {
 
     this.name = this.stackName; // backwards compat
     this.originalName = this.stackName;
+  }
+
+  /**
+   * The CloudFormation template for this stack.
+   */
+  public get template(): any {
+    if (this._template === undefined) {
+      this._template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
+    }
+    return this._template;
   }
 }
