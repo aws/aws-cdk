@@ -157,7 +157,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
     this.inputDataConfig = props.inputDataConfig.map((config) => {
       if (!config.dataSource.s3DataSource.s3DataType) {
-        return Object.assign({}, config, { dataSource: { s3DataSource: { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
+        return {
+          ...config,
+          dataSource: { s3DataSource: { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } },
+        };
       } else {
         return config;
       }
