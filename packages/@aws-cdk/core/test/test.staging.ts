@@ -250,6 +250,6 @@ export = {
 function readDockerStubInput() {
   const out = fs.readFileSync('/tmp/docker-stub.input', 'utf-8').trim();
   return out
-    .replace(/([\/a-zA-Z0-9-@_]+):\/asset-input/, '/input:/asset-input')
-    .replace(/([\/a-zA-Z0-9-@_]+):\/asset-output/, '/output:/asset-output');
+    .replace(/-v ([^:]+):\/asset-input/, '-v /input:/asset-input')
+    .replace(/-v ([^:]+):\/asset-output/, '-v /output:/asset-output');
 }
