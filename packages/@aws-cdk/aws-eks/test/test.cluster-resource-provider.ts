@@ -99,10 +99,10 @@ export = {
           Endpoint: 'http://endpoint',
           Arn: 'arn:cluster-arn',
           CertificateAuthorityData: 'certificateAuthority-data',
-          ClusterSecurityGroupId: undefined,
-          EncryptionConfigKeyArn: undefined,
-          OpenIdConnectIssuerUrl: undefined,
-          OpenIdConnectIssuer: undefined,
+          ClusterSecurityGroupId: '',
+          EncryptionConfigKeyArn: '',
+          OpenIdConnectIssuerUrl: '',
+          OpenIdConnectIssuer: '',
         },
       });
       test.done();
@@ -424,10 +424,10 @@ export = {
             Endpoint: 'http://endpoint',
             Arn: 'arn:cluster-arn',
             CertificateAuthorityData: 'certificateAuthority-data',
-            ClusterSecurityGroupId: undefined,
-            EncryptionConfigKeyArn: undefined,
-            OpenIdConnectIssuerUrl: undefined,
-            OpenIdConnectIssuer: undefined,
+            ClusterSecurityGroupId: '',
+            EncryptionConfigKeyArn: '',
+            OpenIdConnectIssuerUrl: '',
+            OpenIdConnectIssuer: '',
           },
         });
         test.done();
