@@ -48,7 +48,7 @@ cliTest('git directory does not throw off the initer!', async (workDir) => {
   expect(await fs.pathExists(path.join(workDir, 'bin'))).toBeTruthy();
 });
 
-test('verify "future flags" are added to cdk.json', async () => {
+xtest('verify "future flags" are added to cdk.json', async () => {
   // This is a lot to test, and it can be slow-ish, especially when ran with other tests.
   jest.setTimeout(30_000);
 

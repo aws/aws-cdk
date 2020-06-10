@@ -189,3 +189,36 @@ new DatabaseCluster(this, 'dbcluster', {
     s3ExportBuckets: [ exportBucket ]
 });
 ```
+
+### Creating a Database Proxy
+
+For RDS Proxy, See [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+
+```ts
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as rds from '@aws-cdk/aws-rds';
+import * as secrets from '@aws-cdk/aws-secretsmanager';
+
+const vpc: ec2.IVpc = ...;
+const securityGroup: ec2.ISecurityGroup = ...;
+const secret: secrets.ISecret = ...;
+const dbInstance: rds.IDatabaseInstance = ...;
+
+const proxy = new rds.DatabaseProxy(this, 'proxy', {
+    connectionPoolConfiguration: {
+        connectionBorrowTimeout: cdk.Duration.seconds(30),
+        maxConnectionsPercent: 50,
+    },
+    dbInstance,
+    engineFamily: rds.DatabaseProxyEngine.POSTGRESQL,
+    secret,
+    vpc,
+});
+
+...
+
+proxy.dbProxyName;
+proxy.dbProxyArn;
+proxy.endpoint;
+```
