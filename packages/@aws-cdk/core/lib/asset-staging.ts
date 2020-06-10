@@ -136,7 +136,7 @@ export class AssetStaging extends Construct {
 
   private bundle(options: BundlingOptions): string {
     // Create temporary directory for bundling
-    const bundleDir = fs.mkdtempSync(path.resolve(path.join(FileSystem.tmpdir, 'cdk-asset-bundle-')));
+    const bundleDir = fs.mkdtempSync(path.join(FileSystem.tmpdir, 'cdk-asset-bundle-'));
 
     // Always mount input and output dir
     const volumes = [
