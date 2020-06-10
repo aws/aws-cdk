@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import { CopyOptions, FingerprintOptions } from './options';
@@ -43,4 +44,17 @@ export class FileSystem {
   public static isEmpty(dir: string): boolean {
     return fs.readdirSync(dir).length === 0;
   }
+
+  /**
+   * The real path of the system temp directory
+   */
+  public static get tmpdir(): string {
+    if (FileSystem._tmpdir) {
+      return FileSystem._tmpdir;
+    }
+    FileSystem._tmpdir = fs.realpathSync(os.tmpdir());
+    return FileSystem._tmpdir;
+  }
+
+  private static _tmpdir?: string;
 }
