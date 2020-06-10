@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { integrationResourceArn } from '../../private/task-utils';
-import { DynamoAttribute, DynamoAttributeValueMap, DynamoAttributeValue } from '../shared-types';
+import { DynamoAttribute, DynamoAttributeValue, DynamoAttributeValueMap } from '../shared-types';
 
 export enum DynamoMethod {
   GET = 'Get',
