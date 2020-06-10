@@ -180,6 +180,14 @@ export class FargateProfile extends Construct implements ITaggable {
     this.fargateProfileArn = resource.getAttString('fargateProfileArn');
     this.fargateProfileName = resource.ref;
 
+    // Fargate profiles must be created sequentially. If other profile(s) already
+    // exist on the same cluster, create a dependency to force sequential creation.
+    const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
+    if (clusterFargateProfiles.length > 1) {
+      const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
+      resource.node.addDependency(previousProfile);
+    }
+
     // map the fargate pod execution role to the relevant groups in rbac
     // see https://github.com/aws/aws-cdk/issues/7981
     props.cluster.awsAuth.addRoleMapping(role, {
