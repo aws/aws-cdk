@@ -332,6 +332,12 @@ export class Cluster extends Resource implements ICluster {
   public readonly defaultNodegroup?: Nodegroup;
 
   /**
+   * If the cluster has one (or more) FargateProfiles associated, this array
+   * will hold a reference to each.
+   */
+  private readonly _fargateProfiles: FargateProfile[] = [];
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -755,6 +761,18 @@ export class Cluster extends Resource implements ICluster {
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
     return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+  }
+
+  /**
+   * Internal API used by `FargateProfile` to keep inventory of Fargate profiles associated with
+   * this cluster, for the sake of ensuring the profiles are created sequentially.
+   *
+   * @returns the list of FargateProfiles attached to this cluster, including the one just attached.
+   * @internal
+   */
+  public _attachFargateProfile(fargateProfile: FargateProfile): FargateProfile[] {
+    this._fargateProfiles.push(fargateProfile);
+    return this._fargateProfiles;
   }
 
   /**
