@@ -1,5 +1,3 @@
-import { transformAttributeValueMap } from './private/utils';
-
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
  */
@@ -127,23 +125,18 @@ export class DynamoProjectionExpression {
 /**
  * Map of string to AttributeValue
  */
-export interface DynamoAttributeValueMap {
+export type DynamoAttributeValueMap = {
   [key: string]: DynamoAttributeValue;
-}
+};
 
 /**
  * Class to generate AttributeValue
  */
-export class DynamoAttributeValue {
-  private attributeValue: any = {};
-
+export interface DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
    */
-  public withS(value: string) {
-    this.attributeValue.S = value;
-    return this;
-  }
+  readonly s?: string;
 
   /**
    * Sets an attribute of type Number. For example:  "N": "123.45"
@@ -151,26 +144,17 @@ export class DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public withN(value: string) {
-    this.attributeValue.N = value;
-    return this;
-  }
+  readonly n?: string;
 
   /**
    * Sets an attribute of type Binary. For example:  "B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"
    */
-  public withB(value: string) {
-    this.attributeValue.B = value;
-    return this;
-  }
+  readonly b?: string;
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
    */
-  public withSS(value: string[]) {
-    this.attributeValue.SS = value;
-    return this;
-  }
+  readonly ss?: string[];
 
   /**
    * Sets an attribute of type Number Set. For example:  "NS": ["42.2", "-19", "7.5", "3.14"]
@@ -178,55 +162,30 @@ export class DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public withNS(value: string[]) {
-    this.attributeValue.NS = value;
-    return this;
-  }
+  readonly ns?: string[];
 
   /**
    * Sets an attribute of type Binary Set. For example:  "BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]
    */
-  public withBS(value: string[]) {
-    this.attributeValue.BS = value;
-    return this;
-  }
+  readonly bs?: string[];
 
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
    */
-  public withM(value: DynamoAttributeValueMap) {
-    this.attributeValue.M = transformAttributeValueMap(value);
-    return this;
-  }
+  readonly m?: DynamoAttributeValueMap;
 
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]
    */
-  public withL(value: DynamoAttributeValue[]) {
-    this.attributeValue.L = value.map((val) => val.toObject());
-    return this;
-  }
+  readonly l?: DynamoAttributeValue[];
 
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
    */
-  public withNULL(value: boolean) {
-    this.attributeValue.NULL = value;
-    return this;
-  }
+  readonly isNull?: boolean;
 
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
    */
-  public withBOOL(value: boolean) {
-    this.attributeValue.BOOL = value;
-    return this;
-  }
-
-  /**
-   * Return the attributeValue object
-   */
-  public toObject() {
-    return this.attributeValue;
-  }
+  readonly isBool?: boolean;
 }

@@ -21,7 +21,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const secondNumber = 24;
 
     const table = new ddb.Table(this, 'Messages', {
-      tableName: 'Messages',
+      tableName: TABLE_NAME,
       partitionKey: {
         name: 'MessageId',
         type: ddb.AttributeType.STRING,
@@ -33,9 +33,9 @@ class CallDynamoDBStack extends cdk.Stack {
 
     const putItemTask = new tasks.DynamoPutItem(this, 'PutItem', {
       item: {
-        MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
-        Text: new tasks.DynamoAttributeValue().withS(sfn.Data.stringAt('$.bar')),
-        TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`),
+        MessageId: { s: MESSAGE_ID },
+        Text: { s: sfn.Data.stringAt('$.bar') },
+        TotalCount: { n: `${firstNumber}` },
       },
       table,
     });
@@ -43,7 +43,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const getItemTaskAfterPut = new tasks.DynamoGetItem(this, 'GetItemAfterPut', {
       partitionKey: {
         name: 'MessageId',
-        value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+        value: { s: MESSAGE_ID },
       },
       table,
     });
@@ -51,12 +51,12 @@ class CallDynamoDBStack extends cdk.Stack {
     const updateItemTask = new tasks.DynamoUpdateItem(this, 'UpdateItem', {
       partitionKey: {
         name: 'MessageId',
-        value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+        value: { s: MESSAGE_ID },
       },
       table,
       expressionAttributeValues: {
-        ':val': new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.Item.TotalCount.N')),
-        ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`),
+        ':val': { n: sfn.Data.stringAt('$.Item.TotalCount.N') },
+        ':rand': { n: `${secondNumber}` },
       },
       updateExpression: 'SET TotalCount = :val + :rand',
     });
@@ -64,7 +64,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const getItemTaskAfterUpdate = new tasks.DynamoGetItem(this, 'GetItemAfterUpdate', {
       partitionKey: {
         name: 'MessageId',
-        value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+        value: { s: MESSAGE_ID },
       },
       table,
       outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
@@ -73,7 +73,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const deleteItemTask = new tasks.DynamoDeleteItem(this, 'DeleteItem', {
       partitionKey: {
         name: 'MessageId',
-        value: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
+        value: { s: MESSAGE_ID },
       },
       table,
       resultPath: 'DISCARD',

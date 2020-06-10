@@ -23,11 +23,11 @@ test('GetItem task', () => {
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {
     partitionKey: {
       name: 'SOME_KEY',
-      value: new tasks.DynamoAttributeValue().withS('1234'),
+      value: { s: '1234' },
     },
     sortKey: {
       name: 'OTHER_KEY',
-      value: new tasks.DynamoAttributeValue().withN('4321'),
+      value: { n: '4321' },
     },
     table,
     consistentRead: true,
@@ -73,11 +73,11 @@ test('supports tokens', () => {
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {
     partitionKey: {
       name: 'SOME_KEY',
-      value: new tasks.DynamoAttributeValue().withS(sfn.Data.stringAt('$.partitionKey')),
+      value: { s: sfn.Data.stringAt('$.partitionKey') },
     },
     sortKey: {
       name: 'OTHER_KEY',
-      value: new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.sortKey')),
+      value: { n: sfn.Data.stringAt('$.sortKey') },
     },
     table,
     consistentRead: true,

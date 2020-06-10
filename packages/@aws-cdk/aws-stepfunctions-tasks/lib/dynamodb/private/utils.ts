@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { integrationResourceArn } from '../../private/task-utils';
-import { DynamoAttribute, DynamoAttributeValueMap } from '../shared-types';
+import { DynamoAttribute, DynamoAttributeValueMap, DynamoAttributeValue } from '../shared-types';
 
 export enum DynamoMethod {
   GET = 'Get',
@@ -15,11 +15,11 @@ export function getDynamoResourceArn(method: DynamoMethod) {
 
 export function configurePrimaryKey(partitionKey: DynamoAttribute, sortKey?: DynamoAttribute) {
   const key = {
-    [partitionKey.name]: partitionKey.value.toObject(),
+    [partitionKey.name]: toObject(partitionKey.value),
   };
 
   if (sortKey) {
-    key[sortKey.name] = sortKey.value.toObject();
+    key[sortKey.name] = toObject(sortKey.value);
   }
 
   return key;
@@ -29,8 +29,54 @@ export function transformAttributeValueMap(attrMap?: DynamoAttributeValueMap) {
   const transformedValue: any = {};
   for (const key in attrMap) {
     if (key) {
-      transformedValue[key] = attrMap[key].toObject();
+      transformedValue[key] = toObject(attrMap[key]);
     }
   }
   return attrMap ? transformedValue : undefined;
+}
+
+function toObject(value: DynamoAttributeValue): any {
+  if (Object.keys(value).length !== 1) {
+    throw new Error('no no no');
+  }
+
+  if (value.s) {
+    return { S: value.s };
+  }
+
+  if (value.n) {
+    return { N: value.n };
+  }
+
+  if (value.b) {
+    return { B: value.b };
+  }
+
+  if (value.ss) {
+    return { SS: value.ss };
+  }
+
+  if (value.ns) {
+    return { NS: value.ns };
+  }
+
+  if (value.bs) {
+    return { BS: value.bs };
+  }
+
+  if (value.m) {
+    return { M: transformAttributeValueMap(value.m) };
+  }
+
+  if (value.l) {
+    return { L: value.l.map((val) => toObject(val)) };
+  }
+
+  if (value.isNull) {
+    return { NULL: value.isNull };
+  }
+
+  if (value.isBool) {
+    return { BOOL: value.isBool };
+  }
 }

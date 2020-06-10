@@ -23,13 +23,13 @@ test('UpdateItem task', () => {
   const task = new tasks.DynamoUpdateItem(stack, 'UpdateItem', {
     partitionKey: {
       name: 'SOME_KEY',
-      value: new tasks.DynamoAttributeValue().withS('1234'),
+      value: { s: '1234' },
     },
     table,
     conditionExpression: 'ForumName <> :f and Subject <> :s',
     expressionAttributeNames: { OTHER_KEY: '#OK' },
     expressionAttributeValues: {
-      ':val': new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.Item.TotalCount.N')),
+      ':val': { n: sfn.Data.stringAt('$.Item.TotalCount.N') },
     },
     returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
     returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
