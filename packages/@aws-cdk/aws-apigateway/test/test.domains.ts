@@ -273,12 +273,11 @@ export = {
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
 
     // WHEN
-    test.throws(() => { 
-      new apigw.DomainName(stack, 'someDomain', {domainName: 'someDomainWithUpercase.domain.com', certificate}) 
-    })
+    test.throws(() => {
+      new apigw.DomainName(stack, 'someDomain', {domainName: 'someDomainWithUpercase.domain.com', certificate});
+    });
 
     // THEN
-
     test.done();
   },
 
