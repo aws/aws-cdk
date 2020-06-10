@@ -1,0 +1,78 @@
+{
+  "Parameters": {
+    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3Bucket8CD0F73B": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+    },
+    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3VersionKeyA9EAF743": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+    },
+    "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8ArtifactHashBAE492DD": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8\""
+    }
+  },
+  "Resources": {
+    "MyUserDC45028B": {
+      "Type": "AWS::IAM::User"
+    },
+    "MyUserDefaultPolicy7B897426": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3Bucket8CD0F73B"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParameters10af79ff4bd6432db05b51810586c19ca95abd08759fca785e44f594bc9633b8S3Bucket8CD0F73B"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyUserDefaultPolicy7B897426",
+        "Users": [
+          {
+            "Ref": "MyUserDC45028B"
+          }
+        ]
+      }
+    }
+  }
+}

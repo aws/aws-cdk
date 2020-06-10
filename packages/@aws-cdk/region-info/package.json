@@ -55,7 +55,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "cdk-build-tools": "0.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "pkglint": "0.0.0"
   },
   "repository": {
