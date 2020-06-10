@@ -294,4 +294,46 @@ export = {
 
     test.done();
   },
+
+  'fargate role is added to RBAC'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.FargateCluster(stack, 'FargateCluster');
+
+    // THEN
+    expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesResource', {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+    }));
+    test.done();
+  },
+
+  'cannot be added to a cluster without kubectl enabled'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', { kubectlEnabled: false });
+
+    // WHEN
+    test.throws(() => new eks.FargateProfile(stack, 'MyFargateProfile', {
+      cluster,
+      selectors: [ { namespace: 'default' } ],
+    }), /unsupported/);
+
+    test.done();
+  },
 };
