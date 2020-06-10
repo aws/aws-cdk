@@ -135,6 +135,8 @@ export type DynamoAttributeValueMap = {
 export interface DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
+   *
+   * @default - None
    */
   readonly s?: string;
 
@@ -143,16 +145,22 @@ export interface DynamoAttributeValue {
    * Numbers are sent across the network to DynamoDB as strings,
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
+   *
+   * @default - None
    */
   readonly n?: string;
 
   /**
    * Sets an attribute of type Binary. For example:  "B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"
+   *
+   * @default - None
    */
   readonly b?: string;
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
+   *
+   * @default - None
    */
   readonly ss?: string[];
 
@@ -161,31 +169,43 @@ export interface DynamoAttributeValue {
    * Numbers are sent across the network to DynamoDB as strings,
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
+   *
+   * @default - None
    */
   readonly ns?: string[];
 
   /**
    * Sets an attribute of type Binary Set. For example:  "BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]
+   *
+   * @default - None
    */
   readonly bs?: string[];
 
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
+   *
+   * @default - None
    */
   readonly m?: DynamoAttributeValueMap;
 
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]
+   *
+   * @default - None
    */
   readonly l?: DynamoAttributeValue[];
 
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
+   *
+   * @default - None
    */
   readonly nullValue?: boolean;
 
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
+   *
+   * @default - None
    */
   readonly booleanValue?: boolean;
 }
