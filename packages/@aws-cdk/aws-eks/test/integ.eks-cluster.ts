@@ -66,9 +66,14 @@ class EksClusterStack extends TestStack {
     cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
     cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
 
+    // add a service account connected to a IAM role
+    cluster.addServiceAccount('MyServiceAccount');
+
     new CfnOutput(this, 'ClusterEndpoint', { value: cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: cluster.clusterCertificateAuthorityData });
+    new CfnOutput(this, 'ClusterSecurityGroupId', { value: cluster.clusterSecurityGroupId });
+    new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
   }
 }

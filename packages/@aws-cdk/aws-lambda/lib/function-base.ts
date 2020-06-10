@@ -283,6 +283,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
+
+          return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
         },
         node: this.node,
       },
@@ -314,6 +316,15 @@ export abstract class FunctionBase extends Resource implements IFunction {
       function: this,
       ...options,
     });
+  }
+
+  /**
+   * Returns the construct tree node that corresponds to the lambda function.
+   * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
+   * @internal
+   */
+  protected _functionNode(): ConstructNode {
+    return this.node;
   }
 
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {

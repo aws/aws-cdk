@@ -411,10 +411,13 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * listener.addTargets(service.loadBalancerTarget({
-   *   containerName: 'MyContainer',
-   *   containerPort: 1234
-   * }));
+   * listener.addTargets('ECS', {
+   *   port: 80,
+   *   targets: [service.loadBalancerTarget({
+   *     containerName: 'MyContainer',
+   *     containerPort: 1234,
+   *   })],
+   * });
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     const self = this;

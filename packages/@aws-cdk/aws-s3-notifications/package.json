@@ -56,23 +56,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -101,11 +84,14 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true
+  }
 }

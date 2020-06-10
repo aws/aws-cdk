@@ -31,22 +31,22 @@ import * as lambda from '@aws-cdk/aws-lambda';
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda),
-    // Lambda's result is in the attribute `Payload`
-    outputPath: '$.Payload',
+const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
+  lambdaFunction: submitLambda,
+  // Lambda's result is in the attribute `Payload`
+  outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
     time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
-const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status" in the response
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Pass just the field named "guid" into the Lambda, put the
+  // Lambda's result in a field called "status" in the response
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -54,11 +54,11 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Use "guid" field as input
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Use "guid" field as input
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const definition = submitJob
@@ -131,19 +131,44 @@ directly in the Amazon States language.
 
 ### Pass
 
-A `Pass` state does no work, but it can optionally transform the execution's
-JSON state.
+A `Pass` state passes its input to its output, without performing work.
+Pass states are useful when constructing and debugging state machines.
+
+The following example injects some fixed data into the state machine through
+the `result` field. The `result` field will be added to the input and the result
+will be passed as the state's output.
 
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
 const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-    result: { hello: "world" },
-    resultPath: '$.subObject',
+  result: { hello: 'world' },
+  resultPath: '$.subObject',
 });
 
 // Set the next state
 pass.next(nextState);
 ```
+
+The `Pass` state also supports passing key-value pairs as input. Values can
+be static, or selected from the input with a path.
+
+The following example filters the `greeting` field from the state input
+and also injects a field called `otherData`.
+
+```ts
+const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
+  parameters: { // input to the pass state
+    input: stepfunctions.DataAt('$.input.greeting')
+    otherData: 'some-extra-stuff'
+  },
+});
+```
+
+The object specified in `parameters` will be the input of the `Pass` state.
+Since neither `Result` nor `ResultPath` are supplied, the `Pass` state copies
+its input through to its output.
+
+Learn more about the [Pass state](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-pass-state.html)
 
 ### Wait
 
