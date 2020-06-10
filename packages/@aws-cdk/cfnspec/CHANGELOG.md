@@ -1,3 +1,137 @@
+# CloudFormation Resource Specification v15.0.0
+
+## New Resource Types
+
+* AWS::EFS::AccessPoint
+* AWS::IoT::ProvisioningTemplate
+* AWS::RDS::DBProxy
+* AWS::RDS::DBProxyTargetGroup
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Image OutputResources (__deleted__)
+
+## Property Changes
+
+* AWS::CodeGuruProfiler::ProfilingGroup AgentPermissions (__added__)
+* AWS::ImageBuilder::Image OutputResources (__added__)
+* AWS::MSK::Cluster ConfigurationInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster KafkaVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::EC2::ClientVpnEndpoint.FederatedAuthenticationRequest (__added__)
+* AWS::ImageBuilder::Image.Ami (__added__)
+* AWS::ImageBuilder::Image.ImageState (__added__)
+* AWS::ImageBuilder::Image.OutputResources (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftRetryOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.VpcConfiguration (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientAuthenticationRequest FederatedAuthentication (__added__)
+* AWS::KinesisFirehose::DeliveryStream.BufferingHints IntervalInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.BufferingHints SizeInMBs.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration InputFormatConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration OutputFormatConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration SchemaConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchBufferingHints IntervalInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchBufferingHints SizeInMBs.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration ClusterEndpoint (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration VpcConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration DomainARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration IndexRotationPeriod.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration RetryOptions.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration S3BackupMode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration TypeName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchRetryOptions DurationInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration CompressionFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.InputFormatConfiguration Deserializer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.OpenXJsonSerDe ColumnToJsonKeyMappings.DuplicatesAllowed (__deleted__)
+* AWS::KinesisFirehose::DeliveryStream.OutputFormatConfiguration Serializer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.Processor Parameters.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration RetryOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration S3BackupConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration S3BackupMode (__added__)
+* AWS::KinesisFirehose::DeliveryStream.S3DestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.S3DestinationConfiguration CompressionFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration CatalogId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration DatabaseName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration Region.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration RoleARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration TableName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration VersionId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SplunkRetryOptions DurationInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.ConfigurationInfo Arn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.ConfigurationInfo Revision.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v14.4.0
 
 ## New Resource Types
