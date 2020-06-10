@@ -36,8 +36,9 @@ export function transformAttributeValueMap(attrMap?: DynamoAttributeValueMap) {
 }
 
 function toObject(value: DynamoAttributeValue): any {
-  if (Object.keys(value).length !== 1) {
-    throw new Error('no no no');
+  const attrCount = Object.keys(value).length;
+  if (attrCount !== 1) {
+    throw new Error(`exactly 1 attribute value must be supplied. received ${attrCount} attributes`);
   }
 
   if (value.s) {
