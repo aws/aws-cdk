@@ -192,6 +192,7 @@ eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
 eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
 eval $(gp env -e)
 ```
+see https://www.gitpod.io/docs/environment-variables/
 
 If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
