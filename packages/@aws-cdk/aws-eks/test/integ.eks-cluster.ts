@@ -72,6 +72,8 @@ class EksClusterStack extends TestStack {
     new CfnOutput(this, 'ClusterEndpoint', { value: cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: cluster.clusterCertificateAuthorityData });
+    new CfnOutput(this, 'ClusterSecurityGroupId', { value: cluster.clusterSecurityGroupId });
+    new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
   }
 }

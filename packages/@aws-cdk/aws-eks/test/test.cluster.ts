@@ -306,6 +306,8 @@ export = {
       clusterName: cluster.clusterName,
       securityGroups: cluster.connections.securityGroups,
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
+      clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+      clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
     });
 
     // this should cause an export/import
