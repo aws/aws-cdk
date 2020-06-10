@@ -12,7 +12,11 @@ export = {
   },
 
   'tmpdir returns a real path and is cached'(test: Test) {
-    const symlinkTmp = path.join(__dirname, 'fixtures', 'symlinks', 'local-dir-link');
+    // Create symlink that points to /tmp
+    const symlinkTmp = path.join(__dirname, 'tmp-link');
+    fs.symlinkSync(os.tmpdir(), symlinkTmp);
+
+    // Now stub os.tmpdir() to return this link instead of /tmp
     const tmpdirStub = sinon.stub(os, 'tmpdir').returns(symlinkTmp);
 
     test.ok(path.isAbsolute(FileSystem.tmpdir));
@@ -26,9 +30,18 @@ export = {
     test.ok(tmpdirStub.calledOnce); // cached result
 
     fs.unlinkSync(p);
+    fs.unlinkSync(symlinkTmp);
 
-    // @ts-ignore
-    delete FileSystem._tmpdir; // do not use the wrong cached FileSystem.tmpdir in other tests
+    test.done();
+  },
+
+  'mkdtemp creates a temporary directory in the system temp'(test: Test) {
+    const tmpdir = FileSystem.mkdtemp('cdk-mkdtemp-');
+
+    test.equal(path.dirname(tmpdir), FileSystem.tmpdir);
+    test.ok(fs.existsSync(tmpdir));
+
+    fs.rmdirSync(tmpdir);
 
     test.done();
   },
