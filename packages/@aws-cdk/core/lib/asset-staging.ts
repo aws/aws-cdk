@@ -37,7 +37,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  */
 export class AssetStaging extends Construct {
   /**
-   * The directory inside the bundling container into the asset sources will be mounted.
+   * The directory inside the bundling container into which the asset sources will be mounted.
    * @experimental
    */
   public static readonly BUNDLING_INPUT_DIR = '/asset-input';
