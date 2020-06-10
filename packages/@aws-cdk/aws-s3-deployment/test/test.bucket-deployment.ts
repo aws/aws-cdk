@@ -228,7 +228,7 @@ export = {
         ],
       },
       'SourceBucketNames': [{
-        'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3Bucket1A1EC3E9',
+        'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
       }],
       'SourceObjectKeys': [{
         'Fn::Join': [
@@ -241,7 +241,7 @@ export = {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824',
+                      'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
                     },
                   ],
                 },
@@ -254,7 +254,7 @@ export = {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParameterse9b696b2a8a1f93ea8b8a9ce1e4dd4727f9243eba984e50411ca95c6b03d26b6S3VersionKeyE46A4824',
+                      'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
                     },
                   ],
                 },
@@ -369,7 +369,7 @@ export = {
     test.equal(s3deploy.CacheControl.setPrivate().value, 'private');
     test.equal(s3deploy.CacheControl.proxyRevalidate().value, 'proxy-revalidate');
     test.equal(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value, 'max-age=60');
-    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-max-age=60');
+    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-maxage=60');
     test.equal(s3deploy.CacheControl.fromString('only-if-cached').value, 'only-if-cached');
 
     test.done();

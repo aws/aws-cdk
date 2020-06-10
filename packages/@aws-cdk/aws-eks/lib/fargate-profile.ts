@@ -1,7 +1,6 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { Construct, CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
@@ -133,6 +132,12 @@ export class FargateProfile extends Construct implements ITaggable {
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
+    // currently the custom resource requires a role to assume when interacting with the cluster
+    // and we only have this role when kubectl is enabled.
+    if (!props.cluster.kubectlEnabled) {
+      throw new Error('adding Faregate Profiles to clusters without kubectl enabled is currently unsupported');
+    }
+
     const provider = ClusterResourceProvider.getOrCreate(this);
 
     const role = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
@@ -157,7 +162,7 @@ export class FargateProfile extends Construct implements ITaggable {
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
 
     const resource = new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
       properties: {
         AssumeRoleArn: props.cluster._getKubectlCreationRoleArn(),
@@ -174,5 +179,24 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.fargateProfileArn = resource.getAttString('fargateProfileArn');
     this.fargateProfileName = resource.ref;
+
+    // Fargate profiles must be created sequentially. If other profile(s) already
+    // exist on the same cluster, create a dependency to force sequential creation.
+    const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
+    if (clusterFargateProfiles.length > 1) {
+      const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
+      resource.node.addDependency(previousProfile);
+    }
+
+    // map the fargate pod execution role to the relevant groups in rbac
+    // see https://github.com/aws/aws-cdk/issues/7981
+    props.cluster.awsAuth.addRoleMapping(role, {
+      username: 'system:node:{{SessionName}}',
+      groups: [
+        'system:bootstrappers',
+        'system:nodes',
+        'system:node-proxier',
+      ],
+    });
   }
 }

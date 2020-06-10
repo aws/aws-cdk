@@ -99,6 +99,8 @@ export = {
           Endpoint: 'http://endpoint',
           Arn: 'arn:cluster-arn',
           CertificateAuthorityData: 'certificateAuthority-data',
+          OpenIdConnectIssuerUrl: undefined,
+          OpenIdConnectIssuer: undefined,
         },
       });
       test.done();
@@ -401,7 +403,7 @@ export = {
         test.done();
       },
 
-      async 'with "Successful" status, returns IsComplete=true'(test: Test) {
+      async 'with "Successful" status, returns IsComplete=true with "Data"'(test: Test) {
         const event = mocks.newRequest('Update');
         const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
           ...event,
@@ -413,7 +415,17 @@ export = {
         const response = await isCompleteHandler.isComplete();
 
         test.deepEqual(mocks.actualRequest.describeUpdateRequest, { name: 'physical-resource-id', updateId: 'foobar' });
-        test.equal(response.IsComplete, true);
+        test.deepEqual(response, {
+          IsComplete: true,
+          Data: {
+            Name: 'physical-resource-id',
+            Endpoint: 'http://endpoint',
+            Arn: 'arn:cluster-arn',
+            CertificateAuthorityData: 'certificateAuthority-data',
+            OpenIdConnectIssuerUrl: undefined,
+            OpenIdConnectIssuer: undefined,
+          },
+        });
         test.done();
       },
 

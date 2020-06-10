@@ -2,12 +2,12 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { CloudAssemblyBuilder } from '../lib';
+import * as cxapi from '../lib';
 
 test('cloud assembly builder', () => {
   // GIVEN
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
-  const session = new CloudAssemblyBuilder(outdir);
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
   const templateFile = 'foo.template.json';
 
   // WHEN
@@ -36,10 +36,13 @@ test('cloud assembly builder', () => {
 
   session.addMissing({
     key: 'foo',
-    provider: 'context-provider',
+    provider: cxschema.ContextProvider.VPC_PROVIDER,
     props: {
-      a: 'A',
-      b: 2,
+      account: '1234',
+      region: 'us-east-1',
+      filter: {
+        a: 'a',
+      },
     },
   });
 
@@ -67,7 +70,17 @@ test('cloud assembly builder', () => {
   expect(manifest).toStrictEqual({
     version: cxschema.Manifest.version(),
     missing: [
-      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } },
+      {
+        key: 'foo',
+        provider: 'vpc-provider',
+        props: {
+          account: '1234',
+          region: 'us-east-1',
+          filter: {
+            a: 'a',
+          },
+        },
+      },
     ],
     artifacts: {
       'tree-artifact': {
@@ -108,17 +121,49 @@ test('cloud assembly builder', () => {
 });
 
 test('outdir must be a directory', () => {
-  expect(() => new CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
+  expect(() => new cxapi.CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
 });
 
 test('duplicate missing values with the same key are only reported once', () => {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
-  const session = new CloudAssemblyBuilder(outdir);
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
 
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
-  session.addMissing({ key: 'foo', provider: 'context-provider', props: { } });
+  const props: cxschema.ContextQueryProperties = {
+    account: '1234',
+    region: 'asdf',
+    filter: { a: 'a' },
+  };
+
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
+  session.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
 
   const assembly = session.buildAssembly();
 
   expect(assembly.manifest.missing!.length).toEqual(1);
+});
+
+test('write and read nested cloud assembly artifact', () => {
+  // GIVEN
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
+
+  const innerAsmDir = path.join(outdir, 'hello');
+  new cxapi.CloudAssemblyBuilder(innerAsmDir).buildAssembly();
+
+  // WHEN
+  session.addArtifact('Assembly', {
+    type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
+    properties: {
+      directoryName: 'hello',
+    } as cxschema.NestedCloudAssemblyProperties,
+  });
+  const asm = session.buildAssembly();
+
+  // THEN
+  const art = asm.tryGetArtifact('Assembly') as cxapi.NestedCloudAssemblyArtifact | undefined;
+  expect(art).toBeInstanceOf(cxapi.NestedCloudAssemblyArtifact);
+  expect(art?.fullPath).toEqual(path.join(outdir, 'hello'));
+
+  const nested = art?.nestedAssembly;
+  expect(nested?.artifacts.length).toEqual(0);
 });
