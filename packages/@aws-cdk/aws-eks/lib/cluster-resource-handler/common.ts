@@ -14,22 +14,6 @@ export interface EksUpdateId {
 
 export type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
 
-/**
- * Decodes encoded true/false values
- */
-function decodeBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
-      default:
-        return v;
-    }
-  });
-}
-
 export abstract class ResourceHandler {
   protected readonly requestId: string;
   protected readonly logicalResourceId: string;
@@ -47,10 +31,6 @@ export abstract class ResourceHandler {
     const roleToAssume = event.ResourceProperties.AssumeRoleArn;
     if (!roleToAssume) {
       throw new Error('AssumeRoleArn must be provided');
-    }
-
-    if (event.ResourceProperties.Config) {
-      this.event.ResourceProperties.Config = decodeBooleans(event.ResourceProperties.Config);
     }
 
     eks.configureAssumeRole({
