@@ -147,6 +147,24 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly minHealthyPercent?: number;
 }
 
 /**
