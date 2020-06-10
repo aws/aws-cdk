@@ -206,6 +206,109 @@ describe('State Machine Resources', () => {
 
   }),
 
+  test('Created state machine can grant task response actions to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantTaskResponse(role);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:SendTaskSuccess',
+              'states:SendTaskFailure',
+              'states:SendTaskHeartbeat',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    });
+
+  }),
+
+  test('Created state machine can grant actions to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grant(role, ['states:DescribeExecution'], `${stateMachine.executionArn}:*`);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:DescribeExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution::*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    });
+
+  }),
+
   test('Imported state machine can grant start execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -226,6 +329,95 @@ describe('State Machine Resources', () => {
             Action: 'states:StartExecution',
             Effect: 'Allow',
             Resource: stateMachineArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    });
+  }),
+
+  test('Imported state machine can grant task response access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantTaskResponse(role);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:SendTaskSuccess',
+              'states:SendTaskFailure',
+              'states:SendTaskHeartbeat',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    });
+  }),
+
+  test('Imported state machine can grant access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grant(role, ['states:DescribeExecution'], `${stateMachine.executionArn}:*`);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:DescribeExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:*',
+                ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',

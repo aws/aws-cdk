@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -130,12 +130,29 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly executionArn = Arn.format({
+        resource: 'execution',
+        service: 'states',
+        account: this.stack.account,
+        partition: this.stack.partition,
+        region: this.stack.region,
+        resourceName: Arn.parse(stateMachineArn, ':').resourceName,
+        sep: ':',
+      }, this.stack);
+      // public readonly executionArn = this.getResourceArnAttribute(this.stateMachineArn, {
+      //   service: 'states',
+      //   resource: 'execution',
+      //   resourceName: this.physicalName,
+      //   sep: ':',
+      // });
     }
 
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
+
+  public abstract readonly executionArn: string;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -146,6 +163,33 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       grantee: identity,
       actions: ['states:StartExecution'],
       resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to access task responses of the
+   * state machine.
+   */
+  public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:SendTaskSuccess',
+        'states:SendTaskFailure',
+        'states:SendTaskHeartbeat',
+      ],
+      resourceArns: ['*'],
+    });
+  }
+
+  /**
+   * Grant the given identity user specified permissions
+   */
+  public grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [resourceArn],
     });
   }
 }
@@ -169,6 +213,11 @@ export class StateMachine extends StateMachineBase {
    * The ARN of the state machine
    */
   public readonly stateMachineArn: string;
+
+  /**
+   * The ARN of the execution
+   */
+  public readonly executionArn: string;
 
   /**
    * Type of the state machine
@@ -236,6 +285,18 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       sep: ':',
     });
+    this.executionArn = Arn.format({
+      resource: 'execution',
+      service: 'states',
+      account: this.stack.account,
+      partition: this.stack.partition,
+      region: this.stack.region,
+      resourceName: this.physicalName,
+      sep: ':',
+    }, this.stack);
+
+    // console.log('state ' + this.stateMachineArn)
+    // console.log('exec  ' + this.executionArn);
   }
 
   /**
@@ -335,10 +396,33 @@ export interface IStateMachine extends IResource {
   readonly stateMachineArn: string;
 
   /**
+   * The ARN of the executions
+   * @attribute
+   */
+  readonly executionArn: string;
+
+  /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
    *
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to access task responses of the
+   * state machine.
+   *
+   * @param identity The principal
+   */
+  grantTaskResponse(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity user specified permissions
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   * @param resourceArn The ARN of the resource
+   */
+  grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant;
 }
