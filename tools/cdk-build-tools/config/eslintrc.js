@@ -54,7 +54,7 @@ module.exports = {
       }
     }],
 
-    '@typescript-eslint/indent': [ 'error', 2 ],
+    '@typescript-eslint/consistent-type-assertions': [ 'error' ],
 
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': [ 'error' ],
@@ -78,7 +78,10 @@ module.exports = {
     // Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
     'import/no-unresolved': [ 'error' ],
 
-    // Style
+    indent: [ 'error', 2 ],
+
     quotes: [ 'error', 'single', { avoidEscape: true } ],
+
+    semi: [ 'error', 'always' ],
   }
 }

@@ -1,5 +1,7 @@
 import { FileAssetPackaging } from '../file-asset';
 
+/* eslint-disable @typescript-eslint/ban-types */
+
 /**
  * Validate that a given key is of a given type in an object
  *
