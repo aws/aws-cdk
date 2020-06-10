@@ -523,19 +523,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     if (props.notificationsTopic && props.notifications) {
-      throw new Error('Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+      throw new Error('Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead');
     }
 
     if (props.notificationsTopic) {
       this.notifications = [{
-        notificationsTopic: props.notificationsTopic,
+        topic: props.notificationsTopic,
       }];
     }
 
     if (props.notifications) {
       this.notifications = props.notifications.map(nc => ({
-        notificationsTopic: nc.notificationsTopic,
-        notificationTypes: nc.notificationTypes ?? NotificationTypes.ALL,
+        topic: nc.topic,
+        scalingEvents: nc.scalingEvents ?? ScalingEvents.ALL,
       }));
     }
 
@@ -690,8 +690,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     return this.notifications.map(notification => ({
-      topicArn: notification.notificationsTopic.topicArn,
-      notificationTypes: notification.notificationTypes ? notification.notificationTypes._types : NotificationTypes.ALL._types,
+      topicArn: notification.topic.topicArn,
+      notificationTypes: notification.scalingEvents ? notification.scalingEvents._types : ScalingEvents.ALL._types,
     }));
   }
 }
@@ -719,26 +719,26 @@ export enum UpdateType {
 }
 
 /**
- * AutoScalingGroup fleet change notifcations configurations.
+ * AutoScalingGroup fleet change notifications configurations.
  * You can configure AutoScaling to send an SNS notification whenever your Auto Scaling group scales.
  */
 export interface NotificationConfiguration {
   /**
    * SNS topic to send notifications about fleet scaling events
    */
-  readonly notificationsTopic: sns.ITopic;
+  readonly topic: sns.ITopic;
 
   /**
    * Which fleet scaling events triggers a notification
-   * @default all
+   * @default ScalingEvents.ALL
    */
-  readonly notificationTypes?: NotificationTypes;
+  readonly scalingEvents?: ScalingEvents;
 }
 
 /**
- * Fleet scaling event notification type
+ * Fleet scaling events
  */
-export enum NotificationType {
+export enum ScalingEvent {
   /**
    * Notify when an instance was launced
    */
@@ -764,6 +764,7 @@ export enum NotificationType {
    */
   TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION'
 }
+
 /**
  * Additional settings when a rolling update is selected
  */
@@ -840,34 +841,34 @@ export interface RollingUpdateConfiguration {
 }
 
 /**
- * A group of notificationTypes, you can use one of the predefined groups, such as NotificationTypes.ERRORS
+ * A list of ScalingEvents, you can use one of the predefined lists, such as ScalingEvents.ERRORS
  * or create a custome group by instantiating a `NotificationTypes` object, e.g: `new NotificationTypes(`NotificationType.INSTANCE_LAUNCH`)`.
  */
-export class NotificationTypes {
+export class ScalingEvents {
   /**
-   * Fleet scaling erros
+   * Fleet scaling errors
    */
-  public static readonly ERRORS = new NotificationTypes(NotificationType.INSTANCE_LAUNCH_ERROR, NotificationType.INSTANCE_TERMINATE_ERROR);
+  public static readonly ERRORS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH_ERROR, ScalingEvent.INSTANCE_TERMINATE_ERROR);
 
   /**
    * All fleet scaling events
    */
-  public static readonly ALL = new NotificationTypes(NotificationType.INSTANCE_LAUNCH,
-    NotificationType.INSTANCE_LAUNCH_ERROR,
-    NotificationType.INSTANCE_TERMINATE,
-    NotificationType.INSTANCE_TERMINATE_ERROR);
+  public static readonly ALL = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH,
+    ScalingEvent.INSTANCE_LAUNCH_ERROR,
+    ScalingEvent.INSTANCE_TERMINATE,
+    ScalingEvent.INSTANCE_TERMINATE_ERROR);
 
   /**
    * Fleet scaling launch events
    */
-  public static readonly LAUNCH_EVENTS = new NotificationTypes(NotificationType.INSTANCE_LAUNCH, NotificationType.INSTANCE_LAUNCH_ERROR);
+  public static readonly LAUNCH_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH, ScalingEvent.INSTANCE_LAUNCH_ERROR);
 
   /**
    * @internal
    */
-  public readonly _types: NotificationType[];
+  public readonly _types: ScalingEvent[];
 
-  constructor(...types: NotificationType[]) {
+  constructor(...types: ScalingEvent[]) {
     this._types = types;
   }
 }

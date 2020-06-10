@@ -1041,7 +1041,7 @@ export = {
         vpc,
         notificationsTopic: topic,
         notifications: [{
-          notificationsTopic: topic,
+          topic,
         }],
       });
     }, 'Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
@@ -1061,12 +1061,12 @@ export = {
       vpc,
       notifications: [
         {
-          notificationsTopic: topic,
-          notificationTypes: autoscaling.NotificationTypes.ERRORS,
+          topic,
+          scalingEvents: autoscaling.ScalingEvents.ERRORS,
         },
         {
-          notificationsTopic: topic,
-          notificationTypes: new autoscaling.NotificationTypes(autoscaling.NotificationType.INSTANCE_TERMINATE),
+          topic,
+          scalingEvents: new autoscaling.ScalingEvents(autoscaling.ScalingEvent.INSTANCE_TERMINATE),
         },
       ],
     });
@@ -1106,7 +1106,7 @@ export = {
       vpc,
       notifications: [
         {
-          notificationsTopic: topic,
+          topic,
         },
       ],
     });
@@ -1162,7 +1162,7 @@ export = {
   },
 
   'NotificationTypes.ALL includes all non test NotificationType'(test: Test) {
-    test.deepEqual(Object.values(autoscaling.NotificationType).length - 1, autoscaling.NotificationTypes.ALL._types.length);
+    test.deepEqual(Object.values(autoscaling.ScalingEvent).length - 1, autoscaling.ScalingEvents.ALL._types.length);
     test.done();
   },
 };
