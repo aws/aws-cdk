@@ -18,6 +18,8 @@ export class ClusterResource extends Construct {
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
+  public readonly attrClusterSecurityGroupId: string;
+  public readonly attrEncryptionConfigKeyArn: string;
   public readonly attrOpenIdConnectIssuerUrl: string;
   public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
@@ -117,6 +119,13 @@ export class ClusterResource extends Construct {
       properties: {
         Config: props,
         AssumeRoleArn: this.creationRole.roleArn,
+
+        // IMPORTANT: increment this number when you add new attributes to the
+        // resource. Otherwise, CloudFormation will error with "Vendor response
+        // doesn't contain XXX key in object" (see #8276) by incrementing this
+        // number, you will effectively cause a "no-op update" to the cluster
+        // which will return the new set of attribute.
+        AttributesRevision: 2,
       },
     });
 
@@ -126,6 +135,8 @@ export class ClusterResource extends Construct {
     this.attrEndpoint = Token.asString(resource.getAtt('Endpoint'));
     this.attrArn = Token.asString(resource.getAtt('Arn'));
     this.attrCertificateAuthorityData = Token.asString(resource.getAtt('CertificateAuthorityData'));
+    this.attrClusterSecurityGroupId = Token.asString(resource.getAtt('ClusterSecurityGroupId'));
+    this.attrEncryptionConfigKeyArn = Token.asString(resource.getAtt('EncryptionConfigKeyArn'));
     this.attrOpenIdConnectIssuerUrl = Token.asString(resource.getAtt('OpenIdConnectIssuerUrl'));
     this.attrOpenIdConnectIssuer = Token.asString(resource.getAtt('OpenIdConnectIssuer'));
   }
