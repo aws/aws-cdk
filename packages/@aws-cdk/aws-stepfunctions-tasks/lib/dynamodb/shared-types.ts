@@ -182,10 +182,10 @@ export interface DynamoAttributeValue {
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
    */
-  readonly isNull?: boolean;
+  readonly nullValue?: boolean;
 
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
    */
-  readonly isBool?: boolean;
+  readonly booleanValue?: boolean;
 }

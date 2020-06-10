@@ -73,11 +73,11 @@ function toObject(value: DynamoAttributeValue): any {
     return { L: value.l.map((val) => toObject(val)) };
   }
 
-  if (value.isNull) {
-    return { NULL: value.isNull };
+  if (value.nullValue) {
+    return { NULL: value.nullValue };
   }
 
-  if (value.isBool) {
-    return { BOOL: value.isBool };
+  if (value.booleanValue) {
+    return { BOOL: value.booleanValue };
   }
 }
