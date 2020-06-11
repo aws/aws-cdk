@@ -178,7 +178,7 @@ export interface Login {
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**

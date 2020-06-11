@@ -6,6 +6,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
+import { SageMakerCreateTrainingJob } from '../../lib/sagemaker/create-training-job';
 
 let stack: cdk.Stack;
 
@@ -16,7 +17,7 @@ beforeEach(() => {
 
 test('create basic training job', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+  const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
     trainingJobName: 'MyTrainJob',
     algorithmSpecification: {
       algorithmName: 'BlazingText',
@@ -34,7 +35,7 @@ test('create basic training job', () => {
     outputDataConfig: {
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
     },
-  })});
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -91,8 +92,8 @@ test('create basic training job', () => {
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       trainingJobName: 'MyTrainJob',
       algorithmSpecification: {
         algorithmName: 'BlazingText',
@@ -110,8 +111,8 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       outputDataConfig: {
         s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
       },
-    })});
-  }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call SageMaker./i);
+    });
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i);
 });
 
 test('create complex training job', () => {
@@ -128,9 +129,9 @@ test('create complex training job', () => {
     ],
   });
 
-  const trainTask = new tasks.SagemakerTrainTask({
+  const trainTask = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
     trainingJobName: 'MyTrainJob',
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     role,
     algorithmSpecification: {
       algorithmName: 'BlazingText',
@@ -177,7 +178,7 @@ test('create complex training job', () => {
     resourceConfig: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSizeInGB: 50,
+      volumeSize: cdk.Size.gibibytes(50),
       volumeEncryptionKey: kmsKey,
     },
     stoppingCondition: {
@@ -191,10 +192,9 @@ test('create complex training job', () => {
     },
   });
   trainTask.addSecurityGroup(securityGroup);
-  const task = new sfn.Task(stack, 'TrainSagemaker', { task: trainTask });
 
   // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
+  expect(stack.resolve(trainTask.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
       'Fn::Join': [
@@ -272,8 +272,8 @@ test('create complex training job', () => {
       ],
       VpcConfig: {
         SecurityGroupIds: [
-          { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
           { 'Fn::GetAtt': [ 'TrainSagemakerTrainJobSecurityGroup7C858EB9', 'GroupId' ] },
+          { 'Fn::GetAtt': [ 'SecurityGroupDD263621', 'GroupId' ] },
         ],
         Subnets: [
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -293,7 +293,7 @@ test('pass param to training job', () => {
     ],
   });
 
-  const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+  const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
     trainingJobName: sfn.Data.stringAt('$.JobName'),
     role,
     algorithmSpecification: {
@@ -317,12 +317,12 @@ test('pass param to training job', () => {
     resourceConfig: {
       instanceCount: 1,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSizeInGB: 50,
+      volumeSize: cdk.Size.gibibytes(50),
     },
     stoppingCondition: {
       maxRuntime: cdk.Duration.hours(1),
     },
-  })});
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -377,7 +377,7 @@ test('pass param to training job', () => {
 
 test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
 
-  expect(() => new tasks.SagemakerTrainTask({
+  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {},
     inputDataConfig: [
