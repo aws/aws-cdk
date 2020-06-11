@@ -963,9 +963,6 @@ CDK supports creating a REST API by importing an OpenAPI definition file. It cur
 v3.0 definition files. Read more about [Configuring a REST API using
 OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html).
 
-It is possible to use the `addResource()` API to define additional API Gateway Resources. **Note that,** deployment
-will fail if a Resource of the same name is already defined in the Open API specification.
-
 The following code creates a REST API using an external OpenAPI definition JSON file -
 
 ```ts
@@ -976,6 +973,15 @@ const api = new apigateway.SpecRestApi(this, 'books-api', {
 const booksResource = api.root.addResource('books')
 booksResource.addMethod('GET', ...);
 ```
+
+It is possible to use the `addResource()` API to define additional API Gateway Resources.
+
+**Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
+
+**Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
+applied to Resources and Methods defined in the CDK, and not the ones defined in the spec. Use the [API Gateway
+extensions to OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html)
+to configure these.
 
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
