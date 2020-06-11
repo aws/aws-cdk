@@ -1476,35 +1476,6 @@ export class LinuxGpuBuildImage implements IBuildImage {
     '1.6.0-gpu-py36-cu101-ubuntu16.04');
 
   /**
-   * @returns a Linux GPU image from AWS Deep Learning Containers.
-   */
-  private static DlcImage(name: string, tag: string): IBuildImage {
-    let account: number;
-    switch (Aws.REGION) {
-      case 'ap-east-1':
-        account = 871362719292;
-        break;
-      case 'me-south-1':
-        account = 217643126080;
-        break;
-      case 'cn-north-1':
-        account = 727897471807;
-        break;
-      case 'cn-northwest-1':
-        account = 727897471807;
-        break;
-      default:
-        account = 763104351884;
-        break;
-    }
-
-    return new LinuxGpuBuildImage({
-      imageId: `${account}.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
-      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
-    });
-  }
-
-  /**
    * @returns a Linux GPU build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
@@ -1543,6 +1514,35 @@ export class LinuxGpuBuildImage implements IBuildImage {
       imageId: asset.imageUri,
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       repository: asset.repository,
+    });
+  }
+
+  /**
+   * @returns a Linux GPU image from AWS Deep Learning Containers.
+   */
+  private static DlcImage(name: string, tag: string): IBuildImage {
+    let account: number;
+    switch (Aws.REGION) {
+      case 'ap-east-1':
+        account = 871362719292;
+        break;
+      case 'me-south-1':
+        account = 217643126080;
+        break;
+      case 'cn-north-1':
+        account = 727897471807;
+        break;
+      case 'cn-northwest-1':
+        account = 727897471807;
+        break;
+      default:
+        account = 763104351884;
+        break;
+    }
+
+    return new LinuxGpuBuildImage({
+      imageId: `${account}.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     });
   }
 
