@@ -180,16 +180,16 @@ alarm.addAlarmAction(new cw_actions.SnsAction(topic));
 can be created from existing Alarm resources.
 
 ```ts
-const alarmRule = new OrAlarmRule(
-  new OrAlarmRule(
-    new AndAlarmRule(
-      alarm1.toAlarmRule(AlarmState.ALARM),
-      alarm2.toAlarmRule(AlarmState.OK),
-      alarm3.toAlarmRule(AlarmState.ALARM),
+const alarmRule = AlarmRule.anyOf(
+  AlarmRule.allOf(
+    AlarmRule.anyOf(
+      AlarmRule.fromAlarm(alarm1, AlarmState.ALARM),
+      AlarmRule.fromAlarm(alarm2, AlarmState.OK),
+      AlarmRule.fromAlarm(alarm3, AlarmState.ALARM),
     ),
-    new NotAlarmRule(alarm4.toAlarmRule(AlarmState.INSUFFICIENT_DATA)),
+    AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
   ),
-  new BooleanAlarmRule(false),
+  AlarmRule.fromBoolean(false),
 );
 
 new CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {

@@ -1,5 +1,5 @@
 import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { AlarmBase, IAlarm, IAlarmRule } from './alarm';
+import { AlarmBase, AlarmState, IAlarm, IAlarmRule } from './alarm';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 
 /**
@@ -14,73 +14,94 @@ enum Operator {
 }
 
 /**
- * AlarmRule to express TRUE/FALSE intent in Rule Expression.
+ * Class with static functions to build AlarmRule for Composite Alarms.
  */
-export class BooleanAlarmRule implements IAlarmRule {
+export class AlarmRule {
 
-  private readonly booleanValue: boolean;
-
-  constructor(booleanValue: boolean) {
-    this.booleanValue = booleanValue;
+  /**
+   * function to join all provided AlarmRules with AND operator.
+   *
+   * @param operands IAlarmRules to be joined with AND operator.
+   */
+  public static allOf(...operands: IAlarmRule[]): IAlarmRule {
+    return this.concat(Operator.AND, ...operands);
   }
 
-  public toAlarmRule(): string {
-    return `${String(this.booleanValue).toUpperCase()}`;
+  /**
+   * function to join all provided AlarmRules with OR operator.
+   *
+   * @param operands IAlarmRules to be joined with OR operator.
+   */
+  public static anyOf(...operands: IAlarmRule[]): IAlarmRule {
+    return this.concat(Operator.OR, ...operands);
   }
 
-}
-
-abstract class BinaryAlarmRule implements IAlarmRule {
-
-  private readonly operands: IAlarmRule[];
-  private readonly operator: Operator;
-
-  constructor(operator: Operator, ...operands: IAlarmRule[]) {
-    this.operands = operands;
-    this.operator = operator;
+  /**
+   * function to wrap provided AlarmRule in NOT operator.
+   *
+   * @param operand IAlarmRule to be wrapped in NOT operator.
+   */
+  public static not(operand: IAlarmRule): IAlarmRule {
+    // tslint:disable-next-line:new-parens
+    return new class implements IAlarmRule {
+      public toAlarmRule(): string {
+        return `(NOT ${operand.toAlarmRule()})`;
+      }
+    };
   }
 
-  public toAlarmRule(): string {
-    return this.operands
-      .map(operand => `(${operand.toAlarmRule()})`)
-      .join(` ${this.operator} `);
+  /**
+   * function to build TRUE/FALSE intent for Rule Expression.
+   *
+   * @param value boolean value to be used in rule expression.
+   */
+  public static fromBoolean(value: boolean): IAlarmRule {
+    // tslint:disable-next-line:new-parens
+    return new class implements IAlarmRule {
+      public toAlarmRule(): string {
+        return `${String(value).toUpperCase()}`;
+      }
+    };
   }
 
-}
-
-/**
- * AlarmRule to join all provided AlarmRules with AND operator.
- */
-export class AndAlarmRule extends BinaryAlarmRule {
-
-  constructor(...operands: IAlarmRule[]) {
-    super(Operator.AND, ...operands);
-  }
-}
-
-/**
- * AlarmRule to join all provided AlarmRules with OR operator.
- */
-export class OrAlarmRule extends BinaryAlarmRule {
-
-  constructor(...operands: IAlarmRule[]) {
-    super(Operator.OR, ...operands);
-  }
-}
-
-/**
- * AlarmRule to wrap provided AlarmRule in NOT operator.
- */
-export class NotAlarmRule implements IAlarmRule {
-
-  private readonly operand: IAlarmRule;
-
-  constructor(operand: IAlarmRule) {
-    this.operand = operand;
+  /**
+   * function to build Rule Expression for given IAlarm and AlarmState.
+   *
+   * @param alarm IAlarm to be used in Rule Expression.
+   * @param alarmState AlarmState to be used in Rule Expression.
+   */
+  public static fromAlarm(alarm: IAlarm, alarmState: AlarmState): IAlarmRule {
+    // tslint:disable-next-line:new-parens
+    return new class implements IAlarmRule {
+      public toAlarmRule(): string {
+        return `${alarmState}(${alarm.alarmArn})`;
+      }
+    };
   }
 
-  public toAlarmRule(): string {
-    return `(NOT ${this.operand.toAlarmRule()})`;
+  /**
+   * function to build Rule Expression for given Alarm Rule string.
+   *
+   * @param alarmRule string to be used in Rule Expression.
+   */
+  public static fromString(alarmRule: string): IAlarmRule {
+    // tslint:disable-next-line:new-parens
+    return new class implements IAlarmRule {
+      public toAlarmRule(): string {
+        return alarmRule;
+      }
+    };
+  }
+
+  private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
+    // tslint:disable-next-line:new-parens
+    return new class implements IAlarmRule {
+      public toAlarmRule(): string {
+        return operands
+          .map(operand => `(${operand.toAlarmRule()})`)
+          .join(` ${operator} `);
+      }
+    };
   }
 
 }
@@ -151,6 +172,10 @@ export class CompositeAlarm extends AlarmBase {
     class Import extends Resource implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
       public readonly alarmName = Stack.of(scope).parseArn(compositeAlarmArn).resourceName!;
+
+      public toAlarmRule(): string {
+        throw new Error('Method not implemented.');
+      }
     }
     return new Import(scope, id);
   }
@@ -169,6 +194,8 @@ export class CompositeAlarm extends AlarmBase {
    */
   public readonly alarmName: string;
 
+  private readonly alarmRule: string;
+
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
       physicalName: props.compositeAlarmName ?? Lazy.stringValue({ produce: () => this.generateUniqueId() }),
@@ -178,9 +205,11 @@ export class CompositeAlarm extends AlarmBase {
       throw new Error('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule');
     }
 
+    this.alarmRule = props.alarmRule.toAlarmRule();
+
     const alarm = new CfnCompositeAlarm(this, 'Resource', {
       alarmName: this.physicalName,
-      alarmRule: props.alarmRule.toAlarmRule(),
+      alarmRule: this.alarmRule,
       alarmDescription: props.alarmDescription,
       actionsEnabled: props.actionsEnabled,
       alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
@@ -195,6 +224,10 @@ export class CompositeAlarm extends AlarmBase {
       resourceName: this.physicalName,
     });
 
+  }
+
+  public toAlarmRule(): string {
+    return this.alarmRule;
   }
 
   private generateUniqueId(): string {
