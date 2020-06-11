@@ -233,12 +233,10 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetentionRole?: iam.IRole;
 
   /**
-   * Retry options for creating CloudWatch log groups. Deploying many Lambdas
-   * with log retention resources may result in rate limit issues when creating
-   * CloudWatch Log groups. The retry options allow you to customize the retry
-   * options in order to successfully create these.
+   * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
+   * These options control the retry policy when interacting with CloudWatch APIs.
    *
-   * @default - Default retry options of the AWS SDK.
+   * @default - Default AWS SDK retry options.
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 

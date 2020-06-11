@@ -2,16 +2,16 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
-import { LogRetentionRetryOptions } from '../log-retention';
 
 /**
  * Creates a log group and doesn't throw if it exists.
  *
- * @param logGroupName the name of the log group to create
+ * @param logGroupName the name of the log group to create.
+ * @param options CloudWatch API SDK options.
  */
-async function createLogGroupSafe(logGroupName: string, retryOptions?: LogRetentionRetryOptions) {
+async function createLogGroupSafe(logGroupName: string, options?: any) {
   try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions });
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -24,10 +24,11 @@ async function createLogGroupSafe(logGroupName: string, retryOptions?: LogRetent
  * Puts or deletes a retention policy on a log group.
  *
  * @param logGroupName the name of the log group to create
+ * @param options CloudWatch API SDK options.
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, retryOptions?: LogRetentionRetryOptions, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...retryOptions });
+async function setRetentionPolicy(logGroupName: string, options?: any, retentionInDays?: number) {
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
@@ -42,8 +43,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;
 
-    // Parse retry options for creating the target log group
-    const retryOptions = parseRetryOptions(event.ResourceProperties.LogRetentionRetryOptions);
+    // Parse to AWS SDK retry options
+    const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
 
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group

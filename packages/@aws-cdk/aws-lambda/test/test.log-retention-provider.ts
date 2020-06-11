@@ -309,7 +309,7 @@ export = {
         ServiceToken: 'token',
         RetentionInDays: '30',
         LogGroupName: 'group',
-        LogRetentionRetryOptions: {
+        SdkRetry: {
           maxRetries: '5',
           base: '300',
         },

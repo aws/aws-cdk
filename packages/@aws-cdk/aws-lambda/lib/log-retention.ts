@@ -28,7 +28,7 @@ export interface LogRetentionProps {
   readonly role?: iam.IRole;
 
   /**
-   * Retry options for managing CloudWatch log groups.
+   * Retry options for all AWS API calls.
    *
    * @default - AWS SDK default retry options
    */
@@ -36,21 +36,21 @@ export interface LogRetentionProps {
 }
 
 /**
- * Retry options for managing CloudWatch log groups
+ * Retry options for all AWS API calls.
  */
 export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default - AWS SDK default
+   * @default - 3 (AWS SDK default)
    */
   readonly maxRetries?: number;
   /**
-   * The base number of milliseconds to use in the exponential backoff for operation retries.
+   * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default - AWS SDK default
+   * @default - 100 milliseconds (AWS SDK default)
    */
-  readonly base?: number;
+  readonly base?: cdk.Duration;
 }
 
 /**
@@ -89,12 +89,16 @@ export class LogRetention extends cdk.Construct {
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
+    const retryOptions = props.logRetentionRetryOptions;
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        LogRetentionRetryOptions: props.logRetentionRetryOptions,
+        SdkRetry: retryOptions ? {
+          maxRetries: retryOptions.maxRetries,
+          base: retryOptions.base?.toMilliseconds(),
+        } : undefined,
         RetentionInDays: props.retention === logs.RetentionDays.INFINITE ? undefined : props.retention,
       },
     });
