@@ -1479,7 +1479,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
    * @returns a Linux GPU image from AWS Deep Learning Containers.
    */
   private static DlcImage(name: string, tag: string): IBuildImage {
-    let account;
+    let account: number;
     switch (Aws.REGION) {
       case 'ap-east-1':
         account = 871362719292;
