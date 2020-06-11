@@ -184,8 +184,9 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-For gitpod users only! The best way to supply CDK with your AWS credentials is to add them as [persisting environment
-variables](https://www.gitpod.io/docs/environment-variables/). Adding them works as follows via terminal:
+For gitpod users only! The best way to supply CDK with your AWS credentials is to add them as
+[persisting environment variables](https://www.gitpod.io/docs/environment-variables/).
+Adding them works as follows via terminal:
 
 ```shell
 eval $(gp env -e AWS_ACCESS_KEY_ID=XXXXXXXXX)
