@@ -1,10 +1,7 @@
 import * as child_process from 'child_process';
 import { Test } from 'nodeunit';
-import * as os from 'os';
 import * as sinon from 'sinon';
 import { BundlingDockerImage } from '../lib';
-
-const userInfo = os.userInfo();
 
 export = {
   'tearDown'(callback: any) {
@@ -31,11 +28,12 @@ export = {
       },
       volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
       workingDirectory: '/working-directory',
+      user: 'user:group',
     });
 
     test.ok(spawnSyncStub.calledWith('docker', [
       'run', '--rm',
-      '-u', `${userInfo.uid}:${userInfo.gid}`,
+      '-u', 'user:group',
       '-v', '/host-path:/container-path',
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
@@ -72,7 +70,6 @@ export = {
 
     test.ok(spawnSyncStub.secondCall.calledWith('docker', [
       'run', '--rm',
-      '-u', `${userInfo.uid}:${userInfo.gid}`,
       imageId,
     ]));
     test.done();

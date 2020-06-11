@@ -1,5 +1,4 @@
 import { spawnSync } from 'child_process';
-import * as os from 'os';
 
 /**
  * Bundling options
@@ -43,6 +42,17 @@ export interface BundlingOptions {
    * @default /asset-input
    */
   readonly workingDirectory?: string;
+
+  /**
+   * The user to use when running the container.
+   *
+   *   user | user:group | uid | uid:gid | user:gid | uid:group
+   *
+   * @see https://docs.docker.com/engine/reference/run/#user
+   *
+   * @default - uid:gid of the current user or 1000:1000 on Windows
+   */
+  readonly user?: string;
 }
 
 /**
@@ -97,16 +107,11 @@ export class BundlingDockerImage {
     const environment = options.environment || {};
     const command = options.command || [];
 
-    // Get uid and gid of current user. On Windows, uid and gid are -1 and we
-    // can safely fallback to 1000 because docker always runs as the current
-    // user.
-    const userInfo = os.userInfo();
-    const uid = userInfo.uid !== -1 ? userInfo.uid : 1000;
-    const gid = userInfo.gid !== -1 ? userInfo.gid : 1000;
-
     const dockerArgs: string[] = [
       'run', '--rm',
-      '-u', `${uid}:${gid}`,
+      ...options.user
+        ? ['-u', options.user]
+        : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
@@ -166,6 +171,13 @@ interface DockerRunOptions {
    * @default - image default
    */
   readonly workingDirectory?: string;
+
+  /**
+   * The user to use when running the container.
+   *
+   * @default - root or image default
+   */
+  readonly user?: string;
 }
 
 /**
