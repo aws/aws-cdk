@@ -1,9 +1,6 @@
 import { spawnSync } from 'child_process';
 import * as os from 'os';
 
-export const BUNDLING_INPUT_DIR = '/asset-input';
-export const BUNDLING_OUTPUT_DIR = '/asset-output';
-
 /**
  * Bundling options
  *
@@ -76,7 +73,7 @@ export class BundlingDockerImage {
       path,
     ];
 
-    const docker = exec('docker', dockerArgs);
+    const docker = dockerExec(dockerArgs);
 
     const match = docker.stdout.toString().match(/Successfully built ([a-z0-9]+)/);
 
@@ -119,7 +116,7 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    exec('docker', dockerArgs);
+    dockerExec(dockerArgs);
   }
 }
 
@@ -187,8 +184,9 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function exec(cmd: string, args: string[]) {
-  const proc = spawnSync(cmd, args);
+function dockerExec(args: string[]) {
+  const prog = process.env.CDK_DOCKER ?? 'docker';
+  const proc = spawnSync(prog, args);
 
   if (proc.error) {
     throw proc.error;
