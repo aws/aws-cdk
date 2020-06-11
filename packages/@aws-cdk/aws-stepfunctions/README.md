@@ -508,22 +508,104 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
-## Granting actions to a role
+## State Machine Permission Grants
 
-Grant access to a state machine by passing an iam role:
+IAM roles, users, or groups which need to be able to work with a State Machine should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to start an execution
+- `stateMachine.grantRead(principal)` - grants the principal read access
+- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send success, failure, and heartbeat 
+- `stateMachine.grant(principal, actions, resourceArn)` - grants the principal the specific IAM action specified
+
+### Read Permissions
+
+Grant `read` access to a state machine by calling the `grantRead()` API.
 
 ```ts
-stateMachine.grantStartExecution(role);
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
 
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give role read access to state machine
 stateMachine.grantRead(role);
+```
 
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `states:ListExecutions` - to state machine
+- `states:ListStateMachines` - to state machine
+- `states:DescribeExecution` - to executions
+- `states:DescribeStateMachineForExecution` - to executions
+- `states:GetExecutionHistory` - to executions
+- `states:ListActivities` - to `*`
+- `states:DescribeStateMachine` - to `*`
+- `states:DescribeActivity` - to `*`
+
+### Start Execution Permission 
+
+Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+```
+
+The following permission is provided to a service principal by the `grantStartExecution()` API:
+
+- `states:StartExecution` - to state machine
+
+### Task Response Permissions
+
+Grant task response permissions to a service principal by calling the `grantStartExecution()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give role task response permissions
 stateMachine.grantTaskResponse(role);
 ```
 
-Prescribe more fine-grained iam actions control:
+The following task response permissions are provided to a service principal by the `grantTaskResponse()` API:
+
+- `states:SendTaskSuccess` - to `*`
+- `states:SendTaskFailure` - to `*`
+- `states:SendTaskHeartbeat` - to `*`
+
+They are scoped to `*` because IAM says that for these actions, "policies granting access must specify "*" in the resource element."
+
+### Custom Permissions
+
+You can add any set of permissions to a stream by calling the `grant()` API.
 
 ```ts
-stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
+const user = new iam.User(stack, 'MyUser');
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give my user permission to send task success to state machine
+stateMachine.grant(user, ['states:SendTaskSuccess'], '*');
 ```
 
 ## Future work

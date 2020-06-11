@@ -21,6 +21,5 @@ const role = new iam.Role(stack, 'Role', {
 });
 
 stateMachine.grantTaskResponse(role);
-stateMachine.grant(role, ['states:DescribeExecution'], `${stateMachine.executionArn}:*`);
 
 app.synth();

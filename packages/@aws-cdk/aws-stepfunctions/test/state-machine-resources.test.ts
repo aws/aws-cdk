@@ -229,7 +229,10 @@ describe('State Machine Resources', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'states:ListExecutions',
+            Action: [
+              'states:ListExecutions',
+              'states:ListStateMachines',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'StateMachine2E01A3A5',
@@ -279,7 +282,6 @@ describe('State Machine Resources', () => {
           },
           {
             Action: [
-              'states:ListStateMachines',
               'states:ListActivities',
               'states:DescribeStateMachine',
               'states:DescribeActivity',
@@ -360,48 +362,17 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:DescribeExecution'], `${stateMachine.executionArn}:*`);
+    stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'states:DescribeExecution',
+            Action: 'states:ListExecution',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  {
-                    'Fn::Select': [
-                      6,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          {
-                            Ref: 'StateMachine2E01A3A5',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  ':*',
-                ],
-              ],
+              Ref: 'StateMachine2E01A3A5',
             },
           },
         ],
@@ -497,35 +468,16 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:DescribeExecution'], `${stateMachine.executionArn}:*`);
+    stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'states:DescribeExecution',
+            Action: 'states:ListExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:*',
-                ],
-              ],
-            },
+            Resource: stateMachine.stateMachineArn,
           },
         ],
         Version: '2012-10-17',

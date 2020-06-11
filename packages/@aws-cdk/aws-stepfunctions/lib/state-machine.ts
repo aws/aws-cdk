@@ -125,15 +125,6 @@ export interface StateMachineProps {
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
 
-  public get executionArn(): string {
-    return Arn.format({
-      resource: 'execution',
-      service: 'states',
-      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
-      sep: ':',
-    }, this.stack);
-  }
-
   /**
    * Import a state machine
    */
@@ -165,7 +156,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantRead(identity: iam.IGrantable): iam.Grant {
     iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: ['states:ListExecutions'],
+      actions: [
+        'states:ListExecutions',
+        'states:ListStateMachines',
+      ],
       resourceArns: [this.stateMachineArn],
     });
     iam.Grant.addToPrincipal({
@@ -175,12 +169,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:DescribeStateMachineForExecution',
         'states:GetExecutionHistory',
       ],
-      resourceArns: [`${this.executionArn}:*`],
+      resourceArns: [`${this.executionArn()}:*`],
     });
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: [
-        'states:ListStateMachines',
         'states:ListActivities',
         'states:DescribeStateMachine',
         'states:DescribeActivity',
@@ -192,6 +185,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to access task responses of the
    * state machine.
+   *
+   * IAM Policy Simulator says "this action does not support resource-level permissions.
+   * Policies granting access must specify "*" in the resource element."
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -213,6 +209,18 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       grantee: identity,
       actions,
       resourceArns: [resourceArn],
+    });
+  }
+
+  /**
+   * Returns the pattern for the execution ARN's of the state machine
+   */
+  private executionArn(): string {
+    return Stack.of(this).formatArn({
+      resource: 'execution',
+      service: 'states',
+      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
+      sep: ':',
     });
   }
 }
@@ -303,12 +311,6 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       sep: ':',
     });
-    // this.executionArn = Arn.format({
-    //   resource: 'execution',
-    //   service: 'states',
-    //   resourceName: this.physicalName,
-    //   sep: ':',
-    // }, this.stack);
   }
 
   /**
