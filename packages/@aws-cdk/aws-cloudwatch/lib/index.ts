@@ -1,5 +1,6 @@
 export * from './alarm';
 export * from './alarm-action';
+export * from './composite-alarm';
 export * from './dashboard';
 export * from './graph';
 export * from './layout';

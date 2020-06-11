@@ -174,6 +174,29 @@ const alarm = new cloudwatch.Alarm(stack, 'Alarm', { /* ... */ });
 alarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
+### Composite Alarms
+
+[Composite Alarms](https://aws.amazon.com/about-aws/whats-new/2020/03/amazon-cloudwatch-now-allows-you-to-combine-multiple-alarms/) 
+can be created from existing Alarm resources.
+
+```ts
+const alarmRule = new OrAlarmRule(
+  new OrAlarmRule(
+    new AndAlarmRule(
+      alarm1.toAlarmRule(AlarmState.ALARM),
+      alarm2.toAlarmRule(AlarmState.OK),
+      alarm3.toAlarmRule(AlarmState.ALARM),
+    ),
+    new NotAlarmRule(alarm4.toAlarmRule(AlarmState.INSUFFICIENT_DATA)),
+  ),
+  new BooleanAlarmRule(false),
+);
+
+new CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+  alarmRule,
+});
+```
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or

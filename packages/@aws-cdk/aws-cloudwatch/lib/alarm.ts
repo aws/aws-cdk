@@ -105,9 +105,99 @@ export enum TreatMissingData {
 }
 
 /**
+ * Enumeration indicates state of Alarm used in building Alarm Rule.
+ */
+export enum AlarmState {
+
+  /**
+   * State indicates resource is in ALARM
+   */
+  ALARM = 'ALARM',
+
+  /**
+   * State indicates resource is not in ALARM
+   */
+  OK = 'OK',
+
+  /**
+   * State indicates there is not enough data to determine is resource is in ALARM
+   */
+  INSUFFICIENT_DATA = 'INSUFFICIENT_DATA',
+
+}
+
+/**
+ * Interface for Alarm Rule.
+ */
+export interface IAlarmRule {
+
+  /**
+   * serialized representation of Alarm Rule to be used when building the Composite Alarm resource.
+   */
+  toAlarmRule(): string;
+
+}
+
+/**
+ * The base class for Alarm and CompositeAlarm resources.
+ */
+export abstract class AlarmBase extends Resource implements IAlarm {
+
+  /**
+   * @attribute
+   */
+  public abstract readonly alarmArn: string;
+  public abstract readonly alarmName: string;
+
+  protected alarmActionArns?: string[];
+  protected insufficientDataActionArns?: string[];
+  protected okActionArns?: string[];
+
+  /**
+   * Trigger this action if the alarm fires
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addAlarmAction(...actions: IAlarmAction[]) {
+    if (this.alarmActionArns === undefined) {
+      this.alarmActionArns = [];
+    }
+
+    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+  }
+
+  /**
+   * Trigger this action if there is insufficient data to evaluate the alarm
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addInsufficientDataAction(...actions: IAlarmAction[]) {
+    if (this.insufficientDataActionArns === undefined) {
+      this.insufficientDataActionArns = [];
+    }
+
+    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+  }
+
+  /**
+   * Trigger this action if the alarm returns from breaching state into ok state
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addOkAction(...actions: IAlarmAction[]) {
+    if (this.okActionArns === undefined) {
+      this.okActionArns = [];
+    }
+
+    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+  }
+
+}
+
+/**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource implements IAlarm {
+export class Alarm extends AlarmBase {
 
   /**
    * Import an existing CloudWatch alarm provided an ARN
@@ -142,10 +232,6 @@ export class Alarm extends Resource implements IAlarm {
    * The metric object this alarm was based on
    */
   public readonly metric: IMetric;
-
-  private alarmActionArns?: string[];
-  private insufficientDataActionArns?: string[];
-  private okActionArns?: string[];
 
   /**
    * This metric as an annotation
@@ -215,45 +301,6 @@ export class Alarm extends Resource implements IAlarm {
   }
 
   /**
-   * Trigger this action if the alarm fires
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if there is insufficient data to evaluate the alarm
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if the alarm returns from breaching state into ok state
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
    * Turn this alarm into a horizontal annotation
    *
    * This is useful if you want to represent an Alarm in a non-AlarmWidget.
@@ -271,6 +318,28 @@ export class Alarm extends Resource implements IAlarm {
    */
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
+  }
+
+  /**
+   * Build AlarmRule from Alarm with given State (this is for use in composite alarm rule expressions).
+   *
+   * @param alarmState AlarmState to be used in Alarm Rule.
+   */
+  public toAlarmRule(alarmState: AlarmState): IAlarmRule {
+    class AlarmRule implements IAlarmRule {
+      private readonly alarm: IAlarm;
+      private readonly state: AlarmState;
+
+      constructor(alarm: IAlarm, state: AlarmState) {
+        this.alarm = alarm;
+        this.state = state;
+      }
+
+      public toAlarmRule(): string {
+        return `${this.state}(${this.alarm.alarmArn})`;
+      }
+    }
+    return new AlarmRule(this, alarmState);
   }
 
   private renderMetric(metric: IMetric) {
