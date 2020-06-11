@@ -1218,31 +1218,6 @@ class ArmBuildImage implements IBuildImage {
   }
 }
 
-class GpuBuildImage implements IBuildImage {
-  public readonly type = 'LINUX_GPU_CONTAINER';
-  public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
-  public readonly imageId: string;
-
-  constructor(imageId: string) {
-    this.imageId = imageId;
-  }
-
-  public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
-          `'${buildEnvironment.computeType}' was given`);
-    }
-    return ret;
-  }
-
-  public runScriptBuildspec(entrypoint: string): BuildSpec {
-    return runScriptLinuxBuildSpec(entrypoint);
-  }
-}
-
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1297,14 +1272,6 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
   public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
-
-  public static readonly STANDARD_1_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:1.0');
-  public static readonly STANDARD_2_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:2.0');
-  public static readonly STANDARD_3_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:3.0');
-  public static readonly STANDARD_4_0_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/standard:4.0');
-  public static readonly AMAZON_LINUX_2_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
-  public static readonly AMAZON_LINUX_2_2_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
-  public static readonly AMAZON_LINUX_2_3_GPU: IBuildImage = new GpuBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1446,6 +1413,137 @@ export class LinuxBuildImage implements IBuildImage {
 
   public validate(_: BuildEnvironment): string[] {
     return [];
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return runScriptLinuxBuildSpec(entrypoint);
+  }
+}
+
+/**
+ * A CodeBuild GPU image running Linux.
+ *
+ * This class has public constants that represent the most popular GPU images from AWS Deep Learning Containers.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - LinuxGpuBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
+ * - LinuxGpuBuildImage.fromEcrRepository(repo[, tag])
+ * - LinuxGpuBuildImage.fromAsset(parent, id, props)
+ *
+ *
+ * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images/
+ */
+export class LinuxGpuBuildImage implements IBuildImage {
+  /** Tensorflow GPU images from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_1_14_0 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "1.14.0-gpu-py36-cu100-ubuntu16.04");
+  public static readonly DLC_TENSORFLOW_1_15_0 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "1.15.0-gpu-py36-cu100-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_1_15_2_TRAINING = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "1.15.2-gpu-py37-cu100-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_1_15_2_INFERENCE = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-inference"), "1.15.2-gpu-py36-cu100-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_2_0_0 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "2.0.0-gpu-py36-cu100-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_2_0_1 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "2.0.1-gpu-py36-cu100-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_2_1_0_TRAINING = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "2.1.0-gpu-py36-cu101-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_2_1_0_INFERENCE = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-inference"), "2.1.0-gpu-py36-cu101-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_2_2_0_TRAINING = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("tensorflow-training"), "2.2.0-gpu-py37-cu101-ubuntu18.04");
+
+  /** PyTorch GPU images from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_2_0 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-training"), "1.2.0-gpu-py36-cu100-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_3_1 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-training"), "1.3.1-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_4_0_TRAINING = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-training"), "1.4.0-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_4_0_INFERENCE = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-inference"), "1.4.0-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_5_0_TRAINING = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-training"), "1.5.0-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_5_0_INFERENCE = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("pytorch-inference"), "1.5.0-gpu-py36-cu101-ubuntu16.04");
+
+  /** MXNet GPU images from AWS Deep Learning Containers. */
+  public static readonly DLC_MXNET_1_4_1 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("mxnet-training"), "1.4.1-gpu-py36-cu100-ubuntu16.04");
+  public static readonly DLC_MXNET_1_6_0 = LinuxGpuBuildImage.fromEcrRepository(
+      LinuxGpuBuildImage.DlcRepository("mxnet-training"), "1.6.0-gpu-py36-cu101-ubuntu16.04");
+
+  /**
+   * @returns a Linux build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new LinuxGpuBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
+
+  /**
+   * @returns A Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxGpuBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  /**
+   * Uses an Docker image asset as a Linux build image.
+   */
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
+    return new LinuxGpuBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
+
+  private static DlcRepository(name: string): ecr.IRepository {
+    const arn = `arn:aws:ecr:${Aws.REGION}:763104351884::repository/${name}`;
+    return ecr.Repository.fromRepositoryArn(arn);
+  }
+
+  public readonly type = 'LINUX_GPU_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: LinuxBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const ret = [];
+    if (buildEnvironment.computeType &&
+        buildEnvironment.computeType !== ComputeType.LARGE) {
+      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
+          `'${buildEnvironment.computeType}' was given`);
+    }
+    return ret;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
