@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
+import * as os from 'os';
 import * as path from 'path';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
@@ -11,6 +12,9 @@ enum DockerStubCommand {
   FAIL              = 'DOCKER_STUB_FAIL',
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
 }
+
+const userInfo = os.userInfo();
+const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
 
 // this is a way to provide a custom "docker" command for staging.
 process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
@@ -111,7 +115,10 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(readDockerStubInput(), 'run --rm -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS');
+    test.deepEqual(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
     test.deepEqual(fs.readdirSync(assembly.directory), [
       'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
       'cdk.out',
@@ -138,8 +145,10 @@ export = {
       },
     }), /Bundling did not produce any output/);
 
-    test.equal(readDockerStubInput(),
-      'run --rm -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT');
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+    );
     test.done();
   },
 
@@ -160,7 +169,10 @@ export = {
     });
 
     // THEN
-    test.equal(readDockerStubInput(), 'run --rm -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS');
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
 
     test.done();
@@ -201,7 +213,10 @@ export = {
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
     }), /Cannot specify `bundle` for `assetHashType`/);
-    test.equal(readDockerStubInput(), 'run --rm -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS');
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
 
     test.done();
   },
@@ -252,7 +267,10 @@ export = {
         command: [ DockerStubCommand.FAIL ],
       },
     }), /Failed to run bundling Docker image for asset stack\/Asset/);
-    test.equal(readDockerStubInput(), 'run --rm -v /input:/asset-input -v /output:/asset-output -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL');
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+    );
 
     test.done();
   },
