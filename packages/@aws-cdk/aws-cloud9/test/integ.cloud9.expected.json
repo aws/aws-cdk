@@ -323,10 +323,27 @@
         }
       }
     },
+    "Repo02AC86CF": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "foo"
+      }
+    },
     "C9EnvF05FC3BE": {
       "Type": "AWS::Cloud9::EnvironmentEC2",
       "Properties": {
         "InstanceType": "t2.micro",
+        "Repositories": [
+          {
+            "PathComponent": "/foo",
+            "RepositoryUrl": {
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "CloneUrlHttp"
+              ]
+            }
+          }
+        ],
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }

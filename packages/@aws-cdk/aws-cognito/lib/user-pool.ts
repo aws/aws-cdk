@@ -2,6 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
+import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
@@ -908,26 +909,6 @@ export class UserPool extends UserPoolBase {
     return schema;
   }
 }
-
-const StandardAttributeNames: Record<keyof StandardAttributes, string> = {
-  address: 'address',
-  birthdate: 'birthdate',
-  email: 'email',
-  familyName: 'family_name',
-  gender: 'gender',
-  givenName: 'given_name',
-  locale: 'locale',
-  middleName: 'middle_name',
-  fullname: 'name',
-  nickname: 'nickname',
-  phoneNumber: 'phone_number',
-  profilePicture: 'picture',
-  preferredUsername: 'preferred_username',
-  profilePage: 'profile',
-  timezone: 'zoneinfo',
-  lastUpdateTime: 'updated_at',
-  website: 'website',
-};
 
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
