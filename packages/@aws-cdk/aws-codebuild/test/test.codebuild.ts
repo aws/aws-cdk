@@ -1576,12 +1576,12 @@ export = {
   },
 
   'GPU image': {
-    'AMAZON_LINUX_2_GPU': {
+    'DLC_TENSORFLOW_2_2_0_TRAINING': {
       'has type GPU_CONTAINER and default ComputeType LARGE'(test: Test) {
         const stack = new cdk.Stack();
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+            buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_2_0_TRAINING,
           },
         });
 
@@ -1601,7 +1601,7 @@ export = {
         test.throws(() => {
           new codebuild.PipelineProject(stack, 'Project', {
             environment: {
-              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_2_0_TRAINING,
               computeType: codebuild.ComputeType.SMALL,
             },
           });
@@ -1616,7 +1616,7 @@ export = {
         test.throws(() => {
           new codebuild.PipelineProject(stack, 'Project', {
             environment: {
-              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_2_0_TRAINING,
               computeType: codebuild.ComputeType.MEDIUM,
             },
           });
@@ -1631,7 +1631,7 @@ export = {
         test.throws(() => {
           new codebuild.PipelineProject(stack, 'Project', {
             environment: {
-              buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_GPU,
+              buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_2_0_TRAINING,
               computeType: codebuild.ComputeType.X2_LARGE,
             },
           });
