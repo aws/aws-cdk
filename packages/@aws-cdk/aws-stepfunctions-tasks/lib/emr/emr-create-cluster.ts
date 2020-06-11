@@ -29,9 +29,8 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * Also called instance profile and EC2 role. An IAM role for an EMR cluster. The EC2 instances of the cluster assume this role.
    *
    * This attribute has been renamed from jobFlowRole to clusterRole to align with other ERM/StepFunction integration parameters.
-   * A Role will be created if one is not provided.
    *
-   * @default - None
+   * @default - * A Role will be created
    */
   readonly clusterRole?: iam.IRole;
 
@@ -41,10 +40,9 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   readonly name: string;
 
   /**
-   * The IAM role that will be assumed by the Amazon EMR service to access AWS resources on your behalf. A Role will be created if
-   * one is not provided.
+   * The IAM role that will be assumed by the Amazon EMR service to access AWS resources on your behalf.
    *
-   * @default - None
+   * @default - A role will be created that Amazon EMR service can assume.
    */
   readonly serviceRole?: iam.IRole;
 
@@ -63,9 +61,9 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   readonly applications?: EmrCreateCluster.ApplicationConfigProperty[];
 
   /**
-   * An IAM role for automatic scaling policies. A Role will be created if one is not provided.
+   * An IAM role for automatic scaling policies.
    *
-   * @default - None
+   * @default - A role will be created.
    */
   readonly autoScalingRole?: iam.IRole;
 
