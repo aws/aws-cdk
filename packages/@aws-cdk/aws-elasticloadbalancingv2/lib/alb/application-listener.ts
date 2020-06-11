@@ -244,6 +244,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
+        conditions: props.conditions,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
