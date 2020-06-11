@@ -41,14 +41,13 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
   },
   "cdk-build": {
     "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/sdk-api-metadata.json && rm -f lib/sdk-api-metadata.d.ts"
+      "node ./build-tools/gen.js"
     ],
     "jest": true
   },
@@ -68,7 +67,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "aws-sdk": "^2.675.0",
+    "aws-sdk": "^2.691.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -88,6 +87,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
@@ -106,10 +106,11 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.2",
+    "@aws-cdk/aws-kinesis": "0.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {

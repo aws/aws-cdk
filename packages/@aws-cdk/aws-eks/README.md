@@ -386,6 +386,33 @@ A convenience method for mapping a role to the `system:masters` group is also av
 cluster.awsAuth.addMastersRole(role)
 ```
 
+### Cluster Security Group
+
+When you create an Amazon EKS cluster, a
+[cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
+is automatically created as well. This security group is designed to allow
+all traffic from the control plane and managed node groups to flow freely
+between each other.
+
+The ID for that security group can be retrieved after creating the cluster.
+
+```ts
+const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
+```
+
+### Cluster Encryption Configuration
+
+When you create an Amazon EKS cluster, envelope encryption of
+Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled. The documentation
+on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
+can provide more details about the customer master key (CMK) that can be used for the encryption.
+
+The Amazon Resource Name (ARN) for that CMK can be retrieved.
+
+```ts
+const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
+```
+
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
@@ -518,9 +545,42 @@ cluster.addCapacity('BottlerocketNodes', {
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
-Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity. 
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
 
+### Service Accounts
 
+With services account you can provide Kubernetes Pods access to AWS resources.
+
+```ts
+// add service account
+const sa = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+const mypod = cluster.addResource('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    serviceAccountName: sa.serviceAccountName
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ],
+
+      }
+    ]
+  }
+});
+
+// create the resource after the service account
+mypod.node.addDependency(sa);
+
+// print the IAM role arn for this service account
+new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
+```
 
 ### Roadmap
 

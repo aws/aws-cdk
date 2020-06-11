@@ -2,8 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -157,6 +157,25 @@ describe('User Pool', () => {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
         emailBody: 'invalid email body {##Verify Email##}',
+      },
+    })).not.toThrow();
+  });
+
+  test('validation is skipped for email and sms messages when tokens', () => {
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'Parameter');
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        emailBody: parameter.valueAsString,
+      },
+    })).not.toThrow();
+
+    expect(() => new UserPool(stack, 'Pool2', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE,
+        smsMessage: parameter.valueAsString,
       },
     })).not.toThrow();
   });
@@ -454,15 +473,49 @@ describe('User Pool', () => {
     });
   });
 
-  test('required attributes', () => {
+  test('sign in case sensitive is correctly picked up', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      requiredAttributes: {
-        fullname: true,
-        timezone: true,
+      signInCaseSensitive: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: {
+        CaseSensitive: false,
+      },
+    });
+  });
+
+  test('sign in case sensitive is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {});
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UsernameConfiguration: ABSENT,
+    });
+  });
+
+  test('standard attributes default to mutable', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      standardAttributes: {
+        fullname: {
+          required: true,
+        },
+        timezone: {
+          required: true,
+        },
       },
     });
 
@@ -472,38 +525,120 @@ describe('User Pool', () => {
         {
           Name: 'name',
           Required: true,
+          Mutable: true,
         },
         {
           Name: 'zoneinfo',
           Required: true,
+          Mutable: true,
         },
       ],
     });
   });
 
-  test('schema is absent when required attributes are specified but as false', () => {
+  test('mutable standard attributes', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
+    new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
+      standardAttributes: {
+        fullname: {
+          required: true,
+          mutable: true,
+        },
+        timezone: {
+          required: true,
+          mutable: true,
+        },
+      },
+    });
+
     new UserPool(stack, 'Pool1', {
       userPoolName: 'Pool1',
-    });
-    new UserPool(stack, 'Pool2', {
-      userPoolName: 'Pool2',
-      requiredAttributes: {
-        familyName: false,
+      standardAttributes: {
+        fullname: {
+          mutable: false,
+        },
+        timezone: {
+          mutable: false,
+        },
       },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
+      Schema: [
+        {
+          Mutable: true,
+          Name: 'name',
+          Required: true,
+        },
+        {
+          Mutable: true,
+          Name: 'zoneinfo',
+          Required: true,
+        },
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
+      Schema: [
+        {
+          Name: 'name',
+          Required: false,
+          Mutable: false,
+        },
+        {
+          Name: 'zoneinfo',
+          Required: false,
+          Mutable: false,
+        },
+      ],
+    });
+  });
+
+  test('schema is absent when attributes are not specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { userPoolName: 'Pool' });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      UserPoolName: 'Pool',
       Schema: ABSENT,
     });
+  });
+
+  test('optional mutable standardAttributes', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      userPoolName: 'Pool',
+      standardAttributes: {
+        timezone: {
+          mutable: true,
+        },
+      },
+    });
+
+    // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UserPoolName: 'Pool2',
-      Schema: ABSENT,
+      UserPoolName: 'Pool',
+      Schema: [
+        {
+          Mutable: true,
+          Required: false,
+          Name: 'zoneinfo',
+        },
+      ],
     });
   });
 
@@ -786,6 +921,50 @@ test('addClient', () => {
     ClientName: 'userpoolimportedclient',
     UserPoolId: stack.resolve(imported.userPoolId),
   });
+});
+
+test('addDomain', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const userpool = new UserPool(stack, 'Pool');
+  userpool.addDomain('UserPoolDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpooldomain',
+    },
+  });
+  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+  imported.addDomain('UserPoolImportedDomain', {
+    cognitoDomain: {
+      domainPrefix: 'userpoolimporteddomain',
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpooldomain',
+    UserPoolId: stack.resolve(userpool.userPoolId),
+  });
+  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+    Domain: 'userpoolimporteddomain',
+    UserPoolId: stack.resolve(imported.userPoolId),
+  });
+});
+
+test('registered identity providers', () => {
+  // GIVEN
+  const stack = new Stack();
+  const userPool = new UserPool(stack, 'pool');
+  const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
+  const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
+
+  // WHEN
+  userPool.registerIdentityProvider(provider1);
+  userPool.registerIdentityProvider(provider2);
+
+  // THEN
+  expect(userPool.identityProviders).toEqual([provider1, provider2]);
 });
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {

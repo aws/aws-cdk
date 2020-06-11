@@ -40,6 +40,18 @@ describe('CDK Include', () => {
       SynthUtils.synthesize(stack);
     }).toThrow(/allowedOrigins: required but missing/);
   });
+
+  test("throws a validation exception for a template with a DependsOn that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-depends-on.json');
+    }).toThrow(/Resource 'Bucket2' depends on 'Bucket1' that doesn't exist/);
+  });
+
+  test("throws a validation exception for a template referencing a Condition resource attribute that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-condition.json');
+    }).toThrow(/Resource 'Bucket' uses Condition 'AlwaysFalseCond' that doesn't exist/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {

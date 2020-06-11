@@ -34,7 +34,8 @@ to an S3 bucket during deployment.
 
  * `s3BucketName` - the name of the assets S3 bucket.
  * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)
- * `s3Url` - the S3 URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
+ * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://mybucket/mykey.zip)
+ * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
 
 In the following example, the various asset attributes are exported as stack outputs:
 
@@ -48,6 +49,9 @@ granted IAM permissions. To do that use the `asset.grantRead(principal)` method:
 The following examples grants an IAM group read permissions on an asset:
 
 [Example of granting read access to an asset](./test/integ.assets.permissions.lit.ts)
+
+The following example uses custom asset bundling to convert a markdown file to html:
+[Example of using asset bundling](./test/integ.assets.bundling.lit.ts)
 
 ## How does it work?
 

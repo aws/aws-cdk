@@ -1,8 +1,9 @@
 import * as child_process from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
-import { cloudFormation, deleteStacks, testEnv } from './aws-helpers';
+import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
 
-export const INTEG_TEST_DIR = '/tmp/cdk-integ-test2';
+export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
 export const STACK_NAME_PREFIX = process.env.STACK_NAME_PREFIX || (() => {
   // Make the stack names unique based on the codebuild project name
@@ -38,6 +39,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
+  neverRequireApproval?: boolean;
 }
 
 export function log(x: string) {
@@ -47,8 +49,10 @@ export function log(x: string) {
 export async function cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
   stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
+  const neverRequireApproval = options.neverRequireApproval ?? true;
+
   return await cdk(['deploy',
-    '--require-approval=never', // We never want a prompt in an unattended test
+    ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
     ...(options.options ?? []),
     ...fullStackName(stackNames)], options);
 }
@@ -69,6 +73,7 @@ export async function cdk(args: string[], options: CdkCliOptions = {}) {
     modEnv: {
       AWS_REGION: (await testEnv()).region,
       AWS_DEFAULT_REGION: (await testEnv()).region,
+      STACK_NAME_PREFIX,
       ...options.modEnv,
     },
   });
@@ -85,57 +90,83 @@ export function fullStackName(stackNames: string | string[]): string | string[] 
 }
 
 /**
+ * Prepare a target dir byreplicating a source directory
+ */
+export async function cloneDirectory(source: string, target: string) {
+  await shell(['rm', '-rf', target]);
+  await shell(['mkdir', '-p', target]);
+  await shell(['cp', '-R', source + '/*', target]);
+}
+
+/**
  * Prepare the app fixture
  *
  * If this is done in the main test script, it will be skipped
  * in the subprocess scripts since the app fixture can just be reused.
  */
 export async function prepareAppFixture() {
-  if (!process.env.FIXTURE_PREPARED) {
-    await shell(['rm', '-rf', INTEG_TEST_DIR]);
-    await shell(['mkdir', '-p', INTEG_TEST_DIR]);
-    await shell(['cp', '-R', path.join(__dirname, 'app') + '/', INTEG_TEST_DIR]);
+  await cloneDirectory(path.join(__dirname, 'app'), INTEG_TEST_DIR);
 
-    await shell(['npm', 'install',
-      '@aws-cdk/core',
-      '@aws-cdk/aws-sns',
-      '@aws-cdk/aws-iam',
-      '@aws-cdk/aws-lambda',
-      '@aws-cdk/aws-ssm',
-      '@aws-cdk/aws-ecr-assets',
-      '@aws-cdk/aws-cloudformation',
-      '@aws-cdk/aws-ec2'], {
-      cwd: INTEG_TEST_DIR,
-    });
-
-    process.env.FIXTURE_PREPARED = '1';
-  }
+  await shell(['npm', 'install',
+    '@aws-cdk/core',
+    '@aws-cdk/aws-sns',
+    '@aws-cdk/aws-iam',
+    '@aws-cdk/aws-lambda',
+    '@aws-cdk/aws-ssm',
+    '@aws-cdk/aws-ecr-assets',
+    '@aws-cdk/aws-cloudformation',
+    '@aws-cdk/aws-ec2'], {
+    cwd: INTEG_TEST_DIR,
+  });
 }
 
 /**
- * Cleanup leftover stacks
+ * Return the stacks starting with our testing prefix that should be deleted
  */
-export async function cleanupOldStacks() {
-  const response = await cloudFormation('listStacks', {
-    StackStatusFilter: [
-      'CREATE_IN_PROGRESS' , 'CREATE_FAILED' , 'CREATE_COMPLETE' ,
-      'ROLLBACK_IN_PROGRESS' , 'ROLLBACK_FAILED' , 'ROLLBACK_COMPLETE' ,
-      'DELETE_FAILED',
-      'UPDATE_IN_PROGRESS' , 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS' ,
-      'UPDATE_COMPLETE' , 'UPDATE_ROLLBACK_IN_PROGRESS' ,
-      'UPDATE_ROLLBACK_FAILED' ,
-      'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS' ,
-      'UPDATE_ROLLBACK_COMPLETE' , 'REVIEW_IN_PROGRESS' ,
-      'IMPORT_IN_PROGRESS' , 'IMPORT_COMPLETE' ,
-      'IMPORT_ROLLBACK_IN_PROGRESS' , 'IMPORT_ROLLBACK_FAILED' ,
-      'IMPORT_ROLLBACK_COMPLETE' ,
-    ],
-  });
+export async function deleteableStacks(prefix: string): Promise<AWS.CloudFormation.Stack[]> {
+  const statusFilter = [
+    'CREATE_IN_PROGRESS', 'CREATE_FAILED', 'CREATE_COMPLETE',
+    'ROLLBACK_IN_PROGRESS', 'ROLLBACK_FAILED', 'ROLLBACK_COMPLETE',
+    'DELETE_FAILED',
+    'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS',
+    'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_IN_PROGRESS',
+    'UPDATE_ROLLBACK_FAILED',
+    'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS',
+    'UPDATE_ROLLBACK_COMPLETE', 'REVIEW_IN_PROGRESS',
+    'IMPORT_IN_PROGRESS', 'IMPORT_COMPLETE',
+    'IMPORT_ROLLBACK_IN_PROGRESS', 'IMPORT_ROLLBACK_FAILED',
+    'IMPORT_ROLLBACK_COMPLETE',
+  ];
 
-  const stacksToDelete = (response.StackSummaries ?? [])
-    .filter(s => s.StackName.startsWith(STACK_NAME_PREFIX))
-    .map(s => s.StackName);
-  await deleteStacks(...stacksToDelete);
+  const response = await cloudFormation('describeStacks', {});
+
+  return (response.Stacks ?? [])
+    .filter(s => s.StackName.startsWith(prefix))
+    .filter(s => statusFilter.includes(s.StackStatus));
+}
+
+/**
+ * Cleanup leftover stacks and buckets
+ */
+export async function cleanup(): Promise<void> {
+  const stacksToDelete = await deleteableStacks(STACK_NAME_PREFIX);
+
+  // Bootstrap stacks have buckets that need to be cleaned
+  const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+  await Promise.all(bucketNames.map(emptyBucket));
+
+  // Bootstrap stacks have ECR repositories with images which should be deleted
+  const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+  await Promise.all(imageRepositoryNames.map(deleteImageRepository));
+
+  await deleteStacks(...stacksToDelete.map(s => s.StackName));
+
+  // We might have leaked some buckets by upgrading the bootstrap stack. Be
+  // sure to clean everything.
+  for (const bucket of bucketsToDelete) {
+    await deleteBucket(bucket);
+  }
+  bucketsToDelete = [];
 }
 
 /**
@@ -182,8 +213,24 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}: ${Buffer.concat(stderr).toString('utf-8').trim()}`));
       }
     });
   });
+}
+
+let bucketsToDelete = new Array<string>();
+
+/**
+ * Append this to the list of buckets to potentially delete
+ *
+ * At the end of a test, we clean up buckets that may not have gotten destroyed
+ * (for whatever reason).
+ */
+export function rememberToDeleteBucket(bucketName: string) {
+  bucketsToDelete.push(bucketName);
+}
+
+function defined<A>(x: A): x is NonNullable<A> {
+  return x !== undefined;
 }

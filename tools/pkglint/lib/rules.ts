@@ -825,7 +825,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
   }
 }
 
@@ -1005,12 +1005,8 @@ export class Cfn2Ts extends ValidationRule {
   public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) {
-      return;
-    }
-
-    if (!isAWS(pkg)) {
-      return;
+    if (!isJSII(pkg) || !isAWS(pkg)) {
+      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
@@ -1253,7 +1249,7 @@ function isJSII(pkg: PackageJson): boolean {
  * @param pkg
  */
 function isAWS(pkg: PackageJson): boolean {
-  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+  return pkg.json['cdk-build']?.cloudformation != null;
 }
 
 /**

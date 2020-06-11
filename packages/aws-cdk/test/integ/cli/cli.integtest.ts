@@ -1,21 +1,26 @@
 import { promises as fs } from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import { afterSeconds, cloudFormation, iam, lambda, retry, sns, sts } from './aws-helpers';
-import { cdk, cdkDeploy, cdkDestroy, cleanupOldStacks, fullStackName, INTEG_TEST_DIR,
-  log, prepareAppFixture, STACK_NAME_PREFIX } from './cdk-helpers';
+import { cloudFormation, iam, lambda, retry, sleep, sns, sts, testEnv } from './aws-helpers';
+import { cdk, cdkDeploy, cdkDestroy, cleanup, cloneDirectory, fullStackName,
+  INTEG_TEST_DIR, log, prepareAppFixture, shell, STACK_NAME_PREFIX } from './cdk-helpers';
+import { integTest } from './test-helpers';
 
 jest.setTimeout(600 * 1000);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await prepareAppFixture();
-  await cleanupOldStacks();
+});
+
+beforeEach(async () => {
+  await cleanup();
 });
 
 afterEach(async () => {
-  await cleanupOldStacks();
+  await cleanup();
 });
 
-test('VPC Lookup', async () => {
+integTest('VPC Lookup', async () => {
   log('Making sure we are clean before starting.');
   await cdkDestroy('define-vpc', { modEnv: { ENABLE_VPC_TESTING: 'DEFINE' }});
 
@@ -27,26 +32,26 @@ test('VPC Lookup', async () => {
   await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' }});
 });
 
-test('Two ways of shoing the version', async () => {
+integTest('Two ways of shoing the version', async () => {
   const version1 = await cdk(['version']);
   const version2 = await cdk(['--version']);
 
   expect(version1).toEqual(version2);
 });
 
-test('Termination protection', async () => {
-  await cdkDeploy('termination-protection');
+integTest('Termination protection', async () => {
+  const stackName = 'termination-protection';
+  await cdkDeploy(stackName);
 
   // Try a destroy that should fail
-  await expect(cdkDestroy('termination-protection')).rejects.toThrow('exited with error');
+  await expect(cdkDestroy(stackName)).rejects.toThrow('exited with error');
 
-  await cloudFormation('updateTerminationProtection', {
-    EnableTerminationProtection: false,
-    StackName: fullStackName('termination-protection'),
-  });
+  // Can update termination protection even though the change set doesn't contain changes
+  await cdkDeploy(stackName, { modEnv: { TERMINATION_PROTECTION: 'FALSE' } });
+  await cdkDestroy(stackName);
 });
 
-test('cdk synth', async () => {
+integTest('cdk synth', async () => {
   await expect(cdk(['synth', fullStackName('test-1')])).resolves.toEqual(
     `Resources:
   topic69831491:
@@ -66,7 +71,7 @@ test('cdk synth', async () => {
       aws:cdk:path: ${STACK_NAME_PREFIX}-test-2/topic2/Resource`);
 });
 
-test('ssm parameter provider error', async () => {
+integTest('ssm parameter provider error', async () => {
   await expect(cdk(['synth',
     fullStackName('missing-ssm-parameter'),
     '-c', 'test:ssm-parameter-name=/does/not/exist',
@@ -75,7 +80,7 @@ test('ssm parameter provider error', async () => {
   })).resolves.toContain('SSM parameter not available in account');
 });
 
-test('automatic ordering', async () => {
+integTest('automatic ordering', async () => {
   // Deploy the consuming stack which will include the producing stack
   await cdkDeploy('order-consuming');
 
@@ -83,7 +88,7 @@ test('automatic ordering', async () => {
   await cdkDestroy('order-providing');
 });
 
-test('context setting', async () => {
+integTest('context setting', async () => {
   await fs.writeFile(path.join(INTEG_TEST_DIR, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
   }));
@@ -102,7 +107,7 @@ test('context setting', async () => {
   }
 });
 
-test('deploy', async () => {
+integTest('deploy', async () => {
   const stackArn = await cdkDeploy('test-2', { captureStderr: false });
 
   // verify the number of resources in the stack
@@ -112,14 +117,14 @@ test('deploy', async () => {
   expect(response.StackResources?.length).toEqual(2);
 });
 
-test('deploy all', async () => {
+integTest('deploy all', async () => {
   const arns = await cdkDeploy('test-*', { captureStderr: false });
 
   // verify that we only deployed a single stack (there's a single ARN in the output)
   expect(arns.split('\n').length).toEqual(2);
 });
 
-test('nested stack with parameters', async () => {
+integTest('nested stack with parameters', async () => {
 // STACK_NAME_PREFIX is used in MyTopicParam to allow multiple instances
 // of this test to run in parallel, othewise they will attempt to create the same SNS topic.
   const stackArn = await cdkDeploy('with-nested-stack-using-parameters', {
@@ -137,7 +142,7 @@ test('nested stack with parameters', async () => {
   expect(response.StackResources?.length).toEqual(1);
 });
 
-test('deploy without execute', async () => {
+integTest('deploy without execute', async () => {
   const stackArn = await cdkDeploy('test-2', {
     options: ['--no-execute'],
     captureStderr: false,
@@ -152,16 +157,23 @@ test('deploy without execute', async () => {
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 });
 
-test('security related changes without a CLI are expected to fail', async () => {
+integTest('security related changes without a CLI are expected to fail', async () => {
   // redirect /dev/null to stdin, which means there will not be tty attached
   // since this stack includes security-related changes, the deployment should
   // immediately fail because we can't confirm the changes
-  await expect(cdkDeploy('iam-test', {
+  const stackName = 'iam-test';
+  await expect(cdkDeploy(stackName, {
     options: ['<', '/dev/null'], // H4x, this only works because I happen to know we pass shell: true.
+    neverRequireApproval: false,
   })).rejects.toThrow('exited with error');
+
+  // Ensure stack was not deployed
+  await expect(cloudFormation('describeStacks', {
+    StackName: fullStackName(stackName),
+  })).rejects.toThrow('does not exist');
 });
 
-test('deploy wildcard with outputs', async () => {
+integTest('deploy wildcard with outputs', async () => {
   const outputsFile = path.join(INTEG_TEST_DIR, 'outputs', 'outputs.json');
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
@@ -180,7 +192,7 @@ test('deploy wildcard with outputs', async () => {
   });
 });
 
-test('deploy with parameters', async () => {
+integTest('deploy with parameters', async () => {
   const stackArn = await cdkDeploy('param-test-1', {
     options: [
       '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}bazinga`,
@@ -200,7 +212,7 @@ test('deploy with parameters', async () => {
   ]);
 });
 
-test('deploy with wildcard and parameters', async () => {
+integTest('deploy with wildcard and parameters', async () => {
   await cdkDeploy('param-test-*', {
     options: [
       '--parameters', `${STACK_NAME_PREFIX}-param-test-1:TopicNameParam=${STACK_NAME_PREFIX}bazinga`,
@@ -211,7 +223,7 @@ test('deploy with wildcard and parameters', async () => {
   });
 });
 
-test('deploy with parameters multi', async () => {
+integTest('deploy with parameters multi', async () => {
   const paramVal1 = `${STACK_NAME_PREFIX}bazinga`;
   const paramVal2 = `${STACK_NAME_PREFIX}=jagshemash`;
 
@@ -239,7 +251,7 @@ test('deploy with parameters multi', async () => {
   ]);
 });
 
-test('deploy with notification ARN', async () => {
+integTest('deploy with notification ARN', async () => {
   const topicName = `${STACK_NAME_PREFIX}-test-topic`;
 
   const response = await sns('createTopic', { Name: topicName });
@@ -261,7 +273,7 @@ test('deploy with notification ARN', async () => {
   }
 });
 
-test('deploy with role', async () => {
+integTest('deploy with role', async () => {
   const roleName = `${STACK_NAME_PREFIX}-test-role`;
 
   await deleteRole();
@@ -296,19 +308,30 @@ test('deploy with role', async () => {
       }),
     });
 
-    await retry('Trying to assume fresh role', afterSeconds(300), async () => {
+    await retry('Trying to assume fresh role', retry.forSeconds(300), async () => {
       await sts('assumeRole', {
         RoleArn: roleArn,
         RoleSessionName: 'testing',
       });
     });
 
+    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+    // Give it a little more sleep to make sure CloudFormation is not hitting a box
+    // that doesn't have it yet.
+    await sleep(5000);
+
     await cdkDeploy('test-2', {
       options: ['--role-arn', roleArn],
     });
 
+    // Immediately delete the stack again before we delete the role.
+    //
+    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+    // operations will fail when CloudFormation tries to assume the role that's already gone.
+    await cdkDestroy('test-2');
+
   } finally {
-    deleteRole();
+    await deleteRole();
   }
 
   async function deleteRole() {
@@ -328,7 +351,7 @@ test('deploy with role', async () => {
   }
 });
 
-test('cdk diff', async () => {
+integTest('cdk diff', async () => {
   const diff1 = await cdk(['diff', fullStackName('test-1')]);
   expect(diff1).toContain('AWS::SNS::Topic');
 
@@ -340,11 +363,11 @@ test('cdk diff', async () => {
     .rejects.toThrow('exited with error');
 });
 
-test('deploy stack with docker asset', async () => {
+integTest('deploy stack with docker asset', async () => {
   await cdkDeploy('docker');
 });
 
-test('deploy and test stack with lambda asset', async () => {
+integTest('deploy and test stack with lambda asset', async () => {
   const stackArn = await cdkDeploy('lambda', { captureStderr: false });
 
   const response = await cloudFormation('describeStacks', {
@@ -362,7 +385,7 @@ test('deploy and test stack with lambda asset', async () => {
   expect(JSON.stringify(output.Payload)).toContain('dear asset');
 });
 
-test('cdk ls', async () => {
+integTest('cdk ls', async () => {
   const listing = await cdk(['ls'], { captureStderr: false });
 
   const expectedStacks = [
@@ -392,7 +415,7 @@ test('cdk ls', async () => {
   }
 });
 
-test('deploy stack without resource', async () => {
+integTest('deploy stack without resource', async () => {
   // Deploy the stack without resources
   await cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' }});
 
@@ -410,23 +433,23 @@ test('deploy stack without resource', async () => {
     .rejects.toThrow('conditional-resource does not exist');
 });
 
-test('IAM diff', async () => {
+integTest('IAM diff', async () => {
   const output = await cdk(['diff', fullStackName('iam-test')]);
 
   // Roughly check for a table like this:
   //
-  // ┌───┬─────────────────┬────────┬────────────────┬────────────────────────────┬───────────┐
-  // │   │ Resource        │ Effect │ Action         │ Principal                  │ Condition │
-  // ├───┼─────────────────┼────────┼────────────────┼────────────────────────────┼───────────┤
-  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazon.aws.com │           │
-  // └───┴─────────────────┴────────┴────────────────┴────────────────────────────┴───────────┘
+  // ┌───┬─────────────────┬────────┬────────────────┬────────────────────────────-──┬───────────┐
+  // │   │ Resource        │ Effect │ Action         │ Principal                     │ Condition │
+  // ├───┼─────────────────┼────────┼────────────────┼───────────────────────────────┼───────────┤
+  // │ + │ ${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazonaws.com     │           │
+  // └───┴─────────────────┴────────┴────────────────┴───────────────────────────────┴───────────┘
 
   expect(output).toContain('${SomeRole.Arn}');
   expect(output).toContain('sts:AssumeRole');
-  expect(output).toContain('ec2.amazon.aws.com');
+  expect(output).toContain('ec2.amazonaws.com');
 });
 
-test('fast deploy', async () => {
+integTest('fast deploy', async () => {
   // we are using a stack with a nested stack because CFN will always attempt to
   // update a nested stack, which will allow us to verify that updates are actually
   // skipped unless --force is specified.
@@ -457,7 +480,99 @@ test('fast deploy', async () => {
   }
 });
 
-test('failed deploy does not hang', async () => {
+integTest('failed deploy does not hang', async () => {
   // this will hang if we introduce https://github.com/aws/aws-cdk/issues/6403 again.
   await expect(cdkDeploy('failed')).rejects.toThrow('exited with error');
 });
+
+integTest('can still load old assemblies', async () => {
+  const cxAsmDir =  path.join(os.tmpdir(), 'cdk-integ-cx');
+
+  const testAssembliesDirectory = path.join(__dirname, 'cloud-assemblies');
+  for (const asmdir of await listChildDirs(testAssembliesDirectory)) {
+    log(`ASSEMBLY ${asmdir}`);
+    await cloneDirectory(asmdir, cxAsmDir);
+
+    // Some files in the asm directory that have a .js extension are
+    // actually treated as templates. Evaluate them using NodeJS.
+    const templates = await listChildren(cxAsmDir, fullPath => Promise.resolve(fullPath.endsWith('.js')));
+    for (const template of templates) {
+      const targetName = template.replace(/.js$/, '');
+      await shell([process.execPath, template, '>', targetName], {
+        cwd: cxAsmDir,
+        modEnv: {
+          TEST_ACCOUNT: (await testEnv()).account,
+          TEST_REGION: (await testEnv()).region,
+        },
+      });
+    }
+
+    // Use this directory as a Cloud Assembly
+    const output = await cdk([
+      '--app', cxAsmDir,
+      '-v',
+      'synth']);
+
+    // Assert that there was no providerError in CDK's stderr
+    // Because we rely on the app/framework to actually error in case the
+    // provider fails, we inspect the logs here.
+    expect(output).not.toContain('$providerError');
+  }
+});
+
+integTest('generating and loading assembly', async () => {
+  const asmOutputDir = path.join(os.tmpdir(), 'cdk-integ-asm');
+  await shell(['rm', '-rf', asmOutputDir]);
+
+  // Make sure our fixture directory is clean
+  await prepareAppFixture();
+
+  // Synthesize a Cloud Assembly tothe default directory (cdk.out) and a specific directory.
+  await cdk(['synth']);
+  await cdk(['synth', '--output', asmOutputDir]);
+
+  // cdk.out in the current directory and the indicated --output should be the same
+  await shell(['diff', 'cdk.out', asmOutputDir], {
+    cwd: INTEG_TEST_DIR,
+  });
+
+  // Check that we can 'ls' the synthesized asm.
+  // Change to some random directory to make sure we're not accidentally loading cdk.json
+  const list = await cdk(['--app', asmOutputDir, 'ls'], { cwd: os.tmpdir() });
+  // Same stacks we know are in the app
+  expect(list).toContain(`${STACK_NAME_PREFIX}-lambda`);
+  expect(list).toContain(`${STACK_NAME_PREFIX}-test-1`);
+  expect(list).toContain(`${STACK_NAME_PREFIX}-test-2`);
+
+  // Check that we can use '.' and just synth ,the generated asm
+  const stackTemplate = await cdk(['--app', '.', 'synth', fullStackName('test-2')], {
+    cwd: asmOutputDir,
+  });
+  expect(stackTemplate).toContain('topic152D84A37');
+
+  // Deploy a Lambda from the copied asm
+  await cdkDeploy('lambda', { options: ['-a', '.'], cwd: asmOutputDir });
+
+  // Remove the original custom docker file that was used during synth.
+  // this verifies that the assemly has a copy of it and that the manifest uses
+  // relative paths to reference to it.
+  await fs.unlink(path.join(INTEG_TEST_DIR, 'docker', 'Dockerfile.Custom'));
+
+  // deploy a docker image with custom file without synth (uses assets)
+  await cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir });
+});
+
+async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
+  const ret = new Array<string>();
+  for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
+    const fullPath = path.join(parent, child.toString());
+    if (await pred(fullPath)) {
+      ret.push(fullPath);
+    }
+  }
+  return ret;
+}
+
+async function listChildDirs(parent: string) {
+  return listChildren(parent, async (fullPath: string) => (await fs.stat(fullPath)).isDirectory());
+}

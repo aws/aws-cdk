@@ -72,6 +72,9 @@
                         },
                         {
                             "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
                         }
                     ]
                 }
@@ -85,6 +88,7 @@
             "enum": [
                 "aws:cloudformation:stack",
                 "cdk:asset-manifest",
+                "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
             ],
@@ -331,6 +335,23 @@
                 "file"
             ]
         },
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative path to the nested cloud assembly",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
+            ]
+        },
         "MissingContext": {
             "description": "Represents a missing piece of context.",
             "type": "object",
@@ -360,6 +381,9 @@
                         },
                         {
                             "$ref": "#/definitions/VpcContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
                         }
                     ]
                 }
@@ -375,6 +399,7 @@
             "enum": [
                 "ami",
                 "availability-zones",
+                "endpoint-service-availability-zones",
                 "hosted-zone",
                 "ssm",
                 "vpc-provider"
@@ -418,7 +443,7 @@
             ]
         },
         "AvailabilityZonesContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to availability zone context provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -468,7 +493,7 @@
             ]
         },
         "SSMParameterContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to SSM Parameter Context Provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -523,6 +548,29 @@
                 "account",
                 "filter",
                 "region"
+            ]
+        },
+        "EndpointServiceAvailabilityZonesContextQuery": {
+            "description": "Query to endpoint service context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "Query service name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "serviceName"
             ]
         },
         "RuntimeInfo": {

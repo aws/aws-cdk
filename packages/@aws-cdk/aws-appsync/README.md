@@ -75,13 +75,16 @@ export class ApiStack extends Stack {
       },
       authorizationConfig: {
         defaultAuthorization: {
-          userPool,
-          defaultAction: UserPoolDefaultAction.ALLOW,
+          authorizationType: AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool,
+            defaultAction: UserPoolDefaultAction.ALLOW
+          },
         },
         additionalAuthorizationModes: [
           {
-            apiKeyDesc: 'My API Key',
-          },
+            authorizationType: AuthorizationType.API_KEY,
+          }
         ],
       },
       schemaDefinitionFile: './schema.graphql',
