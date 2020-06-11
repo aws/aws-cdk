@@ -5,10 +5,9 @@ import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { RestApiBase } from './private/restapi-base';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
