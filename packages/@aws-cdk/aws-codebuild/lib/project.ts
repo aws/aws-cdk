@@ -1505,6 +1505,11 @@ export class LinuxGpuBuildImage implements IBuildImage {
     });
   }
 
+  private static DlcRepository(name: string): ecr.IRepository {
+    const arn = `arn:aws:ecr:${Aws.REGION}:763104351884::repository/${name}`;
+    return ecr.Repository.fromRepositoryArn(this, name, arn);
+  }
+
   /**
    * Uses an Docker image asset as a Linux build image.
    */
@@ -1515,11 +1520,6 @@ export class LinuxGpuBuildImage implements IBuildImage {
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
       repository: asset.repository,
     });
-  }
-
-  private static DlcRepository(name: string): ecr.IRepository {
-    const arn = `arn:aws:ecr:${Aws.REGION}:763104351884::repository/${name}`;
-    return ecr.Repository.fromRepositoryArn(this, name, arn);
   }
 
   public readonly type = 'LINUX_GPU_CONTAINER';
