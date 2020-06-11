@@ -257,7 +257,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: ABSENT,
               ReadWriteType: ABSENT,
@@ -331,7 +344,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: false,
               ReadWriteType: 'ReadOnly',
@@ -391,7 +417,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::Lambda::Function',
-                Values: [ 'arn:aws:lambda' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':lambda',
+                      ],
+                    ],
+                  },
+                ],
               }],
             },
           ],
