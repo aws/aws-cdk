@@ -1436,51 +1436,70 @@ export class LinuxBuildImage implements IBuildImage {
  */
 export class LinuxGpuBuildImage implements IBuildImage {
   /** Tensorflow GPU images from AWS Deep Learning Containers. */
-  public static readonly DLC_TENSORFLOW_1_14_0 = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "1.14.0-gpu-py36-cu100-ubuntu16.04");
-  public static readonly DLC_TENSORFLOW_1_15_0 = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "1.15.0-gpu-py36-cu100-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_1_15_2_TRAINING = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "1.15.2-gpu-py37-cu100-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_1_15_2_INFERENCE = LinuxGpuBuildImage.DlcImage("tensorflow-inference",
-      "1.15.2-gpu-py36-cu100-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_2_0_0 = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "2.0.0-gpu-py36-cu100-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_2_0_1 = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "2.0.1-gpu-py36-cu100-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_2_1_0_TRAINING = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "2.1.0-gpu-py36-cu101-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_2_1_0_INFERENCE = LinuxGpuBuildImage.DlcImage("tensorflow-inference",
-      "2.1.0-gpu-py36-cu101-ubuntu18.04");
-  public static readonly DLC_TENSORFLOW_2_2_0_TRAINING = LinuxGpuBuildImage.DlcImage("tensorflow-training",
-      "2.2.0-gpu-py37-cu101-ubuntu18.04");
+  public static readonly DLC_TENSORFLOW_1_14_0 = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '1.14.0-gpu-py36-cu100-ubuntu16.04');
+  public static readonly DLC_TENSORFLOW_1_15_0 = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '1.15.0-gpu-py36-cu100-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_1_15_2_TRAINING = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '1.15.2-gpu-py37-cu100-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_1_15_2_INFERENCE = LinuxGpuBuildImage.DlcImage('tensorflow-inference',
+    '1.15.2-gpu-py36-cu100-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_2_0_0 = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '2.0.0-gpu-py36-cu100-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_2_0_1 = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '2.0.1-gpu-py36-cu100-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_2_1_0_TRAINING = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '2.1.0-gpu-py36-cu101-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_2_1_0_INFERENCE = LinuxGpuBuildImage.DlcImage('tensorflow-inference',
+    '2.1.0-gpu-py36-cu101-ubuntu18.04');
+  public static readonly DLC_TENSORFLOW_2_2_0_TRAINING = LinuxGpuBuildImage.DlcImage('tensorflow-training',
+    '2.2.0-gpu-py37-cu101-ubuntu18.04');
 
   /** PyTorch GPU images from AWS Deep Learning Containers. */
-  public static readonly DLC_PYTORCH_1_2_0 = LinuxGpuBuildImage.DlcImage("pytorch-training",
-      "1.2.0-gpu-py36-cu100-ubuntu16.04");
-  public static readonly DLC_PYTORCH_1_3_1 = LinuxGpuBuildImage.DlcImage("pytorch-training",
-      "1.3.1-gpu-py36-cu101-ubuntu16.04");
-  public static readonly DLC_PYTORCH_1_4_0_TRAINING = LinuxGpuBuildImage.DlcImage("pytorch-training",
-      "1.4.0-gpu-py36-cu101-ubuntu16.04");
-  public static readonly DLC_PYTORCH_1_4_0_INFERENCE = LinuxGpuBuildImage.DlcImage("pytorch-inference",
-      "1.4.0-gpu-py36-cu101-ubuntu16.04");
-  public static readonly DLC_PYTORCH_1_5_0_TRAINING = LinuxGpuBuildImage.DlcImage("pytorch-training",
-      "1.5.0-gpu-py36-cu101-ubuntu16.04");
-  public static readonly DLC_PYTORCH_1_5_0_INFERENCE = LinuxGpuBuildImage.DlcImage("pytorch-inference",
-      "1.5.0-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_PYTORCH_1_2_0 = LinuxGpuBuildImage.DlcImage('pytorch-training',
+    '1.2.0-gpu-py36-cu100-ubuntu16.04');
+  public static readonly DLC_PYTORCH_1_3_1 = LinuxGpuBuildImage.DlcImage('pytorch-training',
+    '1.3.1-gpu-py36-cu101-ubuntu16.04');
+  public static readonly DLC_PYTORCH_1_4_0_TRAINING = LinuxGpuBuildImage.DlcImage('pytorch-training',
+    '1.4.0-gpu-py36-cu101-ubuntu16.04');
+  public static readonly DLC_PYTORCH_1_4_0_INFERENCE = LinuxGpuBuildImage.DlcImage('pytorch-inference',
+    '1.4.0-gpu-py36-cu101-ubuntu16.04');
+  public static readonly DLC_PYTORCH_1_5_0_TRAINING = LinuxGpuBuildImage.DlcImage('pytorch-training',
+    '1.5.0-gpu-py36-cu101-ubuntu16.04');
+  public static readonly DLC_PYTORCH_1_5_0_INFERENCE = LinuxGpuBuildImage.DlcImage('pytorch-inference',
+    '1.5.0-gpu-py36-cu101-ubuntu16.04');
 
   /** MXNet GPU images from AWS Deep Learning Containers. */
-  public static readonly DLC_MXNET_1_4_1 = LinuxGpuBuildImage.DlcImage("mxnet-training",
-      "1.4.1-gpu-py36-cu100-ubuntu16.04");
-  public static readonly DLC_MXNET_1_6_0 = LinuxGpuBuildImage.DlcImage("mxnet-training",
-      "1.6.0-gpu-py36-cu101-ubuntu16.04");
+  public static readonly DLC_MXNET_1_4_1 = LinuxGpuBuildImage.DlcImage('mxnet-training',
+    '1.4.1-gpu-py36-cu100-ubuntu16.04');
+  public static readonly DLC_MXNET_1_6_0 = LinuxGpuBuildImage.DlcImage('mxnet-training',
+    '1.6.0-gpu-py36-cu101-ubuntu16.04');
 
   /**
    * @returns a Linux GPU image from AWS Deep Learning Containers.
    */
   private static DlcImage(name: string, tag: string): IBuildImage {
+    let account;
+    switch (Aws.REGION) {
+      case 'ap-east-1':
+        account = 871362719292;
+        break;
+      case 'me-south-1':
+        account = 217643126080;
+        break;
+      case 'cn-north-1':
+        account = 727897471807;
+        break;
+      case 'cn-northwest-1':
+        account = 727897471807;
+        break;
+      default:
+        account = 763104351884;
+        break;
+    }
+
     return new LinuxGpuBuildImage({
-      imageId: `763104351884.dkr.ecr.${Aws.REGION}.amazonaws.com/${name}:${tag}`,
+      imageId: `${account}.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
       imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     });
   }
