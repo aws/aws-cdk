@@ -436,6 +436,22 @@ describe('cloudtrail', () => {
           ],
         });
       });
+
+      test('managementEvents set to None correctly turns off management events', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              IncludeManagementEvents: false,
+            },
+          ],
+        });
+      });
     });
   });
 
