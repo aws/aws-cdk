@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
@@ -150,6 +151,16 @@ export class AssetStaging extends Construct {
     // Create temporary directory for bundling
     const bundleDir = FileSystem.mkdtemp('cdk-asset-bundle-');
 
+    let user: string;
+    if (options.user) {
+      user = options.user;
+    } else { // Default to current user
+      const userInfo = os.userInfo();
+      user = userInfo.uid !== -1 // uid is -1 on Windows
+        ? `${userInfo.uid}:${userInfo.gid}`
+        : '1000:1000';
+    }
+
     // Always mount input and output dir
     const volumes = [
       {
@@ -166,6 +177,7 @@ export class AssetStaging extends Construct {
     try {
       options.image._run({
         command: options.command,
+        user,
         volumes,
         environment: options.environment,
         workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
