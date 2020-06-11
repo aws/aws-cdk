@@ -1,4 +1,5 @@
 import { spawnSync } from 'child_process';
+import * as os from 'os';
 
 export const BUNDLING_INPUT_DIR = '/asset-input';
 export const BUNDLING_OUTPUT_DIR = '/asset-output';
@@ -99,12 +100,19 @@ export class BundlingDockerImage {
     const environment = options.environment || {};
     const command = options.command || [];
 
+    // Get uid and gid of current user.
+    const { uid, gid } = os.userInfo();
+
     const dockerArgs: string[] = [
       'run', '--rm',
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
+        : [],
+      // On Windows, uid and gid are -1 and docker always runs as the current user
+      ...(uid !== -1 && gid !== -1)
+        ? ['-u', `${uid}:${gid}`]
         : [],
       this.image,
       ...command,

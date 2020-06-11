@@ -36,6 +36,7 @@ export = {
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
       '-w', '/working-directory',
+      '-u', '1000:1000',
       'alpine',
       'cool', 'command',
     ]));
@@ -68,6 +69,7 @@ export = {
 
     test.ok(spawnSyncStub.secondCall.calledWith('docker', [
       'run', '--rm',
+      '-u', '1000:1000',
       imageId,
     ]));
     test.done();
