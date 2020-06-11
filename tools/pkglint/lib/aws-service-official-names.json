@@ -42,7 +42,7 @@
   "AWS::ElasticLoadBalancing": "Amazon Elastic Load Balancing",
   "AWS::ElasticLoadBalancingV2": "Amazon Elastic Load Balancing V2",
   "AWS::Elasticsearch": "Amazon Elasticsearch Service",
-  "AWS::Events": "Amazon CloudWatch Events",
+  "AWS::Events": "Amazon EventBridge",
   "AWS::FSx": "Amazon FSx",
   "AWS::GameLift": "Amazon GameLift",
   "AWS::Glue": "AWS Glue",
