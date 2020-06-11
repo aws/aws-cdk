@@ -123,14 +123,10 @@ The following example adds the item from calling DynamoDB's `getItem` API to the
 input and passes it to the next state.
 
 ```ts
-new sfn.Task(this, 'PutItem', {
-  task: tasks.CallDynamoDB.getItem({
-    item: {
-      MessageId: new tasks.DynamoAttributeValue().withS('12345'),
-    },
-    tableName: 'my-table',
-  }),
-  resultPath: `$.Item`
+new tasks.DynamoGetItem(this, 'PutItem', {
+  item: { MessageId: { s: '12345'} },
+  tableName: 'my-table',
+  resultPath: `$.Item`,
 });
 ```
 
@@ -253,10 +249,7 @@ The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API
 
 ```ts
 new tasks.DynamoGetItem(this, 'Get Item', {
-    partitionKey: {
-      name: 'messageId',
-      value: { s: 'message-007' },
-    },
+    key: { messageId: { s: 'message-007' } },
     table,
 });
 ```
@@ -282,10 +275,7 @@ The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/
 
 ```ts
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
-  partitionKey: {
-    name: 'MessageId',
-    value: new tasks.DynamoAttributeValue().withS('message-007'),
-  },
+  key: { MessageId: { s: 'message-007' } },
   table,
   resultPath: 'DISCARD',
 });
@@ -298,10 +288,7 @@ to the table if it does not already exist.
 
 ```ts
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
-  partitionKey: {
-    name: 'MessageId',
-    value: { s: 'message-007' },
-  },
+  key: { MessageId: { s: 'message-007' } },
   table,
   expressionAttributeValues: {
     ':val': { n: sfn.Data.stringAt('$.Item.TotalCount.N') },
