@@ -1,15 +1,74 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { IGrantable, IPrincipal, IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import {
+  IGrantable,
+  IPrincipal,
+  IRole,
+  ManagedPolicy,
+  Role,
+  ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable } from '@aws-cdk/core';
 import { readFileSync } from 'fs';
-import { CfnApiKey, CfnDataSource, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from './appsync.generated';
+import {
+  CfnApiKey,
+  CfnDataSource,
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
+  CfnResolver,
+} from './appsync.generated';
 
 /**
- * Marker interface for the different authorization modes.
+ * enum with all possible values for AppSync authorization type
  */
-export interface AuthMode { }
+export enum AuthorizationType {
+  /**
+   * API Key authorization type
+   */
+  API_KEY = 'API_KEY',
+  /**
+   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
+   */
+  IAM = 'AWS_IAM',
+  /**
+   * Cognito User Pool authorization type
+   */
+  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
+  /**
+   * OpenID Connect authorization type
+   */
+  OIDC = 'OPENID_CONNECT',
+}
+
+/**
+ * Interface to specify default or additional authorization(s)
+ */
+export interface AuthorizationMode {
+  /**
+   * One of possible four values AppSync supports
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
+   *
+   * @default - `AuthorizationType.API_KEY`
+   */
+  readonly authorizationType: AuthorizationType;
+  /**
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
+   */
+  readonly userPoolConfig?: UserPoolConfig;
+  /**
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * @default - check default values of `ApiKeyConfig` memebers
+   */
+  readonly apiKeyConfig?: ApiKeyConfig;
+  /**
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
+   */
+  readonly openIdConnectConfig?: OpenIdConnectConfig;
+}
 
 /**
  * enum with all possible values for Cognito user-pool default actions
@@ -28,8 +87,7 @@ export enum UserPoolDefaultAction {
 /**
  * Configuration for Cognito user-pools in AppSync
  */
-export interface UserPoolConfig extends AuthMode {
-
+export interface UserPoolConfig {
   /**
    * The Cognito user pool to use as identity source
    */
@@ -48,18 +106,20 @@ export interface UserPoolConfig extends AuthMode {
   readonly defaultAction?: UserPoolDefaultAction;
 }
 
-function isUserPoolConfig(obj: unknown): obj is UserPoolConfig {
-  return (obj as UserPoolConfig).userPool !== undefined;
-}
-
 /**
  * Configuration for API Key authorization in AppSync
  */
-export interface ApiKeyConfig extends AuthMode {
+export interface ApiKeyConfig {
   /**
-   * Unique description of the API key
+   * Unique name of the API Key
+   * @default - 'DefaultAPIKey'
    */
-  readonly apiKeyDesc: string;
+  readonly name?: string;
+  /**
+   * Description of API key
+   * @default - 'Default API Key created by CDK'
+   */
+  readonly description?: string;
 
   /**
    * The time from creation time after which the API key expires, using RFC3339 representation.
@@ -70,8 +130,33 @@ export interface ApiKeyConfig extends AuthMode {
   readonly expires?: string;
 }
 
-function isApiKeyConfig(obj: unknown): obj is ApiKeyConfig {
-  return (obj as ApiKeyConfig).apiKeyDesc !== undefined;
+/**
+ * Configuration for OpenID Connect authorization in AppSync
+ */
+export interface OpenIdConnectConfig {
+  /**
+   * The number of milliseconds an OIDC token is valid after being authenticated by OIDC provider.
+   * `auth_time` claim in OIDC token is required for this validation to work.
+   * @default - no validation
+   */
+  readonly tokenExpiryFromAuth?: number;
+  /**
+   * The number of milliseconds an OIDC token is valid after being issued to a user.
+   * This validation uses `iat` claim of OIDC token.
+   * @default - no validation
+   */
+  readonly tokenExpiryFromIssue?: number;
+  /**
+   * The client identifier of the Relying party at the OpenID identity provider.
+   * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
+   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @default - * (All)
+   */
+  readonly clientId?: string;
+  /**
+   * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
+   */
+  readonly oidcProvider: string;
 }
 
 /**
@@ -83,14 +168,14 @@ export interface AuthorizationConfig {
    *
    * @default - API Key authorization
    */
-  readonly defaultAuthorization?: AuthMode;
+  readonly defaultAuthorization?: AuthorizationMode;
 
   /**
    * Additional authorization modes
    *
    * @default - No other modes
    */
-  readonly additionalAuthorizationModes?: [AuthMode]
+  readonly additionalAuthorizationModes?: AuthorizationMode[];
 }
 
 /**
@@ -206,22 +291,56 @@ export class GraphQLApi extends Construct {
   constructor(scope: Construct, id: string, props: GraphQLApiProps) {
     super(scope, id);
 
+    this.validateAuthorizationProps(props);
+    const defaultAuthorizationType =
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      AuthorizationType.API_KEY;
+
     let apiLogsRole;
     if (props.logConfig) {
-      apiLogsRole = new Role(this, 'ApiLogsRole', { assumedBy: new ServicePrincipal('appsync') });
-      apiLogsRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'));
+      apiLogsRole = new Role(this, 'ApiLogsRole', {
+        assumedBy: new ServicePrincipal('appsync'),
+      });
+      apiLogsRole.addManagedPolicy(
+        ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSAppSyncPushToCloudWatchLogs',
+        ),
+      );
     }
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
-      authenticationType: 'API_KEY',
-      ...props.logConfig && {
+      authenticationType: defaultAuthorizationType,
+      ...(props.logConfig && {
         logConfig: {
           cloudWatchLogsRoleArn: apiLogsRole ? apiLogsRole.roleArn : undefined,
           excludeVerboseContent: props.logConfig.excludeVerboseContent,
-          fieldLogLevel: props.logConfig.fieldLogLevel ? props.logConfig.fieldLogLevel.toString() : undefined,
+          fieldLogLevel: props.logConfig.fieldLogLevel
+            ? props.logConfig.fieldLogLevel.toString()
+            : undefined,
         },
-      },
+      }),
+      openIdConnectConfig:
+        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
+        AuthorizationType.OIDC
+          ? this.formatOpenIdConnectConfig(
+            props.authorizationConfig.defaultAuthorization
+              .openIdConnectConfig!,
+          )
+          : undefined,
+      userPoolConfig:
+        props.authorizationConfig?.defaultAuthorization?.authorizationType ===
+        AuthorizationType.USER_POOL
+          ? this.formatUserPoolConfig(
+            props.authorizationConfig.defaultAuthorization.userPoolConfig!,
+          )
+          : undefined,
+      additionalAuthenticationProviders: props.authorizationConfig
+        ?.additionalAuthorizationModes!.length
+        ? this.formatAdditionalAuthorizationModes(
+          props.authorizationConfig!.additionalAuthorizationModes!,
+        )
+        : undefined,
     });
 
     this.apiId = this.api.attrApiId;
@@ -229,8 +348,18 @@ export class GraphQLApi extends Construct {
     this.graphQlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
 
-    if (props.authorizationConfig) {
-      this.setupAuth(props.authorizationConfig);
+    if (
+      defaultAuthorizationType === AuthorizationType.API_KEY ||
+      props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
+        (authMode) => authMode.authorizationType === AuthorizationType.API_KEY
+      ) !== -1
+    ) {
+      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
+        ?.defaultAuthorization?.apiKeyConfig || {
+          name: 'DefaultAPIKey',
+          description: 'Default API Key created by CDK',
+        };
+      this.createAPIKey(apiKeyConfig);
     }
 
     let definition;
@@ -266,7 +395,11 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param table The DynamoDB table backing this data source [disable-awslint:ref-via-interface]
    */
-  public addDynamoDbDataSource(name: string, description: string, table: Table): DynamoDbDataSource {
+  public addDynamoDbDataSource(
+    name: string,
+    description: string,
+    table: Table,
+  ): DynamoDbDataSource {
     return new DynamoDbDataSource(this, `${name}DS`, {
       api: this,
       description,
@@ -281,7 +414,11 @@ export class GraphQLApi extends Construct {
    * @param description The description of the data source
    * @param lambdaFunction The Lambda function to call to interact with this data source
    */
-  public addLambdaDataSource(name: string, description: string, lambdaFunction: IFunction): LambdaDataSource {
+  public addLambdaDataSource(
+    name: string,
+    description: string,
+    lambdaFunction: IFunction,
+  ): LambdaDataSource {
     return new LambdaDataSource(this, `${name}DS`, {
       api: this,
       description,
@@ -290,55 +427,132 @@ export class GraphQLApi extends Construct {
     });
   }
 
-  private setupAuth(auth: AuthorizationConfig) {
-    if (isUserPoolConfig(auth.defaultAuthorization)) {
-      const { authenticationType, userPoolConfig } = this.userPoolDescFrom(auth.defaultAuthorization);
-      this.api.authenticationType = authenticationType;
-      this.api.userPoolConfig = userPoolConfig;
-    } else if (isApiKeyConfig(auth.defaultAuthorization)) {
-      this.api.authenticationType = this.apiKeyDesc(auth.defaultAuthorization).authenticationType;
+  private validateAuthorizationProps(props: GraphQLApiProps) {
+    const defaultAuthorizationType =
+      props.authorizationConfig?.defaultAuthorization?.authorizationType ||
+      AuthorizationType.API_KEY;
+
+    if (
+      defaultAuthorizationType === AuthorizationType.OIDC &&
+      !props.authorizationConfig?.defaultAuthorization?.openIdConnectConfig
+    ) {
+      throw new Error('Missing default OIDC Configuration');
     }
 
-    this.api.additionalAuthenticationProviders = [];
-    for (const mode of (auth.additionalAuthorizationModes || [])) {
-      if (isUserPoolConfig(mode)) {
-        this.api.additionalAuthenticationProviders.push(this.userPoolDescFrom(mode));
-      } else if (isApiKeyConfig(mode)) {
-        this.api.additionalAuthenticationProviders.push(this.apiKeyDesc(mode));
-      }
+    if (
+      defaultAuthorizationType === AuthorizationType.USER_POOL &&
+      !props.authorizationConfig?.defaultAuthorization?.userPoolConfig
+    ) {
+      throw new Error('Missing default User Pool Configuration');
+    }
+
+    if (props.authorizationConfig?.additionalAuthorizationModes) {
+      props.authorizationConfig.additionalAuthorizationModes.forEach(
+        (authorizationMode) => {
+          if (
+            authorizationMode.authorizationType === AuthorizationType.API_KEY &&
+            defaultAuthorizationType === AuthorizationType.API_KEY
+          ) {
+            throw new Error(
+              "You can't duplicate API_KEY in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
+            );
+          }
+
+          if (
+            authorizationMode.authorizationType === AuthorizationType.IAM &&
+            defaultAuthorizationType === AuthorizationType.IAM
+          ) {
+            throw new Error(
+              "You can't duplicate IAM in additional authorization config. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
+            );
+          }
+
+          if (
+            authorizationMode.authorizationType === AuthorizationType.OIDC &&
+            !authorizationMode.openIdConnectConfig
+          ) {
+            throw new Error(
+              'Missing OIDC Configuration inside an additional authorization mode',
+            );
+          }
+
+          if (
+            authorizationMode.authorizationType ===
+              AuthorizationType.USER_POOL &&
+            !authorizationMode.userPoolConfig
+          ) {
+            throw new Error(
+              'Missing User Pool Configuration inside an additional authorization mode',
+            );
+          }
+        },
+      );
     }
   }
 
-  private userPoolDescFrom(upConfig: UserPoolConfig): { authenticationType: string; userPoolConfig: CfnGraphQLApi.UserPoolConfigProperty } {
+  private formatOpenIdConnectConfig(
+    config: OpenIdConnectConfig,
+  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
     return {
-      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      userPoolConfig: {
-        appIdClientRegex: upConfig.appIdClientRegex,
-        userPoolId: upConfig.userPool.userPoolId,
-        awsRegion: upConfig.userPool.stack.region,
-        defaultAction: upConfig.defaultAction ? upConfig.defaultAction.toString() : 'ALLOW',
-      },
+      authTtl: config.tokenExpiryFromAuth,
+      clientId: config.clientId,
+      iatTtl: config.tokenExpiryFromIssue,
+      issuer: config.oidcProvider,
     };
   }
 
-  private apiKeyDesc(akConfig: ApiKeyConfig): { authenticationType: string } {
+  private formatUserPoolConfig(
+    config: UserPoolConfig,
+  ): CfnGraphQLApi.UserPoolConfigProperty {
+    return {
+      userPoolId: config.userPool.userPoolId,
+      awsRegion: config.userPool.stack.region,
+      appIdClientRegex: config.appIdClientRegex,
+      defaultAction: config.defaultAction || 'ALLOW',
+    };
+  }
+
+  private createAPIKey(config: ApiKeyConfig) {
     let expires: number | undefined;
-    if (akConfig.expires) {
-      expires = new Date(akConfig.expires).valueOf();
-      const now = Date.now();
-      const days = (d: number) => now + Duration.days(d).toMilliseconds();
+    if (config.expires) {
+      expires = new Date(config.expires).valueOf();
+      const days = (d: number) =>
+        Date.now() + Duration.days(d).toMilliseconds();
       if (expires < days(1) || expires > days(365)) {
         throw Error('API key expiration must be between 1 and 365 days.');
       }
       expires = Math.round(expires / 1000);
     }
-    const key = new CfnApiKey(this, `${akConfig.apiKeyDesc || ''}ApiKey`, {
+    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
       expires,
-      description: akConfig.apiKeyDesc,
+      description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
     this._apiKey = key.attrApiKey;
-    return { authenticationType: 'API_KEY' };
+  }
+
+  private formatAdditionalAuthorizationModes(
+    authModes: AuthorizationMode[],
+  ): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] {
+    return authModes.reduce<
+    CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]
+    >(
+      (acc, authMode) => [
+        ...acc,
+        {
+          authenticationType: authMode.authorizationType,
+          userPoolConfig:
+            authMode.authorizationType === AuthorizationType.USER_POOL
+              ? this.formatUserPoolConfig(authMode.userPoolConfig!)
+              : undefined,
+          openIdConnectConfig:
+            authMode.authorizationType === AuthorizationType.OIDC
+              ? this.formatOpenIdConnectConfig(authMode.openIdConnectConfig!)
+              : undefined,
+        },
+      ],
+      [],
+    );
   }
 }
 
