@@ -2,33 +2,28 @@ import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
-import { configurePrimaryKey, DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttribute, DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap, transformKey } from './private/utils';
+import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
 
 /**
  * Properties for DynamoDeleteItem Task
  */
 export interface DynamoDeleteItemProps extends sfn.TaskStateBaseProps {
   /**
-   * An attribute representing the partition key of the item to delete.
-   *
-   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-Key
-   */
-  readonly partitionKey: DynamoAttribute;
-
-  /**
    * The name of the table containing the requested item.
    */
   readonly table: ddb.ITable;
 
   /**
-   * An attribute representing the sort key of the item to delete.
+   * Primary key of the item to retrieve.
    *
-   * @default - No sort key
+   * For the primary key, you must provide all of the attributes.
+   * For example, with a simple primary key, you only need to provide a value for the partition key.
+   * For a composite primary key, you must provide values for both the partition key and the sort key.
    *
-   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html#DDB-DeleteItem-request-Key
+   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly sortKey?: DynamoAttribute;
+  readonly key: DynamoAttributeValueMap;
 
   /**
    * A condition that must be satisfied in order for a conditional DeleteItem to succeed.
@@ -114,7 +109,7 @@ export class DynamoDeleteItem extends sfn.TaskStateBase {
     return {
       Resource: getDynamoResourceArn(DynamoMethod.DELETE),
       Parameters: sfn.FieldUtils.renderObject({
-        Key: configurePrimaryKey(this.props.partitionKey, this.props.sortKey),
+        Key: transformKey(this.props.key),
         TableName: this.props.table.tableName,
         ConditionExpression: this.props.conditionExpression,
         ExpressionAttributeNames: this.props.expressionAttributeNames,

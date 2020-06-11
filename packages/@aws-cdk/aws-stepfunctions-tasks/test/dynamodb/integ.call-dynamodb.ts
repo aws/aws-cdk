@@ -41,18 +41,12 @@ class CallDynamoDBStack extends cdk.Stack {
     });
 
     const getItemTaskAfterPut = new tasks.DynamoGetItem(this, 'GetItemAfterPut', {
-      partitionKey: {
-        name: 'MessageId',
-        value: { s: MESSAGE_ID },
-      },
+      key: { MessageId: { s: MESSAGE_ID } },
       table,
     });
 
     const updateItemTask = new tasks.DynamoUpdateItem(this, 'UpdateItem', {
-      partitionKey: {
-        name: 'MessageId',
-        value: { s: MESSAGE_ID },
-      },
+      key: { MessageId: { s: MESSAGE_ID } },
       table,
       expressionAttributeValues: {
         ':val': { n: sfn.Data.stringAt('$.Item.TotalCount.N') },
@@ -62,19 +56,13 @@ class CallDynamoDBStack extends cdk.Stack {
     });
 
     const getItemTaskAfterUpdate = new tasks.DynamoGetItem(this, 'GetItemAfterUpdate', {
-      partitionKey: {
-        name: 'MessageId',
-        value: { s: MESSAGE_ID },
-      },
+      key: { MessageId: { s: MESSAGE_ID } },
       table,
       outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
     });
 
     const deleteItemTask = new tasks.DynamoDeleteItem(this, 'DeleteItem', {
-      partitionKey: {
-        name: 'MessageId',
-        value: { s: MESSAGE_ID },
-      },
+      key: { MessageId: { s: MESSAGE_ID } },
       table,
       resultPath: 'DISCARD',
     });

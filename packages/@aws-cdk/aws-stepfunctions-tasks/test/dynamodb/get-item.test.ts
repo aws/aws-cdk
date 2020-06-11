@@ -21,13 +21,9 @@ beforeEach(() => {
 test('GetItem task', () => {
   // WHEN
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {
-    partitionKey: {
-      name: 'SOME_KEY',
-      value: { s: '1234' },
-    },
-    sortKey: {
-      name: 'OTHER_KEY',
-      value: { n: '4321' },
+    key: {
+      SOME_KEY: { s: '1234' },
+      OTHER_KEY: { n: '4321' },
     },
     table,
     consistentRead: true,
@@ -71,13 +67,9 @@ test('GetItem task', () => {
 test('supports tokens', () => {
   // WHEN
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {
-    partitionKey: {
-      name: 'SOME_KEY',
-      value: { s: sfn.Data.stringAt('$.partitionKey') },
-    },
-    sortKey: {
-      name: 'OTHER_KEY',
-      value: { n: sfn.Data.stringAt('$.sortKey') },
+    key: {
+      SOME_KEY: { s: sfn.Data.stringAt('$.partitionKey') },
+      OTHER_KEY: { n: sfn.Data.stringAt('$.sortKey') },
     },
     table,
     consistentRead: true,

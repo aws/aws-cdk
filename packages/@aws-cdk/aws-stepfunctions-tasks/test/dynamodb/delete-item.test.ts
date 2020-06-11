@@ -21,12 +21,7 @@ beforeEach(() => {
 test('DeleteItem task', () => {
   // WHEN
   const task = new tasks.DynamoDeleteItem(stack, 'DeleteItem', {
-    partitionKey: {
-      name: 'SOME_KEY',
-      value: {
-        s: '1234',
-      },
-    },
+    key: { SOME_KEY: { s: '1234' } },
     table,
     conditionExpression: 'ForumName <> :f and Subject <> :s',
     expressionAttributeNames: { OTHER_KEY: '#OK' },

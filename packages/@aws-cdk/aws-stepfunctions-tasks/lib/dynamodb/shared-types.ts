@@ -125,9 +125,9 @@ export class DynamoProjectionExpression {
 /**
  * Map of string to AttributeValue
  */
-export type DynamoAttributeValueMap = {
+export interface DynamoAttributeValueMap {
   [key: string]: DynamoAttributeValue;
-};
+}
 
 /**
  * Class to generate AttributeValue

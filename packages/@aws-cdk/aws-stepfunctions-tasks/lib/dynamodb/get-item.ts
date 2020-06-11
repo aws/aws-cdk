@@ -2,33 +2,28 @@ import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
-import { configurePrimaryKey, DynamoMethod, getDynamoResourceArn } from './private/utils';
-import { DynamoAttribute, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
+import { DynamoMethod, getDynamoResourceArn, transformKey } from './private/utils';
+import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
 
 /**
  * Properties for DynamoGetItem Task
  */
 export interface DynamoGetItemProps extends sfn.TaskStateBaseProps {
   /**
-   * A attribute representing the partition key of the item to retrieve.
-   *
-   * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
-   */
-  readonly partitionKey: DynamoAttribute;
-
-  /**
    * The name of the table containing the requested item.
    */
   readonly table: ddb.ITable;
 
   /**
-   * A attribute representing the sort key of the item to retrieve.
+   * Primary key of the item to retrieve.
    *
-   * @default - No sort key
+   * For the primary key, you must provide all of the attributes.
+   * For example, with a simple primary key, you only need to provide a value for the partition key.
+   * For a composite primary key, you must provide values for both the partition key and the sort key.
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly sortKey?: DynamoAttribute;
+  readonly key: DynamoAttributeValueMap;
 
   /**
    * Determines the read consistency model:
@@ -96,7 +91,7 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     return {
       Resource: getDynamoResourceArn(DynamoMethod.GET),
       Parameters: sfn.FieldUtils.renderObject({
-        Key: configurePrimaryKey(this.props.partitionKey, this.props.sortKey),
+        Key: transformKey(this.props.key),
         TableName: this.props.table.tableName,
         ConsistentRead: this.props.consistentRead ?? false,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
