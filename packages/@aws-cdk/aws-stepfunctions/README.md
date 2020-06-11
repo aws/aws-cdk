@@ -508,6 +508,10 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
+## Granting actions to a role
+
+To be completed when Grant APIs are reviewed and updated.
+
 ## Future work
 
 Contributions welcome:
