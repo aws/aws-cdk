@@ -1,9 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import { AssetHashType, AssetOptions } from './assets';
-import { BUNDLING_INPUT_DIR, BUNDLING_OUTPUT_DIR, BundlingOptions } from './bundling';
+import { BundlingOptions } from './bundling';
 import { Construct, ISynthesisSession } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 
@@ -36,6 +35,18 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * means that only if content was changed, copy will happen.
  */
 export class AssetStaging extends Construct {
+  /**
+   * The directory inside the bundling container into which the asset sources will be mounted.
+   * @experimental
+   */
+  public static readonly BUNDLING_INPUT_DIR = '/asset-input';
+
+  /**
+   * The directory inside the bundling container into which the bundled output should be written.
+   * @experimental
+   */
+  public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
+
   /**
    * The path to the asset (stringinfied token).
    *
@@ -137,17 +148,17 @@ export class AssetStaging extends Construct {
 
   private bundle(options: BundlingOptions): string {
     // Create temporary directory for bundling
-    const bundleDir = fs.mkdtempSync(path.resolve(path.join(os.tmpdir(), 'cdk-asset-bundle-')));
+    const bundleDir = FileSystem.mkdtemp('cdk-asset-bundle-');
 
     // Always mount input and output dir
     const volumes = [
       {
         hostPath: this.sourcePath,
-        containerPath: BUNDLING_INPUT_DIR,
+        containerPath: AssetStaging.BUNDLING_INPUT_DIR,
       },
       {
         hostPath: bundleDir,
-        containerPath: BUNDLING_OUTPUT_DIR,
+        containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
       },
       ...options.volumes ?? [],
     ];
@@ -157,14 +168,14 @@ export class AssetStaging extends Construct {
         command: options.command,
         volumes,
         environment: options.environment,
-        workingDirectory: options.workingDirectory ?? BUNDLING_INPUT_DIR,
+        workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
       throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
-      throw new Error(`Bundling did not produce any output. Check that your container writes content to ${BUNDLING_OUTPUT_DIR}.`);
+      throw new Error(`Bundling did not produce any output. Check that your container writes content to ${AssetStaging.BUNDLING_OUTPUT_DIR}.`);
     }
 
     return bundleDir;
