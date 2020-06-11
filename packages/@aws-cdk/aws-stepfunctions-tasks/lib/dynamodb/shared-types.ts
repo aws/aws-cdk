@@ -66,21 +66,6 @@ export enum DynamoReturnValues {
 }
 
 /**
- * Property for any key
- */
-export interface DynamoAttribute {
-  /**
-   * The name of the attribute
-   */
-  readonly name: string;
-
-  /**
-   * The value of the attribute
-   */
-  readonly value: DynamoAttributeValue;
-}
-
-/**
  * Class to generate projection expression
  */
 export class DynamoProjectionExpression {
@@ -120,13 +105,6 @@ export class DynamoProjectionExpression {
   public toString(): string {
     return this.expression.join('');
   }
-}
-
-/**
- * Map of string to AttributeValue
- */
-export interface DynamoAttributeValueMap {
-  [key: string]: DynamoAttributeValue;
 }
 
 /**
@@ -186,7 +164,7 @@ export interface DynamoAttributeValue {
    *
    * @default - None
    */
-  readonly m?: DynamoAttributeValueMap;
+  readonly m?: { [key: string]: DynamoAttributeValue };
 
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]

@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
+import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
 
 /**
  * Properties for DynamoGetItem Task
@@ -23,7 +23,7 @@ export interface DynamoGetItemProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly key: DynamoAttributeValueMap;
+  readonly key: { [key: string]: DynamoAttributeValue };
 
   /**
    * Determines the read consistency model:

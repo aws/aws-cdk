@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
 
 /**
  * Properties for DynamoUpdateItem Task
@@ -23,7 +23,7 @@ export interface DynamoUpdateItemProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html#DDB-GetItem-request-Key
    */
-  readonly key: DynamoAttributeValueMap;
+  readonly key: { [key: string]: DynamoAttributeValue };
 
   /**
    * A condition that must be satisfied in order for a conditional DeleteItem to succeed.
@@ -50,7 +50,7 @@ export interface DynamoUpdateItemProps extends sfn.TaskStateBaseProps {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: DynamoAttributeValueMap;
+  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue };
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response

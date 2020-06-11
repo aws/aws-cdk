@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { integrationResourceArn } from '../../private/task-utils';
-import { DynamoAttributeValue, DynamoAttributeValueMap } from '../shared-types';
+import { DynamoAttributeValue } from '../shared-types';
 
 export enum DynamoMethod {
   GET = 'Get',
@@ -13,7 +13,7 @@ export function getDynamoResourceArn(method: DynamoMethod) {
   return integrationResourceArn('dynamodb', `${method.toLowerCase()}Item`, sfn.IntegrationPattern.REQUEST_RESPONSE);
 }
 
-export function transformAttributeValueMap(attrMap?: DynamoAttributeValueMap) {
+export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttributeValue }) {
   const transformedValue: any = {};
   for (const key in attrMap) {
     if (key) {

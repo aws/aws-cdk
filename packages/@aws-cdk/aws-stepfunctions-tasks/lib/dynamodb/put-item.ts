@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
 
 /**
  * Properties for DynamoPutItem Task
@@ -16,7 +16,7 @@ export interface DynamoPutItemProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#DDB-PutItem-request-Item
    */
-  readonly item: DynamoAttributeValueMap;
+  readonly item: { [key: string]: DynamoAttributeValue };
 
   /**
    * The name of the table where the item should be written .
@@ -48,7 +48,7 @@ export interface DynamoPutItemProps extends sfn.TaskStateBaseProps {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: DynamoAttributeValueMap;
+  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue };
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
