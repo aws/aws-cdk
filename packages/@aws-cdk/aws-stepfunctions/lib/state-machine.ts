@@ -124,35 +124,27 @@ export interface StateMachineProps {
  * A new or imported state machine.
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
+
+  public get executionArn(): string {
+    return Arn.format({
+      resource: 'execution',
+      service: 'states',
+      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
+      sep: ':',
+    }, this.stack);
+  }
+
   /**
    * Import a state machine
    */
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
-      public readonly executionArn = Arn.format({
-        resource: 'execution',
-        service: 'states',
-        account: this.stack.account,
-        partition: this.stack.partition,
-        region: this.stack.region,
-        resourceName: Arn.parse(stateMachineArn, ':').resourceName,
-        sep: ':',
-      }, this.stack);
-      // public readonly executionArn = this.getResourceArnAttribute(this.stateMachineArn, {
-      //   service: 'states',
-      //   resource: 'execution',
-      //   resourceName: this.physicalName,
-      //   sep: ':',
-      // });
     }
-
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
-
-  public abstract readonly executionArn: string;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -246,11 +238,6 @@ export class StateMachine extends StateMachineBase {
   public readonly stateMachineArn: string;
 
   /**
-   * The ARN of the execution
-   */
-  public readonly executionArn: string;
-
-  /**
    * Type of the state machine
    * @attribute
    */
@@ -316,18 +303,12 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       sep: ':',
     });
-    this.executionArn = Arn.format({
-      resource: 'execution',
-      service: 'states',
-      account: this.stack.account,
-      partition: this.stack.partition,
-      region: this.stack.region,
-      resourceName: this.physicalName,
-      sep: ':',
-    }, this.stack);
-
-    // console.log('state ' + this.stateMachineArn)
-    // console.log('exec  ' + this.executionArn);
+    // this.executionArn = Arn.format({
+    //   resource: 'execution',
+    //   service: 'states',
+    //   resourceName: this.physicalName,
+    //   sep: ':',
+    // }, this.stack);
   }
 
   /**
@@ -425,12 +406,6 @@ export interface IStateMachine extends IResource {
    * @attribute
    */
   readonly stateMachineArn: string;
-
-  /**
-   * The ARN of the executions
-   * @attribute
-   */
-  readonly executionArn: string;
 
   /**
    * Grant the given identity permissions to start an execution of this state

@@ -206,7 +206,7 @@ describe('State Machine Resources', () => {
 
   }),
 
-  test('Created state machine can grant actions to a role', () => {
+  test('Created state machine can grant read access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -258,7 +258,21 @@ describe('State Machine Resources', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':execution::*',
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
                 ],
               ],
             },
@@ -371,7 +385,21 @@ describe('State Machine Resources', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':execution::*',
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
                 ],
               ],
             },

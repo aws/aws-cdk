@@ -522,7 +522,7 @@ stateMachine.grantTaskResponse(role);
 
 Prescribe more fine-grained iam actions control:
 
-```tsß
+```ts
 stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
 ```
 
