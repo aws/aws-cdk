@@ -2,7 +2,7 @@ import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Stack } from '@aws-cdk/core';
-import { DynamoMethod, getDynamoResourceArn, transformKey } from './private/utils';
+import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
 import { DynamoAttributeValueMap, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
 
 /**
@@ -91,7 +91,7 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     return {
       Resource: getDynamoResourceArn(DynamoMethod.GET),
       Parameters: sfn.FieldUtils.renderObject({
-        Key: transformKey(this.props.key),
+        Key: transformAttributeValueMap(this.props.key),
         TableName: this.props.table.tableName,
         ConsistentRead: this.props.consistentRead ?? false,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
