@@ -1519,7 +1519,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
 
   private static DlcRepository(name: string): ecr.IRepository {
     const arn = `arn:aws:ecr:${Aws.REGION}:763104351884::repository/${name}`;
-    return ecr.Repository.fromRepositoryArn(arn);
+    return ecr.Repository.fromRepositoryArn(this, name, arn);
   }
 
   public readonly type = 'LINUX_GPU_CONTAINER';
