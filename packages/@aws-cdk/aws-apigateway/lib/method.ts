@@ -213,8 +213,8 @@ export class Method extends Resource {
 
     this.methodId = resource.ref;
 
-    if (RestApiBase.isRestApiBase(props.resource.api)) {
-      (props.resource.api as any)._attachMethod(this);
+    if (RestApiBase._isRestApiBase(props.resource.api)) {
+      props.resource.api._attachMethod(this);
     }
 
     const deployment = props.resource.api.latestDeployment;

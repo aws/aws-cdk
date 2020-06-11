@@ -19,8 +19,9 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
    * Checks if the given object is an instance of RestApiBase.
+   * @internal
    */
-  public static isRestApiBase(x: any): x is IRestApi {
+  public static _isRestApiBase(x: any): x is RestApiBase {
     return x !== null && typeof(x) === 'object' && RESTAPI_SYMBOL in x;
   }
 
