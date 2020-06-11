@@ -313,7 +313,7 @@ export function arrayWith(...elements: any[]): PropertyMatcher {
 
   const ret = (value: any, inspection: InspectionFailure): boolean => {
     if (!Array.isArray(value)) {
-      return failMatcher(inspection, `Expect an object but got '${typeof value}'`);
+      return failMatcher(inspection, `Expect an array but got '${typeof value}'`);
     }
 
     for (const element of elements) {
