@@ -202,7 +202,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
-   * Grant the given identity user specified permissions
+   * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant {
     return iam.Grant.addToPrincipal({
