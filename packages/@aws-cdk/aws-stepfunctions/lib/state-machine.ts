@@ -177,7 +177,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceArns: [this.stateMachineArn],
     });
     iam.Grant.addToPrincipal({
-      grantee: identity, 
+      grantee: identity,
       actions: [
         'states:DescribeExecution',
         'states:DescribeStateMachineForExecution',
@@ -196,7 +196,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceArns: ['*'],
     });
   }
-
 
   /**
    * Grant the given identity permissions to access task responses of the

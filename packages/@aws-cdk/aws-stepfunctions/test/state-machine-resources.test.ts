@@ -233,7 +233,7 @@ describe('State Machine Resources', () => {
             Effect: 'Allow',
             Resource: {
               Ref: 'StateMachine2E01A3A5',
-            }
+            },
           },
           {
             Action: [
@@ -242,7 +242,7 @@ describe('State Machine Resources', () => {
               'states:GetExecutionHistory',
             ],
             Effect: 'Allow',
-            Resource:{
+            Resource: {
               'Fn::Join': [
                 '',
                 [

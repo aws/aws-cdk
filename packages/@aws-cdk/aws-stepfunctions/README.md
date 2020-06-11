@@ -510,7 +510,21 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 
 ## Granting actions to a role
 
-To be completed when Grant APIs are reviewed and updated.
+Grant access to a state machine by passing an iam role:
+
+```ts
+stateMachine.grantStartExecution(role);
+
+stateMachine.grantRead(role);
+
+stateMachine.grantTaskResponse(role);
+```
+
+Prescribe more fine-grained iam actions control:
+
+```tsß
+stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
+```
 
 ## Future work
 
