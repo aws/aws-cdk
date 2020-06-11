@@ -206,6 +206,86 @@ describe('State Machine Resources', () => {
 
   }),
 
+  test('Created state machine can grant actions to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new stepfunctions.Task(stack, 'Task', {
+      task: {
+        bind: () => ({ resourceArn: 'resource' }),
+      },
+    });
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantRead(role);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:ListExecutions',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'StateMachine2E01A3A5',
+            }
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:DescribeStateMachineForExecution',
+              'states:GetExecutionHistory',
+            ],
+            Effect: 'Allow',
+            Resource:{
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution::*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:ListStateMachines',
+              'states:ListActivities',
+              'states:DescribeStateMachine',
+              'states:DescribeActivity',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    });
+
+  }),
+
   test('Created state machine can grant task response actions to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();

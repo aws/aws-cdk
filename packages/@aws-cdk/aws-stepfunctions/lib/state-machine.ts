@@ -167,6 +167,38 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
+   * Grant the given identity permissions to read results from state
+   * machine.
+   */
+  public grantRead(identity: iam.IGrantable): iam.Grant {
+    iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['states:ListExecutions'],
+      resourceArns: [this.stateMachineArn],
+    });
+    iam.Grant.addToPrincipal({
+      grantee: identity, 
+      actions: [
+        'states:DescribeExecution',
+        'states:DescribeStateMachineForExecution',
+        'states:GetExecutionHistory',
+      ],
+      resourceArns: [`${this.executionArn}:*`],
+    });
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:ListStateMachines',
+        'states:ListActivities',
+        'states:DescribeStateMachine',
+        'states:DescribeActivity',
+      ],
+      resourceArns: ['*'],
+    });
+  }
+
+
+  /**
    * Grant the given identity permissions to access task responses of the
    * state machine.
    */
@@ -410,8 +442,15 @@ export interface IStateMachine extends IResource {
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
 
   /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
    * Grant the given identity permissions to access task responses of the
-   * state machine.
+   * state machine
    *
    * @param identity The principal
    */
