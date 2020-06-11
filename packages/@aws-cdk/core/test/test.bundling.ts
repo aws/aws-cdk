@@ -32,11 +32,11 @@ export = {
 
     test.ok(spawnSyncStub.calledWith('docker', [
       'run', '--rm',
+      '-u', '1000:1000',
       '-v', '/host-path:/container-path',
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
       '-w', '/working-directory',
-      '-u', '1000:1000',
       'alpine',
       'cool', 'command',
     ]));

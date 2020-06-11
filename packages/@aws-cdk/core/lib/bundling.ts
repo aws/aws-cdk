@@ -100,19 +100,20 @@ export class BundlingDockerImage {
     const environment = options.environment || {};
     const command = options.command || [];
 
-    // Get uid and gid of current user.
-    const { uid, gid } = os.userInfo();
+    // Get uid and gid of current user. On Windows, uid and gid are -1 and we
+    // can safely fallback to 1000 because docker always runs as the current
+    // user.
+    const userInfo = os.userInfo();
+    const uid = userInfo.uid !== -1 ? userInfo.uid : 1000;
+    const gid = userInfo.gid !== -1 ? userInfo.gid : 1000;
 
     const dockerArgs: string[] = [
       'run', '--rm',
+      '-u', `${uid}:${gid}`,
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
-        : [],
-      // On Windows, uid and gid are -1 and docker always runs as the current user
-      ...(uid !== -1 && gid !== -1)
-        ? ['-u', `${uid}:${gid}`]
         : [],
       this.image,
       ...command,
