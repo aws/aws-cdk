@@ -82,7 +82,6 @@ new DatabaseInstanceFromSnapshot(stack, 'Instance', {
 
 new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     sourceDatabaseInstance: sourceInstance,
-    engine: rds.DatabaseInstanceEngine.POSTGRES,
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
     vpc
 });
