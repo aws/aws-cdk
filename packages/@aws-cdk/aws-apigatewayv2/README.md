@@ -140,9 +140,10 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 
 ### Custom Domain Name
 
-Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Each custom domain name can be associated with a single API stage. Use `HttpApiMapping` to map the your custom name to a specific stage. 
+Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Custom domains name are associated to API stages.
 
-The code snippet below creates a custom domain and configures a default domain mapping for your API by creating a default `HttpApiMapping` that maps the custom domain to the `$default` stage of the API.
+The code snippet below creates a custom domain and configures a default domain mapping for your API that maps the
+custom domain to the `$default` stage of the API.
 
 ```ts
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -162,7 +163,7 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 });
 ```
 
-To create a new `Stage` with custom domain mapping:
+To associate a specifc `Stage` to a custom domain mapping -
 
 ```ts
 api.addStage('beta', {
@@ -176,7 +177,7 @@ api.addStage('beta', {
 } );
 ```
 
-You are allowed to create yet another 
+The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
 const apiDemo = new HttpApi(stack, 'DemoApi', {
@@ -189,7 +190,9 @@ const apiDemo = new HttpApi(stack, 'DemoApi', {
 });
 ```
 
-The optional `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed to have one API mapping with empty `mappingKey`. In the sample above, the custom domain is associated with 3 API mapping resources across different APIs and Stages.
+The optional `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed
+to have one API mapping with empty `mappingKey`. In the sample above, the custom domain is associated with 3 API
+mapping resources across different APIs and Stages.
 
 |        API     |     Stage   |   URL  |
 | :------------: | :---------: | :----: |
