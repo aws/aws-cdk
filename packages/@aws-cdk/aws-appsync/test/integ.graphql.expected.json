@@ -280,7 +280,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -301,7 +301,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -322,7 +322,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n        },\n            \n            #set($input = $ctx.args.order)\n            $util.qr($input.put(\"referral\", \"referral\"))\n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
