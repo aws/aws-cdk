@@ -409,6 +409,21 @@ export class GraphQLApi extends Construct {
   }
 
   /**
+   * add a new http data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param endpoint The http endpoint
+   */
+  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
+    return new HttpDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      endpoint,
+      name,
+    });
+  }
+
+  /**
    * add a new Lambda data source to this API
    * @param name The name of the data source
    * @param description The description of the data source
@@ -748,6 +763,30 @@ export class DynamoDbDataSource extends BackedDataSource {
     } else {
       props.table.grantReadWriteData(this);
     }
+  }
+}
+
+/**
+ * Properties for an AppSync http datasource
+ */
+export interface HttpDataSourceProps extends BaseDataSourceProps {
+  /**
+   * The http endpoint
+   */
+  readonly endpoint: string;
+}
+
+/**
+ * An AppSync datasource backed by a http endpoint
+ */
+export class HttpDataSource extends BaseDataSource {
+  constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    super(scope, id, props, {
+      httpConfig: {
+        endpoint: props.endpoint,
+      },
+      type: 'HTTP',
+    });
   }
 }
 
