@@ -35,7 +35,7 @@
     "typescript": "~3.8.3"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.1",
+    "@types/glob": "^7.1.2",
     "@types/jest": "^25.2.3",
     "@types/node": "^10.17.25",
     "cdk-build-tools": "0.0.0",
