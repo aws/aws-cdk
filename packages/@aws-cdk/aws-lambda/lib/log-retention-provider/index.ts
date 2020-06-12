@@ -2,6 +2,13 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { RetryDelayOptions } from 'aws-sdk/lib/config';
+
+interface SdkRetryOptions {
+  maxRetries?: number;
+  retryOptions?: RetryDelayOptions;
+}
 
 /**
  * Creates a log group and doesn't throw if it exists.
@@ -9,7 +16,7 @@ import * as AWS from 'aws-sdk';
  * @param logGroupName the name of the log group to create.
  * @param options CloudWatch API SDK options.
  */
-async function createLogGroupSafe(logGroupName: string, options?: any) {
+async function createLogGroupSafe(logGroupName: string, options?: SdkRetryOptions) {
   try { // Try to create the log group
     const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
@@ -27,7 +34,7 @@ async function createLogGroupSafe(logGroupName: string, options?: any) {
  * @param options CloudWatch API SDK options.
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, options?: any, retentionInDays?: number) {
+async function setRetentionPolicy(logGroupName: string, options?: SdkRetryOptions, retentionInDays?: number) {
   const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
@@ -114,8 +121,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     });
   }
 
-  function parseRetryOptions(rawOptions: any) {
-    const retryOptions: { maxRetries?: number, retryOptions?: { base?: number } } = {};
+  function parseRetryOptions(rawOptions: any): SdkRetryOptions {
+    const retryOptions: SdkRetryOptions = {};
     if (rawOptions) {
       if (rawOptions.maxRetries) {
         retryOptions.maxRetries = parseInt(rawOptions.maxRetries, 10);
