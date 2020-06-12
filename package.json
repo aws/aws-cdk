@@ -15,13 +15,13 @@
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.34",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
+    "graceful-fs": "^4.2.4",
     "jsii-diff": "^1.6.0",
     "jsii-pacmak": "^1.6.0",
     "jsii-rosetta": "^1.6.0",
-    "lerna": "^3.22.0",
+    "lerna": "^3.22.1",
     "standard-version": "^8.0.0",
-    "graceful-fs": "^4.2.4",
     "typescript": "~3.8.3"
   },
   "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
