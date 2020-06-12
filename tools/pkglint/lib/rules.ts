@@ -183,6 +183,11 @@ export class MaturitySetting extends ValidationRule {
       return;
     }
 
+    if (pkg.json.featureStability) {
+      // Skip this in favour of the FeatureStabilityRule.
+      return;
+    }
+
     let maturity = pkg.json.maturity as string | undefined;
     const stability = pkg.json.stability as string | undefined;
     if (!maturity) {
@@ -227,7 +232,7 @@ export class MaturitySetting extends ValidationRule {
     }
 
     const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    const badgeRegex = toRegExp(badge);
     if (!badgeRegex.test(readmeContent)) {
       // Removing a possible old, now invalid stability indication from the README.md before adding a new one
       const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
@@ -300,6 +305,11 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
+    if (pkg.json.featureStability) {
+      // Skip this in favour of the FeatureStabilityRule.
+      return;
+    }
+
     const maturity = pkg.json.maturity as string | undefined;
     const stability = pkg.json.stability as string | undefined;
 
@@ -309,6 +319,50 @@ export class StabilitySetting extends ValidationRule {
         ruleName: this.name,
         message: `stability is '${stability}', but based on maturity is expected to be '${expectedStability}'`,
         fix: expectedStability ? (() => pkg.json.stability = expectedStability) : undefined,
+      });
+    }
+  }
+}
+
+export class FeatureStabilityRule extends ValidationRule {
+  public readonly name = 'package-info/feature-stability';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private || !pkg.json.featureStability) {
+      return;
+    }
+
+    const partTable = pkg.json.featureStability.map((feature: any) => `| ${feature.name} | ${feature.stability} |`);
+    const stabilityBanner: string = [
+      '<!--BEGIN STABILITY BANNER-->',
+      '---',
+      '',
+      '| Features | Stability |',
+      '| --- | --- |',
+      '| CFN Resources | Stable |',
+      ...partTable,
+      '',
+      // '---',
+      // '<!--END STABILITY BANNER-->',
+    ].join('\n');
+
+    // tslint:disable-next-line
+    console.log(`stabilityBanner is ${stabilityBanner}`);
+
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const stabilityRegex = toRegExp(stabilityBanner);
+    if (!stabilityRegex.test(readmeContent)) {
+      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
+      // const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: 'Invalid stability banner - FIXME: better message',
+        // fix: TODO
       });
     }
   }
@@ -1288,4 +1342,8 @@ function repoRoot(dir: string) {
     root = path.dirname(root);
   }
   return root;
+}
+
+function toRegExp(str: string): RegExp {
+  return new RegExp(str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
 }
