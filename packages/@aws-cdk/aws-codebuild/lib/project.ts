@@ -1424,6 +1424,7 @@ export class LinuxBuildImage implements IBuildImage {
  * A CodeBuild GPU image running Linux.
  *
  * This class has public constants that represent the most popular GPU images from AWS Deep Learning Containers.
+ * Please note that these constants are not available in the following regions: ap-east-1, me-south-1, cn-north-1, cn-northwest-1
  *
  * You can also specify a custom image using one of the static methods:
  *
@@ -1535,27 +1536,8 @@ export class LinuxGpuBuildImage implements IBuildImage {
    * @returns a Linux GPU image from AWS Deep Learning Containers.
    */
   private static DlcImage(name: string, tag: string): IBuildImage {
-    let account: number;
-    switch (Aws.REGION) {
-      case 'ap-east-1':
-        account = 871362719292;
-        break;
-      case 'me-south-1':
-        account = 217643126080;
-        break;
-      case 'cn-north-1':
-        account = 727897471807;
-        break;
-      case 'cn-northwest-1':
-        account = 727897471807;
-        break;
-      default:
-        account = 763104351884;
-        break;
-    }
-
     return new LinuxGpuBuildImage({
-      imageId: `${account}.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
+      imageId: `763104351884.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
       imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     });
   }
