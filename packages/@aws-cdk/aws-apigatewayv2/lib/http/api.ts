@@ -1,7 +1,7 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
-import { CfnApi, CfnApiMapping, CfnApiProps } from '../apigatewayv2.generated';
-// import { HttpApiMapping } from './api-mapping';
-import { AddDomainNameOptions, DomainMappingOptions, DomainName } from './domain-name';
+import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { DomainMappingOptions } from '../common';
+import { HttpApiMapping } from './api-mapping';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -131,7 +131,6 @@ export class HttpApi extends Resource implements IHttpApi {
    * default stage of the api resource
    */
   public readonly defaultStage: HttpStage | undefined;
-  private _domainName?: DomainName;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -182,30 +181,15 @@ export class HttpApi extends Resource implements IHttpApi {
       });
     }
 
-    // if (props?.domainName) {
-    //   this.addDomainName(props.domainName);
-    // }
-
     if (props?.defaultDomainMapping) {
-      this.addDomainMapping(props.defaultDomainMapping);
-      // const mappingKey = props.defaultDomainMapping.mappingKey;
-      // const dn = this.addDomainName(props.defaultDomainMapping.domain);
-      // const stage = props.defaultDomainMapping.domain.stage ?? this.defaultStage!;
-      // // create the mapping
-      // const mapping = new CfnApiMapping(this, `${dn.domainName}${mappingKey}`, {
-      //   apiId: this.httpApiId,
-      //   domainName: dn.domainName,
-      //   stage: stage.stageName,
-      //   apiMappingKey: mappingKey,
-      // });
-      // const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
-      //   api: this,
-      //   domainName: dn,
-      //   stage,
-      // });
-      // mapping.node.addDependency(stage);
-    }
+      const options = props.defaultDomainMapping;
+      new HttpApiMapping(this, `${options.domainName}${options.mappingKey}`, {
+        api: this,
+        domainName: options.domainName,
+        stage: options.stage ?? this.defaultStage!,
+      });
 
+    }
   }
 
   /**
@@ -225,10 +209,12 @@ export class HttpApi extends Resource implements IHttpApi {
       ...options,
     });
     if (options.domainMapping) {
-      this.addDomainMapping({
+      new HttpApiMapping(this, `${options.domainMapping.domainName}${options.domainMapping.mappingKey}`, {
+        api: this,
+        domainName: options.domainMapping.domainName,
         stage,
-        ...options.domainMapping,
-      });
+        apiMappingKey: options.domainMapping.mappingKey,
+      } );
     }
     return stage;
   }
@@ -245,54 +231,4 @@ export class HttpApi extends Resource implements IHttpApi {
       integration: options.integration,
     }));
   }
-
-  /**
-   * Add a custom domain for this API and create the API mapping to a stage.
-   */
-  public addDomainName(options: AddDomainNameOptions): DomainName {
-    const dn = new DomainName(this, `DomainName${options.domainName}`, {
-      domainName: options.domainName,
-      certificate: options.certificate,
-    });
-
-    // const stage = options.stage ?? this.defaultStage!;
-
-    // const mapping = new HttpApiMapping(this, `${dn.domainName}defaultMapping`, {
-    //   api: this,
-    //   domainName: dn,
-    //   stage,
-    // });
-    // mapping.node.addDependency(stage);
-
-    this._domainName = dn;
-
-    return dn;
-  }
-
-  /**
-   * Create the `HttpApiMapping` resource with the custom domain and stage for the HTTP API
-   * @param options Options for domain name mapping
-   */
-  public addDomainMapping(options: DomainMappingOptions) {
-    const mappingKey = options.mappingKey;
-    // const dn = this.addDomainName(options);
-    const stage = options.stage ?? this.defaultStage!;
-    // create the mapping
-    const mapping = new CfnApiMapping(this, `${options.domainName}${mappingKey}`, {
-      apiId: this.httpApiId,
-      domainName: options.domainName.domainName,
-      stage: stage.stageName,
-      apiMappingKey: mappingKey,
-    });
-    mapping.node.addDependency(options.domainName, stage);
-  }
-
-  /**
-   * The first domain name mapped to this API, if defined through the `domainName`
-   * configuration prop, or added via `addDomainName`
-   */
-  public get domainName() {
-    return this._domainName;
-  }
-
 }

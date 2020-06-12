@@ -1,8 +1,7 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage } from '../common';
+import { CommonStageOptions, DomainMappingOptions, IStage } from '../common';
 import { IHttpApi } from './api';
-import { DomainMappingOptions } from './domain-name';
 
 const DEFAULT_STAGE_NAME = '$default';
 

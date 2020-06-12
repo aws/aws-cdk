@@ -52,7 +52,7 @@ describe('ApiMapping', () => {
       api,
       domainName: dn,
       stage: beta,
-      apiMappingName: 'betaMapping',
+      apiMappingKey: 'beta',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
@@ -61,6 +61,7 @@ describe('ApiMapping', () => {
       },
       DomainName: 'example.com',
       Stage: 'beta',
+      ApiMappingKey: 'beta',
     });
   });
 

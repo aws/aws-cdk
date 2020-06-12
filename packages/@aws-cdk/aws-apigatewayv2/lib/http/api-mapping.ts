@@ -18,10 +18,17 @@ export interface IHttpApiMapping extends IApiMapping {
  */
 export interface HttpApiMappingProps {
   /**
-   * Name for the API Mapping resource
-   * @default - id of the HttpApiMapping construct.
+   * Api mapping name
+   * @default -  logical id
    */
   readonly apiMappingName?: string;
+
+  /**
+   * Api mapping key
+   * @default -  empty api mapping key
+   */
+  readonly apiMappingKey?: string;
+
   /**
    * API for the HttpApiMapping resource
    */
@@ -64,20 +71,23 @@ export class HttpApiMapping extends Resource implements IHttpApiMapping {
    * ID of the API Mapping
    */
   public readonly apiMappingId: string;
+
   /**
    * Name of the API Mapping
+   * @attribute
    */
-  public readonly httpApiMappingName: string;
+  public readonly apiMappingName: string;
 
   constructor(scope: Construct, id: string, props: HttpApiMappingProps) {
     super(scope, id);
 
-    this.httpApiMappingName = props.apiMappingName ?? id;
+    this.apiMappingName = props.apiMappingName ?? id;
 
     const apiMappingProps: CfnApiMappingProps = {
       apiId: props.api.httpApiId,
       domainName: props.domainName.domainName,
       stage: props.stage.stageName,
+      apiMappingKey: props.apiMappingKey,
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);

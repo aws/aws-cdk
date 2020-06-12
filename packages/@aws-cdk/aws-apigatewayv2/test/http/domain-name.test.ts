@@ -33,43 +33,10 @@ describe('DomainName', () => {
   test('creates DomainName correctly with domainName property', () => {
 
     const stack = new Stack();
-    const dn = new DomainName(stack, 'DomainName', {
+    new DomainName(stack, 'DomainName', {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
       domainName: 'example.com',
     });
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: true,
-      defaultDomainMapping: {
-        domainName: dn,
-        mappingKey: 'prod',
-      },
-    });
-
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
-      DomainName: 'example.com',
-      DomainNameConfigurations: [
-        {
-          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
-          EndpointType: 'REGIONAL',
-        },
-      ],
-    });
-    expect(api).toHaveProperty('domainName');
-  });
-
-  test('addDomainName() creates DomainName correctly', () => {
-
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: true,
-    });
-
-    api.addDomainName({
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      domainName,
-      stage: api.defaultStage!,
-    });
-
     expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
       DomainName: 'example.com',
       DomainNameConfigurations: [
@@ -84,14 +51,9 @@ describe('DomainName', () => {
   test('import domain name correctly', () => {
 
     const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: true,
-    });
-
-    const dn = api.addDomainName({
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      stage: api.defaultStage!,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
 
     const imported = DomainName.fromDomainNameAttributes(stack, 'dn', {
