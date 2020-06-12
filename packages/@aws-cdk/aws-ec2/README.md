@@ -142,6 +142,8 @@ Which subnets are selected is evaluated as follows:
   availability zones have been looked up).
   * `availabilityZones`: only the specific subnets from the selected subnet groups that are
     in the given availability zones will be returned.
+  * `containsIPv4Addr`: only the specific subnets from the selected subnet groups that contain
+    any of the provided IPv4 addresses will be returned.
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
 
