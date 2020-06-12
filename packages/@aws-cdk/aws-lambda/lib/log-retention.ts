@@ -42,13 +42,13 @@ export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default - 3 (AWS SDK default)
+   * @default 3 (AWS SDK default)
    */
   readonly maxRetries?: number;
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default - 100 milliseconds (AWS SDK default)
+   * @default Duration.millis(100) (AWS SDK default)
    */
   readonly base?: cdk.Duration;
 }
