@@ -83,18 +83,20 @@ export = {
 
   'parameter group family'(test: Test) {
     // WHEN
-    const engine1 = new DatabaseClusterEngine(
-      'no-parameter-group-family',
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
-    const engine2 = new DatabaseClusterEngine(
-      'aurora-postgresql',
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      [
+    const engine1 = new DatabaseClusterEngine({
+      name: 'no-parameter-group-family',
+      singleUserRotationApplication: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+    });
+    const engine2 = new DatabaseClusterEngine({
+      name: 'aurora-postgresql',
+      singleUserRotationApplication: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      parameterGroupFamilies: [
         { engineMajorVersion: '1.0', parameterGroupFamily: 'family-1'},
         { engineMajorVersion: '2.0', parameterGroupFamily: 'family-2' },
-      ]);
+      ],
+    });
 
     // THEN
     test.equals(engine1.parameterGroupFamily(), undefined);

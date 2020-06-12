@@ -7,8 +7,9 @@ import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token 
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
+import { DatabaseClusterEngine } from './engine';
 import { ClusterParameterGroup, IParameterGroup } from './parameter-group';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
