@@ -13,13 +13,20 @@ const wait = new sfn.Wait(stack, 'wait time', {
   time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
-const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: wait,
-});
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-stateMachine.grantTaskResponse(role);
+const activity = new sfn.Activity(stack, 'Activity1');
+
+new cdk.CfnOutput(stack, 'ActivityArn', { value: activity.activityArn});
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition: wait,
+});
+
+stateMachine.grant(role, ['states:SendTaskSuccess'], activity.activityArn);
+
+// stateMachine.grantTaskResponse(role);
 
 app.synth();

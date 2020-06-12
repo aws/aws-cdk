@@ -1,5 +1,51 @@
 {
   "Resources": {
+    "Role1ABCC5F0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "RoleDefaultPolicy5FFB7DAB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:SendTaskSuccess",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "Activity16F144C4A"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+        "Roles": [
+          {
+            "Ref": "Role1ABCC5F0"
+          }
+        ]
+      }
+    },
+    "Activity16F144C4A": {
+      "Type": "AWS::StepFunctions::Activity",
+      "Properties": {
+        "Name": "awsstepfunctionsintegActivity1D86DDFB8"
+      }
+    },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -42,47 +88,12 @@
       "DependsOn": [
         "StateMachineRoleB840431D"
       ]
-    },
-    "Role1ABCC5F0": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "RoleDefaultPolicy5FFB7DAB": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "states:SendTaskSuccess",
-                "states:SendTaskFailure",
-                "states:SendTaskHeartbeat"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "RoleDefaultPolicy5FFB7DAB",
-        "Roles": [
-          {
-            "Ref": "Role1ABCC5F0"
-          }
-        ]
+    }
+  },
+  "Outputs": {
+    "ActivityArn": {
+      "Value": {
+        "Ref": "Activity16F144C4A"
       }
     }
   }

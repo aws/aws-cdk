@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -183,25 +183,16 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:StartExecution',
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'StateMachine2E01A3A5',
-            },
+        Statement: arrayWith(objectLike({
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'StateMachine2E01A3A5',
           },
-        ],
-        Version: '2012-10-17',
+        })),
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
     });
 
   }),
@@ -225,7 +216,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -290,15 +281,8 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
-    });
+      }},
+    );
 
   }),
 
@@ -321,7 +305,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -334,14 +318,7 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-        Version: '2012-10-17',
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
     });
 
   }),
@@ -365,7 +342,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -376,14 +353,7 @@ describe('State Machine Resources', () => {
             },
           },
         ],
-        Version: '2012-10-17',
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
     });
 
   }),
@@ -434,7 +404,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -447,14 +417,7 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-        Version: '2012-10-17',
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
     });
   }),
 
@@ -471,7 +434,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -480,14 +443,7 @@ describe('State Machine Resources', () => {
             Resource: stateMachine.stateMachineArn,
           },
         ],
-        Version: '2012-10-17',
       },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
     });
   }),
 
