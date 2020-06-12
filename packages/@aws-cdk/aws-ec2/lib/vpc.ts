@@ -7,7 +7,7 @@ import {
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
-import { NetworkBuilder } from './network-util';
+import { CidrBlock, NetworkBuilder, NetworkUtils } from './network-util';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
@@ -32,6 +32,11 @@ export interface ISubnet extends IResource {
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
   readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * The IPv4 CIDR block for this subnet
+   */
+  readonly ipv4CidrBlock: string;
 
   /**
    * The route table for this subnet
@@ -195,6 +200,13 @@ export interface SubnetSelection {
    * @default no filtering on AZs is done
    */
   readonly availabilityZones?: string[];
+
+  /**
+   * Select subnets whose CIDR range contains any of the provided IPv4 addresses
+   *
+   * @default no filtering on IP is done
+   */
+  readonly containsIPv4Addr?: string[];
 
   /**
    * Select the subnet group with the given name
@@ -460,6 +472,10 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets = retainByAZ(subnets, selection.availabilityZones);
     }
 
+    if (selection.containsIPv4Addr !== undefined) { // Filter by IP blocks, inclusive
+      subnets = retainByIp(subnets, selection.containsIPv4Addr);
+    }
+
     if (!!selection.onePerAz && subnets.length > 0) { // Ensure one per AZ if specified
       subnets = retainOnePerAz(subnets);
     }
@@ -525,22 +541,36 @@ abstract class VpcBase extends Resource implements IVpc {
         return {
           subnetType: SubnetType.PRIVATE,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones};
+          availabilityZones: placement.availabilityZones,
+          containsIPv4Addr: placement.containsIPv4Addr };
       }
       if (this.isolatedSubnets.length > 0) {
         return {
           subnetType: SubnetType.ISOLATED,
           onePerAz: placement.onePerAz,
-          availabilityZones: placement.availabilityZones };
+          availabilityZones: placement.availabilityZones,
+          containsIPv4Addr: placement.containsIPv4Addr };
       }
       return {
         subnetType: SubnetType.PUBLIC,
         onePerAz: placement.onePerAz,
-        availabilityZones: placement.availabilityZones };
+        availabilityZones: placement.availabilityZones,
+        containsIPv4Addr: placement.containsIPv4Addr };
     }
 
     return placement;
   }
+}
+
+function retainByIp(subnets: ISubnet[], ips: string[]): ISubnet[] {
+  const cidrBlockObjs = ips.map(ip => {
+    const ipNum = NetworkUtils.ipToNum(ip);
+    return new CidrBlock(ipNum, 32);
+  });
+  return subnets.filter(s => {
+    const subnetCidrBlock = new CidrBlock(s.ipv4CidrBlock);
+    return cidrBlockObjs.some(cidr => subnetCidrBlock.containsCidr(cidr));
+  });
 }
 
 function retainByAZ(subnets: ISubnet[], azs: string[]): ISubnet[] {
@@ -653,6 +683,13 @@ export interface SubnetAttributes {
    * @default - No AZ information, cannot use AZ selection features
    */
   readonly availabilityZone?: string;
+
+  /**
+   * The IPv4 CIDR block associated with the subnet
+   *
+   * @default - No CIDR information, cannot use CIDR filter features
+   */
+  readonly ipv4CidrBlock?: string;
 
   /**
    * The subnetId for this particular subnet
@@ -1418,6 +1455,11 @@ export class Subnet extends Resource implements ISubnet {
   /**
    * @attribute
    */
+  public readonly ipv4CidrBlock: string;
+
+  /**
+   * @attribute
+   */
   public readonly subnetIpv6CidrBlocks: string[];
 
   /**
@@ -1449,6 +1491,7 @@ export class Subnet extends Resource implements ISubnet {
     this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
+    this.ipv4CidrBlock = props.cidrBlock;
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
@@ -1851,6 +1894,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
+  private readonly _ipv4CidrBlock?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
@@ -1862,7 +1906,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       // tslint:disable-next-line: max-line-length
       scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
-
+    this._ipv4CidrBlock = attrs.ipv4CidrBlock;
     this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
     this.routeTable = {
@@ -1871,10 +1915,18 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     };
   }
 
+  public get ipv4CidrBlock(): string {
+    if (!this._ipv4CidrBlock) {
+      // tslint:disable-next-line: max-line-length
+      throw new Error("You cannot reference an imported Subnet's IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()");
+    }
+    return this._ipv4CidrBlock;
+  }
+
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
       // tslint:disable-next-line: max-line-length
-      throw new Error("You cannot reference a Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
+      throw new Error("You cannot reference an imported Subnet's availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()");
     }
     return this._availabilityZone;
   }

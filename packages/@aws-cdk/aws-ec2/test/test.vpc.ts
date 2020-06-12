@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
+import { AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
   InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
   RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
@@ -1201,6 +1201,74 @@ export = {
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
         subnets: {
           availabilityZones: ['dummy1a', 'dummy1c'],
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
+      }));
+      test.done();
+    },
+
+    'can filter by single IP address'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this bastion host in the same subnet as this IPv4
+      // address.
+      new BastionHostLinux(stack, 'Bastion', {
+        vpc,
+        subnetSelection: {
+          containsIPv4Addr: ['10.0.160.0'],
+        },
+      });
+
+      // THEN
+      // 10.0.160.0/19 is the third subnet, sequentially, if you split
+      // 10.0.0.0/16 into 6 pieces
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
+        SubnetId: {
+          Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+        },
+      }));
+      test.done();
+    },
+
+    'can filter by multiple IP addresses'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this endpoint in the same subnets as these IPv4
+      // address.
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          containsIPv4Addr: ['10.0.96.0', '10.0.160.0'],
         },
       });
 
