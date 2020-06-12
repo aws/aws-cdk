@@ -694,8 +694,7 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Snapshot"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",

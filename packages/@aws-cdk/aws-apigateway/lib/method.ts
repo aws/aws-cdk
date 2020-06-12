@@ -249,7 +249,7 @@ export class Method extends Resource {
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, stage);
+    return this.restApi.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), stage);
   }
 
   /**
@@ -257,7 +257,7 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, 'test-invoke-stage');
+    return this.restApi.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
   private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
@@ -392,4 +392,8 @@ export enum AuthorizationType {
    * Use an AWS Cognito user pool.
    */
   COGNITO = 'COGNITO_USER_POOLS',
+}
+
+function pathForArn(path: string): string {
+  return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
 }
