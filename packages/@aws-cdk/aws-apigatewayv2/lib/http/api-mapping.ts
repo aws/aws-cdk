@@ -25,7 +25,7 @@ export interface HttpApiMappingProps {
   readonly api: IHttpApi;
 
   /**
-   * custom domain nam efor the HttpApiMapping resource
+   * custom domain name of the mapping target
    */
   readonly domainName: IDomainName;
 
