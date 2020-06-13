@@ -1,7 +1,8 @@
 import { IResource } from '@aws-cdk/core';
 
 /**
- *  interface of the ApiMapping resource
+ * Represents an ApiGatewayV2 ApiMapping resource
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html
  */
 export interface IApiMapping extends IResource {
   /**
