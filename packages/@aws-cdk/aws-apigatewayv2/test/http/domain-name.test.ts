@@ -10,33 +10,12 @@ describe('DomainName', () => {
   test('default', () => {
 
     const stack = new Stack();
-    new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
 
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
-      DomainName: 'example.com',
-      DomainNameConfigurations: [
-        {
-          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
-          EndpointType: 'REGIONAL',
-        },
-      ],
-    });
-  });
-
-  test('creates DomainName correctly with domainName property', () => {
-
-    const stack = new Stack();
-    new DomainName(stack, 'DomainName', {
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      domainName: 'example.com',
-    });
     expect(stack).toHaveResource('AWS::ApiGatewayV2::DomainName', {
       DomainName: 'example.com',
       DomainNameConfigurations: [

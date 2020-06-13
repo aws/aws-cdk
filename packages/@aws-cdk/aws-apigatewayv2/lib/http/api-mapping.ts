@@ -4,16 +4,6 @@ import { IApiMapping, IDomainName, IStage } from '../common';
 import { IHttpApi } from '../http/api';
 
 /**
- * Represents a Route for an HTTP API.
- */
-export interface IHttpApiMapping extends IApiMapping {
-  /**
-   * The HTTP API associated with this API mapping.
-   */
-  // readonly httpApi: IHttpApi;
-}
-
-/**
  * Properties used to create the HttpApiMapping resource
  */
 export interface HttpApiMappingProps {
@@ -33,10 +23,12 @@ export interface HttpApiMappingProps {
    * API for the HttpApiMapping resource
    */
   readonly api: IHttpApi;
+
   /**
    * custom domain nam efor the HttpApiMapping resource
    */
   readonly domainName: IDomainName;
+
   /**
    * stage for the HttpApiMapping resource
    */
@@ -57,12 +49,12 @@ export interface HttpApiMappingAttributes {
  * Create a new API mapping for API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
-export class HttpApiMapping extends Resource implements IHttpApiMapping {
+export class HttpApiMapping extends Resource implements IApiMapping {
   /**
    * import from API ID
    */
-  public static fromHttpApiMappingAttributes(scope: Construct, id: string, attrs: HttpApiMappingAttributes): IHttpApiMapping {
-    class Import extends Resource implements IHttpApiMapping {
+  public static fromHttpApiMappingAttributes(scope: Construct, id: string, attrs: HttpApiMappingAttributes): IApiMapping {
+    class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
     }
     return new Import(scope, id);
