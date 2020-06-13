@@ -20,7 +20,7 @@ export interface HttpApiMappingProps {
   readonly apiMappingKey?: string;
 
   /**
-   * API for the HttpApiMapping resource
+   * The HttpApi to which this mapping is applied
    */
   readonly api: IHttpApi;
 
