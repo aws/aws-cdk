@@ -6,6 +6,12 @@ import { IHttpApi } from './api';
 const DEFAULT_STAGE_NAME = '$default';
 
 /**
+ * Represents the HttpStage
+ */
+export interface IHttpStage extends IStage {
+}
+
+/**
  * Options to create a new stage for an HTTP API.
  */
 export interface HttpStageOptions extends CommonStageOptions {

@@ -1,7 +1,8 @@
 import { Construct, Resource } from '@aws-cdk/core';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
-import { IApiMapping, IDomainName, IStage } from '../common';
+import { IApiMapping, IDomainName } from '../common';
 import { IHttpApi } from '../http/api';
+import { IHttpStage } from './stage';
 
 /**
  * Properties used to create the HttpApiMapping resource
@@ -31,8 +32,10 @@ export interface HttpApiMappingProps {
 
   /**
    * stage for the HttpApiMapping resource
+   *
+   * @default - the $default stage
    */
-  readonly stage: IStage;
+  readonly stage?: IHttpStage;
 }
 
 /**
@@ -78,7 +81,7 @@ export class HttpApiMapping extends Resource implements IApiMapping {
     const apiMappingProps: CfnApiMappingProps = {
       apiId: props.api.httpApiId,
       domainName: props.domainName.domainName,
-      stage: props.stage.stageName,
+      stage: props.stage ? props.stage.stageName : '$default',
       apiMappingKey: props.apiMappingKey,
     };
 

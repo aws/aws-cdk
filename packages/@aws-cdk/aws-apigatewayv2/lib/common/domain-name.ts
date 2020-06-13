@@ -52,9 +52,9 @@ export interface DomainNameAttributes {
 }
 
 /**
- * Options for DomainMapping
+ * Options for defaultDomainMapping
  */
-export interface DomainMappingOptions {
+export interface DefaultDomainMappingOptions {
   /**
    * The domain name for the mapping
    *
@@ -68,6 +68,12 @@ export interface DomainMappingOptions {
    */
   readonly mappingKey?: string;
 
+}
+
+/**
+ * Options for DomainMapping
+ */
+export interface DomainMappingOptions extends DefaultDomainMappingOptions {
   /**
    * The API Stage
    *

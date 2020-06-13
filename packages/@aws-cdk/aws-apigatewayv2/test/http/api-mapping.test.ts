@@ -20,7 +20,7 @@ describe('ApiMapping', () => {
     new HttpApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
-      stage: api.defaultStage!,
+      apiMappingName: 'myApiMapping',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {
@@ -78,7 +78,6 @@ describe('ApiMapping', () => {
     const mapping = new HttpApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
-      stage: api.defaultStage!,
     });
 
     const imported = HttpApiMapping.fromHttpApiMappingAttributes(stack, 'ImportedMapping', {

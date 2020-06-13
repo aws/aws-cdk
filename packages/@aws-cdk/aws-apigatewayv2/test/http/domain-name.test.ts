@@ -86,4 +86,37 @@ describe('DomainName', () => {
       ApiMappingKey: 'beta',
     });
   });
+
+  test('api with defaultDomainMapping', () => {
+
+    const stack = new Stack();
+    const dn = new DomainName(stack, 'DN', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
+    });
+    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::ApiMapping', {
+      ApiId: {
+        Ref: 'ApiF70053CD',
+      },
+      DomainName: 'example.com',
+      Stage: '$default',
+    });
+  });
 });

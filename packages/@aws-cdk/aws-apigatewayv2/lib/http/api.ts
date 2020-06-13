@@ -1,6 +1,6 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { DomainMappingOptions } from '../common';
+import { DefaultDomainMappingOptions } from '../common';
 import { HttpApiMapping } from './api-mapping';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
@@ -51,7 +51,7 @@ export interface HttpApiProps {
    *
    * @default - no default domain mapping configured
    */
-  readonly defaultDomainMapping?: DomainMappingOptions;
+  readonly defaultDomainMapping?: DefaultDomainMappingOptions;
 }
 
 /**
@@ -130,7 +130,7 @@ export class HttpApi extends Resource implements IHttpApi {
   /**
    * default stage of the api resource
    */
-  public readonly defaultStage: HttpStage | undefined;
+  private readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -186,7 +186,8 @@ export class HttpApi extends Resource implements IHttpApi {
       new HttpApiMapping(this, `${options.domainName}${options.mappingKey}`, {
         api: this,
         domainName: options.domainName,
-        stage: options.stage ?? this.defaultStage!,
+        // use '$default' stage when we create a new API with defaultDomainMapping
+        stage: this.defaultStage!,
       });
 
     }
