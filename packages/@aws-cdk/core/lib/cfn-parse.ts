@@ -5,8 +5,20 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from './cfn-resource-policy';
 import { CfnTag } from './cfn-tag';
+import { ICfnFinder } from './from-cfn';
+import { CfnReference } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
+
+/**
+ * The options for {@link FromCloudFormation.parseValue}.
+ */
+export interface ParseCfnOptions {
+  /**
+   * The finder interface used to resolve references in the template.
+   */
+  readonly finder: ICfnFinder;
+}
 
 /**
  * This class contains functions for translating from a pure CFN value
@@ -22,8 +34,8 @@ import { isResolvableObject, Token } from './token';
  * @experimental
  */
 export class FromCloudFormation {
-  public static parseValue(cfnValue: any): any {
-    return parseCfnValueToCdkValue(cfnValue);
+  public static parseValue(cfnValue: any, options: ParseCfnOptions): any {
+    return parseCfnValueToCdkValue(cfnValue, options);
   }
 
   // nothing to for any but return it
@@ -110,11 +122,11 @@ export class FromCloudFormation {
     return ret;
   }
 
-  public static parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
+  public static parseCreationPolicy(policy: any, options: ParseCfnOptions): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
-    policy = FromCloudFormation.parseValue(policy);
+    policy = FromCloudFormation.parseValue(policy, options);
 
     return undefinedIfAllValuesAreEmpty({
       autoScalingCreationPolicy: parseAutoScalingCreationPolicy(policy.AutoScalingCreationPolicy),
@@ -139,11 +151,11 @@ export class FromCloudFormation {
     }
   }
 
-  public static parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
+  public static parseUpdatePolicy(policy: any, options: ParseCfnOptions): CfnUpdatePolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
 
     // change simple JS values to their CDK equivalents
-    policy = FromCloudFormation.parseValue(policy);
+    policy = FromCloudFormation.parseValue(policy, options);
 
     return undefinedIfAllValuesAreEmpty({
       autoScalingReplacingUpdate: parseAutoScalingReplacingUpdate(policy.AutoScalingReplacingUpdate),
@@ -216,7 +228,7 @@ export class FromCloudFormation {
   }
 }
 
-function parseCfnValueToCdkValue(cfnValue: any): any {
+function parseCfnValueToCdkValue(cfnValue: any, options: ParseCfnOptions): any {
   // == null captures undefined as well
   if (cfnValue == null) {
     return undefined;
@@ -227,17 +239,17 @@ function parseCfnValueToCdkValue(cfnValue: any): any {
     return cfnValue;
   }
   if (Array.isArray(cfnValue)) {
-    return cfnValue.map(el => parseCfnValueToCdkValue(el));
+    return cfnValue.map(el => parseCfnValueToCdkValue(el, options));
   }
   if (typeof cfnValue === 'object') {
     // an object can be either a CFN intrinsic, or an actual object
-    const cfnIntrinsic = parseIfCfnIntrinsic(cfnValue);
+    const cfnIntrinsic = parseIfCfnIntrinsic(cfnValue, options);
     if (cfnIntrinsic) {
       return cfnIntrinsic;
     }
     const ret: any = {};
     for (const [key, val] of Object.entries(cfnValue)) {
-      ret[key] = parseCfnValueToCdkValue(val);
+      ret[key] = parseCfnValueToCdkValue(val, options);
     }
     return ret;
   }
@@ -245,58 +257,70 @@ function parseCfnValueToCdkValue(cfnValue: any): any {
   return cfnValue;
 }
 
-function parseIfCfnIntrinsic(object: any): any {
+function parseIfCfnIntrinsic(object: any, options: ParseCfnOptions): any {
   const key = looksLikeCfnIntrinsic(object);
   switch (key) {
     case undefined:
       return undefined;
     case 'Ref': {
-      // ToDo handle translating logical IDs
-      return specialCaseRefs(object[key]) ?? Fn._ref(object[key]);
+      const refTarget = object[key];
+      const specialRef = specialCaseRefs(refTarget);
+      if (specialRef) {
+        return specialRef;
+      } else {
+        const refElement = options.finder.findRefTarget(refTarget);
+        if (!refElement) {
+          throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
+        }
+        return CfnReference.for(refElement, 'Ref');
+      }
     }
     case 'Fn::GetAtt': {
       // Fn::GetAtt takes a 2-element list as its argument
       const value = object[key];
-      // ToDo same comment here as in Ref above
-      return Fn.getAtt((value[0]), value[1]);
+      const target = options.finder.findResource(value[0]);
+      if (!target) {
+        throw new Error(`Resource used in GetAtt expression with logical ID: '${value[0]}' not found`);
+      }
+      return target.getAtt(value[1]);
     }
     case 'Fn::Join': {
       // Fn::Join takes a 2-element list as its argument,
       // where the first element is the delimiter,
       // and the second is the list of elements to join
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.join(value[0], value[1]);
     }
     case 'Fn::Cidr': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.cidr(value[0], value[1], value[2]);
     }
     case 'Fn::FindInMap': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.findInMap(value[0], value[1], value[2]);
     }
     case 'Fn::Select': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.select(value[0], value[1]);
     }
     case 'Fn::GetAZs': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.getAzs(value);
     }
     case 'Fn::ImportValue': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.importValue(value);
     }
     case 'Fn::Split': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.split(value[0], value[1]);
     }
     case 'Fn::Transform': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.transform(value.Name, value.Parameters);
     }
     case 'Fn::Base64': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.base64(value);
     }
     case 'Fn::If': {
@@ -304,23 +328,23 @@ function parseIfCfnIntrinsic(object: any): any {
       // ToDo the first argument is the name of the condition,
       // so we will need to retrieve the actual object from the template
       // when we handle preserveLogicalIds=false
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.conditionIf(value[0], value[1], value[2]);
     }
     case 'Fn::Equals': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.conditionEquals(value[0], value[1]);
     }
     case 'Fn::And': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.conditionAnd(...value);
     }
     case 'Fn::Not': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.conditionNot(value[0]);
     }
     case 'Fn::Or': {
-      const value = parseCfnValueToCdkValue(object[key]);
+      const value = parseCfnValueToCdkValue(object[key], options);
       return Fn.conditionOr(...value);
     }
     default:

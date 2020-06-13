@@ -128,7 +128,13 @@ export class CfnInclude extends core.CfnElement {
   }
 
   private createParameter(logicalId: string): void {
-    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId]);
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId], {
+      finder: {
+        findResource() { throw new Error('Using GetAtt in Parameter definitions is not allowed'); },
+        findRefTarget() { throw new Error('Using Ref expressions in Parameter definitions is not allowed'); },
+        findCondition() { throw new Error('Referring to Conditions in Parameter definitions is not allowed'); },
+      },
+    });
     const cfnParameter = new core.CfnParameter(this, logicalId, {
       type: expression.Type,
       default: expression.Default,
@@ -149,7 +155,14 @@ export class CfnInclude extends core.CfnElement {
   private createCondition(conditionName: string): void {
     // ToDo condition expressions can refer to other conditions -
     // will be important when implementing preserveLogicalIds=false
-    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Conditions[conditionName]);
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Conditions[conditionName], {
+      finder: {
+        findResource() { throw new Error('Using GetAtt in Condition definitions is not allowed'); },
+        findRefTarget() { throw new Error('Using Ref expressions in Condition definitions is not allowed'); },
+        // ToDo handle one Condition referencing the other using { Condition: "ConditionName" } syntax
+        findCondition() { return undefined; },
+      },
+    });
     const cfnCondition = new core.CfnCondition(this, conditionName, {
       expression,
     });
@@ -197,6 +210,14 @@ export class CfnInclude extends core.CfnElement {
           return undefined;
         }
         return self.getOrCreateResource(lId);
+      },
+
+      findRefTarget(elementName: string): core.CfnElement | undefined {
+        if (elementName in self.parameters) {
+          return self.parameters[elementName];
+        }
+
+        return this.findResource(elementName);
       },
     };
     const options: core.FromCloudFormationOptions = {
