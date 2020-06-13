@@ -372,6 +372,11 @@ export enum RedirectStatus {
    * Not found (404)
    */
   NOT_FOUND = '404',
+
+  /**
+   * Not found rewrite (404)
+   */
+  NOT_FOUND_REWRITE = '404-200',
 }
 
 /**

@@ -297,6 +297,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
+  public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
 
   /**
    * The name of the service.

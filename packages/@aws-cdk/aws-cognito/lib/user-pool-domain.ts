@@ -1,5 +1,5 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { CfnUserPoolDomain } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -90,7 +90,10 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       throw new Error('One of, and only one of, cognitoDomain or customDomain must be specified');
     }
 
-    if (props.cognitoDomain?.domainPrefix && !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
+    if (props.cognitoDomain?.domainPrefix &&
+      !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
+      !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
+
       throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
     }
 
