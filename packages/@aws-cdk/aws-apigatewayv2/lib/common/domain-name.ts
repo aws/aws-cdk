@@ -9,7 +9,7 @@ import { IStage } from './stage';
  */
 export interface IDomainName extends IResource {
   /**
-   * domain name string
+   * The custom domain name
    *
    * @attribute
    *
