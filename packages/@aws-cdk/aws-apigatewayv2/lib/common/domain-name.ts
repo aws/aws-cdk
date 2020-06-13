@@ -4,7 +4,8 @@ import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 import { IStage } from './stage';
 
 /**
- * interface for the DomainName
+ * Represents an APIGatewayV2 DomainName
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
 export interface IDomainName extends IResource {
   /**
