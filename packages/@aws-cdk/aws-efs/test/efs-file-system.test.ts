@@ -23,6 +23,15 @@ test('default file system is created correctly', () => {
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
 });
 
+test('exposing mount targets and selected subnets', () => {
+  // WHEN
+  const fs = new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  // THEN
+  expect(fs.mountTargetSubnets.subnetIds.length).toEqual(fs.mountTargets.length);
+});
+
 test('unencrypted file system is created correctly with default KMS', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {

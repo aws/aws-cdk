@@ -218,6 +218,16 @@ export class FileSystem extends Resource implements IFileSystem {
   public readonly fileSystemId: string;
 
   /**
+   * The subnets of the mount targets
+   */
+  public readonly mountTargetSubnets: ec2.SelectedSubnets;
+
+  /**
+   * The mount targets
+   */
+  public readonly mountTargets: CfnMountTarget[];
+
+  /**
    * Constructor for creating a new EFS FileSystem.
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
@@ -254,14 +264,17 @@ export class FileSystem extends Resource implements IFileSystem {
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;
+    this.mountTargets = Array<CfnMountTarget>();
     subnets.subnetIds.forEach((subnetId: string) => {
-      new CfnMountTarget(this,
+      const cfnMountTarget = new CfnMountTarget(this,
         'EfsMountTarget' + (++mountTargetCount),
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId,
         });
+      this.mountTargets.push(cfnMountTarget);
     });
+    this.mountTargetSubnets = subnets;
   }
 }
