@@ -19,7 +19,9 @@ export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   readonly readers?: iam.IGrantable[];
 
   /**
-   * Custom source hash to use when identifying the specific version of the asset.
+   * Custom hash to use when identifying the specific version of the asset. For consistency,
+   * this custom hash will be SHA256 hashed and encoded as hex. The resulting hash will be
+   * the asset hash.
    *
    * NOTE: the source hash is used in order to identify a specific revision of the asset,
    * and used for optimizing and caching deployment activities related to this asset such as
