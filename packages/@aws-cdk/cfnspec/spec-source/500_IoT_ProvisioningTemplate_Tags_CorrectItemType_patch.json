@@ -2,7 +2,7 @@
   "ResourceTypes": {
     "AWS::IoT::ProvisioningTemplate": {
       "patch": {
-        "description": "AWS::IoT::ProvisioningTemplate property ItemType should have been PrimitiveItemType",
+        "description": "AWS::IoT::ProvisioningTemplate.Properties.Tag.ItemType should have been PrimitiveItemType",
         "operations": [
           {
             "op": "remove",
