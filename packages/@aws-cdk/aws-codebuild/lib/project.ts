@@ -1491,7 +1491,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
     '1.6.0-gpu-py36-cu101-ubuntu16.04');
 
   /**
-   * @returns a Linux GPU build image from a Docker Hub image.
+   * Returns a Linux GPU build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxGpuBuildImage({
@@ -1502,7 +1502,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux GPU build image from an ECR repository.
+   * Returns A Linux GPU build image from an ECR Repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -1533,7 +1533,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns a Linux GPU image from AWS Deep Learning Containers.
+   * Returns a Linux GPU image from AWS Deep Learning Containers.
    */
   private static DlcImage(name: string, tag: string): IBuildImage {
     return new LinuxGpuBuildImage({
