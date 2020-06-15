@@ -275,7 +275,7 @@ export = {
     // WHEN
     test.throws(() => {
       new apigw.DomainName(stack, 'someDomain', {domainName: 'someDomainWithUpercase.domain.com', certificate});
-    });
+    }, /uppercase/);
 
     // THEN
     test.done();
