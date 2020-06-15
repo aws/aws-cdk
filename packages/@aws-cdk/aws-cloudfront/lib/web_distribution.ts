@@ -141,14 +141,30 @@ export interface LoggingConfiguration {
  */
 export interface SourceConfiguration {
   /**
+   * The number of times that CloudFront attempts to connect to the origin.
+   * You can specify 1, 2, or 3 as the number of attempts.
+   *
+   * @default 3
+   */
+  readonly connectionAttempts?: number;
+
+  /**
+   * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
+   * You can specify a number of seconds between 1 and 10 (inclusive).
+   *
+   * @default cdk.Duration.seconds(10)
+   */
+  readonly connectionTimeout?: cdk.Duration;
+
+  /**
    * An s3 origin source - if you're using s3 for your assets
    */
-  readonly s3OriginSource?: S3OriginConfig
+  readonly s3OriginSource?: S3OriginConfig;
 
   /**
    * A custom origin source - for all non-s3 sources.
    */
-  readonly customOriginSource?: CustomOriginConfig,
+  readonly customOriginSource?: CustomOriginConfig;
 
   /**
    * The behaviors associated with this source.
@@ -161,7 +177,7 @@ export interface SourceConfiguration {
    *
    * @default /
    */
-  readonly originPath?: string,
+  readonly originPath?: string;
 
   /**
    * Any additional headers to pass to the origin
@@ -791,6 +807,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
           }
           : undefined,
+        connectionAttempts: originConfig.connectionAttempts || 3,
+        connectionTimeout: originConfig.connectionTimeout && originConfig.connectionTimeout.toSeconds() || 10,
       };
 
       for (const behavior of originConfig.behaviors) {

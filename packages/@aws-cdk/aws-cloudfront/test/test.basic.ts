@@ -82,6 +82,8 @@ export = {
                         'TLSv1.2',
                       ],
                     },
+                    'ConnectionAttempts': 3,
+                    'ConnectionTimeout': 10,
                     'DomainName': 'myorigin.com',
                     'Id': 'origin1',
                     'OriginCustomHeaders': [
@@ -139,6 +141,8 @@ export = {
               'DefaultRootObject': 'index.html',
               'Origins': [
                 {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
                   'DomainName': {
                     'Fn::GetAtt': [
                       'Bucket83908E77',
@@ -215,6 +219,8 @@ export = {
               'DefaultRootObject': 'index.html',
               'Origins': [
                 {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
                   'DomainName': {
                     'Fn::GetAtt': [
                       'Bucket83908E77',
@@ -294,6 +300,8 @@ export = {
               'DefaultRootObject': 'index.html',
               'Origins': [
                 {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
                   'DomainName': {
                     'Fn::GetAtt': [
                       'Bucket83908E77',
@@ -370,6 +378,8 @@ export = {
               'DefaultRootObject': 'index.html',
               'Origins': [
                 {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
                   'DomainName': {
                     'Fn::GetAtt': [
                       'Bucket83908E77',
@@ -905,6 +915,8 @@ export = {
                   'DefaultRootObject': 'index.html',
                   'Origins': [
                     {
+                      'ConnectionAttempts': 3,
+                      'ConnectionTimeout': 10,
                       'DomainName': {
                         'Fn::GetAtt': [
                           'Bucket83908E77',
@@ -979,6 +991,8 @@ export = {
                   'DefaultRootObject': 'index.html',
                   'Origins': [
                     {
+                      'ConnectionAttempts': 3,
+                      'ConnectionTimeout': 10,
                       'DomainName': {
                         'Fn::GetAtt': [
                           'Bucket83908E77',
