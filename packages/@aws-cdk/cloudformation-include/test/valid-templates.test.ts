@@ -184,6 +184,22 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with many conditions, and output it unchanged', () => {
+    includeTestTemplate(stack, 'conditions.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('conditions.json'),
+    );
+  });
+
+  test('can ingest a template with multiple cloudformation intrinsic functions, and output it unchanged', () => {
+    includeTestTemplate(stack, 'functions.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('functions.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 

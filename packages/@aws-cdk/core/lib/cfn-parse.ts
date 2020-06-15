@@ -179,6 +179,25 @@ function parseIfCfnIntrinsic(object: any): any {
       const value = parseCfnValueToCdkValue(object[key]);
       return Fn.join(value[0], value[1]);
     }
+    case 'Fn::Cidr': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      
+      if (value.length == 2)
+        return Fn.cidr(value[0], value[1]);
+      return Fn.cidr(value[0], value[1], value[2]);
+    }
+    case 'Fn::FindInMap': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.findInMap(value[0], value[1], value[2]);
+    }
+    case 'Fn::Select': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.select(value[0], value[1]);
+    }
+    case 'Fn::GetAZs': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.getAzs(value);
+    }
     case 'Fn::If': {
       // Fn::If takes a 3-element list as its argument
       // ToDo the first argument is the name of the condition,
@@ -190,6 +209,18 @@ function parseIfCfnIntrinsic(object: any): any {
     case 'Fn::Equals': {
       const value = parseCfnValueToCdkValue(object[key]);
       return Fn.conditionEquals(value[0], value[1]);
+    }
+    case 'Fn::And': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.conditionAnd(...value);
+    }
+    case 'Fn::Not': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.conditionNot(value[0]);
+    }
+    case 'Fn::Or': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.conditionOr(...value);
     }
     default:
       throw new Error(`Unsupported CloudFormation function '${key}'`);
