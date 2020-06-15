@@ -91,7 +91,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -108,7 +108,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

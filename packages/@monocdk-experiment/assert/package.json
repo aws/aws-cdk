@@ -44,7 +44,7 @@
     "ts-jest": "^26.1.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
@@ -52,7 +52,7 @@
   "peerDependencies": {
     "jest": "^25.5.4",
     "monocdk-experiment": "^0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

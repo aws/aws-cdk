@@ -49,7 +49,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -87,7 +87,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.3"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
