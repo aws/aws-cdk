@@ -2118,10 +2118,10 @@ aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.691.0:
-  version "2.691.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.691.0.tgz#92361b63117e94d065dad2f215296f5a19fe0c70"
-  integrity sha512-HV/iANH5PJvexubWr/oDmWMKtV/n1shtrACrLIUa5vTXIT6O7CzUouExNOvOtFMZw8zJkLmyEpa/0bDpMmo0Zg==
+aws-sdk@^2.637.0, aws-sdk@^2.697.0:
+  version "2.697.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.697.0.tgz#37320f50449a0d048fd34664dec023fdfeeab01f"
+  integrity sha512-aNrwiPRHQyzjJxpfgLwVOevuGTOMkU5uiP4VDIngfc/k4s2kQgLSyhLSKmNTjbubHCHfs1sQQkP3RXK2Oi8Rbw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4117,10 +4117,10 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-check@^1.25.0:
-  version "1.25.0"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.25.0.tgz#ae22f452e2d53577c32c7903d5b4e1eb3aacf7d5"
-  integrity sha512-HhiFqNBfty56YNuPLBlEKBmyCmUtAAV8d9qr/n3DJT1mi8dM34uK542tnO5HAgrhVjICLQuH3jrD6kULw+uCJQ==
+fast-check@^1.25.1:
+  version "1.25.1"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.25.1.tgz#aab6e34496a23ba7d7d20188699d9abdcaaa2dcc"
+  integrity sha512-4lyIDY2YKpSiPXpceCQBTfDxLh/7/C3OHgvzToea3y1YAlv38Wz9mfIsu+MD4go0NX3ow/g98kEmlW00+CoH3w==
   dependencies:
     pure-rand "^2.0.0"
     tslib "^2.0.0"
