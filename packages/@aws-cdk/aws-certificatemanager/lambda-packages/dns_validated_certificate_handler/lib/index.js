@@ -225,6 +225,7 @@ const deleteCertificate = async function(arn, region) {
  * Main handler, invoked by Lambda
  */
 exports.certificateRequestHandler = async function(event, context) {
+  console.log('The `DnsValidatedCertificate` construct is deprecated. See `validation` prop in `Certificate`.')
   var responseData = {};
   var physicalResourceId;
   var certificateArn;

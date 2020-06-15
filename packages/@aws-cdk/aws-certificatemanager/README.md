@@ -45,19 +45,26 @@ records for your domain.
 See [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
 in the Amazon Certificate Manager User Guide.
 
-### Automatic DNS-validated certificates using Route53
+```ts
+new Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: CertificateValidation.fromDns(),
+});
+```
 
-The `DnsValidatedCertificateRequest` class provides a Custom Resource by which
-you can request a TLS certificate from AWS Certificate Manager that is
-automatically validated using a cryptographically secure DNS record. For this to
-work, there must be a Route 53 public zone that is responsible for serving
-records under the Domain Name of the requested certificate. For example, if you
-request a certificate for `www.example.com`, there must be a Route 53 public
-zone `example.com` that provides authoritative records for the domain.
+If Amazon Route 53 is your DNS provider for the requested domain, the DNS record can be
+created automatically:
 
-Example:
+```ts
+new Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: CertificateValidation.fromDns(myHostedZone),
+});
+```
 
-[request a validated certificate example](test/example.dns-validated-request.lit.ts)
+When working with multiple domains, you can specify a default validation hosted zone:
+
+[multiple domains DNS validation](test/example.dns.lit.ts)
 
 ### Importing
 
