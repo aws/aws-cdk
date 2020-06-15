@@ -1,4 +1,4 @@
-import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
   Protocol, Secret } from '@aws-cdk/aws-ecs';
@@ -536,9 +536,9 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     if (certificate !== undefined) {
       return certificate;
     } else {
-      return new DnsValidatedCertificate(this, `Certificate${listenerName}`, {
+      return new Certificate(this, `Certificate${listenerName}`, {
         domainName,
-        hostedZone: domainZone,
+        validation: CertificateValidation.fromDns(domainZone),
       });
     }
   }

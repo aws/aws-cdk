@@ -1,4 +1,4 @@
-import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
@@ -335,9 +335,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
-        this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
+        this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
-          hostedZone: props.domainZone,
+          validation: CertificateValidation.fromDns(props.domainZone),
         });
       }
     }
