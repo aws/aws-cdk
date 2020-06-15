@@ -1538,7 +1538,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
   private static DlcImage(name: string, tag: string): IBuildImage {
     return new LinuxGpuBuildImage({
       imageId: `763104351884.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${name}:${tag}`,
-      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
     });
   }
 
