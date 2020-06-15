@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Tag } from '@aws-cdk/core';
@@ -287,6 +287,7 @@ export = {
         },
       },
       DependsOn: [
+        'MyClusterfargateprofileMyProfile1ImportedCreateRolePolicy42D1D843',
         'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',
         'MyClusterfargateprofileMyProfile1879D501A',
       ],
@@ -334,6 +335,33 @@ export = {
       selectors: [ { namespace: 'default' } ],
     }), /unsupported/);
 
+    test.done();
+  },
+
+  'allow cluster creation role to iam:PassRole on fargate pod execution role'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.FargateCluster(stack, 'FargateCluster');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    }));
     test.done();
   },
 };
