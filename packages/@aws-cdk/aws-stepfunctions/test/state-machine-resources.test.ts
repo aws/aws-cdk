@@ -286,43 +286,6 @@ describe('State Machine Resources', () => {
 
   }),
 
-  test('Created state machine can grant task response actions to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantTaskResponse(role);
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-      },
-    });
-
-  }),
-
   test('Created state machine can grant actions to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -391,7 +354,7 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Imported state machine can grant task response access to a role', () => {
+  test('Imported state machine can grant read access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const stateMachineArn = 'arn:aws:states:::my-state-machine';
@@ -401,7 +364,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grantTaskResponse(role);
+    stateMachine.grantRead(role);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -409,16 +372,52 @@ describe('State Machine Resources', () => {
         Statement: [
           {
             Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
+              'states:ListExecutions',
+              'states:ListStateMachines',
+            ],
+            Effect: 'Allow',
+            Resource: stateMachineArn,
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:DescribeStateMachineForExecution',
+              'states:GetExecutionHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:ListActivities',
+              'states:DescribeStateMachine',
+              'states:DescribeActivity',
             ],
             Effect: 'Allow',
             Resource: '*',
           },
         ],
-      },
-    });
+      }},
+    );
   }),
 
   test('Imported state machine can grant access to a role', () => {

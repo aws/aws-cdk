@@ -516,7 +516,6 @@ Any object that implements the `IGrantable` interface (has an associated princip
 
 - `stateMachine.grantStartExecution(principal)` - grants the principal the ability to start an execution
 - `stateMachine.grantRead(principal)` - grants the principal read access
-- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send success, failure, and heartbeat 
 - `stateMachine.grant(principal, actions, resourceArn)` - grants the principal the specific IAM action specified
 
 ### Read Permissions
@@ -568,9 +567,24 @@ The following permission is provided to a service principal by the `grantStartEx
 
 - `states:StartExecution` - to state machine
 
-### Task Response Permissions
+### Custom Permissions
 
-Grant task response permissions to a service principal by calling the `grantStartExecution()` API.
+You can add any set of permissions to a state machine by calling the `grant()` API.
+
+```ts
+const user = new iam.User(stack, 'MyUser');
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give user permission to send task success to the state machine
+stateMachine.grant(user, ['states:SendTaskSuccess'], stateMachine.stateMachineArn);
+```
+
+### Task Response Permissions Example
+
+There is no API for granting task response permissions; `grant()` should be used instead:
 
 ```ts
 const role = new iam.Role(stack, 'Role', {
@@ -582,30 +596,7 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 //give role task response permissions
-stateMachine.grantTaskResponse(role);
-```
-
-The following task response permissions are provided to a service principal by the `grantTaskResponse()` API:
-
-- `states:SendTaskSuccess` - to `*`
-- `states:SendTaskFailure` - to `*`
-- `states:SendTaskHeartbeat` - to `*`
-
-They are scoped to `*` because IAM says that for these actions, "policies granting access must specify "*" in the resource element."
-
-### Custom Permissions
-
-You can add any set of permissions to a stream by calling the `grant()` API.
-
-```ts
-const user = new iam.User(stack, 'MyUser');
-
-const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
-});
-
-//give my user permission to send task success to state machine
-stateMachine.grant(user, ['states:SendTaskSuccess'], '*');
+stateMachine.grant(role, ['states:SendTaskSuccess', 'states:SendTaskFailure', 'states:SendTaskHeartbeat'], stateMachine.stateMachineArn);
 ```
 
 ## Future work

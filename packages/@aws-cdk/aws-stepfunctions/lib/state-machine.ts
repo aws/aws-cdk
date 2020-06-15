@@ -183,25 +183,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
-   * Grant the given identity permissions to access task responses of the
-   * state machine.
-   *
-   * IAM Policy Simulator says "this action does not support resource-level permissions.
-   * Policies granting access must specify "*" in the resource element."
-   */
-  public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:SendTaskSuccess',
-        'states:SendTaskFailure',
-        'states:SendTaskHeartbeat',
-      ],
-      resourceArns: ['*'],
-    });
-  }
-
-  /**
    * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant {
@@ -425,15 +406,7 @@ export interface IStateMachine extends IResource {
   grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the given identity permissions to access task responses of the
-   * state machine
-   *
-   * @param identity The principal
-   */
-  grantTaskResponse(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grant the given identity user specified permissions
+   * Grant the given identity custom permissions
    *
    * @param identity The principal
    * @param actions The list of desired actions
