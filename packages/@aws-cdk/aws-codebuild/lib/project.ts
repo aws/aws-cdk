@@ -1154,7 +1154,7 @@ export interface IBuildImage {
   /**
    * The type of build environment.
    */
-  readonly type: string;
+  readonly type: EnvironmentType;
 
   /**
    * The Docker image identifier that the build environment uses.
