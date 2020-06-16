@@ -364,19 +364,17 @@ export class Cluster extends Resource implements ICluster {
   public readonly defaultNodegroup?: Nodegroup;
 
   /**
-   * If this cluster is kubectl-enabled, returns the `ClusterResource` object
-   * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   *
-   * @internal
-   */
-  public readonly _clusterResource?: ClusterResource;
-
-  /**
    * If the cluster has one (or more) FargateProfiles associated, this array
    * will hold a reference to each.
    */
   private readonly _fargateProfiles: FargateProfile[] = [];
+
+  /**
+   * If this cluster is kubectl-enabled, returns the `ClusterResource` object
+   * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   */
+  private readonly _clusterResource?: ClusterResource;
 
   /**
    * Manages the aws-auth config map.
@@ -778,12 +776,12 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
+  public get _kubectlCreationRole() {
     if (!this._clusterResource) {
       throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
-    return this._clusterResource.getCreationRoleArn(assumedBy);
+    return this._clusterResource.creationRole;
   }
 
   /**
@@ -796,7 +794,12 @@ export class Cluster extends Resource implements ICluster {
     }
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+    const provider = this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+
+    // allow the kubectl provider to assume the cluster creation role.
+    this._clusterResource.addTrustedRole(provider.role);
+
+    return provider;
   }
 
   /**
