@@ -251,7 +251,7 @@
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^8.10.2",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.5"
   },
   "peerDependencies": {
     "constructs": "^3.0.2"
