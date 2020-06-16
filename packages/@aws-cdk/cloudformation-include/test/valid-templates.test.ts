@@ -289,7 +289,7 @@ describe('CDK Include', () => {
   test("throws an exception when encountering a CFN function it doesn't support", () => {
     expect(() => {
       includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
-    }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
+    }).toThrow(/Unsupported CloudFormation function 'Fn::DoesNotExist'/);
   });
 
   test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {

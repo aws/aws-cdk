@@ -210,6 +210,10 @@ function parseIfCfnIntrinsic(object: any): any {
       const value = parseCfnValueToCdkValue(object[key]);
       return Fn.transform(value);
     }
+    case 'Fn::Base64': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.base64(value);
+    }
     case 'Fn::If': {
       // Fn::If takes a 3-element list as its argument
       // ToDo the first argument is the name of the condition,
