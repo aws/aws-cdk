@@ -257,7 +257,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: ABSENT,
               ReadWriteType: ABSENT,
@@ -331,7 +344,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: false,
               ReadWriteType: 'ReadOnly',
@@ -391,8 +417,37 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::Lambda::Function',
-                Values: [ 'arn:aws:lambda' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':lambda',
+                      ],
+                    ],
+                  },
+                ],
               }],
+            },
+          ],
+        });
+      });
+
+      test('managementEvents set to None correctly turns off management events', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              IncludeManagementEvents: false,
             },
           ],
         });
