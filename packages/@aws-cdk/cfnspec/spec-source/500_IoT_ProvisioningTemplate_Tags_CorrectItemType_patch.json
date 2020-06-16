@@ -1,0 +1,21 @@
+{
+  "ResourceTypes": {
+    "AWS::IoT::ProvisioningTemplate": {
+      "patch": {
+        "description": "AWS::IoT::ProvisioningTemplate.Properties.Tag.ItemType should have been PrimitiveItemType",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Tags/ItemType",
+            "value": "Json"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Tags/PrimitiveItemType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}
