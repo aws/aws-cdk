@@ -102,9 +102,15 @@
     ]
   },
   "stability": "experimental",
-  "featureStability": [
-    { "name": "Higher level constructs for User Pools", "stability": "Developer Preview" },
-    { "name": "Higher level constructs for Identity Pools", "stability": "Not Implemented" }
+  "features": [
+    {
+      "name": "Higher level constructs for User Pools",
+      "stability": "Developer Preview"
+    },
+    {
+      "name": "Higher level constructs for Identity Pools",
+      "stability": "Not Implemented"
+    }
   ],
   "awscdkio": {
     "announce": false

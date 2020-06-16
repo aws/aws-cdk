@@ -1,4 +1,4 @@
-README maturity banners.
+## README maturity banners.
 
 L1 banners will only be included if the package contains a
 `lib/*.generated.ts` file.

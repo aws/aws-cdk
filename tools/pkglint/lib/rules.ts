@@ -183,7 +183,7 @@ export class MaturitySetting extends ValidationRule {
       return;
     }
 
-    if (pkg.json.featureStability) {
+    if (pkg.json.features) {
       // Skip this in favour of the FeatureStabilityRule.
       return;
     }
@@ -305,7 +305,7 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
-    if (pkg.json.featureStability) {
+    if (pkg.json.features) {
       // Skip this in favour of the FeatureStabilityRule.
       return;
     }
@@ -328,26 +328,27 @@ export class FeatureStabilityRule extends ValidationRule {
   public readonly name = 'package-info/feature-stability';
 
   public validate(pkg: PackageJson): void {
-    if (pkg.json.private || !pkg.json.featureStability) {
+    if (pkg.json.private || !pkg.json.features) {
       return;
     }
 
-    const partTable = pkg.json.featureStability.map((feature: any) => `| ${feature.name} | ${feature.stability} |`);
+    const featuresEntries = pkg.json.features.map((feature: any) => `| ${feature.name} | ${feature.stability} |`);
+    const stabilityFooter = fs.readFileSync(path.join(__dirname, 'banners', 'features-banner.snip.md'), { encoding: 'utf-8' });
+
     const stabilityBanner: string = [
       '<!--BEGIN STABILITY BANNER-->',
       '---',
       '',
       '| Features | Stability |',
       '| --- | --- |',
-      '| CFN Resources | Stable |',
-      ...partTable,
+      ...this.cfnEntries(pkg),
+      ...featuresEntries,
       '',
-      // '---',
-      // '<!--END STABILITY BANNER-->',
+      stabilityFooter,
+      '',
+      '---',
+      '<!--END STABILITY BANNER-->',
     ].join('\n');
-
-    // tslint:disable-next-line
-    console.log(`stabilityBanner is ${stabilityBanner}`);
 
     const readmeFile = path.join(pkg.packageRoot, 'README.md');
     if (!fs.existsSync(readmeFile)) {
@@ -357,14 +358,20 @@ export class FeatureStabilityRule extends ValidationRule {
     const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
     const stabilityRegex = toRegExp(stabilityBanner);
     if (!stabilityRegex.test(readmeContent)) {
-      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
-      // const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
       pkg.report({
         ruleName: this.name,
-        message: 'Invalid stability banner - FIXME: better message',
-        // fix: TODO
+        message: 'Stability banner does not match as expected',
+        fix: () => fs.writeFileSync(readmeFile, [title, stabilityBanner, ...body].join('\n')),
       });
     }
+  }
+
+  private cfnEntries(pkg: PackageJson): string[] {
+    if (pkg.json['cdk-build']?.cloudformation) {
+      return [ '| CFN Resources | Stable |' ];
+    }
+    return [];
   }
 }
 
