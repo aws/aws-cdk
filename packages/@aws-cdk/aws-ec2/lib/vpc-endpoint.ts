@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
@@ -296,6 +297,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
+  public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
 
   /**
    * The name of the service.
@@ -360,6 +362,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * Limit to only those availability zones where the endpoint service can be created
+   *
+   * Setting this to 'true' requires a lookup to be performed at synthesis time. Account
+   * and region must be set on the containing stack for this to work.
+   *
+   * @default false
+   */
+  readonly lookupSupportedAzs?: boolean;
 }
 
 /**
@@ -459,8 +471,24 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
-    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
-    const subnetIds = subnets.subnetIds;
+    const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
+    const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    let subnets;
+
+    // If we don't have an account/region, we will not be able to do filtering on AZs since
+    // they will be undefined
+    // Otherwise, we filter by AZ
+    const agnostic = (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.stack.region));
+
+    if (agnostic && lookupSupportedAzs) {
+      throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
+    } else if (!agnostic && lookupSupportedAzs) {
+      const availableAZs = this.availableAvailabilityZones(props.service.name);
+      subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
+    } else {
+      subnets = subnetSelection.subnets;
+    }
+    const subnetIds = subnets.map(s => s.subnetId);
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
@@ -476,6 +504,21 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
+  }
+
+  private availableAvailabilityZones(serviceName: string): string[] {
+    // Here we check what AZs the endpoint service is available in
+    // If for whatever reason we can't retrieve the AZs, and no context is set,
+    // we will fall back to all AZs
+    const availableAZs = ContextProvider.getValue(this, {
+      provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: this.stack.availabilityZones,
+      props: {serviceName},
+    }).value;
+    if (!Array.isArray(availableAZs)) {
+      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);
+    }
+    return availableAZs;
   }
 }
 

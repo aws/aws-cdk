@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
-  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect,
-  FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
+  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
+  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -342,6 +342,7 @@ describe('IAM policy document', () => {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; },
+      addToPrincipalPolicy() { return { statementAdded: false }; },
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();
@@ -540,6 +541,45 @@ describe('IAM policy document', () => {
           OperatorThree: { 'fed-key': 'fed-val', 'with-key': 'with-val', 'add-key': 'add-val' },
         },
       });
+    });
+
+    test('tokens can be used in conditions', () => {
+      // GIVEN
+      const stack = new Stack();
+      const statement = new PolicyStatement();
+
+      // WHEN
+      const p = new ArnPrincipal('arn:of:principal').withConditions({
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+      });
+
+      statement.addPrincipals(p);
+
+      // THEN
+      const resolved = stack.resolve(statement.toStatementJson());
+      expect(resolved).toEqual({
+        Condition: {
+          StringEquals: {
+            goo: 'zar',
+          },
+        },
+        Effect: 'Allow',
+        Principal: {
+          AWS: 'arn:of:principal',
+        },
+      });
+    });
+
+    test('conditions cannot be merged if they include tokens', () => {
+      const p = new FederatedPrincipal('fed', {
+        StringEquals: { foo: 'bar' },
+      }).withConditions({
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+      });
+
+      const statement = new PolicyStatement();
+
+      expect(() => statement.addPrincipals(p)).toThrow(/multiple "StringEquals" conditions cannot be merged if one of them contains an unresolved token/);
     });
 
     test('values passed to `withConditions` overwrite values from the wrapped principal ' +

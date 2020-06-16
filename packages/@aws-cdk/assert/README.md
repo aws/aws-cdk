@@ -63,6 +63,7 @@ If you only care that a resource of a particular type exists (regardless of its 
 
 ```ts
 haveResource(type, subsetOfProperties)
+haveResourceLike(type, subsetOfProperties)
 ```
 
 Example:
@@ -76,7 +77,35 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 }));
 ```
 
-`ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
+The object you give to `haveResource`/`haveResourceLike` like can contain the
+following values:
+
+- **Literal values**: the given property in the resource must match the given value *exactly*.
+- `ABSENT`: a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
+- `arrayWith(...)`/`objectLike(...)`/`deepObjectLike(...)`/`exactValue()`: special matchers
+  for inexact matching. You can use these to match arrays where not all elements have to match,
+  just a single one, or objects where not all keys have to match.
+
+The difference between `haveResource` and `haveResourceLike` is the same as
+between `objectLike` and `deepObjectLike`: the first allows
+additional (unspecified) object keys only at the *first* level, while the
+second one allows them in nested objects as well.
+
+If you want to escape from the "deep lenient matching" behavior, you can use
+`exactValue()`.
+
+Slightly more complex example with array matchers:
+
+```ts
+expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+  PolicyDocument: {
+    Statement: arrayWith(objectLike({
+      Action: ['s3:GetObject'],
+      Resource: ['arn:my:arn'],
+    }})
+  }
+}));
+```
 
 ### Check number of resources
 

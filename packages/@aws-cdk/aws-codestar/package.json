@@ -48,7 +48,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeStar"
+    "cloudformation": "AWS::CodeStar",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -62,43 +63,34 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-codestar.GitHubRepositoryProps"
+    ]
   },
   "stability": "experimental",
-  "maturity": "cfn-only",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

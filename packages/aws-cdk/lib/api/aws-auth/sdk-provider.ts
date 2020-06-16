@@ -127,7 +127,7 @@ export class SdkProvider {
    * If `region` is undefined, the default value will be used.
    */
   public async withAssumedRole(roleArn: string, externalId: string | undefined, region: string | undefined) {
-    debug(`Assuming role '${roleArn}'`);
+    debug(`Assuming role '${roleArn}'.`);
     region = region ?? this.defaultRegion;
 
     const creds = new AWS.ChainableTemporaryCredentials({

@@ -63,8 +63,20 @@
                 },
                 "properties": {
                     "description": "The set of properties for this artifact (depends on type) (Default - no properties.)",
-                    "type": "object",
-                    "additionalProperties": {}
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AwsCloudFormationStackProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/AssetManifestProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
+                        }
+                    ]
                 }
             },
             "required": [
@@ -75,6 +87,8 @@
             "description": "Type of cloud artifact.",
             "enum": [
                 "aws:cloudformation:stack",
+                "cdk:asset-manifest",
+                "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
             ],
@@ -246,6 +260,98 @@
                 "value"
             ]
         },
+        "AwsCloudFormationStackProperties": {
+            "description": "Artifact properties for CloudFormation stacks.",
+            "type": "object",
+            "properties": {
+                "templateFile": {
+                    "description": "A file relative to the assembly root which contains the CloudFormation template for this stack.",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "Values for CloudFormation stack parameters that should be passed when the stack is deployed. (Default - No parameters)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "stackName": {
+                    "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
+                    "type": "string"
+                },
+                "terminationProtection": {
+                    "description": "Whether to enable termination protection for this stack.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
+                    "type": "string"
+                },
+                "cloudFormationExecutionRoleArn": {
+                    "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
+                    "type": "string"
+                },
+                "stackTemplateAssetObjectUrl": {
+                    "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - No bootstrap stack required)",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "templateFile"
+            ]
+        },
+        "AssetManifestProperties": {
+            "description": "Artifact properties for the Asset Manifest",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the asset manifest",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 1 (basic modern bootstrap stack))",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "TreeArtifactProperties": {
+            "description": "Artifact properties for the Construct Tree Artifact",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the tree artifact",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative path to the nested cloud assembly",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
+            ]
+        },
         "MissingContext": {
             "description": "Represents a missing piece of context.",
             "type": "object",
@@ -275,6 +381,9 @@
                         },
                         {
                             "$ref": "#/definitions/VpcContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
                         }
                     ]
                 }
@@ -290,6 +399,7 @@
             "enum": [
                 "ami",
                 "availability-zones",
+                "endpoint-service-availability-zones",
                 "hosted-zone",
                 "ssm",
                 "vpc-provider"
@@ -333,7 +443,7 @@
             ]
         },
         "AvailabilityZonesContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to availability zone context provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -383,7 +493,7 @@
             ]
         },
         "SSMParameterContextQuery": {
-            "description": "Query to hosted zone context provider",
+            "description": "Query to SSM Parameter Context Provider",
             "type": "object",
             "properties": {
                 "account": {
@@ -438,6 +548,29 @@
                 "account",
                 "filter",
                 "region"
+            ]
+        },
+        "EndpointServiceAvailabilityZonesContextQuery": {
+            "description": "Query to endpoint service context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "Query service name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "serviceName"
             ]
         },
         "RuntimeInfo": {

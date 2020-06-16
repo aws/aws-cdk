@@ -17,6 +17,42 @@ Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
 information of most of the capabilities of this library. The rest of this
 README will only cover topics not already covered in the Developer Guide.
 
+## Stacks and Stages
+
+A `Stack` is the smallest physical unit of deployment, and maps directly onto
+a CloudFormation Stack. You define a Stack by defining a subclass of `Stack`
+-- let's call it `MyStack` -- and instantiating the constructs that make up
+your application in `MyStack`'s constructor. You then instantiate this stack
+one or more times to define different instances of your application. For example,
+you can instantiate it once using few and cheap EC2 instances for testing,
+and once again using more and bigger EC2 instances for production.
+
+When your application grows, you may decide that it makes more sense to split it
+out across multiple `Stack` classes. This can happen for a number of reasons:
+
+- You could be starting to reach the maximum number of resources allowed in a single
+  stack (this is currently 200).
+- You could decide you want to separate out stateful resources and stateless resources
+  into separate stacks, so that it becomes easy to tear down and recreate the stacks
+  that don't have stateful resources.
+- There could be a single stack with resources (like a VPC) that are shared
+  between multiple instances of other stacks containing your applications.
+
+As soon as your conceptual application starts to encompass multiple stacks,
+it is convenient to wrap them in another construct that represents your
+logical application. You can then treat that new unit the same way you used
+to be able to treat a single stack: by instantiating it multiple times
+for different instances of your application.
+
+You can define a custom subclass of `Construct`, holding one or more
+`Stack`s, to represent a single logical instance of your application.
+
+As a final note: `Stack`s are not a unit of reuse. They describe physical
+deployment layouts, and as such are best left to application builders to
+organize their deployments with. If you want to vend a reusable construct,
+define it as a subclasses of `Construct`: the consumers of your construct
+will decide where to place it in their own stacks.
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
@@ -36,7 +72,7 @@ class MyNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
     super(scope, id, props);
 
-    new s3.Bucket(this, 'NestedBucket');  
+    new s3.Bucket(this, 'NestedBucket');
   }
 }
 
@@ -236,7 +272,7 @@ new CustomResource(this, 'MyMagicalResource', {
     Property2: 'bar'
   },
 
-  // the ARN of the provider (SNS/Lambda) which handles 
+  // the ARN of the provider (SNS/Lambda) which handles
   // CREATE, UPDATE or DELETE events for this resource type
   // see next section for details
   serviceToken: 'ARN'
@@ -292,7 +328,7 @@ function getOrCreate(scope: Construct): sns.Topic {
 Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
 is sent to the SNS topic. Users must process these notifications (e.g. through a
 fleet of worker hosts) and submit success/failure responses to the
-CloudFormation service. 
+CloudFormation service.
 
 Set `serviceToken` to `topic.topicArn`  in order to use this provider:
 
@@ -311,7 +347,7 @@ new CustomResource(this, 'MyResource', {
 
 An AWS lambda function is called *directly* by CloudFormation for all resource
 events. The handler must take care of explicitly submitting a success/failure
-response to the CloudFormation service and handle various error cases. 
+response to the CloudFormation service and handle various error cases.
 
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
@@ -361,7 +397,7 @@ exports.handler = async function(event) {
   const id = event.PhysicalResourceId; // only for "Update" and "Delete"
   const props = event.ResourceProperties;
   const oldProps = event.OldResourceProperties; // only for "Update"s
-  
+
   switch (event.RequestType) {
     case "Create":
       // ...
@@ -371,7 +407,7 @@ exports.handler = async function(event) {
 
       // if an error is thrown, a FAILED response will be submitted to CFN
       throw new Error('Failed!');
-      
+
     case "Delete":
       // ...
   }
@@ -403,10 +439,10 @@ Here is an complete example of a custom resource that summarizes two numbers:
 
 ```js
 exports.handler = async e => {
-  return { 
-    Data: { 
+  return {
+    Data: {
       Result: e.ResourceProperties.lhs + e.ResourceProperties.rhs
-    } 
+    }
   };
 };
 ```
@@ -426,14 +462,14 @@ export class Sum extends Construct {
     super(scope, id);
 
     const resourceType = 'Custom::Sum';
-    const provider = CustomResourceProvider.getOrCreate(this, resourceType, {
+    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
     const resource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
-      serviceToken: provider.serviceToken,
+      serviceToken: serviceToken,
       properties: {
         lhs: props.lhs,
         rhs: props.rhs
@@ -463,7 +499,7 @@ Handlers are implemented as AWS Lambda functions, which means that they can be
 implemented in any Lambda-supported runtime. Furthermore, this provider has an
 asynchronous mode, which means that users can provide an `isComplete` lambda
 function which is called periodically until the operation is complete. This
-allows implementing providers that can take up to two hours to stabilize. 
+allows implementing providers that can take up to two hours to stabilize.
 
 Set `serviceToken` to `provider.serviceToken` to use this type of provider:
 
@@ -487,7 +523,7 @@ See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-r
 Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
 is sent to the SNS topic. Users must process these notifications (e.g. through a
 fleet of worker hosts) and submit success/failure responses to the
-CloudFormation service. 
+CloudFormation service.
 
 Set `serviceToken` to `topic.topicArn`  in order to use this provider:
 
@@ -506,7 +542,7 @@ new CustomResource(this, 'MyResource', {
 
 An AWS lambda function is called *directly* by CloudFormation for all resource
 events. The handler must take care of explicitly submitting a success/failure
-response to the CloudFormation service and handle various error cases. 
+response to the CloudFormation service and handle various error cases.
 
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
@@ -532,7 +568,7 @@ Handlers are implemented as AWS Lambda functions, which means that they can be
 implemented in any Lambda-supported runtime. Furthermore, this provider has an
 asynchronous mode, which means that users can provide an `isComplete` lambda
 function which is called periodically until the operation is complete. This
-allows implementing providers that can take up to two hours to stabilize. 
+allows implementing providers that can take up to two hours to stabilize.
 
 Set `serviceToken` to `provider.serviceToken` to use this provider:
 
@@ -815,3 +851,41 @@ const stack = new Stack(app, 'StackName', {
 ```
 
 By default, termination protection is disabled.
+
+### CfnJson
+
+`CfnJson` allows you to postpone the resolution of a JSON blob from
+deployment-time. This is useful in cases where the CloudFormation JSON template
+cannot express a certain value.
+
+A common example is to use `CfnJson` in order to render a JSON map which needs
+to use intrinsic functions in keys. Since JSON map keys must be strings, it is
+impossible to use intrinsics in keys and `CfnJson` can help.
+
+The following example defines an IAM role which can only be assumed by
+principals that are tagged with a specific tag.
+
+```ts
+const tagParam = new CfnParameter(this, 'TagName');
+
+const stringEquals = new CfnJson(this, 'ConditionJson', {
+  value: {
+    [`aws:PrincipalTag/${tagParam.valueAsString}`]: true
+  },
+});
+
+const principal = new AccountRootPrincipal().withConditions({
+  StringEquals: stringEquals,
+});
+
+new Role(this, 'MyRole', { assumedBy: principal });
+```
+
+**Explanation**: since in this example we pass the tag name through a parameter, it
+can only be resolved during deployment. The resolved value can be represented in
+the template through a `{ "Ref": "TagName" }`. However, since we want to use
+this value inside a [`aws:PrincipalTag/TAG-NAME`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principaltag)
+IAM operator, we need it in the *key* of a `StringEquals` condition. JSON keys
+*must be* strings, so to circumvent this limitation, we use `CfnJson`
+to "delay" the rendition of this template section to deploy-time. This means
+that the value of `StringEquals` in the template will be `{ "Fn::GetAtt": [ "ConditionJson", "Value" ] }`, and will only "expand" to the operator we synthesized during deployment.
