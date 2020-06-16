@@ -439,4 +439,18 @@ describe('User Pool Client', () => {
       AllowedOAuthFlowsUserPoolClient: true,
     });
   });
+
+  test('fails when oAuth is specified but is disableOAuth is set', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addClient('Client', {
+      disableOAuth: true,
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
+    })).toThrow(/disableOAuth is set/);
+  });
 });

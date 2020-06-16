@@ -213,6 +213,7 @@ export interface UserPoolClientOptions {
 
   /**
    * OAuth settings for this to client to interact with the app.
+   * An error is thrown when this is specified and `disableOAuth` is set.
    * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
   readonly oAuth?: OAuthSettings;
@@ -289,6 +290,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
+
+    if (props.disableOAuth && props.oAuth) {
+      throw new Error('OAuth settings cannot be specified when disableOAuth is set.');
+    }
 
     this.oAuthFlows = props.oAuth?.flows ?? {
       implicitCodeGrant: true,
