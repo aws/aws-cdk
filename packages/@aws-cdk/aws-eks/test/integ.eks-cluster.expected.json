@@ -823,6 +823,16 @@
               "Action": "iam:CreateServiceLinkedRole",
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1095,55 +1105,6 @@
                 },
                 ":iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
               ]
-            ]
-          }
-        ]
-      }
-    },
-    "ClusterfargateprofiledefaultImportedCreateRolePolicy0D9EA6D2": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "ClusterfargateprofiledefaultImportedCreateRolePolicy0D9EA6D2",
-        "Roles": [
-          {
-            "Fn::Select": [
-              1,
-              {
-                "Fn::Split": [
-                  "/",
-                  {
-                    "Fn::Select": [
-                      5,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::GetAtt": [
-                              "ClusterCreationRole360249B6",
-                              "Arn"
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
             ]
           }
         ]

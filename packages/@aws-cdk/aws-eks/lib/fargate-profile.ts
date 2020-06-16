@@ -145,8 +145,7 @@ export class FargateProfile extends Construct implements ITaggable {
       managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ],
     });
 
-    const creationRoleArn = props.cluster._getKubectlCreationRoleArn();
-    role.grantPassRole(iam.Role.fromRoleArn(this, 'ImportedCreateRole', creationRoleArn));
+    role.grantPassRole(props.cluster._clusterResource!.creationRole);
 
     let subnets: string[] | undefined;
     if (props.vpc) {

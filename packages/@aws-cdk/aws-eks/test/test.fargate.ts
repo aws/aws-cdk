@@ -287,7 +287,6 @@ export = {
         },
       },
       DependsOn: [
-        'MyClusterfargateprofileMyProfile1ImportedCreateRolePolicy42D1D843',
         'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',
         'MyClusterfargateprofileMyProfile1879D501A',
       ],
@@ -349,6 +348,59 @@ export = {
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'FargateClusterRole8E36B33A',
+                'Arn'
+              ]
+            }
+          },
+          {
+            Action: [
+              'ec2:DescribeSubnets',
+              'ec2:DescribeRouteTables'
+            ],
+            Effect: 'Allow',
+            Resource: '*'
+          },
+          {
+            Action: [
+              'eks:CreateCluster',
+              'eks:DescribeCluster',
+              'eks:DescribeUpdate',
+              'eks:DeleteCluster',
+              'eks:UpdateClusterVersion',
+              'eks:UpdateClusterConfig',
+              'eks:CreateFargateProfile',
+              'eks:TagResource',
+              'eks:UntagResource'
+            ],
+            Effect: 'Allow',
+            Resource: [
+              '*'
+            ]
+          },
+          {
+            Action: [
+              'eks:DescribeFargateProfile',
+              'eks:DeleteFargateProfile'
+            ],
+            Effect: 'Allow',
+            Resource: '*'
+          },
+          {
+            Action: 'iam:GetRole',
+            Effect: 'Allow',
+            Resource: '*'
+          },
+          {
+            Action: 'iam:CreateServiceLinkedRole',
+            Effect: 'Allow',
+            Resource: '*'
+          },
           {
             Action: 'iam:PassRole',
             Effect: 'Allow',

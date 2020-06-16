@@ -23,13 +23,13 @@ export class ClusterResource extends Construct {
   public readonly attrOpenIdConnectIssuerUrl: string;
   public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
-
   /**
    * The IAM role which created the cluster. Initially this is the only IAM role
    * that gets administrator privilages on the cluster (`system:masters`), and
    * will be able to issue `kubectl` commands against it.
    */
-  private readonly creationRole: iam.Role;
+  public readonly creationRole: iam.Role;
+
   private readonly trustedPrincipals: string[] = [];
 
   constructor(scope: Construct, id: string, props: CfnClusterProps) {
