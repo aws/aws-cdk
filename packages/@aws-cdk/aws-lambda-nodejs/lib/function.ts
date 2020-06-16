@@ -1,9 +1,8 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Builder } from './builder';
+import { ParcelCode } from './parcel-code';
 import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
@@ -104,8 +103,6 @@ export class NodejsFunction extends lambda.Function {
 
     const entry = findEntry(id, props.entry);
     const handler = props.handler || 'handler';
-    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
-    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
@@ -115,25 +112,20 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
 
-    // Build with Parcel
-    const builder = new Builder({
-      entry,
-      outDir: handlerDir,
-      global: handler,
-      minify: props.minify,
-      sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
-      projectRoot: path.resolve(projectRoot),
-      environment: props.containerEnvironment,
-    });
-    builder.build();
-
     super(scope, id, {
       ...props,
       runtime,
-      code: lambda.Code.fromAsset(handlerDir),
+      code: new ParcelCode({
+        entry,
+        global: handler,
+        minify: props.minify,
+        sourceMaps: props.sourceMaps,
+        cacheDir: props.cacheDir,
+        nodeVersion: extractVersion(runtime),
+        nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
+        projectRoot: path.resolve(projectRoot),
+        environment: props.containerEnvironment,
+      }),
       handler: `index.${handler}`,
     });
   }

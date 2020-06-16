@@ -1,42 +1,27 @@
 import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { NodejsFunction } from '../lib';
-import { Builder, BuilderOptions } from '../lib/builder';
+import { ParcelCode } from '../lib/parcel-code';
 
-jest.mock('../lib/builder', () => {
-  return {
-    Builder: jest.fn().mockImplementation((options: BuilderOptions) => {
-      return {
-        build: jest.fn(() => {
-          require('fs-extra').ensureDirSync(options.outDir); // eslint-disable-line @typescript-eslint/no-require-imports
-        }),
-      };
-    }),
-  };
+jest.mock('../lib/parcel-code');
+ParcelCode.prototype.bind = () => ({
+  inlineCode: 'code',
 });
 
 let stack: Stack;
-const buildDir = path.join(__dirname, '.build');
 beforeEach(() => {
   stack = new Stack();
-  fs.removeSync(buildDir);
-});
-
-afterEach(() => {
-  fs.removeSync(buildDir);
+  jest.clearAllMocks();
 });
 
 test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
     global: 'handler',
-    outDir: expect.stringContaining(buildDir),
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -49,7 +34,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -62,7 +47,7 @@ test('NodejsFunction with container env vars', () => {
     },
   });
 
-  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
     environment: {
       KEY: 'VALUE',
     },
