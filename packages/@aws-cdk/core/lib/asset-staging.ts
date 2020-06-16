@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -219,7 +220,9 @@ export class AssetStaging extends Construct {
         if (!props.assetHash) {
           throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
         }
-        return props.assetHash;
+        // Hash the hash to make sure we can use it in a file/directory name.
+        // The resulting hash will also have the same length as for the other hash types.
+        return crypto.createHash('sha256').update(props.assetHash).digest('hex');
       default:
         throw new Error('Unknown asset hash type.');
     }
