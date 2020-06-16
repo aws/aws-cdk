@@ -4,9 +4,9 @@
 
 | Features | Stability |
 | --- | --- |
-| CFN Resources | Stable |
-| Higher level constructs for User Pools | Developer Preview |
-| Higher level constructs for Identity Pools | Not Implemented |
+| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for User Pools | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
+| Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
 
 > All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
