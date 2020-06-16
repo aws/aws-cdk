@@ -173,6 +173,15 @@ export class Fn {
   }
 
   /**
+   * 
+   * @param macroNameParameters The name of the macro to perform the processing, and the Parameters to pass to it
+   * @returns a token represented as a string
+   */
+  public static transform(macroNameParameters: string): string {
+    return new FnTransform(macroNameParameters).toString();
+  }
+
+  /**
    * Returns true if all the specified conditions evaluate to true, or returns
    * false if any one of the conditions evaluates to false. ``Fn::And`` acts as
    * an AND operator. The minimum number of conditions that you can include is
@@ -353,6 +362,19 @@ class FnFindInMap extends FnBase {
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
     super('Fn::FindInMap', [ mapName, topLevelKey, secondLevelKey ]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Transform`` specifies a macro to perform custom processing on part of a stack template.
+ */
+class FnTransform extends FnBase {
+  /**
+   * 
+   * @param macroNameParameters The name of the macro to be invoked, and the parameters to pass to it
+   */
+  constructor(macroNameParameters: string) {
+    super('Fn::Transform', macroNameParameters);
   }
 }
 

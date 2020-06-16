@@ -198,6 +198,18 @@ function parseIfCfnIntrinsic(object: any): any {
       const value = parseCfnValueToCdkValue(object[key]);
       return Fn.getAzs(value);
     }
+    case 'Fn::ImportValue': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.importValue(value);
+    }
+    case 'Fn::Split': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.split(value[0], value[1]);
+    }
+    case 'Fn::Transform': {
+      const value = parseCfnValueToCdkValue(object[key]);
+      return Fn.transform(value);
+    }
     case 'Fn::If': {
       // Fn::If takes a 3-element list as its argument
       // ToDo the first argument is the name of the condition,

@@ -40,7 +40,10 @@
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
         "VpcId" : { 
-          "Ref" : "VPC"   
+          "Fn::Split": [
+              ",",
+              { "Fn::ImportValue" : "ImportedVpcId" }
+          ]
         },
         "CidrBlock" : "10.0.0.0/24",
         "AvailabilityZone" : {
@@ -68,6 +71,19 @@
               "Fn::GetAZs" : "eu-west-2" 
             } 
           ]
+        }
+      }
+    },
+    "transformBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Transform": {
+            "Name": "AWS::Include",
+            "Parameters": {
+              "Location": "location"
+            }
+          }
         }
       }
     }
