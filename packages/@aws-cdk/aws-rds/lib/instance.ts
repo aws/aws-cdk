@@ -995,7 +995,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 /**
  * Construction properties for a DatabaseInstanceReadReplica.
  */
-export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceSourceProps {
+export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewProps {
   /**
    * The source database instance.
    *
