@@ -193,7 +193,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       throw new Error('activityArn must be a valid activity ARN');
     }
 
-    // ActivityArn is validated if it exists
+    // ActivityArn is valid if it exists
     const arn = activityArn || this.stateMachineArn;
 
     return iam.Grant.addToPrincipal({

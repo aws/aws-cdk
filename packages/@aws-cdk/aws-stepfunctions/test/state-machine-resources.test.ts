@@ -333,7 +333,7 @@ describe('State Machine Resources', () => {
         bind: () => ({ resourceArn: 'resource' }),
       },
     });
-    const activityArn = 'arn:aws:states:::activity:*';
+    const activityArn = 'arn:aws:states:*:*:activity:*';
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -531,7 +531,7 @@ describe('State Machine Resources', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const activityArn = 'arn:aws:states:::activity:*';
+    const activityArn = 'arn:aws:states:*:*:activity:*';
     const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),

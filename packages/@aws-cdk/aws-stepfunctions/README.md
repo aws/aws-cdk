@@ -567,6 +567,45 @@ The following permission is provided to a service principal by the `grantStartEx
 
 - `states:StartExecution` - to state machine
 
+### Task Response Permissions
+
+Grant permission to allow task responses to a state machine by calling the `grantTaskResponse()` API. 
+
+Task responses can be scoped down either to the state machine that holds a task that will use the callback pattern,
+or an activity task with a separate `ARN`.
+
+Grant permission to the state machine: 
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//default arn is the state machine arn
+stateMachine.grantTaskResponse(role);
+```
+
+Grant permission to an activity task: 
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const activityArn = 'arn:aws:states:*:*:activity:ActivityPrefix*';
+
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//specify the activity-level ARN for the task response
+stateMachine.grantTaskResponse(role, activityArn);
+```
+
 ### Custom Permissions
 
 You can add any set of permissions to a state machine by calling the `grant()` API.
@@ -580,23 +619,6 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
 
 //give user permission to send task success to the state machine
 stateMachine.grant(user, ['states:SendTaskSuccess'], stateMachine.stateMachineArn);
-```
-
-### Task Response Permissions Example
-
-There is no API for granting task response permissions; `grant()` should be used instead:
-
-```ts
-const role = new iam.Role(stack, 'Role', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-});
-
-const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
-});
-
-//give role task response permissions
-stateMachine.grant(role, ['states:SendTaskSuccess', 'states:SendTaskFailure', 'states:SendTaskHeartbeat'], stateMachine.stateMachineArn);
 ```
 
 ## Future work
