@@ -28,6 +28,15 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
+A file system can set `RemovalPolicy`. Default policy is `RETAIN`.
+
+```ts
+const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
+  vpc,
+  removalPolicy: RemovalPolicy.DESTROY
+});
+```
+
 ### Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has
