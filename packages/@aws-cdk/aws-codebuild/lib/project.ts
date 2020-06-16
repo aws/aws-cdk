@@ -1160,7 +1160,7 @@ export interface IBuildImage {
   /**
    * The type of build environment.
    */
-  readonly type: EnvironmentType;
+  readonly type: string;
 
   /**
    * The Docker image identifier that the build environment uses.
@@ -1210,7 +1210,7 @@ export interface IBuildImage {
 }
 
 class ArmBuildImage implements IBuildImage {
-  public readonly type = EnvironmentType.ARM_CONTAINER;
+  public readonly type = 'ARM_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
   public readonly imageId: string;
@@ -1413,7 +1413,7 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = EnvironmentType.LINUX_CONTAINER;
+  public readonly type = 'LINUX_CONTAINER';
   public readonly defaultComputeType = ComputeType.SMALL;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1558,7 +1558,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = EnvironmentType.LINUX_GPU_CONTAINER;
+  public readonly type = 'LINUX_GPU_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1701,7 +1701,7 @@ export class WindowsBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = EnvironmentType.WINDOWS_CONTAINER;
+  public readonly type = 'WINDOWS_CONTAINER';
   public readonly defaultComputeType = ComputeType.MEDIUM;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
