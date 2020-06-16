@@ -170,7 +170,7 @@ export class IntegrationTest {
    * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
    */
   private async readStackPragma(): Promise<string[]> {
-    const source = await fs.readFile(this.sourceFilePath, 'utf-8');
+    const source = await fs.readFile(this.sourceFilePath, { encoding: 'utf-8' });
     const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
       return [];
