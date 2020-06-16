@@ -354,17 +354,17 @@ export = {
             Resource: {
               'Fn::GetAtt': [
                 'FargateClusterRole8E36B33A',
-                'Arn'
-              ]
-            }
+                'Arn',
+              ],
+            },
           },
           {
             Action: [
               'ec2:DescribeSubnets',
-              'ec2:DescribeRouteTables'
+              'ec2:DescribeRouteTables',
             ],
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: [
@@ -376,30 +376,30 @@ export = {
               'eks:UpdateClusterConfig',
               'eks:CreateFargateProfile',
               'eks:TagResource',
-              'eks:UntagResource'
+              'eks:UntagResource',
             ],
             Effect: 'Allow',
             Resource: [
-              '*'
-            ]
+              '*',
+            ],
           },
           {
             Action: [
               'eks:DescribeFargateProfile',
-              'eks:DeleteFargateProfile'
+              'eks:DeleteFargateProfile',
             ],
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: 'iam:GetRole',
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: 'iam:CreateServiceLinkedRole',
             Effect: 'Allow',
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: 'iam:PassRole',
