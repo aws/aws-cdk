@@ -183,6 +183,31 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
+   * Grant the given identity task response permissions for a resource
+   *
+   * @default stateMachineArn
+   */
+  public grantTaskResponse(identity: iam.IGrantable, activityArn?: string): iam.Grant {
+    // Validate activityArn
+    if (activityArn && Arn.parse(activityArn, ':').resource !== 'activity') {
+      throw new Error('activityArn must be a valid activity ARN');
+    }
+
+    // ActivityArn is validated if it exists
+    const arn = activityArn || this.stateMachineArn;
+
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:SendTaskSuccess',
+        'states:SendTaskFailure',
+        'states:SendTaskHeartbeat',
+      ],
+      resourceArns: [arn],
+    });
+  }
+
+  /**
    * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant {
@@ -404,6 +429,14 @@ export interface IStateMachine extends IResource {
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   * @param resourceArn The ARN of the resource
+   */
+  grantTaskResponse(identity: iam.IGrantable, resourceArn?: string): iam.Grant;
 
   /**
    * Grant the given identity custom permissions
