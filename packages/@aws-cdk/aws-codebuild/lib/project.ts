@@ -1083,22 +1083,6 @@ export enum ComputeType {
 }
 
 /**
- * Build machine environment type.
- *
- * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
- */
-export enum EnvironmentType {
-  /** The environment type used for Linux images. */
-  LINUX_CONTAINER = 'LINUX_CONTAINER',
-  /** The environment type used for Linux GPU images. Only compatible with ComputeType.LARGE. */
-  LINUX_GPU_CONTAINER = 'LINUX_GPU_CONTAINER',
-  /** The environment type used for ARM images. Only compatible with ComputeType.LARGE. */
-  ARM_CONTAINER = 'ARM_CONTAINER',
-  /** The environment type used for Windows images. */
-  WINDOWS_CONTAINER = 'WINDOWS_CONTAINER',
-}
-
-/**
  * The type of principal CodeBuild will use to pull your build Docker image.
  */
 export enum ImagePullPrincipalType {
