@@ -192,7 +192,7 @@ export = {
 
     // THEN
     test.equal(fs.existsSync(STUB_INPUT_FILE), false);
-    test.equal(asset.assetHash, 'my-custom-hash');
+    test.equal(asset.assetHash, 'b9c77053f5b83bbe5ba343bc18e92db939a49017010813225fea91fa892c4823'); // hash of 'my-custom-hash'
 
     test.done();
   },
