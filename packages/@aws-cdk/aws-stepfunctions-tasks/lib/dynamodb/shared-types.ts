@@ -1,3 +1,5 @@
+import { transformAttributeValueMap } from './private/utils';
+
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
  */
@@ -108,15 +110,37 @@ export class DynamoProjectionExpression {
 }
 
 /**
- * Class to generate AttributeValue
+ * Map of string to AttributeValue
  */
-export interface DynamoAttributeValue {
+export interface DynamoAttributeValueMap {
+  [key: string]: DynamoAttributeValue;
+}
+
+/**
+ * Represents the data for an attribute.
+ * Each attribute value is described as a name-value pair.
+ * The name is the data type, and the value is the data itself.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
+ */
+export class DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
-   *
-   * @default - None
+   * Strings may be literal values or as JsonPath
    */
-  readonly s?: string;
+  public static wrapString(s: string) {
+    return new DynamoAttributeValue({ S: s });
+  }
+
+  /**
+   * Sets a literal number. For example: 1234
+   * Numbers are sent across the network to DynamoDB as strings,
+   * to maximize compatibility across languages and libraries.
+   * However, DynamoDB treats them as number type attributes for mathematical operations.
+   */
+  public static wrapNumber(n: number) {
+    return new DynamoAttributeValue({ N: n.toString() });
+  }
 
   /**
    * Sets an attribute of type Number. For example:  "N": "123.45"
@@ -124,23 +148,35 @@ export interface DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    *
-   * @default - None
+   * Numbers may be expressed as literal strings or as JsonPath
    */
-  readonly n?: string;
+  public static wrapNumberFromString(n: string) {
+    return new DynamoAttributeValue({ N: n.toString() });
+  }
 
   /**
    * Sets an attribute of type Binary. For example:  "B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"
-   *
-   * @default - None
    */
-  readonly b?: string;
+  public static wrapBinary(b: string) {
+    return new DynamoAttributeValue({ B: b });
+  }
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
-   *
-   * @default - None
    */
-  readonly ss?: string[];
+  public static wrapStringSet(ss: string[]) {
+    return new DynamoAttributeValue({ SS: ss });
+  }
+
+  /**
+   * Sets an attribute of type Number Set. For example:  "NS": ["42.2", "-19", "7.5", "3.14"]
+   * Numbers are sent across the network to DynamoDB as strings,
+   * to maximize compatibility across languages and libraries.
+   * However, DynamoDB treats them as number type attributes for mathematical operations.
+   */
+  public static wrapNumberSet(ns: number[]) {
+    return new DynamoAttributeValue({ NS: ns.toString() });
+  }
 
   /**
    * Sets an attribute of type Number Set. For example:  "NS": ["42.2", "-19", "7.5", "3.14"]
@@ -148,42 +184,57 @@ export interface DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    *
-   * @default - None
+   * Numbers may be expressed as literal strings or as JsonPath
    */
-  readonly ns?: string[];
+  public static wrapNumberSetFromString(ns: string[]) {
+    return new DynamoAttributeValue({ NS: ns });
+  }
 
   /**
    * Sets an attribute of type Binary Set. For example:  "BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]
-   *
-   * @default - None
    */
-  readonly bs?: string[];
+  public static wrapBinarySet(bs: string[]) {
+    return new DynamoAttributeValue({ BS: bs });
+  }
 
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
-   *
-   * @default - None
    */
-  readonly m?: { [key: string]: DynamoAttributeValue };
+  public static wrapMap(m: { [key: string]: DynamoAttributeValue }) {
+    return new DynamoAttributeValue({ M: transformAttributeValueMap(m) });
+  }
 
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]
-   *
-   * @default - None
    */
-  readonly l?: DynamoAttributeValue[];
+  public static wrapList(l: DynamoAttributeValue[]) {
+    return new DynamoAttributeValue({ L: l.map((val) => val.toObject()) });
+  }
 
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
-   *
-   * @default - None
    */
-  readonly nullValue?: boolean;
+  public static wrapNull(isNull: boolean) {
+    return new DynamoAttributeValue({ NULL: isNull });
+  }
 
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
-   *
-   * @default - None
    */
-  readonly booleanValue?: boolean;
+  public static wrapBoolean(isBoolean: boolean) {
+    return new DynamoAttributeValue({ BOOL: isBoolean });
+  }
+
+  public readonly attributeValue: any;
+
+  private constructor(value: any) {
+    this.attributeValue = value;
+  }
+
+  /**
+   * Returns the DynamoDB attribute value
+   */
+  public toObject() {
+    return this.attributeValue;
+  }
 }
