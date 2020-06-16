@@ -122,7 +122,7 @@ export class NodejsFunction extends lambda.Function {
         sourceMaps: props.sourceMaps,
         cacheDir: props.cacheDir,
         nodeVersion: extractVersion(runtime),
-        nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
+        nodeDockerTag: props.nodeDockerTag ?? `${process.versions.node}-alpine`,
         projectRoot: path.resolve(projectRoot),
         environment: props.containerEnvironment,
       }),
