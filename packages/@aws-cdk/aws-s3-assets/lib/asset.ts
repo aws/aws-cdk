@@ -1,5 +1,6 @@
 import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -109,6 +110,8 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
+  private readonly kmsEncrypted: boolean;
+
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
@@ -145,6 +148,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.s3ObjectUrl = location.s3ObjectUrl;
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
+    this.kmsEncrypted = location.kmsEncrypted ?? false;
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
@@ -189,6 +193,10 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     // accidentally revoke permission on old versions when deploying a new
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
+
+    if (this.kmsEncrypted) {
+      kms.Key.grantDecryptAny(grantee);
+    }
   }
 }
 

@@ -208,6 +208,22 @@ export interface FileAssetLocation {
    * @example s3://mybucket/myobject
    */
   readonly s3ObjectUrl: string;
+
+  /**
+   * Whether the asset location has been encrypted by a KMS key
+   *
+   * If so, the consuming role should be given "kms:Decrypt" permissions in its
+   * identity policy. The reader role must get permissions to use all keys,
+   * since it's not possible to physical-name a key, and so we can't write the
+   * IAM policy that will only give access to the asset key ARN.
+   *
+   * It's the responsibility of they key's creator to make sure that all
+   * consumers that need access to it have such access, and no more (based on
+   * the key policy).
+   *
+   * @default false
+   */
+  readonly kmsEncrypted?: boolean;
 }
 
 /**

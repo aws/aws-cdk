@@ -247,6 +247,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
+      kmsEncrypted: true,
     };
   }
 
