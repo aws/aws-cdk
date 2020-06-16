@@ -18,7 +18,9 @@ export interface IAsset {
 export interface AssetOptions {
   /**
    * Specify a custom hash for this asset. If `assetHashType` is set it must
-   * be set to `AssetHashType.CUSTOM`.
+   * be set to `AssetHashType.CUSTOM`. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
    *
    * NOTE: the hash is used in order to identify a specific revision of the asset, and
    * used for optimizing and caching deployment activities related to this asset such as

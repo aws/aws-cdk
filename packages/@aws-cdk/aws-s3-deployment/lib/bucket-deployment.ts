@@ -161,11 +161,11 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    const assetHash = calcSourceHash(handlerSourceDirectory);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
