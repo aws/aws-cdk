@@ -173,8 +173,10 @@ export class Fn {
   }
 
   /**
-   * 
-   * @param macroNameParameters The name of the macro to perform the processing, and the Parameters to pass to it
+   * The intrinsic function Fn::Transform specifies a macro to perform custom processing on part of a stack template.
+   * Macros enable you to perform custom processing on templates, from simple actions like find-and-replace operations
+   * to extensive transformations of entire templates.
+   * @param macroNameParameters The name of the macro to perform the processing, and the Parameters to pass to it.
    * @returns a token represented as a string
    */
   public static transform(macroNameParameters: string): string {
@@ -370,7 +372,6 @@ class FnFindInMap extends FnBase {
  */
 class FnTransform extends FnBase {
   /**
-   * 
    * @param macroNameParameters The name of the macro to be invoked, and the parameters to pass to it
    */
   constructor(macroNameParameters: string) {
