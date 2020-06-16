@@ -42,7 +42,7 @@
   "devDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@types/archiver": "^3.1.0",
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.2",
     "@types/jest": "^26.0.0",
     "@types/minimatch": "^3.0.3",

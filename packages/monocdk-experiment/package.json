@@ -245,7 +245,7 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@types/fs-extra": "^8.1.1",
+    "@types/fs-extra": "^9.0.1",
     "@types/node": "^10.17.26",
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.0.1",

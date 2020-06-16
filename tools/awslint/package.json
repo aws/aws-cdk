@@ -24,7 +24,7 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/yargs": "^15.0.5",
     "tslint": "^5.20.1",
     "typescript": "~3.8.3"
