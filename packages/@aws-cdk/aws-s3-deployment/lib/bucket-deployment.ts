@@ -174,8 +174,10 @@ export class BucketDeployment extends cdk.Construct {
       memorySize: props.memoryLimit,
     });
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
-    sources.forEach(source => source.bucket.grantRead(handler));
+    const handlerRole = handler.role;
+    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
