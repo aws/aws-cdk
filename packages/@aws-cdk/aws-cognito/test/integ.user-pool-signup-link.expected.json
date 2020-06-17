@@ -94,6 +94,7 @@
           "implicit",
           "code"
         ],
+        "AllowedOAuthFlowsUserPoolClient": true,
         "AllowedOAuthScopes": [
           "profile",
           "phone",
