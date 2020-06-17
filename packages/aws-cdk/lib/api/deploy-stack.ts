@@ -150,7 +150,7 @@ export interface DeployStackOptions {
    *
    * If not set, all parameters must be specified for every deployment.
    *
-   * @default true
+   * @default false
    */
   usePreviousParameters?: boolean;
 
@@ -204,11 +204,10 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const legacyAssets = new AssetManifestBuilder();
   const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
 
-  const usePreviousParameters = options.usePreviousParameters ?? true;
   const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
     ...options.parameters,
     ...assetParams,
-  }, usePreviousParameters ? cloudFormationStack.parameterNames : []);
+  }, options.usePreviousParameters ? cloudFormationStack.parameterNames : []);
 
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);

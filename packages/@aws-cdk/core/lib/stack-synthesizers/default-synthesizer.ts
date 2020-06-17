@@ -237,6 +237,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
+    assertBound(this._kmsKeyArnExportName);
 
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
@@ -267,7 +268,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
-      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName!)),
+      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName)),
     };
   }
 
