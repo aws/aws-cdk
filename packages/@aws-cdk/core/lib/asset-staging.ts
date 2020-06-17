@@ -139,13 +139,13 @@ export class AssetStaging extends Construct {
 
   private bundle(options: BundlingOptions): string {
     // Temp staging directory in the working directory
-    const stagingDir = path.join('.', STAGING_TMP);
-    if (!fs.existsSync(stagingDir)) {
-      fs.mkdirSync(stagingDir);
+    const stagingTmp = path.join('.', STAGING_TMP);
+    if (!fs.existsSync(stagingTmp)) {
+      fs.mkdirSync(stagingTmp);
     }
 
     // Create temp directory for bundling inside the temp staging directory
-    const bundleDir = fs.mkdtempSync(path.join(stagingDir, 'asset-bundle-'));
+    const bundleDir = fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-'));
 
     let user: string;
     if (options.user) {
