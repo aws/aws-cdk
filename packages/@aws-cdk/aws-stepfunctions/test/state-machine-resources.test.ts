@@ -322,10 +322,9 @@ describe('State Machine Resources', () => {
         ],
       },
     });
-
   }),
 
-  test('Created state machine can grant task response actions to an activity', () => {
+  test('Created state machine can grant actions to the executions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -333,7 +332,6 @@ describe('State Machine Resources', () => {
         bind: () => ({ resourceArn: 'resource' }),
       },
     });
-    const activityArn = 'arn:aws:states:*:*:activity:*';
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -342,25 +340,53 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grantTaskResponse(role, activityArn);
+    stateMachine.grantExecution(role, ['states:GetExecutionHistory']);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
-            ],
+            Action: 'states:GetExecutionHistory',
             Effect: 'Allow',
-            Resource: activityArn,
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  ':*',
+                ],
+              ],
+            },
           },
         ],
       },
     });
-
   }),
 
   test('Created state machine can grant actions to a role', () => {
@@ -379,7 +405,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
+    stateMachine.grant(role, ['states:ListExecution']);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -527,37 +553,6 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Imported state machine can task response permissions to an activity', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const activityArn = 'arn:aws:states:*:*:activity:*';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantTaskResponse(role, activityArn);
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
-            ],
-            Effect: 'Allow',
-            Resource: activityArn,
-          },
-        ],
-      },
-    });
-  }),
-
   test('Imported state machine can grant access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -568,7 +563,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:ListExecution'], stateMachine.stateMachineArn);
+    stateMachine.grant(role, ['states:ListExecution']);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

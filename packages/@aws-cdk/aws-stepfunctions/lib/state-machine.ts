@@ -183,19 +183,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
-   * Grant the given identity task response permissions for a resource
-   *
-   * @default stateMachineArn
+   * Grant the given identity task response permissions on a state machine
    */
-  public grantTaskResponse(identity: iam.IGrantable, activityArn?: string): iam.Grant {
-    // Validate activityArn
-    if (activityArn && Arn.parse(activityArn, ':').resource !== 'activity') {
-      throw new Error('activityArn must be a valid activity ARN');
-    }
-
-    // ActivityArn is valid if it exists
-    const arn = activityArn || this.stateMachineArn;
-
+  public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: [
@@ -203,18 +193,29 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:SendTaskFailure',
         'states:SendTaskHeartbeat',
       ],
-      resourceArns: [arn],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions on all executions of the state machine
+   */
+  public grantExecution(identity: iam.IGrantable, actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [`${this.executionArn()}:*`],
     });
   }
 
   /**
    * Grant the given identity custom permissions
    */
-  public grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant {
+  public grant(identity: iam.IGrantable, actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions,
-      resourceArns: [resourceArn],
+      resourceArns: [this.stateMachineArn],
     });
   }
 
@@ -434,16 +435,22 @@ export interface IStateMachine extends IResource {
    * Grant the given identity read permissions for this state machine
    *
    * @param identity The principal
-   * @param resourceArn The ARN of the resource
    */
-  grantTaskResponse(identity: iam.IGrantable, resourceArn?: string): iam.Grant;
+  grantTaskResponse(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions for all executions of a state machine
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  grantExecution(identity: iam.IGrantable, actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity custom permissions
    *
    * @param identity The principal
    * @param actions The list of desired actions
-   * @param resourceArn The ARN of the resource
    */
-  grant(identity: iam.IGrantable, actions: string[], resourceArn: string): iam.Grant;
+  grant(identity: iam.IGrantable, actions: string[]): iam.Grant;
 }
