@@ -49,6 +49,12 @@ export interface ISecret extends IResource {
   grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
+   * Grants updating the secret value to some role.
+   * 
+   * @param grantee       the prinicpal being granted permission.
+   */
+  grantUpdate(grantee: iam.IGrantable): iam.Grant;
+  /**
    * Adds a rotation schedule to the secret.
    */
   addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule;
@@ -167,6 +173,25 @@ abstract class SecretBase extends Resource implements ISecret {
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:PutSecretValue'],
+      resourceArns: [this.secretArn],
+      scope: this,
+    });
+
+    if (this.encryptionKey) {
+      // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
+      this.encryptionKey.grantEncrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
+      );
+    }
+
+    return result;
+  }
+
+  public grantUpdate(grantee: iam.IGrantable): iam.Grant {
+    // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    const result = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['secretsmanager:UpdateSecret'],
       resourceArns: [this.secretArn],
       scope: this,
     });
