@@ -959,7 +959,7 @@ export class UserPool extends UserPoolBase {
   }
 
   private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
-    const accountRecovery = (props.accountRecovery === undefined) ? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL : props.accountRecovery;
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
     switch (accountRecovery) {
       case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
         return {
