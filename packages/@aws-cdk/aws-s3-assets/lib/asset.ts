@@ -110,7 +110,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
-  private readonly kmsEncrypted: boolean;
+  private readonly kmsKey?: kms.IKey;
 
   constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
@@ -148,7 +148,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.s3ObjectUrl = location.s3ObjectUrl;
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
-    this.kmsEncrypted = location.kmsEncrypted ?? false;
+    this.kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(scope, 'Key', location.kmsKeyArn) : undefined;
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
@@ -194,8 +194,8 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
 
-    if (this.kmsEncrypted) {
-      kms.Key.grantDecryptAny(grantee);
+    if (this.kmsKey) {
+      this.kmsKey.grantDecrypt(grantee);
     }
   }
 }

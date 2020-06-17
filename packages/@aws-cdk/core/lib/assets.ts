@@ -210,20 +210,21 @@ export interface FileAssetLocation {
   readonly s3ObjectUrl: string;
 
   /**
-   * Whether the asset location has been encrypted by a KMS key
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any
    *
    * If so, the consuming role should be given "kms:Decrypt" permissions in its
-   * identity policy. The reader role must get permissions to use all keys,
-   * since it's not possible to physical-name a key, and so we can't write the
-   * IAM policy that will only give access to the asset key ARN.
+   * identity policy.
    *
    * It's the responsibility of they key's creator to make sure that all
-   * consumers that need access to it have such access, and no more (based on
-   * the key policy).
+   * consumers that the key's key policy is configured such that the key can be used
+   * by all consumers that need it.
    *
-   * @default false
+   * The default bootstrap stack provisioned by the CDK CLI ensures this, and
+   * can be used as an example for how to configure the key properly.
+   *
+   * @default - Asset bucket is not encrypted
    */
-  readonly kmsEncrypted?: boolean;
+  readonly kmsKeyArn?: string;
 }
 
 /**

@@ -3,10 +3,6 @@ import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/c
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
-const DECRYPT_ACTIONS = ['kms:Decrypt'];
-const ENCRYPT_ACTIONS = ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'];
-const ENCRYPT_DECRYPT_ACTIONS = [...DECRYPT_ACTIONS, ...ENCRYPT_ACTIONS];
-
 /**
  * A KMS Key, either managed by this CDK app, or imported.
  */
@@ -168,21 +164,32 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant decryption permisisons using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...DECRYPT_ACTIONS);
+    return this.grant(grantee,
+      'kms:Decrypt',
+    );
   }
 
   /**
    * Grant encryption permisisons using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...ENCRYPT_ACTIONS);
+    return this.grant(grantee,
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*',
+    );
   }
 
   /**
    * Grant encryption and decryption permisisons using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...ENCRYPT_DECRYPT_ACTIONS);
+    return this.grant(grantee,
+      'kms:Decrypt',
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*',
+    );
   }
 
   /**
@@ -326,39 +333,6 @@ export class Key extends KeyBase {
     }
 
     return new Import(keyResourceName);
-  }
-
-  /**
-   * Grant decryption permisisons using any key to the given principal
-   */
-  public static grantDecryptAny(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      actions: DECRYPT_ACTIONS,
-      grantee,
-      resourceArns: ['*'],
-    });
-  }
-
-  /**
-   * Grant encryption permisisons using any key to the given principal
-   */
-  public static grantEncryptAny(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      actions: ENCRYPT_ACTIONS,
-      grantee,
-      resourceArns: ['*'],
-    });
-  }
-
-  /**
-   * Grant encryption and decryption permisisons using any key to the given principal
-   */
-  public static grantEncryptDecryptAny(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      actions: ENCRYPT_DECRYPT_ACTIONS,
-      grantee,
-      resourceArns: ['*'],
-    });
   }
 
   public readonly keyArn: string;

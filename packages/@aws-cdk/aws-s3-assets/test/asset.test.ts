@@ -143,7 +143,7 @@ test('"grantRead" also gives KMS permissions when using the new bootstrap stack'
       Statement: arrayWith({
         Action: 'kms:Decrypt',
         Effect: 'Allow',
-        Resource: '*',
+        Resource:  { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
       }),
     },
   });
