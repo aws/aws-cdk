@@ -338,19 +338,15 @@ export class FeatureStabilityRule extends ValidationRule {
       return;
     }
 
-    const stabilityFooter = fs.readFileSync(path.join(__dirname, 'banners', 'features-banner.snip.md'), { encoding: 'utf-8' });
-
     const stabilityBanner: string = [
       '<!--BEGIN STABILITY BANNER-->',
       '---',
       '',
       '| Features | Stability |',
       '| --- | --- |',
-      ...this.cfnEntries(pkg),
       ...this.featureEntries(pkg),
       '',
-      stabilityFooter,
-      '',
+      ...this.bannerNotices(pkg),
       '---',
       '<!--END STABILITY BANNER-->',
     ].join('\n');
@@ -372,21 +368,37 @@ export class FeatureStabilityRule extends ValidationRule {
     }
   }
 
-  private cfnEntries(pkg: PackageJson): string[] {
-    if (pkg.json['cdk-build']?.cloudformation) {
-      return [ `| CFN Resources | ![Stable](${this.badges.Stable}) |` ];
-    }
-    return [];
-  }
-
   private featureEntries(pkg: PackageJson): string[] {
-    return pkg.json.features.map((feature: any) => {
-      const badge: string = this.badges[feature.stability];
+    const entries: string[] = [];
+    if (pkg.json['cdk-build']?.cloudformation) {
+      entries.push(`| CFN Resources | ![Stable](${this.badges.Stable}) |`);
+    }
+    pkg.json.features.forEach((feature: { [key: string]: string }) => {
+      const badge = this.badges[feature.stability];
       if (!badge) {
         throw new Error(`Unknown stability - ${feature.stability}`);
       }
-      return `| ${feature.name} | ![${feature.stability}](${badge}) |`;
+      entries.push(`| ${feature.name} | ![${feature.stability}](${badge}) |`);
     });
+    return entries;
+  }
+
+  private bannerNotices(pkg: PackageJson): string[] {
+    const notices: string[] = [];
+    if (pkg.json['cdk-build']?.cloudformation) {
+      notices.push(readBannerFile('features-cfn-stable.md'));
+      notices.push('');
+    }
+
+    const noticeOrder = [ 'Experimental', 'Developer Preview', 'Stable' ];
+    const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
+    const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
+    filteredNotices.map((notice) => {
+      const lowerTrainCase = notice.toLowerCase().replace(/\s/g, '-');
+      notices.push(readBannerFile(`features-${lowerTrainCase}.md`));
+      notices.push('');
+    });
+    return notices;
   }
 }
 
@@ -1368,4 +1380,8 @@ function repoRoot(dir: string) {
 
 function toRegExp(str: string): RegExp {
   return new RegExp(str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+}
+
+function readBannerFile(file: string): string {
+  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' });
 }
