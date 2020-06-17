@@ -6,12 +6,7 @@ import * as lambda from '../lib';
 
 const app = new cdk.App();
 
-const env = {
-  region: process.env.CDK_DEFAULT_REGION,
-  account: process.env.CDK_DEFAULT_ACCOUNT,
-};
-
-const stack = new cdk.Stack(app, 'aws-cdk-lambda-1', { env });
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,
