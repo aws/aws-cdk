@@ -16,6 +16,7 @@ class EksClusterStack extends TestStack {
 
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
+      vpc: new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1}),
       mastersRole,
       defaultCapacity: 2,
       version: '1.16',
