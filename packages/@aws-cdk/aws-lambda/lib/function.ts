@@ -7,6 +7,7 @@ import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
+import { FileSystemOptions } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
@@ -274,6 +275,11 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
+
+  /**
+   * The filesystem configuration for the lambda function
+   */
+  readonly filesystemConfigs?: FileSystemOptions;
 }
 
 /**
@@ -471,6 +477,8 @@ export class Function extends FunctionBase {
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
+  private _resource: CfnResource;
+  private vpcSubnetIds: string[];
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -527,6 +535,8 @@ export class Function extends FunctionBase {
     });
 
     resource.node.addDependency(this.role);
+    this._resource = resource;
+    this.vpcSubnetIds = [];
 
     this.functionName = this.getResourceNameAttribute(resource.ref);
     this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -570,6 +580,11 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
+
+    // filesystem
+    if (props.filesystemConfigs) {
+      this.mount(props.filesystemConfigs);
+    }
   }
 
   /**
@@ -645,6 +660,33 @@ export class Function extends FunctionBase {
     });
   }
 
+  public mount(options: FileSystemOptions) {
+    // TBD - As Lambda with EFS Filesystem doesn't support cross-AZ and required to be
+    // in the same subnet. Make sure all selected vpc subnets have available
+    // efs mount targets. We'll implement this when EFS filesystem exposes its subnets
+    // for (const s in this.vpcSubnetIds) {
+    //   if (!options.fs.mountTargetSubnets.subnetIds.includes(s)) {
+    //     throw new Error(`lambda function vpc subnet ${s} not in efs mount target subnets`);
+    //   }
+    // }
+
+    // TBD - the access point can be reused if provided
+    // We'll implement this when the L2 of the AWS::EFS::AccessPoint is ready
+
+    Array.isArray(this.vpcSubnetIds);
+
+    this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
+
+    // wait until the efs filesystem and mount targets are ready
+    this.node.addDependency(options.filesystem.resource);
+
+    this._resource.addPropertyOverride('FileSystemConfigs', [
+      {
+        Arn: options.filesystem.accessPointArn,
+        LocalMountPath: options.localMountPath ?? '/mnt/lambdafs'
+      },
+    ]);
+  }
   /**
    * The LogGroup where the Lambda function's logs are made available.
    *
@@ -761,6 +803,7 @@ export class Function extends FunctionBase {
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
 
+    this.vpcSubnetIds = subnetIds;
     return {
       subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
