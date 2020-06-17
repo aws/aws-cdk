@@ -9,21 +9,22 @@
     "Conditions": {
         "AlwaysTrueCond": {
           "Fn::Not": [{
-            "Fn::Equals": [
-              {
-                "Ref": "AWS::Region"
-              },
-              "completely-made-up-region"
-            ]
-          }]
+            "Fn::Equals": [{"Ref": "AWS::Region"}, "completely-made-up-region"]}]
         },
         "AlwaysFalseCond": {
-          "Fn::Equals": [
-            {
-              "Ref": "AWS::Region"
-            },
-            "completely-made-up-region"
-          ]
+          "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region"]
+        },
+        "AndCond": {
+          "Fn::And": [
+            {"Condition": "AlwaysTrueCond"},
+            {"Condition": "AlwaysFalseCond"}
+          ] 
+        },
+        "OrCond": {
+          "Fn::Or": [
+            {"Condition": "AlwaysTrueCond"},
+            {"Condition": "AlwaysFalseCond"}
+          ] 
         }
       },
     "Resources": {
@@ -33,8 +34,8 @@
           "CidrBlock" : {
               "Fn::If": [
                   "AlwaysTrueCond",
-                  { "Fn::Cidr": [ "192.168.1.1/24", "2"] },
-                  { "Fn::Cidr": [ "10.0.0.0/24", "6", "5"] }
+                  { "Fn::Cidr": [ "192.168.1.1/24", 2] },
+                  { "Fn::Cidr": [ "10.0.0.0/24", 6, 5] }
               ]
           }
         }
@@ -55,7 +56,7 @@
           }
         }
       },
-      "subnet1" : {
+      "Subnet1" : {
         "Type" : "AWS::EC2::Subnet",
         "Properties" : {
           "VpcId" : { 
@@ -80,7 +81,24 @@
           }
         }
       },
-      "transformBucket": {
+      "Subnet2" : {
+        "Type" : "AWS::EC2::Subnet",
+        "Properties" : {
+          "VpcId" : { 
+            "Fn::Select" : ["3", ["foo", "aValidVPCID", "foo2"]]
+          },
+          "CidrBlock" : "10.0.0.0/24",
+          "AvailabilityZone" : {
+            "Fn::Select" : [ 
+              "0", 
+              { 
+                "Fn::GetAZs" : "eu-west-2" 
+              } 
+            ]
+          }
+        }
+      },
+      "TransformBucket": {
         "Type": "AWS::S3::Bucket",
         "Properties": {
           "BucketName": {

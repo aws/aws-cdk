@@ -209,7 +209,7 @@ function parseIfCfnIntrinsic(object: any): any {
     }
     case 'Fn::Transform': {
       const value = parseCfnValueToCdkValue(object[key]);
-      return Fn.transform(value);
+      return Fn.transform(value.Name, value.Parameters);
     }
     case 'Fn::Base64': {
       const value = parseCfnValueToCdkValue(object[key]);
