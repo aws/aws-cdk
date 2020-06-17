@@ -53,7 +53,6 @@ export async function deployBootstrapStack(
     roleArn: options.roleArn,
     tags: options.parameters?.tags,
     execute: options?.parameters?.execute,
-    usePreviousParameters: true,
     parameters,
   });
 }
