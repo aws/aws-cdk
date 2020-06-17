@@ -1,5 +1,6 @@
 import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -146,7 +147,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
 
-    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
+    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
+
+    this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
+      bucketName: this.s3BucketName,
+      encryptionKey: kmsKey,
+    });
 
     for (const reader of (props.readers ?? [])) {
       this.grantRead(reader);

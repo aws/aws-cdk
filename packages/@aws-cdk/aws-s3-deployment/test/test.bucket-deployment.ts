@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { arrayWith, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -562,6 +562,33 @@ export = {
         },
       ],
     }));
+    test.done();
+  },
+
+  'Deployment role gets KMS permissions when using assets from new style synthesizer'(test: Test) {
+    const stack = new cdk.Stack(undefined, undefined, {
+      synthesizer: new cdk.DefaultStackSynthesizer(),
+    });
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: arrayWith({
+          Action: ['kms:Decrypt', 'kms:DescribeKey'],
+          Effect: 'Allow',
+          Resource:  { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
+        }),
+      },
+    }));
+
     test.done();
   },
 
