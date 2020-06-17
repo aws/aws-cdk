@@ -204,10 +204,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const legacyAssets = new AssetManifestBuilder();
   const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
 
+  const usePreviousParameters = options.usePreviousParameters ?? true;
   const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
     ...options.parameters,
     ...assetParams,
-  }, options.usePreviousParameters ? cloudFormationStack.parameterNames : []);
+  }, usePreviousParameters ? cloudFormationStack.parameterNames : []);
 
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
