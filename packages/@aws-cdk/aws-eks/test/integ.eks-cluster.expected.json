@@ -823,6 +823,16 @@
               "Action": "iam:CreateServiceLinkedRole",
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

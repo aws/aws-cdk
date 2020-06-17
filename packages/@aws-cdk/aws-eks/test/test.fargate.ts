@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Tag } from '@aws-cdk/core';
@@ -334,6 +334,86 @@ export = {
       selectors: [ { namespace: 'default' } ],
     }), /unsupported/);
 
+    test.done();
+  },
+
+  'allow cluster creation role to iam:PassRole on fargate pod execution role'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new eks.FargateCluster(stack, 'FargateCluster');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'FargateClusterRole8E36B33A',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'ec2:DescribeSubnets',
+              'ec2:DescribeRouteTables',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'eks:CreateCluster',
+              'eks:DescribeCluster',
+              'eks:DescribeUpdate',
+              'eks:DeleteCluster',
+              'eks:UpdateClusterVersion',
+              'eks:UpdateClusterConfig',
+              'eks:CreateFargateProfile',
+              'eks:TagResource',
+              'eks:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              '*',
+            ],
+          },
+          {
+            Action: [
+              'eks:DescribeFargateProfile',
+              'eks:DeleteFargateProfile',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'iam:GetRole',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'iam:CreateServiceLinkedRole',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    }));
     test.done();
   },
 };
