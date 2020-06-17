@@ -192,7 +192,10 @@ new DatabaseCluster(this, 'dbcluster', {
 
 ### Creating a Database Proxy
 
-For RDS Proxy, See [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+Amazon RDS Proxy sits between your application and your relational database to efficiently manage
+connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+
+The following code configures an RDS Proxy for a `DatabaseInstance`.
 
 ```ts
 import * as cdk from '@aws-cdk/core';
@@ -205,20 +208,13 @@ const securityGroup: ec2.ISecurityGroup = ...;
 const secret: secrets.ISecret = ...;
 const dbInstance: rds.IDatabaseInstance = ...;
 
-const proxy = new rds.DatabaseProxy(this, 'proxy', {
+const proxy = dbInstance.addProxy('proxy', {
     connectionPoolConfiguration: {
         connectionBorrowTimeout: cdk.Duration.seconds(30),
         maxConnectionsPercent: 50,
     },
-    dbInstance,
     engineFamily: rds.DatabaseProxyEngine.POSTGRESQL,
     secret,
     vpc,
 });
-
-...
-
-proxy.dbProxyName;
-proxy.dbProxyArn;
-proxy.endpoint;
 ```

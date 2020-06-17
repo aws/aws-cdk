@@ -15,13 +15,13 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
 });
 
 new rds.DatabaseProxy(stack, 'dbProxy', {
-  connectionPoolConfiguration: {
-    connectionBorrowTimeout: cdk.Duration.seconds(30),
+  connectionPool: {
+    borrowTimeout: cdk.Duration.seconds(30),
     maxConnectionsPercent: 50,
   },
-  dbInstance,
-  engineFamily: rds.DatabaseProxyEngine.POSTGRESQL,
+  engineFamily: rds.ProxyEngineFamily.POSTGRESQL,
   secret: dbInstance.secret!,
+  proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
 });
 
