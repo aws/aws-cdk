@@ -8,6 +8,8 @@ import { BundlingOptions } from './bundling';
 import { Construct, ISynthesisSession } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 
+const STAGING_TMP = '.cdk.staging';
+
 /**
  * Initialization properties for `AssetStaging`.
  */
@@ -118,22 +120,9 @@ export class AssetStaging extends Construct {
 
     // Asset has been bundled
     if (this.bundleDir) {
-      // Try to rename bundling directory to staging directory
-      try {
-        fs.renameSync(this.bundleDir, targetPath);
-        return;
-      } catch (err) {
-        // /tmp and cdk.out could be mounted across different mount points
-        // in this case we will fallback to copying. This can happen in Windows
-        // Subsystem for Linux (WSL).
-        if (err.code === 'EXDEV') {
-          fs.mkdirSync(targetPath);
-          FileSystem.copyDirectory(this.bundleDir, targetPath, this.fingerprintOptions);
-          return;
-        }
-
-        throw err;
-      }
+      // Rename bundling directory to staging directory
+      fs.renameSync(this.bundleDir, targetPath);
+      return;
     }
 
     // Copy file/directory to staging directory
@@ -149,8 +138,14 @@ export class AssetStaging extends Construct {
   }
 
   private bundle(options: BundlingOptions): string {
-    // Create temporary directory for bundling
-    const bundleDir = FileSystem.mkdtemp('cdk-asset-bundle-');
+    // Temp staging directory in the working directory
+    const stagingDir = path.join('.', STAGING_TMP);
+    if (!fs.existsSync(stagingDir)) {
+      fs.mkdirSync(stagingDir);
+    }
+
+    // Create temp directory for bundling inside the temp staging directory
+    const bundleDir = fs.mkdtempSync(path.join(stagingDir, 'asset-bundle-'));
 
     let user: string;
     if (options.user) {
