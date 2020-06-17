@@ -1,6 +1,9 @@
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
-import { CfnDeletionPolicy } from './cfn-resource-policy';
+import {
+  CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
+  CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
+} from './cfn-resource-policy';
 import { CfnTag } from './cfn-tag';
 import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
@@ -105,6 +108,91 @@ export class FromCloudFormation {
       ret[key] = mapper(val);
     }
     return ret;
+  }
+
+  public static parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
+    if (typeof policy !== 'object') { return undefined; }
+
+    // change simple JS values to their CDK equivalents
+    policy = FromCloudFormation.parseValue(policy);
+
+    return undefinedIfAllValuesAreEmpty({
+      autoScalingCreationPolicy: parseAutoScalingCreationPolicy(policy.AutoScalingCreationPolicy),
+      resourceSignal: parseResourceSignal(policy.ResourceSignal),
+    });
+
+    function parseAutoScalingCreationPolicy(p: any): CfnResourceAutoScalingCreationPolicy | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return undefinedIfAllValuesAreEmpty({
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
+      });
+    }
+
+    function parseResourceSignal(p: any): CfnResourceSignal | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return undefinedIfAllValuesAreEmpty({
+        count: FromCloudFormation.getNumber(p.Count),
+        timeout: FromCloudFormation.getString(p.Timeout),
+      });
+    }
+  }
+
+  public static parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
+    if (typeof policy !== 'object') { return undefined; }
+
+    // change simple JS values to their CDK equivalents
+    policy = FromCloudFormation.parseValue(policy);
+
+    return undefinedIfAllValuesAreEmpty({
+      autoScalingReplacingUpdate: parseAutoScalingReplacingUpdate(policy.AutoScalingReplacingUpdate),
+      autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
+      autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
+      codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
+      enableVersionUpgrade: policy.EnableVersionUpgrade,
+      useOnlineResharding: policy.UseOnlineResharding,
+    });
+
+    function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return undefinedIfAllValuesAreEmpty({
+        willReplace: p.WillReplace,
+      });
+    }
+
+    function parseAutoScalingRollingUpdate(p: any): CfnAutoScalingRollingUpdate | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return undefinedIfAllValuesAreEmpty({
+        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize),
+        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService),
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
+        pauseTime: FromCloudFormation.getString(p.PauseTime),
+        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses),
+        waitOnResourceSignals: p.WaitOnResourceSignals,
+      });
+    }
+
+    function parseCodeDeployLambdaAliasUpdate(p: any): CfnCodeDeployLambdaAliasUpdate | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return {
+        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook),
+        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook),
+        applicationName: FromCloudFormation.getString(p.ApplicationName),
+        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName),
+      };
+    }
+
+    function parseAutoScalingScheduledAction(p: any): CfnAutoScalingScheduledAction | undefined {
+      if (typeof p !== 'object') { return undefined; }
+
+      return undefinedIfAllValuesAreEmpty({
+        ignoreUnmodifiedGroupSizeProperties: p.IgnoreUnmodifiedGroupSizeProperties,
+      });
+    }
   }
 
   public static parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
@@ -219,4 +307,8 @@ function specialCaseRefs(value: any): any {
     case 'AWS::NoValue': return Aws.NO_VALUE;
     default: return undefined;
   }
+}
+
+function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
+  return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }

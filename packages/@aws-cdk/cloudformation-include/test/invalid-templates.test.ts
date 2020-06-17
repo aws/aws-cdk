@@ -52,6 +52,12 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'non-existent-condition.json');
     }).toThrow(/Resource 'Bucket' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
+
+  test('throws a validation exception when encountering an unrecognized resource attribute', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-resource-attribute.json');
+    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {

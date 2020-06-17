@@ -124,8 +124,8 @@ All items unchecked below are currently not supported.
 - [x] Properties
 - [x] Condition
 - [x] DependsOn
-- [ ] CreationPolicy
-- [ ] UpdatePolicy
+- [x] CreationPolicy
+- [x] UpdatePolicy
 - [x] UpdateReplacePolicy
 - [x] DeletionPolicy
 - [x] Metadata

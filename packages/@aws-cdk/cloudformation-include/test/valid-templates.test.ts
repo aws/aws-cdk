@@ -264,6 +264,28 @@ describe('CDK Include', () => {
     });
   });
 
+  test('correctly handles the CreationPolicy resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('resource-attribute-creation-policy.json'),
+    );
+  });
+
+  test('correctly handles the UpdatePolicy resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-update-policy.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('resource-attribute-update-policy.json'),
+    );
+  });
+
   test("throws an exception when encountering a Resource type it doesn't recognize", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
@@ -274,18 +296,6 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
     }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
-  });
-
-  test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
-    }).toThrow(/The CreationPolicy resource attribute is not supported by cloudformation-include yet/);
-  });
-
-  test('throws an exception when encountering the UpdatePolicy attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-update-policy.json');
-    }).toThrow(/The UpdatePolicy resource attribute is not supported by cloudformation-include yet/);
   });
 });
 

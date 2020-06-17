@@ -249,6 +249,8 @@ export default class CodeGenerator {
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
     this.code.line('const cfnOptions = ret.cfnOptions;');
+    this.code.line(`cfnOptions.creationPolicy = ${CFN_PARSE}.FromCloudFormation.parseCreationPolicy(resourceAttributes.CreationPolicy);`);
+    this.code.line(`cfnOptions.updatePolicy = ${CFN_PARSE}.FromCloudFormation.parseUpdatePolicy(resourceAttributes.UpdatePolicy);`);
     this.code.line(`cfnOptions.deletionPolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.DeletionPolicy);`);
     this.code.line(`cfnOptions.updateReplacePolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);`);
     this.code.line(`cfnOptions.metadata = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Metadata);`);

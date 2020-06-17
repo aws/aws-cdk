@@ -129,7 +129,10 @@ export class CfnInclude extends core.CfnElement {
       throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
     }
     // fail early for resource attributes we don't support yet
-    const knownAttributes = ['Type', 'Properties', 'Condition', 'DependsOn', 'DeletionPolicy', 'UpdateReplacePolicy', 'Metadata'];
+    const knownAttributes = [
+      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
+      'CreationPolicy', 'UpdatePolicy', 'DeletionPolicy', 'UpdateReplacePolicy',
+    ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
         throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
