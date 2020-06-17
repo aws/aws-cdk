@@ -185,7 +185,7 @@ function uppercaseProperties(props: { [key: string]: any }) {
 
 /**
  * Encodes values (specially boolean) as special strings
- * 
+ *
  * Because CloudFormation converts every input as string for custom resources,
  * we will use these encoded values to cast them into proper types.
  */
