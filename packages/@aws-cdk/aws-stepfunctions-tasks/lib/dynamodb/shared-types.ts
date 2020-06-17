@@ -1,3 +1,4 @@
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { transformAttributeValueMap } from './private/utils';
 
 /**
@@ -110,13 +111,6 @@ export class DynamoProjectionExpression {
 }
 
 /**
- * Map of string to AttributeValue
- */
-export interface DynamoAttributeValueMap {
-  [key: string]: DynamoAttributeValue;
-}
-
-/**
  * Represents the data for an attribute.
  * Each attribute value is described as a name-value pair.
  * The name is the data type, and the value is the data itself.
@@ -128,8 +122,8 @@ export class DynamoAttributeValue {
    * Sets an attribute of type String. For example:  "S": "Hello"
    * Strings may be literal values or as JsonPath
    */
-  public static wrapString(s: string) {
-    return new DynamoAttributeValue({ S: s });
+  public static fromString(value: string) {
+    return new DynamoAttributeValue({ S: value });
   }
 
   /**
@@ -138,8 +132,8 @@ export class DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public static wrapNumber(n: number) {
-    return new DynamoAttributeValue({ N: n.toString() });
+  public static fromNumber(value: number) {
+    return new DynamoAttributeValue({ N: value.toString() });
   }
 
   /**
@@ -150,22 +144,24 @@ export class DynamoAttributeValue {
    *
    * Numbers may be expressed as literal strings or as JsonPath
    */
-  public static wrapNumberFromString(n: string) {
-    return new DynamoAttributeValue({ N: n.toString() });
+  public static numberFromString(value: string) {
+    return new DynamoAttributeValue({ N: value.toString() });
   }
 
   /**
    * Sets an attribute of type Binary. For example:  "B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"
+   *
+   * @param value base-64 encoded string
    */
-  public static wrapBinary(b: string) {
-    return new DynamoAttributeValue({ B: b });
+  public static fromBinary(value: string) {
+    return new DynamoAttributeValue({ B: value });
   }
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
    */
-  public static wrapStringSet(ss: string[]) {
-    return new DynamoAttributeValue({ SS: ss });
+  public static fromStringSet(value: string[]) {
+    return new DynamoAttributeValue({ SS: value });
   }
 
   /**
@@ -174,8 +170,8 @@ export class DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
-  public static wrapNumberSet(ns: number[]) {
-    return new DynamoAttributeValue({ NS: ns.toString() });
+  public static fromNumberSet(value: number[]) {
+    return new DynamoAttributeValue({ NS: value.toString() });
   }
 
   /**
@@ -186,45 +182,61 @@ export class DynamoAttributeValue {
    *
    * Numbers may be expressed as literal strings or as JsonPath
    */
-  public static wrapNumberSetFromString(ns: string[]) {
-    return new DynamoAttributeValue({ NS: ns });
+  public static numberSetFromStrings(value: string[]) {
+    return new DynamoAttributeValue({ NS: value });
   }
 
   /**
    * Sets an attribute of type Binary Set. For example:  "BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]
    */
-  public static wrapBinarySet(bs: string[]) {
-    return new DynamoAttributeValue({ BS: bs });
+  public static fromBinarySet(value: string[]) {
+    return new DynamoAttributeValue({ BS: value });
   }
 
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
    */
-  public static wrapMap(m: { [key: string]: DynamoAttributeValue }) {
-    return new DynamoAttributeValue({ M: transformAttributeValueMap(m) });
+  public static fromMap(value: { [key: string]: DynamoAttributeValue }) {
+    return new DynamoAttributeValue({ M: transformAttributeValueMap(value) });
+  }
+
+  /**
+   * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
+   *
+   * @param value Json path that specifies state input to be used
+   */
+  public static mapFromJsonPath(value: string) {
+    if (!sfn.Data.isJsonPathString(value)) {
+      throw new Error(`Invalid Json path. Value does not begin with '$'. Received: ${value}`);
+    }
+    return new DynamoAttributeValue({ M: value });
   }
 
   /**
    * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N", "3.14159"}]
    */
-  public static wrapList(l: DynamoAttributeValue[]) {
-    return new DynamoAttributeValue({ L: l.map((val) => val.toObject()) });
+  public static fromList(value: DynamoAttributeValue[]) {
+    return new DynamoAttributeValue({ L: value.map((val) => val.toObject()) });
   }
 
   /**
    * Sets an attribute of type Null. For example:  "NULL": true
    */
-  public static wrapNull(isNull: boolean) {
-    return new DynamoAttributeValue({ NULL: isNull });
+  public static fromNull(value: boolean) {
+    return new DynamoAttributeValue({ NULL: value });
   }
 
   /**
    * Sets an attribute of type Boolean. For example:  "BOOL": true
    */
-  public static wrapBoolean(isBoolean: boolean) {
-    return new DynamoAttributeValue({ BOOL: isBoolean });
+  public static fromBoolean(value: boolean) {
+    return new DynamoAttributeValue({ BOOL: value });
   }
 
+  /**
+   * Represents the data for the attribute. Data can be
+   * i.e. "S": "Hello"
+   */
   public readonly attributeValue: any;
 
   private constructor(value: any) {

@@ -33,36 +33,36 @@ class CallDynamoDBStack extends cdk.Stack {
 
     const putItemTask = new tasks.DynamoPutItem(this, 'PutItem', {
       item: {
-        MessageId: tasks.DynamoAttributeValue.wrapString(MESSAGE_ID),
-        Text: tasks.DynamoAttributeValue.wrapString(sfn.Data.stringAt('$.bar')),
-        TotalCount: tasks.DynamoAttributeValue.wrapNumber(firstNumber),
+        MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID),
+        Text: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.bar')),
+        TotalCount: tasks.DynamoAttributeValue.fromNumber(firstNumber),
       },
       table,
     });
 
     const getItemTaskAfterPut = new tasks.DynamoGetItem(this, 'GetItemAfterPut', {
-      key: { MessageId: tasks.DynamoAttributeValue.wrapString(MESSAGE_ID) },
+      key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
     });
 
     const updateItemTask = new tasks.DynamoUpdateItem(this, 'UpdateItem', {
-      key: { MessageId: tasks.DynamoAttributeValue.wrapString(MESSAGE_ID) },
+      key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
       expressionAttributeValues: {
-        ':val': tasks.DynamoAttributeValue.wrapNumberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
-        ':rand': tasks.DynamoAttributeValue.wrapNumber(secondNumber),
+        ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+        ':rand': tasks.DynamoAttributeValue.fromNumber(secondNumber),
       },
       updateExpression: 'SET TotalCount = :val + :rand',
     });
 
     const getItemTaskAfterUpdate = new tasks.DynamoGetItem(this, 'GetItemAfterUpdate', {
-      key: { MessageId: tasks.DynamoAttributeValue.wrapString(MESSAGE_ID) },
+      key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
       outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
     });
 
     const deleteItemTask = new tasks.DynamoDeleteItem(this, 'DeleteItem', {
-      key: { MessageId: tasks.DynamoAttributeValue.wrapString(MESSAGE_ID) },
+      key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
       resultPath: 'DISCARD',
     });

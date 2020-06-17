@@ -21,12 +21,12 @@ beforeEach(() => {
 test('PutItem task', () => {
   // WHEN
   const task = new tasks.DynamoPutItem(stack, 'PutItem', {
-    item: { SOME_KEY: tasks.DynamoAttributeValue.wrapString('1234') },
+    item: { SOME_KEY: tasks.DynamoAttributeValue.fromString('1234') },
     table,
     conditionExpression: 'ForumName <> :f and Subject <> :s',
     expressionAttributeNames: { OTHER_KEY: '#OK' },
     expressionAttributeValues: {
-      ':val': tasks.DynamoAttributeValue.wrapNumberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+      ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
     },
     returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
     returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
