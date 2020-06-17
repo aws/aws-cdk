@@ -258,7 +258,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
-    const httpUrl = cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`);
+    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
     const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
 
     // Return CFN expression
@@ -297,10 +298,12 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
+    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+
     // Return CFN expression
     return {
       repositoryName: cfnify(this.repositoryName),
-      imageUri: cfnify(`${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${this.repositoryName}:${imageTag}`),
+      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
     };
   }
 
@@ -430,11 +433,31 @@ function replaceAll(s: string, search: string, replace: string) {
 }
 
 /**
- * If the string still contains placeholders, wrap it in a Fn::Sub so they will be substituted at CFN deploymen time
+ * If the string still contains placeholders, wrap it in a Fn::Sub so they will be substituted at CFN deployment time
  *
  * (This happens to work because the placeholders we picked map directly onto CFN
  * placeholders. If they didn't we'd have to do a transformation here).
  */
 function cfnify(s: string): string {
   return s.indexOf('${') > -1 ? Fn.sub(s) : s;
+}
+
+/**
+ * Return the stack locations if they're concrete, or the original CFN intrisics otherwise
+ *
+ * We need to return these instead of the tokenized versions of the strings,
+ * since we must accept those same ${AWS::AccountId}/${AWS::Region} placeholders
+ * in bucket names and role names (in order to allow environment-agnostic stacks).
+ *
+ * We'll wrap a single {Fn::Sub} around the final string in order to replace everything,
+ * but we can't have the token system render part of the string to {Fn::Join} because
+ * the CFN specification doesn't allow the {Fn::Sub} template string to be an arbitrary
+ * expression--it must be a string literal.
+ */
+function stackLocationOrInstrinsics(stack: Stack) {
+  return {
+    account: resolvedOr(stack.account, '${AWS::AccountId}'),
+    region: resolvedOr(stack.region, '${AWS::Region}'),
+    urlSuffix: resolvedOr(stack.urlSuffix, '${AWS::URLSuffix}'),
+  };
 }

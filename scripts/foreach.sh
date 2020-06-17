@@ -44,6 +44,23 @@ if [[ "${1:-}" == "--reset" ]]; then
     exit 0
 fi
 
+if [[ "${1:-}" == "--skip" ]]; then
+    if [ ! -f ${statefile} ]; then
+        error "skip failed. no active sessions found."
+        exit 1
+    fi
+    next=$(head -1 ${statefile})
+    if [ -z "${next}" ]; then
+      error "skip failed. queue is empty. to reset:"
+      error "   $0 --reset"
+      exit 1
+    fi
+    tail -n +2 "${statefile}" > "${statefile}.tmp"
+    cp "${statefile}.tmp" "${statefile}"
+    success "directory '$next' skipped. re-run the original foreach command to resume."
+    exit 0
+fi
+
 up=""
 up_desc=""
 if [[ "${1:-}" == "--up" ]]; then
