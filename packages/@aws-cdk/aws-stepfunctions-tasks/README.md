@@ -249,8 +249,8 @@ The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API
 
 ```ts
 new tasks.DynamoGetItem(this, 'Get Item', {
-    key: { messageId: { s: 'message-007' } },
-    table,
+  key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
+  table,
 });
 ```
 
@@ -261,9 +261,9 @@ The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API
 ```ts
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
-    MessageId: { s: 'message-007' },
-    Text: { s: sfn.Data.stringAt('$.bar') },
-    TotalCount: { n: '10' },
+    MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
+    Text: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.bar')),
+    TotalCount: tasks.DynamoAttributeValue.fromNumber(10),
   },
   table,
 });
@@ -275,7 +275,7 @@ The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/
 
 ```ts
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
-  key: { MessageId: { s: 'message-007' } },
+  key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table,
   resultPath: 'DISCARD',
 });
@@ -288,11 +288,11 @@ to the table if it does not already exist.
 
 ```ts
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
-  key: { MessageId: { s: 'message-007' } },
+  key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table,
   expressionAttributeValues: {
-    ':val': { n: sfn.Data.stringAt('$.Item.TotalCount.N') },
-    ':rand': { n: '20' },
+    ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+    ':rand': tasks.DynamoAttributeValue.fromNumber(20),
   },
   updateExpression: 'SET TotalCount = :val + :rand',
 });
