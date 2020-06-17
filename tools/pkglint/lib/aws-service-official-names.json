@@ -12,7 +12,7 @@
   "AWS::Backup": "AWS Backup",
   "AWS::Batch": "AWS Batch",
   "AWS::Budgets": "AWS Budgets",
-  "AWS::CertificateManager": "Amazon Certificate Manager",
+  "AWS::CertificateManager": "AWS Certificate Manager",
   "AWS::Cloud9": "AWS Cloud9",
   "AWS::CloudFormation": "AWS CloudFormation",
   "AWS::CloudFront": "Amazon CloudFront",

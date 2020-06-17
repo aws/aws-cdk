@@ -21,7 +21,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * If true, each task will receive a public IP address.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
