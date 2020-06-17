@@ -173,15 +173,13 @@ export class Fn {
   }
 
   /**
-   * The intrinsic function Fn::Transform specifies a macro to perform custom processing on part of a stack template.
-   * Macros enable you to perform custom processing on templates, from simple actions like find-and-replace operations
-   * to extensive transformations of entire templates.
+   * Creates a token representing the ``Fn::Transform`` expression
    * @param macroName The name of the macro to perform the processing
    * @param parameters The parameters to be passed to the macro
-   * @returns a token represented as a string
+   * @returns a token representing the transform expression
    */
-  public static transform(macroName: string, parameters: '{[name: string]: any}'): string {
-    return new FnTransform(macroName, parameters).toString();
+  public static transform(macroName: string, parameters: { [name: string]: any }): IResolvable {
+    return new FnTransform(macroName, parameters);
   }
 
   /**
@@ -377,7 +375,7 @@ class FnTransform extends FnBase {
    * @param macroName The name of the macro to be invoked
    * @param parameters the parameters to pass to it
    */
-  constructor(macroName: string, parameters: '{[name: string]: any}') {
+  constructor(macroName: string, parameters: { [name: string]: any }) {
     super('Fn::Transform', {Name: macroName, Parameters: parameters});
   }
 }
