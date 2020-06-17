@@ -976,53 +976,122 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
   });
 }
 
-test('AccountRecoverySetting should be configured correctly - when specified', () => {
-  // GIVEN
-  const stack = new Stack();
+describe('AccountRecoverySetting should be configured correctly', () => {
+  test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
+    // GIVEN
+    const stack = new Stack();
 
-  // WHEN
-  new UserPool(stack, 'pool', {
-    accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA,
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_email', Priority: 1 },
+          { Name: 'verified_phone_number', Priority: 2 },
+        ],
+      },
+    });
   });
 
-  // THEN
-  expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-    AccountRecoverySetting: {
-      RecoveryMechanisms: [{
-        Name: 'verified_email',
-        Priority: 1,
-      }, {
-        Name: 'verified_phone_number',
-        Priority: 2,
-      }],
-    },
-  });
-});
+  test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
+    // GIVEN
+    const stack = new Stack();
 
-test('AccountRecoverySettings should be configured correctly - legacy default', () => {
-  // GIVEN
-  const stack = new Stack();
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
 
-  // WHEN
-  new UserPool(stack, 'pool', {
-    accountRecovery: AccountRecovery.PHONE_AND_EMAIL,
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+          { Name: 'verified_email', Priority: 2 },
+        ],
+      },
+    });
   });
 
-  // THEN
-  expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-    AccountRecoverySetting: ABSENT,
+  test('EMAIL_ONLY', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_email', Priority: 1 },
+        ],
+      },
+    });
   });
-});
 
-test('AccountRecoverySettings should be configured correctly - when absent', () => {
-  // GIVEN
-  const stack = new Stack();
+  test('PHONE_ONLY_WITHOUT_MFA', () => {
+    // GIVEN
+    const stack = new Stack();
 
-  // WHEN
-  new UserPool(stack, 'pool');
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
 
-  // THEN
-  expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-    AccountRecoverySetting: ABSENT,
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+        ],
+      },
+    });
+  });
+
+  test('NONE', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'admin_only', Priority: 1 },
+        ],
+      },
+    });
+  });
+
+  test('PHONE_AND_EMAIL', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: ABSENT,
+    });
+  });
+
+  test('default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+          { Name: 'verified_email', Priority: 2 },
+        ],
+      },
+    });
   });
 });

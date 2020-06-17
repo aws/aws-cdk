@@ -554,7 +554,7 @@ export interface UserPoolProps {
   /**
    * How will a user be able to recover their account?
    *
-   * @default AccountRecovery.PHONE_AND_EMAIL
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
 }
@@ -959,7 +959,7 @@ export class UserPool extends UserPoolBase {
   }
 
   private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
-    const accountRecovery = (props.accountRecovery === undefined) ? AccountRecovery.PHONE_AND_EMAIL : props.accountRecovery;
+    const accountRecovery = (props.accountRecovery === undefined) ? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL : props.accountRecovery;
     switch (accountRecovery) {
       case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
         return {
@@ -990,7 +990,7 @@ export class UserPool extends UserPoolBase {
       case AccountRecovery.PHONE_AND_EMAIL:
         return undefined;
       default:
-        throw new Error('Invalid AccountRecovery type');
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
     }
   }
 }
