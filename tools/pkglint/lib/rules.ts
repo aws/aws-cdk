@@ -326,13 +326,18 @@ export class StabilitySetting extends ValidationRule {
 
 export class FeatureStabilityRule extends ValidationRule {
   public readonly name = 'package-info/feature-stability';
+  private readonly badges: { [key: string]: string } = {
+    'Not Implemented': 'https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge',
+    'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
+    'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
+    'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
+  };
 
   public validate(pkg: PackageJson): void {
     if (pkg.json.private || !pkg.json.features) {
       return;
     }
 
-    const featuresEntries = pkg.json.features.map((feature: any) => `| ${feature.name} | ${feature.stability} |`);
     const stabilityFooter = fs.readFileSync(path.join(__dirname, 'banners', 'features-banner.snip.md'), { encoding: 'utf-8' });
 
     const stabilityBanner: string = [
@@ -342,7 +347,7 @@ export class FeatureStabilityRule extends ValidationRule {
       '| Features | Stability |',
       '| --- | --- |',
       ...this.cfnEntries(pkg),
-      ...featuresEntries,
+      ...this.featureEntries(pkg),
       '',
       stabilityFooter,
       '',
@@ -369,9 +374,19 @@ export class FeatureStabilityRule extends ValidationRule {
 
   private cfnEntries(pkg: PackageJson): string[] {
     if (pkg.json['cdk-build']?.cloudformation) {
-      return [ '| CFN Resources | Stable |' ];
+      return [ `| CFN Resources | ![Stable](${this.badges.Stable}) |` ];
     }
     return [];
+  }
+
+  private featureEntries(pkg: PackageJson): string[] {
+    return pkg.json.features.map((feature: any) => {
+      const badge: string = this.badges[feature.stability];
+      if (!badge) {
+        throw new Error(`Unknown stability - ${feature.stability}`);
+      }
+      return `| ${feature.name} | ![${feature.stability}](${badge}) |`;
+    });
   }
 }
 
