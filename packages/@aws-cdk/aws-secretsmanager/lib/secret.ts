@@ -50,7 +50,7 @@ export interface ISecret extends IResource {
 
   /**
    * Grants updating the secret value to some role.
-   * 
+   *
    * @param grantee       the prinicpal being granted permission.
    */
   grantUpdate(grantee: iam.IGrantable): iam.Grant;
