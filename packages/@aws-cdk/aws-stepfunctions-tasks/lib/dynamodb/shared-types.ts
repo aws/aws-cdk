@@ -1,4 +1,3 @@
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { transformAttributeValueMap } from './private/utils';
 
 /**
@@ -171,7 +170,7 @@ export class DynamoAttributeValue {
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    */
   public static fromNumberSet(value: number[]) {
-    return new DynamoAttributeValue({ NS: value.toString() });
+    return new DynamoAttributeValue({ NS: value.map(String) });
   }
 
   /**
@@ -206,10 +205,10 @@ export class DynamoAttributeValue {
    * @param value Json path that specifies state input to be used
    */
   public static mapFromJsonPath(value: string) {
-    if (!sfn.Data.isJsonPathString(value)) {
-      throw new Error(`Invalid Json path. Value does not begin with '$'. Received: ${value}`);
+    if (!value.startsWith('$')) {
+      throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
     }
-    return new DynamoAttributeValue({ M: value });
+    return new DynamoAttributeValue({ 'M.$': value });
   }
 
   /**
