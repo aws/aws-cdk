@@ -1,9 +1,8 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Builder } from './builder';
+import { Bundling } from './bundling';
 import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
@@ -84,6 +83,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the closest path containing a .git folder
    */
   readonly projectRoot?: string;
+
+  /**
+   * The environment variables to pass to the container running Parcel.
+   *
+   * @default - no environment variables are passed to the container
+   */
+  readonly containerEnvironment?: { [key: string]: string; };
 }
 
 /**
@@ -96,36 +102,31 @@ export class NodejsFunction extends lambda.Function {
     }
 
     const entry = findEntry(id, props.entry);
-    const handler = props.handler || 'handler';
-    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
-    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
+    const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime || defaultRunTime;
+    const runtime = props.runtime ?? defaultRunTime;
     const projectRoot = props.projectRoot ?? findGitPath();
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
-
-    // Build with Parcel
-    const builder = new Builder({
-      entry,
-      outDir: handlerDir,
-      global: handler,
-      minify: props.minify,
-      sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
-      projectRoot: path.resolve(projectRoot),
-    });
-    builder.build();
+    const nodeDockerTag = props.nodeDockerTag ?? `${process.versions.node}-alpine`;
 
     super(scope, id, {
       ...props,
       runtime,
-      code: lambda.Code.fromAsset(handlerDir),
+      code: Bundling.parcel({
+        entry,
+        global: handler,
+        minify: props.minify,
+        sourceMaps: props.sourceMaps,
+        cacheDir: props.cacheDir,
+        nodeVersion: extractVersion(runtime),
+        nodeDockerTag,
+        projectRoot: path.resolve(projectRoot),
+        environment: props.containerEnvironment,
+      }),
       handler: `index.${handler}`,
     });
   }

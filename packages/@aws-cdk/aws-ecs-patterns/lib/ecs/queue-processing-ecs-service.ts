@@ -96,6 +96,8 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });
