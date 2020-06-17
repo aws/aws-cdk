@@ -1,8 +1,8 @@
 
-import { AssetCode } from '@aws-cdk/aws-lambda';
+import { Code } from '@aws-cdk/aws-lambda';
 import { AssetHashType } from '@aws-cdk/core';
 import * as fs from 'fs';
-import { ParcelCode } from '../lib/parcel-code';
+import { Bundling } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync');
@@ -11,8 +11,8 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test('parcel code', () => {
-  new ParcelCode({
+test('Parcel bundling', () => {
+  Bundling.parcel({
     entry: '/project/folder/entry.ts',
     global: 'handler',
     cacheDir: '/cache-dir',
@@ -25,7 +25,7 @@ test('parcel code', () => {
   });
 
   // Correctly bundles with parcel
-  expect(AssetCode).toHaveBeenCalledWith('/project', {
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.BUNDLE,
     bundling: expect.objectContaining({
       environment: {
@@ -55,8 +55,8 @@ test('parcel code', () => {
   );
 });
 
-test('with Windows paths', () => {
-  new ParcelCode({
+test('Parcel with Windows paths', () => {
+  Bundling.parcel({
     entry: 'C:\\my-project\\lib\\entry.ts',
     global: 'handler',
     cacheDir: '/cache-dir',
@@ -65,7 +65,7 @@ test('with Windows paths', () => {
     projectRoot: 'C:\\my-project',
   });
 
-  expect(AssetCode).toHaveBeenCalledWith('C:\\my-project', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith('C:\\my-project', expect.objectContaining({
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         'parcel', 'build', expect.stringContaining('/lib/entry.ts'),

@@ -2,11 +2,19 @@ import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
-import { ParcelCode } from '../lib/parcel-code';
+import { Bundling } from '../lib/bundling';
 
-jest.mock('../lib/parcel-code');
-ParcelCode.prototype.bind = () => ({
-  inlineCode: 'code',
+jest.mock('../lib/bundling', () => {
+  return {
+    Bundling: {
+      parcel: jest.fn().mockReturnValue({
+        bind: () => {
+          return { inlineCode: 'code' };
+        },
+        bindToResource: () => { return; },
+      }),
+    },
+  };
 });
 
 let stack: Stack;
@@ -19,7 +27,7 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
     global: 'handler',
   }));
@@ -34,7 +42,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -47,7 +55,7 @@ test('NodejsFunction with container env vars', () => {
     },
   });
 
-  expect(ParcelCode).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     environment: {
       KEY: 'VALUE',
     },

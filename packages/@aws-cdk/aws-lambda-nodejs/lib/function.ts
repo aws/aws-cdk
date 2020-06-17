@@ -2,7 +2,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ParcelCode } from './parcel-code';
+import { Bundling } from './bundling';
 import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
@@ -102,27 +102,28 @@ export class NodejsFunction extends lambda.Function {
     }
 
     const entry = findEntry(id, props.entry);
-    const handler = props.handler || 'handler';
+    const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime || defaultRunTime;
+    const runtime = props.runtime ?? defaultRunTime;
     const projectRoot = props.projectRoot ?? findGitPath();
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
+    const nodeDockerTag = props.nodeDockerTag ?? `${process.versions.node}-alpine`;
 
     super(scope, id, {
       ...props,
       runtime,
-      code: new ParcelCode({
+      code: Bundling.parcel({
         entry,
         global: handler,
         minify: props.minify,
         sourceMaps: props.sourceMaps,
         cacheDir: props.cacheDir,
         nodeVersion: extractVersion(runtime),
-        nodeDockerTag: props.nodeDockerTag ?? `${process.versions.node}-alpine`,
+        nodeDockerTag,
         projectRoot: path.resolve(projectRoot),
         environment: props.containerEnvironment,
       }),

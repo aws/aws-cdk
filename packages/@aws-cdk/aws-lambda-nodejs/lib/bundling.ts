@@ -5,9 +5,9 @@ import * as path from 'path';
 import { findPkgPath } from './util';
 
 /**
- * Properties for a ParcelCode
+ * Options for Parcel bundling
  */
-export interface ParcelCodeProps {
+export interface ParcelOptions {
   /**
    * Entry file
    */
@@ -62,8 +62,8 @@ export interface ParcelCodeProps {
 /**
  * Parcel code
  */
-export class ParcelCode extends lambda.AssetCode {
-  constructor(props: ParcelCodeProps) {
+export class Bundling {
+  public static parcel(options: ParcelOptions): lambda.AssetCode {
     // Original package.json path and content
     let pkgPath = findPkgPath();
     if (!pkgPath) {
@@ -74,36 +74,36 @@ export class ParcelCode extends lambda.AssetCode {
     const originalPkgJson = JSON.parse(originalPkg.toString());
 
     // Update engines.node in package.json to set the right Babel target
-    setEngines(props.nodeVersion, pkgPath, originalPkgJson);
+    setEngines(options.nodeVersion, pkgPath, originalPkgJson);
 
     // Entry file path relative to container path
-    const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(props.projectRoot, path.resolve(props.entry)));
+    const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(options.projectRoot, path.resolve(options.entry)));
 
     try {
       const command = [
         'parcel', 'build', containerEntryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
         '--out-dir', cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
         '--out-file', 'index.js',
-        '--global', props.global,
+        '--global', options.global,
         '--target', 'node',
         '--bundle-node-modules',
         '--log-level', '2',
-        !props.minify && '--no-minify',
-        !props.sourceMaps && '--no-source-maps',
-        ...(props.cacheDir ? ['--cache-dir', '/parcel-cache'] : []),
+        !options.minify && '--no-minify',
+        !options.sourceMaps && '--no-source-maps',
+        ...(options.cacheDir ? ['--cache-dir', '/parcel-cache'] : []),
       ].filter(Boolean) as string[];
 
-      super(props.projectRoot, {
+      return lambda.Code.fromAsset(options.projectRoot, {
         assetHashType: cdk.AssetHashType.BUNDLE,
         bundling: {
           image: cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel-bundler'), {
             buildArgs: {
-              NODE_TAG: props.nodeDockerTag ?? `${process.versions.node}-alpine`,
+              NODE_TAG: options.nodeDockerTag ?? `${process.versions.node}-alpine`,
             },
           }),
-          environment: props.environment,
-          volumes: props.cacheDir
-            ? [{ containerPath: '/parcel-cache', hostPath: props.cacheDir }]
+          environment: options.environment,
+          volumes: options.cacheDir
+            ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
             : [],
           workingDirectory: path.dirname(containerEntryPath).replace(/\\/g, '/'), // Always use POSIX paths in the container
           command,
