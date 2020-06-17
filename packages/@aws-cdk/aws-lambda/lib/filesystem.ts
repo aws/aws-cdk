@@ -50,7 +50,7 @@ export class LambdaFileSystem {
                 creationInfo: {
                     ownerUid: '1000',
                     ownerGid: '1000',
-                    permissions: '777',
+                    permissions: '755',
                 }
             },
             posixUser: {
