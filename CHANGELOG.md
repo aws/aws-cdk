@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.45.0](https://github.com/aws/aws-cdk/compare/v1.44.0...v1.45.0) (2020-06-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **stepfunctions-tasks:** constructs for `SageMakerCreateTrainingJob` and
+`SageMakerCreateTransformJob` replace previous implementation that
+implemented `IStepFunctionsTask`.
+* **stepfunctions-tasks:** `volumeSizeInGB` property in `ResourceConfig` for
+SageMaker tasks are now type `core.Size`
+* **stepfunctions-tasks:** `maxPayload` property in `SagemakerTransformProps`
+is now type `core.Size`
+* **stepfunctions-tasks:** `volumeKmsKeyId` property in `SageMakerCreateTrainingJob` is now `volumeEncryptionKey`
+* **cognito:** `requiredAttributes` on `UserPool` construct is now replaced with `standardAttributes` with a slightly modified signature.
+* **rds:** DatabaseClusterProps.kmsKey has been renamed to storageEncryptionKey
+* **rds**: DatabaseInstanceNewProps.performanceInsightKmsKey has been renamed to performanceInsightEncryptionKey
+* **rds**: DatabaseInstanceSourceProps.secretKmsKey has been renamed to masterUserPasswordEncryptionKey
+* **rds**: DatabaseInstanceProps.kmsKey has been renamed to storageEncryptionKey
+* **rds**: DatabaseInstanceReadReplicaProps.kmsKey has been renamed to storageEncryptionKey
+* **rds**: Login.kmsKey has been renamed to encryptionKey
+
+### Features
+
+* **assert:** more powerful matchers ([#8444](https://github.com/aws/aws-cdk/issues/8444)) ([ed6f763](https://github.com/aws/aws-cdk/commit/ed6f763bddbb2090bbf07e5bbd6c7710a54dd33d))
+* **cloud9:** support AWS CodeCommit repository clone on launch ([#8205](https://github.com/aws/aws-cdk/issues/8205)) ([4781f94](https://github.com/aws/aws-cdk/commit/4781f94ee530ef66488fbf7b3728a753fa5718cd)), closes [#8204](https://github.com/aws/aws-cdk/issues/8204)
+* **codestar:** support the GitHubRepository resource ([#8209](https://github.com/aws/aws-cdk/issues/8209)) ([02ddab8](https://github.com/aws/aws-cdk/commit/02ddab8c1e76c59ccaff4f45986de68d538d54eb)), closes [#8210](https://github.com/aws/aws-cdk/issues/8210)
+* **cognito:** allow mutable attributes for requiredAttributes ([#7754](https://github.com/aws/aws-cdk/issues/7754)) ([1fabd98](https://github.com/aws/aws-cdk/commit/1fabd9819d4dbe64d175e73400078e435235d1d2))
+* **core,s3-assets,lambda:** custom asset bundling ([#7898](https://github.com/aws/aws-cdk/issues/7898)) ([888b412](https://github.com/aws/aws-cdk/commit/888b412797b2bcd7b8f1b8c5cbc0c25d94f91a5f))
+* **rds:** rename 'kmsKey' properties to 'encryptionKey' ([#8324](https://github.com/aws/aws-cdk/issues/8324)) ([4eefbbe](https://github.com/aws/aws-cdk/commit/4eefbbe612d4bd643bffd4dee525d88a921439cb))
+* **secretsmanager:** deletionPolicy for secretsmanager ([#8188](https://github.com/aws/aws-cdk/issues/8188)) ([f6fe36a](https://github.com/aws/aws-cdk/commit/f6fe36a0281a60ad65474b6ce0e22d0182ed2bea)), closes [#6527](https://github.com/aws/aws-cdk/issues/6527)
+* **secretsmanager:** Secret.grantRead() also gives DescribeSecret permissions ([#8409](https://github.com/aws/aws-cdk/issues/8409)) ([f44ae60](https://github.com/aws/aws-cdk/commit/f44ae607670bccee21dfd390effa7d0e8701efd4)), closes [#6444](https://github.com/aws/aws-cdk/issues/6444) [#7953](https://github.com/aws/aws-cdk/issues/7953)
+* **stepfunctions-tasks:** task constructs for creating and transforming SageMaker jobs ([#8391](https://github.com/aws/aws-cdk/issues/8391)) ([480d4c0](https://github.com/aws/aws-cdk/commit/480d4c004122f37533c22a14c6ecb89b5da07011))
+
+
+### Bug Fixes
+
+* **apigateway:** authorizerUri does not resolve to the correct partition ([#8152](https://github.com/aws/aws-cdk/issues/8152)) ([f455273](https://github.com/aws/aws-cdk/commit/f4552733909cd0734a7d829a35d0c1277b2ca4fc)), closes [#8098](https://github.com/aws/aws-cdk/issues/8098)
+* **apigateway:** methodArn not replacing path parameters with asterisks ([#8206](https://github.com/aws/aws-cdk/issues/8206)) ([8fc3751](https://github.com/aws/aws-cdk/commit/8fc37513477f4d9a8a37e4b6979a79e8ba6a1efd)), closes [#8036](https://github.com/aws/aws-cdk/issues/8036)
+* **aws-s3-deployment:** Set proper s-maxage Cache Control header ([#8434](https://github.com/aws/aws-cdk/issues/8434)) ([8d5b801](https://github.com/aws/aws-cdk/commit/8d5b801971ddaba82e0767c74fe7640d3e802c2f)), closes [#6292](https://github.com/aws/aws-cdk/issues/6292)
+* **cognito:** error when using parameter for `domainPrefix` ([#8399](https://github.com/aws/aws-cdk/issues/8399)) ([681b3bb](https://github.com/aws/aws-cdk/commit/681b3bbc7de517c06ac0bd848b73cc6d7267dfa1)), closes [#8314](https://github.com/aws/aws-cdk/issues/8314)
+* **dynamodb:** old global table replicas cannot be deleted ([#8224](https://github.com/aws/aws-cdk/issues/8224)) ([00884c7](https://github.com/aws/aws-cdk/commit/00884c752d6746864f2a71d093502d4fb2422037)), closes [#7189](https://github.com/aws/aws-cdk/issues/7189)
+* **elbv2:** addAction ignores conditions ([#8385](https://github.com/aws/aws-cdk/issues/8385)) ([729cc0b](https://github.com/aws/aws-cdk/commit/729cc0b1705cab64696682f21985d97ce6c41607)), closes [#8328](https://github.com/aws/aws-cdk/issues/8328)
+* **elbv2:** missing permission to write NLB access logs to S3 bucket ([#8114](https://github.com/aws/aws-cdk/issues/8114)) ([d6a1265](https://github.com/aws/aws-cdk/commit/d6a126508e4bb03f6f9d874c2c6648c3e3661a41)), closes [#8113](https://github.com/aws/aws-cdk/issues/8113)
+
+## [1.44.0](https://github.com/aws/aws-cdk/compare/v1.43.0...v1.44.0) (2020-06-04)
+
+
+### Features
+
+* **ecs-patterns:** support min and max health percentage in queueprocessingservice ([#8312](https://github.com/aws/aws-cdk/issues/8312)) ([6da564d](https://github.com/aws/aws-cdk/commit/6da564d68c5195c88c5959b7375e2973c2b07676))
+
 ## [1.43.0](https://github.com/aws/aws-cdk/compare/v1.42.1...v1.43.0) (2020-06-03)
 
 

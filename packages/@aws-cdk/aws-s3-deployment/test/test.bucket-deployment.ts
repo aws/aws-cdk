@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { arrayWith, countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -369,7 +369,7 @@ export = {
     test.equal(s3deploy.CacheControl.setPrivate().value, 'private');
     test.equal(s3deploy.CacheControl.proxyRevalidate().value, 'proxy-revalidate');
     test.equal(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value, 'max-age=60');
-    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-max-age=60');
+    test.equal(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value, 's-maxage=60');
     test.equal(s3deploy.CacheControl.fromString('only-if-cached').value, 'only-if-cached');
 
     test.done();
@@ -562,6 +562,33 @@ export = {
         },
       ],
     }));
+    test.done();
+  },
+
+  'Deployment role gets KMS permissions when using assets from new style synthesizer'(test: Test) {
+    const stack = new cdk.Stack(undefined, undefined, {
+      synthesizer: new cdk.DefaultStackSynthesizer(),
+    });
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket: bucket,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: arrayWith({
+          Action: ['kms:Decrypt', 'kms:DescribeKey'],
+          Effect: 'Allow',
+          Resource:  { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
+        }),
+      },
+    }));
+
     test.done();
   },
 

@@ -631,30 +631,6 @@
         }
       }
     },
-    "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "MyApi49610EDF"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "MyApiGETD0C7AA0C"
-      ]
-    },
-    "MyApiDeploymentStageprodE1054AF0": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "MyApi49610EDF"
-        },
-        "DeploymentId": {
-          "Ref": "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc"
-        },
-        "StageName": "prod"
-      }
-    },
     "MyApiCloudWatchRole2BEC1A9C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -699,6 +675,30 @@
       "DependsOn": [
         "MyApi49610EDF"
       ]
+    },
+    "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi49610EDF"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MyApiGETD0C7AA0C"
+      ]
+    },
+    "MyApiDeploymentStageprodE1054AF0": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi49610EDF"
+        },
+        "DeploymentId": {
+          "Ref": "MyApiDeploymentECB0D05E7a475a505b0c925e193030293593b6dc"
+        },
+        "StageName": "prod"
+      }
     },
     "MyApiGETD0C7AA0C": {
       "Type": "AWS::ApiGateway::Method",
