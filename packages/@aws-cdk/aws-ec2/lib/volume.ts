@@ -347,6 +347,26 @@ export interface VolumeProps {
    * The customer-managed encryption key that is used to encrypt the Volume. The encrypted property must
    * be true if this is provided.
    *
+   * Note: If using an {@link aws-kms.IKey} created from a {@link aws-kms.Key.fromKeyArn()} here,
+   * then the KMS key **must** have the following in its Key policy; otherwise, the Volume
+   * will fail to create.
+   *
+   *     {
+   *       "Effect": "Allow",
+   *       "Principal": { "AWS": "<arn for your account-user> ex: arn:aws:iam::00000000000:root" },
+   *       "Resource": "*",
+   *       "Action": [
+   *         "kms:DescribeKey",
+   *         "kms:GenerateDataKeyWithoutPlainText",
+   *       ],
+   *       "Condition": {
+   *         "StringEquals": {
+   *           "kms:ViaService": "ec2.<Region>.amazonaws.com", (eg: ec2.us-east-1.amazonaws.com)
+   *           "kms:CallerAccount": "0000000000" (your account ID)
+   *         }
+   *       }
+   *     }
+   *
    * @default The default KMS key for the account, region, and EC2 service is used.
    */
   readonly encryptionKey?: IKey;
@@ -517,13 +537,15 @@ export class Volume extends VolumeBase {
             'kms:CallerAccount': Stack.of(this).account,
           },
         });
-      this.encryptionKey.grant(principal,
+      const grant = this.encryptionKey.grant(principal,
         // Describe & Generate are required to be able to create the CMK-encrypted Volume.
         'kms:DescribeKey',
         'kms:GenerateDataKeyWithoutPlainText',
-        // ReEncrypt is required for when the CMK is rotated.
-        'kms:ReEncrypt*',
       );
+      if (props.snapshotId) {
+        // ReEncrypt is required for when re-encrypting from an encrypted snapshot.
+        grant.principalStatement?.addActions('kms:ReEncrypt*');
+      }
     }
   }
 

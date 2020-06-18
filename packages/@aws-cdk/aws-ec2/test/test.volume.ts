@@ -179,7 +179,6 @@ export = {
             Action: [
               'kms:DescribeKey',
               'kms:GenerateDataKeyWithoutPlainText',
-              'kms:ReEncrypt*',
             ],
             Condition: {
               StringEquals: {
@@ -200,6 +199,39 @@ export = {
                 },
               },
             },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'encryption with kms from snapshot'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const encryptionKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+      encrypted: true,
+      encryptionKey,
+      snapshotId: 'snap-1234567890',
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {},
+          {
+            Action: [
+              'kms:DescribeKey',
+              'kms:GenerateDataKeyWithoutPlainText',
+              'kms:ReEncrypt*',
+            ],
           },
         ],
       },
@@ -478,6 +510,81 @@ export = {
               },
             },
             Resource: '*',
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantAttachVolume to any instance with KMS.fromKeyArn() encryption'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
+    const kmsKey = new kms.Key(stack, 'Key');
+    // kmsKey policy is not strictly necessary for the test.
+    // Demonstrating how to properly construct the Key.
+    const principal =
+      new kms.ViaServicePrincipal(`ec2.${stack.region}.amazonaws.com`, new AccountRootPrincipal()).withConditions({
+        StringEquals: {
+          'kms:CallerAccount': stack.account,
+        },
+      });
+    kmsKey.grant(principal,
+      // Describe & Generate are required to be able to create the CMK-encrypted Volume.
+      'kms:DescribeKey',
+      'kms:GenerateDataKeyWithoutPlainText',
+      // ReEncrypt is required for when the CMK is rotated.
+      'kms:ReEncrypt*',
+    );
+
+    const encryptionKey = kms.Key.fromKeyArn(stack, 'KeyArn', kmsKey.keyArn);
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+      encrypted: true,
+      encryptionKey,
+    });
+
+    // WHEN
+    volume.grantAttachVolume(role);
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {},
+          {
+            Effect: 'Allow',
+            Action: 'kms:CreateGrant',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+            Condition: {
+              Bool: {
+                'kms:GrantIsForAWSResource': true,
+              },
+              StringEquals: {
+                'kms:ViaService': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'ec2.',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      '.amazonaws.com',
+                    ],
+                  ],
+                },
+                'kms:GrantConstraintType': 'EncryptionContextSubset',
+              },
+            },
           },
         ],
       },
