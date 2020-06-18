@@ -181,10 +181,6 @@ function parseIfCfnIntrinsic(object: any): any {
     }
     case 'Fn::Cidr': {
       const value = parseCfnValueToCdkValue(object[key]);
-
-      if (value.length === 2) {
-        return Fn.cidr(value[0], value[1]);
-      }
       return Fn.cidr(value[0], value[1], value[2]);
     }
     case 'Fn::FindInMap': {

@@ -174,6 +174,7 @@ export class Fn {
 
   /**
    * Creates a token representing the ``Fn::Transform`` expression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-transform.html
    * @param macroName The name of the macro to perform the processing
    * @param parameters The parameters to be passed to the macro
    * @returns a token representing the transform expression
@@ -376,7 +377,7 @@ class FnTransform extends FnBase {
    * @param parameters the parameters to pass to it
    */
   constructor(macroName: string, parameters: { [name: string]: any }) {
-    super('Fn::Transform', {Name: macroName, Parameters: parameters});
+    super('Fn::Transform', { Name: macroName, Parameters: parameters });
   }
 }
 

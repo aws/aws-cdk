@@ -20,31 +20,20 @@
         }
       ]
     },
-    "AlwaysFalseCond": {
-      "Fn::Equals": [
-        {
-          "Ref": "AWS::Region"
-        },
-        "completely-made-up-region"
-      ]
-    },
     "AndCond": {
       "Fn::And": [
         {
           "Condition": "AlwaysTrueCond"
         },
         {
-          "Condition": "AlwaysFalseCond"
-        }
-      ]
-    },
-    "OrCond": {
-      "Fn::Or": [
-        {
-          "Condition": "AlwaysTrueCond"
-        },
-        {
-          "Condition": "AlwaysFalseCond"
+          "Fn::Or": [
+            {
+              "Condition": "AlwaysTrueCond"
+            },
+            {
+              "Condition": "AlwaysTrueCond"
+            }
+          ]
         }
       ]
     }
@@ -59,14 +48,15 @@
             {
               "Fn::Cidr": [
                 "192.168.1.1/24",
-                2
+                2,
+                5
               ]
             },
             {
               "Fn::Cidr": [
                 "10.0.0.0/24",
-                6,
-                5
+                "6",
+                "5"
               ]
             }
           ]
@@ -124,12 +114,14 @@
       "Properties": {
         "VpcId": {
           "Fn::Select": [
-            "3",
-            [
-              "foo",
-              "aValidVPCID",
-              "foo2"
-            ]
+            0,
+            {
+              "Fn::Cidr": [
+                "10.0.0.0/24",
+                5,
+                2
+              ]
+            }
           ]
         },
         "CidrBlock": "10.0.0.0/24",
