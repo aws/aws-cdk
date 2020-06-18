@@ -299,18 +299,6 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
   });
-
-  test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
-    }).toThrow(/The CreationPolicy resource attribute is not supported by cloudformation-include yet/);
-  });
-
-  test('throws an exception when encountering the UpdatePolicy attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-update-policy.json');
-    }).toThrow(/The UpdatePolicy resource attribute is not supported by cloudformation-include yet/);
-  });
 });
 
 interface IncludeTestTemplateProps {
