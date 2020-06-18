@@ -496,6 +496,10 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
+    if (props.filesystemConfigs) {
+      this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
+    }
+
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies,
@@ -659,11 +663,9 @@ export class Function extends FunctionBase {
   }
 
   public mount(options: FileSystemOptions) {
-    this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
-
     // wait until the efs filesystem and mount targets are ready
     this.node.addDependency(options.filesystem.resource);
-    
+
     this._resource.addPropertyOverride('FileSystemConfigs', [
       {
         Arn: options.filesystem.accessPointArn,
