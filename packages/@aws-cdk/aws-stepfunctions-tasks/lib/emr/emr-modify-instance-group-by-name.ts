@@ -37,7 +37,6 @@ export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProp
  * @experimental
  */
 export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
-
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
@@ -45,10 +44,7 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:ModifyInstanceGroups',
-          'elasticmapreduce:ListInstanceGroups',
-        ],
+        actions: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
         resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
@@ -56,8 +52,7 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
 
   protected renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName',
-        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName', sfn.IntegrationPattern.REQUEST_RESPONSE),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         InstanceGroupName: this.props.instanceGroupName,
@@ -79,21 +74,21 @@ export namespace EmrModifyInstanceGroupByName {
     /**
      * Specific list of instances to be protected when shrinking an instance group.
      *
-     * @default - None
+     * @default - No instances will be protected when shrinking an instance group
      */
     readonly instancesToProtect?: string[];
 
     /**
      * Specific list of instances to be terminated when shrinking an instance group.
      *
-     * @default - None
+     * @default - No instances will be terminated when shrinking an instance group.
      */
     readonly instancesToTerminate?: string[];
 
     /**
      * Decommissioning timeout override for the specific list of instances to be terminated.
      *
-     * @default - EMR selected default
+     * @default cdk.Duration.seconds
      */
     readonly instanceTerminationTimeout?: cdk.Duration;
   }

@@ -140,7 +140,7 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   /**
    * A value of true indicates that all IAM users in the AWS account can perform cluster actions if they have the proper IAM policy permissions.
    *
-   * @default - true
+   * @default true
    */
   readonly visibleToAllUsers?: boolean;
 }
@@ -155,8 +155,7 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
  * @experimental
  */
 export class EmrCreateCluster extends sfn.TaskStateBase {
-
-  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
   ];
@@ -173,7 +172,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
   constructor(scope: cdk.Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
-    this.visibleToAllUsers = (this.props.visibleToAllUsers !== undefined) ? this.props.visibleToAllUsers : true;
+    this.visibleToAllUsers = this.props.visibleToAllUsers !== undefined ? this.props.visibleToAllUsers : true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
     validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -232,7 +231,6 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   }
 
   protected renderTask(): any {
-
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
@@ -247,7 +245,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         Configurations: cdk.listMapper(ConfigurationPropertyToJson)(this.props.configurations),
         CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
         EbsRootVolumeSize: this.props.ebsRootVolumeSize?.toGibibytes(),
-        KerberosAttributes: (this.props.kerberosAttributes) ? KerberosAttributesPropertyToJson(this.props.kerberosAttributes) : undefined,
+        KerberosAttributes: this.props.kerberosAttributes ? KerberosAttributesPropertyToJson(this.props.kerberosAttributes) : undefined,
         LogUri: cdk.stringToCloudFormation(this.props.logUri),
         ReleaseLabel: cdk.stringToCloudFormation(this.props.releaseLabel),
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
@@ -258,53 +256,52 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     };
   }
 
-  private renderTags(tags: {[key: string]: any} | undefined): {[key: string]: any} {
-    return (tags) ? { Tags: Object.keys(tags).map(key => ({ Key: key, Value: tags[key] })) } : {};
+  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
+    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   /**
    * This generates the PolicyStatements required by the Task to call CreateCluster.
    */
-  private createPolicyStatements(
-    serviceRole: iam.IRole, clusterRole: iam.IRole,
-    autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
+  private createPolicyStatements(serviceRole: iam.IRole, clusterRole: iam.IRole, autoScalingRole?: iam.IRole): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
 
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:RunJobFlow',
-          'elasticmapreduce:DescribeCluster',
-          'elasticmapreduce:TerminateJobFlows',
-        ],
+        actions: ['elasticmapreduce:RunJobFlow', 'elasticmapreduce:DescribeCluster', 'elasticmapreduce:TerminateJobFlows'],
         resources: ['*'],
       }),
     ];
 
     // Allow the StateMachine to PassRole to Cluster roles
-    policyStatements.push(new iam.PolicyStatement({
-      actions: ['iam:PassRole'],
-      resources: [
-        serviceRole.roleArn,
-        clusterRole.roleArn,
-      ],
-    }));
-    if (autoScalingRole !== undefined) {
-      policyStatements.push(new iam.PolicyStatement({
+    policyStatements.push(
+      new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [ autoScalingRole.roleArn ],
-      }));
+        resources: [serviceRole.roleArn, clusterRole.roleArn],
+      }),
+    );
+    if (autoScalingRole !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['iam:PassRole'],
+          resources: [autoScalingRole.roleArn],
+        }),
+      );
     }
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRRunJobFlowRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventForEMRRunJobFlowRule',
+            }),
+          ],
+        }),
+      );
     }
 
     return policyStatements;
@@ -316,9 +313,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private createServiceRole(): iam.IRole {
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
-      ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole')],
     });
   }
 
@@ -333,7 +328,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     });
 
     new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ role.roleName ],
+      roles: [role.roleName],
       instanceProfileName: role.roleName,
     });
 
@@ -346,21 +341,15 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private createAutoScalingRole(): iam.IRole {
     const role = new iam.Role(this, 'AutoScalingRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole'),
-      ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole')],
     });
 
     role.assumeRolePolicy?.addStatements(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        principals: [
-          new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
-        ],
-        actions: [
-          'sts:AssumeRole',
-        ],
-      })
+        principals: [new iam.ServicePrincipal('application-autoscaling.amazonaws.com')],
+        actions: ['sts:AssumeRole'],
+      }),
     );
 
     return role;
@@ -384,7 +373,7 @@ export namespace EmrCreateCluster {
      * Indicates that Amazon EMR blacklists and drains tasks from nodes before terminating the Amazon EC2 instances, regardless of the
      * instance-hour boundary.
      */
-    TERMINATE_AT_TASK_COMPLETION = 'TERMINATE_AT_TASK_COMPLETION'
+    TERMINATE_AT_TASK_COMPLETION = 'TERMINATE_AT_TASK_COMPLETION',
   }
 
   /**
@@ -404,7 +393,7 @@ export namespace EmrCreateCluster {
     /**
      * Task Node
      */
-    TASK = 'TASK'
+    TASK = 'TASK',
   }
 
   /**
@@ -424,7 +413,7 @@ export namespace EmrCreateCluster {
     /**
      * Standard Volume Type
      */
-    STANDARD = 'standard'
+    STANDARD = 'standard',
   }
 
   /**
@@ -452,7 +441,7 @@ export namespace EmrCreateCluster {
     /**
      * The volume type. Volume types supported are gp2, io1, standard.
      */
-    readonly volumeType: EbsBlockDeviceVolumeType
+    readonly volumeType: EbsBlockDeviceVolumeType;
   }
 
   /**
@@ -566,7 +555,7 @@ export namespace EmrCreateCluster {
     /**
      * TERMINATE_CLUSTER
      */
-    TERMINATE_CLUSTER = 'TERMINATE_CLUSTER'
+    TERMINATE_CLUSTER = 'TERMINATE_CLUSTER',
   }
 
   /**
@@ -679,7 +668,7 @@ export namespace EmrCreateCluster {
     /**
      * LESS_THAN_OR_EQUAL
      */
-    LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL'
+    LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL',
   }
 
   /**
@@ -707,7 +696,7 @@ export namespace EmrCreateCluster {
     /**
      * MAXIMUM
      */
-    MAXIMUM = 'MAXIMUM'
+    MAXIMUM = 'MAXIMUM',
   }
 
   /**
@@ -823,7 +812,7 @@ export namespace EmrCreateCluster {
     /**
      * COUNT_PER_SECOND
      */
-    COUNT_PER_SECOND = 'COUNT_PER_SECOND'
+    COUNT_PER_SECOND = 'COUNT_PER_SECOND',
   }
 
   /**
@@ -864,15 +853,15 @@ export namespace EmrCreateCluster {
     /**
      * A CloudWatch metric dimension
      *
-     * @default No dimensions
+     * @default - No dimensions
      */
     readonly dimensions?: MetricDimensionProperty[];
 
     /**
      * The number of periods, in five-minute increments, during which the alarm condition must exist before the alarm triggers automatic
-     * scaling activity. The default value is 1.
+     * scaling activity.
      *
-     * @default - None
+     * @default 1
      */
     readonly evaluationPeriods?: number;
 
@@ -882,9 +871,9 @@ export namespace EmrCreateCluster {
     readonly metricName: string;
 
     /**
-     * The namespace for the CloudWatch metric. The default is AWS/ElasticMapReduce.
+     * The namespace for the CloudWatch metric.
      *
-     * @default - None
+     * @default 'AWS/ElasticMapReduce'
      */
     readonly namespace?: string;
 
@@ -895,9 +884,9 @@ export namespace EmrCreateCluster {
     readonly period: cdk.Duration;
 
     /**
-     * The statistic to apply to the metric associated with the alarm. The default is AVERAGE.
+     * The statistic to apply to the metric associated with the alarm.
      *
-     * @default - None
+     * @default CloudWatchAlarmStatistic.AVERAGE
      */
     readonly statistic?: CloudWatchAlarmStatistic;
 
@@ -912,7 +901,7 @@ export namespace EmrCreateCluster {
      * The unit of measure associated with the CloudWatch metric being watched. The value specified for Unit must correspond to the units
      * specified in the CloudWatch metric.
      *
-     * @default - None
+     * @default CloudWatchAlarmUnit.NONE
      */
     readonly unit?: CloudWatchAlarmUnit;
   }
@@ -946,7 +935,7 @@ export namespace EmrCreateCluster {
     /**
      * Spot Instance
      */
-    SPOT = 'SPOT'
+    SPOT = 'SPOT',
   }
 
   /**
@@ -954,7 +943,7 @@ export namespace EmrCreateCluster {
    *
    * @experimental
    */
-  export enum ScalingAdjustmentType {
+  export enum oScalingAdjustmentType {
     /**
      * CHANGE_IN_CAPACITY
      */
@@ -966,7 +955,7 @@ export namespace EmrCreateCluster {
     /**
      * EXACT_CAPACITY
      */
-    EXACT_CAPACITY = 'EXACT_CAPACITY'
+    EXACT_CAPACITY = 'EXACT_CAPACITY',
   }
 
   /**
@@ -988,9 +977,8 @@ export namespace EmrCreateCluster {
 
     /**
      * The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start.
-     * The default value is 0.
      *
-     * @default - None
+     * @default 0
      */
     readonly coolDown?: number;
 
@@ -1254,19 +1242,21 @@ export namespace EmrCreateCluster {
     /**
      * Applies only to Amazon EMR release versions earlier than 4.0. The Hadoop version for the cluster.
      *
-     * @default - None
+     * @default - 0.18 if the AmiVersion parameter is not set. If AmiVersion is set, the version of Hadoop for that AMI version is used.
      */
     readonly hadoopVersion?: string;
 
     /**
      * The number of EC2 instances in the cluster.
      *
-     * @default - None
+     * @default 0
      */
     readonly instanceCount?: number;
-
+    s;
+    s;
     /**
      * Describes the EC2 instances and instance configurations for clusters that use the instance fleet configuration.
+     * The instance fleet configuration is available only in Amazon EMR versions 4.8.0 and later, excluding 5.0.x versions.
      *
      * @default - None
      */
@@ -1311,7 +1301,7 @@ export namespace EmrCreateCluster {
      * Specifies whether to lock the cluster to prevent the Amazon EC2 instances from being terminated by API call, user intervention,
      * or in the event of a job-flow error.
      *
-     * @default - None
+     * @default false
      */
     readonly terminationProtected?: boolean;
   }
@@ -1335,7 +1325,7 @@ export namespace EmrCreateCluster {
      *
      * @default No additionalInfo
      */
-    readonly additionalInfo?: {[key: string]: string};
+    readonly additionalInfo?: { [key: string]: string };
 
     /**
      * Arguments for Amazon EMR to pass to the application.
@@ -1396,7 +1386,7 @@ export namespace EmrCreateCluster {
     /**
      * The script run by the bootstrap action
      */
-    readonly scriptBootstrapAction: ScriptBootstrapActionConfigProperty
+    readonly scriptBootstrapAction: ScriptBootstrapActionConfigProperty;
   }
 
   /**
@@ -1422,7 +1412,7 @@ export namespace EmrCreateCluster {
      *
      * @default No properties
      */
-    readonly properties?: {[key: string]: string};
+    readonly properties?: { [key: string]: string };
 
     /**
      * A list of additional configurations to apply within a configuration object.
