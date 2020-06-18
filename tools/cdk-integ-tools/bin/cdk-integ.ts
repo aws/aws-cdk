@@ -35,7 +35,7 @@ async function main() {
 
     try {
       // tslint:disable-next-line:max-line-length
-      await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+      await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
         verbose: argv.verbose,
         // Note: no "context" and "env", so use default user settings!
       });
@@ -43,17 +43,13 @@ async function main() {
       console.error('Success! Writing out reference synth.');
 
       // If this all worked, write the new expectation file
-      const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
-        json: true,
-        verbose: argv.verbose,
-        ...DEFAULT_SYNTH_OPTIONS,
-      });
+      const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
       await test.writeExpected(actual);
     } finally {
       if (argv.clean) {
         console.error('Cleaning up.');
-        await test.invoke(['destroy', '--force', ...stackToDeploy ]);
+        await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
       } else {
         console.error('Skipping clean up (--no-clean).');
       }
