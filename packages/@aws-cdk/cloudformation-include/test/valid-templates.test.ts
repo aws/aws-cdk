@@ -184,6 +184,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
+    includeTestTemplate(stack, 'functions-and-conditions.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
@@ -290,12 +298,6 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
-  });
-
-  test("throws an exception when encountering a CFN function it doesn't support", () => {
-    expect(() => {
-      includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
-    }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
   });
 });
 
