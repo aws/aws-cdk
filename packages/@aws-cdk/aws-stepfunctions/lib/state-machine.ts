@@ -200,7 +200,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions on all executions of the state machine
    */
-  public grantExecution(identity: iam.IGrantable, actions: string[]) {
+  public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions,
@@ -211,7 +211,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity custom permissions
    */
-  public grant(identity: iam.IGrantable, actions: string[]): iam.Grant {
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions,
@@ -444,7 +444,7 @@ export interface IStateMachine extends IResource {
    * @param identity The principal
    * @param actions The list of desired actions
    */
-  grantExecution(identity: iam.IGrantable, actions: string[]): iam.Grant;
+  grantExecution(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity custom permissions
@@ -452,5 +452,5 @@ export interface IStateMachine extends IResource {
    * @param identity The principal
    * @param actions The list of desired actions
    */
-  grant(identity: iam.IGrantable, actions: string[]): iam.Grant;
+  grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
 }

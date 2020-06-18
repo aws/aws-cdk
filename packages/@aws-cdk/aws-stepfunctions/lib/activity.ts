@@ -80,7 +80,7 @@ export class Activity extends Resource implements IActivity {
    * @param identity The principal
    * @param actions The list of desired actions
    */
-  public grant(identity: iam.IGrantable, actions: string[]) {
+  public grant(identity: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions,

@@ -55,7 +55,7 @@ describe('Activity', () => {
     const activity = new stepfunctions.Activity(stack, 'Activity');
 
     // WHEN
-    activity.grant(role, ['states:SendTaskSuccess']);
+    activity.grant(role, 'states:SendTaskSuccess');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

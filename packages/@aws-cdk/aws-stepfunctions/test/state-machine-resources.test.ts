@@ -340,7 +340,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grantExecution(role, ['states:GetExecutionHistory']);
+    stateMachine.grantExecution(role, 'states:GetExecutionHistory');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -405,7 +405,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:ListExecution']);
+    stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -563,7 +563,7 @@ describe('State Machine Resources', () => {
     });
 
     // WHEN
-    stateMachine.grant(role, ['states:ListExecution']);
+    stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

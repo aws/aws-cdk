@@ -469,7 +469,7 @@ const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-activity.grant(role, ['states:SendTaskSuccess']);
+activity.grant(role, 'states:SendTaskSuccess');
 ```
 
 This will grant the IAM principal the specified actions onto the activity.
@@ -622,7 +622,7 @@ const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
 });
 
 // Give role permission to get execution history of ALL executions for the state machine
-stateMachine.grantExecution(role, ['states:GetExecutionHistory']);
+stateMachine.grantExecution(role, 'states:GetExecutionHistory');
 ```
 
 ### Custom Permissions
@@ -637,7 +637,7 @@ const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
 });
 
 //give user permission to send task success to the state machine
-stateMachine.grant(user, ['states:SendTaskSuccess']);
+stateMachine.grant(user, 'states:SendTaskSuccess');
 ```
 
 ## Future work
