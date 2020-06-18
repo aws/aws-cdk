@@ -88,6 +88,11 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-efs.AccessPointProps"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {

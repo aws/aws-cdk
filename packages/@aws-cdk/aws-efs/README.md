@@ -28,6 +28,20 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
+### Access Point
+
+An access point is an application-specific view into an EFS file system that applies an operating system user and group, and a file system path, to any file system request made through the access point. The operating system user and group override any identity information provided by the NFS client. The file system path is exposed as the access point's root directory. Applications using the access point can only access data in its own directory and below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
+
+Use `AccessPoint` to create the access point resources:
+
+```ts
+new AccessPoint(stack, 'MyAccessPoint', {
+  filesystem: fileSystem
+});
+
+```
+
+
 ### Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has
