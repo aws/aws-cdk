@@ -496,8 +496,8 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
-    if (props.filesystemConfigs) {
-      this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
+    if (props.filesystems) {
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
