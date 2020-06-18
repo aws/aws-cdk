@@ -279,7 +279,7 @@ export interface FunctionProps extends FunctionOptions {
   /**
    * The filesystem configuration for the lambda function
    */
-  readonly filesystemConfigs?: FileSystemOptions;
+  readonly filesystems?: FileSystemOptions;
 }
 
 /**
