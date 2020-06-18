@@ -68,7 +68,7 @@
       "Properties": {
         "BucketName": {
           "Fn::If": [
-            "OrCond",
+            "AndCond",
             {
               "Fn::FindInMap": [
                 "RegionMap",
