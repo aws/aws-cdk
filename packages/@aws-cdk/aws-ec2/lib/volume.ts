@@ -1,4 +1,4 @@
-import { Anyone, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
@@ -415,7 +415,22 @@ abstract class VolumeBase extends Resource implements IVolume {
       actions: [ 'ec2:AttachVolume' ],
       resourceArns : this.collectGrantResourceArns(instances),
     });
-    // Note: Access to the encryption key is not required. The service having access to it is sufficient.
+    if (this.encryptionKey) {
+      // When attaching a volume, the EC2 Service will need to grant to itself permission
+      // to be able to decrypt the encryption key. We restrict the CreateGrant for principle
+      // of least privilege, in accordance with best practices.
+      // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-permissions
+      const kmsGrant: Grant = this.encryptionKey.grant(grantee, 'kms:CreateGrant');
+      kmsGrant.principalStatement!.addConditions(
+        {
+          Bool: { 'kms:GrantIsForAWSResource': true },
+          StringEquals: {
+            'kms:ViaService': `ec2.${Stack.of(this).region}.amazonaws.com`,
+            'kms:GrantConstraintType': 'EncryptionContextSubset',
+          },
+        },
+      );
+    }
     return result;
   }
 
@@ -425,7 +440,7 @@ abstract class VolumeBase extends Resource implements IVolume {
       actions: [ 'ec2:DetachVolume' ],
       resourceArns : this.collectGrantResourceArns(instances),
     });
-    // Note: Access to the encryption key is not required. The service having access to it is sufficient.
+    // Note: No encryption key permissions are required to detach an encrypted volume.
     return result;
   }
 
@@ -495,15 +510,19 @@ export class Volume extends VolumeBase {
     this.encryptionKey = props.encryptionKey;
 
     if (this.encryptionKey) {
+      // Per: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
       const principal =
-         new ViaServicePrincipal(`ec2.${Stack.of(this).region}.amazonaws.com`, new Anyone()).withConditions({
-           StringEquals: {
-             'kms:CallerAccount': Stack.of(this).account,
-           },
-         });
-      this.encryptionKey.grantEncryptDecrypt(principal).principalStatement?.addActions(
-        'kms:CreateGrant',
+        new ViaServicePrincipal(`ec2.${Stack.of(this).region}.amazonaws.com`, new AccountRootPrincipal()).withConditions({
+          StringEquals: {
+            'kms:CallerAccount': Stack.of(this).account,
+          },
+        });
+      this.encryptionKey.grant(principal,
+        // Describe & Generate are required to be able to create the CMK-encrypted Volume.
         'kms:DescribeKey',
+        'kms:GenerateDataKeyWithoutPlainText',
+        // ReEncrypt is required for when the CMK is rotated.
+        'kms:ReEncrypt*',
       );
     }
   }

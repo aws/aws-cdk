@@ -157,15 +157,29 @@ export = {
           {},
           {
             Effect: 'Allow',
-            Principal: '*',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
             Resource: '*',
             Action: [
-              'kms:Decrypt',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-              'kms:CreateGrant',
               'kms:DescribeKey',
+              'kms:GenerateDataKeyWithoutPlainText',
+              'kms:ReEncrypt*',
             ],
             Condition: {
               StringEquals: {
@@ -408,6 +422,67 @@ export = {
         }],
       },
     }));
+    test.done();
+  },
+
+  'grantAttachVolume to any instance with encryption'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
+    const encryptionKey = new kms.Key(stack, 'Key');
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+      encrypted: true,
+      encryptionKey,
+    });
+
+    // WHEN
+    volume.grantAttachVolume(role);
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {},
+          {},
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::GetAtt': [
+                  'Role1ABCC5F0',
+                  'Arn',
+                ],
+              },
+            },
+            Action: 'kms:CreateGrant',
+            Condition: {
+              Bool: {
+                'kms:GrantIsForAWSResource': true,
+              },
+              StringEquals: {
+                'kms:ViaService': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'ec2.',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      '.amazonaws.com',
+                    ],
+                  ],
+                },
+                'kms:GrantConstraintType': 'EncryptionContextSubset',
+              },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    }));
+
     test.done();
   },
 
