@@ -120,7 +120,7 @@ export class AssetStaging extends Construct {
 
     // Asset has been bundled
     if (this.bundleDir) {
-      // Rename bundling directory to staging directory
+      // Move bundling directory to staging directory
       fs.moveSync(this.bundleDir, targetPath);
       return;
     }
