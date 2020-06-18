@@ -519,7 +519,7 @@ State machines can be imported by their ARN via the `StateMachine.fromStateMachi
 import * as sfn from 'aws-stepfunctions';
 
 const stack = new Stack(app, 'MyStack');
-const stateMachine = sfn.StateMachine.fromStateMachineArn(
+sfn.StateMachine.fromStateMachineArn(
   stack,
   'ImportedStateMachine',
   'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
