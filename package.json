@@ -62,6 +62,8 @@
       "@aws-cdk/cloud-assembly-schema/semver/**",
       "@aws-cdk/cloudformation-include/yaml",
       "@aws-cdk/cloudformation-include/yaml/**",
+      "@aws-cdk/core/fs-extra",
+      "@aws-cdk/core/fs-extra/**",
       "@aws-cdk/core/minimatch",
       "@aws-cdk/core/minimatch/**",
       "@aws-cdk/cx-api/semver",

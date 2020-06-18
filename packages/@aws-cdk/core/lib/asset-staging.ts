@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as crypto from 'crypto';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { AssetHashType, AssetOptions } from './assets';
@@ -121,7 +121,7 @@ export class AssetStaging extends Construct {
     // Asset has been bundled
     if (this.bundleDir) {
       // Rename bundling directory to staging directory
-      fs.renameSync(this.bundleDir, targetPath);
+      fs.moveSync(this.bundleDir, targetPath);
       return;
     }
 
@@ -140,9 +140,7 @@ export class AssetStaging extends Construct {
   private bundle(options: BundlingOptions): string {
     // Temp staging directory in the working directory
     const stagingTmp = path.join('.', STAGING_TMP);
-    if (!fs.existsSync(stagingTmp)) {
-      fs.mkdirSync(stagingTmp);
-    }
+    fs.ensureDirSync(stagingTmp);
 
     // Create temp directory for bundling inside the temp staging directory
     const bundleDir = fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-'));
