@@ -331,9 +331,22 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 
 #### EC2
 
+The EC2 launch type allows you to run your containerized applications on a cluster
+of Amazon EC2 instances that you manage.
+
+When a task that uses the EC2 launch type is launched, Amazon ECS must determine where
+to place the task based on the requirements specified in the task definition, such as
+CPU and memory. Similarly, when you scale down the task count, Amazon ECS must determine
+which tasks to terminate. You can apply task placement strategies and constraints to
+customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
+
 The following example runs a job from a task definition on EC2
 
 ```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
 const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
   compatibility: ecs.Compatibility.EC2,
 });
@@ -344,17 +357,31 @@ taskDefinition.addContainer('TheContainer', {
 });
 
 const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
-  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  cluster,
-  taskDefinition,
-  containerOverrides: [{
-    containerName: 'TheContainer',
-    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
-  },],
-});
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinition,
+    placementStrategies: [
+      ecs.PlacementStrategy.spreadAcrossInstances(),
+      ecs.PlacementStrategy.packedByCpu(),
+      ecs.PlacementStrategy.randomly(),
+    ],
+    placementConstraints: [
+      ecs.PlacementConstraint.memberOf('blieptuut')
+    ],
+  });
 ```
 
 #### Fargate
+
+AWS Fargate is a serverless compute engine for containers that works with Amazon
+Elastic Container Service (ECS). Fargate makes it easy for you to focus on building
+your applications. Fargate removes the need to provision and manage servers, lets you
+specify and pay for resources per application, and improves security through application
+isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
+
+The Fargate launch type allows you to run your containerized applications without the need
+to provision and manage the backend infrastructure. Just register your task definition and
+Fargate launches the container for you.
 
 The following example runs a job from a task definition on Fargate
 
