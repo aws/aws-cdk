@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-chatbot",
         "module": "aws_cdk.aws_chatbot"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

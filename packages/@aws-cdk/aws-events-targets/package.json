@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-events-targets",
         "module": "aws_cdk.aws_events_targets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

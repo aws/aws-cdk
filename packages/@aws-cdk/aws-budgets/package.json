@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-budgets",
         "module": "aws_cdk.aws_budgets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

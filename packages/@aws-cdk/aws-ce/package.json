@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ce",
         "module": "aws_cdk.aws_ce"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

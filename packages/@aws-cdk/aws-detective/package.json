@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-detective",
         "module": "aws_cdk.aws_detective"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

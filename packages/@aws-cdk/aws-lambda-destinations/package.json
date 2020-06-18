@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-lambda-destinations",
         "module": "aws_cdk.aws_lambda_destinations"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

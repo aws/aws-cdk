@@ -24,7 +24,9 @@
     "compat": "cdk-compat"
   },
   "awslint": {
-    "exclude": ["*:*"]
+    "exclude": [
+      "*:*"
+    ]
   },
   "cdk-build": {
     "eslint": {
@@ -71,7 +73,8 @@
         "distName": "monocdk.experiment",
         "module": "monocdk_experiment"
       }
-    }
+    },
+    "projectReferences": false
   },
   "author": {
     "name": "Amazon Web Services",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-qldb",
         "module": "aws_cdk.aws_qldb"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

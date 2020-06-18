@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ecr-assets",
         "module": "aws_cdk.aws_ecr_assets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

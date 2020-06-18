@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-appsync",
         "module": "aws_cdk.aws_appsync"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

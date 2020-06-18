@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-neptune",
         "module": "aws_cdk.aws_neptune"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

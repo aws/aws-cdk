@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-dax",
         "module": "aws_cdk.aws_dax"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

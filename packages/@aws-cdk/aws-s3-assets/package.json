@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-s3-assets",
         "module": "aws_cdk.aws_s3_assets"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

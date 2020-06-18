@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-ssm",
         "module": "aws_cdk.aws_ssm"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -26,7 +26,8 @@
         "distName": "aws-cdk.example-construct-library",
         "module": "aws_cdk.example_construct_library"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

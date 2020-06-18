@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-docdb",
         "module": "aws_cdk.aws_docdb"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

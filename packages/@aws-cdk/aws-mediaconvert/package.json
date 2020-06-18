@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-mediaconvert",
         "module": "aws_cdk.aws_mediaconvert"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

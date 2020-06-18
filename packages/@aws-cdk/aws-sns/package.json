@@ -28,7 +28,8 @@
     },
     "excludeTypescript": [
       "examples"
-    ]
+    ],
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-cloudwatch",
         "module": "aws_cdk.aws_cloudwatch"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

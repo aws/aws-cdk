@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-fms",
         "module": "aws_cdk.aws_fms"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

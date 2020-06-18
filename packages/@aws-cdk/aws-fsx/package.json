@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-fsx",
         "module": "aws_cdk.aws_fsx"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

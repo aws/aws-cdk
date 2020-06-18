@@ -25,7 +25,8 @@
         "distName": "aws-cdk.aws-logs-destinations",
         "module": "aws_cdk.aws_logs_destinations"
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",

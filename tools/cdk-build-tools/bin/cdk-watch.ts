@@ -23,7 +23,7 @@ async function main() {
     })
     .argv as any;
 
-  await shell(packageCompiler({ jsii: args.jsii, tsc: args.tsc }).concat(['-w']));
+  await shell(packageCompiler({ jsii: args.jsii, tsc: args.tsc }).concat(['-w']));
 }
 
 main().catch(e => {
