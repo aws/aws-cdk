@@ -57,6 +57,11 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
     }).toThrow(/Unsupported CloudFormation function 'Fn::DoesNotExist'/);
+
+    test('throws a validation exception when encountering an unrecognized resource attribute', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-resource-attribute.json');
+    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
   });
 });
 
