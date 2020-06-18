@@ -70,6 +70,8 @@
       "@aws-cdk/cx-api/semver/**",
       "monocdk-experiment/case",
       "monocdk-experiment/case/**",
+      "monocdk-experiment/fs-extra",
+      "monocdk-experiment/fs-extra/**",
       "monocdk-experiment/jsonschema",
       "monocdk-experiment/jsonschema/**",
       "monocdk-experiment/minimatch",
