@@ -680,6 +680,12 @@
     "myuserpool01998219": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
+        "AccountRecoverySetting": { 
+          "RecoveryMechanisms": [
+            { "Name": "verified_phone_number", "Priority": 1 },
+            { "Name": "verified_email", "Priority": 2 }
+          ]
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": false,
           "InviteMessageTemplate": {
