@@ -30,8 +30,15 @@ async function main() {
 
   const options = cdkBuildOptions();
 
+  const defaultShellOptions = {
+    timers,
+    env: {
+      CDK_DISABLE_STACK_TRACE: '1',
+    },
+  };
+
   if (options.test) {
-    await shell(options.test, { timers });
+    await shell(options.test, defaultShellOptions);
   }
 
   const testFiles = await unitTestFiles();
@@ -41,7 +48,7 @@ async function main() {
     if (testFiles.length > 0) {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
-    await shell([args.jest], { timers });
+    await shell([args.jest], defaultShellOptions);
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
@@ -65,12 +72,12 @@ async function main() {
     testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
-    await shell(testCommand, { timers });
+    await shell(testCommand, defaultShellOptions);
   }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['cdk-integ-assert'], { timers });
+    await shell(['cdk-integ-assert'], defaultShellOptions);
   }
 }
 

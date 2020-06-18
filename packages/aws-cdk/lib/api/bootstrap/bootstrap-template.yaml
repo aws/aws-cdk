@@ -347,6 +347,16 @@ Outputs:
     Description: The domain name of the S3 bucket owned by the CDK toolkit stack
     Value:
       Fn::Sub: "${StagingBucket.RegionalDomainName}"
+  FileAssetKeyArn:
+    Description: The ARN of the KMS key used to encrypt the asset bucket
+    Value:
+      Fn::If:
+        - CreateNewKey
+        - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+        - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+    Export:
+      Name:
+        Fn::Sub: CdkBootstrap-${Qualifier}-FileAssetKeyArn
   ImageRepositoryName:
     Description: The name of the ECR repository which hosts docker image assets
     Value:
@@ -354,7 +364,7 @@ Outputs:
   BootstrapVersion:
     Description: The version of the bootstrap resources that are currently mastered
       in this stack
-    Value: '2'
+    Value: '3'
     Export:
       Name:
         Fn::Sub: CdkBootstrap-${Qualifier}-Version
