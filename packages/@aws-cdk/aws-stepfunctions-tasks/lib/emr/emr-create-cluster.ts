@@ -943,7 +943,7 @@ export namespace EmrCreateCluster {
    *
    * @experimental
    */
-  export enum oScalingAdjustmentType {
+  export enum ScalingAdjustmentType {
     /**
      * CHANGE_IN_CAPACITY
      */
@@ -1252,8 +1252,7 @@ export namespace EmrCreateCluster {
      * @default 0
      */
     readonly instanceCount?: number;
-    s;
-    s;
+
     /**
      * Describes the EC2 instances and instance configurations for clusters that use the instance fleet configuration.
      * The instance fleet configuration is available only in Amazon EMR versions 4.8.0 and later, excluding 5.0.x versions.
