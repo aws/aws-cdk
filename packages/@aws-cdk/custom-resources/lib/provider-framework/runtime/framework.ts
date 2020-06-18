@@ -14,6 +14,22 @@ export = {
 };
 
 /**
+ * Decodes encoded true/false values
+ */
+function decodeBooleans(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case 'TRUE:BOOLEAN':
+        return true;
+      case 'FALSE:BOOLEAN':
+        return false;
+      default:
+        return v;
+    }
+  });
+}
+
+/**
  * The main runtime entrypoint of the async custom resource lambda function.
  *
  * Any lifecycle event changes to the custom resources will invoke this handler, which will, in turn,
@@ -26,7 +42,7 @@ export = {
 async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
   log('onEventHandler', cfnRequest);
 
-  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
+  cfnRequest.ResourceProperties = decodeBooleans(cfnRequest.ResourceProperties || { });
 
   const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
   log('onEvent returned:', onEventResult);

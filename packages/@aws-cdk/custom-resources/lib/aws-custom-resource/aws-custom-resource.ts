@@ -330,7 +330,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       pascalCaseProperties: true,
       encodeValues: true,
       properties: {
-        create: create,
+        create,
         update: props.onUpdate,
         delete: props.onDelete,
       },
