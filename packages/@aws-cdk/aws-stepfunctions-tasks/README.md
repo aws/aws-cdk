@@ -85,8 +85,8 @@ The following example provides the field named `input` as the input to the `Task
 state that runs a Lambda function.
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
   inputPath: '$.input'
 });
 ```
@@ -105,8 +105,8 @@ as well as other metadata.
 The following example assigns the output from the Task to a field named `result`
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
   outputPath: '$.Payload.result'
 });
 ```
@@ -150,11 +150,10 @@ The following example provides the field named `input` as the input to the Lambd
 and invokes it asynchronously.
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda, {
-    payload: sfn.Data.StringAt('$.input'),
-    invocationType: tasks.InvocationType.EVENT,
-  }),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
+  payload: sfn.Data.StringAt('$.input'),
+  invocationType: tasks.InvocationType.EVENT,
 });
 ```
 
@@ -617,37 +616,33 @@ Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functio
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
 
 ```ts
-new sfn.Task(stack, 'TrainSagemaker', {
-  task: new tasks.SagemakerTrainTask({
-    trainingJobName: sfn.Data.stringAt('$.JobName'),
-    role,
-    algorithmSpecification: {
-      algorithmName: 'BlazingText',
-      trainingInputMode: tasks.InputMode.FILE,
-    },
-    inputDataConfig: [
-      {
-        channelName: 'train',
-        dataSource: {
-          s3DataSource: {
-            s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
-          },
-        },
+new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
+  trainingJobName: sfn.Data.stringAt('$.JobName'),
+  role,
+  algorithmSpecification: {
+    algorithmName: 'BlazingText',
+    trainingInputMode: tasks.InputMode.FILE,
+  },
+  inputDataConfig: [{
+    channelName: 'train',
+    dataSource: {
+      s3DataSource: {
+        s3DataType: tasks.S3DataType.S3_PREFIX,
+        s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
       },
-    ],
-    outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
     },
-    resourceConfig: {
-      instanceCount: 1,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
-      volumeSizeInGB: 50,
-    },
-    stoppingCondition: {
-      maxRuntime: cdk.Duration.hours(1),
-    },
-  }),
+  }],
+  outputDataConfig: {
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+  },
+  resourceConfig: {
+    instanceCount: 1,
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+    volumeSize: cdk.Size.gibibytes(50),
+  },
+  stoppingCondition: {
+    maxRuntime: cdk.Duration.hours(1),
+  },
 });
 ```
 
@@ -656,29 +651,27 @@ new sfn.Task(stack, 'TrainSagemaker', {
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
 
 ```ts
-const transformJob = new tasks.SagemakerTransformTask(
-    transformJobName: "MyTransformJob",
-    modelName: "MyModelName",
-    role,
-    transformInput: {
-        transformDataSource: {
-            s3DataSource: {
-                s3Uri: 's3://inputbucket/train',
-                s3DataType: S3DataType.S3Prefix,
-            }
-        }
-    },
-    transformOutput: {
-        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
-    },
-    transformResources: {
-        instanceCount: 1,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+new sfn.SagemakerTransformTask(this, 'Batch Inference', {
+  transformJobName: 'MyTransformJob',
+  modelName: 'MyModelName',
+  role,
+  transformInput: {
+    transformDataSource: {
+      s3DataSource: {
+        s3Uri: 's3://inputbucket/train',
+        s3DataType: S3DataType.S3Prefix,
+      }
+    }
+  },
+  transformOutput: {
+    s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+  },
+  transformResources: {
+    instanceCount: 1,
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+  }
 });
 
-const task = new sfn.Task(this, 'Batch Inference', {
-    task: transformJob
-});
 ```
 
 ## SNS
