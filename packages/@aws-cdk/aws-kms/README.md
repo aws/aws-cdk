@@ -55,6 +55,21 @@ Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 
+If a Key has an associated Alias, the Alias can be imported by name and used in place
+of the Key as a reference. A common scenario for this is in referencing AWS managed keys.
+
+```ts
+const myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/aws/s3');
+const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
+    sendToCloudWatchLogs: true,
+    kmsKey: myKeyAlias
+});
+```
+
+Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` will be
+no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
+have a reference to the underlying KMS Key.
+
 ### Trust Account Identities
 
 KMS keys can be created to trust IAM policies. This is the default behavior in
@@ -102,7 +117,7 @@ bucket.grantReadWrite(fn);
 key.grantEncryptDecrypt(fn);
 ```
 
-The challenge in this scenario is the KMS key policy behavior. The simple way to understand 
+The challenge in this scenario is the KMS key policy behavior. The simple way to understand
 this, is IAM policies for account entities can only grant the permissions granted to the
 account root principle in the key policy. When `trustAccountIdentities` is true,
 the following policy statement is added:
