@@ -88,6 +88,24 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
+## Conditions
+
+If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const condition: core.CfnCondition = cfnTemplate.getCondition('MyCondition');
+```
+
+The `CfnCondition` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+condition.expression = core.Fn.conditionEquals(1, 2);
+```
+
 ## Known limitations
 
 This module is still in its early, experimental stage,
@@ -98,16 +116,16 @@ All items unchecked below are currently not supported.
 
 - [x] Resources
 - [ ] Parameters
-- [ ] Conditions
+- [x] Conditions
 - [ ] Outputs
 
 ### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
 
 - [x] Properties
-- [ ] Condition
+- [x] Condition
 - [x] DependsOn
-- [ ] CreationPolicy
-- [ ] UpdatePolicy
+- [x] CreationPolicy
+- [x] UpdatePolicy
 - [x] UpdateReplacePolicy
 - [x] DeletionPolicy
 - [x] Metadata
@@ -119,7 +137,7 @@ All items unchecked below are currently not supported.
 - [x] Fn::Join
 - [x] Fn::If
 - [ ] Fn::And
-- [ ] Fn::Equals
+- [x] Fn::Equals
 - [ ] Fn::Not
 - [ ] Fn::Or
 - [ ] Fn::Base64

@@ -52,6 +52,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   * @attribute
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 }
 
 /**
@@ -83,6 +95,16 @@ export interface ClusterAttributes {
    * The certificate-authority-data for your cluster.
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 
   /**
    * The security groups associated with this cluster.
@@ -300,6 +322,16 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  public readonly clusterEncryptionConfigKeyArn: string;
+
+  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -330,6 +362,12 @@ export class Cluster extends Resource implements ICluster {
    * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
    */
   public readonly defaultNodegroup?: Nodegroup;
+
+  /**
+   * If the cluster has one (or more) FargateProfiles associated, this array
+   * will hold a reference to each.
+   */
+  private readonly _fargateProfiles: FargateProfile[] = [];
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -414,6 +452,8 @@ export class Cluster extends Resource implements ICluster {
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
+    this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -736,12 +776,12 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
+  public get _kubectlCreationRole() {
     if (!this._clusterResource) {
       throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
-    return this._clusterResource.getCreationRoleArn(assumedBy);
+    return this._clusterResource.creationRole;
   }
 
   /**
@@ -754,7 +794,24 @@ export class Cluster extends Resource implements ICluster {
     }
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+    const provider = this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+
+    // allow the kubectl provider to assume the cluster creation role.
+    this._clusterResource.addTrustedRole(provider.role);
+
+    return provider;
+  }
+
+  /**
+   * Internal API used by `FargateProfile` to keep inventory of Fargate profiles associated with
+   * this cluster, for the sake of ensuring the profiles are created sequentially.
+   *
+   * @returns the list of FargateProfiles attached to this cluster, including the one just attached.
+   * @internal
+   */
+  public _attachFargateProfile(fargateProfile: FargateProfile): FargateProfile[] {
+    this._fargateProfiles.push(fargateProfile);
+    return this._fargateProfiles;
   }
 
   /**
@@ -990,6 +1047,8 @@ export interface AutoScalingGroupOptions {
 class ImportedCluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
   public readonly clusterCertificateAuthorityData: string;
+  public readonly clusterSecurityGroupId: string;
+  public readonly clusterEncryptionConfigKeyArn: string;
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
@@ -1003,6 +1062,8 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
+    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
