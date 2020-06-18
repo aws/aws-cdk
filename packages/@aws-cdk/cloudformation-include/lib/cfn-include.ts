@@ -23,6 +23,7 @@ export interface CfnIncludeProps {
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
+  private readonly parameters: { [parameterName: string]: core.CfnParameter } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -43,6 +44,11 @@ export class CfnInclude extends core.CfnElement {
     // then, instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
+    }
+
+    // instantiate all parameters
+    for (const parameterName of Object.keys(this.template.Parameters || {})) {
+      this.createParameter(parameterName);
     }
   }
 
@@ -72,7 +78,7 @@ export class CfnInclude extends core.CfnElement {
 
   /**
    * Returns the CfnCondition object from the 'Conditions'
-   * section of the CloudFormation template with the give name.
+   * section of the CloudFormation template with the given name.
    * Any modifications performed on that object will be reflected in the resulting CDK template.
    *
    * If a Condition with the given name is not present in the template,
@@ -88,19 +94,47 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnParameter object from the 'Parameters'
+   * section of the CloudFormation template with the given name.
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Parameter with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param parameterName the name of the Parameter in the CloudFormation template file
+   */
+  /* public getParameter(parameterName: string): core.CfnParameter {
+    const ret = this.parameters[parameterName];
+    if (!ret) {
+      throw new Error(`Parameter with name '${parameterName}' was not found in the template`);
+    }
+    return ret;
+  }
+  */
+
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
-      // except Conditions and Resources, which will be taken care of by the created L1s
-      if (section !== 'Conditions' && section !== 'Resources') {
+      // except Conditions, Resources, and Parameters, which will be taken care of by the created L1s
+      // ToDo
+      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters') {
         ret[section] = this.template[section];
       }
     }
 
     return ret;
+  }
+
+  private createParameter(parameterName: string): void {
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[parameterName]);
+    const CfnParameter = new core.CfnParameter(this, parameterName, expression);
+
+    CfnParameter.overrideLogicalId(parameterName);
+    this.parameters[parameterName] = CfnParameter;
   }
 
   private createCondition(conditionName: string): void {

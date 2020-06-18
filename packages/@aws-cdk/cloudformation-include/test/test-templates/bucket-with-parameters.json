@@ -1,0 +1,15 @@
+{
+  "Parameters": {
+    "BucketName": "MyS3Bucket"
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "BucketName"
+        }
+      }
+    }
+  }
+}

@@ -251,6 +251,19 @@ describe('CDK Include', () => {
     );
   });
 
+  test("correctly parses templates with parameters", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    //const bucketNameParam = cfnTemplate.getParameter('BucketName');
+
+    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+      "Properties": {
+        "BucketName": "MyS3Bucket"
+      }
+    });
+
+    //expect(bucketNameParam).toBe("MyS3Bucket");
+  });
+
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
     const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
@@ -299,6 +312,7 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
   });
+
 });
 
 interface IncludeTestTemplateProps {
