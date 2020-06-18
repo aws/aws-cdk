@@ -34,6 +34,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Attributes](#attributes)
   - [Security](#security)
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
+    - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
@@ -268,6 +269,18 @@ new UserPool(this, 'myuserpool', {
 ```
 
 Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
+
+#### Account Recovery Settings
+
+User pools can be configured on which method a user should use when recovering the password for their account. This
+can either be email and/or SMS. Read more at [Recovering User Accounts](https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html)
+
+```ts
+new UserPool(this, 'UserPool', {
+  ...,
+  accountRecoverySettings: AccountRecovery.EMAIL_ONLY,
+})
+```
 
 ### Emails
 

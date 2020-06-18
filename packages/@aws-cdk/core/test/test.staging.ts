@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
+import * as sinon from 'sinon';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
@@ -26,6 +27,7 @@ export = {
       fs.unlinkSync(STUB_INPUT_FILE);
     }
     cb();
+    sinon.restore();
   },
 
   'base case'(test: Test) {
@@ -103,6 +105,8 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
+    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -126,6 +130,11 @@ export = {
       'stack.template.json',
       'tree.json',
     ]);
+
+    // asset is bundled in a directory inside .cdk.staging
+    const stagingTmp = path.join('.', '.cdk.staging');
+    test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
+    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
 
     test.done();
   },
@@ -192,7 +201,7 @@ export = {
 
     // THEN
     test.equal(fs.existsSync(STUB_INPUT_FILE), false);
-    test.equal(asset.assetHash, 'my-custom-hash');
+    test.equal(asset.assetHash, 'b9c77053f5b83bbe5ba343bc18e92db939a49017010813225fea91fa892c4823'); // hash of 'my-custom-hash'
 
     test.done();
   },
