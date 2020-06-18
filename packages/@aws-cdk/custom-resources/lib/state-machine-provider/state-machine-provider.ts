@@ -104,7 +104,7 @@ export class StateMachineProvider extends Construct {
           End: true,
         },
       },
-    }, 2);
+    });
 
     const stateMachine = new CfnResource(this, 'StateMachine', {
       type: 'AWS::StepFunctions::StateMachine',

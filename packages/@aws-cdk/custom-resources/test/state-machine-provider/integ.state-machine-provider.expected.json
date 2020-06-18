@@ -31,7 +31,7 @@
     "PassStateMachine597FE51C": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\n  \"StartAt\": \"Pass\",\n  \"States\": {\n    \"Pass\": {\n      \"Type\": \"Pass\",\n      \"Result\": {\n        \"PhysicalResourceId\": \"physical-resource-id\",\n        \"Data\": {\n          \"foo\": \"bar\"\n        }\n      },\n      \"End\": true\n    }\n  }\n}",
+        "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"Result\":{\"PhysicalResourceId\":\"physical-resource-id\",\"Data\":{\"foo\":\"bar\"}},\"End\":true}}}",
         "RoleArn": {
           "Fn::GetAtt": [
             "PassStateMachineRoleFFB3319B",
@@ -358,25 +358,25 @@
           "Fn::Join": [
             "",
             [
-              "{\n  \"StartAt\": \"StartExecution\",\n  \"States\": {\n    \"StartExecution\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:states:::states:startExecution.sync:2\",\n      \"Parameters\": {\n        \"Input.$\": \"$\",\n        \"StateMachineArn\": \"",
+              "{\"StartAt\":\"StartExecution\",\"States\":{\"StartExecution\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::states:startExecution.sync:2\",\"Parameters\":{\"Input.$\":\"$\",\"StateMachineArn\":\"",
               {
                 "Ref": "PassStateMachine597FE51C"
               },
-              "\"\n      },\n      \"TimeoutSeconds\": 1800,\n      \"Next\": \"CfnResponseSuccess\",\n      \"Catch\": [\n        {\n          \"ErrorEquals\": [\n            \"States.ALL\"\n          ],\n          \"Next\": \"CfnResponseFailed\"\n        }\n      ]\n    },\n    \"CfnResponseSuccess\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"",
+              "\"},\"TimeoutSeconds\":1800,\"Next\":\"CfnResponseSuccess\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"CfnResponseFailed\"}]},\"CfnResponseSuccess\":{\"Type\":\"Task\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
                   "ProviderCfnResponseSuccess01B6851D",
                   "Arn"
                 ]
               },
-              "\",\n      \"End\": true\n    },\n    \"CfnResponseFailed\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"",
+              "\",\"End\":true},\"CfnResponseFailed\":{\"Type\":\"Task\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
                   "ProviderCfnResponseFailedCC9A90F2",
                   "Arn"
                 ]
               },
-              "\",\n      \"End\": true\n    }\n  }\n}"
+              "\",\"End\":true}}}"
             ]
           ]
         },

@@ -58,7 +58,7 @@ class PassStateMachine extends Construct implements IStateMachine {
           End: true,
         },
       },
-    }, 2);
+    });
 
     const passStateMachine = new CfnResource(this, 'Resource', {
       type: 'AWS::StepFunctions::StateMachine',

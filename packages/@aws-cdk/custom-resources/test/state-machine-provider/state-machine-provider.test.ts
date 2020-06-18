@@ -25,21 +25,21 @@ test('State machine provider', () => {
       'Fn::Join': [
         '',
         [
-          '{\n  "StartAt": "StartExecution",\n  "States": {\n    "StartExecution": {\n      "Type": "Task",\n      "Resource": "arn:aws:states:::states:startExecution.sync:2",\n      "Parameters": {\n        "Input.$": "$",\n        "StateMachineArn": "arn:aws:states:us-east-1:123456789012:stateMachine:my-machine"\n      },\n      "TimeoutSeconds": 1800,\n      "Next": "CfnResponseSuccess",\n      "Catch": [\n        {\n          "ErrorEquals": [\n            "States.ALL"\n          ],\n          "Next": "CfnResponseFailed"\n        }\n      ]\n    },\n    "CfnResponseSuccess": {\n      "Type": "Task",\n      "Resource": "',
+          '{"StartAt":"StartExecution","States":{"StartExecution":{"Type":"Task","Resource":"arn:aws:states:::states:startExecution.sync:2","Parameters":{"Input.$":"$","StateMachineArn":"arn:aws:states:us-east-1:123456789012:stateMachine:my-machine"},"TimeoutSeconds":1800,"Next":"CfnResponseSuccess","Catch":[{"ErrorEquals":["States.ALL"],"Next":"CfnResponseFailed"}]},"CfnResponseSuccess":{"Type":"Task","Resource":"',
           {
             'Fn::GetAtt': [
               'ProviderCfnResponseSuccess01B6851D',
               'Arn',
             ],
           },
-          '",\n      "End": true\n    },\n    "CfnResponseFailed": {\n      "Type": "Task",\n      "Resource": "',
+          '","End":true},"CfnResponseFailed":{"Type":"Task","Resource":"',
           {
             'Fn::GetAtt': [
               'ProviderCfnResponseFailedCC9A90F2',
               'Arn',
             ],
           },
-          '",\n      "End": true\n    }\n  }\n}',
+          '","End":true}}}',
         ],
       ],
     },
