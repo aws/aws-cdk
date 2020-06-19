@@ -82,7 +82,7 @@ export interface TrailProps {
    *
    * @default - No encryption.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 
   /** SNS topic that is notified when new log files are published.
    *
@@ -261,7 +261,7 @@ export class Trail extends Resource {
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
-      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      kmsKeyId: props.encryptionKey?.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
