@@ -4,6 +4,8 @@ import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from
 /**
  * Extract a field from the State Machine data or context
  * that gets passed around between states
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-paths.html
  */
 export class JsonPath {
   /**
@@ -18,6 +20,7 @@ export class JsonPath {
    * Instead of using a literal string list, get the value from a JSON path
    */
   public static listAt(path: string): string[] {
+    // does not apply to task context
     validateDataPath(path);
     return Token.asList(new JsonPathToken(path));
   }
@@ -77,6 +80,8 @@ export class JsonPath {
 
 /**
  * Extract a field from the State Machine data that gets passed around between states
+ *
+ * @deprecated replaced by `JsonPath`
  */
 export class Data {
   /**
@@ -130,6 +135,8 @@ export class Data {
  * Extract a field from the State Machine Context data
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#wait-token-contextobject
+ *
+ * @deprecated replaced by `JsonPath`
  */
 export class Context {
   /**
