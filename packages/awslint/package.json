@@ -1,6 +1,5 @@
 {
   "name": "awslint",
-  "private": true,
   "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
@@ -9,7 +8,8 @@
     "lint": "tslint -p . && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
-    "build+test+package": "npm run build+test",
+    "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
+    "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
   "bin": {
