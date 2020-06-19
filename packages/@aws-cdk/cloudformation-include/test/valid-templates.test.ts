@@ -345,7 +345,6 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
   });
-
 });
 
 interface IncludeTestTemplateProps {
