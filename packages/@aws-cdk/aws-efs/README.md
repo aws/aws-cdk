@@ -28,6 +28,15 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
+A file system can set `RemovalPolicy`. Default policy is `RETAIN`.
+
+```ts
+const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
+  vpc,
+  removalPolicy: RemovalPolicy.DESTROY
+});
+```
+
 ### Access Point
 
 An access point is an application-specific view into an EFS file system that applies an operating system user and
