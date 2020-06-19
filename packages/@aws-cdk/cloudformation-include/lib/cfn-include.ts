@@ -40,6 +40,7 @@ export class CfnInclude extends core.CfnElement {
     for (const logicalId of Object.keys(this.template.Parameters || {})) {
       this.createParameter(logicalId);
     }
+
     // first, instantiate the conditions
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.createCondition(conditionName);
