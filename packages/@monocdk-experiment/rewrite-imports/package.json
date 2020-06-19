@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "glob": "^7.1.6",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.5"
   },
   "devDependencies": {
     "@types/glob": "^7.1.2",
