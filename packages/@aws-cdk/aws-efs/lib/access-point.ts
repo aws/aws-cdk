@@ -12,6 +12,50 @@ export interface IAccessPoint extends IResource {
    * @attribute
    */
   readonly accessPointId: string;
+
+  /**
+   * The ARN of the AccessPoint
+   *
+   * @attribute
+   */
+  readonly accessPointArn: string;
+}
+
+export interface CreationInfo {
+  /**
+   * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
+   */
+  readonly ownerUid: string;
+
+  /**
+   * Specifies the POSIX group ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
+   */
+  readonly ownerGid: string;
+
+  /**
+   * Specifies the POSIX permissions to apply to the RootDirectory, in the format of an octal number representing
+   * the file's mode bits.
+   */
+  readonly permissions: string;
+}
+
+export interface PosixUser {
+  /**
+   * The POSIX user ID used for all file system operations using this access point.
+   */
+  readonly uid: string;
+
+  /**
+   * The POSIX group ID used for all file system operations using this access point.
+   */
+  readonly gid: string;
+
+  /**
+   * Secondary POSIX group IDs used for all file system operations using this access point.
+   *
+   * @default - None
+   */
+  readonly secondaryGids?: string[];
 }
 
 /**
@@ -24,55 +68,39 @@ export interface AccessPointProps {
   readonly filesystem: IFileSystem;
 
   /**
-   * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
-   *
-   * @default 1000
+   * Specifies the POSIX IDs and permissions to apply to the access point's RootDirectory. If the
+   * `RootDirectory` > `Path` specified does not exist, EFS creates the root directory using the `CreationInfo`
+   *  settings when a client connects to an access point.
    */
-  readonly ownerUid?: string;
-
-  /**
-   * Specifies the POSIX group ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
-   *
-   * @default 1000
-   */
-  readonly ownerGid?: string;
-
-  /**
-   * Specifies the POSIX permissions to apply to the RootDirectory, in the format of an octal number representing
-   * the file's mode bits.
-   *
-   * @default 755
-   */
-  readonly permissions?: string;
+  readonly creationInfo?: CreationInfo;
 
   /**
    * Specifies the path on the EFS file system to expose as the root directory to NFS clients using the access point
    * to access the EFS file system
    *
-   * @default /export
+   * @default - root(/) directory of the efs filesystem
    */
   readonly path?: string;
 
   /**
-   * The POSIX user ID used for all file system operations using this access point.
-   *
-   * @default 1000
-   */
-  readonly posixUserUid?: string;
-
-  /**
-   * Secondary POSIX group IDs used for all file system operations using this access point.
+   * The full POSIX identity, including the user ID, group ID, and any secondary group IDs, on the access point
+   *  that is used for all file system operations performed by NFS clients using the access point.
    *
    * @default - None
    */
-  readonly secondaryGids?: string[];
+  readonly posixUser?: PosixUser;
+}
+
+export interface AccessPointAttributes {
+  /**
+   * ID of the Access Point
+   */
+  readonly accessPointId: string;
 
   /**
-   * The POSIX group ID used for all file system operations using this access point.
-   *
-   * @default 1000
+   * ARN of the Access Point
    */
-  readonly posixUserGid?: string;
+  readonly accessPointArn: string;
 }
 
 /**
@@ -82,9 +110,10 @@ export class AccessPoint extends Resource implements IAccessPoint {
   /**
    * Import an existing Access Point
    */
-  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
+  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     class Import extends Resource implements IAccessPoint {
-      public readonly accessPointId = accessPointId;
+      public readonly accessPointId = attrs.accessPointId;
+      public readonly accessPointArn = attrs.accessPointArn;
     }
     return new Import(scope, id);
   }
@@ -107,18 +136,18 @@ export class AccessPoint extends Resource implements IAccessPoint {
     const resource = new CfnAccessPoint(scope, 'Resource', {
       fileSystemId: props.filesystem.fileSystemId,
       rootDirectory: {
-        creationInfo: {
-          ownerGid: props.ownerGid ?? '1000',
-          ownerUid: props.ownerUid ?? '1000',
-          permissions: props.permissions ?? '755',
-        },
-        path: props.path ?? '/export',
+        creationInfo: props.creationInfo ? {
+          ownerGid: props.creationInfo?.ownerGid,
+          ownerUid: props.creationInfo?.ownerUid,
+          permissions: props.creationInfo?.permissions,
+        } : undefined,
+        path: props.path,
       },
-      posixUser: {
-        gid: props.posixUserGid ?? '1000',
-        uid: props.posixUserUid ?? '1000',
-        secondaryGids: props.secondaryGids,
-      },
+      posixUser: props.posixUser ? {
+        uid: props.posixUser.uid,
+        gid: props.posixUser.gid,
+        secondaryGids: props.posixUser.secondaryGids,
+      } : undefined
     });
 
     this.accessPointId = resource.ref;
