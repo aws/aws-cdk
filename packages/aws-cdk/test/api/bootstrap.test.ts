@@ -42,6 +42,11 @@ beforeEach(() => {
       executed = true;
       return {};
     }),
+    getTemplate: jest.fn(() => {
+      executed = true;
+      return {};
+    }),
+    deleteStack: jest.fn(),
   };
   sdk.stubCloudFormation(cfnMocks);
 });
@@ -156,4 +161,97 @@ test('passing CFN execution policies to the old bootstrapping results in an erro
   }))
     .rejects
     .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience.');
+});
+
+test('even if the bootstrap stack is in a rollback state, can still retry bootstrapping it', async () => {
+  (cfnMocks.describeStacks! as jest.Mock)
+    .mockReset()
+    // First two calls, the stack exists with a 'rollback complete' status
+    // (first is for version checking, second is in deploy-stack.ts)
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+        StackStatusReason: 'It is magic',
+        Outputs: [
+          { OutputKey: 'BucketName', OutputValue: 'bucket' },
+          { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
+        ],
+      },
+    ] }))
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+        StackStatusReason: 'It is magic',
+        Outputs: [
+          { OutputKey: 'BucketName', OutputValue: 'bucket' },
+          { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
+        ],
+      },
+    ] }))
+    // Third call, stack has been created
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'CREATE_COMPLETE',
+        StackStatusReason: 'It is magic',
+        EnableTerminationProtection: false,
+      },
+    ]}));
+
+  // WHEN
+  const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+});
+
+test('even if the bootstrap stack failed to create, can still retry bootstrapping it', async () => {
+  (cfnMocks.describeStacks! as jest.Mock)
+    .mockReset()
+    // First two calls, the stack exists with a 'rollback complete' status
+    // (first is for version checking, second is in deploy-stack.ts)
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'ROLLBACK_COMPLETE',
+        StackStatusReason: 'It is magic',
+        Outputs: [
+          { OutputKey: 'BucketName', OutputValue: 'bucket' },
+        ],
+      } as AWS.CloudFormation.Stack,
+    ] }))
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'ROLLBACK_COMPLETE',
+        StackStatusReason: 'It is magic',
+        Outputs: [
+          { OutputKey: 'BucketName', OutputValue: 'bucket' },
+        ],
+      },
+    ] }))
+    // Third call, we just did a delete and want to see it gone
+    .mockImplementationOnce(() => ({ Stacks: [] }))
+    // Fourth call, stack has been created
+    .mockImplementationOnce(() => ({ Stacks: [
+      {
+        StackStatus: 'CREATE_COMPLETE',
+        StackStatusReason: 'It is magic',
+        EnableTerminationProtection: false,
+      },
+    ]}));
+
+  // WHEN
+  const ret = await bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
+
+  // THEN
+  const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
+  expect(bucketProperties.BucketName).toBeUndefined();
+  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
+    .toBeUndefined();
+  expect(ret.noOp).toBeFalsy();
+  expect(executed).toBeTruthy();
+  expect(cfnMocks.deleteStack).toHaveBeenCalled();
 });
