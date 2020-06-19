@@ -21,6 +21,9 @@ export interface IAccessPoint extends IResource {
   readonly accessPointArn: string;
 }
 
+/**
+ * Represents the CreateionInfo
+ */
 export interface CreationInfo {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
@@ -39,6 +42,9 @@ export interface CreationInfo {
   readonly permissions: string;
 }
 
+/**
+ * Represents the PosixUser
+ */
 export interface PosixUser {
   /**
    * The POSIX user ID used for all file system operations using this access point.
@@ -65,12 +71,14 @@ export interface AccessPointProps {
   /**
    * The efs filesystem
    */
-  readonly filesystem: IFileSystem;
+  readonly fileSystem: IFileSystem;
 
   /**
    * Specifies the POSIX IDs and permissions to apply to the access point's RootDirectory. If the
    * `RootDirectory` > `Path` specified does not exist, EFS creates the root directory using the `CreationInfo`
    *  settings when a client connects to an access point.
+   *
+   * @default - None
    */
   readonly creationInfo?: CreationInfo;
 
@@ -91,6 +99,9 @@ export interface AccessPointProps {
   readonly posixUser?: PosixUser;
 }
 
+/**
+ * Attributes of the Access Point
+ */
 export interface AccessPointAttributes {
   /**
    * ID of the Access Point
@@ -134,12 +145,12 @@ export class AccessPoint extends Resource implements IAccessPoint {
     super(scope, id);
 
     const resource = new CfnAccessPoint(scope, 'Resource', {
-      fileSystemId: props.filesystem.fileSystemId,
+      fileSystemId: props.fileSystem.fileSystemId,
       rootDirectory: {
         creationInfo: props.creationInfo ? {
-          ownerGid: props.creationInfo?.ownerGid,
-          ownerUid: props.creationInfo?.ownerUid,
-          permissions: props.creationInfo?.permissions,
+          ownerGid: props.creationInfo.ownerGid,
+          ownerUid: props.creationInfo.ownerUid,
+          permissions: props.creationInfo.permissions,
         } : undefined,
         path: props.path,
       },
@@ -147,7 +158,7 @@ export class AccessPoint extends Resource implements IAccessPoint {
         uid: props.posixUser.uid,
         gid: props.posixUser.gid,
         secondaryGids: props.posixUser.secondaryGids,
-      } : undefined
+      } : undefined,
     });
 
     this.accessPointId = resource.ref;

@@ -36,16 +36,12 @@ and group override any identity information provided by the NFS client. The file
 access point's root directory. Applications using the access point can only access data in its own directory and
 below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
 
-Use `AccessPoint` to create an access point or `addAccessPoint()` from the `FileSystem` resource:
+Use `AccessPoint` to create an access point:
 
 ```ts
-// create first access point
-new AccessPoint(stack, 'AccessPoint1', {
+new AccessPoint(stack, 'AccessPoint', {
   fileSystem
 });
-
-// create second access point
-fileSystem.addAccessPoint(stack, 'AccessPoint2', {...})
 ```
 
 By default, when you create an access point, the root(`/`) directory is exposed to the client connecting to

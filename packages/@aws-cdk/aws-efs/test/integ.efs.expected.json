@@ -556,7 +556,7 @@
             "OwnerUid": "1000",
             "Permissions": "755"
           },
-          "Path": "/export"
+          "Path": "/custom-path"
         }
       }
     }
