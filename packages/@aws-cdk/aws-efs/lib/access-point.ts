@@ -3,7 +3,7 @@ import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 
 /**
- * Interface to implement AccessPoint
+ * Represents an EFS AccessPoint
  */
 export interface IAccessPoint extends IResource {
   /**
