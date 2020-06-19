@@ -815,7 +815,7 @@ test('Create Cluster with InstanceGroup', () => {
                 evalutionPeriods: 1,
                 metricName: 'Name',
                 namespace: 'Namespace',
-                period: cdk.Duration.seconds(sfn.Data.numberAt('$.CloudWatchPeriod')),
+                period: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.CloudWatchPeriod')),
                 statistic: tasks.EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
                 threshold: 1,
                 unit: tasks.EmrCreateCluster.CloudWatchAlarmUnit.NONE,

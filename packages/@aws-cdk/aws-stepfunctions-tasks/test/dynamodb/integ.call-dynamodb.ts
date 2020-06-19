@@ -36,7 +36,7 @@ class CallDynamoDBStack extends cdk.Stack {
         item: {
           MessageId: new tasks.DynamoAttributeValue().withS(MESSAGE_ID),
           Text: new tasks.DynamoAttributeValue().withS(
-            sfn.Data.stringAt('$.bar'),
+            sfn.JsonPath.stringAt('$.bar'),
           ),
           TotalCount: new tasks.DynamoAttributeValue().withN(`${firstNumber}`),
         },
@@ -63,7 +63,7 @@ class CallDynamoDBStack extends cdk.Stack {
         tableName: TABLE_NAME,
         expressionAttributeValues: {
           ':val': new tasks.DynamoAttributeValue().withN(
-            sfn.Data.stringAt('$.Item.TotalCount.N'),
+            sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
           ),
           ':rand': new tasks.DynamoAttributeValue().withN(`${secondNumber}`),
         },
@@ -79,7 +79,7 @@ class CallDynamoDBStack extends cdk.Stack {
         },
         tableName: TABLE_NAME,
       }),
-      outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
+      outputPath: sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
     });
 
     const deleteItemTask = new sfn.Task(this, 'DeleteItem', {

@@ -73,7 +73,7 @@ test('PutItem task', () => {
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
         ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N'),
+          sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
         ),
       },
       returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
@@ -124,7 +124,7 @@ test('DeleteItem task', () => {
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
         ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N'),
+          sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
         ),
       },
       returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
@@ -175,7 +175,7 @@ test('UpdateItem task', () => {
       expressionAttributeNames: { OTHER_KEY: '#OK' },
       expressionAttributeValues: {
         ':val': new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.Item.TotalCount.N'),
+          sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
         ),
       },
       returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
@@ -222,18 +222,18 @@ test('supports tokens', () => {
       partitionKey: {
         name: 'SOME_KEY',
         value: new tasks.DynamoAttributeValue().withS(
-          sfn.Data.stringAt('$.partitionKey'),
+          sfn.JsonPath.stringAt('$.partitionKey'),
         ),
       },
       sortKey: {
         name: 'OTHER_KEY',
         value: new tasks.DynamoAttributeValue().withN(
-          sfn.Data.stringAt('$.sortKey'),
+          sfn.JsonPath.stringAt('$.sortKey'),
         ),
       },
-      tableName: sfn.Data.stringAt('$.tableName'),
+      tableName: sfn.JsonPath.stringAt('$.tableName'),
       consistentRead: true,
-      expressionAttributeNames: { OTHER_KEY: sfn.Data.stringAt('$.otherKey') },
+      expressionAttributeNames: { OTHER_KEY: sfn.JsonPath.stringAt('$.otherKey') },
       projectionExpression: [
         new tasks.DynamoProjectionExpression()
           .withAttribute('Messages')

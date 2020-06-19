@@ -144,7 +144,7 @@ Most tasks take parameters. Parameter values can either be static, supplied dire
 in the workflow definition (by specifying their values), or a value available at runtime
 in the state machine's execution (either as its input or an output of a prior state).
 Parameter values available at runtime can be specified via the `Data` class,
-using methods such as `Data.stringAt()`.
+using methods such as `JsonPath.stringAt()`.
 
 The following example provides the field named `input` as the input to the Lambda function
 and invokes it asynchronously.
@@ -152,7 +152,7 @@ and invokes it asynchronously.
 ```ts
 const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
   lambdaFunction: submitJobLambda,
-  payload: sfn.Data.StringAt('$.input'),
+  payload: sfn.JsonPath.StringAt('$.input'),
   invocationType: tasks.InvocationType.EVENT,
 });
 ```
@@ -271,7 +271,7 @@ new sfn.Task(this, 'PutItem', {
   task: tasks.CallDynamoDB.putItem({
     item: {
       MessageId: new tasks.DynamoAttributeValue().withS('message-007'),
-      Text: new tasks.DynamoAttributeValue().withS(sfn.Data.stringAt('$.bar')),
+      Text: new tasks.DynamoAttributeValue().withS(sfn.JsonPath.stringAt('$.bar')),
       TotalCount: new tasks.DynamoAttributeValue().withN('10'),
     },
     tableName: 'my-table',
@@ -310,7 +310,7 @@ const updateItemTask = new sfn.Task(this, 'UpdateItem', {
     },
     tableName: 'my-table',
     expressionAttributeValues: {
-      ':val': new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.Item.TotalCount.N')),
+      ':val': new tasks.DynamoAttributeValue().withN(sfn.JsonPath.stringAt('$.Item.TotalCount.N')),
       ':rand': new tasks.DynamoAttributeValue().withN('20'),
     },
     updateExpression: 'SET TotalCount = :val + :rand',
@@ -340,7 +340,7 @@ new ecs.RunEcsFargateTask({
       environment: [
         {
           name: 'CONTAINER_INPUT',
-          value: Data.stringAt('$.valueFromStateData'),
+          value: JsonPath.stringAt('$.valueFromStateData'),
         }
       ]
     }
@@ -492,7 +492,7 @@ Corresponds to the [`modifyInstanceGroups`](https://docs.aws.amazon.com/emr/late
 new sfn.Task(stack, 'Task', {
   task: new tasks.EmrModifyInstanceGroupByName({
     clusterId: 'ClusterId',
-    instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
+    instanceGroupName: sfn.JsonPath.stringAt('$.InstanceGroupName'),
     instanceGroup: {
       instanceCount: 1,
     },
@@ -597,8 +597,8 @@ new tasks.LambdaInvoke(stack, 'Invoke with callback', {
   lambdaFunction: myLambda,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   payload: sfn.TaskInput.fromObject({
-    token: sfn.Context.taskToken,
-    input: sfn.Data.stringAt('$.someField'),
+    token: sfn.JsonPath.taskToken,
+    input: sfn.JsonPath.stringAt('$.someField'),
   }),
 });
 ```
@@ -617,7 +617,7 @@ You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/lat
 
 ```ts
 new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
-  trainingJobName: sfn.Data.stringAt('$.JobName'),
+  trainingJobName: sfn.JsonPath.stringAt('$.JobName'),
   role,
   algorithmSpecification: {
     algorithmName: 'BlazingText',
@@ -702,7 +702,7 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
   topic,
   message: sfn.TaskInput.fromObject({
     field1: 'somedata',
-    field2: sfn.Data.stringAt('$.field2'),
+    field2: sfn.JsonPath.stringAt('$.field2'),
   })
 });
 ```
@@ -724,7 +724,7 @@ const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
   stateMachine: child,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   input: sfn.TaskInput.fromObject({
-    token: sfn.Context.taskToken,
+    token: sfn.JsonPath.taskToken,
     foo: 'bar'
   }),
   name: 'MyExecutionName'
@@ -764,7 +764,7 @@ const task2 = new tasks.SqsSendMessage(this, 'Send2', {
   queue,
   messageBody: sfn.TaskInput.fromObject({
     field1: 'somedata',
-    field2: sfn.Data.stringAt('$.field2'),
+    field2: sfn.JsonPath.stringAt('$.field2'),
   }),
 });
 ```

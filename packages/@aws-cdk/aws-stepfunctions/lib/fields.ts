@@ -2,6 +2,80 @@ import { Token } from '@aws-cdk/core';
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from './json-path';
 
 /**
+ * Extract a field from the State Machine data or context
+ * that gets passed around between states
+ */
+export class JsonPath {
+  /**
+   * Instead of using a literal string, get the value from a JSON path
+   */
+  public static stringAt(path: string): string {
+    validateJsonPath(path);
+    return new JsonPathToken(path).toString();
+  }
+
+  /**
+   * Instead of using a literal string list, get the value from a JSON path
+   */
+  public static listAt(path: string): string[] {
+    validateDataPath(path);
+    return Token.asList(new JsonPathToken(path));
+  }
+
+  /**
+   * Instead of using a literal number, get the value from a JSON path
+   */
+  public static numberAt(path: string): number {
+    validateJsonPath(path);
+    return Token.asNumber(new JsonPathToken(path));
+  }
+
+  /**
+   * Use the entire data structure
+   *
+   * Will be an object at invocation time, but is represented in the CDK
+   * application as a string.
+   */
+  public static get entirePayload(): string {
+    return new JsonPathToken('$').toString();
+  }
+
+  /**
+   * Determines if the indicated string is an encoded JSON path
+   *
+   * @param value string to be evaluated
+   */
+  public static isJsonPathString(value: string): boolean {
+    return !!jsonPathString(value);
+  }
+
+  /**
+   * Return the Task Token field
+   *
+   * External actions will need this token to report step completion
+   * back to StepFunctions using the `SendTaskSuccess` or `SendTaskFailure`
+   * calls.
+   */
+  public static get taskToken(): string {
+    return new JsonPathToken('$$.Task.Token').toString();
+  }
+
+  /**
+   * Use the entire context data structure
+   *
+   * Will be an object at invocation time, but is represented in the CDK
+   * application as a string.
+   */
+  public static get entireContext(): string {
+    return new JsonPathToken('$$').toString();
+  }
+
+  private constructor() {
+  }
+
+}
+
+/**
  * Extract a field from the State Machine data that gets passed around between states
  */
 export class Data {
@@ -130,6 +204,12 @@ export class FieldUtils {
   }
 
   private constructor() {
+  }
+}
+
+function validateJsonPath(path: string) {
+  if (path !== '$' && !path.startsWith('$.') && path !== '$$' && !path.startsWith('$$.')) {
+    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.' or start with '$$.' Received: ${path}`);
   }
 }
 
