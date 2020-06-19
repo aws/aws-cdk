@@ -78,6 +78,17 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnParameter object from the 'Parameters'
+   * section of the included template
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Parameter with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param parameterName the name of the parameter to retrieve
+   */
+
   public getParameter(parameterName: string): core.CfnParameter {
     const ret = this.parameters[parameterName];
     if (!ret) {
@@ -136,7 +147,7 @@ export class CfnInclude extends core.CfnElement {
       noEcho: expression.NoEcho,
     };
     const CfnParameter = new core.CfnParameter(this, logicalId, expressionCaseCorrected);
-    
+
     CfnParameter.overrideLogicalId(logicalId);
     this.parameters[logicalId] = CfnParameter;
   }

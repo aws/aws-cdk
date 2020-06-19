@@ -263,27 +263,27 @@ describe('CDK Include', () => {
             "Type": "AWS::S3::Bucket",
             "Properties": {
               "BucketName": {
-                "Ref": "BucketName"
-              }
-            }
+                "Ref": "BucketName",
+              },
+            },
           },
           "newBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
               "BucketName": {
-                "Ref": "BucketName"
-              }
-            }
-          }
+                "Ref": "BucketName",
+              },
+            },
+          },
         },
         "Parameters": {
           "BucketName": {
             "Type": "String",
             "Default": "MyS3Bucket",
-            "Description": "The name of your bucket"
-          }
-        }
-      }
+            "Description": "The name of your bucket",
+          },
+        },
+      },
     );
 
     expect(bucket.bucketName).toBeDefined();
