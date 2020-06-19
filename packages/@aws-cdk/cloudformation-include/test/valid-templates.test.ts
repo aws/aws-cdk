@@ -255,8 +255,8 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
-    new s3.CfnBucket(stack, "NewBucket", {
-      "bucketName": param.valueAsString,
+    new s3.CfnBucket(stack, 'NewBucket', {
+      bucketName: param.valueAsString,
     });
 
     expect(stack).toMatchTemplate({
@@ -281,7 +281,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
 
     expect(() => {
-      cfnTemplate.getParameter("FakeBucketNameThatDoesNotExist");
+      cfnTemplate.getParameter('FakeBucketNameThatDoesNotExist');
     }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
   });
 
