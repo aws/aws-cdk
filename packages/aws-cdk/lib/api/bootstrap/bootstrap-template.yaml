@@ -28,6 +28,11 @@ Parameters:
     Description: An identifier to distinguish multiple bootstrap stacks in the same environment
     Default: hnb659fds
     Type: String
+  PublicAccessBlockConfiguration:
+    Description: Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+    Default: 'true'
+    Type: 'String'
+    AllowedValues: ['true', 'false']
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -57,6 +62,10 @@ Conditions:
       - Fn::Equals:
           - ''
           - Ref: ContainerAssetsRepositoryName
+  UsePublicAccessBlockConfiguration:
+    Fn::Equals:
+      - 'true'
+      - Ref: PublicAccessBlockConfiguration  
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -128,10 +137,13 @@ Resources:
                   - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
                   - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
+        Fn::If:
+          - UsePublicAccessBlockConfiguration
+          - BlockPublicAcls: true
+            BlockPublicPolicy: true
+            IgnorePublicAcls: true
+            RestrictPublicBuckets: true
+          - Ref: AWS::NoValue       
     UpdateReplacePolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
