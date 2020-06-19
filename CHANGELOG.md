@@ -19,7 +19,6 @@ use cluster.connections.securityGroups instead
 * **rds:** the property `engine` can no longer be passed when creating a DatabaseInstanceReadReplica
 * **rds:** the property 'instanceClass' in DatabaseInstanceNewProps has been renamed to 'instanceType'
 * **appsync:** Changes way of auth config even for existing supported methods viz., User Pools and API Key.
-### End Commit Message
 
 ### Features
 
@@ -75,9 +74,6 @@ use cluster.connections.securityGroups instead
 * **rds:** 'engine' is no longer required in DatabaseInstanceReadReplica ([#8509](https://github.com/aws/aws-cdk/issues/8509)) ([86d84e6](https://github.com/aws/aws-cdk/commit/86d84e6d592b2bee110ca0fd9890ce32e46055c3))
 * **rds:** rename 'instanceClass' in DatabaseInstance to 'instanceType' ([#8507](https://github.com/aws/aws-cdk/issues/8507)) ([e35cb1a](https://github.com/aws/aws-cdk/commit/e35cb1a7355606180c20dad56fa4ca0ea6652bf7))
 * **secretsmanager:** rotation function name can exceed 64 chars ([#7896](https://github.com/aws/aws-cdk/issues/7896)) ([24e474b](https://github.com/aws/aws-cdk/commit/24e474b68ceada06271194a122e0bcdbd41e6c31)), closes [/github.com/aws/aws-cdk/issues/7885#issuecomment-626250425](https://github.com/aws//github.com/aws/aws-cdk/issues/7885/issues/issuecomment-626250425) [#7885](https://github.com/aws/aws-cdk/issues/7885) [#8442](https://github.com/aws/aws-cdk/issues/8442)
-
-
-* **stepfunctions-tasks:** task state to call Amazon EMR  ([#8177](https://github.com/aws/aws-cdk/issues/8177)) ([d803284](https://github.com/aws/aws-cdk/commit/d803284c8dc7e2515fd3f97ad4dd85bf35ae8afc))
 
 ## [1.45.0](https://github.com/aws/aws-cdk/compare/v1.44.0...v1.45.0) (2020-06-09)
 
