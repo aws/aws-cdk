@@ -79,6 +79,12 @@ export interface TrailProps {
   readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
+   * @default - No encryption.
+   * @deprecated - use encryptionKey instead.
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
    * @default - No encryption.
    */
@@ -254,6 +260,10 @@ export class Trail extends Resource {
       this.eventSelectors.push(managementEvent);
     }
 
+    if (props.kmsKey && props.encryptionKey) {
+      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
+    }
+
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
@@ -261,7 +271,7 @@ export class Trail extends Resource {
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
-      kmsKeyId: props.encryptionKey?.keyArn,
+      kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
