@@ -12,13 +12,13 @@ export interface CodeBuildProjectProps {
    *
    * This will be the payload for the StartBuild API.
    *
-   * @default - the entire CloudWatch event
+   * @default - the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
 }
 
 /**
- * Start a CodeBuild build when an AWS CloudWatch events rule is triggered.
+ * Start a CodeBuild build when an Amazon EventBridge rule is triggered.
  */
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(
