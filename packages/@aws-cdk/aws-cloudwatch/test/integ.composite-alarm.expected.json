@@ -60,19 +60,19 @@
               {
                 "Fn::GetAtt": [ "Alarm1F9009D71", "Arn" ]
               },
-              ")) OR (OK(",
+              ") OR OK(",
               {
                 "Fn::GetAtt": [ "Alarm2A7122E13", "Arn" ]
               },
-              ")) OR (ALARM(",
+              ") OR ALARM(",
               {
                 "Fn::GetAtt": [ "Alarm32341D8D9", "Arn" ]
               },
-              "))) AND ((NOT INSUFFICIENT_DATA(",
+              ")) AND (NOT (INSUFFICIENT_DATA(",
               {
                 "Fn::GetAtt":[ "Alarm4671832C8", "Arn" ]
               },
-              ")))) OR (FALSE)"
+              ")))) OR FALSE)"
             ]
           ]
         }

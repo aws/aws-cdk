@@ -39,9 +39,9 @@ export = {
     const alarmRule = AlarmRule.anyOf(
       AlarmRule.allOf(
         AlarmRule.anyOf(
-          AlarmRule.fromAlarm(alarm1, AlarmState.ALARM),
+          alarm1,
           AlarmRule.fromAlarm(alarm2, AlarmState.OK),
-          AlarmRule.fromAlarm(alarm3, AlarmState.ALARM),
+          alarm3,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
       ),
@@ -65,28 +65,28 @@ export = {
                 'Arn',
               ],
             },
-            ')) OR (OK(',
+            ') OR OK(',
             {
               'Fn::GetAtt': [
                 'Alarm2A7122E13',
                 'Arn',
               ],
             },
-            ')) OR (ALARM(',
+            ') OR ALARM(',
             {
               'Fn::GetAtt': [
                 'Alarm32341D8D9',
                 'Arn',
               ],
             },
-            '))) AND ((NOT INSUFFICIENT_DATA(',
+            ')) AND (NOT (INSUFFICIENT_DATA(',
             {
               'Fn::GetAtt': [
                 'Alarm4671832C8',
                 'Arn',
               ],
             },
-            ')))) OR (FALSE)',
+            ')))) OR FALSE)',
           ],
         ],
       },

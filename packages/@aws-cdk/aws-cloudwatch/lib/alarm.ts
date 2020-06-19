@@ -1,5 +1,5 @@
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAlarmAction } from './alarm-action';
+import { Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
@@ -8,37 +8,6 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
-
-/**
- * Interface for Alarm Rule.
- */
-export interface IAlarmRule {
-
-  /**
-   * serialized representation of Alarm Rule to be used when building the Composite Alarm resource.
-   */
-  toAlarmRule(): string;
-
-}
-
-/**
- * Represents a CloudWatch Alarm
- */
-export interface IAlarm extends IAlarmRule, IResource {
-  /**
-   * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
-   *
-   * @attribute
-   */
-  readonly alarmArn: string;
-
-  /**
-   * Name of the alarm
-   *
-   * @attribute
-   */
-  readonly alarmName: string;
-}
 
 /**
  * Properties for Alarms
@@ -51,14 +20,6 @@ export interface AlarmProps extends CreateAlarmOptions {
    * custom Metric objects by instantiating one.
    */
   readonly metric: IMetric;
-
-  /**
-   * AlarmState to build composite alarm expressions.
-   *
-   * @default - ALARM
-   */
-  readonly alarmState?: AlarmState;
-
 }
 
 /**
@@ -125,86 +86,6 @@ export enum TreatMissingData {
 }
 
 /**
- * Enumeration indicates state of Alarm used in building Alarm Rule.
- */
-export enum AlarmState {
-
-  /**
-   * State indicates resource is in ALARM
-   */
-  ALARM = 'ALARM',
-
-  /**
-   * State indicates resource is not in ALARM
-   */
-  OK = 'OK',
-
-  /**
-   * State indicates there is not enough data to determine is resource is in ALARM
-   */
-  INSUFFICIENT_DATA = 'INSUFFICIENT_DATA',
-
-}
-
-/**
- * The base class for Alarm and CompositeAlarm resources.
- */
-export abstract class AlarmBase extends Resource implements IAlarm {
-
-  /**
-   * @attribute
-   */
-  public abstract readonly alarmArn: string;
-  public abstract readonly alarmName: string;
-
-  protected alarmActionArns?: string[];
-  protected insufficientDataActionArns?: string[];
-  protected okActionArns?: string[];
-
-  public abstract toAlarmRule(): string;
-
-  /**
-   * Trigger this action if the alarm fires
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if there is insufficient data to evaluate the alarm
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if the alarm returns from breaching state into ok state
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-}
-
-/**
  * An alarm on a CloudWatch metric
  */
 export class Alarm extends AlarmBase {
@@ -217,13 +98,9 @@ export class Alarm extends AlarmBase {
    * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
    */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends Resource implements IAlarm {
+    class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
-
-      public toAlarmRule(): string {
-        throw new Error('Method not implemented.');
-      }
     }
     return new Import(scope, id);
   }
@@ -251,8 +128,6 @@ export class Alarm extends AlarmBase {
    * This metric as an annotation
    */
   private readonly annotation: HorizontalAnnotation;
-
-  private readonly alarmState: AlarmState;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
@@ -314,7 +189,6 @@ export class Alarm extends AlarmBase {
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
-    this.alarmState = props.alarmState || AlarmState.ALARM;
   }
 
   /**
@@ -335,10 +209,6 @@ export class Alarm extends AlarmBase {
    */
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
-  }
-
-  public toAlarmRule(): string {
-    return `${this.alarmState}(${this.alarmArn})`;
   }
 
   private renderMetric(metric: IMetric) {

@@ -183,9 +183,9 @@ can be created from existing Alarm resources.
 const alarmRule = AlarmRule.anyOf(
   AlarmRule.allOf(
     AlarmRule.anyOf(
-      AlarmRule.fromAlarm(alarm1, AlarmState.ALARM),
+      alarm1,
       AlarmRule.fromAlarm(alarm2, AlarmState.OK),
-      AlarmRule.fromAlarm(alarm3, AlarmState.ALARM),
+      alarm3,
     ),
     AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
   ),
