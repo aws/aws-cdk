@@ -22,12 +22,15 @@ export * from './cfn-resource';
 export * from './cfn-resource-policy';
 export * from './cfn-rule';
 export * from './stack';
+export * from './stage';
 export * from './cfn-element';
 export * from './cfn-dynamic-reference';
 export * from './cfn-tag';
+export * from './cfn-json';
 export * from './removal-policy';
 export * from './arn';
 export * from './duration';
+export * from './from-cfn';
 export * from './size';
 export * from './stack-trace';
 
@@ -45,6 +48,7 @@ export * from './assets';
 export * from './tree';
 
 export * from './asset-staging';
+export * from './bundling';
 export * from './fs';
 
 export * from './custom-resource';

@@ -28,7 +28,7 @@ export class Manifest {
    * @param filePath - path to the manifest file.
    */
   public static load(filePath: string): assembly.AssemblyManifest {
-    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
     Manifest.patchStackTags(raw);
     Manifest.validate(raw);
     return raw;

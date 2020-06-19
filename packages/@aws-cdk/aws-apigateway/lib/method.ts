@@ -7,7 +7,7 @@ import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
-import { RestApi } from './restapi';
+import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
@@ -159,13 +159,16 @@ export class Method extends Resource {
 
   public readonly httpMethod: string;
   public readonly resource: IResource;
-  public readonly restApi: RestApi;
+  /**
+   * The API Gateway RestApi associated with this method.
+   */
+  public readonly api: IRestApi;
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;
-    this.restApi = props.resource.restApi;
+    this.api = props.resource.api;
     this.httpMethod = props.httpMethod.toUpperCase();
 
     validateHttpMethod(this.httpMethod);
@@ -186,12 +189,12 @@ export class Method extends Resource {
     }
 
     if (Authorizer.isAuthorizer(authorizer)) {
-      authorizer._attachToApi(this.restApi);
+      authorizer._attachToApi(this.api);
     }
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
-      restApiId: this.restApi.restApiId,
+      restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
@@ -209,13 +212,23 @@ export class Method extends Resource {
 
     this.methodId = resource.ref;
 
-    props.resource.restApi._attachMethod(this);
+    if (RestApiBase._isRestApiBase(props.resource.api)) {
+      props.resource.api._attachMethod(this);
+    }
 
-    const deployment = props.resource.restApi.latestDeployment;
+    const deployment = props.resource.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ method: methodProps });
     }
+  }
+
+  /**
+   * The RestApi associated with this Method
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    return this.resource.restApi;
   }
 
   /**
@@ -236,7 +249,7 @@ export class Method extends Resource {
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, stage);
+    return this.restApi.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), stage);
   }
 
   /**
@@ -244,7 +257,7 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, 'test-invoke-stage');
+    return this.restApi.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
   private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
@@ -379,4 +392,8 @@ export enum AuthorizationType {
    * Use an AWS Cognito user pool.
    */
   COGNITO = 'COGNITO_USER_POOLS',
+}
+
+function pathForArn(path: string): string {
+  return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
 }

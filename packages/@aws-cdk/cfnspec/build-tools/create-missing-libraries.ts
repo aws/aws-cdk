@@ -269,7 +269,7 @@ async function main() {
     ]);
 
     await write('.eslintrc.js', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+      "const baseConfig = require('cdk-build-tools/config/eslintrc');",
       "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
       'module.exports = baseConfig;',
     ]);

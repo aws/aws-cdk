@@ -32,6 +32,15 @@ export class CloudFormationStack {
     }
   }
 
+  /**
+   * Return a copy of the given stack that does not exist
+   *
+   * It's a little silly that it needs arguments to do that, but there we go.
+   */
+  public static doesNotExist(cfn: CloudFormation, stackName: string) {
+    return new CloudFormationStack(cfn, stackName);
+  }
+
   private _template: any;
 
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
@@ -219,6 +228,8 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
 /**
  * Waits for a CloudFormation stack to stabilize in a complete/available state.
  *
+ * Fails if the stacks is not in a SUCCESSFUL state.
+ *
  * @param cfn        a CloudFormation client
  * @param stackName      the name of the stack to wait for
  * @param failOnDeletedStack whether to fail if the awaited stack is deleted.
@@ -229,6 +240,26 @@ export async function waitForStack(
   cfn: CloudFormation,
   stackName: string,
   failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
+
+  const stack = await stabilizeStack(cfn, stackName);
+  if (!stack) { return undefined; }
+
+  const status = stack.stackStatus;
+  if (status.isCreationFailure) {
+    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
+  } else if (!status.isSuccess) {
+    throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
+  } else if (status.isDeleted) {
+    if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
+    return undefined;
+  }
+  return stack;
+}
+
+/**
+ * Wait for a stack to become stable (no longer _IN_PROGRESS), returning it
+ */
+export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);
@@ -241,14 +272,7 @@ export async function waitForStack(
       debug('Stack %s is still not stable (%s)', stackName, status);
       return undefined;
     }
-    if (status.isCreationFailure) {
-      throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-    } else if (!status.isSuccess) {
-      throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
-    } else if (status.isDeleted) {
-      if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
-      return null;
-    }
+
     return stack;
   });
 }

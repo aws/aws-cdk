@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
@@ -210,8 +211,24 @@ export class PrincipalWithConditions implements IPrincipal {
     Object.entries(principalConditions).forEach(([operator, condition]) => {
       mergedConditions[operator] = condition;
     });
+
     Object.entries(additionalConditions).forEach(([operator, condition]) => {
-      mergedConditions[operator] = { ...mergedConditions[operator], ...condition };
+      // merge the conditions if one of the additional conditions uses an
+      // operator that's already used by the principal's conditions merge the
+      // inner structure.
+      const existing = mergedConditions[operator];
+      if (!existing) {
+        mergedConditions[operator] = condition;
+        return; // continue
+      }
+
+      // if either the existing condition or the new one contain unresolved
+      // tokens, fail the merge. this is as far as we go at this point.
+      if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
+        throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+      }
+
+      mergedConditions[operator] = { ...existing, ...condition };
     });
     return mergedConditions;
   }
@@ -414,6 +431,55 @@ export class FederatedPrincipal extends PrincipalBase {
 
   public toString() {
     return `FederatedPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as Web Identity such as Cognito, Amazon,
+ * Facebook, Google, etc.
+ */
+export class WebIdentityPrincipal extends FederatedPrincipal {
+
+  /**
+   *
+   * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(identityProvider: string, conditions: Conditions = {}) {
+    super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `WebIdentityPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * A principal that represents a federated identity provider as from a OpenID Connect provider.
+ */
+export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
+
+  /**
+   *
+   * @param openIdConnectProvider OpenID Connect provider
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   */
+  constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
+    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({ Federated: [this.federated] }, this.conditions);
+  }
+
+  public toString() {
+    return `OpenIdConnectPrincipal(${this.federated})`;
   }
 }
 
