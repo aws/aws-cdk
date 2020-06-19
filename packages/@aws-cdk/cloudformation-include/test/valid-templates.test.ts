@@ -253,12 +253,12 @@ describe('CDK Include', () => {
 
   test("correctly parses templates with parameters", () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
-    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
       bucketName: param.valueAsString,
     });
 
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
     expect(stack).toMatchTemplate({
       "Resources": {
         ...originalTemplate.Resources,
