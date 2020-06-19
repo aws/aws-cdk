@@ -76,6 +76,33 @@ export = {
       test.deepEqual(response.Reason, 'hello, reason');
       test.done();
     },
+
+    async 'check decoded booleans'(test: Test) {
+      // GIVEN
+      const createEvent = makeEvent({ RequestType: 'Create', ResourceProperties: {
+        ServiceToken: '<ServiceToken>',
+        someString: 'value',
+        someEncodedBoolean: 'TRUE:BOOLEAN',
+        anotherEncodedBoolean: 'FALSE:BOOLEAN',
+      }});
+
+      // WHEN
+      const response = await invokeHandler(createEvent, async (event) => {
+        delete event.ResourceProperties.ServiceToken;
+        return {
+          Data: event.ResourceProperties,
+        };
+      });
+
+      // THEN
+      test.deepEqual(response.Status, 'SUCCESS');
+      test.deepEqual(response.Data, {
+        someString: 'value',
+        someEncodedBoolean: true,
+        anotherEncodedBoolean: false,
+      });
+      test.done();
+    },
   },
 
   async 'an error thrown by the handler is sent as a failure response to cloudformation'(test: Test) {
