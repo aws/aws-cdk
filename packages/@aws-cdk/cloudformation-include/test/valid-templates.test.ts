@@ -253,43 +253,31 @@ describe('CDK Include', () => {
 
   test("correctly parses templates with parameters", () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
-    const bucket = new s3.CfnBucket(stack, "newBucket", {"bucketName": param.valueAsString});
+    new s3.CfnBucket(stack, "NewBucket", {
+      "bucketName": param.valueAsString,
+    });
 
-    expect(stack).toMatchTemplate(
-      {
-        "Resources": {
-          "Bucket": {
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-              "BucketName": {
-                "Ref": "BucketName",
-              },
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+        "NewBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Ref": "BucketName",
             },
-          },
-          "newBucket": {
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-              "BucketName": {
-                "Ref": "BucketName",
-              },
-            },
-          },
-        },
-        "Parameters": {
-          "BucketName": {
-            "Type": "String",
-            "Default": "MyS3Bucket",
-            "Description": "The name of your bucket",
           },
         },
       },
-    );
-
-    expect(bucket.bucketName).toBeDefined();
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+    });
   });
 
-  test('getParameter() throws an exception when a parameter is not found', () => {
+  test('getParameter() throws an exception if asked for a Parameter with a name that is not present in the template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
 
     expect(() => {
