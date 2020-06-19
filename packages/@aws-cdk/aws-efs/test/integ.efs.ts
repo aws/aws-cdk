@@ -8,9 +8,9 @@ const stack = new cdk.Stack(app, 'test-efs-integ');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1});
 
 const filesystem = new FileSystem(stack, 'FileSystem', {
-  vpc
+  vpc,
 });
 
 new AccessPoint(stack, 'AccessPoint', {
-  filesystem
+  filesystem,
 });
