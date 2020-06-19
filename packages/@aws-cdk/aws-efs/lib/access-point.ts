@@ -26,7 +26,7 @@ export interface AccessPointProps {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
    *
-   * @default 1000
+   * @default '1000'
    */
   readonly ownerUid?: string;
 
