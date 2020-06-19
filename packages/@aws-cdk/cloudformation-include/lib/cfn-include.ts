@@ -41,12 +41,12 @@ export class CfnInclude extends core.CfnElement {
       this.createParameter(logicalId);
     }
 
-    // first, instantiate the conditions
+    // instantiate the conditions
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.createCondition(conditionName);
     }
 
-    // then, instantiate all resources as CDK L1 objects
+    // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
     }
