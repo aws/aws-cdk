@@ -23,7 +23,7 @@ export interface CfnIncludeProps {
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
-  private readonly parameters: { [parameterName: string]: core.CfnParameter } = {};
+  private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -47,27 +47,11 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate all parameters
-    for (const parameterName of Object.keys(this.template.Parameters || {})) {
-      this.createParameter(parameterName);
+    for (const logicalId of Object.keys(this.template.Parameters || {})) {
+      this.createParameter(logicalId);
     }
   }
 
-  /**
-   * Returns the low-level CfnResource from the template with the given logical ID.
-   * Any modifications performed on that resource will be reflected in the resulting CDK template.
-   *
-   * The returned object will be of the proper underlying class;
-   * you can always cast it to the correct type in your code:
-   *
-   *     // assume the template contains an AWS::S3::Bucket with logical ID 'Bucket'
-   *     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
-   *     // cfnBucket is of type s3.CfnBucket
-   *
-   * If the template does not contain a resource with the given logical ID,
-   * an exception will be thrown.
-   *
-   * @param logicalId the logical ID of the resource in the CloudFormation template file
-   */
   public getResource(logicalId: string): core.CfnResource {
     const ret = this.resources[logicalId];
     if (!ret) {
@@ -94,6 +78,14 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  public getParameter(parameterName: string): core.CfnParameter {
+    const ret = this.parameters[parameterName];
+    if (!ret) {
+      throw new Error(`Parameter with name '${parameterName}' was not found in the template`);
+    }
+    return ret;
+  }
+
   /**
    * Returns the CfnParameter object from the 'Parameters'
    * section of the CloudFormation template with the given name.
@@ -102,7 +94,7 @@ export class CfnInclude extends core.CfnElement {
    * If a Parameter with the given name is not present in the template,
    * throws an exception.
    *
-   * @param parameterName the name of the Parameter in the CloudFormation template file
+   * @param logicalId the name of the Parameter in the CloudFormation template file
    */
   /* public getParameter(parameterName: string): core.CfnParameter {
     const ret = this.parameters[parameterName];
@@ -129,12 +121,24 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
-  private createParameter(parameterName: string): void {
-    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[parameterName]);
-    const CfnParameter = new core.CfnParameter(this, parameterName, expression);
-
-    CfnParameter.overrideLogicalId(parameterName);
-    this.parameters[parameterName] = CfnParameter;
+  private createParameter(logicalId: string): void {
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId]);
+    const expressionCaseCorrected = {
+      type: expression.Type,
+      default: expression.Default,
+      allowedPattern: expression.AllowedPattern,
+      constraintDescription: expression.ConstraintDescription,
+      description: expression.Description,
+      maxLength: expression.MaxLength,
+      maxValue: expression.MaxValue,
+      minLength: expression.MinLength,
+      minValue: expression.MinValue,
+      noEcho: expression.NoEcho,
+    };
+    const CfnParameter = new core.CfnParameter(this, logicalId, expressionCaseCorrected);
+    
+    CfnParameter.overrideLogicalId(logicalId);
+    this.parameters[logicalId] = CfnParameter;
   }
 
   private createCondition(conditionName: string): void {

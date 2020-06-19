@@ -253,15 +253,48 @@ describe('CDK Include', () => {
 
   test("correctly parses templates with parameters", () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
-    //const bucketNameParam = cfnTemplate.getParameter('BucketName');
+    const param = cfnTemplate.getParameter('BucketName');
+    const bucket = new s3.CfnBucket(stack, "newBucket", {"bucketName": param.valueAsString});
 
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
-      "Properties": {
-        "BucketName": "MyS3Bucket"
+    expect(stack).toMatchTemplate(
+      {
+        "Resources": {
+          "Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": {
+                "Ref": "BucketName"
+              }
+            }
+          },
+          "newBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": {
+                "Ref": "BucketName"
+              }
+            }
+          }
+        },
+        "Parameters": {
+          "BucketName": {
+            "Type": "String",
+            "Default": "MyS3Bucket",
+            "Description": "The name of your bucket"
+          }
+        }
       }
-    });
+    );
 
-    //expect(bucketNameParam).toBe("MyS3Bucket");
+    expect(bucket.bucketName).toBeDefined();
+  });
+
+  test('getParameter() throws an exception when a parameter is not found', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+
+    expect(() => {
+      cfnTemplate.getParameter("FakeBucketNameThatDoesNotExist");
+    }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
   });
 
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {

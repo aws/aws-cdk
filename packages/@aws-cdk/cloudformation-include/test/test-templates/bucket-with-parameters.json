@@ -1,6 +1,10 @@
 {
   "Parameters": {
-    "BucketName": "MyS3Bucket"
+    "BucketName": {
+      "Default": "MyS3Bucket",
+      "Description": "The name of your bucket",
+      "Type": "String"
+    }
   },
   "Resources": {
     "Bucket": {
