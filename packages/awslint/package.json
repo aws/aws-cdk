@@ -2,7 +2,6 @@
   "name": "awslint",
   "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
-  "main": "index.js",
   "scripts": {
     "build": "tsc -b && chmod +x bin/awslint",
     "lint": "tslint -p . && pkglint",
