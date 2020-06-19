@@ -1,6 +1,18 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
+
+/**
+ * Interface to implement AccessPoint
+ */
+export interface IAccessPoint extends IResource {
+  /**
+   * The ID of the AccessPoint
+   *
+   * @attribute
+   */
+  readonly accessPointId: string;
+}
 
 /**
  * Properties for the AccessPoint
@@ -66,7 +78,17 @@ export interface AccessPointProps {
 /**
  * Represents the AccessPoint
  */
-export class AccessPoint extends Resource {
+export class AccessPoint extends Resource implements IAccessPoint {
+  /**
+   * Import an existing Access Point
+   */
+  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
+    class Import extends Resource implements IAccessPoint {
+      public readonly accessPointId = accessPointId;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * resource ARN
    * @attribute

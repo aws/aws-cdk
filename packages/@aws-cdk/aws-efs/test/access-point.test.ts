@@ -24,6 +24,16 @@ test('default access point is created correctly', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
 });
 
+test('import correctly', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    filesystem,
+  });
+  const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
+  // THEN
+  expect(imported.accessPointId).toEqual(ap.accessPointId);
+});
+
 test('custom access point is created correctly', () => {
   // WHEN
   new AccessPoint(stack, 'MyAccessPoint', {
