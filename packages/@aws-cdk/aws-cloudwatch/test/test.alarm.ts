@@ -1,8 +1,7 @@
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarmAction, Metric } from '../lib';
-import { IAlarm } from '../lib/alarm-base';
+import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
