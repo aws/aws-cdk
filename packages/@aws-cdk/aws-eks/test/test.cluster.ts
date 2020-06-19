@@ -87,6 +87,45 @@ export = {
     test.done();
   },
 
+  'control plane logging': {
+
+    'set control plane logging on kubectl enabled cluster'(test: Test) {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+  
+      // WHEN
+      new eks.Cluster(stack, 'cluster', { vpc, kubectlEnabled: true, controlPlaneLogging: true });
+  
+      // THEN
+      expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          logging: {
+            clusterLogging: [
+              {
+                enabled: 'TRUE:BOOLEAN',
+                types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+              },
+            ],
+          },
+        },
+      }));
+      test.done();
+    },
+
+    'not possible to set control plane logging when kubectl is disabled'(test: Test) {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+  
+      // WHEN
+      const clusterProps = { vpc, kubectlEnabled: false, controlPlaneLogging: true };
+  
+      // THEN
+      test.throws(() => new eks.Cluster(stack, 'cluster', clusterProps), /Cannot configure control plane logging if kubectl is disabled/);
+      test.done();
+    },
+
+  },
+
   'default capacity': {
 
     'x2 m5.large by default'(test: Test) {
@@ -682,7 +721,7 @@ export = {
           expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
             Release: 'stackclusterchartspotinterrupthandlerdec62e07',
             Chart: 'aws-node-termination-handler',
-            Wait: false,
+            Wait: 'FALSE:BOOLEAN',
             Values: '{\"nodeSelector.lifecycle\":\"Ec2Spot\"}',
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',

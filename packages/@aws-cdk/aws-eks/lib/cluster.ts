@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
-import { clusterArnComponents, ClusterResource } from './cluster-resource';
+import { clusterArnComponents, ClusterResource, ControlPlaneLogging } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
@@ -167,6 +167,13 @@ export interface ClusterOptions {
    * @default - If not supplied, will use Amazon default version
    */
   readonly version?: string;
+
+  /**
+   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
+   *
+   * @default - False, meaning that cluster control plane logs are not exported to CloudWatch Logs.
+   */
+  readonly controlPlaneLogging?: boolean | ControlPlaneLogging;
 
   /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
@@ -350,6 +357,11 @@ export class Cluster extends Resource implements ICluster {
   public readonly kubectlEnabled: boolean;
 
   /**
+   * The Control Plane logging configuration for your cluster.
+   */
+  public readonly controlPlaneLogging?: boolean | ControlPlaneLogging;
+
+  /**
    * The auto scaling group that hosts the default capacity for this cluster.
    * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
    * `defaultCapacityType` is `EC2` but default capacity is set to 0.
@@ -441,9 +453,29 @@ export class Cluster extends Resource implements ICluster {
     let resource;
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
-      resource = new ClusterResource(this, 'Resource', clusterProps);
+      this.controlPlaneLogging = props.controlPlaneLogging === undefined ? false : props.controlPlaneLogging;
+      let logging = this.controlPlaneLogging;
+      if (logging === true) {
+        logging = {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+            },
+          ],
+        };
+      }
+      resource = new ClusterResource(this, 'Resource', {
+        ...clusterProps,
+        logging: logging || undefined,
+      });
       this._clusterResource = resource;
     } else {
+      if (props.controlPlaneLogging) {
+        throw new Error('Cannot configure control plane logging if kubectl is disabled');
+      } else {
+        this.controlPlaneLogging = undefined;
+      }
       resource = new CfnCluster(this, 'Resource', clusterProps);
     }
 

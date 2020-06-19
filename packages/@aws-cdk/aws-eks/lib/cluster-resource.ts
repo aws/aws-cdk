@@ -5,6 +5,45 @@ import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
 
 /**
+ * EKS cluster control plane logging configuration
+ */
+export interface ControlPlaneLogging {
+
+  /**
+   * The cluster control plane logging configuration for your cluster.
+   */
+  clusterLogging: [
+    {
+      /**
+       * If a log type is enabled, that log type exports its control plane logs to CloudWatch Logs.
+       * If a log type is not enabled, that log type does not export its control plane logs.
+       * Each individual log type can be enabled or disabled independently.
+       */
+      readonly enabled: boolean;
+
+      /**
+       * The available cluster control plane log types.
+       */
+      readonly types: Array<'api' | 'audit' | 'authenticator' | 'controllerManager' | 'scheduler'>;
+    }
+  ]
+}
+
+/**
+ * Configuration props for EKS Cluster custom resource.
+ */
+export interface ClusterResourceProps extends CfnClusterProps {
+  /**
+   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+   *
+   * @default - Fully disabled, meaning that cluster control plane logs are not exported to CloudWatch Logs.
+   */
+  readonly logging?: ControlPlaneLogging;
+}
+
+/**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
  * resource.
  *
@@ -32,7 +71,7 @@ export class ClusterResource extends Construct {
   private readonly creationRole: iam.Role;
   private readonly trustedPrincipals: string[] = [];
 
-  constructor(scope: Construct, id: string, props: CfnClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterResourceProps) {
     super(scope, id);
 
     const stack = Stack.of(this);
@@ -116,6 +155,7 @@ export class ClusterResource extends Construct {
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
+      encodeValues: true,
       properties: {
         Config: props,
         AssumeRoleArn: this.creationRole.roleArn,
