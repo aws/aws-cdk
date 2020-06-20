@@ -115,7 +115,7 @@ All items unchecked below are currently not supported.
 ### Ability to retrieve CloudFormation objects from the template:
 
 - [x] Resources
-- [ ] Parameters
+- [x] Parameters
 - [x] Conditions
 - [ ] Outputs
 
