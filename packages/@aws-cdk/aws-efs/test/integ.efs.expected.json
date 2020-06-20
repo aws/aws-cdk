@@ -459,7 +459,9 @@
             "Value": "test-efs-integ/FileSystem"
           }
         ]
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "FileSystemEfsSecurityGroup212D3ACB": {
       "Type": "AWS::EC2::SecurityGroup",
