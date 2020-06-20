@@ -42,6 +42,17 @@ export interface BundlingOptions {
    * @default /asset-input
    */
   readonly workingDirectory?: string;
+
+  /**
+   * The user to use when running the container.
+   *
+   *   user | user:group | uid | uid:gid | user:gid | uid:group
+   *
+   * @see https://docs.docker.com/engine/reference/run/#user
+   *
+   * @default - uid:gid of the current user or 1000:1000 on Windows
+   */
+  readonly user?: string;
 }
 
 /**
@@ -98,6 +109,9 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'run', '--rm',
+      ...options.user
+        ? ['-u', options.user]
+        : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
@@ -157,6 +171,13 @@ interface DockerRunOptions {
    * @default - image default
    */
   readonly workingDirectory?: string;
+
+  /**
+   * The user to use when running the container.
+   *
+   * @default - root or image default
+   */
+  readonly user?: string;
 }
 
 /**

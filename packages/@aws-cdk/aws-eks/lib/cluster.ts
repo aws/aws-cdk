@@ -808,12 +808,12 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
+  public get _kubectlCreationRole() {
     if (!this._clusterResource) {
       throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
-    return this._clusterResource.getCreationRoleArn(assumedBy);
+    return this._clusterResource.creationRole;
   }
 
   /**
@@ -826,7 +826,12 @@ export class Cluster extends Resource implements ICluster {
     }
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+    const provider = this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+
+    // allow the kubectl provider to assume the cluster creation role.
+    this._clusterResource.addTrustedRole(provider.role);
+
+    return provider;
   }
 
   /**

@@ -62,13 +62,13 @@ export class ClusterResource extends Construct {
   public readonly attrOpenIdConnectIssuerUrl: string;
   public readonly attrOpenIdConnectIssuer: string;
   public readonly ref: string;
-
   /**
    * The IAM role which created the cluster. Initially this is the only IAM role
    * that gets administrator privilages on the cluster (`system:masters`), and
    * will be able to issue `kubectl` commands against it.
    */
-  private readonly creationRole: iam.Role;
+  public readonly creationRole: iam.Role;
+
   private readonly trustedPrincipals: string[] = [];
 
   constructor(scope: Construct, id: string, props: ClusterResourceProps) {
@@ -182,28 +182,23 @@ export class ClusterResource extends Construct {
   }
 
   /**
-   * Returns the ARN of the cluster creation role and grants `trustedRole`
-   * permissions to assume this role.
+   * Grants `trustedRole` permissions to assume the creation role.
    */
-  public getCreationRoleArn(trustedRole?: iam.IRole): string {
-
-    if (!trustedRole) {
-      return this.creationRole.roleArn;
+  public addTrustedRole(trustedRole: iam.IRole): void {
+    if (this.trustedPrincipals.includes(trustedRole.roleArn)) {
+      return;
     }
 
-    if (!this.trustedPrincipals.includes(trustedRole.roleArn)) {
-      if (!this.creationRole.assumeRolePolicy) {
-        throw new Error('unexpected: cluster creation role must have trust policy');
-      }
-
-      this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-        actions: [ 'sts:AssumeRole' ],
-        principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ],
-      }));
-
-      this.trustedPrincipals.push(trustedRole.roleArn);
+    if (!this.creationRole.assumeRolePolicy) {
+      throw new Error('unexpected: cluster creation role must have trust policy');
     }
-    return this.creationRole.roleArn;
+
+    this.creationRole.assumeRolePolicy.addStatements(new iam.PolicyStatement({
+      actions: [ 'sts:AssumeRole' ],
+      principals: [ new iam.ArnPrincipal(trustedRole.roleArn) ],
+    }));
+
+    this.trustedPrincipals.push(trustedRole.roleArn);
   }
 }
 
