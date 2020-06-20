@@ -173,6 +173,17 @@ export class Fn {
   }
 
   /**
+   * Creates a token representing the ``Fn::Transform`` expression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-transform.html
+   * @param macroName The name of the macro to perform the processing
+   * @param parameters The parameters to be passed to the macro
+   * @returns a token representing the transform expression
+   */
+  public static transform(macroName: string, parameters: { [name: string]: any }): IResolvable {
+    return new FnTransform(macroName, parameters);
+  }
+
+  /**
    * Returns true if all the specified conditions evaluate to true, or returns
    * false if any one of the conditions evaluates to false. ``Fn::And`` acts as
    * an AND operator. The minimum number of conditions that you can include is
@@ -353,6 +364,20 @@ class FnFindInMap extends FnBase {
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
     super('Fn::FindInMap', [ mapName, topLevelKey, secondLevelKey ]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Transform`` specifies a macro to perform custom processing on part of a stack template.
+ */
+class FnTransform extends FnBase {
+  /**
+   * creates an ``Fn::Transform`` function.
+   * @param macroName The name of the macro to be invoked
+   * @param parameters the parameters to pass to it
+   */
+  constructor(macroName: string, parameters: { [name: string]: any }) {
+    super('Fn::Transform', { Name: macroName, Parameters: parameters });
   }
 }
 
