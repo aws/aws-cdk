@@ -386,6 +386,38 @@ A convenience method for mapping a role to the `system:masters` group is also av
 cluster.awsAuth.addMastersRole(role)
 ```
 
+### Kubernetes Control Plane Logging
+
+Amazon [EKS control plane logging](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)
+provides audit and diagnostic logs directly from the Kubernetes control plane
+to CloudWatch Logs in your account.
+
+By default, cluster control plane logs aren't sent to CloudWatch Logs. You must
+enable each log type individually to send logs for your cluster. You can activate
+all control plane logs by having the property `controlPlaneLogging: true`,
+then the following setting will be applied:
+
+```ts
+new eks.Cluster(this, 'Cluster', {
+  kubectlEnabled: true,
+  controlPlaneLogging: {
+    clusterLogging: [
+      {
+        enabled: true,
+        types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler']
+      }
+    ]
+  }
+});
+```
+
+For more details about the log types available check the
+[API reference documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_LogSetup.html).
+
+**NOTE**: the control plane logging is only available if the cluster
+has the `kubectlEnabled: true`, because there is still no
+CloudFormation support to change that configuration.
+
 ### Cluster Security Group
 
 When you create an Amazon EKS cluster, a
