@@ -116,7 +116,7 @@ export interface InstanceProps {
    *
    * @default a new security group is created.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The DB parameter group to associate with the instance.

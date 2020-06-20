@@ -206,8 +206,15 @@ export interface UserPoolClientOptions {
   readonly authFlows?: AuthFlow;
 
   /**
+   * Turns off all OAuth interactions for this client.
+   * @default false
+   */
+  readonly disableOAuth?: boolean;
+
+  /**
    * OAuth settings for this to client to interact with the app.
-   * @default - see defaults in `OAuthSettings`
+   * An error is thrown when this is specified and `disableOAuth` is set.
+   * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
   readonly oAuth?: OAuthSettings;
 
@@ -284,6 +291,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
+    if (props.disableOAuth && props.oAuth) {
+      throw new Error('OAuth settings cannot be specified when disableOAuth is set.');
+    }
+
     this.oAuthFlows = props.oAuth?.flows ?? {
       implicitCodeGrant: true,
       authorizationCodeGrant: true,
@@ -303,10 +314,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: this.configureAuthFlows(props),
-      allowedOAuthFlows: this.configureOAuthFlows(),
-      allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
+      allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
+      allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
-      allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
+      allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
     });

@@ -21,14 +21,14 @@ export interface SqsQueueProps {
    *
    * Must be a valid JSON text passed to the target queue.
    *
-   * @default the entire CloudWatch event
+   * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
 
 }
 
 /**
- * Use an SQS Queue as a target for AWS CloudWatch event rules.
+ * Use an SQS Queue as a target for Amazon EventBridge rules.
  *
  * @example
  *
@@ -47,9 +47,9 @@ export class SqsQueue implements events.IRuleTarget {
 
   /**
    * Returns a RuleTarget that can be used to trigger this SQS queue as a
-   * result from a CloudWatch event.
+   * result from an EventBridge event.
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sqs-permissions
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // deduplicated automatically

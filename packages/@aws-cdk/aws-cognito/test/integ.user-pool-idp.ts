@@ -1,5 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { UserPool, UserPoolIdentityProviderAmazon } from '../lib';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderAmazon } from '../lib';
 
 /*
  * Stack verification steps
@@ -15,6 +15,13 @@ new UserPoolIdentityProviderAmazon(stack, 'amazon', {
   userPool: userpool,
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
+  attributeMapping: {
+    givenName: ProviderAttribute.AMAZON_NAME,
+    email: ProviderAttribute.AMAZON_EMAIL,
+    custom: {
+      userId: ProviderAttribute.AMAZON_USER_ID,
+    },
+  },
 });
 
 const client = userpool.addClient('client');

@@ -6,7 +6,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -66,20 +66,7 @@ pull_request_rules:
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
-        # List out all the people whose work is okay to provisionally approve
-      - author!=eladb
-      - author!=RomainMuller
-      - author!=garnaat
-      - author!=nija-at
-      - author!=shivlaks
-      - author!=skinny85
-      - author!=rix0rrr
-      - author!=NGL321
-      - author!=Jerry-AWS
-      - author!=SomayaB
-      - author!=MrArnoldPalmer
-      - author!=NetaNir
-      - author!=iliapolo
+      - label!=contribution/core
       - base=master
       - -merged
       - -closed

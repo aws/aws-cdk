@@ -313,7 +313,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The name of the compute and memory capacity classes.
    */
-  readonly instanceClass: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 
   /**
    * Specifies if the database instance is a multiple Availability Zone deployment.
@@ -610,7 +610,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: `db.${props.instanceClass}`,
+      dbInstanceClass: `db.${props.instanceType}`,
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
@@ -995,7 +995,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 /**
  * Construction properties for a DatabaseInstanceReadReplica.
  */
-export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceSourceProps {
+export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewProps {
   /**
    * The source database instance.
    *

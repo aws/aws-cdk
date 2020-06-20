@@ -45,6 +45,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
         client_secret: props.clientSecret,
         authorize_scopes: scopes.join(' '),
       },
+      attributeMapping: super.configureAttributeMapping(),
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);

@@ -1,6 +1,7 @@
 import { ABSENT, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -156,6 +157,44 @@ describe('cloudtrail', () => {
       });
     });
 
+    test('encryption keys', () => {
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'key');
+      new Trail(stack, 'EncryptionKeyTrail', {
+        trailName: 'EncryptionKeyTrail',
+        encryptionKey: key,
+      });
+      new Trail(stack, 'KmsKeyTrail', {
+        trailName: 'KmsKeyTrail',
+        kmsKey: key,
+      });
+      new Trail(stack, 'UnencryptedTrail', {
+        trailName: 'UnencryptedTrail',
+      });
+      expect(() => new Trail(stack, 'ErrorTrail', {
+        trailName: 'ErrorTrail',
+        encryptionKey: key,
+        kmsKey: key,
+      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'EncryptionKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': [ 'keyFEDD6EC0', 'Arn' ],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'KmsKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': [ 'keyFEDD6EC0', 'Arn' ],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'UnencryptedTrail',
+        KMSKeyId: ABSENT,
+      });
+    });
+
     describe('with cloud watch logs', () => {
       test('enabled', () => {
         const stack = getTestStack();
@@ -257,7 +296,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: ABSENT,
               ReadWriteType: ABSENT,
@@ -331,7 +383,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::S3::Object',
-                Values: [ 'arn:aws:s3:::' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
               }],
               IncludeManagementEvents: false,
               ReadWriteType: 'ReadOnly',
@@ -391,7 +456,20 @@ describe('cloudtrail', () => {
             {
               DataResources: [{
                 Type: 'AWS::Lambda::Function',
-                Values: [ 'arn:aws:lambda' ],
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':lambda',
+                      ],
+                    ],
+                  },
+                ],
               }],
             },
           ],

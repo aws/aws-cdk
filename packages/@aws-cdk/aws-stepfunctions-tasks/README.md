@@ -85,8 +85,8 @@ The following example provides the field named `input` as the input to the `Task
 state that runs a Lambda function.
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
   inputPath: '$.input'
 });
 ```
@@ -105,8 +105,8 @@ as well as other metadata.
 The following example assigns the output from the Task to a field named `result`
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
   outputPath: '$.Payload.result'
 });
 ```
@@ -150,11 +150,10 @@ The following example provides the field named `input` as the input to the Lambd
 and invokes it asynchronously.
 
 ```ts
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda, {
-    payload: sfn.Data.StringAt('$.input'),
-    invocationType: tasks.InvocationType.EVENT,
-  }),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
+  payload: sfn.Data.StringAt('$.input'),
+  invocationType: tasks.InvocationType.EVENT,
 });
 ```
 
@@ -394,15 +393,13 @@ autoScalingRole.assumeRolePolicy?.addStatements(
   });
 )
 
-new sfn.Task(stack, 'Create Cluster', {
-  task: new tasks.EmrCreateCluster({
-    instances: {},
-    clusterRole,
-    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
-    serviceRole,
-    autoScalingRole,
-    integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-  }),
+new tasks.EmrCreateCluster(stack, 'Create Cluster', {
+  instances: {},
+  clusterRole,
+  name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+  serviceRole,
+  autoScalingRole,
+  integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
 });
 ```
 
@@ -414,11 +411,9 @@ terminated by user intervention, an API call, or a job-flow error.
 Corresponds to the [`setTerminationProtection`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrSetClusterTerminationProtection({
-    clusterId: 'ClusterId',
-    terminationProtected: false,
-  }),
+new tasks.EmrSetClusterTerminationProtection(stack, 'Task', {
+  clusterId: 'ClusterId',
+  terminationProtected: false,
 });
 ```
 
@@ -428,10 +423,8 @@ Shuts down a cluster (job flow).
 Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/APIReference/API_TerminateJobFlows.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrTerminateCluster({
-    clusterId: 'ClusterId'
-  }),
+new tasks.EmrTerminateCluster(stack, 'Task', {
+  clusterId: 'ClusterId'
 });
 ```
 
@@ -441,13 +434,11 @@ Adds a new step to a running cluster.
 Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrAddStep({
+new tasks.EmrAddStep(stack, 'Task', {
     clusterId: 'ClusterId',
     name: 'StepName',
     jar: 'Jar',
     actionOnFailure: tasks.ActionOnFailure.CONTINUE,
-  }),
 });
 ```
 
@@ -457,11 +448,9 @@ Cancels a pending step in a running cluster.
 Corresponds to the [`cancelSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_CancelSteps.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrCancelStep({
-    clusterId: 'ClusterId',
-    stepId: 'StepId',
-  }),
+new tasks.EmrCancelStep(stack, 'Task', {
+  clusterId: 'ClusterId',
+  stepId: 'StepId',
 });
 ```
 
@@ -473,13 +462,11 @@ fleet with the specified InstanceFleetName.
 Corresponds to the [`modifyInstanceFleet`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceFleet.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrModifyInstanceFleetByName({
-    clusterId: 'ClusterId',
-    instanceFleetName: 'InstanceFleetName',
-    targetOnDemandCapacity: 2,
-    targetSpotCapacity: 0,
-  }),
+new sfn.EmrModifyInstanceFleetByName(stack, 'Task', {
+  clusterId: 'ClusterId',
+  instanceFleetName: 'InstanceFleetName',
+  targetOnDemandCapacity: 2,
+  targetSpotCapacity: 0,
 });
 ```
 
@@ -490,14 +477,12 @@ Modifies the number of nodes and configuration settings of an instance group.
 Corresponds to the [`modifyInstanceGroups`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceGroups.html) API in EMR.
 
 ```ts
-new sfn.Task(stack, 'Task', {
-  task: new tasks.EmrModifyInstanceGroupByName({
-    clusterId: 'ClusterId',
-    instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
-    instanceGroup: {
-      instanceCount: 1,
-    },
-  }),
+new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+  clusterId: 'ClusterId',
+  instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
+  instanceGroup: {
+    instanceCount: 1,
+  },
 });
 ```
 

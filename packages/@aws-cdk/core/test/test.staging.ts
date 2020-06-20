@@ -1,10 +1,35 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
+import * as os from 'os';
 import * as path from 'path';
+import * as sinon from 'sinon';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
+const STUB_INPUT_FILE = '/tmp/docker-stub.input';
+
+enum DockerStubCommand {
+  SUCCESS           = 'DOCKER_STUB_SUCCESS',
+  FAIL              = 'DOCKER_STUB_FAIL',
+  SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
+}
+
+const userInfo = os.userInfo();
+const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
+
+// this is a way to provide a custom "docker" command for staging.
+process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
+
 export = {
+
+  'tearDown'(cb: any) {
+    if (fs.existsSync(STUB_INPUT_FILE)) {
+      fs.unlinkSync(STUB_INPUT_FILE);
+    }
+    cb();
+    sinon.restore();
+  },
+
   'base case'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -80,18 +105,24 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
+    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: ['touch', '/asset-output/test.txt'],
+        command: [ DockerStubCommand.SUCCESS ],
       },
     });
 
     // THEN
     const assembly = app.synth();
+    test.deepEqual(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
     test.deepEqual(fs.readdirSync(assembly.directory), [
       'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
       'cdk.out',
@@ -99,6 +130,11 @@ export = {
       'stack.template.json',
       'tree.json',
     ]);
+
+    // asset is bundled in a directory inside .cdk.staging
+    const stagingTmp = path.join('.', '.cdk.staging');
+    test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
+    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
 
     test.done();
   },
@@ -114,9 +150,14 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [ DockerStubCommand.SUCCESS_NO_OUTPUT ],
       },
     }), /Bundling did not produce any output/);
 
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+    );
     test.done();
   },
 
@@ -131,11 +172,16 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: ['touch', '/asset-output/test.txt'],
+        command: [ DockerStubCommand.SUCCESS ],
       },
       assetHashType: AssetHashType.BUNDLE,
     });
 
+    // THEN
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
 
     test.done();
@@ -153,7 +199,9 @@ export = {
       assetHash: 'my-custom-hash',
     });
 
-    test.equal(asset.assetHash, 'my-custom-hash');
+    // THEN
+    test.equal(fs.existsSync(STUB_INPUT_FILE), false);
+    test.equal(asset.assetHash, 'b9c77053f5b83bbe5ba343bc18e92db939a49017010813225fea91fa892c4823'); // hash of 'my-custom-hash'
 
     test.done();
   },
@@ -169,11 +217,15 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
-        command: ['touch', '/asset-output/test.txt'],
+        command: [ DockerStubCommand.SUCCESS ],
       },
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
     }), /Cannot specify `bundle` for `assetHashType`/);
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
 
     test.done();
   },
@@ -189,6 +241,7 @@ export = {
       sourcePath: directory,
       assetHashType: AssetHashType.BUNDLE,
     }), /Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified/);
+    test.equal(fs.existsSync(STUB_INPUT_FILE), false);
 
     test.done();
   },
@@ -204,6 +257,7 @@ export = {
       sourcePath: directory,
       assetHashType: AssetHashType.CUSTOM,
     }), /`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`/);
+    test.equal(fs.existsSync(STUB_INPUT_FILE), false); // "docker" not executed
 
     test.done();
   },
@@ -219,9 +273,21 @@ export = {
       sourcePath: directory,
       bundling: {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
+        command: [ DockerStubCommand.FAIL ],
       },
     }), /Failed to run bundling Docker image for asset stack\/Asset/);
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+    );
 
     test.done();
   },
 };
+
+function readDockerStubInput() {
+  const out = fs.readFileSync(STUB_INPUT_FILE, 'utf-8').trim();
+  return out
+    .replace(/-v ([^:]+):\/asset-input/, '-v /input:/asset-input')
+    .replace(/-v ([^:]+):\/asset-output/, '-v /output:/asset-output');
+}

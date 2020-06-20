@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
-import { Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -975,3 +975,123 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
     handler: 'index.handler',
   });
 }
+
+describe('AccountRecoverySetting should be configured correctly', () => {
+  test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_email', Priority: 1 },
+          { Name: 'verified_phone_number', Priority: 2 },
+        ],
+      },
+    });
+  });
+
+  test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+          { Name: 'verified_email', Priority: 2 },
+        ],
+      },
+    });
+  });
+
+  test('EMAIL_ONLY', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_email', Priority: 1 },
+        ],
+      },
+    });
+  });
+
+  test('PHONE_ONLY_WITHOUT_MFA', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+        ],
+      },
+    });
+  });
+
+  test('NONE', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'admin_only', Priority: 1 },
+        ],
+      },
+    });
+  });
+
+  test('PHONE_AND_EMAIL', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: ABSENT,
+    });
+  });
+
+  test('default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'pool');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      AccountRecoverySetting: {
+        RecoveryMechanisms: [
+          { Name: 'verified_phone_number', Priority: 1 },
+          { Name: 'verified_email', Priority: 2 },
+        ],
+      },
+    });
+  });
+});
