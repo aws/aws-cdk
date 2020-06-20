@@ -4,6 +4,24 @@ import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
 
+
+/**
+ * The cluster control plane logging configuration for your cluster.
+ */
+export interface ClusterLogging {
+  /**
+   * If a log type is enabled, that log type exports its control plane logs to CloudWatch Logs.
+   * If a log type is not enabled, that log type does not export its control plane logs.
+   * Each individual log type can be enabled or disabled independently.
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The available cluster control plane log types.
+   */
+  readonly types: Array<'api' | 'audit' | 'authenticator' | 'controllerManager' | 'scheduler'>;
+}
+
 /**
  * EKS cluster control plane logging configuration
  */
@@ -12,21 +30,7 @@ export interface ControlPlaneLogging {
   /**
    * The cluster control plane logging configuration for your cluster.
    */
-  clusterLogging: [
-    {
-      /**
-       * If a log type is enabled, that log type exports its control plane logs to CloudWatch Logs.
-       * If a log type is not enabled, that log type does not export its control plane logs.
-       * Each individual log type can be enabled or disabled independently.
-       */
-      readonly enabled: boolean;
-
-      /**
-       * The available cluster control plane log types.
-       */
-      readonly types: Array<'api' | 'audit' | 'authenticator' | 'controllerManager' | 'scheduler'>;
-    }
-  ]
+  clusterLogging: Array<ClusterLogging>;
 }
 
 /**

@@ -60,7 +60,7 @@ export = {
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: true });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: true }));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: 'TRUE:BOOLEAN' }));
       test.done();
     },
     'should default to not waiting before marking release as successful'(test: Test) {
@@ -71,7 +71,7 @@ export = {
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: false }));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Wait: 'FALSE:BOOLEAN' }));
       test.done();
     },
     'should timeout only after 10 minutes'(test: Test) {

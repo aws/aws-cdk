@@ -89,7 +89,7 @@ export = {
 
   'control plane logging': {
 
-    'set control plane logging on kubectl enabled cluster'(test: Test) {
+    'set logging fully on kubectl enabled cluster'(test: Test) {
       // GIVEN
       const { stack, vpc } = testFixture();
   
@@ -112,7 +112,45 @@ export = {
       test.done();
     },
 
-    'not possible to set control plane logging when kubectl is disabled'(test: Test) {
+    'set logging partially on kubectl enabled cluster'(test: Test) {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+  
+      // WHEN
+      new eks.Cluster(stack, 'cluster', { vpc, kubectlEnabled: true, controlPlaneLogging: {
+        clusterLogging: [
+          {
+            enabled: true,
+            types: ['api', 'scheduler'],
+          },
+          {
+            enabled: false,
+            types: ['audit', 'authenticator', 'controllerManager'],
+          },
+        ],
+      }});
+  
+      // THEN
+      expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          logging: {
+            clusterLogging: [
+              {
+                enabled: 'TRUE:BOOLEAN',
+                types: ['api', 'scheduler'],
+              },
+              {
+                enabled: 'FALSE:BOOLEAN',
+                types: ['audit', 'authenticator', 'controllerManager'],
+              },
+            ],
+          },
+        },
+      }));
+      test.done();
+    },
+
+    'not possible to set logging when kubectl is disabled'(test: Test) {
       // GIVEN
       const { stack, vpc } = testFixture();
   
