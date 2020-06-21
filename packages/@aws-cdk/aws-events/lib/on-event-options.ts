@@ -36,7 +36,7 @@ export interface OnEventOptions {
    * @default - No additional filtering based on an event pattern.
    *
    * @see
-   * http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CloudWatchEventsandEventPatterns.html
+   * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
    */
   readonly eventPattern?: EventPattern;
 }

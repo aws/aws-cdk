@@ -5,7 +5,7 @@
       "Properties": {
         "RepositoryName": "my-repository",
         "RepositoryDescription": {
-          "Fn::Base64": "my description, in base-64!"
+          "Fn::DoesNotExist": "my description, in base-64!"
         }
       }
     }
