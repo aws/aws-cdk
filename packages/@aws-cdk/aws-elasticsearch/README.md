@@ -9,4 +9,75 @@
 ---
 <!--END STABILITY BANNER-->
 
+To create an Elasticsearch domain:
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const cluster = new es.Cluster(this, 'Domain', {
+    elasticsearchVersion: '7.4',
+    clusterConfig: {
+        masterNodes: 3,
+        masterNodeInstanceType: 'c5.large.elasticsearch',
+        dataNodes: 3,
+        dataNodeInstanceType: 'r5.large.elasticsearch',
+    },
+    logPublishingOptions: {
+        slowSearchLogEnabed: true,
+        appLogEnabled: true
+    },
+});
+```
+
+This creates an Elasticsearch cluster and automatically sets up log groups for
+logging the cluster logs and slow search logs.
+
+
+### Permissions
+
+#### IAM
+
+Helper methods also exist for managing access to the cluster.
+
+```ts
+const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+// Grant the lambda functiomn read and write access to app-search index
+cluster.grantReadWriteForIndex(lambda, 'app-search');
+```
+
+### Encryption
+
+The cluster can also be created with encryption enabled:
+
+```ts
+const cluster = new es.Cluster(this, 'Domain', {
+    elasticsearchVersion: '7.4',
+    clusterConfig: {
+        masterNodes: 3,
+        masterNodeInstanceType: 'c5.large.elasticsearch',
+        dataNodes: 3,
+        dataNodeInstanceType: 'r5.large.elasticsearch',
+    },
+    nodeToNodeEncryptionEnabled: true,
+    encryptionAtRestOptions: {
+        enabled: true,
+    },
+});
+
+```
+
+This sets up the cluster with node to node encryption and encryption at
+rest. You can also choose to supply your own KMS key to use for encryption at
+rest.
+
+### Metrics
+
+Helper methods exist to access common cluster metrics for example:
+
+```ts
+
+const freeStorageSpace = cluster.metricFreeStorageSpace('account-id');
+const masterSysMemoryUtilization = cluster.metric('MasterSysMemoryUtilization', 'account-id');
+```
+
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
