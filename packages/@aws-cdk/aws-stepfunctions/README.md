@@ -638,6 +638,7 @@ const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
 
 //give user permission to send task success to the state machine
 stateMachine.grant(user, 'states:SendTaskSuccess');
+```
 
 ## Import
 
