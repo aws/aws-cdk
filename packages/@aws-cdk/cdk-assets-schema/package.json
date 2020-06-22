@@ -70,11 +70,12 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "stable",
+  "stability": "deprecated",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable",
+  "deprecated": true,
+  "maturity": "deprecated",
   "cdk-build": {
     "jest": true
   }
