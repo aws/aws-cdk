@@ -1,11 +1,14 @@
 
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType } from '@aws-cdk/core';
+import { version as delayVersion } from 'delay/package.json';
 import * as fs from 'fs';
 import { Bundling } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
 const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+const existsSyncOriginal = fs.existsSync;
+const existsSyncMock = jest.spyOn(fs, 'existsSync');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -81,7 +84,7 @@ test('Parcel bundling with externals and dependencies', () => {
     runtime: Runtime.NODEJS_12_X,
     projectRoot: '/project',
     externalModules: ['abc'],
-    installModules: ['@aws-cdk/core'],
+    installModules: ['delay'],
   });
 
   // Correctly bundles with parcel
@@ -102,8 +105,8 @@ test('Parcel bundling with externals and dependencies', () => {
     targets: expect.objectContaining({
       'cdk-lambda': expect.objectContaining({
         includeNodeModules: {
-          '@aws-cdk/core': false,
-          'abc': false,
+          delay: false,
+          abc: false,
         },
       }),
     }),
@@ -112,7 +115,34 @@ test('Parcel bundling with externals and dependencies', () => {
   // Correctly writes dummy package.json
   expect(writeFileSyncMock).toHaveBeenCalledWith('/project/.package.json', JSON.stringify({
     dependencies: {
-      '@aws-cdk/core': '0.0.0',
+      delay: delayVersion,
     },
   }));
+});
+
+test('Detects yarn.lock', () => {
+  existsSyncMock.mockImplementation((p: fs.PathLike) => {
+    if (/yarn.lock/.test(p.toString())) {
+      return true;
+    }
+    return existsSyncOriginal(p);
+  });
+
+  Bundling.parcel({
+    entry: '/project/folder/entry.ts',
+    runtime: Runtime.NODEJS_12_X,
+    projectRoot: '/project',
+    externalModules: ['abc'],
+    installModules: ['delay'],
+  });
+
+  // Correctly bundles with parcel
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.BUNDLE,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/yarn\.lock.+yarn install/),
+      ]),
+    }),
+  });
 });
