@@ -136,7 +136,7 @@ export class AccessPoint extends Resource implements IAccessPoint {
   public readonly accessPointArn: string;
 
   /**
-   * resource ID
+   * The ID of the Access Point
    * @attribute
    */
   public readonly accessPointId: string;
