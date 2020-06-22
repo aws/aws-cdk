@@ -1,5 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
@@ -102,12 +102,17 @@ export class DomainName extends Resource implements IDomainName {
     const endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = endpointType === EndpointType.EDGE;
 
+    if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
+      throw new Error('domainName does not support uppercase letters. ' +
+        `got: '${props.domainName}'`);
+    }
+
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
-      securityPolicy: props.securityPolicy
+      securityPolicy: props.securityPolicy,
     });
 
     this.domainName = resource.ref;
@@ -136,7 +141,7 @@ export class DomainName extends Resource implements IDomainName {
     return new BasePathMapping(this, id, {
       domainName: this,
       restApi: targetApi,
-      ...options
+      ...options,
     });
   }
 }

@@ -26,9 +26,14 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  requiredAttributes: {
-    fullname: true,
-    email: true,
+  standardAttributes: {
+    fullname: {
+      required: true,
+      mutable: true,
+    },
+    email: {
+      required: true,
+    },
   },
   customAttributes: {
     'some-string-attr': new StringAttribute(),
@@ -69,8 +74,18 @@ const userpool = new UserPool(stack, 'myuserpool', {
   },
 });
 
+const cognitoDomain = userpool.addDomain('myuserpooldomain', {
+  cognitoDomain: {
+    domainPrefix: 'myawesomeapp',
+  },
+});
+
 new CfnOutput(stack, 'userpoolId', {
-  value: userpool.userPoolId
+  value: userpool.userPoolId,
+});
+
+new CfnOutput(stack, 'cognitoDomainName', {
+  value: `${cognitoDomain.domainName}.auth.${stack.region}.amazoncognito.com`,
 });
 
 function dummyTrigger(name: string): IFunction {

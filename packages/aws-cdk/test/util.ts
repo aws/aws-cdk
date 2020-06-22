@@ -6,13 +6,17 @@ import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
 import { MockSdkProvider } from './util/mock-sdk';
 
+export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
+
 export interface TestStackArtifact {
   stackName: string;
-  template: any;
+  template?: any;
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
+  terminationProtection?: boolean;
 }
 
 export interface TestAssembly {
@@ -31,7 +35,7 @@ export class MockCloudExecutable extends CloudExecutable {
     super({
       configuration,
       sdkProvider,
-      synthesizer: () => Promise.resolve(testAssembly(assembly))
+      synthesizer: () => Promise.resolve(testAssembly(assembly)),
     });
 
     this.configuration = configuration;
@@ -48,14 +52,15 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
+    const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
+    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
     const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
       metadata[asset.id] = [
-        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset }
+        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset },
       ];
     }
 
@@ -70,8 +75,10 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       dependencies: stack.depends,
       metadata,
       properties: {
-        templateFile
-      }
+        ...stack.properties,
+        templateFile,
+        terminationProtection: stack.terminationProtection,
+      },
     });
   }
 

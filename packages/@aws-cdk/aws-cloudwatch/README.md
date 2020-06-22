@@ -241,6 +241,28 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph legend can be adjusted from the default position at bottom of the widget.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  legendPosition: LegendPosition.RIGHT,
+}));
+```
+
+The graph can publish live data within the last minute that has not been fully aggregated.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  liveData: true,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -271,6 +293,21 @@ to your dashboard:
 ```ts
 dashboard.addWidgets(new TextWidget({
   markdown: '# Key Performance Indicators'
+}));
+```
+
+### Query results widget
+
+A `LogQueryWidget` shows the results of a query from Logs Insights:
+
+```ts
+dashboard.addWidgets(new LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  // The lines will be automatically combined using '\n|'.
+  queryLines: [
+    'fields @message',
+    'filter @message like /Error/',
+  ]
 }));
 ```
 

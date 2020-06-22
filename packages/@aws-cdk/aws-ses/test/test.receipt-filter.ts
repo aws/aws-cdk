@@ -14,7 +14,7 @@ export = {
     new ReceiptFilter(stack, 'Filter', {
       ip: '1.2.3.4/16',
       receiptFilterName: 'MyFilter',
-      policy: ReceiptFilterPolicy.BLOCK
+      policy: ReceiptFilterPolicy.BLOCK,
     });
 
     // THEN
@@ -26,13 +26,13 @@ export = {
             'Filter': {
               'IpFilter': {
                 'Cidr': '1.2.3.4/16',
-                'Policy': 'Block'
+                'Policy': 'Block',
               },
-              'Name': 'MyFilter'
-            }
-          }
-        }
-      }
+              'Name': 'MyFilter',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -46,8 +46,8 @@ export = {
     new WhiteListReceiptFilter(stack, 'WhiteList', {
       ips: [
         '10.0.0.0/16',
-        '1.2.3.4'
-      ]
+        '1.2.3.4',
+      ],
     });
 
     // THEN
@@ -59,10 +59,10 @@ export = {
             'Filter': {
               'IpFilter': {
                 'Cidr': '0.0.0.0/0',
-                'Policy': 'Block'
-              }
-            }
-          }
+                'Policy': 'Block',
+              },
+            },
+          },
         },
         'WhiteListAllow1000016F396A7F2': {
           'Type': 'AWS::SES::ReceiptFilter',
@@ -70,10 +70,10 @@ export = {
             'Filter': {
               'IpFilter': {
                 'Cidr': '10.0.0.0/16',
-                'Policy': 'Allow'
-              }
-            }
-          }
+                'Policy': 'Allow',
+              },
+            },
+          },
         },
         'WhiteListAllow1234A4DDAD4E': {
           'Type': 'AWS::SES::ReceiptFilter',
@@ -81,14 +81,14 @@ export = {
             'Filter': {
               'IpFilter': {
                 'Cidr': '1.2.3.4',
-                'Policy': 'Allow'
-              }
-            }
-          }
-        }
-      }
+                'Policy': 'Allow',
+              },
+            },
+          },
+        },
+      },
     });
 
     test.done();
-  }
+  },
 };

@@ -16,9 +16,9 @@ repo.onReferenceCreated('OnReferenceCreated', {
   target: {
     bind: () => ({
       arn: topic.topicArn,
-      id: ''
-    })
-  }
+      id: '',
+    }),
+  },
 });
 
 app.synth();

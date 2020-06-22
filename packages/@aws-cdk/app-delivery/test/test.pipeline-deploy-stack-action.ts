@@ -1,4 +1,4 @@
-import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -43,8 +43,8 @@ export = nodeunit.testCase({
               adminPermissions: false,
             }));
           }, 'Cross-environment deployment is not supported');
-        }
-      )
+        },
+      ),
     );
     test.done();
   },
@@ -74,8 +74,8 @@ export = nodeunit.testCase({
               adminPermissions: false,
             }));
           }, 'createChangeSetRunOrder must be < executeChangeSetRunOrder');
-        }
-      )
+        },
+      ),
     );
     test.done();
   },
@@ -138,48 +138,48 @@ export = nodeunit.testCase({
         StackName: 'TestStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM',
-      }
+      },
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AnonymousIAM',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM',
-      }
+      },
     })));
     expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM',
-      }
+      },
     })));
     expect(pipelineStack).notTo(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM',
-      }
+      },
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'NoCapStack',
         ActionMode: 'CHANGE_SET_REPLACE',
-      }
+      },
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AutoExpand',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_AUTO_EXPAND',
-      }
+      },
     })));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'AnonymousIAMAndAutoExpand',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND',
-      }
+      },
     })));
     test.done();
   },
@@ -245,16 +245,16 @@ export = nodeunit.testCase({
             Action: '*',
             Effect: 'Allow',
             Resource: '*',
-          }
+          },
         ],
-      }
+      },
     }));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
       Configuration: {
         StackName: 'TestStack',
         ActionMode: 'CHANGE_SET_REPLACE',
         Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
-      }
+      },
     })));
     test.done();
   },
@@ -271,7 +271,7 @@ export = nodeunit.testCase({
       stack: pipelineStack,
       input: selfUpdatingStack.synthesizedApp,
       adminPermissions: false,
-      role
+      role,
     });
     selfUpdateStage.addAction(deployAction);
     test.same(deployAction.deploymentRole, role);
@@ -305,9 +305,9 @@ export = nodeunit.testCase({
         'ec2:DescribeSecurityGroups',
         'ec2:CreateSecurityGroup',
         'ec2:RevokeSecurityGroupEgress',
-        'ec2:RevokeSecurityGroupIngress'
+        'ec2:RevokeSecurityGroupIngress',
       ],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     // THEN //
@@ -339,7 +339,7 @@ export = nodeunit.testCase({
                         'Arn',
                       ],
                     },
-                    '/*'
+                    '/*',
                   ],
                 ],
               },
@@ -366,7 +366,7 @@ export = nodeunit.testCase({
               'ec2:DescribeSecurityGroups',
               'ec2:CreateSecurityGroup',
               'ec2:RevokeSecurityGroupEgress',
-              'ec2:RevokeSecurityGroupIngress'
+              'ec2:RevokeSecurityGroupIngress',
             ],
             Effect: 'Allow',
             Resource: '*',
@@ -401,11 +401,48 @@ export = nodeunit.testCase({
               adminPermissions: false,
             });
           }, /Cannot deploy the stack DeployedStack because it references/);
-        }
-      )
+        },
+      ),
     );
     test.done();
-  }
+  },
+
+  'allows overriding the ChangeSet and Execute action names'(test: nodeunit.Test) {
+    const stack = getTestStack();
+    const selfUpdatingPipeline = createSelfUpdatingStack(stack);
+    selfUpdatingPipeline.pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new PipelineDeployStackAction({
+          input: selfUpdatingPipeline.synthesizedApp,
+          adminPermissions: true,
+          stack,
+          createChangeSetActionName: 'Prepare',
+          executeChangeSetActionName: 'Deploy',
+        }),
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {},
+        {},
+        {
+          Name: 'Deploy',
+          Actions: [
+            {
+              Name: 'Prepare',
+            },
+            {
+              Name: 'Deploy',
+            },
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
 });
 
 class FakeAction implements codepipeline.IAction {

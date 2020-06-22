@@ -78,6 +78,7 @@ describe('Batch Job Definition', () => {
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
+        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount)}],
         Ulimits: [],
         User: jobDefProps.container.user,
         Vcpus: jobDefProps.container.vcpus,
@@ -126,12 +127,12 @@ describe('Batch Job Definition', () => {
                       {
                         'Fn::GetAtt': [
                           'imagerepoD116FAF0',
-                          'Arn'
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                          'Arn',
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
               '.dkr.ecr.',
               {
@@ -143,30 +144,30 @@ describe('Batch Job Definition', () => {
                       {
                         'Fn::GetAtt': [
                           'imagerepoD116FAF0',
-                          'Arn'
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                          'Arn',
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
               '.',
               {
-                Ref: 'AWS::URLSuffix'
+                Ref: 'AWS::URLSuffix',
               },
               '/',
               {
-                Ref: 'imagerepoD116FAF0'
+                Ref: 'imagerepoD116FAF0',
               },
-              ':latest'
-            ]
-          ]
+              ':latest',
+            ],
+          ],
         },
         Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1
-      }
+        Vcpus: 1,
+      },
     }, ResourcePart.Properties);
   });
 

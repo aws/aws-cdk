@@ -68,8 +68,8 @@ export class Construct extends constructs.Construct implements IConstruct {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
-          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
-      }
+          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode,
+      },
     });
 
     if (Token.isUnresolved(id)) {
@@ -91,7 +91,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected onValidate(): string[] {
     return this.validate();
@@ -122,7 +122,7 @@ export class Construct extends constructs.Construct implements IConstruct {
   protected onSynthesize(session: constructs.ISynthesisSession): void {
     this.synthesize({
       outdir: session.outdir,
-      assembly: session.assembly!
+      assembly: session.assembly!,
     });
   }
 
@@ -132,7 +132,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected validate(): string[] {
     return [];
@@ -182,6 +182,8 @@ export enum ConstructOrder {
 
 /**
  * Options for synthesis.
+ *
+ * @deprecated use `app.synth()` or `stage.synth()` instead
  */
 export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   /**
@@ -222,28 +224,25 @@ export class ConstructNode {
 
   /**
    * Synthesizes a CloudAssembly from a construct tree.
-   * @param root The root of the construct tree.
+   * @param node The root of the construct tree.
    * @param options Synthesis options.
+   * @deprecated Use `app.synth()` or `stage.synth()` instead
    */
-  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
-
-    root._actualNode.synthesize({
-      outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder
-      }
-    });
-
-    return builder.buildAssembly(options);
+  public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const a: typeof import('././private/synthesis') = require('./private/synthesis');
+    return a.synthesize(node.root, options);
   }
 
   /**
    * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
    * @param node The root node
+   * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p: typeof import('./private/prepare-app') = require('./private/prepare-app');
+    p.prepareApp(node.root); // resolve cross refs and nested stack assets.
     return node._actualNode.prepare();
   }
 
@@ -269,7 +268,7 @@ export class ConstructNode {
     Object.defineProperty(this._actualNode, ORIGINAL_CONSTRUCT_NODE_SYMBOL, {
       value: this,
       configurable: false,
-      enumerable: false
+      enumerable: false,
     });
   }
 

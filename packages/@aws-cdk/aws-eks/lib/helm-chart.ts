@@ -1,5 +1,4 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -48,6 +47,12 @@ export interface HelmChartOptions {
    * @default - Helm will not wait before marking release as successful
    */
   readonly wait?: boolean;
+
+  /**
+   * Amount of time to wait for any individual Kubernetes operation. Maximum 15 minutes.
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -69,7 +74,7 @@ export interface HelmChartProps extends HelmChartOptions {
  */
 export class HelmChart extends Construct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
 
@@ -80,20 +85,26 @@ export class HelmChart extends Construct {
 
     const provider = props.cluster._kubectlProvider;
 
+    const timeout = props.timeout?.toSeconds();
+    if (timeout && timeout > 900) {
+      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+    }
+
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
-        Release: props.release || this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+        Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
-        Wait: props.wait || false,
+        Wait: props.wait ?? false,
+        Timeout: timeout,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
-        Namespace: props.namespace || 'default',
-        Repository: props.repository
-      }
+        Namespace: props.namespace ?? 'default',
+        Repository: props.repository,
+      },
     });
   }
 }

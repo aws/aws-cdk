@@ -12,7 +12,7 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetention } from './log-retention';
+import { LogRetention, LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -99,6 +99,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * It controls the permissions that the function will have. The Role must
    * be assumable by the 'lambda.amazonaws.com' service principal.
    *
+   * The default Role automatically has permissions granted for Lambda execution. If you
+   * provide a Role, you must add the relevant AWS managed policies yourself.
+   *
+   * The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole" and
+   * "service-role/AWSLambdaVPCAccessExecutionRole".
+   *
    * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
@@ -119,7 +125,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default - Private subnets.
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -227,6 +233,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetentionRole?: iam.IRole;
 
   /**
+   * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
+   * These options control the retry policy when interacting with CloudWatch APIs.
+   *
+   * @default - Default AWS SDK retry options.
+   */
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+
+  /**
    * Options for the `lambda.Version` resource automatically created by the
    * `fn.currentVersion` method.
    * @default - default options as described in `VersionOptions`
@@ -290,7 +304,7 @@ export class Function extends FunctionBase {
 
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
-      ...this.currentVersionOptions
+      ...this.currentVersionOptions,
     });
 
     return this._currentVersion;
@@ -329,11 +343,11 @@ export class Function extends FunctionBase {
 
         if (attrs.securityGroup) {
           this._connections = new ec2.Connections({
-            securityGroups: [attrs.securityGroup]
+            securityGroups: [attrs.securityGroup],
           });
         } else if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)],
           });
         }
       }
@@ -349,7 +363,7 @@ export class Function extends FunctionBase {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
-      ...props
+      ...props,
     });
   }
   /**
@@ -477,7 +491,7 @@ export class Function extends FunctionBase {
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies
+      managedPolicies,
     });
     this.grantPrincipal = this.role;
 
@@ -497,7 +511,7 @@ export class Function extends FunctionBase {
         s3Bucket: code.s3Location && code.s3Location.bucketName,
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
-        zipFile: code.inlineCode
+        zipFile: code.inlineCode,
       },
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
@@ -509,7 +523,7 @@ export class Function extends FunctionBase {
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
-      reservedConcurrentExecutions: props.reservedConcurrentExecutions
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions,
     });
 
     resource.node.addDependency(this.role);
@@ -537,7 +551,8 @@ export class Function extends FunctionBase {
       const logretention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
-        role: props.logRetentionRole
+        role: props.logRetentionRole,
+        logRetentionRetryOptions: props.logRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }
@@ -679,7 +694,7 @@ export class Function extends FunctionBase {
     // stacks.
     if (!this._currentVersion) {
       return {
-        variables: this.environment
+        variables: this.environment,
       };
     }
 
@@ -723,7 +738,7 @@ export class Function extends FunctionBase {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
-        allowAllOutbound: props.allowAllOutbound
+        allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
     }
@@ -748,7 +763,7 @@ export class Function extends FunctionBase {
 
     return {
       subnetIds,
-      securityGroupIds: securityGroups.map(sg => sg.securityGroupId)
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
 
@@ -762,12 +777,12 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14)
+      retentionPeriod: Duration.days(14),
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn]
+      resources: [deadLetterQueue.queueArn],
     }));
 
     return deadLetterQueue;
@@ -776,7 +791,7 @@ export class Function extends FunctionBase {
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn
+        targetArn: deadLetterQueue.queueArn,
       };
     } else {
       return undefined;
@@ -790,11 +805,11 @@ export class Function extends FunctionBase {
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-      resources: ['*']
+      resources: ['*'],
     }));
 
     return {
-      mode: props.tracing
+      mode: props.tracing,
     };
   }
 }

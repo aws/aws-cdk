@@ -8,7 +8,7 @@ import { CfnRotationSchedule } from './secretsmanager.generated';
  */
 export interface RotationScheduleOptions {
   /**
-   * THe Lambda function that can rotate the secret.
+   * The Lambda function that can rotate the secret.
    */
   readonly rotationLambda: lambda.IFunction;
 
@@ -42,8 +42,8 @@ export class RotationSchedule extends Resource {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda.functionArn,
       rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30
-      }
+        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
+      },
     });
   }
 }

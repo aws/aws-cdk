@@ -3,10 +3,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
-import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct-compat';
+import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
-import { FileAssetParameters } from './private/asset-parameters';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -16,21 +15,6 @@ const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
-
-/**
- * The well-known name for the docker image asset ECR repository. All docker
- * image assets will be pushed into this repository with an image tag based on
- * the source hash.
- */
-const ASSETS_ECR_REPOSITORY_NAME = 'aws-cdk/assets';
-
-/**
- * This allows users to work around the fact that the ECR repository is
- * (currently) not configurable by setting this context key to their desired
- * repository name. The CLI will auto-create this ECR repository if it's not
- * already created.
- */
-const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-name';
 
 export interface StackProps {
   /**
@@ -43,8 +27,66 @@ export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
    *
-   * @default - The `default-account` and `default-region` context parameters will be
-   * used. If they are undefined, it will not be possible to deploy the stack.
+   * Set the `region`/`account` fields of `env` to either a concrete value to
+   * select the indicated environment (recommended for production stacks), or to
+   * the values of environment variables
+   * `CDK_DEFAULT_REGION`/`CDK_DEFAULT_ACCOUNT` to let the target environment
+   * depend on the AWS credentials/configuration that the CDK CLI is executed
+   * under (recommended for development stacks).
+   *
+   * If the `Stack` is instantiated inside a `Stage`, any undefined
+   * `region`/`account` fields from `env` will default to the same field on the
+   * encompassing `Stage`, if configured there.
+   *
+   * If either `region` or `account` are not set nor inherited from `Stage`, the
+   * Stack will be considered "*environment-agnostic*"". Environment-agnostic
+   * stacks can be deployed to any environment but may not be able to take
+   * advantage of all features of the CDK. For example, they will not be able to
+   * use environmental context lookups such as `ec2.Vpc.fromLookup` and will not
+   * automatically translate Service Principals to the right format based on the
+   * environment's AWS partition, and other such enhancements.
+   *
+   * @example
+   *
+   * // Use a concrete account and region to deploy this stack to:
+   * // `.account` and `.region` will simply return these values.
+   * new MyStack(app, 'Stack1', {
+   *   env: {
+   *     account: '123456789012',
+   *     region: 'us-east-1'
+   *   },
+   * });
+   *
+   * // Use the CLI's current credentials to determine the target environment:
+   * // `.account` and `.region` will reflect the account+region the CLI
+   * // is configured to use (based on the user CLI credentials)
+   * new MyStack(app, 'Stack2', {
+   *   env: {
+   *     account: process.env.CDK_DEFAULT_ACCOUNT,
+   *     region: process.env.CDK_DEFAULT_REGION
+   *   },
+   * });
+   *
+   * // Define multiple stacks stage associated with an environment
+   * const myStage = new Stage(app, 'MyStage', {
+   *   env: {
+   *     account: '123456789012',
+   *     region: 'us-east-1'
+   *   }
+   * });
+   *
+   * // both of these stavks will use the stage's account/region:
+   * // `.account` and `.region` will resolve to the concrete values as above
+   * new MyStack(myStage, 'Stack1');
+   * new YourStack(myStage, 'Stack1');
+   *
+   * // Define an environment-agnostic stack:
+   * // `.account` and `.region` will resolve to `{ "Ref": "AWS::AccountId" }` and `{ "Ref": "AWS::Region" }` respectively.
+   * // which will only resolve to actual values by CloudFormation during deployment.
+   * new MyStack(app, 'Stack1');
+   *
+   * @default - The environment of the containing `Stage` if available,
+   * otherwise create the stack will be environment-agnostic.
    */
   readonly env?: Environment;
 
@@ -61,6 +103,21 @@ export interface StackProps {
    * @default {}
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Synthesis method to use while deploying this stack
+   *
+   * @default - `DefaultStackSynthesizer` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
+   * is set, `LegacyStackSynthesizer` otherwise.
+   */
+  readonly synthesizer?: IStackSynthesizer;
+
+  /**
+   * Whether to enable termination protection for this stack.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
 }
 
 /**
@@ -94,7 +151,7 @@ export class Stack extends Construct implements ITaggable {
         enumerable: false,
         writable: false,
         configurable: false,
-        value
+        value,
       });
       return value;
     }
@@ -182,6 +239,11 @@ export class Stack extends Construct implements ITaggable {
   public readonly environment: string;
 
   /**
+   * Whether termination protection is enabled for this stack.
+   */
+  public readonly terminationProtection?: boolean;
+
+  /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
@@ -203,6 +265,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly artifactId: string;
 
   /**
+   * Synthesis method for this stack
+   *
+   * @experimental
+   */
+  public readonly synthesizer: IStackSynthesizer;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -219,18 +288,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private readonly _missingContext = new Array<cxschema.MissingContext>();
 
-  /**
-   * Includes all parameters synthesized for assets (lazy).
-   */
-  private _assetParameters?: Construct;
-
   private readonly _stackName: string;
-
-  /**
-   * The image ID of all the docker image assets that were already added to this
-   * stack (to avoid duplication).
-   */
-  private readonly addedImageAssets = new Set<string>();
 
   /**
    * Creates a new stack.
@@ -254,6 +312,7 @@ export class Stack extends Construct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
+    this.terminationProtection = props.terminationProtection;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -264,7 +323,7 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.description = props.description;
     }
 
-    this._stackName = props.stackName !== undefined ? props.stackName : this.generateUniqueId();
+    this._stackName = props.stackName !== undefined ? props.stackName : this.generateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -276,11 +335,20 @@ export class Stack extends Construct implements ITaggable {
     // the same name. however, this behavior is breaking for 1.x so it's only
     // applied under a feature flag which is applied automatically for new
     // projects created using `cdk init`.
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT)
-      ? this.generateUniqueId()
+    //
+    // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
+    // people only have to flip one flag.
+    // tslint:disable-next-line: max-line-length
+    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+      ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
+
+    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+      ? new DefaultStackSynthesizer()
+      : new LegacyStackSynthesizer());
+    this.synthesizer.bind(this);
   }
 
   /**
@@ -291,7 +359,7 @@ export class Stack extends Construct implements ITaggable {
       scope: this,
       prefix: [],
       resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-      preparing: false
+      preparing: false,
     });
   }
 
@@ -311,14 +379,17 @@ export class Stack extends Construct implements ITaggable {
    * @param report The set of parameters needed to obtain the context
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    this._missingContext.push(report);
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
+      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
+    }
+    this._missingContext.push(report as cxschema.MissingContext);
   }
 
   /**
    * Rename a generated logical identities
    *
    * To modify the naming scheme strategy, extend the `Stack` class and
-   * override the `createNamingScheme` method.
+   * override the `allocateLogicalId` method.
    */
   public renameLogicalId(oldId: string, newId: string) {
     this._logicalIds.addRename(oldId, newId);
@@ -502,94 +573,40 @@ export class Stack extends Construct implements ITaggable {
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
         Fn.select(0, Fn.getAzs()),
-        Fn.select(1, Fn.getAzs())
+        Fn.select(1, Fn.getAzs()),
       ];
     }
 
     const value = ContextProvider.getValue(this, {
-      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
       dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
     }).value;
 
     if (!Array.isArray(value)) {
-      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
+      throw new Error(`Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`);
     }
 
     return value;
   }
 
+  /**
+   * Register a file asset on this Stack
+   *
+   * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
+   * and a different IDeploymentEnvironment class if you are implementing.
+   */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-
-    // assets are always added at the top-level stack
-    if (this.nestedStackParent) {
-      return this.nestedStackParent.addFileAsset(asset);
-    }
-
-    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
-    if (!params) {
-      params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
-
-      const metadata: cxschema.FileAssetMetadataEntry = {
-        path: asset.fileName,
-        id: asset.sourceHash,
-        packaging: asset.packaging,
-        sourceHash: asset.sourceHash,
-
-        s3BucketParameter: params.bucketNameParameter.logicalId,
-        s3KeyParameter: params.objectKeyParameter.logicalId,
-        artifactHashParameter: params.artifactHashParameter.logicalId,
-      };
-
-      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
-    }
-
-    const bucketName = params.bucketNameParameter.valueAsString;
-
-    // key is prefix|postfix
-    const encodedKey = params.objectKeyParameter.valueAsString;
-
-    const s3Prefix = Fn.select(0, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
-    const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
-    const objectKey = `${s3Prefix}${s3Filename}`;
-
-    const s3Url = `https://s3.${this.region}.${this.urlSuffix}/${bucketName}/${objectKey}`;
-
-    return { bucketName, objectKey, s3Url };
+    return this.synthesizer.addFileAsset(asset);
   }
 
+  /**
+   * Register a docker image asset on this Stack
+   *
+   * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
+   * and a different `IDeploymentEnvironment` class if you are implementing.
+   */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    if (this.nestedStackParent) {
-      return this.nestedStackParent.addDockerImageAsset(asset);
-    }
-
-    // check if we have an override from context
-    const repositoryNameOverride = this.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
-    const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
-    const imageTag = asset.sourceHash;
-    const assetId = asset.sourceHash;
-
-    // only add every image (identified by source hash) once for each stack that uses it.
-    if (!this.addedImageAssets.has(assetId)) {
-      const metadata: cxschema.ContainerImageAssetMetadataEntry = {
-        repositoryName,
-        imageTag,
-        id: assetId,
-        packaging: 'container-image',
-        path: asset.directoryName,
-        sourceHash: asset.sourceHash,
-        buildArgs: asset.dockerBuildArgs,
-        target: asset.dockerBuildTarget,
-        file: asset.dockerFile,
-      };
-
-      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
-      this.addedImageAssets.add(assetId);
-    }
-
-    return {
-      imageUri: `${this.account}.dkr.ecr.${this.region}.${this.urlSuffix}/${repositoryName}:${imageTag}`,
-      repositoryName
-    };
+    return this.synthesizer.addDockerImageAsset(asset);
   }
 
   /**
@@ -653,7 +670,7 @@ export class Stack extends Construct implements ITaggable {
     if (!dep) {
       dep = this._stackDependencies[target.node.uniqueId] = {
         stack: target,
-        reasons: []
+        reasons: [],
       };
     }
 
@@ -726,35 +743,13 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  /**
-   * Prepare stack
-   *
-   * Find all CloudFormation references and tell them we're consuming them.
-   *
-   * Find all dependencies as well and add the appropriate DependsOn fields.
-   */
-  protected prepare() {
-    // Resource dependencies
-    for (const dependency of this.node.dependencies) {
-      for (const target of findCfnResources([ dependency.target ])) {
-        for (const source of findCfnResources([ dependency.source ])) {
-          source.addDependsOn(target);
-        }
-      }
-    }
-
-    if (this.tags.hasTags()) {
-      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, this.tags.renderTags());
-    }
-
-    // if this stack is a roort (e.g. in unit tests), call `prepareApp` so that
-    // we resolve cross-references and nested stack assets.
-    if (!this.node.scope) {
-      prepareApp(this);
-    }
-  }
-
   protected synthesize(session: ISynthesisSession): void {
+    // In principle, stack synthesis is delegated to the
+    // StackSynthesis object.
+    //
+    // However, some parts of synthesis currently use some private
+    // methods on Stack, and I don't really see the value in refactoring
+    // this right now, so some parts still happen here.
     const builder = session.assembly;
 
     // write the CloudFormation template as a JSON file
@@ -766,38 +761,8 @@ export class Stack extends Construct implements ITaggable {
       builder.addMissing(ctx);
     }
 
-    // if this is a nested stack, do not emit it as a cloud assembly artifact (it will be registered as an s3 asset instead)
-    if (this.nested) {
-      return;
-    }
-
-    const deps = this.dependencies.map(s => s.artifactId);
-    const meta = this.collectMetadata();
-
-    // backwards compatibility since originally artifact ID was always equal to
-    // stack name the stackName attribute is optional and if it is not specified
-    // the CLI will use the artifact ID as the stack name. we *could have*
-    // always put the stack name here but wanted to minimize the risk around
-    // changes to the assembly manifest. so this means that as long as stack
-    // name and artifact ID are the same, the cloud assembly manifest will not
-    // change.
-    const stackNameProperty = this.stackName === this.artifactId
-      ? { }
-      : { stackName: this.stackName };
-
-    const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: this.templateFile,
-      ...stackNameProperty
-    };
-
-    // add an artifact that represents this stack
-    builder.addArtifact(this.artifactId, {
-      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-      environment: this.environment,
-      properties,
-      dependencies: deps.length > 0 ? deps : undefined,
-      metadata: Object.keys(meta).length > 0 ? meta : undefined,
-    });
+    // Delegate adding artifacts to the Synthesizer
+    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**
@@ -827,7 +792,7 @@ export class Stack extends Construct implements ITaggable {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata
+      Metadata: this.templateOptions.metadata,
     };
 
     const elements = cfnElements(this);
@@ -863,12 +828,15 @@ export class Stack extends Construct implements ITaggable {
    */
   private parseEnvironment(env: Environment = {}) {
     // if an environment property is explicitly specified when the stack is
-    // created, it will be used. if not, use tokens for account and region but
-    // they do not need to be scoped, the only situation in which
-    // export/fn::importvalue would work if { Ref: "AWS::AccountId" } is the
-    // same for provider and consumer anyway.
-    const account = env.account || Aws.ACCOUNT_ID;
-    const region  = env.region  || Aws.REGION;
+    // created, it will be used. if not, use tokens for account and region.
+    //
+    // (They do not need to be anchored to any construct like resource attributes
+    // are, because we'll never Export/Fn::ImportValue them -- the only situation
+    // in which Export/Fn::ImportValue would work is if the value are the same
+    // between producer and consumer anyway, so we can just assume that they are).
+    const containingAssembly = Stage.of(this);
+    const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
+    const region  = env.region  ?? containingAssembly?.region ?? Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate
@@ -878,7 +846,7 @@ export class Stack extends Construct implements ITaggable {
 
     return {
       account, region,
-      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion)
+      environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
 
@@ -899,91 +867,112 @@ export class Stack extends Construct implements ITaggable {
     return undefined;
   }
 
-  private collectMetadata() {
-    const output: { [id: string]: cxschema.MetadataEntry[] } = { };
-    const stack = this;
-
-    visit(this);
-
-    return output;
-
-    function visit(node: IConstruct) {
-      // break off if we reached a node that is not a child of this stack
-      const parent = findParentStack(node);
-      if (parent !== stack) {
-        return;
-      }
-
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
-
-    function findParentStack(node: IConstruct): Stack | undefined {
-      if (node instanceof Stack && node.nestedStackParent === undefined) {
-        return node;
-      }
-
-      if (!node.node.scope) {
-        return undefined;
-      }
-
-      return findParentStack(node.node.scope);
-    }
+  /**
+   * Calculate the stack name based on the construct path
+   *
+   * The stack name is the name under which we'll deploy the stack,
+   * and incorporates containing Stage names by default.
+   *
+   * Generally this looks a lot like how logical IDs are calculated.
+   * The stack name is calculated based on the construct root path,
+   * as follows:
+   *
+   * - Path is calculated with respect to containing App or Stage (if any)
+   * - If the path is one component long just use that component, otherwise
+   *   combine them with a hash.
+   *
+   * Since the hash is quite ugly and we'd like to avoid it if possible -- but
+   * we can't anymore in the general case since it has been written into legacy
+   * stacks. The introduction of Stages makes it possible to make this nicer however.
+   * When a Stack is nested inside a Stage, we use the path components below the
+   * Stage, and prefix the path components of the Stage before it.
+   */
+  private generateStackName() {
+    const assembly  = Stage.of(this);
+    const prefix = (assembly && assembly.stageName) ? `${assembly.stageName}-` : '';
+    return `${prefix}${this.generateStackId(assembly)}`;
   }
 
   /**
-   * Calculcate the stack name based on the construct path
+   * The artifact ID for this stack
+   *
+   * Stack artifact ID is unique within the App's Cloud Assembly.
    */
-  private generateUniqueId() {
-    // In tests, it's possible for this stack to be the root object, in which case
-    // we need to use it as part of the root path.
-    const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];
-    const ids = rootPath.map(c => c.node.id);
-
-    // Special case, if rootPath is length 1 then just use ID (backwards compatibility)
-    // otherwise use a unique stack name (including hash). This logic is already
-    // in makeUniqueId, *however* makeUniqueId will also strip dashes from the name,
-    // which *are* allowed and also used, so we short-circuit it.
-    if (ids.length === 1) {
-      // Could be empty in a unit test, so just pretend it's named "Stack" then
-      return ids[0] || 'Stack';
-    }
-
-    return makeUniqueId(ids);
+  private generateStackArtifactId() {
+    return this.generateStackId(this.node.root);
   }
 
-  private get assetParameters() {
-    if (!this._assetParameters) {
-      this._assetParameters = new Construct(this, 'AssetParameters');
+  /**
+   * Generate an ID with respect to the given container construct.
+   */
+  private generateStackId(container: IConstruct | undefined) {
+    const rootPath = rootPathTo(this, container);
+    const ids = rootPath.map(c => c.node.id);
+
+    // In unit tests our Stack (which is the only component) may not have an
+    // id, so in that case just pretend it's "Stack".
+    if (ids.length === 1 && !ids[0]) {
+      ids[0] = 'Stack';
     }
-    return this._assetParameters;
+
+    return makeStackName(ids);
   }
 }
 
-function merge(template: any, part: any) {
-  for (const section of Object.keys(part)) {
-    const src = part[section];
+function merge(template: any, fragment: any): void {
+  for (const section of Object.keys(fragment)) {
+    const src = fragment[section];
 
     // create top-level section if it doesn't exist
-    let dest = template[section];
+    const dest = template[section];
     if (!dest) {
-      template[section] = dest = src;
+      template[section] = src;
     } else {
-      // add all entities from source section to destination section
-      for (const id of Object.keys(src)) {
-        if (id in dest) {
-          throw new Error(`section '${section}' already contains '${id}'`);
-        }
-        dest[id] = src[id];
-      }
+      template[section] = mergeSection(section, dest, src);
     }
   }
+}
+
+function mergeSection(section: string, val1: any, val2: any): any {
+  switch (section) {
+    case 'Description':
+      return `${val1}\n${val2}`;
+    case 'AWSTemplateFormatVersion':
+      if (val1 != null && val2 != null && val1 !== val2) {
+        throw new Error(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
+      }
+      return val1 ?? val2;
+    case 'Resources':
+    case 'Conditions':
+    case 'Parameters':
+    case 'Outputs':
+    case 'Mappings':
+    case 'Metadata':
+    case 'Transform':
+      return mergeObjectsWithoutDuplicates(section, val1, val2);
+    default:
+      throw new Error(`CDK doesn't know how to merge two instances of the CFN template section '${section}' - ` +
+        'please remove one of them from your code');
+  }
+}
+
+function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): any {
+  if (typeof dest !== 'object') {
+    throw new Error(`Expecting ${JSON.stringify(dest)} to be an object`);
+  }
+  if (typeof src !== 'object') {
+    throw new Error(`Expecting ${JSON.stringify(src)} to be an object`);
+  }
+
+  // add all entities from source section to destination section
+  for (const id of Object.keys(src)) {
+    if (id in dest) {
+      throw new Error(`section '${section}' already contains '${id}'`);
+    }
+    dest[id] = src[id];
+  }
+
+  return dest;
 }
 
 /**
@@ -1041,6 +1030,33 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   return into;
 }
 
+/**
+ * Return the construct root path of the given construct relative to the given ancestor
+ *
+ * If no ancestor is given or the ancestor is not found, return the entire root path.
+ */
+export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConstruct[] {
+  const scopes = construct.node.scopes;
+  for (let i = scopes.length - 2; i >= 0; i--) {
+    if (scopes[i] === ancestor) {
+      return scopes.slice(i + 1);
+    }
+  }
+  return scopes;
+}
+
+/**
+ * makeUniqueId, specialized for Stack names
+ *
+ * Stack names may contain '-', so we allow that character if the stack name
+ * has only one component. Otherwise we fall back to the regular "makeUniqueId"
+ * behavior.
+ */
+function makeStackName(components: string[]) {
+  if (components.length === 1) { return components[0]; }
+  return makeUniqueId(components);
+}
+
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
@@ -1048,22 +1064,12 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
-import { prepareApp } from './private/prepare-app';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
+import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
-
-/**
- * Find all resources in a set of constructs
- */
-function findCfnResources(roots: Iterable<IConstruct>): CfnResource[] {
-  const ret = new Array<CfnResource>();
-  for (const root of roots) {
-    ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
-  }
-  return ret;
-}
 
 interface StackDependency {
   stack: Stack;

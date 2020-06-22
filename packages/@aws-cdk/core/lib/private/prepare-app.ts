@@ -1,6 +1,8 @@
 import { ConstructOrder } from 'constructs';
-import { Construct } from '../construct-compat';
+import { CfnResource } from '../cfn-resource';
+import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
+import { Stage } from '../stage';
 import { resolveReferences } from './refs';
 
 /**
@@ -13,13 +15,25 @@ import { resolveReferences } from './refs';
  *
  * @param root The root of the construct tree.
  */
-export function prepareApp(root: Construct) {
-  if (root.node.scope) {
-    throw new Error('prepareApp must be called on the root node');
+export function prepareApp(root: IConstruct) {
+  if (root.node.scope && !Stage.isStage(root)) {
+    throw new Error('prepareApp can only be called on a stage or a root construct');
+  }
+
+  // apply dependencies between resources in depending subtrees
+  for (const dependency of root.node.dependencies) {
+    const targetCfnResources = findCfnResources(dependency.target);
+    const sourceCfnResources = findCfnResources(dependency.source);
+
+    for (const target of targetCfnResources) {
+      for (const source of sourceCfnResources) {
+        source.addDependsOn(target);
+      }
+    }
   }
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare it's template asset.
+  // from the head of this queue to prepare its template asset.
   const queue = findAllNestedStacks(root);
 
   while (true) {
@@ -46,18 +60,35 @@ function defineNestedStackAsset(nestedStack: Stack) {
   nested._prepareTemplateAsset();
 }
 
-function findAllNestedStacks(root: Construct) {
+function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
+
+  const includeStack = (stack: IConstruct): stack is Stack => {
+    if (!Stack.isStack(stack)) { return false; }
+    if (!stack.nested) { return false; }
+
+    // test: if we are not within a stage, then include it.
+    if (!Stage.of(stack)) { return true; }
+
+    return Stage.of(stack) === root;
+  };
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
   for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
-    if (Stack.isStack(stack) && stack.nested) {
+    if (includeStack(stack)) {
       result.push(stack);
     }
   }
 
   return result;
+}
+
+/**
+ * Find all resources in a set of constructs
+ */
+function findCfnResources(root: IConstruct): CfnResource[] {
+  return root.node.findAll().filter(CfnResource.isCfnResource);
 }
 
 interface INestedStackPrivateApi {

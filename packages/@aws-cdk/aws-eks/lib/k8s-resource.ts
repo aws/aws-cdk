@@ -1,5 +1,4 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -58,7 +57,7 @@ export class KubernetesResource extends Construct {
     const provider = props.cluster._kubectlProvider;
 
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: KubernetesResource.RESOURCE_TYPE,
       properties: {
         // `toJsonString` enables embedding CDK tokens in the manifest and will
@@ -66,8 +65,8 @@ export class KubernetesResource extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role)
-      }
+        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+      },
     });
   }
 }

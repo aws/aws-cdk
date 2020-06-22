@@ -386,6 +386,33 @@ A convenience method for mapping a role to the `system:masters` group is also av
 cluster.awsAuth.addMastersRole(role)
 ```
 
+### Cluster Security Group
+
+When you create an Amazon EKS cluster, a
+[cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
+is automatically created as well. This security group is designed to allow
+all traffic from the control plane and managed node groups to flow freely
+between each other.
+
+The ID for that security group can be retrieved after creating the cluster.
+
+```ts
+const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
+```
+
+### Cluster Encryption Configuration
+
+When you create an Amazon EKS cluster, envelope encryption of
+Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled. The documentation
+on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
+can provide more details about the customer master key (CMK) that can be used for the encryption.
+
+The Amazon Resource Name (ARN) for that CMK can be retrieved.
+
+```ts
+const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
+```
+
 ### Node ssh Access
 
 If you want to be able to SSH into your worker nodes, you must already
@@ -486,7 +513,8 @@ cluster.addChart('NginxIngress', {
 });
 ```
 
-Helm charts will be installed and updated using `helm upgrade --install`.
+Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
+are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster. The chart will exists as CloudFormation resource.
 
@@ -501,7 +529,9 @@ which will be lower cassed and truncated to the last 63 characters.
 
 ### Bottlerocket
 
-[Bottlerocket](https://aws.amazon.com/tw/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI. 
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts. At this moment the managed nodegroup only supports Amazon EKS-optimized AMI but it's possible to create a capacity of self-managed `AutoScalingGroup` running with bottlerocket Linux AMI.
+
+> **NOTICE**: Bottlerocket is in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami).
 
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `t3.small` Linux instances running with `Bottlerocket` AMI.
 
@@ -516,10 +546,42 @@ cluster.addCapacity('BottlerocketNodes', {
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
-Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity. 
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
 
-`Bottlerocket` is now available in public preview and only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART.md#finding-an-ami). 
+### Service Accounts
 
+With services account you can provide Kubernetes Pods access to AWS resources.
+
+```ts
+// add service account
+const sa = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+const mypod = cluster.addResource('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    serviceAccountName: sa.serviceAccountName
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ],
+
+      }
+    ]
+  }
+});
+
+// create the resource after the service account
+mypod.node.addDependency(sa);
+
+// print the IAM role arn for this service account
+new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
+```
 
 ### Roadmap
 

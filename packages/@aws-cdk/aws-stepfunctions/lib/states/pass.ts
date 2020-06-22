@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import {Chain} from '../chain';
+import { FieldUtils } from '../fields';
 import {IChainable, INextable} from '../types';
 import { StateType } from './private/state-type';
 import {renderJsonPath, State } from './state';
@@ -147,7 +148,17 @@ export class Pass extends State implements INextable {
       Result: this.result ? this.result.value : undefined,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderInputOutput(),
-      ...this.renderNextEnd()
+      ...this.renderParameters(),
+      ...this.renderNextEnd(),
     };
+  }
+
+  /**
+   * Render Parameters in ASL JSON format
+   */
+  private renderParameters(): any {
+    return FieldUtils.renderObject({
+      Parameters: this.parameters,
+    });
   }
 }

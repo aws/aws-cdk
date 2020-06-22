@@ -16,10 +16,10 @@ class Test extends cdk.Stack {
         dataTraceEnabled: true,
         methodOptions: {
           '/api/appliances/GET': {
-            cachingEnabled: true
-          }
-        }
-      }
+            cachingEnabled: true,
+          },
+        },
+      },
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
@@ -49,7 +49,7 @@ class Test extends cdk.Stack {
         isBase64Encoded: false,
         statusCode: 200,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
       });
     }
 
@@ -61,8 +61,8 @@ class Test extends cdk.Stack {
       throttle: { rateLimit: 5 },
       quota: {
         limit: 10000,
-        period: apigateway.Period.MONTH
-      }
+        period: apigateway.Period.MONTH,
+      },
     });
     plan.addApiStage({
       stage: api.deploymentStage,
@@ -71,10 +71,10 @@ class Test extends cdk.Stack {
           method: getToysMethod,
           throttle: {
             rateLimit: 10,
-            burstLimit: 2
-          }
-        }
-      ]
+            burstLimit: 2,
+          },
+        },
+      ],
     });
   }
 }

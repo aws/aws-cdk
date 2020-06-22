@@ -27,16 +27,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
           }
         ]
       }
@@ -124,16 +124,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
           }
         ]
       }
@@ -221,16 +221,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -283,16 +283,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -694,8 +694,7 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Snapshot"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -968,7 +967,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3BucketFCE6B300"
+            "Ref": "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3S3Bucket21D86049"
           },
           "S3Key": {
             "Fn::Join": [
@@ -981,7 +980,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3"
+                          "Ref": "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3S3VersionKey1F67C4C1"
                         }
                       ]
                     }
@@ -994,7 +993,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3"
+                          "Ref": "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3S3VersionKey1F67C4C1"
                         }
                       ]
                     }
@@ -1109,17 +1108,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3BucketFCE6B300": {
+    "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3S3Bucket21D86049": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "S3 bucket for asset \"3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3\""
     },
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3": {
+    "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3S3VersionKey1F67C4C1": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "S3 key for asset version \"3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3\""
     },
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eArtifactHash8EE34ABC": {
+    "AssetParameters3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3ArtifactHash31AA1F7C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "Artifact hash for asset \"3974ceb096f16a0d6c372c0c821ca2ab0333112497b2d3bc462ccaf2fc6037c3\""
     }
   }
 }

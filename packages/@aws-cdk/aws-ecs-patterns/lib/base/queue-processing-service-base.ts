@@ -147,6 +147,24 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly minHealthyPercent?: number;
 }
 
 /**
@@ -216,13 +234,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
       this.sqsQueue = props.queue;
     } else {
       this.deadLetterQueue = new Queue(this, 'EcsProcessingDeadLetterQueue', {
-        retentionPeriod: props.retentionPeriod || Duration.days(14)
+        retentionPeriod: props.retentionPeriod || Duration.days(14),
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
         deadLetterQueue: {
           queue: this.deadLetterQueue,
-          maxReceiveCount: props.maxReceiveCount || 3
-        }
+          maxReceiveCount: props.maxReceiveCount || 3,
+        },
       });
 
       new CfnOutput(this, 'SQSDeadLetterQueue', { value: this.deadLetterQueue.queueName });
@@ -269,7 +287,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     });
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
-      scalingSteps: this.scalingSteps
+      scalingSteps: this.scalingSteps,
     });
   }
 

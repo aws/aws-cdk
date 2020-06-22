@@ -2,6 +2,7 @@ import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import {
   Attribute,
@@ -12,6 +13,7 @@ import {
   ProjectionType,
   StreamViewType,
   Table,
+  TableEncryption,
 } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -34,7 +36,7 @@ function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   while (true) {
     const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
       indexName: `${GSI_NAME}${n}`,
-      partitionKey: { name: `${GSI_PARTITION_KEY.name}${n}`, type: GSI_PARTITION_KEY.type }
+      partitionKey: { name: `${GSI_PARTITION_KEY.name}${n}`, type: GSI_PARTITION_KEY.type },
     };
     yield globalSecondaryIndexProps;
     n++;
@@ -57,7 +59,7 @@ function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
       indexName: `${LSI_NAME}${n}`,
-      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type }
+      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
     };
     yield localSecondaryIndexProps;
     n++;
@@ -72,7 +74,7 @@ describe('default properties', () => {
     expect(stack).toHaveResource('AWS::DynamoDB::Table', {
       AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
       KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
-      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN }, ResourcePart.CompleteDefinition);
@@ -91,17 +93,17 @@ describe('default properties', () => {
     const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table', {
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
-        { AttributeName: 'sortKey', AttributeType: 'N' }
+        { AttributeName: 'sortKey', AttributeType: 'N' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
     });
@@ -112,18 +114,18 @@ describe('default properties', () => {
 
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table',
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
         ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       });
@@ -133,21 +135,21 @@ describe('default properties', () => {
     const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table',
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      },
     );
   });
 
@@ -162,14 +164,14 @@ describe('default properties', () => {
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      },
     );
   });
 
@@ -184,14 +186,14 @@ describe('default properties', () => {
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      },
     );
   });
 
@@ -206,14 +208,14 @@ describe('default properties', () => {
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      },
     );
   });
 
@@ -226,23 +228,23 @@ describe('default properties', () => {
       writeCapacity: 1337,
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table',
       {
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         StreamSpecification: { StreamViewType: 'NEW_AND_OLD_IMAGES' },
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
         ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-        TableName: 'MyTable'
-      }
+        TableName: 'MyTable',
+      },
     );
   });
 
@@ -255,23 +257,23 @@ describe('default properties', () => {
       writeCapacity: 1337,
       stream: StreamViewType.NEW_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table',
       {
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
         ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
         TableName: 'MyTable',
-      }
+      },
     );
   });
 
@@ -284,23 +286,23 @@ describe('default properties', () => {
       writeCapacity: 1337,
       stream: StreamViewType.OLD_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
+      sortKey: TABLE_SORT_KEY,
     });
 
     expect(stack).toHaveResource('AWS::DynamoDB::Table',
       {
         KeySchema: [
           { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
         ],
         ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
         AttributeDefinitions: [
           { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
+          { AttributeName: 'sortKey', AttributeType: 'N' },
         ],
         StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
         TableName: 'MyTable',
-      }
+      },
     );
   });
 });
@@ -325,24 +327,500 @@ test('when specifying every property', () => {
     {
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
-        { AttributeName: 'sortKey', AttributeType: 'N' }
+        { AttributeName: 'sortKey', AttributeType: 'N' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: {
         ReadCapacityUnits: 42,
-        WriteCapacityUnits: 1337
+        WriteCapacityUnits: 1337,
       },
       PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
       SSESpecification: { SSEEnabled: true },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
-      TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true }
-    }
+      TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
+    },
   );
+});
+
+test('when specifying sse with customer managed CMK', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'MyTableKey8597C7A6',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('when specifying only encryptionKey', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('when specifying sse with customer managed CMK with encryptionKey provided by user', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('fails if encryption key is used with AWS managed CMK', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.AWS_MANAGED,
+    encryptionKey,
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+});
+
+test('fails if encryption key is used with default encryption', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.DEFAULT,
+    encryptionKey,
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+});
+
+test('fails if encryption key is used with serverSideEncryption', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    serverSideEncryption: true,
+    encryptionKey,
+  })).toThrow(/encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead/);
+});
+
+test('fails if both encryption and serverSideEncryption is specified', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.DEFAULT,
+    serverSideEncryption: true,
+  })).toThrow(/Only one of encryption and serverSideEncryption can be specified, but both were provided/);
+});
+
+test('fails if both replication regions used with customer managed CMK', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  })).toThrow('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
+});
+
+test('if an encryption key is included, decrypt permissions are also added for grantStream', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryptionKey,
+    stream: StreamViewType.NEW_IMAGE,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantStreamRead(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'Key961B73FD': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'StreamSpecification': {
+            'StreamViewType': 'NEW_IMAGE',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'dynamodb:ListStreams',
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TableA3D7B5AFA',
+                          'Arn',
+                        ],
+                      },
+                      '/stream/*',
+                    ],
+                  ],
+                },
+              },
+              {
+                'Action': [
+                  'dynamodb:DescribeStream',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableA3D7B5AFA',
+                    'StreamArn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
+});
+
+test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantReadWriteData(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'TableAKey07CC09EC': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::GetAtt': [
+                      'MyUserDC45028B',
+                      'Arn',
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Table A',
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'TableAKey07CC09EC',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': [
+                  'dynamodb:BatchGetItem',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:Query',
+                  'dynamodb:GetItem',
+                  'dynamodb:Scan',
+                  'dynamodb:BatchWriteItem',
+                  'dynamodb:PutItem',
+                  'dynamodb:UpdateItem',
+                  'dynamodb:DeleteItem',
+                ],
+                'Effect': 'Allow',
+                'Resource': [
+                  {
+                    'Fn::GetAtt': [
+                      'TableA3D7B5AFA',
+                      'Arn',
+                    ],
+                  },
+                  {
+                    'Ref': 'AWS::NoValue',
+                  },
+                ],
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableAKey07CC09EC',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
@@ -350,7 +828,7 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
   new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY
+    partitionKey: TABLE_PARTITION_KEY,
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -363,7 +841,7 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
         { AttributeName: 'hashKey', AttributeType: 'S' },
       ],
       TableName: 'MyTable',
-    }
+    },
   );
 });
 
@@ -373,20 +851,20 @@ test('error when specifying read or write capacity with a PAY_PER_REQUEST billin
     tableName: TABLE_NAME,
     billingMode: BillingMode.PAY_PER_REQUEST,
     partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1
+    readCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
   expect(() => new Table(stack, 'Table B', {
     tableName: TABLE_NAME,
     billingMode: BillingMode.PAY_PER_REQUEST,
     partitionKey: TABLE_PARTITION_KEY,
-    writeCapacity: 1
+    writeCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
   expect(() => new Table(stack, 'Table C', {
     tableName: TABLE_NAME,
     billingMode: BillingMode.PAY_PER_REQUEST,
     partitionKey: TABLE_PARTITION_KEY,
     readCapacity: 1,
-    writeCapacity: 1
+    writeCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
 });
 
@@ -395,14 +873,14 @@ test('when adding a global secondary index with hash key only', () => {
 
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
-    sortKey: TABLE_SORT_KEY
+    sortKey: TABLE_SORT_KEY,
   });
 
   table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     readCapacity: 42,
-    writeCapacity: 1337
+    writeCapacity: 1337,
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -414,7 +892,7 @@ test('when adding a global secondary index with hash key only', () => {
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -424,10 +902,10 @@ test('when adding a global secondary index with hash key only', () => {
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
-        }
-      ]
-    }
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+        },
+      ],
+    },
   );
 });
 
@@ -435,7 +913,7 @@ test('when adding a global secondary index with hash + range key', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
-    sortKey: TABLE_SORT_KEY
+    sortKey: TABLE_SORT_KEY,
   });
 
   table.addGlobalSecondaryIndex({
@@ -444,7 +922,7 @@ test('when adding a global secondary index with hash + range key', () => {
     sortKey: GSI_SORT_KEY,
     projectionType: ProjectionType.ALL,
     readCapacity: 42,
-    writeCapacity: 1337
+    writeCapacity: 1337,
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -453,11 +931,11 @@ test('when adding a global secondary index with hash + range key', () => {
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
         { AttributeName: 'gsiHashKey', AttributeType: 'S' },
-        { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+        { AttributeName: 'gsiSortKey', AttributeType: 'B' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -465,13 +943,13 @@ test('when adding a global secondary index with hash + range key', () => {
           IndexName: 'MyGSI',
           KeySchema: [
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
-            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
-        }
-      ]
-    }
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+        },
+      ],
+    },
   );
 });
 
@@ -479,7 +957,7 @@ test('when adding a global secondary index with projection type KEYS_ONLY', () =
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
-    sortKey: TABLE_SORT_KEY
+    sortKey: TABLE_SORT_KEY,
   });
 
   table.addGlobalSecondaryIndex({
@@ -495,11 +973,11 @@ test('when adding a global secondary index with projection type KEYS_ONLY', () =
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
         { AttributeName: 'gsiHashKey', AttributeType: 'S' },
-        { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+        { AttributeName: 'gsiSortKey', AttributeType: 'B' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -507,13 +985,13 @@ test('when adding a global secondary index with projection type KEYS_ONLY', () =
           IndexName: 'MyGSI',
           KeySchema: [
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
-            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { ProjectionType: 'KEYS_ONLY' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-        }
-      ]
-    }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        },
+      ],
+    },
   );
 });
 
@@ -528,7 +1006,7 @@ test('when adding a global secondary index with projection type INCLUDE', () => 
     projectionType: ProjectionType.INCLUDE,
     nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value, gsiNonKeyAttributeGenerator.next().value],
     readCapacity: 42,
-    writeCapacity: 1337
+    writeCapacity: 1337,
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -537,11 +1015,11 @@ test('when adding a global secondary index with projection type INCLUDE', () => 
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
         { AttributeName: 'gsiHashKey', AttributeType: 'S' },
-        { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+        { AttributeName: 'gsiSortKey', AttributeType: 'B' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -549,13 +1027,13 @@ test('when adding a global secondary index with projection type INCLUDE', () => 
           IndexName: 'MyGSI',
           KeySchema: [
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
-            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { NonKeyAttributes: ['gsiNonKey0', 'gsiNonKey1'], ProjectionType: 'INCLUDE' },
-          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
-        }
-      ]
-    }
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+        },
+      ],
+    },
   );
 });
 
@@ -564,7 +1042,7 @@ test('when adding a global secondary index on a table with PAY_PER_REQUEST billi
   new Table(stack, CONSTRUCT_NAME, {
     billingMode: BillingMode.PAY_PER_REQUEST,
     partitionKey: TABLE_PARTITION_KEY,
-    sortKey: TABLE_SORT_KEY
+    sortKey: TABLE_SORT_KEY,
   }).addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
@@ -580,7 +1058,7 @@ test('when adding a global secondary index on a table with PAY_PER_REQUEST billi
       BillingMode: 'PAY_PER_REQUEST',
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       GlobalSecondaryIndexes: [
         {
@@ -588,10 +1066,10 @@ test('when adding a global secondary index on a table with PAY_PER_REQUEST billi
           KeySchema: [
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
           ],
-          Projection: { ProjectionType: 'ALL' }
-        }
-      ]
-    }
+          Projection: { ProjectionType: 'ALL' },
+        },
+      ],
+    },
   );
 });
 
@@ -602,7 +1080,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     sortKey: GSI_SORT_KEY,
-    projectionType: ProjectionType.INCLUDE
+    projectionType: ProjectionType.INCLUDE,
   })).toThrow(/non-key attributes should be specified when using INCLUDE projection type/);
 });
 
@@ -614,7 +1092,7 @@ test('error when adding a global secondary index with projection type ALL, but w
   expect(() => table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
-    nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value]
+    nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value],
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
@@ -627,7 +1105,7 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     projectionType: ProjectionType.KEYS_ONLY,
-    nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value]
+    nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value],
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
@@ -636,7 +1114,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   const gsiNonKeyAttributes: string[] = [];
-  for (let i = 0; i < 21; i++) {
+  for (let i = 0; i < 101; i++) {
     gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
   }
 
@@ -645,35 +1123,35 @@ test('error when adding a global secondary index with projection type INCLUDE, b
     partitionKey: GSI_PARTITION_KEY,
     sortKey: GSI_SORT_KEY,
     projectionType: ProjectionType.INCLUDE,
-    nonKeyAttributes: gsiNonKeyAttributes
-  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
+    nonKeyAttributes: gsiNonKeyAttributes,
+  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 100/);
 });
 
 test('error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
-    billingMode: BillingMode.PAY_PER_REQUEST
+    billingMode: BillingMode.PAY_PER_REQUEST,
   });
 
   expect(() => table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     sortKey: GSI_SORT_KEY,
-    readCapacity: 1
+    readCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
   expect(() => table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     sortKey: GSI_SORT_KEY,
-    writeCapacity: 1
+    writeCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
   expect(() => table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
     partitionKey: GSI_PARTITION_KEY,
     sortKey: GSI_SORT_KEY,
     readCapacity: 1,
-    writeCapacity: 1
+    writeCapacity: 1,
   })).toThrow(/PAY_PER_REQUEST/);
 });
 
@@ -694,11 +1172,11 @@ test('when adding multiple global secondary indexes', () => {
         { AttributeName: 'gsiHashKey1', AttributeType: 'S' },
         { AttributeName: 'gsiHashKey2', AttributeType: 'S' },
         { AttributeName: 'gsiHashKey3', AttributeType: 'S' },
-        { AttributeName: 'gsiHashKey4', AttributeType: 'S' }
+        { AttributeName: 'gsiHashKey4', AttributeType: 'S' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -708,7 +1186,7 @@ test('when adding multiple global secondary indexes', () => {
             { AttributeName: 'gsiHashKey0', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
         },
         {
           IndexName: 'MyGSI1',
@@ -716,7 +1194,7 @@ test('when adding multiple global secondary indexes', () => {
             { AttributeName: 'gsiHashKey1', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
         },
         {
           IndexName: 'MyGSI2',
@@ -724,7 +1202,7 @@ test('when adding multiple global secondary indexes', () => {
             { AttributeName: 'gsiHashKey2', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
         },
         {
           IndexName: 'MyGSI3',
@@ -732,7 +1210,7 @@ test('when adding multiple global secondary indexes', () => {
             { AttributeName: 'gsiHashKey3', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
         },
         {
           IndexName: 'MyGSI4',
@@ -740,10 +1218,10 @@ test('when adding multiple global secondary indexes', () => {
             { AttributeName: 'gsiHashKey4', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
         },
-      ]
-    }
+      ],
+    },
   );
 });
 
@@ -761,11 +1239,11 @@ test('when adding a global secondary index without specifying read and write cap
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
-        { AttributeName: 'gsiHashKey', AttributeType: 'S' }
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       GlobalSecondaryIndexes: [
@@ -775,10 +1253,10 @@ test('when adding a global secondary index without specifying read and write cap
             { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
           ],
           Projection: { ProjectionType: 'ALL' },
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-        }
-      ]
-    }
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        },
+      ],
+    },
   );
 });
 
@@ -796,11 +1274,11 @@ test('when adding a local secondary index with hash + range key', () => {
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
-        { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+        { AttributeName: 'lsiSortKey', AttributeType: 'N' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       LocalSecondaryIndexes: [
@@ -808,12 +1286,12 @@ test('when adding a local secondary index with hash + range key', () => {
           IndexName: 'MyLSI',
           KeySchema: [
             { AttributeName: 'hashKey', KeyType: 'HASH' },
-            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { ProjectionType: 'ALL' },
-        }
+        },
       ],
-    }
+    },
   );
 });
 
@@ -823,7 +1301,7 @@ test('when adding a local secondary index with projection type KEYS_ONLY', () =>
   table.addLocalSecondaryIndex({
     indexName: LSI_NAME,
     sortKey: LSI_SORT_KEY,
-    projectionType: ProjectionType.KEYS_ONLY
+    projectionType: ProjectionType.KEYS_ONLY,
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -831,11 +1309,11 @@ test('when adding a local secondary index with projection type KEYS_ONLY', () =>
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
-        { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+        { AttributeName: 'lsiSortKey', AttributeType: 'N' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       LocalSecondaryIndexes: [
@@ -843,12 +1321,12 @@ test('when adding a local secondary index with projection type KEYS_ONLY', () =>
           IndexName: 'MyLSI',
           KeySchema: [
             { AttributeName: 'hashKey', KeyType: 'HASH' },
-            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { ProjectionType: 'KEYS_ONLY' },
-        }
+        },
       ],
-    }
+    },
   );
 });
 
@@ -860,7 +1338,7 @@ test('when adding a local secondary index with projection type INCLUDE', () => {
     indexName: LSI_NAME,
     sortKey: LSI_SORT_KEY,
     projectionType: ProjectionType.INCLUDE,
-    nonKeyAttributes: [lsiNonKeyAttributeGenerator.next().value, lsiNonKeyAttributeGenerator.next().value]
+    nonKeyAttributes: [lsiNonKeyAttributeGenerator.next().value, lsiNonKeyAttributeGenerator.next().value],
   });
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
@@ -868,11 +1346,11 @@ test('when adding a local secondary index with projection type INCLUDE', () => {
       AttributeDefinitions: [
         { AttributeName: 'hashKey', AttributeType: 'S' },
         { AttributeName: 'sortKey', AttributeType: 'N' },
-        { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+        { AttributeName: 'lsiSortKey', AttributeType: 'N' },
       ],
       KeySchema: [
         { AttributeName: 'hashKey', KeyType: 'HASH' },
-        { AttributeName: 'sortKey', KeyType: 'RANGE' }
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       LocalSecondaryIndexes: [
@@ -880,12 +1358,12 @@ test('when adding a local secondary index with projection type INCLUDE', () => {
           IndexName: 'MyLSI',
           KeySchema: [
             { AttributeName: 'hashKey', KeyType: 'HASH' },
-            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+            { AttributeName: 'lsiSortKey', KeyType: 'RANGE' },
           ],
           Projection: { NonKeyAttributes: ['lsiNonKey0', 'lsiNonKey1'], ProjectionType: 'INCLUDE' },
-        }
+        },
       ],
-    }
+    },
   );
 });
 
@@ -907,12 +1385,12 @@ test('error when adding a local secondary index with the name of a global second
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   table.addGlobalSecondaryIndex({
     indexName: 'SecondaryIndex',
-    partitionKey: GSI_PARTITION_KEY
+    partitionKey: GSI_PARTITION_KEY,
   });
 
   expect(() => table.addLocalSecondaryIndex({
     indexName: 'SecondaryIndex',
-    sortKey: LSI_SORT_KEY
+    sortKey: LSI_SORT_KEY,
   })).toThrow(/a duplicate index name, SecondaryIndex, is not allowed/);
 });
 
@@ -922,7 +1400,7 @@ test('error when validating construct if a local secondary index exists without 
 
   table.addLocalSecondaryIndex({
     indexName: LSI_NAME,
-    sortKey: LSI_SORT_KEY
+    sortKey: LSI_SORT_KEY,
   });
 
   const errors = ConstructNode.validate(table.node);
@@ -944,14 +1422,14 @@ test('can enable Read AutoScaling', () => {
     MaxCapacity: 500,
     MinCapacity: 50,
     ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
-    ServiceNamespace: 'dynamodb'
+    ServiceNamespace: 'dynamodb',
   });
   expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
     TargetTrackingScalingPolicyConfiguration: {
       PredefinedMetricSpecification: { PredefinedMetricType: 'DynamoDBReadCapacityUtilization' },
-      TargetValue: 75
-    }
+      TargetValue: 75,
+    },
   });
 });
 
@@ -968,14 +1446,14 @@ test('can enable Write AutoScaling', () => {
     MaxCapacity: 500,
     MinCapacity: 50,
     ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
-    ServiceNamespace: 'dynamodb'
+    ServiceNamespace: 'dynamodb',
   });
   expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
     TargetTrackingScalingPolicyConfiguration: {
       PredefinedMetricSpecification: { PredefinedMetricType: 'DynamoDBWriteCapacityUtilization' },
-      TargetValue: 75
-    }
+      TargetValue: 75,
+    },
   });
 });
 
@@ -997,7 +1475,7 @@ test('error when enabling AutoScaling on the PAY_PER_REQUEST table', () => {
   const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PAY_PER_REQUEST, partitionKey: TABLE_PARTITION_KEY });
   table.addGlobalSecondaryIndex({
     indexName: GSI_NAME,
-    partitionKey: GSI_PARTITION_KEY
+    partitionKey: GSI_PARTITION_KEY,
   });
 
   // WHEN
@@ -1009,7 +1487,7 @@ test('error when enabling AutoScaling on the PAY_PER_REQUEST table', () => {
   }).toThrow(/PAY_PER_REQUEST/);
   expect(() => table.autoScaleGlobalSecondaryIndexReadCapacity(GSI_NAME, {
     minCapacity: 1,
-    maxCapacity: 5
+    maxCapacity: 5,
   })).toThrow(/PAY_PER_REQUEST/);
 });
 
@@ -1040,14 +1518,14 @@ test('can autoscale on a schedule', () => {
   const table = new Table(stack, CONSTRUCT_NAME, {
     readCapacity: 42,
     writeCapacity: 1337,
-    partitionKey: { name: 'Hash', type: AttributeType.STRING }
+    partitionKey: { name: 'Hash', type: AttributeType.STRING },
   });
 
   // WHEN
   const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
   scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
     schedule: appscaling.Schedule.cron({}),
-    maxCapacity: 10
+    maxCapacity: 10,
   });
 
   // THEN
@@ -1056,9 +1534,9 @@ test('can autoscale on a schedule', () => {
       {
         ScalableTargetAction: { 'MaxCapacity': 10 },
         Schedule: 'cron(* * * * ? *)',
-        ScheduledActionName: 'SaveMoneyByNotScalingUp'
-      }
-    ]
+        ScheduledActionName: 'SaveMoneyByNotScalingUp',
+      },
+    ],
   });
 });
 
@@ -1067,7 +1545,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1084,7 +1562,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1101,7 +1579,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1118,7 +1596,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1135,7 +1613,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1152,7 +1630,7 @@ describe('metrics', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING }
+      partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
     // THEN
@@ -1167,6 +1645,54 @@ describe('metrics', () => {
 });
 
 describe('grants', () => {
+
+  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'my-table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+    const user = new iam.User(stack, 'user');
+
+    // WHEN
+    table.grant(user, 'dynamodb:action1', 'dynamodb:action2');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'dynamodb:action1',
+              'dynamodb:action2',
+            ],
+            'Effect': 'Allow',
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Ref': 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
+    });
+  });
 
   test('"grant" allows adding arbitrary actions associated with this table resource', () => {
     testGrant(
@@ -1208,12 +1734,12 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': '*'
-          }
+            'Resource': '*',
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
-      'Users': [{ 'Ref': 'user2C2B57AE' }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }],
     });
   });
 
@@ -1223,8 +1749,8 @@ describe('grants', () => {
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
-      }
+        type: AttributeType.STRING,
+      },
     });
     const user = new iam.User(stack, 'user');
 
@@ -1238,9 +1764,9 @@ describe('grants', () => {
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
-      stream: StreamViewType.NEW_IMAGE
+      stream: StreamViewType.NEW_IMAGE,
     });
     const user = new iam.User(stack, 'user');
 
@@ -1254,12 +1780,12 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] }
-          }
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
-      'Users': [{ 'Ref': 'user2C2B57AE' }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }],
     });
   });
 
@@ -1269,8 +1795,8 @@ describe('grants', () => {
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
-      }
+        type: AttributeType.STRING,
+      },
     });
     const user = new iam.User(stack, 'user');
 
@@ -1284,9 +1810,9 @@ describe('grants', () => {
     const table = new Table(stack, 'my-table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
-      stream: StreamViewType.NEW_IMAGE
+      stream: StreamViewType.NEW_IMAGE,
     });
     const user = new iam.User(stack, 'user');
 
@@ -1300,26 +1826,26 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] }
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
           },
           {
             'Action': [
               'dynamodb:DescribeStream',
               'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator'
+              'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::GetAtt': [
                 'mytable0324D45C',
-                'StreamArn'
-              ]
-            }
-          }
+                'StreamArn',
+              ],
+            },
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
-      'Users': [{ 'Ref': 'user2C2B57AE' }]
+      'Users': [{ 'Ref': 'user2C2B57AE' }],
     });
   });
 
@@ -1345,18 +1871,94 @@ describe('grants', () => {
               'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
-              'dynamodb:Scan'
+              'dynamodb:Scan',
             ],
             'Effect': 'Allow',
             'Resource': [
-              { 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] },
-              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/index/*']] }
-            ]
-          }
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
-      'Users': [{ 'Ref': 'user2C2B57AE' }]
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
+    });
+  });
+
+  test('grant for an imported table', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = Table.fromTableName(stack, 'MyTable', 'my-table');
+    const user = new iam.User(stack, 'user');
+
+    // WHEN
+    table.grant(user, 'dynamodb:*');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:*',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                Ref: 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Users: [
+        {
+          Ref: 'user2C2B57AE',
+        },
+      ],
     });
   });
 });
@@ -1367,7 +1969,7 @@ describe('secondary indexes', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'pkey', type: AttributeType.NUMBER }
+      partitionKey: { name: 'pkey', type: AttributeType.NUMBER },
     });
 
     // WHEN
@@ -1420,19 +2022,19 @@ describe('import', () => {
               'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
-              'dynamodb:Scan'
+              'dynamodb:Scan',
             ],
             'Effect': 'Allow',
             'Resource': [
               tableArn,
-              { 'Ref': 'AWS::NoValue' }
-            ]
-          }
+              { 'Ref': 'AWS::NoValue' },
+            ],
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
-      'Roles': [{ 'Ref': 'NewRole99763075' }]
+      'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
     expect(table.tableArn).toBe(tableArn);
@@ -1465,7 +2067,7 @@ describe('import', () => {
               'dynamodb:BatchWriteItem',
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
-              'dynamodb:DeleteItem'
+              'dynamodb:DeleteItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -1475,30 +2077,30 @@ describe('import', () => {
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition'
+                      'Ref': 'AWS::Partition',
                     },
                     ':dynamodb:',
                     {
-                      'Ref': 'AWS::Region'
+                      'Ref': 'AWS::Region',
                     },
                     ':',
                     {
-                      'Ref': 'AWS::AccountId'
+                      'Ref': 'AWS::AccountId',
                     },
-                    ':table/MyTable'
-                  ]
-                ]
+                    ':table/MyTable',
+                  ],
+                ],
               },
               {
-                'Ref': 'AWS::NoValue'
-              }
-            ]
-          }
+                'Ref': 'AWS::NoValue',
+              },
+            ],
+          },
         ],
-        'Version': '2012-10-17'
+        'Version': '2012-10-17',
       },
       'PolicyName': 'NewRoleDefaultPolicy90E8F49D',
-      'Roles': [{ 'Ref': 'NewRole99763075' }]
+      'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
     expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
@@ -1542,9 +2144,9 @@ describe('import', () => {
               Resource: stack.resolve(`${table.tableArn}/stream/*`),
             },
           ],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
-        Roles: [stack.resolve(role.roleName)]
+        Roles: [stack.resolve(role.roleName)],
       });
     });
 
@@ -1573,11 +2175,68 @@ describe('import', () => {
               Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
               Effect: 'Allow',
               Resource: tableStreamArn,
-            }
+            },
           ],
-          Version: '2012-10-17'
+          Version: '2012-10-17',
         },
-        Roles: [stack.resolve(role.roleName)]
+        Roles: [stack.resolve(role.roleName)],
+      });
+    });
+
+    test('creates the correct index grant if indexes have been provided when importing', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        globalIndexes: ['global'],
+        localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
       });
     });
   });
@@ -1592,11 +2251,11 @@ describe('global', () => {
     new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
       replicationRegions: [
         'eu-west-2',
-        'eu-central-1'
+        'eu-central-1',
       ],
     });
 
@@ -1606,15 +2265,15 @@ describe('global', () => {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
-          ]
+            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
+          ],
         },
         TableName: {
-          Ref: 'TableCD117FA1'
+          Ref: 'TableCD117FA1',
         },
-        Region: 'eu-west-2'
+        Region: 'eu-west-2',
       },
-      Condition: 'TableStackRegionNotEqualseuwest2A03859E7'
+      Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
@@ -1622,28 +2281,413 @@ describe('global', () => {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn'
-          ]
+            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
+          ],
         },
         TableName: {
-          Ref: 'TableCD117FA1'
+          Ref: 'TableCD117FA1',
         },
-        Region: 'eu-central-1'
+        Region: 'eu-central-1',
       },
-      Condition: 'TableStackRegionNotEqualseucentral199D46FC0'
+      Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     }, ResourcePart.CompleteDefinition);
 
     expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
       TableStackRegionNotEqualseuwest2A03859E7: {
         'Fn::Not': [
-          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] }
-        ]
+          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+        ],
       },
       TableStackRegionNotEqualseucentral199D46FC0: {
         'Fn::Not': [
-          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] }
-        ]
-      }
+          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+        ],
+      },
+    });
+  });
+
+  test('grantReadData', () => {
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'my-index',
+      partitionKey: {
+        name: 'key',
+        type: AttributeType.STRING,
+      },
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    table.grantReadData(user);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableCD117FA1',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grantReadData across regions', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1' },
+    });
+    const table = new Table(stack1, 'Table', {
+      tableName: 'my-table',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'my-index',
+      partitionKey: {
+        name: 'key',
+        type: AttributeType.STRING,
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: { region: 'eu-west-2' },
+    });
+    const user = new iam.User(stack2, 'User');
+
+    // WHEN
+    table.grantReadData(user);
+
+    // THEN
+    expect(stack2).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grantTableListStreams across regions', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1' },
+    });
+    const table = new Table(stack1, 'Table', {
+      tableName: 'my-table',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: { region: 'eu-west-2' },
+    });
+    const user = new iam.User(stack2, 'User');
+
+    // WHEN
+    table.grantTableListStreams(user);
+
+    // THEN
+    expect(stack2).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:ListStreams',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/stream/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/stream/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/stream/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
     });
   });
 
@@ -1655,11 +2699,11 @@ describe('global', () => {
     expect(() => new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
       replicationRegions: [
         'eu-west-2',
-        'eu-central-1'
+        'eu-central-1',
       ],
       billingMode: BillingMode.PROVISIONED,
     })).toThrow(/`PAY_PER_REQUEST`/);
@@ -1673,11 +2717,11 @@ describe('global', () => {
     expect(() => new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
       replicationRegions: [
         'eu-west-2',
-        'eu-central-1'
+        'eu-central-1',
       ],
       stream: StreamViewType.OLD_IMAGE,
     })).toThrow(/`NEW_AND_OLD_IMAGES`/);
@@ -1687,14 +2731,14 @@ describe('global', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack', {
-      env: { region: 'us-east-1' }
+      env: { region: 'us-east-1' },
     });
 
     // THEN
     expect(() => new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
       replicationRegions: [
         'eu-west-1',
@@ -1708,18 +2752,18 @@ describe('global', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack', {
-      env: { region: 'eu-west-1' }
+      env: { region: 'eu-west-1' },
     });
 
     // WHEN
     new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
-        type: AttributeType.STRING
+        type: AttributeType.STRING,
       },
       replicationRegions: [
         'eu-west-2',
-        'eu-central-1'
+        'eu-central-1',
       ],
     });
 
@@ -1746,13 +2790,25 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
           'Action': action,
           'Effect': 'Allow',
           'Resource': [
-            { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] },
-            { 'Ref' : 'AWS::NoValue' }
-          ]
-        }
+            {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'Arn',
+              ],
+            },
+            {
+              'Ref': 'AWS::NoValue',
+            },
+          ],
+        },
       ],
-      'Version': '2012-10-17'
+      'Version': '2012-10-17',
     },
-    'Users': [ { 'Ref': 'user2C2B57AE' } ]
+    'PolicyName': 'userDefaultPolicy083DF682',
+    'Users': [
+      {
+        'Ref': 'user2C2B57AE',
+      },
+    ],
   });
 }

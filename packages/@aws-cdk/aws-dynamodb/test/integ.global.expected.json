@@ -41,6 +41,140 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4AA4E210EA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TableCD117FA1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableCD117FA1",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":dynamodb:eu-west-2:",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Ref": "TableCD117FA1"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":dynamodb:eu-central-1:",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Ref": "TableCD117FA1"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4AA4E210EA",
+        "Roles": [
+          {
+            "Fn::GetAtt": [
+              "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
+              "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole3E8625F3Ref"
+            ]
+          }
+        ]
+      }
+    },
+    "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole397161288F61AAFA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:DescribeTable",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TableCD117FA1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableCD117FA1",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "leSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole397161288F61AAFA",
+        "Roles": [
+          {
+            "Fn::GetAtt": [
+              "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
+              "Outputs.cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole2F936EC4Ref"
+            ]
+          }
+        ]
+      }
+    },
     "TableReplicaeuwest290D3CD3A": {
       "Type": "Custom::DynamoDBReplica",
       "Properties": {
@@ -55,6 +189,10 @@
         },
         "Region": "eu-west-2"
       },
+      "DependsOn": [
+        "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole397161288F61AAFA",
+        "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4AA4E210EA"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -73,7 +211,9 @@
         "Region": "eu-central-1"
       },
       "DependsOn": [
-        "TableReplicaeuwest290D3CD3A"
+        "TableReplicaeuwest290D3CD3A",
+        "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole397161288F61AAFA",
+        "TableSourceTableAttachedPolicycdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole6F43DF4AA4E210EA"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -91,7 +231,7 @@
               },
               "/",
               {
-                "Ref": "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bS3Bucket1375170E"
+                "Ref": "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2S3BucketC9264D73"
               },
               "/",
               {
@@ -101,7 +241,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bS3VersionKeyB1F590C9"
+                        "Ref": "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2S3VersionKey992034D6"
                       }
                     ]
                   }
@@ -114,7 +254,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bS3VersionKeyB1F590C9"
+                        "Ref": "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2S3VersionKey992034D6"
                       }
                     ]
                   }
@@ -124,67 +264,58 @@
           ]
         },
         "Parameters": {
-          "referencetocdkdynamodbglobal20191121TableB640876BArn": {
-            "Fn::GetAtt": [
-              "TableCD117FA1",
-              "Arn"
-            ]
+          "referencetocdkdynamodbglobal20191121AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3BucketE0999323Ref": {
+            "Ref": "AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3BucketBDDEC9DD"
           },
-          "referencetocdkdynamodbglobal20191121TableB640876BRef": {
-            "Ref": "TableCD117FA1"
+          "referencetocdkdynamodbglobal20191121AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3VersionKey8D3D9B9ARef": {
+            "Ref": "AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3VersionKey1C286880"
           },
-          "referencetocdkdynamodbglobal20191121AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3Bucket9329A233Ref": {
-            "Ref": "AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3Bucket4FE3E660"
+          "referencetocdkdynamodbglobal20191121AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3BucketF12BD931Ref": {
+            "Ref": "AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3Bucket222C40AB"
           },
-          "referencetocdkdynamodbglobal20191121AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3VersionKeyFFAD911CRef": {
-            "Ref": "AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3VersionKey7D7136AC"
-          },
-          "referencetocdkdynamodbglobal20191121AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3BucketF4126255Ref": {
-            "Ref": "AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3Bucket732DB36D"
-          },
-          "referencetocdkdynamodbglobal20191121AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3VersionKey03777291Ref": {
-            "Ref": "AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3VersionKey2A0FDBB2"
+          "referencetocdkdynamodbglobal20191121AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3VersionKey4CB468E4Ref": {
+            "Ref": "AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3VersionKey70131802"
           }
         }
       }
     }
   },
   "Parameters": {
-    "AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3Bucket4FE3E660": {
+    "AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3BucketBDDEC9DD": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821a\""
+      "Description": "S3 bucket for asset \"012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746\""
     },
-    "AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aS3VersionKey7D7136AC": {
+    "AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746S3VersionKey1C286880": {
       "Type": "String",
-      "Description": "S3 key for asset version \"0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821a\""
+      "Description": "S3 key for asset version \"012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746\""
     },
-    "AssetParameters0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821aArtifactHash81B49BAA": {
+    "AssetParameters012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746ArtifactHashBB09F15F": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"0706ab5a9bd5b9d7fcdb4b10e8d6c37573344b8c1ba8f5800a33b85ce34d821a\""
+      "Description": "Artifact hash for asset \"012c6b101abc4ea1f510921af61a3e08e05f30f84d7b35c40ca4adb1ace60746\""
     },
-    "AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3Bucket732DB36D": {
+    "AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3Bucket222C40AB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4\""
+      "Description": "S3 bucket for asset \"164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441\""
     },
-    "AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4S3VersionKey2A0FDBB2": {
+    "AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441S3VersionKey70131802": {
       "Type": "String",
-      "Description": "S3 key for asset version \"17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4\""
+      "Description": "S3 key for asset version \"164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441\""
     },
-    "AssetParameters17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4ArtifactHashC92EB69E": {
+    "AssetParameters164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441ArtifactHash88D60D5A": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"17429b8bbbb0484d167711d8d3baf4abc55be3663b0f19233952a7fa9d9db8d4\""
+      "Description": "Artifact hash for asset \"164517a9acdab562a370414273e0c6c190700c9be1df02e00bdddf142c7bf441\""
     },
-    "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bS3Bucket1375170E": {
+    "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2S3BucketC9264D73": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"ceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295b\""
+      "Description": "S3 bucket for asset \"b73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2\""
     },
-    "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bS3VersionKeyB1F590C9": {
+    "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2S3VersionKey992034D6": {
       "Type": "String",
-      "Description": "S3 key for asset version \"ceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295b\""
+      "Description": "S3 key for asset version \"b73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2\""
     },
-    "AssetParametersceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295bArtifactHash392EC608": {
+    "AssetParametersb73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2ArtifactHash580BBBA9": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"ceba959ae1599b891165fbd144b9f2d81a1ded6c4bd98a87ec6b1f41a76a295b\""
+      "Description": "Artifact hash for asset \"b73a9afb7e79ff941de53cc25f57889657aff1b3c3ad024656b62644e6b25ce2\""
     }
   }
 }

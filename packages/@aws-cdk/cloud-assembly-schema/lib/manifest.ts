@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
+import { ArtifactMetadataEntryType } from './metadata-schema';
 import * as assembly from './schema';
 
 // this prefix is used by the CLI to identify this specific error.
@@ -27,7 +28,7 @@ export class Manifest {
    * @param filePath - path to the manifest file.
    */
   public static load(filePath: string): assembly.AssemblyManifest {
-    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, 'UTF-8'));
+    const raw: assembly.AssemblyManifest = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
     Manifest.patchStackTags(raw);
     Manifest.validate(raw);
     return raw;
@@ -71,7 +72,7 @@ export class Manifest {
       // does exist but is not in the TypeScript definitions
       nestedErrors: true,
 
-      allowUnknownAttributes: false
+      allowUnknownAttributes: false,
 
     } as any);
     if (!result.valid) {
@@ -100,7 +101,7 @@ export class Manifest {
       if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
         for (const metadataEntries of Object.values(artifact.metadata || [])) {
           for (const metadataEntry of metadataEntries) {
-            if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
+            if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
 
               const metadataAny = metadataEntry as any;
 

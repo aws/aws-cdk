@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Cognito"
+    "cloudformation": "AWS::Cognito",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,35 +64,41 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.3.0",
+    "jest": "^25.5.4",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.2"
   },
-  "jest": {},
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret"
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps"
     ]
   },
   "stability": "experimental",

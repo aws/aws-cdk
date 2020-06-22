@@ -1,3 +1,4 @@
+import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
@@ -93,7 +94,7 @@ export = {
   'context can be passed through CDK_CONTEXT'(test: Test) {
     process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
       key1: 'val1',
-      key2: 'val2'
+      key2: 'val2',
     });
     const prog = new App();
     test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
@@ -104,13 +105,13 @@ export = {
   'context passed through CDK_CONTEXT has precedence'(test: Test) {
     process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
       key1: 'val1',
-      key2: 'val2'
+      key2: 'val2',
     });
     const prog = new App({
       context: {
         key1: 'val3',
-        key2: 'val4'
-      }
+        key2: 'val4',
+      },
     });
     test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
     test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
@@ -125,19 +126,19 @@ export = {
         s2c1: {
           Type: 'DummyResource',
           Properties: {
-            Prog2: 'Prog2'
-          }
+            Prog2: 'Prog2',
+          },
         },
         s1c2r1D1791C01: {
-          Type: 'ResourceType1'
+          Type: 'ResourceType1',
         },
         s1c2r25F685FFF: {
           Type: 'ResourceType2',
           Properties: {
-            FromContext: 'HELLO'
-          }
-        }
-      }
+            FromContext: 'HELLO',
+          },
+        },
+      },
     });
     test.done();
   },
@@ -145,8 +146,8 @@ export = {
   'setContext(k,v) can be used to set context programmatically'(test: Test) {
     const prog = new App({
       context: {
-        foo: 'bar'
-      }
+        foo: 'bar',
+      },
     });
     test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
     test.done();
@@ -189,7 +190,7 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key',
-          provider: 'fake',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
             account: '12345689012',
             region: 'ab-north-1',
@@ -199,9 +200,8 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key-2',
-          provider: 'fake2',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
-            foo: 'bar',
             account: '12345689012',
             region: 'ab-south-1',
           },
@@ -217,7 +217,7 @@ export = {
     test.deepEqual(assembly.manifest.missing, [
       {
         key: 'missing-context-key',
-        provider: 'fake',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-north-1',
@@ -225,13 +225,12 @@ export = {
       },
       {
         key: 'missing-context-key-2',
-        provider: 'fake2',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-south-1',
-          foo: 'bar',
         },
-      }
+      },
     ]);
 
     test.done();
@@ -294,8 +293,9 @@ export = {
     test.deepEqual(libs, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
+      '@aws-cdk/cdk-assets-schema': version,
       '@aws-cdk/cloud-assembly-schema': version,
-      'jsii-runtime': `node.js/${process.version}`
+      'jsii-runtime': `node.js/${process.version}`,
     });
 
     test.done();
@@ -322,6 +322,32 @@ export = {
         template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
       },
     ]);
+
+    test.done();
+  },
+
+  'stacks are written to the assembly file in a topological order'(test: Test) {
+    // WHEN
+    const assembly = withApp({}, (app) => {
+      const stackC = new Stack(app, 'StackC');
+      const stackD = new Stack(app, 'StackD');
+      const stackA = new Stack(app, 'StackA');
+      const stackB = new Stack(app, 'StackB');
+
+      // Create the following dependency order:
+      // A ->
+      //      C -> D
+      // B ->
+      stackC.addDependency(stackA);
+      stackC.addDependency(stackB);
+      stackD.addDependency(stackC);
+    });
+
+    // THEN
+    const artifactsIds = assembly.artifacts.map(a => a.id);
+    test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
 
     test.done();
   },

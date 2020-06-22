@@ -20,9 +20,9 @@ class MyNestedStack extends cfn.NestedStack {
 class StackWithNestedStackUsingParameters extends Stack {
   constructor(scope, id) {
     super(scope, id);
-    new CfnParameter(this, 'MyTopicParam');
+    const topicNameParam = new CfnParameter(this, 'MyTopicParam');
     new MyNestedStackUsingParameters(this, 'MyNested', {
-      parameters: {'MyTopicParam': 'ThereIsASpoon'}
+      parameters: {'MyTopicParam': topicNameParam.valueAsString}
     });
   }
 }

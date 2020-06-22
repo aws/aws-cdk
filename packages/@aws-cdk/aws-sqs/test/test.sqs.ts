@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
@@ -17,9 +17,9 @@ export = {
     expect(stack).toMatch({
       'Resources': {
         'Queue4A7E3555': {
-          'Type': 'AWS::SQS::Queue'
-        }
-      }
+          'Type': 'AWS::SQS::Queue',
+        },
+      },
     });
 
     test.done();
@@ -32,7 +32,7 @@ export = {
     expect(stack).toMatch({
       'Resources': {
         'DLQ581697C4': {
-          'Type': 'AWS::SQS::Queue'
+          'Type': 'AWS::SQS::Queue',
         },
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
@@ -41,14 +41,66 @@ export = {
               'deadLetterTargetArn': {
                 'Fn::GetAtt': [
                   'DLQ581697C4',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              'maxReceiveCount': 3
-            }
-          }
-        }
-      }
+              'maxReceiveCount': 3,
+            },
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'message retention period must be between 1 minute to 14 days'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(30),
+    }), /message retention period must be 60 seconds or more/);
+
+    test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
+      retentionPeriod: Duration.days(15),
+    }), /message retention period must be 1209600 seconds of less/);
+
+    test.done();
+  },
+
+  'message retention period can be provided as a parameter'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'my-retention-period', {
+      type: 'Number',
+      default: 30,
+    });
+
+    // WHEN
+    new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(parameter.valueAsNumber),
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      'Parameters': {
+        'myretentionperiod': {
+          'Type': 'Number',
+          'Default': 30,
+        },
+      },
+      'Resources': {
+        'MyQueueE6CA6235': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'MessageRetentionPeriod': {
+              'Ref': 'myretentionperiod',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -60,13 +112,13 @@ export = {
     queue.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['sqs:*'],
-      principals: [new iam.ArnPrincipal('arn')]
+      principals: [new iam.ArnPrincipal('arn')],
     }));
 
     expect(stack).toMatch({
       'Resources': {
         'MyQueueE6CA6235': {
-          'Type': 'AWS::SQS::Queue'
+          'Type': 'AWS::SQS::Queue',
         },
         'MyQueuePolicy6BBEDDAC': {
           'Type': 'AWS::SQS::QueuePolicy',
@@ -77,21 +129,21 @@ export = {
                   'Action': 'sqs:*',
                   'Effect': 'Allow',
                   'Principal': {
-                    'AWS': 'arn'
+                    'AWS': 'arn',
                   },
-                  'Resource': '*'
-                }
+                  'Resource': '*',
+                },
               ],
-              'Version': '2012-10-17'
+              'Version': '2012-10-17',
             },
             'Queues': [
               {
-                'Ref': 'MyQueueE6CA6235'
-              }
-            ]
-          }
-        }
-      }
+                'Ref': 'MyQueueE6CA6235',
+              },
+            ],
+          },
+        },
+      },
     });
     test.done();
   },
@@ -157,7 +209,7 @@ export = {
     'grant() is general purpose'(test: Test) {
       testGrant((q, p) => q.grant(p, 'service:hello', 'service:world'),
         'service:hello',
-        'service:world'
+        'service:world',
       );
       test.done();
     },
@@ -166,7 +218,7 @@ export = {
       const stack = new Stack();
       const queue = sqs.Queue.fromQueueAttributes(stack, 'Import', {
         queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
-        queueUrl: 'https://queue-url'
+        queueUrl: 'https://queue-url',
       });
 
       const user = new iam.User(stack, 'User');
@@ -180,18 +232,18 @@ export = {
               'Action': [
                 'sqs:PurgeQueue',
                 'sqs:GetQueueAttributes',
-                'sqs:GetQueueUrl'
+                'sqs:GetQueueUrl',
               ],
               'Effect': 'Allow',
-              'Resource': 'arn:aws:sqs:us-east-1:123456789012:queue1'
-            }
+              'Resource': 'arn:aws:sqs:us-east-1:123456789012:queue1',
+            },
           ],
-          'Version': '2012-10-17'
-        }
+          'Version': '2012-10-17',
+        },
       }));
 
       test.done();
-    }
+    },
   },
 
   'queue encryption': {
@@ -203,7 +255,7 @@ export = {
 
       test.same(queue.encryptionMasterKey, key);
       expect(stack).to(haveResource('AWS::SQS::Queue', {
-        'KmsMasterKeyId': { 'Fn::GetAtt': [ 'CustomKey1E6D0D07', 'Arn' ] }
+        'KmsMasterKeyId': { 'Fn::GetAtt': [ 'CustomKey1E6D0D07', 'Arn' ] },
       }));
 
       test.done();
@@ -219,9 +271,9 @@ export = {
         'KmsMasterKeyId': {
           'Fn::GetAtt': [
             'QueueKey39FCBAE6',
-            'Arn'
-          ]
-        }
+            'Arn',
+          ],
+        },
       }));
 
       test.done();
@@ -236,10 +288,10 @@ export = {
           'Queue4A7E3555': {
             'Type': 'AWS::SQS::Queue',
             'Properties': {
-              'KmsMasterKeyId': 'alias/aws/sqs'
-            }
-          }
-        }
+              'KmsMasterKeyId': 'alias/aws/sqs',
+            },
+          },
+        },
       });
       test.done();
     },
@@ -248,10 +300,10 @@ export = {
       // GIVEN
       const stack = new Stack();
       const queue = new sqs.Queue(stack, 'Queue', {
-        encryption: sqs.QueueEncryption.KMS
+        encryption: sqs.QueueEncryption.KMS,
       });
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('someone')
+        assumedBy: new iam.ServicePrincipal('someone'),
       });
 
       // WHEN
@@ -265,22 +317,23 @@ export = {
               'Action': [
                 'sqs:SendMessage',
                 'sqs:GetQueueAttributes',
-                'sqs:GetQueueUrl'
+                'sqs:GetQueueUrl',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }
+              'Resource': { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] },
             },
             {
               'Action': [
+                'kms:Decrypt',
                 'kms:Encrypt',
                 'kms:ReEncrypt*',
-                'kms:GenerateDataKey*'
+                'kms:GenerateDataKey*',
               ],
               'Effect': 'Allow',
-              'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] }
-            }
+              'Resource': { 'Fn::GetAtt': [ 'QueueKey39FCBAE6', 'Arn' ] },
+            },
           ],
-          'Version': '2012-10-17'
+          'Version': '2012-10-17',
         },
       }));
 
@@ -291,7 +344,7 @@ export = {
   'test ".fifo" suffixed queues register as fifo'(test: Test) {
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'Queue', {
-      queueName: 'MyQueue.fifo'
+      queueName: 'MyQueue.fifo',
     });
 
     test.deepEqual(queue.fifo, true);
@@ -302,10 +355,10 @@ export = {
           'Type': 'AWS::SQS::Queue',
           'Properties': {
             'QueueName': 'MyQueue.fifo',
-            'FifoQueue': true
-          }
-        }
-      }
+            'FifoQueue': true,
+          },
+        },
+      },
     });
 
     test.done();
@@ -314,7 +367,7 @@ export = {
   'test a fifo queue is observed when the "fifo" property is specified'(test: Test) {
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'Queue', {
-      fifo: true
+      fifo: true,
     });
 
     test.deepEqual(queue.fifo, true);
@@ -324,10 +377,10 @@ export = {
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
           'Properties': {
-            'FifoQueue': true
-          }
-        }
-      }
+            'FifoQueue': true,
+          },
+        },
+      },
     });
 
     test.done();
@@ -344,7 +397,7 @@ export = {
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
       period: Duration.minutes(5),
-      statistic: 'Sum'
+      statistic: 'Sum',
     });
 
     test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
@@ -352,11 +405,11 @@ export = {
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
       period: Duration.minutes(5),
-      statistic: 'Average'
+      statistic: 'Average',
     });
 
     test.done();
-  }
+  },
 };
 
 function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
@@ -375,12 +428,12 @@ function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ..
           'Resource': {
             'Fn::GetAtt': [
               'MyQueueE6CA6235',
-              'Arn'
-            ]
-          }
-        }
+              'Arn',
+            ],
+          },
+        },
       ],
-      'Version': '2012-10-17'
-    }
+      'Version': '2012-10-17',
+    },
   }));
 }

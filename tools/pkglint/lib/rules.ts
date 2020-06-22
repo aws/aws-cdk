@@ -131,6 +131,9 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
+    if (pkg.packageName === '@aws-cdk/core') {
+      return;
+    }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
 
@@ -822,7 +825,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.12.0');
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
   }
 }
 
@@ -1002,12 +1005,8 @@ export class Cfn2Ts extends ValidationRule {
   public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) {
-      return;
-    }
-
-    if (!isAWS(pkg)) {
-      return;
+    if (!isJSII(pkg) || !isAWS(pkg)) {
+      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
@@ -1102,7 +1101,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.0.0';
+    const REQUIRED_VERSION = '^3.0.2';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1177,6 +1176,7 @@ export class EslintSetup extends ValidationRule {
             eslintrcFilename,
             [
               `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/eslintrc');`,
+              "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
               'module.exports = baseConfig;'
             ].join('\n') + '\n'
           );
@@ -1185,6 +1185,53 @@ export class EslintSetup extends ValidationRule {
     }
     fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
     fileShouldContain(this.name, pkg, '.npmignore', '.eslintrc.js');
+  }
+}
+
+export class JestSetup extends ValidationRule {
+  public readonly name = 'package-info/jest.config';
+
+  public validate(pkg: PackageJson): void {
+    const cdkBuild = pkg.json['cdk-build'] || {};
+
+    // check whether the package.json contains the "jest" key,
+    // which we no longer use
+    if (pkg.json.jest) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Using Jest is set through a flag in the "cdk-build" key in package.json, the "jest" key is ignored',
+        fix: () => {
+          delete pkg.json.jest;
+          cdkBuild.jest = true;
+          pkg.json['cdk-build'] = cdkBuild;
+        },
+      });
+    }
+
+    // this rule should only be enforced for packages that use Jest for testing
+    if (!cdkBuild.jest) {
+      return;
+    }
+
+    const jestConfigFilename = 'jest.config.js';
+    if (!fs.existsSync(jestConfigFilename)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'There must be a jest.config.js file at the root of the package',
+        fix: () => {
+          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
+          fs.writeFileSync(
+            jestConfigFilename,
+            [
+              `const baseConfig = require('${rootRelative}/tools/cdk-build-tools/config/jest.config');`,
+              'module.exports = baseConfig;',
+            ].join('\n') + '\n',
+          );
+        },
+      });
+    }
+    fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
+    fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
   }
 }
 
@@ -1202,7 +1249,7 @@ function isJSII(pkg: PackageJson): boolean {
  * @param pkg
  */
 function isAWS(pkg: PackageJson): boolean {
-  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+  return pkg.json['cdk-build']?.cloudformation != null;
 }
 
 /**

@@ -21,6 +21,19 @@ import * as version from '../lib/version';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
+  // Use the following configuration for array arguments:
+  //
+  //     { type: 'array', default: [], nargs: 1, requiresArg: true }
+  //
+  // The default behavior of yargs is to eat all strings following an array argument:
+  //
+  //   ./prog --arg one two positional  => will parse to { arg: ['one', 'two', 'positional'], _: [] } (so no positional arguments)
+  //   ./prog --arg one two -- positional  => does not help, for reasons that I can't understand. Still gets parsed incorrectly.
+  //
+  // By using the config above, every --arg will only consume one argument, so you can do the following:
+  //
+  //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
+
   const initTemplateLanuages = await availableInitLanguages;
   return yargs
     .env('CDK')
@@ -46,17 +59,19 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .command([ 'list [STACKS..]', 'ls [STACKS..]' ], 'Lists all stacks in the app', yargs => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
-      .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket', default: undefined })
+      .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
+      .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
-      .option('trust', { type: 'array', desc: 'The (space-separated) list of AWS account IDs that should be trusted to perform deployments into this environment', default: [], hidden: true })
-      .option('cloudformation-execution-policies', { type: 'array', desc: 'The (space-separated) list of Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed', default: [], hidden: true })
+      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -69,6 +84,7 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
+      .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
@@ -83,7 +99,7 @@ async function parseCommandLineArguments() {
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
-      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project'})
+      .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project'}),
     )
     .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(version.DISPLAY_VERSION)
@@ -93,7 +109,7 @@ async function parseCommandLineArguments() {
     .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
-      'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+      'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     ].join('\n\n'))
     .argv;
 }
@@ -110,17 +126,17 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
+  const configuration = new Configuration(argv);
+  await configuration.load();
+
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-    profile: argv.profile,
+    profile: configuration.settings.get(['profile']),
     ec2creds: argv.ec2creds,
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
-    }
+    },
   });
-
-  const configuration = new Configuration(argv);
-  await configuration.load();
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
 
@@ -209,14 +225,19 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, !!process.env.CDK_NEW_BOOTSTRAP, {
-          bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
-          kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
-          tags: configuration.settings.get(['tags']),
-          execute: args.execute,
-          trustedAccounts: args.trust,
-          cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
-        });
+        return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName,
+          args.roleArn,
+          !!process.env.CDK_NEW_BOOTSTRAP,
+          argv.force,
+          {
+            bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
+            kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            qualifier: args.qualifier,
+            tags: configuration.settings.get(['tags']),
+            execute: args.execute,
+            trustedAccounts: args.trust,
+            cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
+          });
 
       case 'deploy':
         const parameterMap: { [name: string]: string | undefined } = {};
@@ -238,7 +259,8 @@ async function initCommandLine() {
           execute: args.execute,
           force: args.force,
           parameters: parameterMap,
-          outputsFile: args.outputsFile
+          usePreviousParameters: args['previous-parameters'],
+          outputsFile: args.outputsFile,
         });
 
       case 'destroy':
@@ -287,6 +309,8 @@ initCommandLine()
   })
   .catch(err => {
     error(err.message);
-    debug(err.stack);
+    if (err.stack) {
+      debug(err.stack);
+    }
     process.exitCode = 1;
   });

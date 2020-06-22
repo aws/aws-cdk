@@ -40,10 +40,16 @@
     "myuserpool01998219": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
+        "AccountRecoverySetting": { 
+          "RecoveryMechanisms": [
+            { "Name": "verified_phone_number", "Priority": 1 },
+            { "Name": "verified_email", "Priority": 2 }
+          ]
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": true
         },
-        "EmailVerificationMessage": "Hello {username}, Your verification code is {####}",
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
         "SmsConfiguration": {
           "ExternalId": "integuserpoolmyuserpoolDA38443C",
@@ -58,7 +64,7 @@
         "UserPoolName": "MyUserPool",
         "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
-          "EmailMessage": "Hello {username}, Your verification code is {####}",
+          "EmailMessage": "The verification code to your new account is {####}",
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }

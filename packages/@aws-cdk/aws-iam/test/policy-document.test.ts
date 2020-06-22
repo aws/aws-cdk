@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
-  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal, Effect,
-  FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal
+  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
+  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -82,7 +82,7 @@ describe('IAM policy document', () => {
   test('Throws with invalid actions', () => {
     expect(() => {
       new PolicyStatement({
-        actions: ['service:action', '*', 'service:acti*', 'in:val:id']
+        actions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -90,7 +90,7 @@ describe('IAM policy document', () => {
   test('Throws with invalid not actions', () => {
     expect(() => {
       new PolicyStatement({
-        notActions: ['service:action', '*', 'service:acti*', 'in:val:id']
+        notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
   });
@@ -148,8 +148,8 @@ describe('IAM policy document', () => {
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
-        CanonicalUser: canoncialUser
-      }
+        CanonicalUser: canoncialUser,
+      },
     });
   });
 
@@ -169,11 +169,11 @@ describe('IAM policy document', () => {
               { Ref: 'AWS::Partition' },
               ':iam::',
               { Ref: 'AWS::AccountId' },
-              ':root'
-            ]
-          ]
-        }
-      }
+              ':root',
+            ],
+          ],
+        },
+      },
     });
   });
 
@@ -184,11 +184,11 @@ describe('IAM policy document', () => {
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
-        Federated: 'com.amazon.cognito'
+        Federated: 'com.amazon.cognito',
       },
       Condition: {
-        StringEquals: { key: 'value' }
-      }
+        StringEquals: { key: 'value' },
+      },
     });
   });
 
@@ -203,9 +203,9 @@ describe('IAM policy document', () => {
       Principal: {
         AWS: [
           { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] }
-        ]
-      }
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] },
+        ],
+      },
     });
   });
 
@@ -262,9 +262,9 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
 
@@ -276,9 +276,9 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
 
@@ -292,9 +292,9 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' }
+          { Effect: 'Allow', Principal: '*' },
         ],
-        Version: '2012-10-17'
+        Version: '2012-10-17',
       });
     });
   });
@@ -329,9 +329,9 @@ describe('IAM policy document', () => {
     expect(stack.resolve(p)).toEqual({
       Statement: [
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
-        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
+        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } },
       ],
-      Version: '2012-10-17'
+      Version: '2012-10-17',
     });
   });
 
@@ -341,7 +341,8 @@ describe('IAM policy document', () => {
       get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
-      addToPolicy() { return false; }
+      addToPolicy() { return false; },
+      addToPrincipalPolicy() { return { statementAdded: false }; },
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();
@@ -351,9 +352,9 @@ describe('IAM policy document', () => {
       Principal: {
         AWS: [
           { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-          'foo', 'bar'
-        ]
-      }
+          'foo', 'bar',
+        ],
+      },
     });
   });
 
@@ -370,7 +371,7 @@ describe('IAM policy document', () => {
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
-      Resource: 'resource'
+      Resource: 'resource',
     });
   });
 
@@ -384,7 +385,7 @@ describe('IAM policy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
       });
     });
 
@@ -397,7 +398,7 @@ describe('IAM policy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
       });
     });
 
@@ -410,7 +411,7 @@ describe('IAM policy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'test.service-principal.dev' }
+        Principal: { Service: 'test.service-principal.dev' },
       });
     });
   });
@@ -441,7 +442,7 @@ describe('IAM policy document', () => {
       // add via `addPrincipals` (with condition)
       p.addPrincipals(
         new Anyone(),
-        new ServicePrincipal('another.service')
+        new ServicePrincipal('another.service'),
       );
 
       const statement = new PolicyStatement();
@@ -453,13 +454,13 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(statement.toStatementJson())).toEqual({
         Condition: {
-          cond2: { boom: '123' }
+          cond2: { boom: '123' },
         },
         Effect: 'Allow',
         Principal: {
           AWS: [ 'i:am:an:arn', '*', 'aws-principal-3' ],
           Service: [ 'amazon.com', 'another.service' ],
-        }
+        },
       });
     });
 
@@ -538,8 +539,47 @@ describe('IAM policy document', () => {
           OperatorOne: { 'fed-key': 'fed-val' },
           OperatorTwo: { 'fed-key': 'fed-val', 'with-key': 'with-val' },
           OperatorThree: { 'fed-key': 'fed-val', 'with-key': 'with-val', 'add-key': 'add-val' },
-        }
+        },
       });
+    });
+
+    test('tokens can be used in conditions', () => {
+      // GIVEN
+      const stack = new Stack();
+      const statement = new PolicyStatement();
+
+      // WHEN
+      const p = new ArnPrincipal('arn:of:principal').withConditions({
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+      });
+
+      statement.addPrincipals(p);
+
+      // THEN
+      const resolved = stack.resolve(statement.toStatementJson());
+      expect(resolved).toEqual({
+        Condition: {
+          StringEquals: {
+            goo: 'zar',
+          },
+        },
+        Effect: 'Allow',
+        Principal: {
+          AWS: 'arn:of:principal',
+        },
+      });
+    });
+
+    test('conditions cannot be merged if they include tokens', () => {
+      const p = new FederatedPrincipal('fed', {
+        StringEquals: { foo: 'bar' },
+      }).withConditions({
+        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' })}),
+      });
+
+      const statement = new PolicyStatement();
+
+      expect(() => statement.addPrincipals(p)).toThrow(/multiple "StringEquals" conditions cannot be merged if one of them contains an unresolved token/);
     });
 
     test('values passed to `withConditions` overwrite values from the wrapped principal ' +
@@ -574,11 +614,11 @@ describe('IAM policy document', () => {
       statement.addServicePrincipal('service');
       statement.addConditions({
         a: {
-          b: 'c'
+          b: 'c',
         },
         d: {
-          e: 'f'
-        }
+          e: 'f',
+        },
       });
 
       // WHEN
@@ -615,7 +655,7 @@ describe('IAM policy document', () => {
   test('autoAssignSids enables auto-assignment of a unique SID for each statement', () => {
     // GIVEN
     const doc = new PolicyDocument({
-      assignSids: true
+      assignSids: true,
     });
 
     // WHEN
@@ -631,7 +671,7 @@ describe('IAM policy document', () => {
       Version: '2012-10-17',
       Statement: [
         { Action: 'service:action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
-        { Action: 'service:action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
+        { Action: 'service:action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' },
       ],
     });
   });
@@ -654,8 +694,8 @@ describe('IAM policy document', () => {
       resources: ['*'],
       principals: [new ArnPrincipal('arn')],
       conditions: {
-        key: { equals: 'value' }
-      }
+        key: { equals: 'value' },
+      },
     }));
 
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
@@ -665,7 +705,7 @@ describe('IAM policy document', () => {
     test("throws error when Statement isn't an array", () => {
       expect(() => {
         PolicyDocument.fromJson({
-          Statement: 'asdf'
+          Statement: 'asdf',
         });
       }).toThrow(/Statement must be an array/);
     });
@@ -682,7 +722,7 @@ describe('IAM policy document', () => {
 
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
-      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}}
+      Condition: {StringEquals: {'kms:ViaService': 'service', 'sts:ExternalId': '12221121221'}},
     });
   });
 });
