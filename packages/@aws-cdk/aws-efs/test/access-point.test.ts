@@ -29,10 +29,7 @@ test('import correctly', () => {
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
   });
-  const imported = AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
-    accessPointArn: ap.accessPointArn,
-    accessPointId: ap.accessPointId,
-  });
+  const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
   // THEN
   expect(imported.accessPointId).toEqual(ap.accessPointId);
 });

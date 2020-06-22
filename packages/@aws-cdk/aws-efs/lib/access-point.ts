@@ -104,31 +104,20 @@ export interface AccessPointProps {
 }
 
 /**
- * Attributes of the Access Point
- */
-export interface AccessPointAttributes {
-  /**
-   * ID of the Access Point
-   */
-  readonly accessPointId: string;
-
-  /**
-   * ARN of the Access Point
-   */
-  readonly accessPointArn: string;
-}
-
-/**
  * Represents the AccessPoint
  */
 export class AccessPoint extends Resource implements IAccessPoint {
   /**
    * Import an existing Access Point
    */
-  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
+  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
     class Import extends Resource implements IAccessPoint {
-      public readonly accessPointId = attrs.accessPointId;
-      public readonly accessPointArn = attrs.accessPointArn;
+      public readonly accessPointId = accessPointId;
+      public readonly accessPointArn = Stack.of(scope).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'access-point',
+        resourceName: accessPointId,
+      });
     }
     return new Import(scope, id);
   }
