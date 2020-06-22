@@ -74,8 +74,9 @@ export interface AccessPointProps {
   readonly fileSystem: IFileSystem;
 
   /**
-   * Specifies the POSIX IDs and permissions to apply to the access point's RootDirectory. If the
-   * `RootDirectory` > `Path` specified does not exist, EFS creates the root directory using the `CreationInfo`
+   * Specifies the POSIX IDs and permissions to apply when creating the access point's root directory. If the
+   * root directory specified by `path` does not exist, EFS creates the root directory and applies the
+   * permissions specified here.
    *  settings when a client connects to an access point.
    *
    * @default - None
