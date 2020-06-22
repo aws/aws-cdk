@@ -7,9 +7,9 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedMethods: 
-            - GET,
+            - GET
             - POST
-          - AllowedOrigins:
-            - Origin1,
+            AllowedOrigins:
+            - Origin1
             - Origin2
-          - MaxAge: 1
+            MaxAge: 1
