@@ -230,6 +230,53 @@ To disable detailed instance monitoring, specify `instanceMonitoring` property
 for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
 will be enabled.
 
+### Mointoring Group Metrics
+
+Group metrics describe the group rather than any of its instances. To enable group metrics monitoring, you can use the `metricsCollections` property or the `emitAllMetricsCollections` and `emitMetricsCollection` methods.
+
+Enabling montoring for all group metircs using the `metricsCollections` property:
+
+```ts
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  metricsCollections: [
+    {
+      metrics: GroupMetric.ALL
+    }
+  ]
+  // ...
+});
+```
+
+Enabling monitoring for a specific list of group metrics:
+
+```ts
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  metricsCollections: [
+    {
+      metrics: [
+        autoscaling.GroupMetric.MIN_SIZE,
+        autoscaling.GroupMetric.MAX_SIZE
+      ]
+    }
+  ],
+  // ...
+});
+```
+
+Or using the emitXxx methods:
+
+```ts
+// enable monitoring for all group metrics
+asg.emitAllMetricsCollections();
+
+// or enbale mointoring for a specific list of metrics 
+asg.emitMetricsCollection({
+  metrics: [
+    autoscaling.GroupMetric.MIN_SIZE,
+    autoscaling.GroupMetric.MAX_SIZE,
+  ]
+});
+```
 
 ### Future work
 

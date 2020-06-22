@@ -234,6 +234,19 @@ export interface CommonAutoScalingGroupProps {
    * @default - Monitoring.DETAILED
    */
   readonly instanceMonitoring?: Monitoring;
+
+  /**
+   * Configurtion for monitoring group metrics.
+   *
+   * Group metrics describe the group rather than any of its instances.
+   * You can sepcify a list of group metrics to monitor, to monitor all group metric use GroupMetric.ALL e.g `metrics: GroupMetric.ALL`
+   *
+   * All Group metrics are reported in a granularity of 1 Miunte.
+   *
+   * You can also use the `emitAllMetricsCollections` and `emitMetricsCollection` methods
+   * @default - disabled
+   */
+  readonly metricsCollections?: MetricsCollection[];
 }
 
 /**
@@ -282,58 +295,63 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 }
 
 /**
- * The frequency at which Amazon EC2 Auto Scaling sends aggregated data to CloudWatch
- */
-export enum Granularity {
-  /**
-   * 1Minute
-   */
-  ONE_MINUNTE = '1Minute'
-}
-
-/**
  * Group metrics that an Amazon EC2 Auto Scaling group sends to Amazon CloudWatch.
  */
-export enum GroupMetric {
+export class GroupMetric {
+
+  /** All available GroupMetrics. */
+  public static readonly ALL = [];
+
   /**
    * The minimum size of the Auto Scaling group
    */
-  MIN_SIZE = "GroupMinSize",
+  public static readonly MIN_SIZE = new GroupMetric('GroupMinSize');
+
   /**
    * The maximum size of the Auto Scaling group
    */
-  MAX_SIZE = "GroupMaxSize",
+  public static readonly MAX_SIZE = new GroupMetric('GroupMaxSize');
+
   /**
    * The number of instances that the Auto Scaling group attempts to maintain
    */
-  DESIERED_CAPACITY =  "GroupDesiredCapacity",
+  public static readonly DESIERED_CAPACITY = new GroupMetric('GroupDesiredCapacity');
+
   /**
    * The number of instances that are running as part of the Auto Scaling group
    * This metric does not include instances that are pending or terminating
    */
-  IN_SERVICE_INSTANCES = "GroupInServiceInstances",
+  public static readonly IN_SERVICE_INSTANCES = new GroupMetric('GroupInServiceInstances');
   /**
    * The number of instances that are pending
    * A pending instance is not yet in serviceThis metric does not include instances that are in service or terminating
    */
-  PENDING_INSTANCES = "GroupPendingInstances",
+  public static readonly PENDING_INSTANCES = new GroupMetric('GroupPendingInstances');
+
   /**
    * The number of instances that are in a Standby state
    * Instances in this state are still running but are not actively in service
    */
-  STANDBY_INSTANCES = "GroupStandbyInstances",
+  public static readonly STANDBY_INSTANCES = new GroupMetric('GroupStandbyInstances');
+
   /**
    * The number of instances that are in the process of terminating
    * This metric does not include instances that are in service or pending
    */
-  TERMINATING_INSTANCES = "GroupTerminatingInstances",
+  public static readonly TERMINATING_INSTANCES = new GroupMetric('GroupTerminatingInstances');
+
   /**
    * The total number of instances in the Auto Scaling group
    * This metric identifies the number of instances that are in service, pending, and terminating
    */
-  TOTAL_INSTANCES = "GroupTotalInstances",
-}
+  public static readonly TOTAL_INSTANCES = new GroupMetric('GroupTotalInstances');
 
+  public readonly name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
 
 export interface MetricsCollection {
   /**
@@ -531,7 +549,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
-  private readonly metricsCollections: MetricsCollection = [];
+  private readonly metricsCollections: MetricsCollection[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
@@ -551,6 +569,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     this.grantPrincipal = this.role;
+
+    if (props.metricsCollections) {
+      this.metricsCollections.push(...props.metricsCollections);
+    }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ],
@@ -639,7 +661,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.anyValue({ produce: () => this.metricsCollections.length === 0 ? undefined : this.metricsCollections}),
+      metricsCollection: Lazy.anyValue({ produce: () => this.metricsCollections.length === 0 ? undefined : this.metricsCollections.map(mc => ({
+        granularity: '1Minute',
+        metrics: mc.metrics?.length !== 0 ? mc.metrics.map(m => m.name) : undefined
+      }))}),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
@@ -689,14 +714,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * Emit a specifc subset of group metrics, these metrics describe the group rather than any of its instances
-   * to emit all group metrics use `emitAllMetricsCollections`
+   * Emit a specifc subset of group metrics, these metrics describe the group rather than a single instance
+   * to emit all group metrics use \`emitAllMetricsCollections\`
    * @param collection which groups metrics to collect
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
    */
   public emitMetricsCollection(collection: MetricsCollection) {
     this.metricsCollections.push({
-      metrics: collection.metrics.length === 0 ? undefined : collection.metrics,
+      metrics: collection.metrics
     });
   }
 

@@ -7,6 +7,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
+import { GroupMetric } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -1087,24 +1088,120 @@ export = {
         }
       ]
     }));
-  'throw if notification and notificationsTopics are both configured'(test: Test) {
+    test.done();
+  },
+
+  'test configuraing metricsCollection to GroupMetric.ALL adds a single MetricsCollection with no Metrics specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const topic = new sns.Topic(stack, 'MyTopic');
+    // When
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      metricsCollections: [
+        {
+          metrics: GroupMetric.ALL
+        }
+      ]
+    });
 
-    // THEN
-    test.throws(() => {
-      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-        machineImage: new ec2.AmazonLinuxImage(),
-        vpc,
-        notificationsTopic: topic,
-        notifications: [{
-          topic,
-        }],
-      });
-    }, 'Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics: ABSENT
+        }
+      ]
+    }));
+    test.done();
+  },
+
+  'test emitMetricsCollections adds MetricsCollection with a list of specified Metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // When
+    asg.emitMetricsCollection({
+      metrics: [
+        autoscaling.GroupMetric.MIN_SIZE,
+        autoscaling.GroupMetric.MAX_SIZE,
+        autoscaling.GroupMetric.DESIERED_CAPACITY,
+        autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
+      ]
+    });
+    asg.emitMetricsCollection({
+      metrics: [
+        autoscaling.GroupMetric.PENDING_INSTANCES,
+        autoscaling.GroupMetric.STANDBY_INSTANCES,
+        autoscaling.GroupMetric.TOTAL_INSTANCES,
+        autoscaling.GroupMetric.TERMINATING_INSTANCES
+      ]
+    });
+
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ]
+        }, {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ]
+        }
+      ]
+    }));
+    test.done();
+  },
+
+  'can configure metricsCollection on the constructor and using emitMetricsCollection simultaneously'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    // When
+    const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      metricsCollections: [
+        {
+          metrics: [
+            autoscaling.GroupMetric.MIN_SIZE,
+            autoscaling.GroupMetric.MAX_SIZE,
+            autoscaling.GroupMetric.DESIERED_CAPACITY,
+            autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
+          ]
+        },
+      ]
+    });
+    asg.emitMetricsCollection({
+        metrics: [
+          autoscaling.GroupMetric.PENDING_INSTANCES,
+          autoscaling.GroupMetric.STANDBY_INSTANCES,
+          autoscaling.GroupMetric.TOTAL_INSTANCES,
+          autoscaling.GroupMetric.TERMINATING_INSTANCES
+        ]
+    });
+    // Then
+    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      MetricsCollection: [
+        {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ]
+        }, {
+          Granularity: '1Minute',
+          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ]
+        }
+      ]
+    }));
     test.done();
   },
 
@@ -1153,46 +1250,26 @@ export = {
     test.done();
   },
 
-  'test emitMetricsCollections adds MetricsCollection with a list of specified Metrics'(test: Test) {
+  'throw if notification and notificationsTopics are both configured'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // THEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        notificationsTopic: topic,
+        notifications: [{
+          topic,
+        }],
       });
-
-    // When
-    asg.emitMetricsCollection({
-      metrics: [
-        autoscaling.GroupMetric.MIN_SIZE,
-        autoscaling.GroupMetric.MAX_SIZE,
-        autoscaling.GroupMetric.DESIERED_CAPACITY,
-        autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
-      ]
-    });
-    asg.emitMetricsCollection({
-      metrics: [
-        autoscaling.GroupMetric.PENDING_INSTANCES,
-        autoscaling.GroupMetric.STANDBY_INSTANCES,
-        autoscaling.GroupMetric.TOTAL_INSTANCES,
-        autoscaling.GroupMetric.TERMINATING_INSTANCES
-      ]
-    });
-
-    // Then
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      MetricsCollection: [
-        {
-          Granularity: '1Minute',
-          Metrics : [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ]
-        }, {
-          Granularity: '1Minute',
-          Metrics : [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ]
-        }
-      ]
-    }));
+    }, 'Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+    test.done();
+  },
 
   'notificationTypes default includes all non test NotificationType'(test: Test) {
     // GIVEN
