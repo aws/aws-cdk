@@ -31,7 +31,7 @@ export class CfnInclude extends core.CfnElement {
     super(scope, id);
 
     // read the template into a JS object
-    this.template = futils.readJsonSync(props.templateFile);
+    this.template = futils.readYamlSync(props.templateFile);
 
     // ToDo implement preserveLogicalIds=false
     this.preserveLogicalIds = true;

@@ -1,0 +1,15 @@
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: MyBucket
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: 
+            - GET,
+            - POST
+          - AllowedOrigins:
+            - Origin1,
+            - Origin2
+          - MaxAge: 1
