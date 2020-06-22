@@ -13,7 +13,7 @@ const fileSystem = new FileSystem(stack, 'FileSystem', {
 
 new AccessPoint(stack, 'AccessPoint', {
   fileSystem,
-  creationInfo: {
+  createAcl: {
     ownerGid: '1000',
     ownerUid: '1000',
     permissions: '755',

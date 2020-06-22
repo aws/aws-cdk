@@ -76,12 +76,11 @@ export interface AccessPointProps {
   /**
    * Specifies the POSIX IDs and permissions to apply when creating the access point's root directory. If the
    * root directory specified by `path` does not exist, EFS creates the root directory and applies the
-   * permissions specified here.
-   *  settings when a client connects to an access point.
+   * permissions specified here. If the specified `path` does not exist, you must specify `createAcl`.
    *
    * @default - None
    */
-  readonly creationInfo?: CreationInfo;
+  readonly createAcl?: CreationInfo;
 
   /**
    * Specifies the path on the EFS file system to expose as the root directory to NFS clients using the access point
@@ -93,9 +92,13 @@ export interface AccessPointProps {
 
   /**
    * The full POSIX identity, including the user ID, group ID, and any secondary group IDs, on the access point
-   *  that is used for all file system operations performed by NFS clients using the access point.
+   * that is used for all file system operations performed by NFS clients using the access point.
    *
-   * @default - None
+   * Specify this to enforce a user identity using an access point.
+   *
+   * @see - [Enforcing a User Identity Using an Access Point](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html)
+   *
+   * @default - user identity not enforced
    */
   readonly posixUser?: PosixUser;
 }
@@ -145,13 +148,17 @@ export class AccessPoint extends Resource implements IAccessPoint {
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
 
+    if (props.path && !props.createAcl) {
+      throw new Error('createAcl is required if path is specified');
+    }
+
     const resource = new CfnAccessPoint(scope, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,
       rootDirectory: {
-        creationInfo: props.creationInfo ? {
-          ownerGid: props.creationInfo.ownerGid,
-          ownerUid: props.creationInfo.ownerUid,
-          permissions: props.creationInfo.permissions,
+        creationInfo: props.createAcl ? {
+          ownerGid: props.createAcl.ownerGid,
+          ownerUid: props.createAcl.ownerUid,
+          permissions: props.createAcl.permissions,
         } : undefined,
         path: props.path,
       },
