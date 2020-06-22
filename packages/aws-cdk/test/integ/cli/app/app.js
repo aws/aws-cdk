@@ -107,7 +107,7 @@ class IamStack extends cdk.Stack {
     super(parent, id, props);
 
     new iam.Role(this, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
   }
 }
@@ -255,7 +255,7 @@ new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
 new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
 // Not included in wildcard
-new IamStack(app, `${stackPrefix}-iam-test`);
+new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
 new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
 
@@ -280,7 +280,7 @@ new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 new YourStack(app, `${stackPrefix}-termination-protection`, {
-  terminationProtection: true,
+  terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
 });
 
 app.synth();

@@ -235,6 +235,17 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
 
+  // Update termination protection only if it has changed.
+  const terminationProtection = stackArtifact.terminationProtection ?? false;
+  if (!!cloudFormationStack.terminationProtection !== terminationProtection) {
+    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
+    await cfn.updateTerminationProtection({
+      StackName: deployName,
+      EnableTerminationProtection: terminationProtection,
+    }).promise();
+    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
+  }
+
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
@@ -246,7 +257,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
     // tslint:disable-next-line:max-line-length
-    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, (changeSetDescription.Changes || []).length).start();
+    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, {
+      resourcesTotal: (changeSetDescription.Changes ?? []).length,
+    }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
       const finalStack = await waitForStack(cfn, deployName);
@@ -260,17 +273,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug('Stack %s has completed updating', deployName);
   } else {
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
-  }
-
-  // Update termination protection only if it has changed.
-  const terminationProtection = stackArtifact.terminationProtection ?? false;
-  if (cloudFormationStack.terminationProtection !== terminationProtection) {
-    debug('Updating termination protection from %s to %s for stack %s', cloudFormationStack.terminationProtection, terminationProtection, deployName);
-    await cfn.updateTerminationProtection({
-      StackName: deployName,
-      EnableTerminationProtection: terminationProtection,
-    }).promise();
-    debug('Termination protection updated to %s for stack %s', terminationProtection, deployName);
   }
 
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
@@ -399,8 +401,7 @@ async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormat
   }
 
   // Termination protection has been updated
-  const terminationProtection = deployStackOptions.stack.terminationProtection ?? false; // cast to boolean for comparison
-  if (terminationProtection !== cloudFormationStack.terminationProtection) {
+  if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);
     return false;
   }
