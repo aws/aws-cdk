@@ -150,3 +150,9 @@ test('throws with invalid name', () => {
     backupVaultName: 'Hello!Inv@lid',
   })).toThrow(/Expected vault name to match pattern/);
 });
+
+test('throws with too short name', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    backupVaultName: 'x',
+  })).toThrow(/Expected vault name to match pattern/);
+});
