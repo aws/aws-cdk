@@ -69,7 +69,10 @@ function invokeAspects(root: IConstruct) {
     const nodeAspectsCount = node._aspects.length;
     for (const aspect of allAspectsHere) {
       if (node.invokedAspects.includes(aspect)) { continue; }
+
       aspect.visit(construct);
+      // tslint:disable-next-line: no-console
+      console.log('IM HERE AGAIN!!!!!!');
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
       if (!nestedAspectWarning && nodeAspectsCount !== node._aspects.length) {
