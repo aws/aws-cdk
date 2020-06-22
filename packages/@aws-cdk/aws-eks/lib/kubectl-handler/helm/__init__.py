@@ -24,6 +24,8 @@ def decode_boolean(value):
         elif value == 'FALSE:BOOLEAN':
             return False
         else:
+            # Needed for backward compatilibity because previous state
+            # will have a string value ('true' or 'false')
             return bool(strtobool(value))
     return None
 

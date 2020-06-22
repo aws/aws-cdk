@@ -1,6 +1,7 @@
 export * from './aws-auth';
 export * from './aws-auth-mapping';
 export * from './cluster';
+export * from './shared-interfaces';
 export * from './eks.generated';
 export * from './fargate-profile';
 export * from './helm-chart';

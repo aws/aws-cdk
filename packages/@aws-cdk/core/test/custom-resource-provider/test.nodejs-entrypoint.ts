@@ -5,6 +5,7 @@ import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
+import * as consts from '../../lib/custom-resource-provider/consts';
 import * as entrypoint from '../../lib/custom-resource-provider/nodejs-entrypoint';
 
 export = {
@@ -92,7 +93,7 @@ export = {
         return {
           Data: event.ResourceProperties,
         };
-      });
+      }, true);
 
       // THEN
       test.deepEqual(response.Status, 'SUCCESS');
@@ -192,7 +193,10 @@ function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): A
   } as any;
 }
 
-async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, userHandler: entrypoint.Handler) {
+async function invokeHandler(
+  req: AWSLambda.CloudFormationCustomResourceEvent,
+  userHandler: entrypoint.Handler,
+  isValueEncoded?: boolean) {
   const parsedResponseUrl = url.parse(req.ResponseURL);
 
   // stage entry point and user handler.
@@ -216,6 +220,9 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     actualResponse = responseBody;
   };
 
+  if (isValueEncoded) {
+    process.env[consts.IS_VALUE_ENCODED_ENV] = '1';
+  }
   await entrypoint.handler(req);
   if (!actualResponse) {
     throw new Error('no response sent to cloudformation');

@@ -56,6 +56,7 @@ export class ClusterResourceProvider extends NestedStack {
       isCompleteHandler: isComplete,
       totalTimeout: Duration.hours(1),
       queryInterval: Duration.minutes(1),
+      isValueEncoded: true,
     });
 
     this.roles = [ onEvent.role!, isComplete.role! ];

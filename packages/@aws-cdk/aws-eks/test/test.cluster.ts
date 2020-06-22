@@ -117,17 +117,12 @@ export = {
       const { stack, vpc } = testFixture();
   
       // WHEN
-      new eks.Cluster(stack, 'cluster', { vpc, kubectlEnabled: true, controlPlaneLogging: {
-        clusterLogging: [
-          {
-            enabled: true,
-            types: ['api', 'scheduler'],
-          },
-          {
-            enabled: false,
-            types: ['audit', 'authenticator', 'controllerManager'],
-          },
-        ],
+      new eks.Cluster(stack, 'cluster', { vpc, kubectlEnabled: true, controlPlaneLoggingOptions: {
+        api: true,
+        scheduler: true,
+        audit: false,
+        authenticator: false,
+        controllerManager: false,
       }});
   
       // THEN

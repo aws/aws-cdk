@@ -4,7 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
-import { clusterArnComponents, ClusterResource, ControlPlaneLogging } from './cluster-resource';
+import { clusterArnComponents, ClusterResource } from './cluster-resource';
+import { ControlPlaneLogging } from './shared-interfaces';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
@@ -173,7 +174,8 @@ export interface ClusterOptions {
    *
    * @default - False, meaning that cluster control plane logs are not exported to CloudWatch Logs.
    */
-  readonly controlPlaneLogging?: boolean | ControlPlaneLogging;
+  readonly controlPlaneLogging?: boolean;
+  readonly controlPlaneLoggingOptions?: ControlPlaneLogging;
 
   /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
@@ -359,7 +361,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The Control Plane logging configuration for your cluster.
    */
-  public readonly controlPlaneLogging?: boolean | ControlPlaneLogging;
+  public readonly controlPlaneLogging?: boolean;
+  public readonly controlPlaneLoggingOptions?: ControlPlaneLogging;
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
@@ -453,25 +456,28 @@ export class Cluster extends Resource implements ICluster {
     let resource;
     this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
     if (this.kubectlEnabled) {
-      this.controlPlaneLogging = props.controlPlaneLogging === undefined ? false : props.controlPlaneLogging;
-      let logging = this.controlPlaneLogging;
-      if (logging === true) {
+      let logging: undefined | ControlPlaneLogging;
+      if (props.controlPlaneLogging === true && !props.controlPlaneLoggingOptions) {
         logging = {
-          clusterLogging: [
-            {
-              enabled: true,
-              types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-            },
-          ],
+          api: true,
+          audit: true,
+          authenticator: true,
+          controllerManager: true,
+          scheduler: true,
         };
+      } else if (Object.keys(props.controlPlaneLoggingOptions || {}).length > 0) {
+        if (props.controlPlaneLogging === false) {
+          throw new Error('Cannot configure control plane logging if "controlPlaneLogging" is false');
+        }
+        logging = props.controlPlaneLoggingOptions;
       }
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
-        logging: logging || undefined,
+        logging,
       });
       this._clusterResource = resource;
     } else {
-      if (props.controlPlaneLogging) {
+      if (props.controlPlaneLogging || props.controlPlaneLoggingOptions) {
         throw new Error('Cannot configure control plane logging if kubectl is disabled');
       } else {
         this.controlPlaneLogging = undefined;

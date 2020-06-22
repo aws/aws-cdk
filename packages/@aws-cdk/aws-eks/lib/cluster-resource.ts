@@ -2,13 +2,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
+import { ControlPlaneLogging, LogKind } from './shared-interfaces';
 import { CfnClusterProps } from './eks.generated';
 
-
 /**
- * The cluster control plane logging configuration for your cluster.
+ * An object representing the enabled or disabled Kubernetes control plane logs for your cluster.
  */
-export interface ClusterLogging {
+export interface LogSetup {
   /**
    * If a log type is enabled, that log type exports its control plane logs to CloudWatch Logs.
    * If a log type is not enabled, that log type does not export its control plane logs.
@@ -19,18 +19,18 @@ export interface ClusterLogging {
   /**
    * The available cluster control plane log types.
    */
-  readonly types: Array<'api' | 'audit' | 'authenticator' | 'controllerManager' | 'scheduler'>;
+  readonly types: Array<LogKind>;
 }
 
 /**
- * EKS cluster control plane logging configuration
+ * An object representing the logging configuration for resources in your cluster.
  */
-export interface ControlPlaneLogging {
+export interface Logging {
 
   /**
    * The cluster control plane logging configuration for your cluster.
    */
-  clusterLogging: Array<ClusterLogging>;
+  clusterLogging: Array<LogSetup>;
 }
 
 /**
@@ -156,12 +156,40 @@ export class ClusterResource extends Construct {
       resources: [ '*' ],
     }));
 
+    const enabledLogTypes: LogKind[] = [];
+    const disabledLogTypes: LogKind[] = [];
+    for (const [key, value] of Object.entries(props.logging || {})) {
+      if (value === true) {
+        enabledLogTypes.push(key as LogKind);
+      } else {
+        disabledLogTypes.push(key as LogKind);
+      }
+    }
+    let logging: undefined | Logging;
+    if (enabledLogTypes.length > 0) {
+      logging = {
+        clusterLogging: [
+          {
+            enabled: true,
+            types: enabledLogTypes,
+          },
+          {
+            enabled: false,
+            types: disabledLogTypes,
+          },
+        ],
+      };
+    }
+
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       encodeValues: true,
       properties: {
-        Config: props,
+        Config: {
+          ...props,
+          logging,
+        },
         AssumeRoleArn: this.creationRole.roleArn,
 
         // IMPORTANT: increment this number when you add new attributes to the

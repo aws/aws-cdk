@@ -400,13 +400,12 @@ then the following setting will be applied:
 ```ts
 new eks.Cluster(this, 'Cluster', {
   kubectlEnabled: true,
-  controlPlaneLogging: {
-    clusterLogging: [
-      {
-        enabled: true,
-        types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler']
-      }
-    ]
+  controlPlaneLoggingOptions: {
+    api: true,
+    audit: true,
+    authenticator: true,
+    controllerManager: true,
+    scheduler: true,
   }
 });
 ```

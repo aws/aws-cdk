@@ -30,6 +30,7 @@ export class KubectlProvider extends NestedStack {
 
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
+      isValueEncoded: true,
     });
 
     this.role = handler.role!;
