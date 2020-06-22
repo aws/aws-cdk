@@ -29,7 +29,6 @@ test('NodejsFunction with .ts handler', () => {
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-    global: 'handler',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -56,7 +55,7 @@ test('NodejsFunction with container env vars', () => {
   });
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    environment: {
+    containerEnvironment: {
       KEY: 'VALUE',
     },
   }));
