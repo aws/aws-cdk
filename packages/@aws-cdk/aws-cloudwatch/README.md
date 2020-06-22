@@ -275,6 +275,17 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph can publish live data within the last minute that has not been fully aggregated.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  liveData: true,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:

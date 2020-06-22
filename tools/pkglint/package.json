@@ -17,8 +17,9 @@
   },
   "scripts": {
     "build": "tsc -b && tslint -p . && chmod +x bin/pkglint",
-    "build+test": "npm run build",
-    "build+test+package": "npm run build",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build && npm test",
     "watch": "tsc -b -w",
     "lint": "tsc -b && tslint -p . --force"
   },
@@ -37,7 +38,8 @@
     "@types/fs-extra": "^8.1.0",
     "@types/semver": "^7.2.0",
     "@types/yargs": "^15.0.5",
-    "typescript": "~3.8.3"
+    "jest": "^25.5.4",
+    "typescript": "~3.9.5"
   },
   "dependencies": {
     "case": "^1.6.3",
