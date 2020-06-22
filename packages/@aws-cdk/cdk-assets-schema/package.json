@@ -44,9 +44,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "dependencies": {
-    "semver": "^7.2.2"
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.0",
@@ -64,9 +61,6 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "bundledDependencies": [
-    "semver"
-  ],
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
