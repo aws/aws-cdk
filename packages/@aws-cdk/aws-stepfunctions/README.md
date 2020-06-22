@@ -638,6 +638,22 @@ const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
 
 //give user permission to send task success to the state machine
 stateMachine.grant(user, 'states:SendTaskSuccess');
+
+## Import
+
+Any Step Functions state machine that has been created outside the stack can be imported
+into your CDK stack.
+
+State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API
+
+```ts
+import * as sfn from 'aws-stepfunctions';
+
+const stack = new Stack(app, 'MyStack');
+sfn.StateMachine.fromStateMachineArn(
+  stack,
+  'ImportedStateMachine',
+  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
 ```
 
 ## Future work

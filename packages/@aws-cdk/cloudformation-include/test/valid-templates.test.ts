@@ -184,6 +184,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
+    includeTestTemplate(stack, 'functions-and-conditions.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
@@ -243,6 +251,40 @@ describe('CDK Include', () => {
     );
   });
 
+  test("correctly parses templates with parameters", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const param = cfnTemplate.getParameter('BucketName');
+    new s3.CfnBucket(stack, 'NewBucket', {
+      bucketName: param.valueAsString,
+    });
+
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+        "NewBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Ref": "BucketName",
+            },
+          },
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+    });
+  });
+
+  test('getParameter() throws an exception if asked for a Parameter with a name that is not present in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+
+    expect(() => {
+      cfnTemplate.getParameter('FakeBucketNameThatDoesNotExist');
+    }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
+  });
+
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
     const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
@@ -290,12 +332,6 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
-  });
-
-  test("throws an exception when encountering a CFN function it doesn't support", () => {
-    expect(() => {
-      includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
-    }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
   });
 });
 
