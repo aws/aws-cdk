@@ -42,7 +42,11 @@ function decodeBooleans(object: object) {
 async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) {
   log('onEventHandler', cfnRequest);
 
-  cfnRequest.ResourceProperties = decodeBooleans(cfnRequest.ResourceProperties || { });
+  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
+  // Determine if the properties values have been encoded or not
+  if (process.env[consts.USER_IS_VALUE_ENCODED_ENV]) {
+    cfnRequest.ResourceProperties = decodeBooleans(cfnRequest.ResourceProperties);
+  }
 
   const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, cfnRequest) as OnEventResponse;
   log('onEvent returned:', onEventResult);

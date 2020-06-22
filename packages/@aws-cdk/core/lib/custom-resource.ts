@@ -93,7 +93,7 @@ export interface CustomResourceProps {
   readonly pascalCaseProperties?: boolean;
 
   /**
-   * Encode property values from to special strings:
+   * Encode property values to special strings:
    * - Booleans are encoded to `TRUE:BOOLEAN` and `FALSE:BOOLEAN`
    *
    * @default false

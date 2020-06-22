@@ -59,6 +59,13 @@ export interface ProviderProps {
    * @default Duration.minutes(30)
    */
   readonly totalTimeout?: Duration;
+
+  /**
+   * Whether we should decode property values (such as booleans) from special strings.
+   *
+   * @default false
+   */
+  readonly isValueEncoded?: boolean;
 }
 
 /**
@@ -97,7 +104,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
+    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.isValueEncoded);
 
     if (this.isCompleteHandler) {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -131,7 +138,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     };
   }
 
-  private createFunction(entrypoint: string) {
+  private createFunction(entrypoint: string, isValueEncoded?: boolean) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       runtime: lambda.Runtime.NODEJS_10_X,
@@ -140,10 +147,16 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
+    if (isValueEncoded) {
+      fn.addEnvironment(consts.USER_IS_VALUE_ENCODED_ENV, '1');
+    }
     this.onEventHandler.grantInvoke(fn);
 
     if (this.isCompleteHandler) {
       fn.addEnvironment(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, this.isCompleteHandler.functionArn);
+      if (isValueEncoded) {
+        fn.addEnvironment(consts.USER_IS_VALUE_ENCODED_ENV, '1');
+      }
       this.isCompleteHandler.grantInvoke(fn);
     }
 
