@@ -1,4 +1,5 @@
 import * as core from '@aws-cdk/core';
+import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 
@@ -20,7 +21,9 @@ export interface CfnIncludeProps {
  * Any modifications made on the returned resource objects will be reflected in the resulting CDK template.
  */
 export class CfnInclude extends core.CfnElement {
+  private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
+  private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -32,6 +35,16 @@ export class CfnInclude extends core.CfnElement {
 
     // ToDo implement preserveLogicalIds=false
     this.preserveLogicalIds = true;
+
+    // instantiate all parameters
+    for (const logicalId of Object.keys(this.template.Parameters || {})) {
+      this.createParameter(logicalId);
+    }
+
+    // instantiate the conditions
+    for (const conditionName of Object.keys(this.template.Conditions || {})) {
+      this.createCondition(conditionName);
+    }
 
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
@@ -63,19 +76,86 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnCondition object from the 'Conditions'
+   * section of the CloudFormation template with the given name.
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Condition with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param conditionName the name of the Condition in the CloudFormation template file
+   */
+  public getCondition(conditionName: string): core.CfnCondition {
+    const ret = this.conditions[conditionName];
+    if (!ret) {
+      throw new Error(`Condition with name '${conditionName}' was not found in the template`);
+    }
+    return ret;
+  }
+
+  /**
+   * Returns the CfnParameter object from the 'Parameters'
+   * section of the included template
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Parameter with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param parameterName the name of the parameter to retrieve
+   */
+  public getParameter(parameterName: string): core.CfnParameter {
+    const ret = this.parameters[parameterName];
+    if (!ret) {
+      throw new Error(`Parameter with name '${parameterName}' was not found in the template`);
+    }
+    return ret;
+  }
+
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
-      // except Resources, which will be taken care of by the created L1s
-      if (section !== 'Resources') {
+      // except Conditions, Resources, and Parameters, which will be taken care of by the created L1s
+      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters') {
         ret[section] = this.template[section];
       }
     }
 
     return ret;
+  }
+
+  private createParameter(logicalId: string): void {
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId]);
+    const cfnParameter = new core.CfnParameter(this, logicalId, {
+      type: expression.Type,
+      default: expression.Default,
+      allowedPattern: expression.AllowedPattern,
+      constraintDescription: expression.ConstraintDescription,
+      description: expression.Description,
+      maxLength: expression.MaxLength,
+      maxValue: expression.MaxValue,
+      minLength: expression.MinLength,
+      minValue: expression.MinValue,
+      noEcho: expression.NoEcho,
+    });
+
+    cfnParameter.overrideLogicalId(logicalId);
+    this.parameters[logicalId] = cfnParameter;
+  }
+
+  private createCondition(conditionName: string): void {
+    // ToDo condition expressions can refer to other conditions -
+    // will be important when implementing preserveLogicalIds=false
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Conditions[conditionName]);
+    const cfnCondition = new core.CfnCondition(this, conditionName, {
+      expression,
+    });
+    // ToDo handle renaming of the logical IDs of the conditions
+    cfnCondition.overrideLogicalId(conditionName);
+    this.conditions[conditionName] = cfnCondition;
   }
 
   private getOrCreateResource(logicalId: string): core.CfnResource {
@@ -92,7 +172,10 @@ export class CfnInclude extends core.CfnElement {
       throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
     }
     // fail early for resource attributes we don't support yet
-    const knownAttributes = ['Type', 'Properties', 'DependsOn', 'DeletionPolicy', 'UpdateReplacePolicy', 'Metadata'];
+    const knownAttributes = [
+      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
+      'CreationPolicy', 'UpdatePolicy', 'DeletionPolicy', 'UpdateReplacePolicy',
+    ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
         throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
@@ -105,6 +188,10 @@ export class CfnInclude extends core.CfnElement {
     const jsClassFromModule = module[className.join('.')];
     const self = this;
     const finder: core.ICfnFinder = {
+      findCondition(conditionName: string): core.CfnCondition | undefined {
+        return self.conditions[conditionName];
+      },
+
       findResource(lId: string): core.CfnResource | undefined {
         if (!(lId in (self.template.Resources || {}))) {
           return undefined;
