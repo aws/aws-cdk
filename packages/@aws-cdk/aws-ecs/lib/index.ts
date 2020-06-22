@@ -2,6 +2,7 @@ export * from './base/base-service';
 export * from './base/scalable-task-count';
 export * from './base/task-definition';
 
+export * from './capacity-provider';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
