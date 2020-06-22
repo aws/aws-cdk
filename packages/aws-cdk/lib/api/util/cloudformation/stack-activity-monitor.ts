@@ -490,7 +490,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     const lines = [];
 
     // Add a progress bar at the top
-    const progressWidth = Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRESSBAR_WIDTH);
+    const progressWidth = Math.max(Math.min((this.block.width ?? 80) - PROGRESSBAR_EXTRA_SPACE - 1, MAX_PROGRESSBAR_WIDTH), MIN_PROGRESSBAR_WIDTH);
     const prog = this.progressBar(progressWidth);
     if (prog) {
       lines.push('  ' + prog, '');
@@ -550,12 +550,13 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   private progressBar(width: number) {
     if (!this.resourcesTotal) { return ''; }
     const fraction = Math.min(this.resourcesDone / this.resourcesTotal, 1);
-    const chars = (width - 2) * fraction;
+    const innerWidth = Math.max(1, width - 2);
+    const chars = innerWidth * fraction;
     const remainder = chars - Math.floor(chars);
 
     const fullChars = FULL_BLOCK.repeat(Math.floor(chars));
     const partialChar = PARTIAL_BLOCK[Math.floor(remainder * PARTIAL_BLOCK.length)];
-    const filler = '·'.repeat(width - 2 - Math.floor(chars) - (partialChar ? 1 : 0));
+    const filler = '·'.repeat(innerWidth - Math.floor(chars) - (partialChar ? 1 : 0));
 
     const color = this.rollingBack ? colors.yellow : colors.green;
 
@@ -572,6 +573,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 const FULL_BLOCK = '█';
 const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
 const MAX_PROGRESSBAR_WIDTH = 60;
+const MIN_PROGRESSBAR_WIDTH = 10;
 const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
 
 function colorFromStatusResult(status?: string) {
