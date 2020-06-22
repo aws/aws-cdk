@@ -167,3 +167,61 @@ test('write and read nested cloud assembly artifact', () => {
   const nested = art?.nestedAssembly;
   expect(nested?.artifacts.length).toEqual(0);
 });
+
+test('artifcats are written in topological order', () => {
+  // GIVEN
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
+  const templateFile = 'foo.template.json';
+
+  const innerAsmDir = path.join(outdir, 'hello');
+  new cxapi.CloudAssemblyBuilder(innerAsmDir).buildAssembly();
+
+  // WHEN
+
+  // Create the following dependency order:
+  // A ->
+  //      C -> D
+  // B ->
+  session.addArtifact('artifact-D', {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: 'aws://1222344/us-east-1',
+    dependencies: ['artifact-C'],
+    properties: {
+      templateFile,
+    },
+  });
+
+  session.addArtifact('artifact-C', {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: 'aws://1222344/us-east-1',
+    dependencies: ['artifact-B', 'artifact-A'],
+    properties: {
+      templateFile,
+    },
+  });
+
+  session.addArtifact('artifact-B', {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: 'aws://1222344/us-east-1',
+    properties: {
+      templateFile,
+    },
+  });
+
+  session.addArtifact('artifact-A', {
+    type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+    environment: 'aws://1222344/us-east-1',
+    properties: {
+      templateFile,
+    },
+  });
+
+  const asm = session.buildAssembly();
+  const artifactsIds = asm.artifacts.map(a => a.id);
+
+  // THEN
+  expect(artifactsIds.indexOf('artifact-A')).toBeLessThan(artifactsIds.indexOf('artifact-C'));
+  expect(artifactsIds.indexOf('artifact-B')).toBeLessThan(artifactsIds.indexOf('artifact-C'));
+  expect(artifactsIds.indexOf('artifact-C')).toBeLessThan(artifactsIds.indexOf('artifact-D'));
+});
