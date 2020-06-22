@@ -480,7 +480,7 @@ Object {
               Object {
                 "Ref": "MyApi49610EDF",
               },
-              "/test-invoke-stage/*/{proxy+}",
+              "/test-invoke-stage/*/*",
             ],
           ],
         },
@@ -521,7 +521,7 @@ Object {
               Object {
                 "Ref": "MyApiDeploymentStageprodE1054AF0",
               },
-              "/*/{proxy+}",
+              "/*/*",
             ],
           ],
         },

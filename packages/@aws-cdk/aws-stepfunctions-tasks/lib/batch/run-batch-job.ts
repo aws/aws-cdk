@@ -83,6 +83,8 @@ export interface JobDependency {
 
 /**
  * Properties for RunBatchJob
+ *
+ * @deprecated use `BatchSubmitJob`
  */
 export interface RunBatchJobProps {
   /**
@@ -170,6 +172,8 @@ export interface RunBatchJobProps {
 
 /**
  * A Step Functions Task to run AWS Batch
+ *
+ * @deprecated use `BatchSubmitJob`
  */
 export class RunBatchJob implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;

@@ -4,7 +4,7 @@
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { Construct } from '../construct-compat';
+import { Construct, IConstruct } from '../construct-compat';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
@@ -18,7 +18,7 @@ import { makeUniqueId } from './uniqueid';
  * This is called from the App level to resolve all references defined. Each
  * reference is resolved based on it's consumption context.
  */
-export function resolveReferences(scope: Construct): void {
+export function resolveReferences(scope: IConstruct): void {
   const edges = findAllReferences(scope);
 
   for (const { source, value } of edges) {
@@ -105,7 +105,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 /**
  * Finds all the CloudFormation references in a construct tree.
  */
-function findAllReferences(root: Construct) {
+function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement, value: CfnReference }>();
   for (const consumer of root.node.findAll()) {
 

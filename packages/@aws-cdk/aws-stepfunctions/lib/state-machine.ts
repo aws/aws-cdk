@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -124,6 +124,7 @@ export interface StateMachineProps {
  * A new or imported state machine.
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
+
   /**
    * Import a state machine
    */
@@ -131,7 +132,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
     }
-
     return new Import(scope, id);
   }
 
@@ -146,6 +146,88 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       grantee: identity,
       actions: ['states:StartExecution'],
       resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to read results from state
+   * machine.
+   */
+  public grantRead(identity: iam.IGrantable): iam.Grant {
+    iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:ListExecutions',
+        'states:ListStateMachines',
+      ],
+      resourceArns: [this.stateMachineArn],
+    });
+    iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:DescribeExecution',
+        'states:DescribeStateMachineForExecution',
+        'states:GetExecutionHistory',
+      ],
+      resourceArns: [`${this.executionArn()}:*`],
+    });
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:ListActivities',
+        'states:DescribeStateMachine',
+        'states:DescribeActivity',
+      ],
+      resourceArns: ['*'],
+    });
+  }
+
+  /**
+   * Grant the given identity task response permissions on a state machine
+   */
+  public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:SendTaskSuccess',
+        'states:SendTaskFailure',
+        'states:SendTaskHeartbeat',
+      ],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions on all executions of the state machine
+   */
+  public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [`${this.executionArn()}:*`],
+    });
+  }
+
+  /**
+   * Grant the given identity custom permissions
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Returns the pattern for the execution ARN's of the state machine
+   */
+  private executionArn(): string {
+    return Stack.of(this).formatArn({
+      resource: 'execution',
+      service: 'states',
+      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
+      sep: ':',
     });
   }
 }
@@ -341,4 +423,34 @@ export interface IStateMachine extends IResource {
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   */
+  grantTaskResponse(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions for all executions of a state machine
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  grantExecution(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity custom permissions
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
 }

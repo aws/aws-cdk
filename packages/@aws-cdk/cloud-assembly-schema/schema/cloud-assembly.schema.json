@@ -72,6 +72,9 @@
                         },
                         {
                             "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
                         }
                     ]
                 }
@@ -85,6 +88,7 @@
             "enum": [
                 "aws:cloudformation:stack",
                 "cdk:asset-manifest",
+                "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
             ],
@@ -329,6 +333,23 @@
             },
             "required": [
                 "file"
+            ]
+        },
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative path to the nested cloud assembly",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
             ]
         },
         "MissingContext": {

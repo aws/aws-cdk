@@ -3,7 +3,7 @@ import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { CfnDeletionPolicy, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -88,19 +88,19 @@ export interface DatabaseClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Whether to enable storage encryption
+   * Whether to enable storage encryption.
    *
-   * @default false
+   * @default - true if storageEncryptionKey is provided, false otherwise
    */
   readonly storageEncrypted?: boolean
 
   /**
-   * The KMS key for storage encryption. If specified `storageEncrypted`
-   * will be set to `true`.
+   * The KMS key for storage encryption.
+   * If specified, {@link storageEncrypted} will be set to `true`.
    *
-   * @default - default master key.
+   * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
-  readonly kmsKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKey;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -124,9 +124,9 @@ export interface DatabaseClusterProps {
    * The removal policy to apply when the cluster and its instances are removed
    * from the stack or replaced during an update.
    *
-   * @default - Retain cluster.
+   * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -240,11 +240,6 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public abstract readonly connections: ec2.Connections;
 
   /**
-   * Security group identifier of this database
-   */
-  public abstract readonly securityGroupId: string;
-
-  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -268,7 +263,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
+        securityGroups: attrs.securityGroups,
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
@@ -276,7 +271,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
     }
 
     return new Import(scope, id);
@@ -311,11 +305,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Access to the network connections
    */
   public readonly connections: ec2.Connections;
-
-  /**
-   * Security group identifier of this database
-   */
-  public readonly securityGroupId: string;
 
   /**
    * The secret attached to this cluster
@@ -354,19 +343,22 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds,
     });
+    if (props.removalPolicy === RemovalPolicy.RETAIN) {
+      subnetGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    }
 
-    const securityGroup = props.instanceProps.securityGroup !== undefined ?
-      props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroups = props.instanceProps.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'RDS security group',
         vpc: props.instanceProps.vpc,
-      });
-    this.securityGroupId = securityGroup.securityGroupId;
+      }),
+    ];
 
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
-        encryptionKey: props.masterUser.kmsKey,
+        encryptionKey: props.masterUser.encryptionKey,
       });
     }
 
@@ -441,7 +433,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
-      vpcSecurityGroupIds: [this.securityGroupId],
+      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       port: props.port,
       dbClusterParameterGroupName: clusterParameterGroup && clusterParameterGroup.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
@@ -457,13 +449,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
-      applyToUpdateReplacePolicy: true,
-    });
+    // if removalPolicy was not specified,
+    // leave it as the default, which is Snapshot
+    if (props.removalPolicy) {
+      cluster.applyRemovalPolicy(props.removalPolicy);
+    } else {
+      // The CFN default makes sense for DeletionPolicy,
+      // but doesn't cover UpdateReplacePolicy.
+      // Fix that here.
+      cluster.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
+    }
 
     this.clusterIdentifier = cluster.ref;
 
@@ -519,9 +518,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
         monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       });
 
-      instance.applyRemovalPolicy(props.removalPolicy, {
-        applyToUpdateReplacePolicy: true,
-      });
+      // If removalPolicy isn't explicitly set,
+      // it's Snapshot for Cluster.
+      // Because of that, in this case,
+      // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
+      if (props.removalPolicy) {
+        instance.applyRemovalPolicy(props.removalPolicy);
+      }
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
@@ -532,7 +535,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
+    this.connections = new ec2.Connections({ securityGroups, defaultPort });
   }
 
   /**

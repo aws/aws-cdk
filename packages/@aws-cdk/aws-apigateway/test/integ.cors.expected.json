@@ -6,34 +6,6 @@
         "Name": "cors-api-test"
       }
     },
-    "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "corsapitest8682546E"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "corsapitesttwitchDELETEB4C94228",
-        "corsapitesttwitchGET4270341B",
-        "corsapitesttwitchOPTIONSE5EEB527",
-        "corsapitesttwitchPOSTB52CFB02",
-        "corsapitesttwitch0E3D1559"
-      ]
-    },
-    "corsapitestDeploymentStageprod8F31F2AB": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "corsapitest8682546E"
-        },
-        "DeploymentId": {
-          "Ref": "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d"
-        },
-        "StageName": "prod"
-      }
-    },
     "corsapitestCloudWatchRole9AF5A81A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -78,6 +50,34 @@
       "DependsOn": [
         "corsapitest8682546E"
       ]
+    },
+    "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "corsapitest8682546E"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "corsapitesttwitchDELETEB4C94228",
+        "corsapitesttwitchGET4270341B",
+        "corsapitesttwitchOPTIONSE5EEB527",
+        "corsapitesttwitchPOSTB52CFB02",
+        "corsapitesttwitch0E3D1559"
+      ]
+    },
+    "corsapitestDeploymentStageprod8F31F2AB": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "corsapitest8682546E"
+        },
+        "DeploymentId": {
+          "Ref": "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d"
+        },
+        "StageName": "prod"
+      }
     },
     "corsapitesttwitch0E3D1559": {
       "Type": "AWS::ApiGateway::Resource",

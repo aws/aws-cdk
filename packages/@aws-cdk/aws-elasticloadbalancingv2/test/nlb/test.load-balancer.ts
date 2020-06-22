@@ -115,6 +115,24 @@ export = {
                 { Ref: 'AWS::AccountId' }, '/*']],
             },
           },
+          {
+            Action: 's3:PutObject',
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }},
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+          {
+            Action: 's3:GetBucketAcl',
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+            },
+          },
         ],
       },
     }));
@@ -168,6 +186,24 @@ export = {
             Resource: {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
                 { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' }},
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                { Ref: 'AWS::AccountId' }, '/*']],
+            },
+          },
+          {
+            Action: 's3:GetBucketAcl',
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
             },
           },
         ],

@@ -19,12 +19,21 @@ This construct library allows you to set up AWS Elastic File System (EFS).
 import * as efs from '@aws-cdk/aws-efs';
 
 const myVpc = new ec2.Vpc(this, 'VPC');
-const fileSystem = new efs.EfsFileSystem(this, 'MyEfsFileSystem', {
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: myVpc,
   encrypted: true,
-  lifecyclePolicy: EfsLifecyclePolicyProperty.AFTER_14_DAYS,
-  performanceMode: EfsPerformanceMode.GENERAL_PURPOSE,
-  throughputMode: EfsThroughputMode.BURSTING
+  lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
+  performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+  throughputMode: efs.ThroughputMode.BURSTING
+});
+```
+
+A file system can set `RemovalPolicy`. Default policy is `RETAIN`.
+
+```ts
+const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
+  vpc,
+  removalPolicy: RemovalPolicy.DESTROY
 });
 ```
 
@@ -43,12 +52,12 @@ following code can be used as reference:
 ```
 const vpc = new ec2.Vpc(this, 'VPC');
 
-const fileSystem = new efs.EfsFileSystem(this, 'EfsFileSystem', {
+const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc,
   encrypted: true,
-  lifecyclePolicy: efs.EfsLifecyclePolicyProperty.AFTER_14_DAYS,
-  performanceMode: efs.EfsPerformanceMode.GENERAL_PURPOSE,
-  throughputMode: efs.EfsThroughputMode.BURSTING
+  lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
+  performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+  throughputMode: efs.ThroughputMode.BURSTING
 });
 
 const inst = new Instance(this, 'inst', {

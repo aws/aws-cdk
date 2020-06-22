@@ -84,6 +84,13 @@ bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
+The bucket policy can be directly accessed after creation to add statements or
+adjust the removal policy.
+
+```ts
+bucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
+```
+
 Most of the time, you won't have to manipulate the bucket policy directly.
 Instead, buckets have "grant" methods called to give prepackaged sets of permissions
 to other resources. For example:

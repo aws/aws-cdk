@@ -755,7 +755,10 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'secretsmanager:GetSecretValue',
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
@@ -1111,7 +1114,10 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'secretsmanager:GetSecretValue',
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
             Effect: 'Allow',
             Resource: mySecretArn,
           },

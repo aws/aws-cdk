@@ -34,12 +34,23 @@ automatically transpiled and bundled whether it's written in JavaScript or TypeS
 Alternatively, an entry file and handler can be specified:
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts'
+  entry: '/path/to/my/file.ts',
   handler: 'myExportedFunc'
 });
 ```
 
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+
+Use the `containerEnvironment` prop to pass environments variables to the Docker container
+running Parcel:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  containerEnvironment: {
+    NODE_ENV: 'production',
+  },
+});
+```
 
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps`,

@@ -174,6 +174,29 @@ const alarm = new cloudwatch.Alarm(stack, 'Alarm', { /* ... */ });
 alarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
+### Composite Alarms
+
+[Composite Alarms](https://aws.amazon.com/about-aws/whats-new/2020/03/amazon-cloudwatch-now-allows-you-to-combine-multiple-alarms/) 
+can be created from existing Alarm resources.
+
+```ts
+const alarmRule = AlarmRule.anyOf(
+  AlarmRule.allOf(
+    AlarmRule.anyOf(
+      alarm1,
+      AlarmRule.fromAlarm(alarm2, AlarmState.OK),
+      alarm3,
+    ),
+    AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
+  ),
+  AlarmRule.fromBoolean(false),
+);
+
+new CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+  alarmRule,
+});
+```
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
@@ -249,6 +272,17 @@ dashboard.addWidgets(new GraphWidget({
   // ...
 
   legendPosition: LegendPosition.RIGHT,
+}));
+```
+
+The graph can publish live data within the last minute that has not been fully aggregated.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  liveData: true,
 }));
 ```
 

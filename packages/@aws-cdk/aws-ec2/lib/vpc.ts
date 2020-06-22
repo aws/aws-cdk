@@ -1901,7 +1901,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * They seem pointless but I see no reason to prevent it.
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
-  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE);
+  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);

@@ -33,11 +33,6 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * Endpoints which address each individual replica.
    */
   readonly instanceEndpoints: Endpoint[];
-
-  /**
-   * The security group for this database cluster
-   */
-  readonly securityGroupId: string;
 }
 
 /**
@@ -50,9 +45,9 @@ export interface DatabaseClusterAttributes {
   readonly port: number;
 
   /**
-   * The security group of the database cluster
+   * The security groups of the database cluster
    */
-  readonly securityGroup: ec2.ISecurityGroup;
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * Identifier for the cluster

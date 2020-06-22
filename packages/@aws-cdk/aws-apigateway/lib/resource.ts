@@ -4,7 +4,7 @@ import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions } from './method';
-import { RestApi } from './restapi';
+import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
   /**
@@ -15,12 +15,19 @@ export interface IResource extends IResourceBase {
   /**
    * The rest API that this resource is part of.
    *
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  readonly restApi: RestApi;
+
+  /**
+   * The rest API that this resource is part of.
+   *
    * The reason we need the RestApi object itself and not just the ID is because the model
    * is being tracked by the top-level RestApi object for the purpose of calculating it's
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
-  readonly restApi: RestApi;
+  readonly api: IRestApi;
 
   /**
    * The ID of the resource.
@@ -154,7 +161,11 @@ export interface ResourceProps extends ResourceOptions {
 
 export abstract class ResourceBase extends ResourceConstruct implements IResource {
   public abstract readonly parentResource?: IResource;
+  /**
+   * @deprecated -  Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
   public abstract readonly restApi: RestApi;
+  public abstract readonly api: IRestApi;
   public abstract readonly resourceId: string;
   public abstract readonly path: string;
   public abstract readonly defaultIntegration?: Integration;
@@ -353,6 +364,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return resource.resourceForPath(parts.join('/'));
   }
 
+  /**
+   * @deprecated - Throws error in some use cases that have been enabled since this deprecation notice. Use `RestApi.urlForPath()` instead.
+   */
   public get url(): string {
     return this.restApi.urlForPath(this.path);
   }
@@ -360,7 +374,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
 export class Resource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
+  public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
 
@@ -380,21 +394,21 @@ export class Resource extends ResourceBase {
     }
 
     const resourceProps: CfnResourceProps = {
-      restApiId: props.parent.restApi.restApiId,
+      restApiId: props.parent.api.restApiId,
       parentId: props.parent.resourceId,
       pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
     this.resourceId = resource.ref;
-    this.restApi = props.parent.restApi;
+    this.api = props.parent.api;
 
     // render resource path (special case for root)
     this.path = props.parent.path;
     if (!this.path.endsWith('/')) { this.path += '/'; }
     this.path += props.pathPart;
 
-    const deployment = props.parent.restApi.latestDeployment;
+    const deployment = props.parent.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
@@ -412,6 +426,17 @@ export class Resource extends ResourceBase {
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
+  }
+
+  /**
+   * The RestApi associated with this Resource
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    if (!this.parentResource) {
+      throw new Error('parentResource was unexpectedly not defined');
+    }
+    return this.parentResource.restApi;
   }
 }
 

@@ -1,0 +1,20 @@
+{
+  "ResourceTypes": {
+    "AWS::Macie::FindingsFilter": {
+      "patch": {
+        "description": "Replaces 'FindingsFilterListItems' attribute to be an array of JSON values as it is (currently) not defined in the spec",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/FindingsFilterListItems/ItemType"
+          },
+          {
+            "op": "add",
+            "path": "/Attributes/FindingsFilterListItems/PrimitiveItemType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}

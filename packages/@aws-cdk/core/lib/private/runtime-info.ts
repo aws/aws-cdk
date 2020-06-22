@@ -3,7 +3,7 @@ import { basename, dirname } from 'path';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
-const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk'];
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk', '@aws-solutions-constructs'];
 
 /**
  * Returns a list of loaded modules and their versions.
