@@ -3,3 +3,4 @@
 *.d.ts
 dist
 lib/generated/resources.ts
+!jest.config.js

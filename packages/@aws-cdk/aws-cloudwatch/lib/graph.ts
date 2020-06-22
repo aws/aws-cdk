@@ -180,6 +180,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default - bottom
    */
   readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
 }
 
 /**
@@ -218,6 +225,7 @@ export class GraphWidget extends ConcreteWidget {
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
       },
     }];
   }
