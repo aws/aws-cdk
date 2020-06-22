@@ -87,7 +87,7 @@ export interface AccessPointProps {
    * Specifies the path on the EFS file system to expose as the root directory to NFS clients using the access point
    * to access the EFS file system
    *
-   * @default - root(/) directory of the efs filesystem
+   * @default '/'
    */
   readonly path?: string;
 
