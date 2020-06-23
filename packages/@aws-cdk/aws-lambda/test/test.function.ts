@@ -274,45 +274,44 @@ export = testCase({
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition'
+                    'Ref': 'AWS::Partition',
                   },
                   ':elasticfilesystem:',
                   {
-                    'Ref': 'AWS::Region'
+                    'Ref': 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId'
+                    'Ref': 'AWS::AccountId',
                   },
                   ':access-point/',
                   {
-                    'Ref': 'Resource'
-                  }
-                ]
-              ]
+                    'Ref': 'Resource',
+                  },
+                ],
+              ],
             },
-            'LocalMountPath': '/mnt/msg'
-          }]
+            'LocalMountPath': '/mnt/msg',
+          }],
       }));
       expect(stack).to(haveResource('AWS::EFS::AccessPoint', {
         'FileSystemId': {
-          'Ref': 'Efs9E8BF36B'
+          'Ref': 'Efs9E8BF36B',
         },
         'PosixUser': {
           'Gid': '1000,',
-          'Uid': '1000'
+          'Uid': '1000',
         },
         'RootDirectory': {
           'CreationInfo': {
             'OwnerGid': '1000',
             'OwnerUid': '1000',
-            'Permissions': '755'
+            'Permissions': '755',
           },
-          'Path': '/lambda'
-        }
+          'Path': '/lambda',
+        },
       }));
       test.done();
     },
   },
-
 });

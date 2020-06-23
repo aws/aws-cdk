@@ -49,12 +49,12 @@ export class LambdaFileSystem {
       createAcl: {
         ownerGid: '1000',
         ownerUid: '1000',
-        permissions: '755'
+        permissions: '755',
       },
       path: accessPointRootPath ?? '/lambda',
       posixUser: {
         uid: '1000',
-        gid: '1000,'
+        gid: '1000',
       },
     });
     return {
