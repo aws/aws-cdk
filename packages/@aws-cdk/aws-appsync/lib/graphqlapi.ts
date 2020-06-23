@@ -335,12 +335,7 @@ export class GraphQLApi extends Construct {
             props.authorizationConfig.defaultAuthorization.userPoolConfig!,
           )
           : undefined,
-      additionalAuthenticationProviders: props.authorizationConfig
-        ?.additionalAuthorizationModes!.length
-        ? this.formatAdditionalAuthorizationModes(
-          props.authorizationConfig!.additionalAuthorizationModes!,
-        )
-        : undefined,
+      additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
     });
 
     this.apiId = this.api.attrApiId;
@@ -568,6 +563,11 @@ export class GraphQLApi extends Construct {
       ],
       [],
     );
+  }
+
+  private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
+    const authModes = props.authorizationConfig?.additionalAuthorizationModes;
+    return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
   }
 }
 
