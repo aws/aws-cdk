@@ -68,7 +68,7 @@
   "awscdkio": {
     "announce": false
   },
-  "deprecated": true,
+  "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
   "maturity": "deprecated",
   "cdk-build": {
     "jest": true
