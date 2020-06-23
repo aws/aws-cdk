@@ -56,6 +56,7 @@ export class EcsFargateRunTask extends EcsRunTaskStateBase {
       ...props,
       parameters: {
         LaunchType: 'FARGATE',
+        PlatformVersion: props.platformVersion,
       },
     });
 

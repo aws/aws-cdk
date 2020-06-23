@@ -66,6 +66,7 @@ test('Running a Fargate Task', () => {
         environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
       },
     ],
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
   });
 
   new sfn.StateMachine(stack, 'SM', {
@@ -84,6 +85,7 @@ test('Running a Fargate Task', () => {
           Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
+      'PlatformVersion': '1.4.0',
       TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
