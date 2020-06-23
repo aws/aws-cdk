@@ -5,7 +5,6 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
-import { ControlPlaneLogging } from './shared-interfaces';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
@@ -14,6 +13,7 @@ import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
+import { ControlPlaneLogging } from './shared-interfaces';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io

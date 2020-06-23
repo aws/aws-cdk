@@ -399,7 +399,6 @@ then the following setting will be applied:
 
 ```ts
 new eks.Cluster(this, 'Cluster', {
-  kubectlEnabled: true,
   controlPlaneLoggingOptions: {
     api: true,
     audit: true,

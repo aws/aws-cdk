@@ -2,8 +2,14 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { ControlPlaneLogging, LogKind } from './shared-interfaces';
 import { CfnClusterProps } from './eks.generated';
+import { ControlPlaneLogging } from './shared-interfaces';
+import { encodeValues } from './utils';
+
+/**
+ * The available cluster control plane log types.
+ */
+export type LogKind = keyof ControlPlaneLogging;
 
 /**
  * An object representing the enabled or disabled Kubernetes control plane logs for your cluster.
@@ -19,7 +25,7 @@ export interface LogSetup {
   /**
    * The available cluster control plane log types.
    */
-  readonly types: Array<LogKind>;
+  readonly types: LogKind[];
 }
 
 /**
@@ -30,7 +36,7 @@ export interface Logging {
   /**
    * The cluster control plane logging configuration for your cluster.
    */
-  clusterLogging: Array<LogSetup>;
+  clusterLogging: LogSetup[];
 }
 
 /**
@@ -184,12 +190,11 @@ export class ClusterResource extends Construct {
     const resource = new CustomResource(this, 'Resource', {
       resourceType: CLUSTER_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
-      encodeValues: true,
       properties: {
-        Config: {
+        Config: encodeValues({
           ...props,
           logging,
-        },
+        }),
         AssumeRoleArn: this.creationRole.roleArn,
 
         // IMPORTANT: increment this number when you add new attributes to the
