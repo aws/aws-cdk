@@ -364,7 +364,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
-      dummyValue: `dummy-value-for-${parameterName}`,
+      dummyValue: `arn:aws:service:eu-central-1:123456789012:entity/dummy-value`,
     }).value;
 
     return value;
