@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { FromCloudFormation, ParseCfnOptions } from '../lib/cfn-parse';
+import { CfnParser } from '../lib/cfn-parse';
 
 export = {
   'FromCloudFormation class': {
@@ -56,17 +56,17 @@ export = {
 };
 
 function parseCreationPolicy(policy: any) {
-  return FromCloudFormation.parseCreationPolicy(policy, dummyOptions);
+  return testCfnParser.parseCreationPolicy(policy);
 }
 
 function parseUpdatePolicy(policy: any) {
-  return FromCloudFormation.parseUpdatePolicy(policy, dummyOptions);
+  return testCfnParser.parseUpdatePolicy(policy);
 }
 
-const dummyOptions: ParseCfnOptions = {
+const testCfnParser = new CfnParser({
   finder: {
     findCondition() { return undefined; },
     findRefTarget() { return undefined; },
     findResource() { return undefined; },
   },
-};
+});

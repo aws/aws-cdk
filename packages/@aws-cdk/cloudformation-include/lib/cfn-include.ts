@@ -128,13 +128,13 @@ export class CfnInclude extends core.CfnElement {
   }
 
   private createParameter(logicalId: string): void {
-    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId], {
+    const expression = new cfn_parse.CfnParser({
       finder: {
-        findResource() { throw new Error('Using GetAtt in Parameter definitions is not allowed'); },
+        findResource() { throw new Error('Using GetAtt expressions in Parameter definitions is not allowed'); },
         findRefTarget() { throw new Error('Using Ref expressions in Parameter definitions is not allowed'); },
         findCondition() { throw new Error('Referring to Conditions in Parameter definitions is not allowed'); },
       },
-    });
+    }).parseValue(this.template.Parameters[logicalId]);
     const cfnParameter = new core.CfnParameter(this, logicalId, {
       type: expression.Type,
       default: expression.Default,
@@ -155,14 +155,14 @@ export class CfnInclude extends core.CfnElement {
   private createCondition(conditionName: string): void {
     // ToDo condition expressions can refer to other conditions -
     // will be important when implementing preserveLogicalIds=false
-    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Conditions[conditionName], {
+    const expression = new cfn_parse.CfnParser({
       finder: {
         findResource() { throw new Error('Using GetAtt in Condition definitions is not allowed'); },
         findRefTarget() { throw new Error('Using Ref expressions in Condition definitions is not allowed'); },
-        // ToDo handle one Condition referencing the other using { Condition: "ConditionName" } syntax
+        // ToDo handle one Condition referencing another using the { Condition: "ConditionName" } syntax
         findCondition() { return undefined; },
       },
-    });
+    }).parseValue(this.template.Conditions[conditionName]);
     const cfnCondition = new core.CfnCondition(this, conditionName, {
       expression,
     });
