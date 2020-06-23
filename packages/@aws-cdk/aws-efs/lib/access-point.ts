@@ -78,7 +78,7 @@ export interface AccessPointProps {
    * root directory specified by `path` does not exist, EFS creates the root directory and applies the
    * permissions specified here. If the specified `path` does not exist, you must specify `createAcl`.
    *
-   * @default - None
+   * @default - None. The directory specified by `path` must exist.
    */
   readonly createAcl?: CreationInfo;
 
