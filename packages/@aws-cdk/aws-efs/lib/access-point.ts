@@ -22,7 +22,7 @@ export interface IAccessPoint extends IResource {
 }
 
 /**
- * Represents the CreateionInfo
+ * Permissions as POSIX ACL
  */
 export interface Acl {
   /**
