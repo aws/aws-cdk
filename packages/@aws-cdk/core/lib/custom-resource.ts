@@ -91,14 +91,6 @@ export interface CustomResourceProps {
    * @default false
    */
   readonly pascalCaseProperties?: boolean;
-
-  /**
-   * Encode property values to special strings:
-   * - Booleans are encoded to `TRUE:BOOLEAN` and `FALSE:BOOLEAN`
-   *
-   * @default false
-   */
-  readonly encodeValues?: boolean;
 }
 
 /**
@@ -118,14 +110,13 @@ export class CustomResource extends Resource {
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
-    const shouldEncode = props.encodeValues ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
         ServiceToken: props.serviceToken,
-        ...(shouldEncode ? encodeValues(properties) : properties),
+        ...properties,
       },
     });
 
@@ -181,25 +172,6 @@ function uppercaseProperties(props: { [key: string]: any }) {
     ret[upper] = props[key];
   });
   return ret;
-}
-
-/**
- * Encodes values (specially boolean) as special strings
- *
- * Because CloudFormation converts every input as string for custom resources,
- * we will use these encoded values to cast them into proper types.
- */
-function encodeValues(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case true:
-        return 'TRUE:BOOLEAN';
-      case false:
-        return 'FALSE:BOOLEAN';
-      default:
-        return v;
-    }
-  });
 }
 
 function renderResourceType(resourceType?: string) {

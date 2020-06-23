@@ -63,7 +63,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
-   * @default - no parameters
+   * @default - no paramaters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
@@ -328,11 +328,10 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
-      encodeValues: true,
       properties: {
-        create,
-        update: props.onUpdate,
-        delete: props.onDelete,
+        create: create && encodeBooleans(create),
+        update: props.onUpdate && encodeBooleans(props.onUpdate),
+        delete: props.onDelete && encodeBooleans(props.onDelete),
       },
     });
   }
@@ -385,4 +384,20 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
+}
+
+/**
+ * Encodes booleans as special strings
+ */
+function encodeBooleans(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case true:
+        return 'TRUE:BOOLEAN';
+      case false:
+        return 'FALSE:BOOLEAN';
+      default:
+        return v;
+    }
+  });
 }

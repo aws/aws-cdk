@@ -8,7 +8,6 @@ import { Duration } from '../duration';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import * as consts from './consts';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
@@ -57,13 +56,6 @@ export interface CustomResourceProviderProps {
    * @default Size.mebibytes(128)
    */
   readonly memorySize?: Size;
-
-  /**
-   * Whether we should decode property values (such as booleans) from special strings.
-   *
-   * @default false
-   */
-  readonly isValueEncoded?: boolean;
 }
 
 /**
@@ -169,13 +161,6 @@ export class CustomResourceProvider extends Construct {
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
-    let envVariables: undefined | {[key: string]: string};
-    if (props.isValueEncoded) {
-      envVariables = {
-        [consts.IS_VALUE_ENCODED_ENV]: '1',
-      };
-    }
-
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
@@ -183,7 +168,6 @@ export class CustomResourceProvider extends Construct {
           S3Bucket: asset.bucketName,
           S3Key: asset.objectKey,
         },
-        Variables: envVariables,
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,

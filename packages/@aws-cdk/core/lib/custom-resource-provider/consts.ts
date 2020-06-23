@@ -1,1 +1,0 @@
-export const IS_VALUE_ENCODED_ENV = 'USER_IS_VALUE_ENCODED';

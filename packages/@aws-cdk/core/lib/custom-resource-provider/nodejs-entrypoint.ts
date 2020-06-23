@@ -1,6 +1,5 @@
 import * as https from 'https';
 import * as url from 'url';
-import * as consts from './consts';
 
 // for unit tests
 export const external = {
@@ -22,30 +21,8 @@ export type HandlerResponse = undefined | {
   NoEcho?: boolean;
 };
 
-/**
- * Decodes encoded true/false values
- */
-function decodeBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
-      default:
-        return v;
-    }
-  });
-}
-
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   external.log(JSON.stringify(event, undefined, 2));
-
-  event.ResourceProperties = event.ResourceProperties || { };
-  // Determine if the properties values have been encoded or not
-  if (process.env[consts.IS_VALUE_ENCODED_ENV]) {
-    event.ResourceProperties = decodeBooleans(event.ResourceProperties);
-  }
 
   // ignore DELETE event when the physical resource ID is the marker that
   // indicates that this DELETE is a subsequent DELETE to a failed CREATE

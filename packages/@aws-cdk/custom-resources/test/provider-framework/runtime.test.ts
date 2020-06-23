@@ -75,32 +75,6 @@ test('async flow: isComplete returns true only after 3 times', async () => {
   });
 });
 
-test('check decoded booleans', async () => {
-  // GIVEN
-  mocks.onEventImplMock = async event => {
-    expect(event.ResourceProperties).toStrictEqual({
-      ...MOCK_PROPS,
-      BoolTrue: true,
-      BoolFalse: false,
-    });
-    return { PhysicalResourceId: MOCK_PHYSICAL_ID };
-  };
-
-  // WHEN
-  await simulateEvent({
-    RequestType: 'Create',
-    ResourceProperties: {
-      ...MOCK_PROPS,
-      BoolTrue: 'TRUE:BOOLEAN',
-      BoolFalse: 'FALSE:BOOLEAN',
-    },
-  });
-
-  // THEN
-  expectNoWaiter();
-  expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
-});
-
 test('isComplete throws in the first invocation', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });

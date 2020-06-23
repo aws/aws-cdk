@@ -93,7 +93,6 @@ export class HelmChart extends Construct {
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
-      encodeValues: true,
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: props.cluster._kubectlCreationRole.roleArn,
