@@ -12,7 +12,7 @@ export interface FileAsset {
   /**
    * Destinations for this file asset
    */
-  readonly destinations: Record<string, FileDestination>;
+  readonly destinations: { [id: string]: FileDestination };
 }
 
 /**
