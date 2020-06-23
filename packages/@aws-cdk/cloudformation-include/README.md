@@ -115,7 +115,7 @@ All items unchecked below are currently not supported.
 ### Ability to retrieve CloudFormation objects from the template:
 
 - [x] Resources
-- [ ] Parameters
+- [x] Parameters
 - [x] Conditions
 - [ ] Outputs
 
@@ -136,16 +136,16 @@ All items unchecked below are currently not supported.
 - [x] Fn::GetAtt
 - [x] Fn::Join
 - [x] Fn::If
-- [ ] Fn::And
+- [x] Fn::And
 - [x] Fn::Equals
-- [ ] Fn::Not
-- [ ] Fn::Or
-- [ ] Fn::Base64
-- [ ] Fn::Cidr
-- [ ] Fn::FindInMap
-- [ ] Fn::GetAZs
-- [ ] Fn::ImportValue
-- [ ] Fn::Select
-- [ ] Fn::Split
+- [x] Fn::Not
+- [x] Fn::Or
+- [x] Fn::Base64
+- [x] Fn::Cidr
+- [x] Fn::FindInMap
+- [x] Fn::GetAZs
+- [x] Fn::ImportValue
+- [x] Fn::Select
+- [x] Fn::Split
 - [ ] Fn::Sub
-- [ ] Fn::Transform
+- [x] Fn::Transform
