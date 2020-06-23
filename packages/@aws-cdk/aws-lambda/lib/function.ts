@@ -584,8 +584,8 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     // filesystem
-    if (props.filesystemConfigs) {
-      this.mount(props.filesystemConfigs);
+    if (props.filesystems) {
+      this.mount(props.filesystems);
     }
   }
 

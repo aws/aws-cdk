@@ -76,7 +76,7 @@ def lambda_handler(event, context):
     subnetType: ec2.SubnetType.PRIVATE,
   },
   securityGroups: fs.connections.securityGroups,
-  filesystemConfigs: {
+  filesystems: {
     filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(stack, fs),
     localMountPath: '/mnt/msg',
   }

@@ -1,4 +1,6 @@
-import { expect, haveOutput } from '@aws-cdk/assert';
+import { expect, haveOutput, haveResource } from '@aws-cdk/assert';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -226,6 +228,88 @@ export = testCase({
         outputValue: {
           Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6',
         },
+      }));
+      test.done();
+    },
+  },
+
+
+
+  'filesystem': {
+
+    'mount efs filesystem'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        throughputMode: efs.ThroughputMode.PROVISIONED,
+        provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
+      });
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystems: {
+          filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(stack, fs),
+          localMountPath: '/mnt/msg',
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        'FileSystemConfigs': [
+          {
+            'Arn': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition'
+                  },
+                  ':elasticfilesystem:',
+                  {
+                    'Ref': 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId'
+                  },
+                  ':access-point/',
+                  {
+                    'Ref': 'Resource'
+                  }
+                ]
+              ]
+            },
+            'LocalMountPath': '/mnt/msg'
+          }]
+      }));
+      expect(stack).to(haveResource('AWS::EFS::AccessPoint', {
+        'FileSystemId': {
+          'Ref': 'Efs9E8BF36B'
+        },
+        'PosixUser': {
+          'Gid': '1000,',
+          'Uid': '1000'
+        },
+        'RootDirectory': {
+          'CreationInfo': {
+            'OwnerGid': '1000',
+            'OwnerUid': '1000',
+            'Permissions': '755'
+          },
+          'Path': '/lambda'
+        }
       }));
       test.done();
     },
