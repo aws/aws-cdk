@@ -113,6 +113,7 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
 export function prepareForExecution() {
   startStateMachineInput = undefined;
 
+  process.env[consts.USER_IS_VALUE_ENCODED_ENV] = '1';
   if (onEventImplMock) {
     process.env[consts.USER_ON_EVENT_FUNCTION_ARN_ENV] = MOCK_ON_EVENT_FUNCTION_ARN;
   } else {
