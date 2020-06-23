@@ -499,6 +499,28 @@ describe('IAM Role.fromRoleArn', () => {
   });
 });
 
+  describe('imported with the ARN of a service role 2nd test', () => {
+    beforeEach(() => {
+      roleStack = new Stack();
+      importedRole = Role.fromRoleArn(roleStack, 'Role',
+        `arn:aws:iam::${roleAccount}:role/aws-service-role/anyservice.amazonaws.com/codebuild-role`);
+    });
+
+    it("correctly strips the 'service-role' prefix from the role name", () => {
+      new Policy(roleStack, 'Policy', {
+        statements: [somePolicyStatement()],
+        roles: [importedRole],
+      });
+
+      expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+        'Roles': [
+          'codebuild-role',
+        ],
+      });
+    });
+  });
+});
+
 function somePolicyStatement() {
   return new PolicyStatement({
     actions: ['s3:*'],
