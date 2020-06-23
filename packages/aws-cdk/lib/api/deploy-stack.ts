@@ -10,7 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStack, StackParameters  } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStack } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
@@ -380,7 +380,11 @@ export async function destroyStack(options: DestroyStackOptions) {
  * updated, and the deployment will take a long time to in effect not
  * do anything.
  */
-async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack, params: StackParameters): Promise<boolean> {
+async function canSkipDeploy(
+  deployStackOptions: DeployStackOptions,
+  cloudFormationStack: CloudFormationStack,
+  params: StackParameters): Promise<boolean> {
+
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
 

@@ -331,7 +331,11 @@ export class StackParameters {
 
   private _changes = false;
 
-  constructor(private readonly params: Record<string, TemplateParameter>, updates: Record<string, string | undefined>, previousValues: Record<string, string> = {}) {
+  constructor(
+    private readonly params: Record<string, TemplateParameter>,
+    updates: Record<string, string | undefined>,
+    previousValues: Record<string, string> = {}) {
+
     const missingRequired = new Array<string>();
 
     for (const [key, param] of Object.entries(this.params)) {
