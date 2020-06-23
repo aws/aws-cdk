@@ -391,6 +391,7 @@ export enum InstanceSize {
   XLARGE = 'xlarge',
   XLARGE2 = '2xlarge',
   XLARGE4 = '4xlarge',
+  XLARGE6 = '6xlarge',
   XLARGE8 = '8xlarge',
   XLARGE9 = '9xlarge',
   XLARGE10 = '10xlarge',
