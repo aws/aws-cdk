@@ -6,6 +6,7 @@ export interface ControlPlaneLogging {
    * Kubernetes API server component logs – Your cluster's API server is the
    * control plane component that exposes the Kubernetes API.
    *
+   * @default false
    * @see https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
    */
   readonly api?: boolean;
@@ -14,6 +15,7 @@ export interface ControlPlaneLogging {
    * Audit (audit) – Kubernetes audit logs provide a record of the individual
    * users, administrators, or system components that have affected your cluster.
    *
+   * @default false
    * @see https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
    */
   readonly audit?: boolean;
@@ -23,6 +25,7 @@ export interface ControlPlaneLogging {
    * represent the control plane component that Amazon EKS uses for Kubernetes
    * Role Based Access Control (RBAC) authentication using IAM credentials.
    *
+   * @default false
    * @see https://kubernetes.io/docs/admin/authorization/rbac/
    */
   readonly authenticator?: boolean;
@@ -31,6 +34,7 @@ export interface ControlPlaneLogging {
    * Controller manager – The controller manager manages the core control
    * loops that are shipped with Kubernetes.
    *
+   * @default false
    * @see https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
    */
   readonly controllerManager?: boolean;
@@ -39,6 +43,7 @@ export interface ControlPlaneLogging {
    * Scheduler – The scheduler component manages when and where to run
    * pods in your cluster.
    *
+   * @default false
    * @see https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/
    */
   readonly scheduler?: boolean;

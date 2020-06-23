@@ -4,7 +4,25 @@ import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
 import { ControlPlaneLogging } from './logging';
-import { encodeValues } from './utils';
+
+/**
+ * Encodes values (specially boolean) as special strings
+ *
+ * Because CloudFormation converts every input as string for custom resources,
+ * we will use these encoded values to cast them into proper types.
+ */
+function encodeValues(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case true:
+        return 'TRUE:BOOLEAN';
+      case false:
+        return 'FALSE:BOOLEAN';
+      default:
+        return v;
+    }
+  });
+}
 
 /**
  * The available cluster control plane log types.
