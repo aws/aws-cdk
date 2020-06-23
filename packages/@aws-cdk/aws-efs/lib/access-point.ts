@@ -24,7 +24,7 @@ export interface IAccessPoint extends IResource {
 /**
  * Represents the CreateionInfo
  */
-export interface CreationInfo {
+export interface Acl {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
    */
@@ -80,7 +80,7 @@ export interface AccessPointProps {
    *
    * @default - None. The directory specified by `path` must exist.
    */
-  readonly createAcl?: CreationInfo;
+  readonly createAcl?: Acl;
 
   /**
    * Specifies the path on the EFS file system to expose as the root directory to NFS clients using the access point
@@ -136,10 +136,6 @@ export class AccessPoint extends Resource implements IAccessPoint {
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
-
-    if (props.path && !props.createAcl) {
-      throw new Error('createAcl is required if path is specified');
-    }
 
     const resource = new CfnAccessPoint(scope, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,

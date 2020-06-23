@@ -77,10 +77,3 @@ test('custom access point is created correctly', () => {
     },
   }));
 });
-
-test('throw if path is specified without createAcl', () => {
-  expect(() => new AccessPoint(stack, 'MyAccessPoint', {
-    fileSystem,
-    path: '/export/share',
-  })).toThrow(/createAcl is required if path is specified/);
-});
