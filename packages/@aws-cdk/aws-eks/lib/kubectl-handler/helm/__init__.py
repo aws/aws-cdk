@@ -3,8 +3,6 @@ import logging
 import os
 import subprocess
 
-from distutils.util import strtobool
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -13,21 +11,6 @@ os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
 
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
-
-def decode_boolean(value):
-    """Decodes encoded true/false value"""
-    if isinstance(value, bool):
-        return value
-    elif isinstance(value, str) or isinstance(value, int):
-        if value == 'TRUE:BOOLEAN':
-            return True
-        elif value == 'FALSE:BOOLEAN':
-            return False
-        else:
-            # Needed for backward compatilibity because previous state
-            # will have a string value ('true' or 'false')
-            return bool(strtobool(value))
-    return None
 
 def helm_handler(event, context):
     logger.info(json.dumps(event))
@@ -41,7 +24,7 @@ def helm_handler(event, context):
     release      = props['Release']
     chart        = props['Chart']
     version      = props.get('Version', None)
-    wait         = decode_boolean(props.get('Wait', False))
+    wait         = props.get('Wait', False)
     timeout      = props.get('Timeout', None)
     namespace    = props.get('Namespace', None)
     repository   = props.get('Repository', None)

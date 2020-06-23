@@ -11,9 +11,9 @@ import { HelmChart, HelmChartOptions } from './helm-chart';
 import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
+import { ControlPlaneLogging } from './logging';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { ControlPlaneLogging } from './shared-interfaces';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -170,14 +170,6 @@ export interface ClusterOptions {
   readonly version?: string;
 
   /**
-   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
-   *
-   * @default - False, meaning that cluster control plane logs are not exported to CloudWatch Logs.
-   */
-  readonly controlPlaneLogging?: boolean;
-  readonly controlPlaneLoggingOptions?: ControlPlaneLogging;
-
-  /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
    * group.
    *
@@ -252,6 +244,21 @@ export interface ClusterProps extends ClusterOptions {
    * @default true The cluster can be managed by the AWS CDK application.
    */
   readonly kubectlEnabled?: boolean;
+
+  /**
+   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
+   *
+   * @default false Cluster control plane logs are not exported to CloudWatch Logs.
+   */
+  readonly controlPlaneLogging?: boolean;
+
+  /**
+   * EKS control plane logging options.
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+   */
+  readonly controlPlaneLoggingOptions?: ControlPlaneLogging;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -361,8 +368,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The Control Plane logging configuration for your cluster.
    */
-  public readonly controlPlaneLogging?: boolean;
-  public readonly controlPlaneLoggingOptions?: ControlPlaneLogging;
+  public readonly controlPlaneLogging?: ControlPlaneLogging;
 
   /**
    * The auto scaling group that hosts the default capacity for this cluster.
@@ -471,6 +477,7 @@ export class Cluster extends Resource implements ICluster {
         }
         logging = props.controlPlaneLoggingOptions;
       }
+      this.controlPlaneLogging = logging;
       resource = new ClusterResource(this, 'Resource', {
         ...clusterProps,
         logging,

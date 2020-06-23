@@ -3,7 +3,7 @@ import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@a
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';
-import { ControlPlaneLogging } from './shared-interfaces';
+import { ControlPlaneLogging } from './logging';
 import { encodeValues } from './utils';
 
 /**
