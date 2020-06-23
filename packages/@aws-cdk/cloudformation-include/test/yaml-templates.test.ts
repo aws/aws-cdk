@@ -14,18 +14,30 @@ describe('CDK Include', () => {
     stack = new core.Stack();
   });
 
-  test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
+  test('can ingest a template with a S3 Bucket that has a CorsRule, and output it unchanged', () => {
     includeTestTemplate(stack, 'bucket.yaml');
 
-    const foo = loadTestFileToJsObject('bucket.yaml');
-
-    for (const prop of Object.keys(foo)) {
-        console.log(prop);
-    }
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('bucket.yaml'),
     );
   });
+
+  /* test('can ingest a template with a complex S3 Bucket, and output it unchanged', () => {
+    includeTestTemplate(stack, 'complex-bucket.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('complex-bucket.yaml'),
+    ); 
+  }); */
+
+  test('can ingest a yaml template with parameters and output it unchanged', () => {
+      includeTestTemplate(stack, 'bucket-with-parameters.yaml');
+
+      expect(stack).toMatchTemplate(
+          loadTestFileToJsObject('bucket-with-parameters.yaml'),
+      );
+  });
+});
 
   interface IncludeTestTemplateProps {
     /** @default true */
@@ -46,4 +58,3 @@ describe('CDK Include', () => {
   function _testTemplateFilePath(testTemplate: string) {
     return path.join(__dirname, 'test-templates/yaml', testTemplate);
   }
-});
