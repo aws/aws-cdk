@@ -70,4 +70,11 @@ export interface BootstrappingParameters {
    * @default - Default qualifier
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+   *
+   * @default true
+   */
+  readonly publicAccessBlockConfiguration?: boolean;
 }
