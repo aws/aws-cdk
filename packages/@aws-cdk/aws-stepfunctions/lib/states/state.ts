@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Condition } from '../condition';
+import { JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
-import { JsonPath } from '../fields';
 
 /**
  * Properties shared by all states
