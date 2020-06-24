@@ -525,7 +525,7 @@ export = {
     const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
 
     // THEN
-    test.deepEqual(value, 'dummy-value-for-my-param-name');
+    test.deepEqual(value, 'arn:aws:service:eu-central-1:123456789012:entity/dummy-value');
     test.deepEqual(app.synth().manifest.missing, [
       {
         key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
