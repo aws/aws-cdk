@@ -6,22 +6,17 @@ import { CfnClusterProps } from './eks.generated';
 import { ControlPlaneLogging } from './logging';
 
 /**
- * Encodes values (specially boolean) as special strings
- *
- * Because CloudFormation converts every input as string for custom resources,
- * we will use these encoded values to cast them into proper types.
+ * Configuration props for EKS Cluster custom resource.
  */
-function encodeValues(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case true:
-        return 'TRUE:BOOLEAN';
-      case false:
-        return 'FALSE:BOOLEAN';
-      default:
-        return v;
-    }
-  });
+export interface ClusterResourceProps extends CfnClusterProps {
+  /**
+   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+   *
+   * @default - Fully disabled, meaning that cluster control plane logs are not exported to CloudWatch Logs.
+   */
+  readonly logging?: ControlPlaneLogging;
 }
 
 /**
@@ -55,20 +50,6 @@ export interface Logging {
    * The cluster control plane logging configuration for your cluster.
    */
   clusterLogging: LogSetup[];
-}
-
-/**
- * Configuration props for EKS Cluster custom resource.
- */
-export interface ClusterResourceProps extends CfnClusterProps {
-  /**
-   * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
-   *
-   * @see https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
-   *
-   * @default - Fully disabled, meaning that cluster control plane logs are not exported to CloudWatch Logs.
-   */
-  readonly logging?: ControlPlaneLogging;
 }
 
 /**
@@ -263,4 +244,23 @@ export function clusterArnComponents(clusterName: string): ArnComponents {
     resource: 'cluster',
     resourceName: clusterName,
   };
+}
+
+/**
+ * Encodes values (specially boolean) as special strings
+ *
+ * Because CloudFormation converts every input as string for custom resources,
+ * we will use these encoded values to cast them into proper types.
+ */
+function encodeValues(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => {
+    switch (v) {
+      case true:
+        return 'TRUE:BOOLEAN';
+      case false:
+        return 'FALSE:BOOLEAN';
+      default:
+        return v;
+    }
+  });
 }
