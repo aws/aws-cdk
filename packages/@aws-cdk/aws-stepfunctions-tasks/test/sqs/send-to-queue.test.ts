@@ -16,7 +16,7 @@ test('Send message to queue', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
     messageBody: sfn.TaskInput.fromText('Send this message'),
-    messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
+    messageDeduplicationId: sfn.JsonPath.stringAt('$.deduping'),
   }) });
 
   // THEN
@@ -49,7 +49,7 @@ test('Send message to SQS queue with task token', () => {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     messageBody: sfn.TaskInput.fromObject({
       Input: 'Send this message',
-      Token: sfn.Context.taskToken,
+      Token: sfn.JsonPath.taskToken,
     }),
   }) });
 
@@ -127,7 +127,7 @@ test('Message body can be an object', () => {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromObject({
         literal: 'literal',
-        SomeInput: sfn.Data.stringAt('$.theMessage'),
+        SomeInput: sfn.JsonPath.stringAt('$.theMessage'),
       }),
     }),
   });
