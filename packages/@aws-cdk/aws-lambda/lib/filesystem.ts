@@ -1,5 +1,4 @@
 import * as efs from '@aws-cdk/aws-efs';
-import * as cdk from '@aws-cdk/core';
 
 /**
  * Options for filesystem configuration
@@ -24,11 +23,13 @@ export interface FileSystemOptions {
  * @param accessPoint the EFS Access Point
  */
 export class LambdaFileSystem {
+  /**
+   * mount the efs filesystem via the efs access point
+   */
   public static fromEfsFileSystem(accessPoint: efs.IAccessPoint): LambdaFileSystem {
     return {
       accessPointArn: accessPoint.accessPointArn,
-      resource: accessPoint,
     };
   }
-  private constructor(public readonly accessPointArn: string, public readonly resource: cdk.IResource) { }
+  private constructor(public readonly accessPointArn: string) { }
 }

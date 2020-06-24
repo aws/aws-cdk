@@ -5,7 +5,7 @@ import * as lambda from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-lambda-3');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-4');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,
@@ -23,7 +23,6 @@ const fileSystem = new efs.FileSystem(stack, 'Efs', {
 
 fileSystem.connections.allowDefaultPortInternally();
 
-
 const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
   fileSystem,
   createAcl: {
@@ -38,10 +37,7 @@ const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
   },
 });
 
-// make sure all mount targets are ready before accessing the access point
-accessPoint.node.addDependency(fileSystem)
-
-new lambda.Function(stack, 'MyLambda', {
+const fn = new lambda.Function(stack, 'MyLambda', {
   // sample code below from the blog post: https://go.aws/2Y6UgKe
   code: new lambda.InlineCode(`
 import os
@@ -98,5 +94,7 @@ def lambda_handler(event, context):
     localMountPath: '/mnt/msg',
   },
 });
+
+fn.node.addDependency(accessPoint, fileSystem);
 
 app.synth();

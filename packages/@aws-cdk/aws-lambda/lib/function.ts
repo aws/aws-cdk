@@ -278,6 +278,8 @@ export interface FunctionProps extends FunctionOptions {
 
   /**
    * The filesystem configuration for the lambda function
+   *
+   * @default - will not mount any filesystem
    */
   readonly filesystems?: FileSystemOptions;
 }
@@ -662,10 +664,10 @@ export class Function extends FunctionBase {
     });
   }
 
+  /**
+   * mount the filesystem
+   */
   public mount(options: FileSystemOptions) {
-    // wait until the efs filesystem and mount targets are ready
-    this.node.addDependency(options.filesystem.resource);
-
     this._resource.addPropertyOverride('FileSystemConfigs', [
       {
         Arn: options.filesystem.accessPointArn,
