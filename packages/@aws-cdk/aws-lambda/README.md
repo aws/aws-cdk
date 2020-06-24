@@ -279,24 +279,22 @@ the log retention to never expire even if it was configured with a different val
 
 ### FileSystem Access
 
-You can configure a function to mount an Amazon Elastic File System (Amazon EFS) file system to a directory in your runtime environment. 
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
+directory in your runtime environment with the `filesystems` property. To access Amaozn EFS
+from lambda function, the Amazon EFS access point will be required. 
 
-The following sample enables the lambda function to mount the filesystem from Amazon EFS via the `accessPoint` to 
-the local `/mnt/msg` directory.
+Amazon EFS _access points_ are application-specific entry points into an EFS file system that
+make it easier to manage application access to shared datasets. Access points can enforce a user
+identity, including the user's POSIX groups, for all file system requests that are made through
+the access point. Access points can also enforce a different root directory for the file system
+so that clients can only access data in the specified directory or its subdirectories. See
+[Working with Amazon EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) for more details.
+
+The following sample enables the lambda function to mount the Amazon EFS filesystem via the `accessPoint` to `/mnt/msg` in the runtime environment.
 
 ```ts
 const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
   fileSystem,
-  createAcl: {
-    ownerGid: '1000',
-    ownerUid: '1000',
-    permissions: '755',
-  },
-  path: '/lambda',
-  posixUser: {
-    uid: '1000',
-    gid: '1000',
-  },
 });
 
 const fn = new lambda.Function(stack, 'MyLambda', {
@@ -304,13 +302,9 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   handler,
   runtime,
   vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
-  },
   securityGroups: fileSystem.connections.securityGroups,
   filesystems: {
-    filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(accessPoint),
-    localMountPath: '/mnt/msg',
+    filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   },
 });
 
