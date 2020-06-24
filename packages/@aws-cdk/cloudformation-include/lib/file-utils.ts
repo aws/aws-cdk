@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as YAML from 'yaml';
+import { shortForms } from './short-form-tags.js';
 
 export function readJsonSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);
@@ -8,5 +9,6 @@ export function readJsonSync(filePath: string): any {
 
 export function readYamlSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);
+  YAML.defaultOptions.customTags = shortForms;
   return YAML.parse(fileContents.toString());
 }
