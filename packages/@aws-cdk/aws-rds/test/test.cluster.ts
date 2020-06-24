@@ -300,7 +300,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraMySql({
-        engineVersion: '5.7.mysql_aurora.2.04.4',
+        version: '5.7.mysql_aurora.2.04.4',
       }),
       masterUser: {
         username: 'admin',
@@ -328,7 +328,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        engineVersion: '10.7',
+        version: '10.7',
       }),
       masterUser: {
         username: 'admin',

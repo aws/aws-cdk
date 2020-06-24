@@ -48,7 +48,7 @@ use the static factory methods on `DatabaseClusterEngine`:
 ```typescript
 new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.defaultAurora({
-    engineVersion: '5.6.mysql_aurora.1.17.9',
+    version: '5.6.mysql_aurora.1.17.9',
   },
   ...
 })
@@ -82,12 +82,12 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 
 To use a specific version of the engine
 (which is recommended, in order to avoid surprise updates when RDS add support for a newer version of the engine),
-use the static factory methods on `DatabaseInstancecEngine`:
+use the static factory methods on `DatabaseInstanceEngine`:
 
 ```typescript
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleStandardEdition1({
-    engineVersion: '19.0.0.0',
+    version: '19.0.0.0',
   }),
   ...
 });

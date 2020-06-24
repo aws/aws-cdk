@@ -105,7 +105,7 @@ export interface MariaDbInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class MariaDbInstanceEngine extends NonSqlServerInstanceEngine {
@@ -120,7 +120,7 @@ class MariaDbInstanceEngine extends NonSqlServerInstanceEngine {
         { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
         { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -135,7 +135,7 @@ export interface MySqlInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class MySqlInstanceEngine extends NonSqlServerInstanceEngine {
@@ -149,7 +149,7 @@ class MySqlInstanceEngine extends NonSqlServerInstanceEngine {
         { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
         { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -164,7 +164,7 @@ export interface PostgresInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 /**
@@ -184,7 +184,7 @@ class PostgresInstanceEngine extends NonSqlServerInstanceEngine {
         { engineMajorVersion: '10', parameterGroupFamily: 'postgres10' },
         { engineMajorVersion: '11', parameterGroupFamily: 'postgres11' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -215,7 +215,7 @@ export interface OracleSeInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class OracleSeInstanceEngine extends OracleInstanceEngine {
@@ -225,7 +225,7 @@ class OracleSeInstanceEngine extends OracleInstanceEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -240,7 +240,7 @@ export interface OracleSe1InstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class OracleSe1InstanceEngine extends OracleInstanceEngine {
@@ -250,7 +250,7 @@ class OracleSe1InstanceEngine extends OracleInstanceEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -265,7 +265,7 @@ export interface OracleSe2InstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class OracleSe2InstanceEngine extends OracleInstanceEngine {
@@ -278,7 +278,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
         { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
         { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -293,7 +293,7 @@ export interface OracleEeInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class OracleEeInstanceEngine extends OracleInstanceEngine {
@@ -307,7 +307,7 @@ class OracleEeInstanceEngine extends OracleInstanceEngine {
         { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
         { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -339,7 +339,7 @@ export interface SqlServerSeInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
@@ -352,7 +352,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -367,7 +367,7 @@ export interface SqlServerExInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
@@ -380,7 +380,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -395,7 +395,7 @@ export interface SqlServerWebInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
@@ -408,7 +408,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -423,7 +423,7 @@ export interface SqlServerEeInstanceEngineProps {
    *
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class SqlServerEeInstanceEngine extends SqlServerInstanceEngine {
@@ -437,7 +437,7 @@ class SqlServerEeInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' },
       ],
       defaultInstanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }

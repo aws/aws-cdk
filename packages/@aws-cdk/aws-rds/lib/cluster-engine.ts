@@ -198,7 +198,7 @@ export interface DefaultAuroraClusterEngineProps {
    * @example "5.6.mysql_aurora.1.22.2"
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class DefaultAuroraClusterEngine extends ClusterEngineBase {
@@ -211,7 +211,7 @@ class DefaultAuroraClusterEngine extends ClusterEngineBase {
       parameterGroupFamilies: [
         { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 
@@ -240,7 +240,7 @@ export interface AuroraMySqlClusterEngineProps {
    * @example "5.7.mysql_aurora.2.07.1"
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class AuroraMySqlClusterEngine extends NonDefaultAuroraClusterEngine {
@@ -253,7 +253,7 @@ class AuroraMySqlClusterEngine extends NonDefaultAuroraClusterEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' },
       ],
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }
@@ -269,11 +269,11 @@ export interface AuroraPostgresClusterEngineProps {
    * @example "9.5.21"
    * @default - no version specified
    */
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 class AuroraPostgresClusterEngine extends NonDefaultAuroraClusterEngine {
-  constructor(props: AuroraMySqlClusterEngineProps = {}) {
+  constructor(props: AuroraPostgresClusterEngineProps = {}) {
     super({
       engineType: 'aurora-postgresql',
       needsS3RolesInParameters: false,
@@ -285,7 +285,7 @@ class AuroraPostgresClusterEngine extends NonDefaultAuroraClusterEngine {
         { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11' },
       ],
       defaultPort: 5432,
-      engineVersion: props.engineVersion,
+      engineVersion: props.version,
     });
   }
 }

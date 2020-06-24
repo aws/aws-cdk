@@ -196,7 +196,7 @@ export = {
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleStandardEdition1({
-        engineVersion: '11.2',
+        version: '11.2',
       }),
       configurations: [
         {
