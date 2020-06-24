@@ -170,7 +170,6 @@
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
-    "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
