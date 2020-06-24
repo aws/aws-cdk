@@ -85,7 +85,7 @@
     "semver": "^7.2.2",
     "source-map-support": "^0.5.19",
     "table": "^5.4.6",
-    "uuid": "^8.1.0",
+    "uuid": "^8.2.0",
     "wrap-ansi": "^7.0.0",
     "yaml": "^1.10.0",
     "yargs": "^15.3.1"
