@@ -6,6 +6,8 @@ import { Duration } from '@aws-cdk/core';
 export enum Protocol {
   HTTP = 'http',
   TCP = 'tcp',
+  HTTP2 = 'http2',
+  GRPC = 'grpc',
 }
 
 /**
