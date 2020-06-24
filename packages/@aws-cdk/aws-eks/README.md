@@ -413,7 +413,7 @@ For more details about the log types available check the
 [API reference documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_LogSetup.html).
 
 **NOTE**: the control plane logging is only available if the cluster
-has the `kubectlEnabled: true`, because there is still no
+has the `kubectlEnabled: true` (which is the default), because there is still no
 CloudFormation support to change that configuration.
 
 ### Cluster Security Group
