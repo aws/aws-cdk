@@ -5,7 +5,7 @@ import * as lambda from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-lambda-2');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-3');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,

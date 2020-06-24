@@ -20,30 +20,11 @@ export interface FileSystemOptions {
 }
 
 /**
- * Options for EFS filesystem
- */
-export interface EfsFileSystemOptions {
-  /**
-   * Represents the efs.FileSystem resource
-   */
-  readonly filesystem: efs.FileSystem,
-
-  /**
-   * The root path of the efs filesystem for the access point
-   *
-   * @default - /lambda
-   */
-  readonly accessPointRootPath?: string,
-}
-
-/**
  *
- * @param scope the cdk scope
- * @param filesystem the EFS FileSystem
- * @param accessPointRootPath the root directory of the access point in the efs filesystem
+ * @param accessPoint the EFS Access Point
  */
 export class LambdaFileSystem {
-  public static fromEfsFileSystem(accessPoint: efs.AccessPoint): LambdaFileSystem {
+  public static fromEfsFileSystem(accessPoint: efs.IAccessPoint): LambdaFileSystem {
     return {
       accessPointArn: accessPoint.accessPointArn,
       resource: accessPoint,
