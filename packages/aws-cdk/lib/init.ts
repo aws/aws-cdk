@@ -241,15 +241,16 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, workDir);
+  if (await fs.pathExists('README.md')) {
+    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+  }
+
   if (!generateOnly) {
     await initializeGitRepository(workDir);
     await postInstall(language, canUseNetwork, workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
-  } else {
-    print('✅ All done!');
-  }
+
+  print('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -292,7 +293,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`${command} install`)}!`);
+    warning(`Please run ${colors.green(`${command} install`)}!`);
     return;
   }
 
@@ -300,18 +301,26 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   try {
     await execute(command, ['install'], { cwd });
   } catch (e) {
-    throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
+    warning(`${command} install failed: ` + e.message);
+    warning(`Please run ${command} install`);
   }
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
+  const mvnPackageWarning = 'Please run \'mvn package\'!';
   if (!canUseNetwork) {
-    print(`Please run ${colors.green('mvn package')}!`);
+    warning(mvnPackageWarning);
     return;
   }
 
   print(`Executing ${colors.green('mvn package')}...`);
-  await execute('mvn', ['package'], { cwd });
+  try {
+    await execute('mvn', ['package'], { cwd });
+  } catch (e) {
+    warning('Unable to package compiled code as JAR');
+    warning(mvnPackageWarning);
+  }
+
 }
 
 async function postInstallPython(cwd: string) {
@@ -320,8 +329,8 @@ async function postInstallPython(cwd: string) {
   try {
     await execute(python, ['-m venv', '.env'], { cwd });
   } catch (e) {
-    print('Unable to create virtualenv automatically');
-    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+    warning('Unable to create virtualenv automatically');
+    warning(`Please run ${colors.green(python + ' -m venv .env')}!`);
   }
 }
 
