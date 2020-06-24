@@ -191,6 +191,64 @@ test('deploy is skipped if template did not change', async () => {
   expect(cfnMocks.executeChangeSet).not.toBeCalled();
 });
 
+test('deploy is skipped if parameters are the same', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {},
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy is not skipped if parameters are different', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      HasValue: 'NewValue',
+    },
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
+      { ParameterKey: 'HasDefault', UsePreviousValue: true },
+      { ParameterKey: 'OtherParameter', UsePreviousValue: true },
+    ],
+  }));
+});
+
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(
