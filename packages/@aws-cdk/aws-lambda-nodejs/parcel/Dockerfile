@@ -1,4 +1,5 @@
-# Based on lambci build image with yarn and parcel
+# The correct lambci build image based on the runtime of the function will be
+# passed as build arg. The default allows to do `docker build .` when testing.
 ARG IMAGE=lambci/lambda:build-nodejs12.x
 FROM $IMAGE
 
