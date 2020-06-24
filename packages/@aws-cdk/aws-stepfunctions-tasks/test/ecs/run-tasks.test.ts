@@ -32,7 +32,9 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
     memoryLimitMiB: 256,
   });
 
-  expect(() => new tasks.EcsFargateRunTask(stack, 'task', { cluster, taskDefinition })).toThrowError(/not configured for compatibility with Fargate/);
+  expect(() => new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() })).toThrowError(
+    /not configured for compatibility with Fargate/,
+  );
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -41,7 +43,9 @@ test('Cannot create a Fargate task without a default container', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  expect(() => new tasks.EcsFargateRunTask(stack, 'task', { cluster, taskDefinition })).toThrowError(/must have at least one essential container/);
+  expect(() => new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() })).toThrowError(
+    /must have at least one essential container/,
+  );
 });
 
 test('Running a Fargate Task', () => {
@@ -50,23 +54,25 @@ test('Running a Fargate Task', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
   // WHEN
-  const runTask = new tasks.EcsFargateRunTask(stack, 'RunFargate', {
+  const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
+        containerDefinition,
         environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
       },
     ],
-    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
   });
 
   new sfn.StateMachine(stack, 'SM', {
@@ -85,7 +91,7 @@ test('Running a Fargate Task', () => {
           Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
-      'PlatformVersion': '1.4.0',
+      PlatformVersion: '1.4.0',
       TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
@@ -161,22 +167,23 @@ test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
   // WHEN
-  const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
+        containerDefinition,
         environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
       },
     ],
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
   });
 
   new sfn.StateMachine(stack, 'SM', {
@@ -270,12 +277,14 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   // WHEN
-  const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
-    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
-    placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+      placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
+    }),
   });
 
   new sfn.StateMachine(stack, 'SM', {
@@ -312,24 +321,25 @@ test('Running an EC2 Task with overridden number values', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
   // WHEN
-  const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
+        containerDefinition,
         command: sfn.Data.listAt('$.TheCommand'),
         cpu: 5,
         memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
       },
     ],
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
   });
 
   // THEN

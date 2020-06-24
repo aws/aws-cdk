@@ -346,6 +346,16 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+
 const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
   compatibility: ecs.Compatibility.EC2,
 });
@@ -355,18 +365,20 @@ taskDefinition.addContainer('TheContainer', {
   memoryLimitMiB: 256,
 });
 
-const runTask = new tasks.EcsEc2RunTask(stack, 'Run', {
+const runTask = new tasks.EcsRunTask(stack, 'Run', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
-    placementStrategies: [
-      ecs.PlacementStrategy.spreadAcrossInstances(),
-      ecs.PlacementStrategy.packedByCpu(),
-      ecs.PlacementStrategy.randomly(),
-    ],
-    placementConstraints: [
-      ecs.PlacementConstraint.memberOf('blieptuut')
-    ],
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      placementStrategies: [
+        ecs.PlacementStrategy.spreadAcrossInstances(),
+        ecs.PlacementStrategy.packedByCpu(),
+        ecs.PlacementStrategy.randomly(),
+      ],
+      placementConstraints: [
+        ecs.PlacementConstraint.memberOf('blieptuut')
+      ],
+    }),
   });
 ```
 
@@ -389,6 +401,11 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
   memoryMiB: '512',
@@ -396,19 +413,20 @@ const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
   compatibility: ecs.Compatibility.FARGATE,
 });
 
-taskDefinition.addContainer('TheContainer', {
+const containerDefinition = taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('foo/bar'),
   memoryLimitMiB: 256,
 });
 
-const runTask = new tasks.EcsFargateRunTask(stack, 'RunFargate', {
+const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   cluster,
   taskDefinition,
   containerOverrides: [{
-    containerName: 'TheContainer',
+    containerDefinition,
     environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
   }],
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
 });
 ```
 
