@@ -25,16 +25,6 @@ fileSystem.connections.allowDefaultPortInternally();
 
 const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
   fileSystem,
-  createAcl: {
-    ownerGid: '1000',
-    ownerUid: '1000',
-    permissions: '755',
-  },
-  path: '/lambda',
-  posixUser: {
-    uid: '1000',
-    gid: '1000',
-  },
 });
 
 const fn = new lambda.Function(stack, 'MyLambda', {
@@ -85,13 +75,9 @@ def lambda_handler(event, context):
   handler: 'index.lambda_handler',
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
-  },
-  securityGroups: fileSystem.connections.securityGroups,
+  // securityGroups: fileSystem.connections.securityGroups,
   filesystems: {
-    filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(accessPoint),
-    localMountPath: '/mnt/msg',
+    filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   },
 });
 

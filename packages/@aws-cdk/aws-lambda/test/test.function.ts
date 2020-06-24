@@ -253,16 +253,6 @@ export = testCase({
       });
       const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
         fileSystem: fs,
-        createAcl: {
-          ownerGid: '1000',
-          ownerUid: '1000',
-          permissions: '755',
-        },
-        path: '/lambda',
-        posixUser: {
-          uid: '1000',
-          gid: '1000',
-        },
       });
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
@@ -270,8 +260,7 @@ export = testCase({
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystems: {
-          filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(accessPoint),
-          localMountPath: '/mnt/msg',
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint,'/mnt/msg'),
         },
       });
 

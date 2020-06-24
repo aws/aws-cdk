@@ -122,6 +122,7 @@
       "props-physical-name:@aws-cdk/aws-lambda.EventSourceMappingProps",
       "docs-public-apis:@aws-cdk/aws-lambda.LambdaFileSystem",
       "docs-public-apis:@aws-cdk/aws-lambda.LambdaFileSystem.accessPointArn",
+      "docs-public-apis:@aws-cdk/aws-lambda.LambdaFileSystem.targetPath",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.runtimeEquals",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.OTHER",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.RUBY",

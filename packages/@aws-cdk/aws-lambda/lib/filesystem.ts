@@ -8,28 +8,23 @@ export interface FileSystemOptions {
    *
    * The filesystem definition
    */
-  readonly filesystem: LambdaFileSystem,
+  readonly filesystem: FileSystem,
 
-  /**
-   * target mount path for lambda function
-   *
-   * @default - /mnt/lambdafs
-   */
-  readonly localMountPath?: string,
 }
 
 /**
  *
  * @param accessPoint the EFS Access Point
  */
-export class LambdaFileSystem {
+export class FileSystem {
   /**
    * mount the efs filesystem via the efs access point
    */
-  public static fromEfsFileSystem(accessPoint: efs.IAccessPoint): LambdaFileSystem {
+  public static fromEfsAccessPoint(accessPoint: efs.IAccessPoint, targetPath: string): FileSystem {
     return {
       accessPointArn: accessPoint.accessPointArn,
+      targetPath,
     };
   }
-  private constructor(public readonly accessPointArn: string) { }
+  private constructor(public readonly accessPointArn: string, public readonly targetPath: string) { }
 }
