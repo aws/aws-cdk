@@ -90,7 +90,7 @@ class CallDynamoDBStack extends cdk.Stack {
         },
         tableName: TABLE_NAME,
       }),
-      resultPath: 'DISCARD',
+      resultPath: sfn.JsonPath.DISCARD,
     });
 
     const definition = new sfn.Pass(this, 'Start', {

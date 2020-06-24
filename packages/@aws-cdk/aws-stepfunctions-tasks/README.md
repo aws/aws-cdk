@@ -284,6 +284,9 @@ new sfn.Task(this, 'PutItem', {
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
 ```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
 new sfn.Task(this, 'DeleteItem', {
   task: tasks.CallDynamoDB.deleteItem({
     partitionKey: {
@@ -292,7 +295,7 @@ new sfn.Task(this, 'DeleteItem', {
     },
     tableName: 'my-table',
   }),
-  resultPath: 'DISCARD',
+  resultPath: sfn.JsonPath.DISCARD,
 });
 ```
 
