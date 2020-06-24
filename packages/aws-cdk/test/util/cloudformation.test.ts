@@ -31,28 +31,58 @@ test('A non-existent stack pretends to have an empty template', async () => {
   expect(await stack.template()).toEqual({});
 });
 
-test('given override, always use the override', () => {
-  for (const haveDefault of [false, true]) {
-    for (const havePrevious of [false, true]) {
-      expect(makeParams(haveDefault, havePrevious, true)).toEqual([USE_OVERRIDE]);
-    }
-  }
-});
+test.each([
+  [false, false],
+  [false, true],
+  [true, false],
+  [true, true]])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
+  (haveDefault, havePrevious) => {
+    expect(makeParams(haveDefault, havePrevious, true)).toEqual({
+      apiParameters: [USE_OVERRIDE],
+      changed: true,
+    });
+  });
 
 test('no default, no prev, no override => error', () => {
   expect(() => makeParams(false, false, false)).toThrow(/missing a value: TheParameter/);
 });
 
 test('no default, yes prev, no override => use previous', () => {
-  expect(makeParams(false, true, false)).toEqual([USE_PREVIOUS]);
+  expect(makeParams(false, true, false)).toEqual({
+    apiParameters: [USE_PREVIOUS],
+    changed: false,
+  });
 });
 
 test('default, no prev, no override => empty param set', () => {
-  expect(makeParams(true, false, false)).toEqual([]);
+  expect(makeParams(true, false, false)).toEqual({
+    apiParameters: [],
+    changed: false,
+  });
 });
 
 test('default, prev, no override => use previous', () => {
-  expect(makeParams(true, true, false)).toEqual([USE_PREVIOUS]);
+  expect(makeParams(true, true, false)).toEqual({
+    apiParameters: [USE_PREVIOUS],
+    changed: false,
+  });
+});
+
+test('if a parameter is retrieved from SSM, the parameters always count as changed', () => {
+  const params = TemplateParameters.fromTemplate({
+    Parameters: {
+      Foo: {
+        Type: 'AWS::SSM::Parameter::Name',
+        Default: '/Some/Key',
+      },
+    },
+  });
+
+  // If we don't pass a new value
+  expect(params.diff({}, {Foo: '/Some/Key'}).changed).toEqual(true);
+
+  // If we do pass a new value but it's the same as the old one
+  expect(params.diff({Foo: '/Some/Key'}, {Foo: '/Some/Key'}).changed).toEqual(true);
 });
 
 test('unknown parameter in overrides, pass it anyway', () => {
@@ -61,11 +91,11 @@ test('unknown parameter in overrides, pass it anyway', () => {
   // just error out. But maybe we want to be warned of typos...
   const params = TemplateParameters.fromTemplate({
     Parameters: {
-      Foo: { Default: 'Foo' },
+      Foo: { Type: 'String', Default: 'Foo' },
     },
   });
 
-  expect(params.makeApiParameters({ Bar: 'Bar' }, [])).toEqual([
+  expect(params.diff({ Bar: 'Bar' }, {}).apiParameters).toEqual([
     { ParameterKey: 'Bar', ParameterValue: 'Bar' },
   ]);
 });
@@ -74,10 +104,13 @@ function makeParams(defaultValue: boolean, hasPrevValue: boolean, override: bool
   const params = TemplateParameters.fromTemplate({
     Parameters: {
       [PARAM]: {
+        Type: 'String',
         Default: defaultValue ? DEFAULT : undefined,
       },
     },
   });
-  const prevParams = hasPrevValue ? [PARAM] : [];
-  return params.makeApiParameters({ [PARAM]: override ? OVERRIDE : undefined }, prevParams);
+  const prevParams: Record<string, string> = hasPrevValue ? {[PARAM]: 'Foo'} : {};
+  const stackParams =  params.diff({ [PARAM]: override ? OVERRIDE : undefined }, prevParams);
+
+  return { apiParameters: stackParams.apiParameters, changed: stackParams.changed };
 }
