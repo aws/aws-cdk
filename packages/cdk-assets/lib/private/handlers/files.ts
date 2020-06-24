@@ -1,4 +1,4 @@
-import { FileAssetPackaging } from '@aws-cdk/cdk-assets-schema';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
 import { FileManifestEntry } from '../../asset-manifest';

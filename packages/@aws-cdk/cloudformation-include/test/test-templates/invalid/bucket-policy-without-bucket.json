@@ -28,6 +28,9 @@
           "Version": "2012-10-17"
         }
       }
+    },
+    "Bucket2": {
+      "Type": "AWS::S3::Bucket"
     }
   }
 }

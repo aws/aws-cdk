@@ -12,7 +12,7 @@ export interface DockerImageAsset {
   /**
    * Destinations for this file asset
    */
-  readonly destinations: Record<string, DockerImageDestination>;
+  readonly destinations: { [id: string]: DockerImageDestination };
 }
 
 /**
@@ -45,7 +45,7 @@ export interface DockerImageSource {
    *
    * @default - No additional build arguments
    */
-  readonly dockerBuildArgs?: Record<string, string>;
+  readonly dockerBuildArgs?: { [name: string]: string };
 }
 
 /**

@@ -54,8 +54,6 @@
       "@aws-cdk/aws-ecr-assets/minimatch/**",
       "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
       "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
-      "@aws-cdk/cdk-assets-schema/semver",
-      "@aws-cdk/cdk-assets-schema/semver/**",
       "@aws-cdk/cloud-assembly-schema/jsonschema",
       "@aws-cdk/cloud-assembly-schema/jsonschema/**",
       "@aws-cdk/cloud-assembly-schema/semver",
