@@ -43,23 +43,10 @@ export interface EfsFileSystemOptions {
  * @param accessPointRootPath the root directory of the access point in the efs filesystem
  */
 export class LambdaFileSystem {
-  public static fromEfsFileSystem(scope: cdk.Construct, fileSystem: efs.FileSystem, accessPointRootPath?: string): LambdaFileSystem {
-    const accessPoint = new efs.AccessPoint(scope, 'AccessPoint', {
-      fileSystem,
-      createAcl: {
-        ownerGid: '1000',
-        ownerUid: '1000',
-        permissions: '755',
-      },
-      path: accessPointRootPath ?? '/lambda',
-      posixUser: {
-        uid: '1000',
-        gid: '1000',
-      },
-    });
+  public static fromEfsFileSystem(accessPoint: efs.AccessPoint): LambdaFileSystem {
     return {
       accessPointArn: accessPoint.accessPointArn,
-      resource: fileSystem,
+      resource: accessPoint,
     };
   }
   private constructor(public readonly accessPointArn: string, public readonly resource: cdk.IResource) { }

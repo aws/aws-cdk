@@ -669,7 +669,7 @@ export class Function extends FunctionBase {
     this._resource.addPropertyOverride('FileSystemConfigs', [
       {
         Arn: options.filesystem.accessPointArn,
-        LocalMountPath: options.localMountPath ?? '/mnt/lambdafs'
+        LocalMountPath: options.localMountPath ?? '/mnt/lambdafs',
       },
     ]);
   }

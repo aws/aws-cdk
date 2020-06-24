@@ -1,4 +1,3 @@
-import * as apigateway from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as cdk from '@aws-cdk/core';
@@ -6,14 +5,14 @@ import * as lambda from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-2');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,
   natGateways: 1,
 });
 
-const fs = new efs.FileSystem(stack, 'Efs', {
+const fileSystem = new efs.FileSystem(stack, 'Efs', {
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE,
@@ -22,9 +21,27 @@ const fs = new efs.FileSystem(stack, 'Efs', {
   provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
 });
 
-fs.connections.allowDefaultPortInternally();
+fileSystem.connections.allowDefaultPortInternally();
 
-const handler = new lambda.Function(stack, 'MyLambda', {
+
+const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
+  fileSystem,
+  createAcl: {
+    ownerGid: '1000',
+    ownerUid: '1000',
+    permissions: '755',
+  },
+  path: '/lambda',
+  posixUser: {
+    uid: '1000',
+    gid: '1000',
+  },
+});
+
+// make sure all mount targets are ready before accessing the access point
+accessPoint.node.addDependency(fileSystem)
+
+new lambda.Function(stack, 'MyLambda', {
   // sample code below from the blog post: https://go.aws/2Y6UgKe
   code: new lambda.InlineCode(`
 import os
@@ -75,19 +92,11 @@ def lambda_handler(event, context):
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE,
   },
-  securityGroups: fs.connections.securityGroups,
+  securityGroups: fileSystem.connections.securityGroups,
   filesystems: {
-    filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(stack, fs),
+    filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(accessPoint),
     localMountPath: '/mnt/msg',
-  }
+  },
 });
-
-const api = new apigateway.HttpApi(stack, 'Api', {
-  defaultIntegration: new apigateway.LambdaProxyIntegration({
-    handler
-  })
-});
-
-new cdk.CfnOutput(stack, 'ApiURL', { value: api.url! });
 
 app.synth();
