@@ -39,7 +39,7 @@
     "@types/semver": "^7.2.0",
     "@types/yargs": "^15.0.5",
     "jest": "^25.5.4",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.5"
   },
   "dependencies": {
     "case": "^1.6.3",
