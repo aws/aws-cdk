@@ -279,7 +279,7 @@ the log retention to never expire even if it was configured with a different val
 
 ### FileSystem Access
 
-You can configure a function to mount an Amazon Elastic File System (Amazon EFS) file system to a local directory. 
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) file system to a directory in your runtime environment. 
 
 The following sample enables the lambda function to mount the filesystem from Amazon EFS via the `accessPoint` to 
 the local `/mnt/msg` directory.
