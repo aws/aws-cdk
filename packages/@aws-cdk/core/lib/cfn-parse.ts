@@ -11,6 +11,114 @@ import { IResolvable } from './resolvable';
 import { isResolvableObject, Token } from './token';
 
 /**
+ * This class contains static methods called when going from
+ * translated values received from {@link CfnParser.parseValue}
+ * to the actual L1 properties -
+ * things like changing IResolvable to the appropriate type
+ * (string, string array, or number), etc.
+ *
+ * While this file not exported from the module
+ * (to not make it part of the public API),
+ * it is directly referenced in the generated L1 code.
+ *
+ * @experimental
+ */
+export class FromCloudFormation {
+  // nothing to for any but return it
+  public static getAny(value: any) { return value; }
+
+  // nothing to do - if 'value' is not a boolean or a Token,
+  // a validator should report that at runtime
+  public static getBoolean(value: any): boolean | IResolvable { return value; }
+
+  public static getDate(value: any): Date | IResolvable {
+    // if the date is a deploy-time value, just return it
+    if (isResolvableObject(value)) {
+      return value;
+    }
+
+    // if the date has been given as a string, convert it
+    if (typeof value === 'string') {
+      return new Date(value);
+    }
+
+    // all other cases - just return the value,
+    // if it's not a Date, a validator should catch it
+    return value;
+  }
+
+  public static getString(value: any): string {
+    // if the string is a deploy-time value, serialize it to a Token
+    if (isResolvableObject(value)) {
+      return value.toString();
+    }
+
+    // in all other cases, just return the input,
+    // and let a validator handle it if it's not a string
+    return value;
+  }
+
+  public static getNumber(value: any): number {
+    // if the string is a deploy-time value, serialize it to a Token
+    if (isResolvableObject(value)) {
+      return Token.asNumber(value);
+    }
+
+    // in all other cases, just return the input,
+    // and let a validator handle it if it's not a number
+    return value;
+  }
+
+  public static getStringArray(value: any): string[] {
+    // if the array is a deploy-time value, serialize it to a Token
+    if (isResolvableObject(value)) {
+      return Token.asList(value);
+    }
+
+    // in all other cases, delegate to the standard mapping logic
+    return this.getArray(value, this.getString);
+  }
+
+  public static getArray<T>(value: any, mapper: (arg: any) => T): T[] {
+    if (!Array.isArray(value)) {
+      // break the type system, and just return the given value,
+      // which hopefully will be reported as invalid by the validator
+      // of the property we're transforming
+      // (unless it's a deploy-time value,
+      // which we can't map over at build time anyway)
+      return value;
+    }
+
+    return value.map(mapper);
+  }
+
+  public static getMap<T>(value: any, mapper: (arg: any) => T): { [key: string]: T } {
+    if (typeof value !== 'object') {
+      // if the input is not a map (= object in JS land),
+      // just return it, and let the validator of this property handle it
+      // (unless it's a deploy-time value,
+      // which we can't map over at build time anyway)
+      return value;
+    }
+
+    const ret: { [key: string]: T } = {};
+    for (const [key, val] of Object.entries(value)) {
+      ret[key] = mapper(val);
+    }
+    return ret;
+  }
+
+  public static getCfnTag(tag: any): CfnTag {
+    return tag == null
+      ? { } as any // break the type system - this should be detected at runtime by a tag validator
+      : {
+        key: tag.Key,
+        value: tag.Value,
+      };
+  }
+}
+
+/**
  * The options for {@link FromCloudFormation.parseValue}.
  */
 export interface ParseCfnOptions {
@@ -258,114 +366,6 @@ export class CfnParser {
       default:
         throw new Error(`Unsupported CloudFormation function '${key}'`);
     }
-  }
-}
-
-/**
- * This class contains static methods called when going from
- * translated values received from {@link CfnParser.parseValue}
- * to the actual L1 properties -
- * things like changing IResolvable to the appropriate type
- * (string, string array, or number), etc.
- *
- * While this file not exported from the module
- * (to not make it part of the public API),
- * it is directly referenced in the generated L1 code.
- *
- * @experimental
- */
-export class FromCloudFormation {
-  // nothing to for any but return it
-  public static getAny(value: any) { return value; }
-
-  // nothing to do - if 'value' is not a boolean or a Token,
-  // a validator should report that at runtime
-  public static getBoolean(value: any): boolean | IResolvable { return value; }
-
-  public static getDate(value: any): Date | IResolvable {
-    // if the date is a deploy-time value, just return it
-    if (isResolvableObject(value)) {
-      return value;
-    }
-
-    // if the date has been given as a string, convert it
-    if (typeof value === 'string') {
-      return new Date(value);
-    }
-
-    // all other cases - just return the value,
-    // if it's not a Date, a validator should catch it
-    return value;
-  }
-
-  public static getString(value: any): string {
-    // if the string is a deploy-time value, serialize it to a Token
-    if (isResolvableObject(value)) {
-      return value.toString();
-    }
-
-    // in all other cases, just return the input,
-    // and let a validator handle it if it's not a string
-    return value;
-  }
-
-  public static getNumber(value: any): number {
-    // if the string is a deploy-time value, serialize it to a Token
-    if (isResolvableObject(value)) {
-      return Token.asNumber(value);
-    }
-
-    // in all other cases, just return the input,
-    // and let a validator handle it if it's not a number
-    return value;
-  }
-
-  public static getStringArray(value: any): string[] {
-    // if the array is a deploy-time value, serialize it to a Token
-    if (isResolvableObject(value)) {
-      return Token.asList(value);
-    }
-
-    // in all other cases, delegate to the standard mapping logic
-    return this.getArray(value, this.getString);
-  }
-
-  public static getArray<T>(value: any, mapper: (arg: any) => T): T[] {
-    if (!Array.isArray(value)) {
-      // break the type system, and just return the given value,
-      // which hopefully will be reported as invalid by the validator
-      // of the property we're transforming
-      // (unless it's a deploy-time value,
-      // which we can't map over at build time anyway)
-      return value;
-    }
-
-    return value.map(mapper);
-  }
-
-  public static getMap<T>(value: any, mapper: (arg: any) => T): { [key: string]: T } {
-    if (typeof value !== 'object') {
-      // if the input is not a map (= object in JS land),
-      // just return it, and let the validator of this property handle it
-      // (unless it's a deploy-time value,
-      // which we can't map over at build time anyway)
-      return value;
-    }
-
-    const ret: { [key: string]: T } = {};
-    for (const [key, val] of Object.entries(value)) {
-      ret[key] = mapper(val);
-    }
-    return ret;
-  }
-
-  public static getCfnTag(tag: any): CfnTag {
-    return tag == null
-      ? { } as any // break the type system - this should be detected at runtime by a tag validator
-      : {
-        key: tag.Key,
-        value: tag.Value,
-      };
   }
 }
 
