@@ -123,14 +123,10 @@ The following example adds the item from calling DynamoDB's `getItem` API to the
 input and passes it to the next state.
 
 ```ts
-new sfn.Task(this, 'PutItem', {
-  task: tasks.CallDynamoDB.getItem({
-    item: {
-      MessageId: new tasks.DynamoAttributeValue().withS('12345'),
-    },
-    tableName: 'my-table',
-  }),
-  resultPath: `$.Item`
+new tasks.DynamoGetItem(this, 'PutItem', {
+  item: { MessageId: { s: '12345'} },
+  tableName: 'my-table',
+  resultPath: `$.Item`,
 });
 ```
 
@@ -251,14 +247,9 @@ Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-fu
 The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
 
 ```ts
-new sfn.Task(this, 'Get Item', {
-  task: tasks.CallDynamoDB.getItem({
-    partitionKey: {
-      name: 'messageId',
-      value: new tasks.DynamoAttributeValue().withS('message-007'),
-    },
-    tableName: 'my-table',
-  }),
+new tasks.DynamoGetItem(this, 'Get Item', {
+  key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
+  table,
 });
 ```
 
@@ -267,15 +258,13 @@ new sfn.Task(this, 'Get Item', {
 The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
 
 ```ts
-new sfn.Task(this, 'PutItem', {
-  task: tasks.CallDynamoDB.putItem({
-    item: {
-      MessageId: new tasks.DynamoAttributeValue().withS('message-007'),
-      Text: new tasks.DynamoAttributeValue().withS(sfn.Data.stringAt('$.bar')),
-      TotalCount: new tasks.DynamoAttributeValue().withN('10'),
-    },
-    tableName: 'my-table',
-  }),
+new tasks.DynamoPutItem(this, 'PutItem', {
+  item: {
+    MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
+    Text: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.bar')),
+    TotalCount: tasks.DynamoAttributeValue.fromNumber(10),
+  },
+  table,
 });
 ```
 
@@ -284,14 +273,9 @@ new sfn.Task(this, 'PutItem', {
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
 ```ts
-new sfn.Task(this, 'DeleteItem', {
-  task: tasks.CallDynamoDB.deleteItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.DynamoAttributeValue().withS('message-007'),
-    },
-    tableName: 'my-table',
-  }),
+new tasks.DynamoDeleteItem(this, 'DeleteItem', {
+  key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
+  table,
   resultPath: 'DISCARD',
 });
 ```
@@ -302,19 +286,14 @@ The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/
 to the table if it does not already exist.
 
 ```ts
-const updateItemTask = new sfn.Task(this, 'UpdateItem', {
-  task: tasks.CallDynamoDB.updateItem({
-    partitionKey: {
-      name: 'MessageId',
-      value: new tasks.DynamoAttributeValue().withS('message-007'),
-    },
-    tableName: 'my-table',
-    expressionAttributeValues: {
-      ':val': new tasks.DynamoAttributeValue().withN(sfn.Data.stringAt('$.Item.TotalCount.N')),
-      ':rand': new tasks.DynamoAttributeValue().withN('20'),
-    },
-    updateExpression: 'SET TotalCount = :val + :rand',
-  }),
+new tasks.DynamoUpdateItem(this, 'UpdateItem', {
+  key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
+  table,
+  expressionAttributeValues: {
+    ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+    ':rand': tasks.DynamoAttributeValue.fromNumber(20),
+  },
+  updateExpression: 'SET TotalCount = :val + :rand',
 });
 ```
 
