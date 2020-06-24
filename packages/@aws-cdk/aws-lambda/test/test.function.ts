@@ -260,7 +260,7 @@ export = testCase({
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystems: {
-          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint,'/mnt/msg'),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         },
       });
 
