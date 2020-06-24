@@ -1,4 +1,5 @@
 import { CfnCondition } from './cfn-condition';
+import { CfnElement } from './cfn-element';
 import { CfnResource } from './cfn-resource';
 
 /**
@@ -14,6 +15,13 @@ export interface ICfnFinder {
    * returns undefined.
    */
   findCondition(conditionName: string): CfnCondition | undefined;
+
+  /**
+   * Returns the element referenced using a Ref expression with the given name.
+   * If there is no element with this name in the template,
+   * return undefined.
+   */
+  findRefTarget(elementName: string): CfnElement | undefined;
 
   /**
    * Returns the resource with the given logical ID in the template.

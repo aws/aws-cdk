@@ -1,23 +1,23 @@
 import { Test } from 'nodeunit';
-import { FromCloudFormation } from '../lib/cfn-parse';
+import { CfnParser } from '../lib/cfn-parse';
 
 export = {
   'FromCloudFormation class': {
     '#parseCreationPolicy': {
       'returns undefined when given a non-object as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseCreationPolicy('blah'), undefined);
+        test.equal(parseCreationPolicy('blah'), undefined);
 
         test.done();
       },
 
       'returns undefined when given an empty object as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseCreationPolicy({}), undefined);
+        test.equal(parseCreationPolicy({}), undefined);
 
         test.done();
       },
 
       'returns undefined when given empty sub-objects as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseCreationPolicy({
+        test.equal(parseCreationPolicy({
           AutoScalingCreationPolicy: null,
           ResourceSignal: {
             Count: undefined,
@@ -30,19 +30,19 @@ export = {
 
     '#parseUpdatePolicy': {
       'returns undefined when given a non-object as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseUpdatePolicy('blah'), undefined);
+        test.equal(parseUpdatePolicy('blah'), undefined);
 
         test.done();
       },
 
       'returns undefined when given an empty object as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseUpdatePolicy({}), undefined);
+        test.equal(parseUpdatePolicy({}), undefined);
 
         test.done();
       },
 
       'returns undefined when given empty sub-objects as the argument'(test: Test) {
-        test.equal(FromCloudFormation.parseUpdatePolicy({
+        test.equal(parseUpdatePolicy({
           AutoScalingReplacingUpdate: null,
           AutoScalingRollingUpdate: {
             PauseTime: undefined,
@@ -54,3 +54,19 @@ export = {
     },
   },
 };
+
+function parseCreationPolicy(policy: any) {
+  return testCfnParser.parseCreationPolicy(policy);
+}
+
+function parseUpdatePolicy(policy: any) {
+  return testCfnParser.parseUpdatePolicy(policy);
+}
+
+const testCfnParser = new CfnParser({
+  finder: {
+    findCondition() { return undefined; },
+    findRefTarget() { return undefined; },
+    findResource() { return undefined; },
+  },
+});
