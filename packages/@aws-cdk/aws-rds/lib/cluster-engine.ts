@@ -89,7 +89,7 @@ export interface IClusterEngine {
   bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
 }
 
-interface BaseClusterEngineProps {
+interface ClusterEngineBaseProps {
   readonly engineType: string;
   readonly needsS3RolesInParameters: boolean;
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -99,7 +99,7 @@ interface BaseClusterEngineProps {
   readonly engineVersion?: string;
 }
 
-abstract class BaseClusterEngine implements IClusterEngine {
+abstract class ClusterEngineBase implements IClusterEngine {
   public readonly engineType: string;
   public readonly engineVersion?: string;
   public readonly parameterGroupFamily: string;
@@ -112,7 +112,7 @@ abstract class BaseClusterEngine implements IClusterEngine {
   private readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
   private readonly defaultPort?: number;
 
-  constructor(props: BaseClusterEngineProps) {
+  constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
     this.needsS3RolesInParameters = props.needsS3RolesInParameters;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
@@ -201,7 +201,7 @@ export interface DefaultAuroraClusterEngineProps {
   readonly engineVersion?: string;
 }
 
-class DefaultAuroraClusterEngine extends BaseClusterEngine {
+class DefaultAuroraClusterEngine extends ClusterEngineBase {
   constructor(props: DefaultAuroraClusterEngineProps = {}) {
     super({
       engineType: 'aurora',
@@ -222,7 +222,7 @@ class DefaultAuroraClusterEngine extends BaseClusterEngine {
   }
 }
 
-abstract class NonDefaultAuroraClusterEngine extends BaseClusterEngine {
+abstract class NonDefaultAuroraClusterEngine extends ClusterEngineBase {
   protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'DatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);

@@ -55,7 +55,7 @@ export interface IInstanceEngine {
   bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
 }
 
-interface BaseInstanceEngineProps {
+interface InstanceEngineBaseProps {
   readonly engineType: string;
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -64,14 +64,14 @@ interface BaseInstanceEngineProps {
   readonly engineVersion?: string;
 }
 
-abstract class BaseInstanceEngine implements IInstanceEngine {
+abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly engineType: string;
   public readonly engineVersion?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly defaultInstanceType: ec2.InstanceType;
 
-  constructor(props: BaseInstanceEngineProps) {
+  constructor(props: InstanceEngineBaseProps) {
     this.engineType = props.engineType;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
@@ -86,7 +86,7 @@ abstract class BaseInstanceEngine implements IInstanceEngine {
   }
 }
 
-abstract class NonSqlServerInstanceEngine extends BaseInstanceEngine {
+abstract class NonSqlServerInstanceEngine extends InstanceEngineBase {
   public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone) {
       throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${this.engineType}`);
@@ -319,7 +319,7 @@ interface SqlServerInstanceEngineProps {
   readonly defaultInstanceType?: ec2.InstanceType;
 }
 
-abstract class SqlServerInstanceEngine extends BaseInstanceEngine {
+abstract class SqlServerInstanceEngine extends InstanceEngineBase {
   constructor(props: SqlServerInstanceEngineProps) {
     super({
       ...props,
