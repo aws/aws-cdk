@@ -43,11 +43,11 @@ export interface ParcelBaseOptions {
   readonly projectRoot?: string;
 
   /**
-   * The environment variables to pass to the container running Parcel.
+   * Environment variables defined when Parcel runs.
    *
-   * @default - no environment variables are passed to the container
+   * @default - no environment variables are defined.
    */
-  readonly containerEnvironment?: { [key: string]: string; };
+  readonly parcelEnvironment?: { [key: string]: string; };
 
   /**
    * A list of modules that should be considered as externals (already available
@@ -59,7 +59,7 @@ export interface ParcelBaseOptions {
 
   /**
    * A list of modules that should be installed instead of bundled. Modules are
-   * installed in Lambda comptabile environnment.
+   * installed in a Lambda compatible environnment.
    *
    * @default - all modules are bundled
    */
@@ -170,11 +170,8 @@ export class Bundling {
       assetHashType: cdk.AssetHashType.BUNDLE,
       bundling: {
         image,
-        command: ['bash', '-c', chain([
-          parcelCommand,
-          depsCommand ?? '',
-        ])],
-        environment: options.containerEnvironment,
+        command: ['bash', '-c', chain([parcelCommand, depsCommand])],
+        environment: options.parcelEnvironment,
         volumes: options.cacheDir
           ? [{ containerPath: '/parcel-cache', hostPath: options.cacheDir }]
           : [],

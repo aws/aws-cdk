@@ -20,7 +20,7 @@ test('Parcel bundling', () => {
     runtime: Runtime.NODEJS_12_X,
     cacheDir: '/cache-dir',
     projectRoot: '/project',
-    containerEnvironment: {
+    parcelEnvironment: {
       KEY: 'value',
     },
   });
@@ -132,7 +132,6 @@ test('Detects yarn.lock', () => {
     entry: '/project/folder/entry.ts',
     runtime: Runtime.NODEJS_12_X,
     projectRoot: '/project',
-    externalModules: ['abc'],
     installModules: ['delay'],
   });
 

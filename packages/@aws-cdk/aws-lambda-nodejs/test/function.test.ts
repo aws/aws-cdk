@@ -49,13 +49,13 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    containerEnvironment: {
+    parcelEnvironment: {
       KEY: 'VALUE',
     },
   });
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    containerEnvironment: {
+    parcelEnvironment: {
       KEY: 'VALUE',
     },
   }));

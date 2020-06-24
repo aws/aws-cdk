@@ -76,9 +76,10 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 #### Install modules
+By default, all node modules referenced in your Lambda code will be bundled by Parcel.
 Use the `installModules` prop to specify a list of modules that should not be bundled
-but included in the `node_modules` folder of the Lambda package. This is useful when
-working with native dependencies or when Parcel fails to bundle a module.
+but instead included in the `node_modules` folder of the Lambda package. This is useful
+when working with native dependencies or when Parcel fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
