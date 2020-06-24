@@ -22,7 +22,7 @@ export interface RunLambdaTaskProps {
    * The valid value for Lambda is either FIRE_AND_FORGET or WAIT_FOR_TASK_TOKEN,
    * it determines whether to pause the workflow until a task token is returned.
    *
-   * If this is set to WAIT_FOR_TASK_TOKEN, the Context.taskToken value must be included
+   * If this is set to WAIT_FOR_TASK_TOKEN, the JsonPath.taskToken value must be included
    * somewhere in the payload and the Lambda must call
    * `SendTaskSuccess/SendTaskFailure` using that token.
    *
@@ -79,7 +79,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
         && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new Error('Task Token is missing in payload (pass Context.taskToken somewhere in payload)');
+      throw new Error('Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)');
     }
   }
 

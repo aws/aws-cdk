@@ -277,7 +277,7 @@ execute the same steps for multiple entries of an array in the state input.
 ```ts
 const map = new stepfunctions.Map(this, 'Map State', {
     maxConcurrency: 1,
-    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap')
 });
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
