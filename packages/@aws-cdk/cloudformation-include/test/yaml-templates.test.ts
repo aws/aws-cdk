@@ -26,7 +26,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'sample-join-getatt.yaml');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('sample-join-getatt.yaml'),
+      loadTestFileToJsObject('../sample-join-getatt.json'),
     ); 
   });
 
@@ -34,7 +34,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'functions-and-conditions.yaml');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('functions-and-conditions.json'),
+      loadTestFileToJsObject('../functions-and-conditions.json'),
     ); 
   });
 
@@ -43,7 +43,7 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'bucket-with-parameters.yaml');
 
       expect(stack).toMatchTemplate(
-          loadTestFileToJsObject('bucket-with-parameters.yaml'),
+          loadTestFileToJsObject('../bucket-with-parameters.json'),
       );
   });
 });

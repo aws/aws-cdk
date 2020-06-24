@@ -4,7 +4,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       ReplicationConfiguration:
-        Role: !GetAtt [WorkItemBucketBackupRole, Arn]
+        Role: !GetAtt WorkItemBucketBackupRole.!Ref 'AWS::Region'
         Rules:
         - Destination:
             Bucket: !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref 'AWS::Region', !Ref 'AWS::StackName',

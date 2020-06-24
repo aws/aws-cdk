@@ -75,11 +75,11 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        !If
+        Fn::If:
         - AndCond
-        - !Transform
+        - Fn::Transform:
             Name: AWS::Include
             Parameters:
               Location: location
               AnotherParameter:
-                !Base64 AnotherValue
+                Fn::Base64: AnotherValue
