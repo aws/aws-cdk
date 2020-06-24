@@ -18,7 +18,6 @@ export = {
 
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
-      engineFamily: rds.ProxyEngineFamily.MYSQL,
       proxyTarget: rds.ProxyTarget.fromInstance(instance),
       secret: instance.secret!,
       vpc,
@@ -90,7 +89,6 @@ export = {
 
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
-      engineFamily: rds.ProxyEngineFamily.POSTGRESQL,
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
       secret: cluster.secret!,
       vpc,

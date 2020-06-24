@@ -213,7 +213,6 @@ const proxy = dbInstance.addProxy('proxy', {
         connectionBorrowTimeout: cdk.Duration.seconds(30),
         maxConnectionsPercent: 50,
     },
-    engineFamily: rds.DatabaseProxyEngine.POSTGRESQL,
     secret,
     vpc,
 });

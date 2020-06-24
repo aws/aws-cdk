@@ -4,7 +4,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { IDatabaseCluster } from './cluster-ref';
 import { IDatabaseInstance } from './instance';
-import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
  * The kinds of databases that the proxy can connect to.
@@ -29,13 +29,27 @@ export enum ProxyEngineFamily {
  *
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html#rds-proxy-pinning
  */
-export enum SessionPinningFilter {
+export class SessionPinningFilter {
   /**
    * You can opt out of session pinning for the following kinds of application statements:
    *
    * - Setting session variables and configuration settings.
    */
-  EXCLUDE_VARIABLE_SETS = 'EXCLUDE_VARIABLE_SETS'
+  public static readonly EXCLUDE_VARIABLE_SETS = new SessionPinningFilter('EXCLUDE_VARIABLE_SETS');
+
+  /**
+   * custom filter
+   */
+  public static of(filterName: string): SessionPinningFilter {
+    return new SessionPinningFilter(filterName);
+  }
+
+  private constructor(
+    /**
+     * Filter name
+     */
+    public readonly filterName: string,
+  ) {}
 }
 
 /**
@@ -114,7 +128,9 @@ export class ProxyTarget {
    * @param instance RDS database instance
    */
   public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
-    return new ProxyTarget([instance.instanceIdentifier]);
+    const _instance = instance.node.defaultChild as CfnDBInstance;
+    const engine = ProxyTarget.fromEngine(_instance.engine!);
+    return new ProxyTarget(engine, [instance.instanceIdentifier]);
   }
 
   /**
@@ -123,10 +139,37 @@ export class ProxyTarget {
    * @param cluster RDS database cluster
    */
   public static fromCluster(cluster: IDatabaseCluster): ProxyTarget {
-    return new ProxyTarget(cluster.instanceIdentifiers, [cluster.clusterIdentifier]);
+    const _cluster = cluster.node.defaultChild as CfnDBCluster;
+    const engine = ProxyTarget.fromEngine(_cluster.engine);
+    return new ProxyTarget(engine, cluster.instanceIdentifiers, [cluster.clusterIdentifier]);
+  }
+
+  /**
+   * @deprecated - will be removed after https://github.com/aws/aws-cdk/pull/8686
+   */
+  private static fromEngine(engine: string): ProxyEngineFamily {
+    switch (engine) {
+      case 'aurora':
+      case 'aurora-mysql':
+      case 'mysql':
+        return ProxyEngineFamily.MYSQL;
+      case 'aurora-postgresql':
+      case 'postgres':
+        return ProxyEngineFamily.POSTGRESQL;
+      default:
+        throw new Error(`Unsupported engine type - ${engine}`);
+    }
   }
 
   private constructor(
+    /**
+     * The kinds of databases that the proxy can connect to.
+     * This value determines which database network protocol the proxy recognizes when it interprets network traffic to
+     * and from the database.
+     * The engine family applies to MySQL and PostgreSQL for both RDS and Aurora.
+     */
+    public readonly engineFamily: ProxyEngineFamily,
+
     /**
      * One or more DB instance identifiers.
      */
@@ -189,20 +232,19 @@ export interface DatabaseProxyOptions {
   readonly idleClientTimeout?: cdk.Duration;
 
   /**
-   * The kinds of databases that the proxy can connect to.
-   * This value determines which database network protocol the proxy recognizes when it interprets network traffic to
-   * and from the database.
-   * The engine family applies to MySQL and PostgreSQL for both RDS and Aurora.
-   */
-  readonly engineFamily: ProxyEngineFamily;
-
-  /**
    * A Boolean parameter that specifies whether Transport Layer Security (TLS) encryption is required for connections to the proxy.
    * By enabling this setting, you can enforce encrypted TLS connections to the proxy.
    *
    * @default false
    */
   readonly requireTLS?: boolean;
+
+  /**
+   * IAM role that the proxy uses to access secrets in AWS Secrets Manager.
+   *
+   * @default - A role will automatically be created
+   */
+  readonly role?: iam.IRole;
 
   /**
    * The secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster.
@@ -342,29 +384,16 @@ export class DatabaseProxy extends cdk.Resource
    */
   public readonly connections: ec2.Connections;
 
-  protected readonly resource: CfnDBProxy;
+  private readonly resource: CfnDBProxy;
 
   constructor(scope: cdk.Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id, { physicalName: props.dbProxyName || id });
 
-    const role = new iam.Role(this, 'IAMRole', {
+    const role = props.role || new iam.Role(this, 'IAMRole', {
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
-      inlinePolicies: {
-        0: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: [
-                'secretsmanager:DescribeSecret',
-                'secretsmanager:ListSecretVersionIds',
-                'secretsmanager:GetResourcePolicy',
-                'secretsmanager:GetSecretValue',
-              ],
-              resources: [props.secret.secretArn],
-            }),
-          ],
-        }),
-      },
     });
+
+    props.secret.grantRead(role);
 
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
 
@@ -378,7 +407,7 @@ export class DatabaseProxy extends cdk.Resource
       ],
       dbProxyName: this.physicalName,
       debugLogging: props.debugLogging,
-      engineFamily: props.engineFamily,
+      engineFamily: props.proxyTarget.engineFamily,
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
       requireTls: props.requireTLS,
       roleArn: role.roleArn,
@@ -424,6 +453,6 @@ function toConnectionPoolConfigurationInfo(
     initQuery: config.initQuery,
     maxConnectionsPercent: config.maxConnectionsPercent,
     maxIdleConnectionsPercent: config.maxIdleConnectionsPercent,
-    sessionPinningFilters: config.sessionPinningFilters,
+    sessionPinningFilters: config.sessionPinningFilters?.map(_ => _.filterName),
   };
 }

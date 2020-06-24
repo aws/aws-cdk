@@ -19,7 +19,6 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
     borrowTimeout: cdk.Duration.seconds(30),
     maxConnectionsPercent: 50,
   },
-  engineFamily: rds.ProxyEngineFamily.POSTGRESQL,
   secret: dbInstance.secret!,
   proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
