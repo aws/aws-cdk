@@ -4,7 +4,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       BucketName: 
-        MyBucketName
+        !Ref MyBucketName
       CorsConfiguration:
         CorsRules:
           - AllowedMethods: 

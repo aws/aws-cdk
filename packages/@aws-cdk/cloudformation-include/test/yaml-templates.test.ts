@@ -22,13 +22,22 @@ describe('CDK Include', () => {
     );
   });
 
-  /* test('can ingest a template with a complex S3 Bucket, and output it unchanged', () => {
-    includeTestTemplate(stack, 'complex-bucket.yaml');
+  test('can ingest a complex cloudformation template with Fn::Join and Fn::GetAtt and output it unchanged', () => {
+    includeTestTemplate(stack, 'sample-join-getatt.yaml');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('complex-bucket.yaml'),
+      loadTestFileToJsObject('sample-join-getatt.yaml'),
     ); 
-  }); */
+  });
+
+  test('can ingest a template with many functions and conditions and output it unchanged', () => {
+    includeTestTemplate(stack, 'functions-and-conditions.yaml');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('functions-and-conditions.json'),
+    ); 
+  });
+
 
   test('can ingest a yaml template with parameters and output it unchanged', () => {
       includeTestTemplate(stack, 'bucket-with-parameters.yaml');
