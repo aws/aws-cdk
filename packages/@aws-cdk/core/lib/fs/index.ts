@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import { CopyOptions, FingerprintOptions } from './options';
@@ -43,4 +45,27 @@ export class FileSystem {
   public static isEmpty(dir: string): boolean {
     return fs.readdirSync(dir).length === 0;
   }
+
+  /**
+   * The real path of the system temp directory
+   */
+  public static get tmpdir(): string {
+    if (FileSystem._tmpdir) {
+      return FileSystem._tmpdir;
+    }
+    FileSystem._tmpdir = fs.realpathSync(os.tmpdir());
+    return FileSystem._tmpdir;
+  }
+
+  /**
+   * Creates a unique temporary directory in the **system temp directory**.
+   *
+   * @param prefix A prefix for the directory name. Six random characters
+   * will be generated and appended behind this prefix.
+   */
+  public static mkdtemp(prefix: string): string {
+    return fs.mkdtempSync(path.join(FileSystem.tmpdir, prefix));
+  }
+
+  private static _tmpdir?: string;
 }

@@ -23,6 +23,7 @@ export interface CfnIncludeProps {
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
+  private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -35,12 +36,17 @@ export class CfnInclude extends core.CfnElement {
     // ToDo implement preserveLogicalIds=false
     this.preserveLogicalIds = true;
 
-    // first, instantiate the conditions
+    // instantiate all parameters
+    for (const logicalId of Object.keys(this.template.Parameters || {})) {
+      this.createParameter(logicalId);
+    }
+
+    // instantiate the conditions
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.createCondition(conditionName);
     }
 
-    // then, instantiate all resources as CDK L1 objects
+    // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
     }
@@ -72,7 +78,7 @@ export class CfnInclude extends core.CfnElement {
 
   /**
    * Returns the CfnCondition object from the 'Conditions'
-   * section of the CloudFormation template with the give name.
+   * section of the CloudFormation template with the given name.
    * Any modifications performed on that object will be reflected in the resulting CDK template.
    *
    * If a Condition with the given name is not present in the template,
@@ -88,19 +94,56 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnParameter object from the 'Parameters'
+   * section of the included template
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Parameter with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param parameterName the name of the parameter to retrieve
+   */
+  public getParameter(parameterName: string): core.CfnParameter {
+    const ret = this.parameters[parameterName];
+    if (!ret) {
+      throw new Error(`Parameter with name '${parameterName}' was not found in the template`);
+    }
+    return ret;
+  }
+
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
-      // except Conditions and Resources, which will be taken care of by the created L1s
-      if (section !== 'Conditions' && section !== 'Resources') {
+      // except Conditions, Resources, and Parameters, which will be taken care of by the created L1s
+      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters') {
         ret[section] = this.template[section];
       }
     }
 
     return ret;
+  }
+
+  private createParameter(logicalId: string): void {
+    const expression = cfn_parse.FromCloudFormation.parseValue(this.template.Parameters[logicalId]);
+    const cfnParameter = new core.CfnParameter(this, logicalId, {
+      type: expression.Type,
+      default: expression.Default,
+      allowedPattern: expression.AllowedPattern,
+      constraintDescription: expression.ConstraintDescription,
+      description: expression.Description,
+      maxLength: expression.MaxLength,
+      maxValue: expression.MaxValue,
+      minLength: expression.MinLength,
+      minValue: expression.MinValue,
+      noEcho: expression.NoEcho,
+    });
+
+    cfnParameter.overrideLogicalId(logicalId);
+    this.parameters[logicalId] = cfnParameter;
   }
 
   private createCondition(conditionName: string): void {
@@ -129,7 +172,10 @@ export class CfnInclude extends core.CfnElement {
       throw new Error(`Unrecognized CloudFormation resource type: '${resourceAttributes.Type}'`);
     }
     // fail early for resource attributes we don't support yet
-    const knownAttributes = ['Type', 'Properties', 'Condition', 'DependsOn', 'DeletionPolicy', 'UpdateReplacePolicy', 'Metadata'];
+    const knownAttributes = [
+      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
+      'CreationPolicy', 'UpdatePolicy', 'DeletionPolicy', 'UpdateReplacePolicy',
+    ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
         throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
