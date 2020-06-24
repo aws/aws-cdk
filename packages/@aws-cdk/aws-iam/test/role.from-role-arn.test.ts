@@ -508,7 +508,7 @@ describe('IAM Role.fromRoleArn', () => {
           `arn:aws:iam::${roleAccount}:role/aws-service-role/anyservice.amazonaws.com/codebuild-role`);
       });
 
-      it("correctly strips both the 'service-role' prefix and the service principal from the role name", () => {
+      it("correctly strips both the 'aws-service-role' prefix and the service principal from the role name", () => {
         new Policy(roleStack, 'Policy', {
           statements: [somePolicyStatement()],
           roles: [importedRole],
