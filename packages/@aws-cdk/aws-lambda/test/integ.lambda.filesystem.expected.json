@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc"
+            "Value": "aws-cdk-lambda-1/Vpc"
           }
         ]
       }
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet2"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet2"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -197,7 +197,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet3"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -211,7 +211,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PublicSubnet3"
+            "Value": "aws-cdk-lambda-1/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -262,7 +262,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -276,7 +276,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet1"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -324,7 +324,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet2"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -338,7 +338,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet2"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -386,7 +386,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet3"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -400,7 +400,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc/PrivateSubnet3"
+            "Value": "aws-cdk-lambda-1/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -434,7 +434,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Vpc"
+            "Value": "aws-cdk-lambda-1/Vpc"
           }
         ]
       }
@@ -456,7 +456,7 @@
         "FileSystemTags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Efs"
+            "Value": "aws-cdk-lambda-1/Efs"
           }
         ],
         "ProvisionedThroughputInMibps": 1024,
@@ -468,7 +468,7 @@
     "EfsEfsSecurityGroup6F40EA3B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-lambda-4/Efs/EfsSecurityGroup",
+        "GroupDescription": "aws-cdk-lambda-1/Efs/EfsSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -479,7 +479,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-lambda-4/Efs"
+            "Value": "aws-cdk-lambda-1/Efs"
           }
         ],
         "VpcId": {
@@ -487,11 +487,11 @@
         }
       }
     },
-    "EfsEfsSecurityGroupfromawscdklambda4EfsEfsSecurityGroupA6FCC178204916F497B7": {
+    "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from awscdklambda4EfsEfsSecurityGroupA6FCC178:2049",
+        "Description": "from awscdklambda1EfsEfsSecurityGroup75BEE04E:2049",
         "FromPort": 2049,
         "GroupId": {
           "Fn::GetAtt": [
@@ -571,18 +571,7 @@
         "FileSystemId": {
           "Ref": "Efs9E8BF36B"
         },
-        "PosixUser": {
-          "Gid": "1000",
-          "Uid": "1000"
-        },
-        "RootDirectory": {
-          "CreationInfo": {
-            "OwnerGid": "1000",
-            "OwnerUid": "1000",
-            "Permissions": "755"
-          },
-          "Path": "/lambda"
-        }
+        "RootDirectory": {}
       }
     },
     "MyLambdaServiceRole4539ECB6": {
@@ -643,7 +632,7 @@
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda4EfsEfsSecurityGroupA6FCC178204916F497B7",
+        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
         "EfsEfsSecurityGroup6F40EA3B",
         "Efs9E8BF36B"
       ]
@@ -716,7 +705,7 @@
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda4EfsEfsSecurityGroupA6FCC178204916F497B7",
+        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
         "EfsEfsSecurityGroup6F40EA3B",
         "Efs9E8BF36B",
         "MyLambdaServiceRole4539ECB6"

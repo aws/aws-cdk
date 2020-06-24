@@ -5,7 +5,7 @@ import * as lambda from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-lambda-4');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 3,
@@ -14,9 +14,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const fileSystem = new efs.FileSystem(stack, 'Efs', {
   vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE,
-  },
+  // vpcSubnets: {
+  //   subnetType: ec2.SubnetType.PRIVATE,
+  // },
   throughputMode: efs.ThroughputMode.PROVISIONED,
   provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
 });
@@ -75,7 +75,7 @@ def lambda_handler(event, context):
   handler: 'index.lambda_handler',
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
-  // securityGroups: fileSystem.connections.securityGroups,
+  securityGroups: fileSystem.connections.securityGroups,
   filesystems: {
     filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   },
