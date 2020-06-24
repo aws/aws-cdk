@@ -277,6 +277,47 @@ correct log retention period (never expire, by default).
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
 
+### FileSystem Access
+
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) file system to a local directory. 
+
+The following sample enables the lambda function to mount the filesystem from Amazon EFS via the `accessPoint` to 
+the local `/mnt/msg` directory.
+
+```ts
+const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
+  fileSystem,
+  createAcl: {
+    ownerGid: '1000',
+    ownerUid: '1000',
+    permissions: '755',
+  },
+  path: '/lambda',
+  posixUser: {
+    uid: '1000',
+    gid: '1000',
+  },
+});
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code,
+  handler,
+  runtime,
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+  securityGroups: fileSystem.connections.securityGroups,
+  filesystems: {
+    filesystem: lambda.LambdaFileSystem.fromEfsFileSystem(accessPoint),
+    localMountPath: '/mnt/msg',
+  },
+});
+
+fn.node.addDependency(accessPoint, fileSystem);
+```
+
+
 ### Singleton Function
 
 The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
