@@ -1,5 +1,6 @@
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
 
 /**
  * Use a classic ELB as an alias record target
@@ -9,9 +10,11 @@ export class ClassicLoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+    const delimiter: string = '.';
+    const prefix: string[] = ['dualstack'];
     return {
       hostedZoneId: this.loadBalancer.loadBalancerCanonicalHostedZoneNameId,
-      dnsName: this.loadBalancer.loadBalancerDnsName,
+      dnsName: cdk.Fn.join(delimiter, prefix.concat([this.loadBalancer.loadBalancerDnsName])),
     };
   }
 }
