@@ -419,7 +419,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -438,7 +442,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -631,7 +639,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -650,7 +662,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -666,6 +682,126 @@ export = {
               ],
             },
           ],
+        }],
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantAttachVolume to instance self'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t3.small'),
+      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      availabilityZone: 'us-east-1a',
+    });
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // WHEN
+    volume.grantAttachVolumeToSelf(instance);
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'ec2:AttachVolume',
+          Effect: 'Allow',
+          Resource: [
+            {},
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':instance/*',
+                ],
+              ],
+            },
+          ],
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'ec2:ResourceTag/VolumeGrantAttach-BD7A9717': 'Volume',
+            },
+          },
+        }],
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantAttachVolume to instance self with suffix'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t3.small'),
+      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      availabilityZone: 'us-east-1a',
+    });
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // WHEN
+    volume.grantAttachVolumeToSelf(instance, 'TestSuffix');
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'ec2:AttachVolume',
+          Effect: 'Allow',
+          Resource: [
+            {},
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':instance/*',
+                ],
+              ],
+            },
+          ],
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'Volume',
+            },
+          },
         }],
       },
     }));
@@ -697,7 +833,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -716,7 +856,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -773,7 +917,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -792,7 +940,11 @@ export = {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:ec2:',
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
                   {
                     Ref: 'AWS::Region',
                   },
@@ -808,6 +960,126 @@ export = {
               ],
             },
           ],
+        }],
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantDetachVolume from instance self'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t3.small'),
+      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      availabilityZone: 'us-east-1a',
+    });
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // WHEN
+    volume.grantDetachVolumeFromSelf(instance);
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'ec2:DetachVolume',
+          Effect: 'Allow',
+          Resource: [
+            {},
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':instance/*',
+                ],
+              ],
+            },
+          ],
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'ec2:ResourceTag/VolumeGrantDetach-BD7A9717': 'Volume',
+            },
+          },
+        }],
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantDetachVolume from instance self with suffix'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t3.small'),
+      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      availabilityZone: 'us-east-1a',
+    });
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // WHEN
+    volume.grantDetachVolumeFromSelf(instance, 'TestSuffix');
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'ec2:DetachVolume',
+          Effect: 'Allow',
+          Resource: [
+            {},
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':instance/*',
+                ],
+              ],
+            },
+          ],
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'Volume',
+            },
+          },
         }],
       },
     }));

@@ -1,8 +1,10 @@
+import * as crypto from 'crypto';
+
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
-import { IInstance } from './instance';
+import { IInstance, Instance } from './instance';
 
 /**
  * Block device
@@ -266,9 +268,11 @@ export interface IVolume extends IResource {
 
   /**
    * Grants permission to attach this Volume to an instance.
-   * CAUTION: Granting an instance permission to attach to itself will lead to an unresolvable circular
-   * reference between the instance role and the instance. See the README for an example of how to
-   * resolve this circular reference.
+   * CAUTION: Granting an instance permission to attach to itself using this method will lead to
+   * an unresolvable circular reference between the instance role and the instance.
+   * Use {@link IVolume.grantAttachVolumeToSelf} to grant an instance permission to attach this
+   * volume to itself.
+   *
    * @param grantee  the principal being granted permission.
    * @param instances the instances to which permission is being granted to attach this
    *                 volume to. If not specified, then permission is granted to attach
@@ -277,16 +281,50 @@ export interface IVolume extends IResource {
   grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
 
   /**
+   * Grants permission to an instance to attach this Volume to itself.
+   *
+   * Note: This is implemented by adding a Tag with key `VolumeGrantAttach-<suffix>` to the
+   * instance and this Volume, and then conditioning the Grant on the presence of that Tag on
+   * both the instance and Volume. If you need to grant AttachVolume of this same Volume to
+   * multiple instances then provide a unique `tagKeySuffix` for each attachment; failure to do
+   * so will result in an inability to attach this volume to some instances.
+   *
+   * @param instance     The instance that will be allowed to attach this volume to itself.
+   * [disable-awslint:ref-via-interface]
+   * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
+   *                     Defaults to a hash calculated from this volume.
+   */
+  grantAttachVolumeToSelf(instance: Instance, tagKeySuffix?: string): Grant;
+
+  /**
    * Grants permission to detach this Volume from an instance
-   * CAUTION: Granting an instance permission to detach from itself will lead to an unresolvable circular
-   * reference between the instance role and the instance. See the README for an example of how to
-   * resolve this circular reference.
+   * CAUTION: Granting an instance permission to detach from itself using this method will lead to
+   * an unresolvable circular reference between the instance role and the instance.
+   * Use {@link IVolume.grantDetachVolumeFromSelf} to grant an instance permission to detach this
+   * volume from itself.
+   *
    * @param grantee  the principal being granted permission.
    * @param instances the instances to which permission is being granted to detach this
-   *                 volume from. If not specified, then permission is granted to attach
-   *                 to all instances in this account.
+   *                 volume from. If not specified, then permission is granted to detach
+   *                 from all instances in this account.
    */
   grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+
+  /**
+   * Grants permission to an instance to detach this Volume from itself.
+   *
+   * Note: This is implemented by adding a Tag with key `VolumeGrantDetach-<suffix>` to the
+   * instance and this Volume, and then conditioning the Grant on the presence of that Tag on
+   * both the instance and Volume. If you need to grant DetachVolume of this same Volume to
+   * multiple instances then provide a unique `tagKeySuffix` for each attachment; failure to do
+   * so will result in an inability to detach this volume from some instances.
+   *
+   * @param instance     The instance that will be allowed to detach this volume to itself.
+   * [disable-awslint:ref-via-interface]
+   *  @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
+   *                     Defaults to a hash calculated from this volume.
+   */
+  grantDetachVolumeFromSelf(instance: Instance, tagKeySuffix?: string): Grant;
 }
 
 /**
@@ -435,6 +473,7 @@ abstract class VolumeBase extends Resource implements IVolume {
       actions: [ 'ec2:AttachVolume' ],
       resourceArns : this.collectGrantResourceArns(instances),
     });
+
     if (this.encryptionKey) {
       // When attaching a volume, the EC2 Service will need to grant to itself permission
       // to be able to decrypt the encryption key. We restrict the CreateGrant for principle
@@ -451,6 +490,24 @@ abstract class VolumeBase extends Resource implements IVolume {
         },
       );
     }
+
+    return result;
+  }
+
+  public grantAttachVolumeToSelf(instance: Instance, tagKeySuffix?: string): Grant {
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
+    const tagValue = this.node.uniqueId;
+    const grantCondition: { [key: string]: string } = {};
+    grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
+
+    const result = this.grantAttachVolume(instance);
+    result.principalStatement!.addCondition(
+      'ForAnyValue:StringEquals', grantCondition,
+    );
+
+    Tag.add(this, tagKey, tagValue);
+    Tag.add(instance, tagKey, tagValue);
+
     return result;
   }
 
@@ -464,17 +521,40 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
+  public grantDetachVolumeFromSelf(instance: Instance, tagKeySuffix?: string): Grant {
+    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
+    const tagValue = this.node.uniqueId;
+    const grantCondition: { [key: string]: string } = {};
+    grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
+
+    const result = this.grantDetachVolume(instance);
+    result.principalStatement!.addCondition(
+      'ForAnyValue:StringEquals', grantCondition,
+    );
+
+    Tag.add(this, tagKey, tagValue);
+    Tag.add(instance, tagKey, tagValue);
+
+    return result;
+  }
+
   private collectGrantResourceArns(instances?: IInstance[]): string[] {
     const stack = Stack.of(this);
     const resourceArns: string[] = [
-      `arn:aws:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
+      `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
     ];
+    const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`arn:aws:ec2:${stack.region}:${stack.account}:instance/${instance?.instanceId}`));
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
     } else {
-      resourceArns.push(`arn:aws:ec2:${stack.region}:${stack.account}:instance/*`);
+      resourceArns.push(`${instanceArnPrefix}/*`);
     }
     return resourceArns;
+  }
+
+  private stringHash(value: string): string {
+    const md5 = crypto.createHash('md5').update(value).digest('hex');
+    return md5.slice(0, 8).toUpperCase();
   }
 }
 
