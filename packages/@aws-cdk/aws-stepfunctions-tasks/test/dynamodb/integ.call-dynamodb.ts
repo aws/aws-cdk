@@ -34,7 +34,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const putItemTask = new tasks.DynamoPutItem(this, 'PutItem', {
       item: {
         MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID),
-        Text: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.bar')),
+        Text: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.bar')),
         TotalCount: tasks.DynamoAttributeValue.fromNumber(firstNumber),
       },
       table,
@@ -49,7 +49,7 @@ class CallDynamoDBStack extends cdk.Stack {
       key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
       expressionAttributeValues: {
-        ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+        ':val': tasks.DynamoAttributeValue.numberFromString(sfn.JsonPath.stringAt('$.Item.TotalCount.N')),
         ':rand': tasks.DynamoAttributeValue.fromNumber(secondNumber),
       },
       updateExpression: 'SET TotalCount = :val + :rand',
@@ -58,13 +58,13 @@ class CallDynamoDBStack extends cdk.Stack {
     const getItemTaskAfterUpdate = new tasks.DynamoGetItem(this, 'GetItemAfterUpdate', {
       key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
-      outputPath: sfn.Data.stringAt('$.Item.TotalCount.N'),
+      outputPath: sfn.JsonPath.stringAt('$.Item.TotalCount.N'),
     });
 
     const deleteItemTask = new tasks.DynamoDeleteItem(this, 'DeleteItem', {
       key: { MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID) },
       table,
-      resultPath: 'DISCARD',
+      resultPath: sfn.JsonPath.DISCARD,
     });
 
     const definition = new sfn.Pass(this, 'Start', {
