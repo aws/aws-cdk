@@ -83,3 +83,4 @@ Resources:
               Location: location
               AnotherParameter:
                 Fn::Base64: AnotherValue
+
