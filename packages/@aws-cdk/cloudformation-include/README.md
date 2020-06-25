@@ -87,6 +87,7 @@ resource by importing it by its name:
 const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
+You can also use YAML templates, instead of JSON.
 
 ## Conditions
 
