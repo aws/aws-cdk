@@ -76,7 +76,7 @@ class EksClusterStack extends TestStack {
     cluster.addChart('nginx-ingress', { 
       chart: 'nginx-ingress', 
       repository: 'https://helm.nginx.com/stable', 
-      namespace: 'kube-system' 
+      namespace: 'kube-system',
     });
 
     // add a service account connected to a IAM role
