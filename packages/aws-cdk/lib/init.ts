@@ -302,7 +302,6 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
     await execute(command, ['install'], { cwd });
   } catch (e) {
     warning(`${command} install failed: ` + e.message);
-    warning(`Please run ${command} install`);
   }
 }
 
