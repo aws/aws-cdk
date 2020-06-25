@@ -77,7 +77,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 #### Install modules
 By default, all node modules referenced in your Lambda code will be bundled by Parcel.
-Use the `installModules` prop to specify a list of modules that should not be bundled
+Use the `nodeModules` prop to specify a list of modules that should not be bundled
 but instead included in the `node_modules` folder of the Lambda package. This is useful
 when working with native dependencies or when Parcel fails to bundle a module.
 
@@ -87,7 +87,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-The modules listed in `installModules` must be present in the `package.json`'s dependencies. The
+The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
 same version will be used for installation. If a lock file is detected (`package-lock.json` or
 `yarn.lock`) it will be used along with the right installer (`npm` or `yarn`). The modules are
 installed in a [Lambda compatible Docker container](https://github.com/lambci/docker-lambda).
