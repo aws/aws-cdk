@@ -293,7 +293,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
-    warning(`Please run ${colors.green(`${command} install`)}!`);
+    warning(`Please run '${command} install'!`);
     return;
   }
 
@@ -313,7 +313,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print(`Executing ${colors.green('mvn package')}...`);
+  print('Executing \'mvn package\'');
   try {
     await execute('mvn', ['package'], { cwd });
   } catch (e) {
@@ -325,12 +325,13 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
+  warning(`Please run ${python} -m venv .env'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.env'], { cwd });
   } catch (e) {
     warning('Unable to create virtualenv automatically');
-    warning(`Please run ${colors.green(python + ' -m venv .env')}!`);
+    warning(`Please run '${python} -m venv .env'!`);
   }
 }
 
