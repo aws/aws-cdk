@@ -67,7 +67,7 @@ test('Running a Fargate Task', () => {
     containerOverrides: [
       {
         containerDefinition,
-        environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+        environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
       },
     ],
     launchTarget: new tasks.EcsFargateLaunchTarget({
@@ -180,7 +180,7 @@ test('Running an EC2 Task with bridge network', () => {
     containerOverrides: [
       {
         containerDefinition,
-        environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+        environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
       },
     ],
     launchTarget: new tasks.EcsEc2LaunchTarget(),
@@ -334,9 +334,9 @@ test('Running an EC2 Task with overridden number values', () => {
     containerOverrides: [
       {
         containerDefinition,
-        command: sfn.Data.listAt('$.TheCommand'),
+        command: sfn.JsonPath.listAt('$.TheCommand'),
         cpu: 5,
-        memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
+        memoryLimit: sfn.JsonPath.numberAt('$.MemoryLimit'),
       },
     ],
     launchTarget: new tasks.EcsEc2LaunchTarget(),

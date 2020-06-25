@@ -406,7 +406,7 @@ const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
   taskDefinition,
   containerOverrides: [{
     containerDefinition,
-    environment: [{ name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey') }],
+    environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
   }],
   launchTarget: new tasks.EcsFargateLaunchTarget(),
 });
