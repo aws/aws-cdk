@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { AccessPoint, FileSystem } from '../lib';
+import { FileSystem } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
@@ -11,8 +11,7 @@ const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
 });
 
-new AccessPoint(stack, 'AccessPoint', {
-  fileSystem,
+fileSystem.addAccessPoint('AccessPoint', {
   createAcl: {
     ownerGid: '1000',
     ownerUid: '1000',
@@ -23,4 +22,18 @@ new AccessPoint(stack, 'AccessPoint', {
     gid: '1000',
     uid: '1000',
   },
-});
+})
+
+// new AccessPoint(stack, 'AccessPoint', {
+//   fileSystem,
+//   createAcl: {
+//     ownerGid: '1000',
+//     ownerUid: '1000',
+//     permissions: '755',
+//   },
+//   path: '/custom-path',
+//   posixUser: {
+//     gid: '1000',
+//     uid: '1000',
+//   },
+// });

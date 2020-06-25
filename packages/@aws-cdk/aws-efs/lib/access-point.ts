@@ -64,15 +64,11 @@ export interface PosixUser {
   readonly secondaryGids?: string[];
 }
 
-/**
- * Properties for the AccessPoint
- */
-export interface AccessPointProps {
-  /**
-   * The efs filesystem
-   */
-  readonly fileSystem: IFileSystem;
 
+/**
+ * Options to create an AccessPoint
+ */
+export interface AccessPointOptions {
   /**
    * Specifies the POSIX IDs and permissions to apply when creating the access point's root directory. If the
    * root directory specified by `path` does not exist, EFS creates the root directory and applies the
@@ -101,6 +97,17 @@ export interface AccessPointProps {
    * @default - user identity not enforced
    */
   readonly posixUser?: PosixUser;
+}
+
+
+/**
+ * Properties for the AccessPoint
+ */
+export interface AccessPointProps extends AccessPointOptions {
+  /**
+   * The efs filesystem
+   */
+  readonly fileSystem: IFileSystem;
 }
 
 /**

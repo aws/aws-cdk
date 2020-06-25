@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { Construct, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
+import { AccessPoint, AccessPointOptions } from './access-point';
 
 // tslint:disable:max-line-length
 /**
@@ -270,6 +271,13 @@ export class FileSystem extends Resource implements IFileSystem {
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId,
         });
+    });
+  }
+
+  public addAccessPoint(id: string, accessPointOptions: AccessPointOptions): AccessPoint {
+    return new AccessPoint(this, id, {
+      fileSystem: this,
+      ...accessPointOptions,
     });
   }
 }
