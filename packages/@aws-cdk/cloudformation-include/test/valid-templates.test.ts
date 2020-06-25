@@ -328,6 +328,87 @@ describe('CDK Include', () => {
     );
   });
 
+  test("correctly handles referencing the ingested template's resources across Stacks", () => {
+    // for cross-stack sharing to work, we need an App
+    const app = new core.App();
+    stack = new core.Stack(app, 'MyStack');
+    const cfnTemplate = includeTestTemplate(stack, 'only-empty-bucket.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
+
+    const otherStack = new core.Stack(app, 'OtherStack');
+    const role = new iam.Role(otherStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+    });
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:*'],
+      resources: [cfnBucket.attrArn],
+    }));
+
+    expect(stack).toMatchTemplate({
+      ...loadTestFileToJsObject('only-empty-bucket.json'),
+      "Outputs": {
+        "ExportsOutputFnGetAttBucketArn436138FE": {
+          "Value": {
+            "Fn::GetAtt": ["Bucket", "Arn"],
+          },
+          "Export": {
+            "Name": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
+          },
+        },
+      },
+    });
+
+    expect(otherStack).toHaveResourceLike('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "s3:*",
+            "Resource": {
+              "Fn::ImportValue": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('correctly re-names references to resources in the template if their logical IDs have been changed', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json');
+    const cfnKey = cfnTemplate.getResource('Key');
+    cfnKey.overrideLogicalId('TotallyDifferentKey');
+
+    const originalTemplate = loadTestFileToJsObject('bucket-with-encryption-key.json');
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketEncryption": {
+              "ServerSideEncryptionConfiguration": [
+                {
+                  "ServerSideEncryptionByDefault": {
+                    "KMSMasterKeyID": {
+                      "Fn::GetAtt": ["TotallyDifferentKey", "Arn"],
+                    },
+                    "SSEAlgorithm": "aws:kms",
+                  },
+                },
+              ],
+            },
+          },
+          "Metadata" : {
+            "Object1" : "Location1",
+            "KeyRef": { "Ref": "TotallyDifferentKey" },
+            "KeyArn": { "Fn::GetAtt": ["TotallyDifferentKey", "Arn"] },
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        },
+        "TotallyDifferentKey": originalTemplate.Resources.Key,
+      },
+    });
+  });
+
   test("throws an exception when encountering a Resource type it doesn't recognize", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
