@@ -4,7 +4,7 @@ import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
 import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
 import { CfnInstance, CfnVolume } from './ec2.generated';
-import { IInstance, Instance } from './instance';
+import { IInstance } from './instance';
 
 /**
  * Block device
@@ -281,20 +281,25 @@ export interface IVolume extends IResource {
   grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
 
   /**
-   * Grants permission to an instance to attach this Volume to itself.
+   * Grants permission to attach the Volume by a ResourceTag condition. If you are looking to
+   * grant an Instance, AutoScalingGroup, EC2-Fleet, SpotFleet, ECS host, etc the ability to attach
+   * this volume to **itself** then this is the method you want to use.
    *
-   * Note: This is implemented by adding a Tag with key `VolumeGrantAttach-<suffix>` to the
-   * instance and this Volume, and then conditioning the Grant on the presence of that Tag on
-   * both the instance and Volume. If you need to grant AttachVolume of this same Volume to
-   * multiple instances then provide a unique `tagKeySuffix` for each attachment; failure to do
-   * so will result in an inability to attach this volume to some instances.
+   * This is implemented by adding a Tag with key `VolumeGrantAttach-<suffix>` to the given
+   * constructs and this Volume, and then conditioning the Grant such that the grantee is only
+   * given the ability to AttachVolume if both the Volume and the destination Instance have that
+   * tag applied to them.
    *
-   * @param instance     The instance that will be allowed to attach this volume to itself.
-   * [disable-awslint:ref-via-interface]
+   * If you need to call this method multiple times on different sets of constructs, then provide a
+   * unique `tagKeySuffix` for each call; failure to do so will result in an inability to attach this
+   * volume to some of the grants because it will overwrite the tag.
+   *
+   * @param grantee    the principal being granted permission.
+   * @param constructs The list of constructs that will have the generated resource tag applied to them.
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
    *                     Defaults to a hash calculated from this volume.
    */
-  grantAttachVolumeToSelf(instance: Instance, tagKeySuffix?: string): Grant;
+  grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 
   /**
    * Grants permission to detach this Volume from an instance
@@ -311,20 +316,17 @@ export interface IVolume extends IResource {
   grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
 
   /**
-   * Grants permission to an instance to detach this Volume from itself.
+   * Grants permission to detach the Volume by a ResourceTag condition.
    *
-   * Note: This is implemented by adding a Tag with key `VolumeGrantDetach-<suffix>` to the
-   * instance and this Volume, and then conditioning the Grant on the presence of that Tag on
-   * both the instance and Volume. If you need to grant DetachVolume of this same Volume to
-   * multiple instances then provide a unique `tagKeySuffix` for each attachment; failure to do
-   * so will result in an inability to detach this volume from some instances.
+   * This is implemented via the same mechanism as {@link IVolume.grantAttachVolumeByResourceTag},
+   * and is subject to the same conditions.
    *
-   * @param instance     The instance that will be allowed to detach this volume to itself.
-   * [disable-awslint:ref-via-interface]
-   *  @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
+   * @param grantee    the principal being granted permission.
+   * @param constructs The list of constructs that will have the generated resource tag applied to them.
+   * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
    *                     Defaults to a hash calculated from this volume.
    */
-  grantDetachVolumeFromSelf(instance: Instance, tagKeySuffix?: string): Grant;
+  grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 }
 
 /**
@@ -494,19 +496,21 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantAttachVolumeToSelf(instance: Instance, tagKeySuffix?: string): Grant {
+  public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.node.uniqueId;
+    const tagValue = this.calculateResourceTagValue(constructs);
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
-    const result = this.grantAttachVolume(instance);
+    const result = this.grantAttachVolume(grantee);
     result.principalStatement!.addCondition(
       'ForAnyValue:StringEquals', grantCondition,
     );
 
+    // The ResourceTag condition requires that all resources involved in the operation have
+    // the given tag, so we tag this and all constructs given.
     Tag.add(this, tagKey, tagValue);
-    Tag.add(instance, tagKey, tagValue);
+    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
 
     return result;
   }
@@ -521,19 +525,21 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolumeFromSelf(instance: Instance, tagKeySuffix?: string): Grant {
+  public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
     const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.node.uniqueId;
+    const tagValue = this.calculateResourceTagValue(constructs);
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
-    const result = this.grantDetachVolume(instance);
+    const result = this.grantDetachVolume(grantee);
     result.principalStatement!.addCondition(
       'ForAnyValue:StringEquals', grantCondition,
     );
 
+    // The ResourceTag condition requires that all resources involved in the operation have
+    // the given tag, so we tag this and all constructs given.
     Tag.add(this, tagKey, tagValue);
-    Tag.add(instance, tagKey, tagValue);
+    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
 
     return result;
   }
@@ -555,6 +561,12 @@ abstract class VolumeBase extends Resource implements IVolume {
   private stringHash(value: string): string {
     const md5 = crypto.createHash('md5').update(value).digest('hex');
     return md5.slice(0, 8).toUpperCase();
+  }
+
+  private calculateResourceTagValue(constructs: Construct[]): string {
+    const md5 = crypto.createHash('md5');
+    constructs.forEach(construct => md5.update(construct.node.uniqueId));
+    return md5.digest('hex');
   }
 }
 

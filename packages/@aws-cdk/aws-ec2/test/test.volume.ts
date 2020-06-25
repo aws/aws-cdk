@@ -705,7 +705,7 @@ export = {
     });
 
     // WHEN
-    volume.grantAttachVolumeToSelf(instance);
+    volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -739,12 +739,29 @@ export = {
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-BD7A9717': 'Volume',
+              'ec2:ResourceTag/VolumeGrantAttach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
             },
           },
         }],
       },
     }));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      Tags: [
+        {
+          Key: 'VolumeGrantAttach-BD7A9717',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      Tags: [
+        {},
+        {
+          Key: 'VolumeGrantAttach-BD7A9717',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
 
     test.done();
   },
@@ -765,7 +782,7 @@ export = {
     });
 
     // WHEN
-    volume.grantAttachVolumeToSelf(instance, 'TestSuffix');
+    volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -799,12 +816,29 @@ export = {
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'Volume',
+              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
             },
           },
         }],
       },
     }));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      Tags: [
+        {
+          Key: 'VolumeGrantAttach-TestSuffix',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      Tags: [
+        {},
+        {
+          Key: 'VolumeGrantAttach-TestSuffix',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
 
     test.done();
   },
@@ -983,7 +1017,7 @@ export = {
     });
 
     // WHEN
-    volume.grantDetachVolumeFromSelf(instance);
+    volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -1017,12 +1051,29 @@ export = {
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-BD7A9717': 'Volume',
+              'ec2:ResourceTag/VolumeGrantDetach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
             },
           },
         }],
       },
     }));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      Tags: [
+        {
+          Key: 'VolumeGrantDetach-BD7A9717',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      Tags: [
+        {},
+        {
+          Key: 'VolumeGrantDetach-BD7A9717',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
 
     test.done();
   },
@@ -1043,7 +1094,7 @@ export = {
     });
 
     // WHEN
-    volume.grantDetachVolumeFromSelf(instance, 'TestSuffix');
+    volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -1077,12 +1128,29 @@ export = {
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'Volume',
+              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
             },
           },
         }],
       },
     }));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      Tags: [
+        {
+          Key: 'VolumeGrantDetach-TestSuffix',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      Tags: [
+        {},
+        {
+          Key: 'VolumeGrantDetach-TestSuffix',
+          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+        },
+      ],
+    }, ResourcePart.Properties));
 
     test.done();
   },
