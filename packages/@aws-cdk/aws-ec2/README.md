@@ -634,7 +634,7 @@ volume.grantAttachVolume(role, [instance]);
 ### Instances Attaching Volumes to Themselves
 
 If you need to grant an instance the ability to attach/detach an EBS volume to/from itself, then using `grantAttachVolume` and `grantDetachVolume` as outlined above
-will lead to an unresolvable circular reference between the instance role and the instance. In this case, use `grantAttachVolumeToSelf` and `grantDetachVolumeFromSelf` as follows:
+will lead to an unresolvable circular reference between the instance role and the instance. In this case, use `grantAttachVolumeByResourceTag` and `grantDetachVolumeByResourceTag` as follows:
 
 ```ts
 const instance = new ec2.Instance(this, 'Instance', {
@@ -644,8 +644,8 @@ const volume = new ec2.Volume(this, 'Volume', {
   // ...
 });
 
-const attachGrant = volume.grantAttachVolumeToSelf(instance);
-const detachGrant = volume.grantDetachVolumeFromSelf(instance);
+const attachGrant = volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
+const detachGrant = volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 ```
 
 ### Attaching Volumes
@@ -664,7 +664,7 @@ const volume = new ec2.Volume(this, 'Volume', {
 const instance = new ec2.Instance(this, 'Instance', {
   // ...
 });
-volume.grantAttachVolumeToSelf(instance);
+volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 const targetDevice = '/dev/xvdz';
 instance.userData.addCommands(
   // Attach the volume to /dev/xvdz
