@@ -28,18 +28,23 @@ const findInMap = {
     return {'Fn::FindInMap': (yaml.parse(cstNode.toString().substring("!FindInMap".length)))};
   },
 };
-//ToDo -- are the cloudformation docs lying? They have a sample that doesn't use the . notation
-//https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
 const getAtt = {
   identify: (value:any) => typeof value === "string",
   tag: '!GetAtt',
   resolve: (doc:any, cstNode:any) => {
     const lastDot = cstNode.toString().lastIndexOf(".");
-    return {'Fn::GetAtt': [
-      cstNode.toString().substring("!GetAtt ".length, lastDot), 
-      yaml.parse((cstNode.toString().substring(lastDot + 1)))
-    ]};
-    // return {'Fn::GetAtt': (yaml.parse(cstNode.toString().substring("!GetAtt".length)))};
+
+    if (lastDot != -1) {
+      return {
+        'Fn::GetAtt': [
+          cstNode.toString().substring("!GetAtt ".length, lastDot), 
+          yaml.parse((cstNode.toString().substring(lastDot + 1)))
+      ]};
+    }
+
+    return {
+      'Fn::GetAtt': (yaml.parse(cstNode.toString().substring("!GetAtt".length))),
+    };
   },
 };
 const getAZs = {
