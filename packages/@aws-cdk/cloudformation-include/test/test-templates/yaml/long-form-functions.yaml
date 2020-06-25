@@ -5,14 +5,14 @@ Mappings:
       HVMG2: name2
 Conditions:
   AlwaysTrueCond:
-    !Not
-    - !Equals
+    Fn::Not:
+    - Fn::Equals:
       - Ref: AWS::Region
       - completely-made-up-region
   AndCond:
-    !And
+    Fn::And:
     - Condition: AlwaysTrueCond
-    - !Or
+    - Fn::Or:
       - Condition: AlwaysTrueCond
       - Condition: AlwaysTrueCond
 Resources:
@@ -20,13 +20,13 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock:
-        !If
+        Fn::If:
         - AlwaysTrueCond
-        - !Cidr
+        - Fn::Cidr:
           - 192.168.1.1/24
           - 2
           - 5
-        - !Cidr
+        - Fn::Cidr:
           - 10.0.0.0/24
           - '6'
           - '5'
@@ -34,9 +34,9 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        !If
+        Fn::If:
         - AndCond
-        - !FindInMap
+        - Fn::FindInMap:
           - RegionMap
           - region-1
           - HVM64
@@ -45,32 +45,32 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
-        !If
+        Fn::If:
         - AlwaysTrueCond
-        - !Split
+        - Fn::Split:
           - ","
-          - !ImportValue ImportedVpcId
+          - Fn::ImportValue: ImportedVpcId
         - Unreachable
       CidrBlock: 10.0.0.0/24
       AvailabilityZone:
-        !Select
+        Fn::Select:
         - '0'
-        - !GetAZs ''
+        - Fn::GetAZs: ''
   Subnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
-        !Select
+        Fn::Select:
         - 0
-        - !Cidr
+        - Fn::Cidr:
           - 10.0.0.0/24
           - 5
           - 2
       CidrBlock: 10.0.0.0/24
       AvailabilityZone:
-        !Select
+        Fn::Select:
         - '0'
-        - !GetAZs eu-west-2
+        - Fn::GetAZs: eu-west-2
   TransformBucket:
     Type: AWS::S3::Bucket
     Properties:

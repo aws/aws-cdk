@@ -29,12 +29,11 @@ const findInMap = {
   },
 };
 //ToDo -- are the cloudformation docs lying? They have a sample that doesn't use the . notation
-// if not, you need to start from the right, since the separating . that's of interest is always the rightmost one
+//https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
 const getAtt = {
   identify: (value:any) => typeof value === "string",
   tag: '!GetAtt',
   resolve: (doc:any, cstNode:any) => {
-    console.log(cstNode.toString());
     const lastDot = cstNode.toString().lastIndexOf(".");
     return {'Fn::GetAtt': [
       cstNode.toString().substring("!GetAtt ".length, lastDot), 
