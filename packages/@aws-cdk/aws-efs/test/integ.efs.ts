@@ -22,18 +22,4 @@ fileSystem.addAccessPoint('AccessPoint', {
     gid: '1000',
     uid: '1000',
   },
-})
-
-// new AccessPoint(stack, 'AccessPoint', {
-//   fileSystem,
-//   createAcl: {
-//     ownerGid: '1000',
-//     ownerUid: '1000',
-//     permissions: '755',
-//   },
-//   path: '/custom-path',
-//   posixUser: {
-//     gid: '1000',
-//     uid: '1000',
-//   },
-// });
+});

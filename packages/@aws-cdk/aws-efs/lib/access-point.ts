@@ -64,7 +64,6 @@ export interface PosixUser {
   readonly secondaryGids?: string[];
 }
 
-
 /**
  * Options to create an AccessPoint
  */
@@ -98,7 +97,6 @@ export interface AccessPointOptions {
    */
   readonly posixUser?: PosixUser;
 }
-
 
 /**
  * Properties for the AccessPoint
@@ -144,7 +142,7 @@ export class AccessPoint extends Resource implements IAccessPoint {
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
 
-    const resource = new CfnAccessPoint(scope, 'Resource', {
+    const resource = new CfnAccessPoint(this, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,
       rootDirectory: {
         creationInfo: props.createAcl ? {
