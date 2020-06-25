@@ -1,5 +1,4 @@
 import '@aws-cdk/assert/jest';
-import { ResourcePart } from '@aws-cdk/assert';
 import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
@@ -39,9 +38,9 @@ describe('CDK Include', () => {
         "RegionMap": {
           "region-1": {
             "HVM64": "name1",
-            "HVMG2": "name2"
-          }
-        }
+            "HVMG2": "name2",
+          },
+        },
       },
       "Conditions": {
         "AlwaysTrueCond": {
@@ -49,30 +48,30 @@ describe('CDK Include', () => {
             {
               "Fn::Equals": [
                 {
-                  "Ref": "AWS::Region"
+                  "Ref": "AWS::Region",
                 },
-                "completely-made-up-region"
-              ]
-            }
-          ]
+                "completely-made-up-region",
+              ],
+            },
+          ],
         },
         "AndCond": {
           "Fn::And": [
             {
-              "Condition": "AlwaysTrueCond"
+              "Condition": "AlwaysTrueCond",
             },
             {
               "Fn::Or": [
                 {
-                  "Condition": "AlwaysTrueCond"
+                  "Condition": "AlwaysTrueCond",
                 },
                 {
-                  "Condition": "AlwaysTrueCond"
-                }
-              ]
-            }
-          ]
-        }
+                  "Condition": "AlwaysTrueCond",
+                },
+              ],
+            },
+          ],
+        },
       },
       "Resources": {
         "Vpc": {
@@ -85,19 +84,19 @@ describe('CDK Include', () => {
                   "Fn::Cidr": [
                     "192.168.1.1/24",
                     2,
-                    5
-                  ]
+                    5,
+                  ],
                 },
                 {
                   "Fn::Cidr": [
                     "10.0.0.0/24",
                     "6",
-                    "5"
-                  ]
-                }
-              ]
-            }
-          }
+                    "5",
+                  ],
+                },
+              ],
+            },
+          },
         },
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -109,13 +108,13 @@ describe('CDK Include', () => {
                   "Fn::FindInMap": [
                     "RegionMap",
                     "region-1",
-                    "HVM64"
-                  ]
+                    "HVM64",
+                  ],
                 },
-                "Unreachable"
-              ]
-            }
-          }
+                "Unreachable",
+              ],
+            },
+          },
         },
         "Subnet1": {
           "Type": "AWS::EC2::Subnet",
@@ -127,23 +126,23 @@ describe('CDK Include', () => {
                   "Fn::Split": [
                     ",",
                     {
-                      "Fn::ImportValue": "ImportedVpcId"
-                    }
-                  ]
+                      "Fn::ImportValue": "ImportedVpcId",
+                    },
+                  ],
                 },
-                "Unreachable"
-              ]
+                "Unreachable",
+              ],
             },
             "CidrBlock": "10.0.0.0/24",
             "AvailabilityZone": {
               "Fn::Select": [
                 "0",
                 {
-                  "Fn::GetAZs": ""
-                }
-              ]
-            }
-          }
+                  "Fn::GetAZs": "",
+                },
+              ],
+            },
+          },
         },
         "Subnet2": {
           "Type": "AWS::EC2::Subnet",
@@ -155,21 +154,21 @@ describe('CDK Include', () => {
                   "Fn::Cidr": [
                     "10.0.0.0/24",
                     5,
-                    2
-                  ]
-                }
-              ]
+                    2,
+                  ],
+                },
+              ],
             },
             "CidrBlock": "10.0.0.0/24",
             "AvailabilityZone": {
               "Fn::Select": [
                 "0",
                 {
-                  "Fn::GetAZs": "eu-west-2"
-                }
-              ]
-            }
-          }
+                  "Fn::GetAZs": "eu-west-2",
+                },
+              ],
+            },
+          },
         },
         "TransformBucket": {
           "Type": "AWS::S3::Bucket",
@@ -183,16 +182,16 @@ describe('CDK Include', () => {
                     "Parameters": {
                       "Location": "location",
                       "AnotherParameter": {
-                        "Fn::Base64": "AnotherValue"
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
+                        "Fn::Base64": "AnotherValue",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
     });
   });
 
@@ -211,8 +210,8 @@ describe('CDK Include', () => {
                   "WorkItemBucketBackupRole",
                   {
                     "Ref": 'AWS::Region',
-                  }
-                ]
+                  },
+                ],
               },
               "Rules": [{
                 "Destination": {
@@ -222,22 +221,22 @@ describe('CDK Include', () => {
                         "Fn::Join": [ "-", [
                           { "Ref": "AWS::Region" },
                           { "Ref": "AWS::StackName" },
-                          "replicationbucket"
-                        ]]
-                      }
-                    ]]
+                          "replicationbucket",
+                        ]],
+                      },
+                    ]],
                   },
-                  "StorageClass": "STANDARD"
+                  "StorageClass": "STANDARD",
                 },
                 "Id": "Backup",
                 "Prefix": "",
-                "Status": "Enabled"
-              }]
+                "Status": "Enabled",
+              }],
             },
             "VersioningConfiguration": {
-              "Status": "Enabled"
-            }
-          }
+              "Status": "Enabled",
+            },
+          },
         },
         "RecordServiceS3Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -248,9 +247,9 @@ describe('CDK Include', () => {
                 "Fn::GetAtt": [
                   "WorkItemBucketBackupRole",
                   {
-                    "Ref": 'AWS::Region'
-                  }
-                ]
+                    "Ref": 'AWS::Region',
+                  },
+                ],
               },
               "Rules": [{
                 "Destination": {
@@ -260,22 +259,22 @@ describe('CDK Include', () => {
                         "Fn::Join": ["-", [
                           { "Ref": "AWS::Region" },
                           { "Ref": "AWS::StackName" },
-                          "replicationbucket"
-                        ]]
-                      }
-                    ]]
+                          "replicationbucket",
+                        ]],
+                      },
+                    ]],
                   },
-                  "StorageClass": "STANDARD"
+                  "StorageClass": "STANDARD",
                 },
                 "Id": "Backup",
                 "Prefix": "",
-                "Status": "Enabled"
-              }]
+                "Status": "Enabled",
+              }],
             },
             "VersioningConfiguration": {
-              "Status": "Enabled"
-            }
-          }
+              "Status": "Enabled",
+            },
+          },
         },
         "WorkItemBucketBackupRole": {
           "Type": "AWS::IAM::Role",
@@ -285,11 +284,11 @@ describe('CDK Include', () => {
                 "Action": ["sts:AssumeRole"],
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": ["s3.amazonaws.com"]
-                }
-              }]
-            }
-          }
+                  "Service": ["s3.amazonaws.com"],
+                },
+              }],
+            },
+          },
         },
         "BucketBackupPolicy": {
           "Type": "AWS::IAM::Policy",
@@ -298,36 +297,35 @@ describe('CDK Include', () => {
               "Statement": [{
                 "Action": [
                   "s3:GetReplicationConfiguration",
-                  "s3:ListBucket"
+                  "s3:ListBucket",
                 ],
                 "Effect": "Allow",
                 "Resource": [{
                   "Fn::Join": ["", [
                     "arn:aws:s3:::", {
-                      "Ref": "RecordServiceS3Bucket"
-                    }
-                  ]
-                  ]
-                }]
+                      "Ref": "RecordServiceS3Bucket",
+                    },
+                  ],
+                  ],
+                }],
               }, {
                 "Action": [
                   "s3:GetObjectVersion",
-                  "s3:GetObjectVersionAcl"
+                  "s3:GetObjectVersionAcl",
                 ],
                 "Effect": "Allow",
                 "Resource": [{
                   "Fn::Join": ["", [
                     "arn:aws:s3:::", {
-                      "Ref": "RecordServiceS3Bucket"
+                      "Ref": "RecordServiceS3Bucket",
                     },
-                    "/*"
-                  ]
-                  ]
-                }]
+                    "/*",
+                  ]],
+                }],
               }, {
                 "Action": [
                   "s3:ReplicateObject",
-                  "s3:ReplicateDelete"
+                  "s3:ReplicateDelete",
                 ],
                 "Effect": "Allow",
                 "Resource": [{
@@ -336,21 +334,21 @@ describe('CDK Include', () => {
                       "Fn::Join": ["-", [
                         { "Ref": "AWS::Region" },
                         { "Ref": "AWS::StackName" },
-                        "replicationbucket"
-                      ]]
+                        "replicationbucket",
+                      ]],
                     },
-                    "/*"
-                  ]]
-                }]
-              }]
+                    "/*",
+                  ]],
+                }],
+              }],
             },
             "PolicyName": "BucketBackupPolicy",
             "Roles": [{
-              "Ref": "WorkItemBucketBackupRole"
-            }]
-          }
-        }
-      }
+              "Ref": "WorkItemBucketBackupRole",
+            }],
+          },
+        },
+      },
     });
   });
 
