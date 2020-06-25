@@ -2,6 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { findClosestPathContaining } from './util';
 
+/**
+ * A package.json manager to act on the closest package.json file.
+ *
+ * Configuring the bundler requires to manipulate the package.json and then
+ * restore it.
+ */
 export class PackageJsonManager {
   private readonly pkgPath: string;
   private readonly pkg: Buffer;
@@ -17,6 +23,9 @@ export class PackageJsonManager {
     this.pkgJson = JSON.parse(this.pkg.toString());
   }
 
+  /**
+   * Update the package.json
+   */
   public update(data: any) {
     fs.writeFileSync(this.pkgPath, JSON.stringify({
       ...this.pkgJson,
@@ -24,10 +33,16 @@ export class PackageJsonManager {
     }, null, 2));
   }
 
+  /**
+   * Restore the package.json to the original
+   */
   public restore() {
     fs.writeFileSync(this.pkgPath, this.pkg);
   }
 
+  /**
+   * Extract versions for a list of modules
+   */
   public getVersions(modules: string[]): { [key: string]: string } {
     const dependencies: { [key: string]: string } = {};
 

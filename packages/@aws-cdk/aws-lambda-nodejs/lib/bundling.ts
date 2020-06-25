@@ -63,7 +63,14 @@ export interface ParcelBaseOptions {
    *
    * @default - all modules are bundled
    */
-  readonly installModules?: string[];
+  readonly nodeModules?: string[];
+
+  /**
+   * The version of Parcel to use.
+   *
+   * @default - 2.0.0-beta.1
+   */
+  readonly parcelVersion?: string;
 }
 
 /**
@@ -99,6 +106,7 @@ export class Bundling {
     const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
       buildArgs: {
         IMAGE: options.runtime.bundlingDockerImage.image,
+        PARCEL_VERSION: options.parcelVersion ?? '2.0.0-beta.1',
       },
     });
 
@@ -108,14 +116,14 @@ export class Bundling {
     let includeNodeModules: { [key: string]: boolean } | undefined;
     let dependencies: { [key: string]: string } | undefined;
     const externalModules = options.externalModules ?? ['aws-sdk'];
-    if (externalModules || options.installModules) {
-      const modules = [...externalModules, ...options.installModules ?? []];
+    if (externalModules || options.nodeModules) {
+      const modules = [...externalModules, ...options.nodeModules ?? []];
       includeNodeModules = {};
       for (const mod of modules) {
         includeNodeModules[mod] = false;
       }
-      if (options.installModules) {
-        dependencies = packageJsonManager.getVersions(options.installModules);
+      if (options.nodeModules) {
+        dependencies = packageJsonManager.getVersions(options.nodeModules);
       }
     }
 

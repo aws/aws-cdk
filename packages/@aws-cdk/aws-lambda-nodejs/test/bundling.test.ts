@@ -84,7 +84,7 @@ test('Parcel bundling with externals and dependencies', () => {
     runtime: Runtime.NODEJS_12_X,
     projectRoot: '/project',
     externalModules: ['abc'],
-    installModules: ['delay'],
+    nodeModules: ['delay'],
   });
 
   // Correctly bundles with parcel
@@ -132,7 +132,7 @@ test('Detects yarn.lock', () => {
     entry: '/project/folder/entry.ts',
     runtime: Runtime.NODEJS_12_X,
     projectRoot: '/project',
-    installModules: ['delay'],
+    nodeModules: ['delay'],
   });
 
   // Correctly bundles with parcel

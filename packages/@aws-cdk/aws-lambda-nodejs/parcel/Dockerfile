@@ -13,6 +13,7 @@ RUN mkdir /npm-cache && \
 RUN npm install --global yarn
 
 # Install parcel 2 (fix the version since it's still in beta)
-RUN yarn global add parcel@2.0.0-beta.1
+ARG PARCEL_VERSION=2.0.0-beta.1
+RUN yarn global add parcel@$PARCEL_VERSION
 
 CMD [ "parcel" ]

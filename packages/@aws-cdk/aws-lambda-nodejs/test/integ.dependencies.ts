@@ -15,7 +15,7 @@ class TestStack extends Stack {
       // Will be installed, not bundled
       // (delay is a zero dependency package and its version is fixed
       // in the package.json to ensure a stable hash for this integ test)
-      installModules: ['delay'],
+      nodeModules: ['delay'],
     });
   }
 }
