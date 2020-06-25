@@ -35,7 +35,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly containerOverrides?: ContainerOverride[];
 
   /**
-   * In what subnets to place the task's ENIs
+   * Subnets to place the task's ENIs
    *
    * @default - Private subnet if assignPublicIp, public subnets otherwise
    */
@@ -156,8 +156,8 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     return {
       parameters: {
         LaunchType: 'EC2',
-        PlacementConstraints: noEmpty(flatten((this.options?.placementConstraints || []).map((c) => c.toJson().map(uppercaseKeys)))),
-        PlacementStrategy: noEmpty(flatten((this.options?.placementStrategies || []).map((c) => c.toJson().map(uppercaseKeys)))),
+        PlacementConstraints: noEmpty(flatten((this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
+        PlacementStrategy: noEmpty(flatten((this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
       },
     };
 
@@ -296,7 +296,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   private validateFargateLaunchType() {
     if (!this.props.taskDefinition.isFargateCompatible) {
-      throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
+      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
     }
 
     this.configureAwsVpcNetworking();
