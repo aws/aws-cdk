@@ -73,7 +73,7 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is required in `message` Use Context.taskToken to set the token.');
+        throw new Error('Task Token is required in `message` Use JsonPath.taskToken to set the token.');
       }
     }
 
