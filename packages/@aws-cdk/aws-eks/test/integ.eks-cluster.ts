@@ -14,8 +14,11 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    const vpc = new ec2.Vpc(this, 'Vpc',  { maxAzs: 3, natGateways: 1})
+
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
+      vpc,
       mastersRole,
       defaultCapacity: 2,
       version: '1.16',
@@ -62,9 +65,19 @@ class EksClusterStack extends TestStack {
     // // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    cluster.addChart('dashboard', { 
+      chart: 'kubernetes-dashboard', 
+      repository: 'https://kubernetes.github.io/dashboard/',
+      namespace: 'custom-namespace',
+      createNamespace: true,
+    });
+
+    cluster.addChart('nginx-ingress', { 
+      chart: 'nginx-ingress', 
+      repository: 'https://helm.nginx.com/stable', 
+      namespace: 'kube-system' 
+    });
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');
