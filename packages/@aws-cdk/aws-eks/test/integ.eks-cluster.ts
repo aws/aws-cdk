@@ -14,7 +14,7 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    const vpc = new ec2.Vpc(this, 'Vpc',  { maxAzs: 3, natGateways: 1})
+    const vpc = new ec2.Vpc(this, 'Vpc',  { maxAzs: 3, natGateways: 1});
 
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
@@ -66,16 +66,16 @@ class EksClusterStack extends TestStack {
     cluster.addResource('HelloApp', ...hello.resources);
 
     // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    cluster.addChart('dashboard', { 
-      chart: 'kubernetes-dashboard', 
+    cluster.addChart('dashboard', {
+      chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
       namespace: 'custom-namespace',
       createNamespace: true,
     });
 
-    cluster.addChart('nginx-ingress', { 
-      chart: 'nginx-ingress', 
-      repository: 'https://helm.nginx.com/stable', 
+    cluster.addChart('nginx-ingress', {
+      chart: 'nginx-ingress',
+      repository: 'https://helm.nginx.com/stable',
       namespace: 'kube-system',
     });
 

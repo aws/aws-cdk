@@ -63,7 +63,6 @@ export = {
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
       test.done();
     },
-    
     'should support waiting until everything is completed before marking release as successful'(test: Test) {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
