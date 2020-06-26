@@ -33,7 +33,7 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
                 IgnorePublicAcls: true,
                 RestrictPublicBuckets: true,
               },
-              'AWS::NoValue',
+              { Ref: 'AWS::NoValue' },
             ]},
         },
       },

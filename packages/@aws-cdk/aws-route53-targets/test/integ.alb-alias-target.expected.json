@@ -413,9 +413,17 @@
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::GetAtt": [
-              "LB8A12904C",
-              "DNSName"
+            "Fn::Join": [
+              "",
+              [
+                "dualstack.",
+                {
+                  "Fn::GetAtt": [
+                    "LB8A12904C",
+                    "DNSName"
+                  ]
+                }
+              ]
             ]
           },
           "HostedZoneId": {
