@@ -1,0 +1,21 @@
+Conditions:
+  AlwaysTrueCond:
+    !Not
+    - !Equals
+      - Ref: AWS::Region
+      - completely-made-up-region
+  AndCond:
+    !And
+    - Condition: AlwaysTrueCond
+    - !Or
+      - Condition: AlwaysTrueCond
+      - Condition: AlwaysTrueCond
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        !If
+        - AlwaysTrueCond
+        - MyBucketName
+        - Unreachable

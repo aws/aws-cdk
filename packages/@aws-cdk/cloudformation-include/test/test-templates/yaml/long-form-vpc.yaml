@@ -40,47 +40,9 @@ Resources:
           - RegionMap
           - region-1
           - HVM64
-        - Unreachable
-  Subnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId:
-        Fn::If:
-        - AlwaysTrueCond
-        - Fn::Split:
-          - ","
-          - Fn::ImportValue: ImportedVpcId
-        - Unreachable
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone:
-        Fn::Select:
-        - '0'
-        - Fn::GetAZs: ''
-  Subnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId:
-        Fn::Select:
-        - 0
-        - Fn::Cidr:
-          - 10.0.0.0/24
-          - 5
-          - 2
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone:
-        Fn::Select:
-        - '0'
-        - Fn::GetAZs: eu-west-2
-  TransformBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName:
-        Fn::If:
-        - AndCond
         - Fn::Transform:
             Name: AWS::Include
             Parameters:
               Location: location
               AnotherParameter:
                 Fn::Base64: AnotherValue
-

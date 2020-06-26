@@ -14,24 +14,66 @@ describe('CDK Include', () => {
     stack = new core.Stack();
   });
 
-  test('can ingest a template with all long cfn functions except Fn::Sub, Fn::GetAtt, and Fn::Join, and output it unchanged', () => {
-    includeTestTemplate(stack, 'long-form-functions.yaml');
+  test('can ingest a template with all long-form CloudFormation functions and output it unchanged', () => {
+    includeTestTemplate(stack, 'long-form-vpc.yaml');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('long-form-functions.yaml'),
+      loadTestFileToJsObject('long-form-vpc.yaml'),
     );
   });
 
-  test('can ingest a template with long form Fn::Join and Fn::GetAtt, and output it unchanged', () => {
-    includeTestTemplate(stack, 'long-form-sample.yaml');
+  test('can ingest a template with the short form !Base64', () => {
+    includeTestTemplate(stack, 'short-base64.yaml');
 
-    expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('long-form-sample.yaml'),
-    );
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Base64Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Base64": "NonBase64BucketName",
+            },
+          },
+        },
+      },
+    });
   });
 
-  test('can ingest a yaml template with all short form functions except !GetAtt and !Join and !Sub', () => {
-    includeTestTemplate(stack, 'short-form-functions.yaml');
+  test('can ingest a template with the short form !Cidr', () => {
+    includeTestTemplate(stack, 'short-cidr.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "CidrVpc1": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": {
+              "Fn::Cidr": [
+                "192.168.1.1/24",
+                2,
+                5,
+              ],
+            },
+          },
+        },
+        "CidrVpc2": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": {
+              "Fn::Cidr": [
+                "192.168.1.1/24",
+                "2",
+                "5",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !FindInMap', () => {
+    includeTestTemplate(stack, 'short-find-in-map.yaml');
 
     expect(stack).toMatchTemplate({
       "Mappings": {
@@ -42,6 +84,247 @@ describe('CDK Include', () => {
           },
         },
       },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "RegionMap",
+                "region-1",
+                "HVM64",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !GetAtt', () => {
+    includeTestTemplate(stack, 'short-get-att.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket1": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "SomeBucketName",
+            "ReplicationConfiguration": {
+              "Role": "some-role",
+              "Rules": [
+                {
+                  "Destination": {
+                    "Bucket": "Bucket1",
+                    "StorageClass": "STANDARD",
+                  },
+                  "Status": "Enabled",
+                },
+              ],
+            },
+          },
+        },
+        "Bucket2": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::GetAtt": [
+                "Bucket1",
+                "BucketName",
+              ],
+            },
+          },
+        },
+        "Bucket3": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::GetAtt": [
+                "Bucket1",
+                "BucketName",
+              ],
+            },
+          },
+        },
+        "Bucket4": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::GetAtt": [
+                "Bucket1",
+                "Rules.Destination",
+              ],
+            },
+          },
+        },
+        "Bucket5": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::GetAtt": [
+                "Bucket1",
+                "Rules.Destination",
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !Select, !GetAZs, and !Ref', () => {
+    includeTestTemplate(stack, 'short-select.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Subnet1": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "VpcId": {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::GetAZs": "",
+                },
+              ],
+            },
+            "CidrBlock": "10.0.0.0/24",
+            "AvailabilityZone": {
+              "Fn::Select": [
+                "0",
+                {
+                  "Fn::GetAZs": "eu-west-2",
+                },
+              ],
+            },
+          },
+        },
+        "Subnet2": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "VpcId": {
+              "Fn::Select": [
+                "0",
+                {
+                  "Fn::GetAZs": "",
+                },
+              ],
+            },
+            "CidrBlock": "10.0.0.0/24",
+            "AvailabilityZone": {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::GetAZs": "eu-west-2",
+                },
+              ],
+            },
+          },
+        },
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Ref": "Subnet2",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !ImportValue', () => {
+    includeTestTemplate(stack, 'short-import-value.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket1": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::ImportValue": "SomeSharedValue",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !Join', () => {
+    includeTestTemplate(stack, 'short-join.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Join": [
+                ' ',
+                [
+                  "NamePart1 ",
+                  {
+                    "Fn::ImportValue": "SomeSharedValue",
+                  },
+                ],
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !Split', () => {
+    includeTestTemplate(stack, 'short-split.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Split": [
+                ' ',
+                {
+                  "Fn::ImportValue": "SomeSharedBucketName",
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form !Transform', () => {
+    includeTestTemplate(stack, 'short-transform.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket1": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Transform": {
+                "Name": "SomeMacroName",
+                "Parameters": {
+                  "key1": "value1",
+                  "key2": "value2",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('can ingest a template with the short form conditionals', () => {
+    includeTestTemplate(stack, 'short-form-conditionals.yaml');
+
+    expect(stack).toMatchTemplate({
+
       "Conditions": {
         "AlwaysTrueCond": {
           "Fn::Not": [
@@ -74,302 +357,34 @@ describe('CDK Include', () => {
         },
       },
       "Resources": {
-        "Vpc": {
-          "Type": "AWS::EC2::VPC",
-          "Properties": {
-            "CidrBlock": {
-              "Fn::If": [
-                "AlwaysTrueCond",
-                {
-                  "Fn::Cidr": [
-                    "192.168.1.1/24",
-                    2,
-                    5,
-                  ],
-                },
-                {
-                  "Fn::Cidr": [
-                    "10.0.0.0/24",
-                    "6",
-                    "5",
-                  ],
-                },
-              ],
-            },
-          },
-        },
         "Bucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": {
               "Fn::If": [
-                "AndCond",
-                {
-                  "Fn::FindInMap": [
-                    "RegionMap",
-                    "region-1",
-                    "HVM64",
-                  ],
-                },
-                "Unreachable",
-              ],
-            },
-          },
-        },
-        "Subnet1": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "VpcId": {
-              "Fn::If": [
                 "AlwaysTrueCond",
-                {
-                  "Fn::Split": [
-                    ",",
-                    {
-                      "Fn::ImportValue": "ImportedVpcId",
-                    },
-                  ],
-                },
+                "MyBucketName",
                 "Unreachable",
               ],
             },
-            "CidrBlock": "10.0.0.0/24",
-            "AvailabilityZone": {
-              "Fn::Select": [
-                "0",
-                {
-                  "Fn::GetAZs": "",
-                },
-              ],
-            },
-          },
-        },
-        "Subnet2": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "VpcId": {
-              "Fn::Select": [
-                0,
-                {
-                  "Fn::Cidr": [
-                    "10.0.0.0/24",
-                    5,
-                    2,
-                  ],
-                },
-              ],
-            },
-            "CidrBlock": "10.0.0.0/24",
-            "AvailabilityZone": {
-              "Fn::Select": [
-                "0",
-                {
-                  "Fn::GetAZs": "eu-west-2",
-                },
-              ],
-            },
-          },
-        },
-        "TransformBucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::If": [
-                "AndCond",
-                {
-                  "Fn::Transform": {
-                    "Name": "AWS::Include",
-                    "Parameters": {
-                      "Location": "location",
-                      "AnotherParameter": {
-                        "Fn::Base64": "AnotherValue",
-                      },
-                    },
-                  },
-                },
-              ],
-            },
           },
         },
       },
     });
   });
 
-  test('can ingest a yaml template with short form !GetAtt and !Join', () => {
-    includeTestTemplate(stack, 'short-form-sample.yaml');
-
-    expect(stack).toMatchTemplate({
-      "Resources": {
-        "RecordServiceS3Bucket2": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "Properties": {
-            "ReplicationConfiguration": {
-              "Role": {
-                "Fn::GetAtt": [
-                  "WorkItemBucketBackupRole",
-                  {
-                    "Ref": 'AWS::Region',
-                  },
-                ],
-              },
-              "Rules": [{
-                "Destination": {
-                  "Bucket": {
-                    "Fn::Join": [ "", [
-                      "arn:aws:s3:::", {
-                        "Fn::Join": [ "-", [
-                          { "Ref": "AWS::Region" },
-                          { "Ref": "AWS::StackName" },
-                          "replicationbucket",
-                        ]],
-                      },
-                    ]],
-                  },
-                  "StorageClass": "STANDARD",
-                },
-                "Id": "Backup",
-                "Prefix": "",
-                "Status": "Enabled",
-              }],
-            },
-            "VersioningConfiguration": {
-              "Status": "Enabled",
-            },
-          },
-        },
-        "RecordServiceS3Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-          "Properties": {
-            "ReplicationConfiguration": {
-              "Role": {
-                "Fn::GetAtt": [
-                  "WorkItemBucketBackupRole",
-                  {
-                    "Ref": 'AWS::Region',
-                  },
-                ],
-              },
-              "Rules": [{
-                "Destination": {
-                  "Bucket": {
-                    "Fn::Join": ["", [
-                      "arn:aws:s3:::", {
-                        "Fn::Join": ["-", [
-                          { "Ref": "AWS::Region" },
-                          { "Ref": "AWS::StackName" },
-                          "replicationbucket",
-                        ]],
-                      },
-                    ]],
-                  },
-                  "StorageClass": "STANDARD",
-                },
-                "Id": "Backup",
-                "Prefix": "",
-                "Status": "Enabled",
-              }],
-            },
-            "VersioningConfiguration": {
-              "Status": "Enabled",
-            },
-          },
-        },
-        "WorkItemBucketBackupRole": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-            "AssumeRolePolicyDocument": {
-              "Statement": [{
-                "Action": ["sts:AssumeRole"],
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": ["s3.amazonaws.com"],
-                },
-              }],
-            },
-          },
-        },
-        "BucketBackupPolicy": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-            "PolicyDocument": {
-              "Statement": [{
-                "Action": [
-                  "s3:GetReplicationConfiguration",
-                  "s3:ListBucket",
-                ],
-                "Effect": "Allow",
-                "Resource": [{
-                  "Fn::Join": ["", [
-                    "arn:aws:s3:::", {
-                      "Ref": "RecordServiceS3Bucket",
-                    },
-                  ],
-                  ],
-                }],
-              }, {
-                "Action": [
-                  "s3:GetObjectVersion",
-                  "s3:GetObjectVersionAcl",
-                ],
-                "Effect": "Allow",
-                "Resource": [{
-                  "Fn::Join": ["", [
-                    "arn:aws:s3:::", {
-                      "Ref": "RecordServiceS3Bucket",
-                    },
-                    "/*",
-                  ]],
-                }],
-              }, {
-                "Action": [
-                  "s3:ReplicateObject",
-                  "s3:ReplicateDelete",
-                ],
-                "Effect": "Allow",
-                "Resource": [{
-                  "Fn::Join": ["", [
-                    "arn:aws:s3:::", {
-                      "Fn::Join": ["-", [
-                        { "Ref": "AWS::Region" },
-                        { "Ref": "AWS::StackName" },
-                        "replicationbucket",
-                      ]],
-                    },
-                    "/*",
-                  ]],
-                }],
-              }],
-            },
-            "PolicyName": "BucketBackupPolicy",
-            "Roles": [{
-              "Ref": "WorkItemBucketBackupRole",
-            }],
-          },
-        },
-      },
-    });
-  });
-
-  test('can ingest a yaml template with parameters and output it unchanged', () => {
-    includeTestTemplate(stack, 'bucket-with-parameters.yaml');
+  test('can ingest a yaml with long-form functions and output it unchanged', () => {
+    includeTestTemplate(stack, 'long-form-subnet.yaml');
 
     expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('bucket-with-parameters.yaml'),
+      loadTestFileToJsObject('long-form-subnet.yaml'),
     );
   });
 });
 
-interface IncludeTestTemplateProps {
-  /** @default true */
-  readonly preserveLogicalIds?: boolean;
-}
-
-function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
-    // preserveLogicalIds: props.preserveLogicalIds,
   });
 }
 
