@@ -5,7 +5,7 @@ import * as yaml_types from 'yaml/types';
 
 function makeTagForCfnIntrinsic(
   intrinsicName: string, addFnPrefix: boolean = true,
-  resolveFun?: (_doc: yaml.Document, cstNode: yaml_cst.CST.Node) => any): yaml_types.Schema.Tag {
+  resolveFun?: (_doc: yaml.Document, cstNode: yaml_cst.CST.Node) => any): yaml_types.Schema.CustomTag {
 
   return {
     identify(value: any) { return typeof value === 'string'; },
@@ -14,13 +14,13 @@ function makeTagForCfnIntrinsic(
       const ret: any = {};
       ret[addFnPrefix ? `Fn::${intrinsicName}` : intrinsicName] =
         // the +1 is to account for the ! the short form begins with
-        yaml.parse(cstNode.toString().substring(intrinsicName.length + 1));
+        parseYamlStrWithCfnTags(cstNode.toString().substring(intrinsicName.length + 1));
       return ret;
     }),
   };
 }
 
-export const shortForms: yaml_types.Schema.Tag[] = [
+export const shortForms: yaml_types.Schema.CustomTag[] = [
   'Base64', 'Cidr', 'FindInMap', 'GetAZs', 'ImportValue', 'Join',
   'Select', 'Split', 'Transform', 'And', 'Equals', 'If', 'Not', 'Or',
 ].map(name => makeTagForCfnIntrinsic(name)).concat(
@@ -41,22 +41,28 @@ export const shortForms: yaml_types.Schema.Tag[] = [
       'Fn::GetAtt': firstDot !== -1 && firstBracket === -1
         ? [
           cstNode.toString().substring('!GetAtt '.length, firstDot),
-          yaml.parse((cstNode.toString().substring(firstDot + 1))),
+          parseYamlStrWithCfnTags((cstNode.toString().substring(firstDot + 1))),
         ]
-        : yaml.parse(cstNode.toString().substring('!GetAtt'.length)),
+        : parseYamlStrWithCfnTags(cstNode.toString().substring('!GetAtt'.length)),
     };
   }),
 );
+
+function parseYamlStrWithCfnTags(text: string): any {
+  return yaml.parse(text, {
+    customTags: shortForms,
+  });
+}
 
 export function readJsonSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);
   return JSON.parse(fileContents.toString());
 }
 
-export function readYamlSync(filePath: string, customTags?: [yaml_types.Schema.CustomTag]): any {
+export function readYamlSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);
-  if (customTags) {
-    yaml.defaultOptions.customTags = customTags;
-  }
-  return yaml.parse(fileContents.toString());
+
+  return yaml.parse(fileContents.toString(), {
+    customTags : shortForms,
+  });
 }

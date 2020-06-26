@@ -389,7 +389,7 @@ function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.C
 }
 
 function loadTestFileToJsObject(testTemplate: string): any {
-  return futils.readYamlSync(_testTemplateFilePath(testTemplate), futils.shortForms);
+  return futils.readYamlSync(_testTemplateFilePath(testTemplate));
 }
 
 function _testTemplateFilePath(testTemplate: string) {
