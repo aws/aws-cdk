@@ -10,11 +10,9 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
-    const delimiter: string = '.';
-    const prefix: string[] = ['dualstack'];
     return {
       hostedZoneId: this.loadBalancer.loadBalancerCanonicalHostedZoneId,
-      dnsName: cdk.Fn.join(delimiter, prefix.concat([this.loadBalancer.loadBalancerDnsName])),
+      dnsName: cdk.Fn.join('.', ['dualstack', this.loadBalancer.loadBalancerDnsName]),
     };
   }
 }
