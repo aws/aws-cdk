@@ -41,11 +41,11 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly subnets?: ec2.SubnetSelection;
 
   /**
-   * Existing security group to use for the tasks
+   * Existing security groups to use for the tasks
    *
    * @default - A new security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * Assign public IP addresses to each task
@@ -229,7 +229,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  private securityGroup?: ec2.ISecurityGroup;
+  private securityGroups: ec2.ISecurityGroup[] = [];
   private networkConfiguration?: any;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
@@ -288,17 +288,17 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       AwsvpcConfiguration: {
         AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
+        SecurityGroups: cdk.Lazy.listValue({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
       },
     };
 
     // Make sure we have a security group if we're using AWSVPC networking
-    this.securityGroup = this.props.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
-    this.connections.addSecurityGroup(this.securityGroup);
+    this.securityGroups = this.props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc })];
+    this.connections.addSecurityGroup(...this.securityGroups);
   }
 
   private validateNoNetworkingProps() {
-    if (this.props.subnets !== undefined || this.props.securityGroup !== undefined) {
+    if (this.props.subnets !== undefined || this.props.securityGroups !== undefined) {
       throw new Error(
         `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`,
       );
