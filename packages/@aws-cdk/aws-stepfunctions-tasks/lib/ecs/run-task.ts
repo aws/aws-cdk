@@ -336,7 +336,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 }
 
 function renderOverrides(containerOverrides?: ContainerOverride[]) {
-  if (!containerOverrides) {
+  if (!containerOverrides || containerOverrides.length === 0) {
     return undefined;
   }
 
@@ -349,8 +349,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
       Memory: override.memoryLimit,
       MemoryReservation: override.memoryReservation,
       Environment:
-        override.environment &&
-        override.environment.map((e) => ({
+        override.environment?.map((e) => ({
           Name: e.name,
           Value: e.value,
         })),
