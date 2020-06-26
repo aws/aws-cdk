@@ -91,6 +91,7 @@
     "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2-actions": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2-patterns": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2-targets": "0.0.0",
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
