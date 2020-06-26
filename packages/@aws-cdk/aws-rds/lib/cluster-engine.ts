@@ -189,7 +189,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
 
 /**
  * Creation properties of the plain Aurora database cluster engine.
- * Used in {@link DatabaseClusterEngine.defaultAurora}.
+ * Used in {@link DatabaseClusterEngine.aurora}.
  */
 export interface DefaultAuroraClusterEngineProps {
   /**
@@ -302,7 +302,7 @@ export class DatabaseClusterEngine {
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
 
   /** Creates a new plain Aurora database cluster engine. */
-  public static defaultAurora(props: DefaultAuroraClusterEngineProps): IClusterEngine {
+  public static aurora(props: DefaultAuroraClusterEngineProps): IClusterEngine {
     return new DefaultAuroraClusterEngine(props);
   }
 

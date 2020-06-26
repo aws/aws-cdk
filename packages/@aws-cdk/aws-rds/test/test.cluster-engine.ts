@@ -43,7 +43,7 @@ export = {
 
   'cluster parameter group correctly determined for AURORA and given version'(test: Test) {
     // GIVEN
-    const engine = DatabaseClusterEngine.defaultAurora({
+    const engine = DatabaseClusterEngine.aurora({
       version: '5.6.mysql_aurora.1.22.2',
     });
 

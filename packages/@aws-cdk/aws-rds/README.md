@@ -47,7 +47,7 @@ use the static factory methods on `DatabaseClusterEngine`:
 
 ```typescript
 new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.defaultAurora({
+  engine: rds.DatabaseClusterEngine.aurora({
     version: '5.6.mysql_aurora.1.17.9',
   },
   ...
