@@ -275,7 +275,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     };
 
     // Make sure we have a security group if we're using AWSVPC networking
-    this.securityGroup = this.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    this.securityGroup = this.props.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.connections.addSecurityGroup(this.securityGroup);
   }
 
