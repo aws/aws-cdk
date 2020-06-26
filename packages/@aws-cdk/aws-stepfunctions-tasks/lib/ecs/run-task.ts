@@ -72,7 +72,7 @@ export interface IEcsLaunchTarget {
   /**
    * called when the ECS launch target is configured on RunTask
    */
-  bind(_task: EcsRunTask): EcsLaunchTargetConfig;
+  bind(task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, cluster?: ecs.ICluster): EcsLaunchTargetConfig;
 }
 
 /**
@@ -132,7 +132,11 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the Fargate launch type configured on RunTask
    */
-  public bind(_task: EcsRunTask): EcsLaunchTargetConfig {
+  public bind(_task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, _cluster?: ecs.ICluster): EcsLaunchTargetConfig {
+    if (!taskDefinition.isFargateCompatible) {
+      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
+    }
+
     return {
       parameters: {
         LaunchType: 'FARGATE',
@@ -152,7 +156,15 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
-  public bind(_task: EcsRunTask): EcsLaunchTargetConfig {
+  public bind(_task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, cluster?: ecs.ICluster): EcsLaunchTargetConfig {
+    if (!taskDefinition.isEc2Compatible) {
+      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
+    }
+
+    if (!cluster?.hasEc2Capacity) {
+      throw new Error('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+    }
+
     return {
       parameters: {
         LaunchType: 'EC2',
@@ -206,7 +218,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   constructor(scope: cdk.Construct, id: string, private readonly props: EcsRunTaskProps) {
     super(scope, id, props);
-    this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -216,7 +228,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
     this.validateLaunchTarget();
 
-    for (const override of this.props.containerOverrides || []) {
+    for (const override of this.props.containerOverrides ?? []) {
       const name = override.containerDefinition.containerName;
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
@@ -230,12 +242,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 
   protected renderTask(): any {
-    if (this.networkConfiguration !== undefined) {
-      // Make sure we have a security group if we're using AWSVPC networking
-      this.securityGroup = this.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
-      this.connections.addSecurityGroup(this.securityGroup);
-    }
-
     return {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
@@ -243,7 +249,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this).parameters,
+        ...this.props.launchTarget.bind(this, this.props.taskDefinition, this.props.cluster).parameters,
       }),
     };
   }
@@ -258,25 +264,16 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
       },
     };
+
+    // Make sure we have a security group if we're using AWSVPC networking
+    this.securityGroup = this.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    this.connections.addSecurityGroup(this.securityGroup);
   }
 
   private validateLaunchTarget() {
-    if (this.props.launchTarget instanceof EcsFargateLaunchTarget) {
-      this.validateFargateLaunchType();
-    }
-
-    if (this.props.launchTarget instanceof EcsEc2LaunchTarget) {
-      this.validateEc2LaunchType();
-    }
 
     if (!this.props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
-    }
-  }
-
-  private validateEc2LaunchType() {
-    if (!this.props.cluster.hasEc2Capacity) {
-      throw new Error('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
 
     if (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
@@ -290,16 +287,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   private validateNoNetworkingProps() {
     if (this.props.subnets !== undefined || this.props.securityGroup !== undefined) {
-      throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+      throw new Error(`Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`);
     }
-  }
-
-  private validateFargateLaunchType() {
-    if (!this.props.taskDefinition.isFargateCompatible) {
-      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
-    }
-
-    this.configureAwsVpcNetworking();
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {

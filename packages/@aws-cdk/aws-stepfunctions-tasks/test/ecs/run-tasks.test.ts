@@ -32,9 +32,9 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
     memoryLimitMiB: 256,
   });
 
-  expect(() => new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() })).toThrowError(
-    /not configured for compatibility with Fargate/,
-  );
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+  ).toThrowError(/Supplied TaskDefinition is not compatible with Fargate/);
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -43,9 +43,9 @@ test('Cannot create a Fargate task without a default container', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  expect(() => new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() })).toThrowError(
-    /must have at least one essential container/,
-  );
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+  ).toThrowError(/must have at least one essential container/);
 });
 
 test('Running a Fargate Task', () => {
