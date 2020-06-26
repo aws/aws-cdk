@@ -687,8 +687,6 @@ interface BehaviorWithOrigin extends Behavior {
  * This will create a CloudFront distribution that uses your S3Bucket as it's origin.
  *
  * You can customize the distribution using additional properties from the CloudFrontWebDistributionProps interface.
- *
- *
  */
 export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
   /**

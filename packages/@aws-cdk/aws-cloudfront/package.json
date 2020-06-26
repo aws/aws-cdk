@@ -97,6 +97,8 @@
   "maturity": "experimental",
   "awslint": {
     "exclude": [
+      "props-physical-name:@aws-cdk/aws-cloudfront.Distribution",
+      "props-physical-name:@aws-cdk/aws-cloudfront.DistributionProps",
       "props-physical-name:@aws-cdk/aws-cloudfront.OriginAccessIdentityProps",
       "docs-public-apis:@aws-cdk/aws-cloudfront.OriginProtocolPolicy",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerProtocolPolicy.ALLOW_ALL",
