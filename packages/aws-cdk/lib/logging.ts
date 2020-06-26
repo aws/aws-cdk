@@ -48,7 +48,6 @@ export function prefix(prefixString: string, fn: LoggerFunction): LoggerFunction
   return (fmt: string, ...args: any[]) => fn(`%s ${fmt}`, prefixString, ...args);
 }
 
-
 export const enum LogLevel {
   /** Not verbose at all */
   DEFAULT = 0,
