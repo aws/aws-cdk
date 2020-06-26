@@ -542,7 +542,7 @@
         }
       }
     },
-    "Resource": {
+    "FileSystemAccessPointF8178182": {
       "Type": "AWS::EFS::AccessPoint",
       "Properties": {
         "FileSystemId": {
