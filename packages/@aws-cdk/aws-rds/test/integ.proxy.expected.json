@@ -523,6 +523,7 @@
         ],
         "DBProxyName": "dbProxy",
         "EngineFamily": "POSTGRESQL",
+        "RequireTLS": true,
         "RoleArn": {
           "Fn::GetAtt": [
             "dbProxyIAMRole662F3AB8",

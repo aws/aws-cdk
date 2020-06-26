@@ -53,69 +53,6 @@ export class SessionPinningFilter {
 }
 
 /**
- * Specifies the settings that control the size and behavior of the connection pool.
- */
-export interface ProxyConnectionPool {
-  /**
-   * The duration for a proxy to wait for a connection to become available in the connection pool.
-   * Only applies when the proxy has opened its maximum number of connections and all connections are busy with client
-   * sessions.
-   *
-   * Value must be between 1 second and 1 hour, or `Duration.seconds(0)` to represent unlimited.
-   *
-   * @default cdk.Duration.seconds(120)
-   */
-  readonly borrowTimeout?: cdk.Duration;
-
-  /**
-   * One or more SQL statements for the proxy to run when opening each new database connection.
-   * Typically used with SET statements to make sure that each connection has identical settings such as time zone
-   * and character set.
-   * For multiple statements, use semicolons as the separator.
-   * You can also include multiple variables in a single SET statement, such as SET x=1, y=2.
-   *
-   * not currently supported for PostgreSQL.
-   *
-   * @default - no initialization query
-   */
-  readonly initQuery?: string;
-
-  /**
-   * The maximum size of the connection pool for each target in a target group.
-   * For Aurora MySQL, it is expressed as a percentage of the max_connections setting for the RDS DB instance or Aurora DB
-   * cluster used by the target group.
-   *
-   * 1-100
-   *
-   * @default 100
-   */
-  readonly maxConnectionsPercent?: number;
-
-  /**
-   * Controls how actively the proxy closes idle database connections in the connection pool.
-   * A high value enables the proxy to leave a high percentage of idle connections open.
-   * A low value causes the proxy to close idle client connections and return the underlying database connections
-   * to the connection pool.
-   * For Aurora MySQL, it is expressed as a percentage of the max_connections setting for the RDS DB instance
-   * or Aurora DB cluster used by the target group.
-   *
-   * between 0 and MaxConnectionsPercent
-   *
-   * @default 50
-   */
-  readonly maxIdleConnectionsPercent?: number;
-
-  /**
-   * Each item in the list represents a class of SQL operations that normally cause all later statements in a session
-   * using a proxy to be pinned to the same underlying database connection.
-   * Including an item in the list exempts that class of SQL operations from the pinning behavior.
-   *
-   * @default - no session pinning filters
-   */
-  readonly sessionPinningFilters?: SessionPinningFilter[];
-}
-
-/**
  * Proxy target: Instance or Cluster
  *
  * A target group is a collection of databases that the proxy can connect to.
@@ -199,11 +136,62 @@ export interface DatabaseProxyOptions {
   readonly dbProxyName?: string;
 
   /**
-   * Specifies the settings that control the size and behavior of the connection pool.
+   * The duration for a proxy to wait for a connection to become available in the connection pool.
+   * Only applies when the proxy has opened its maximum number of connections and all connections are busy with client
+   * sessions.
    *
-   * @default - default
+   * Value must be between 1 second and 1 hour, or `Duration.seconds(0)` to represent unlimited.
+   *
+   * @default cdk.Duration.seconds(120)
    */
-  readonly connectionPool?: ProxyConnectionPool;
+  readonly borrowTimeout?: cdk.Duration;
+
+  /**
+   * One or more SQL statements for the proxy to run when opening each new database connection.
+   * Typically used with SET statements to make sure that each connection has identical settings such as time zone
+   * and character set.
+   * For multiple statements, use semicolons as the separator.
+   * You can also include multiple variables in a single SET statement, such as SET x=1, y=2.
+   *
+   * not currently supported for PostgreSQL.
+   *
+   * @default - no initialization query
+   */
+  readonly initQuery?: string;
+
+  /**
+   * The maximum size of the connection pool for each target in a target group.
+   * For Aurora MySQL, it is expressed as a percentage of the max_connections setting for the RDS DB instance or Aurora DB
+   * cluster used by the target group.
+   *
+   * 1-100
+   *
+   * @default 100
+   */
+  readonly maxConnectionsPercent?: number;
+
+  /**
+   * Controls how actively the proxy closes idle database connections in the connection pool.
+   * A high value enables the proxy to leave a high percentage of idle connections open.
+   * A low value causes the proxy to close idle client connections and return the underlying database connections
+   * to the connection pool.
+   * For Aurora MySQL, it is expressed as a percentage of the max_connections setting for the RDS DB instance
+   * or Aurora DB cluster used by the target group.
+   *
+   * between 0 and MaxConnectionsPercent
+   *
+   * @default 50
+   */
+  readonly maxIdleConnectionsPercent?: number;
+
+  /**
+   * Each item in the list represents a class of SQL operations that normally cause all later statements in a session
+   * using a proxy to be pinned to the same underlying database connection.
+   * Including an item in the list exempts that class of SQL operations from the pinning behavior.
+   *
+   * @default - no session pinning filters
+   */
+  readonly sessionPinningFilters?: SessionPinningFilter[];
 
   /**
    * Whether the proxy includes detailed information about SQL statements in its logs.
@@ -235,7 +223,7 @@ export interface DatabaseProxyOptions {
    * A Boolean parameter that specifies whether Transport Layer Security (TLS) encryption is required for connections to the proxy.
    * By enabling this setting, you can enforce encrypted TLS connections to the proxy.
    *
-   * @default false
+   * @default true
    */
   readonly requireTLS?: boolean;
 
@@ -409,7 +397,7 @@ export class DatabaseProxy extends cdk.Resource
       debugLogging: props.debugLogging,
       engineFamily: props.proxyTarget.engineFamily,
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
-      requireTls: props.requireTLS,
+      requireTls: props.requireTLS ?? true,
       roleArn: role.roleArn,
       vpcSecurityGroupIds: props.securityGroups?.map(_ => _.securityGroupId),
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
@@ -424,7 +412,7 @@ export class DatabaseProxy extends cdk.Resource
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
-      connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props.connectionPool),
+      connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
   }
 
@@ -443,16 +431,13 @@ export class DatabaseProxy extends cdk.Resource
  * ConnectionPoolConfiguration (L2 => L1)
  */
 function toConnectionPoolConfigurationInfo(
-  config?: ProxyConnectionPool,
-): undefined | CfnDBProxyTargetGroup.ConnectionPoolConfigurationInfoFormatProperty {
-  if (!config) {
-    return undefined;
-  }
+  props: DatabaseProxyProps,
+): CfnDBProxyTargetGroup.ConnectionPoolConfigurationInfoFormatProperty {
   return {
-    connectionBorrowTimeout: config.borrowTimeout?.toSeconds(),
-    initQuery: config.initQuery,
-    maxConnectionsPercent: config.maxConnectionsPercent,
-    maxIdleConnectionsPercent: config.maxIdleConnectionsPercent,
-    sessionPinningFilters: config.sessionPinningFilters?.map(_ => _.filterName),
+    connectionBorrowTimeout: props.borrowTimeout?.toSeconds(),
+    initQuery: props.initQuery,
+    maxConnectionsPercent: props.maxConnectionsPercent,
+    maxIdleConnectionsPercent: props.maxIdleConnectionsPercent,
+    sessionPinningFilters: props.sessionPinningFilters?.map(_ => _.filterName),
   };
 }

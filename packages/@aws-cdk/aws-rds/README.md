@@ -209,10 +209,8 @@ const secret: secrets.ISecret = ...;
 const dbInstance: rds.IDatabaseInstance = ...;
 
 const proxy = dbInstance.addProxy('proxy', {
-    connectionPoolConfiguration: {
-        connectionBorrowTimeout: cdk.Duration.seconds(30),
-        maxConnectionsPercent: 50,
-    },
+    connectionBorrowTimeout: cdk.Duration.seconds(30),
+    maxConnectionsPercent: 50,
     secret,
     vpc,
 });

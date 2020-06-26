@@ -37,6 +37,7 @@ export = {
         ],
         DBProxyName: 'Proxy',
         EngineFamily: 'MYSQL',
+        RequireTLS: true,
         RoleArn: {
           'Fn::GetAtt': [
             'ProxyIAMRole2FE8AB0F',
@@ -60,6 +61,7 @@ export = {
         DBProxyName: {
           Ref: 'ProxyCB0DFB71',
         },
+        ConnectionPoolConfigurationInfo: {},
         DBInstanceIdentifiers: [
           {
             Ref: 'InstanceC1063A87',
@@ -108,6 +110,7 @@ export = {
         ],
         DBProxyName: 'Proxy',
         EngineFamily: 'POSTGRESQL',
+        RequireTLS: true,
         RoleArn: {
           'Fn::GetAtt': [
             'ProxyIAMRole2FE8AB0F',
@@ -131,6 +134,7 @@ export = {
         DBProxyName: {
           Ref: 'ProxyCB0DFB71',
         },
+        ConnectionPoolConfigurationInfo: {},
         DBClusterIdentifiers: [
           {
             Ref: 'DatabaseB269D8BB',

@@ -15,10 +15,8 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
 });
 
 new rds.DatabaseProxy(stack, 'dbProxy', {
-  connectionPool: {
-    borrowTimeout: cdk.Duration.seconds(30),
-    maxConnectionsPercent: 50,
-  },
+  borrowTimeout: cdk.Duration.seconds(30),
+  maxConnectionsPercent: 50,
   secret: dbInstance.secret!,
   proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
