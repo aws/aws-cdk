@@ -1,3 +1,4 @@
+# https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
