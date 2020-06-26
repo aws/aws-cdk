@@ -61,7 +61,7 @@ export class EvaluateExpression implements sfn.IStepFunctionsTask {
       expressionAttributeValues = matches.reduce(
         (acc, m) => ({
           ...acc,
-          [m]: sfn.Data.stringAt(m), // It's okay to always use `stringAt` here
+          [m]: sfn.JsonPath.stringAt(m), // It's okay to always use `stringAt` here
         }),
         {},
       );
