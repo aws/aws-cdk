@@ -9,6 +9,7 @@ dist
 lib/generated/resources.ts
 .jsii
 lib/*.zip
+lambda/staticipforalb/*.zip
 
 .LAST_BUILD
 .nyc_output
