@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 // tslint:disable:variable-name
 
@@ -246,6 +247,7 @@ export = {
   },
 
   'addMetadata(type, data) can be used to attach metadata to constructs FIND_ME'(test: Test) {
+    const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     test.deepEqual(con.node.metadata, [], 'starts empty');
@@ -253,6 +255,7 @@ export = {
     con.node.addMetadata('key', 'value');
     con.node.addMetadata('number', 103);
     con.node.addMetadata('array', [ 123, 456 ]);
+    restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, 'key');
     test.deepEqual(con.node.metadata[0].data, 'value');
@@ -282,9 +285,12 @@ export = {
   },
 
   'addWarning(message) can be used to add a "WARNING" message entry to the construct'(test: Test) {
+    const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addWarning('This construct is deprecated, use the other one instead');
+    restoreStackTraceColection(previousValue);
+
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
     test.deepEqual(con.node.metadata[0].data, 'This construct is deprecated, use the other one instead');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
@@ -292,9 +298,12 @@ export = {
   },
 
   'addError(message) can be used to add a "ERROR" message entry to the construct'(test: Test) {
+    const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addError('Stop!');
+    restoreStackTraceColection(previousValue);
+
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.ERROR);
     test.deepEqual(con.node.metadata[0].data, 'Stop!');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
@@ -302,9 +311,12 @@ export = {
   },
 
   'addInfo(message) can be used to add an "INFO" message entry to the construct'(test: Test) {
+    const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
     con.node.addInfo('Hey there, how do you do?');
+    restoreStackTraceColection(previousValue);
+
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.INFO);
     test.deepEqual(con.node.metadata[0].data, 'Hey there, how do you do?');
     test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);

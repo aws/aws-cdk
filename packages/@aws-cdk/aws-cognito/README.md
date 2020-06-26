@@ -2,17 +2,18 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+| Features | Stability |
+| --- | --- |
+| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for User Pools | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
+| Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> **Developer Preview:** Higher level constructs in this module that are marked as developer preview have completed their phase of active development and are looking for adoption and feedback. While the same caveats around non-backward compatible as Experimental constructs apply, they will undergo fewer breaking changes. Just as with Experimental constructs, these are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes.
 
 ---
 <!--END STABILITY BANNER-->
-
 [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html) provides
 authentication, authorization, and user management for your web and mobile apps. Your users can sign in directly with a
 user name and password, or through a third party such as Facebook, Amazon, Google or Apple.
@@ -33,6 +34,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Attributes](#attributes)
   - [Security](#security)
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
+    - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
   - [Import](#importing-user-pools)
@@ -162,15 +164,21 @@ attributes. Besides these, additional attributes can be further defined, and are
 Learn more on [attributes in Cognito's
 documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html).
 
-The following code sample configures a user pool with two standard attributes (name and address) as required, and adds
-four optional attributes.
+The following code configures a user pool with two standard attributes (name and address) as required and mutable, and adds
+four custom attributes.
 
 ```ts
 new UserPool(this, 'myuserpool', {
   // ...
-  requiredAttributes: {
-    fullname: true,
-    address: true,
+  standardAttributes: {
+    fullname: {
+      required: true,
+      mutable: false,
+    },
+    address: {
+      required: false,
+      mutable: true,
+    },
   },
   customAttributes: {
     'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
@@ -261,6 +269,18 @@ new UserPool(this, 'myuserpool', {
 ```
 
 Note that, `tempPasswordValidity` can be specified only in whole days. Specifying fractional days would throw an error.
+
+#### Account Recovery Settings
+
+User pools can be configured on which method a user should use when recovering the password for their account. This
+can either be email and/or SMS. Read more at [Recovering User Accounts](https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html)
+
+```ts
+new UserPool(this, 'UserPool', {
+  ...,
+  accountRecoverySettings: AccountRecovery.EMAIL_ONLY,
+})
+```
 
 ### Emails
 
@@ -361,9 +381,26 @@ const provider = new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
 });
 ```
 
-In order to allow users to sign in with a third-party identity provider, the app client that faces the user should be
-configured to use the identity provider. See [App Clients](#app-clients) section to know more about App Clients.
-The identity providers should be configured on `identityProviders` property available on the `UserPoolClient` construct.
+Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
+attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
+User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
+
+The following code shows how different attributes provided by 'Login With Amazon' can be mapped to standard and custom
+user pool attributes.
+
+```ts
+new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
+  // ...
+  attributeMapping: {
+    email: ProviderAttribute.AMAZON_EMAIL,
+    website: ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
+    custom: {
+      // custom user pool attributes go here
+      uniqueId: ProviderAttribute.AMAZON_USER_ID,
+    }
+  }
+});
+```
 
 ### App Clients
 
@@ -450,7 +487,7 @@ pool.addClient('app-client', {
 
 All identity providers created in the CDK app are automatically registered into the corresponding user pool. All app
 clients created in the CDK have all of the identity providers enabled by default. The 'Cognito' identity provider,
-that allows users to register and sign in directly with the Cognito user pool, is also enabled by default. 
+that allows users to register and sign in directly with the Cognito user pool, is also enabled by default.
 Alternatively, the list of supported identity providers for a client can be explicitly specified -
 
 ```ts
@@ -522,3 +559,4 @@ const signInUrl = domain.signInUrl(client, {
   redirectUrl: 'https://myapp.com/home', // must be a URL configured under 'callbackUrls' with the client
 })
 ```
+

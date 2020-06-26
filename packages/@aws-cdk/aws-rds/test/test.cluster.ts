@@ -98,7 +98,7 @@ export = {
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
-        securityGroup: sg,
+        securityGroups: [sg],
       },
     });
 
@@ -242,7 +242,7 @@ export = {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      kmsKey: new kms.Key(stack, 'Key'),
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
     });
 
     // THEN
@@ -383,9 +383,9 @@ export = {
       instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false,
-      }),
+      })],
     });
 
     // WHEN
