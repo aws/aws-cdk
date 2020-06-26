@@ -2,6 +2,9 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as YAML from 'yaml';
+import * as fs from 'fs';
+import * as path from 'path';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
@@ -385,6 +388,8 @@ export class Cluster extends Resource implements ICluster {
 
   private _spotInterruptHandler?: HelmChart;
 
+  private _neuronDevicePlugin?: KubernetesResource;
+
   private readonly version: string | undefined;
 
   /**
@@ -536,6 +541,10 @@ export class Cluster extends Resource implements ICluster {
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
     });
+
+    if (!this._neuronDevicePlugin && nodeTypeForInstanceType(options.instanceType) == NodeType.INFERENTIA) {
+      this.addNeuronDevicePlugin();
+    } 
 
     return asg;
   }
@@ -832,6 +841,20 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._spotInterruptHandler;
+  }
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
+  private addNeuronDevicePlugin() {
+    if (!this._neuronDevicePlugin) {
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/assets/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents)
+      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized)
+    }
+
+    return this._neuronDevicePlugin;
   }
 
   /**

@@ -14,8 +14,11 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 })
+
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
+      vpc,
       mastersRole,
       defaultCapacity: 2,
       version: '1.16',
@@ -50,6 +53,12 @@ class EksClusterStack extends TestStack {
         awsApiRetryAttempts: 5,
       },
     });
+
+    // // inference instances
+    // cluster.addCapacity('InferenceInstances', {
+    //   instanceType: new ec2.InstanceType('inf1.12xlarge'),
+    //   minCapacity: 1,
+    // });
 
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng', {
