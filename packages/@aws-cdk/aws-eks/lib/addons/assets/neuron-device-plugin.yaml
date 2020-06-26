@@ -1,3 +1,4 @@
+# source: https://github.com/aws/aws-neuron-sdk/blob/master/docs/neuron-container-tools/k8s-neuron-device-plugin.yml
 # https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
 apiVersion: apps/v1
 kind: DaemonSet
@@ -7,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      name: neuron-device-plugin-ds
+      name:  neuron-device-plugin-ds
   updateStrategy:
     type: RollingUpdate
   template:
@@ -18,11 +19,11 @@ spec:
         name: neuron-device-plugin-ds
     spec:
       tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - key: aws.amazon.com/neuron
-          operator: Exists
-          effect: NoSchedule
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: aws.amazon.com/neuron
+        operator: Exists
+        effect: NoSchedule
       # Mark this pod as a critical add-on; when enabled, the critical add-on
       # scheduler reserves resources for critical add-on pods so that they can
       # be rescheduled after a failure.
@@ -39,7 +40,7 @@ spec:
                       - inf1.xlarge
                       - inf1.2xlarge
                       - inf1.6xlarge
-                      - inf1.24xlarge
+                      - inf1.4xlarge
               - matchExpressions:
                   - key: "node.kubernetes.io/instance-type"
                     operator: In
@@ -49,8 +50,8 @@ spec:
                       - inf1.6xlarge
                       - inf1.24xlarge
       containers:
-        - image: "%s.dkr.ecr.%s.%s/neuron-device-plugin:1.0.8550.0"
-          imagePullPolicy: IfNotPresent
+        - image: 790709498068.dkr.ecr.us-west-2.amazonaws.com/neuron-device-plugin:1.0.9043.0
+          imagePullPolicy: Always
           name: k8s-neuron-device-plugin-ctr
           securityContext:
             allowPrivilegeEscalation: false

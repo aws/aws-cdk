@@ -2,10 +2,10 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import * as YAML from 'yaml';
+import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -542,9 +542,9 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: options.machineImageType,
     });
 
-    if (!this._neuronDevicePlugin && nodeTypeForInstanceType(options.instanceType) == NodeType.INFERENTIA) {
+    if (!this._neuronDevicePlugin && nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
       this.addNeuronDevicePlugin();
-    } 
+    }
 
     return asg;
   }
@@ -850,8 +850,8 @@ export class Cluster extends Resource implements ICluster {
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
       const fileContents = fs.readFileSync(path.join(__dirname, 'addons/assets/neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents)
-      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized)
+      const sanitized = YAML.parse(fileContents);
+      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
     }
 
     return this._neuronDevicePlugin;
@@ -1255,6 +1255,6 @@ const INFERENTIA_INSTANCETYPES = ['inf1'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
-  INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
-  NodeType.STANDARD;
+    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+      NodeType.STANDARD;
 }
