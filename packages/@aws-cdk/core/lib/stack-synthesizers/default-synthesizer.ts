@@ -1,4 +1,3 @@
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
@@ -16,7 +15,7 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 2;
+const MIN_BOOTSTRAP_STACK_VERSION = 3;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -115,6 +114,19 @@ export interface DefaultStackSynthesizerProps {
   readonly cloudFormationExecutionRole?: string;
 
   /**
+   * Name of the CloudFormation Export with the asset key name
+   *
+   * You must supply this if you have given a non-standard name to the KMS key export
+   *
+   * The placeholders `${Qualifier}`, `${AWS::AccountId}` and `${AWS::Region}` will
+   * be replaced with the values of qualifier and the stack's account and region,
+   * respectively.
+   *
+   * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME
+   */
+  readonly fileAssetKeyArnExportName?: string;
+
+  /**
    * Qualifier to disambiguate multiple environments in the same account
    *
    * You can use this and leave the other naming properties empty if you have deployed
@@ -170,16 +182,22 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
    */
   public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
+  /**
+   * Name of the CloudFormation Export with the asset key name
+   */
+  public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME = 'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
+
   private _stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
   private _deployRoleArn?: string;
+  private _kmsKeyArnExportName?: string;
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
 
-  private readonly files: NonNullable<asset_schema.ManifestFile['files']> = {};
-  private readonly dockerImages: NonNullable<asset_schema.ManifestFile['dockerImages']> = {};
+  private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
+  private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
   }
@@ -211,12 +229,14 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
+    this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
     // tslint:enable:max-line-length
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
+    assertBound(this._kmsKeyArnExportName);
 
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
@@ -237,7 +257,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
-    const httpUrl = cfnify(`https://s3.${this.stack.region}.${this.stack.urlSuffix}/${this.bucketName}/${objectKey}`);
+    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
     const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
 
     // Return CFN expression
@@ -247,6 +268,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
+      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName)),
     };
   }
 
@@ -275,10 +297,12 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       },
     };
 
+    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+
     // Return CFN expression
     return {
       repositoryName: cfnify(this.repositoryName),
-      imageUri: cfnify(`${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${this.repositoryName}:${imageTag}`),
+      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
     };
   }
 
@@ -365,8 +389,8 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     const manifestFile = `${artifactId}.json`;
     const outPath = path.join(session.assembly.outdir, manifestFile);
 
-    const manifest: asset_schema.ManifestFile = {
-      version: asset_schema.AssetManifestSchema.currentVersion(),
+    const manifest: cxschema.AssetManifest = {
+      version: cxschema.Manifest.version(),
       files: this.files,
       dockerImages: this.dockerImages,
     };
@@ -408,11 +432,31 @@ function replaceAll(s: string, search: string, replace: string) {
 }
 
 /**
- * If the string still contains placeholders, wrap it in a Fn::Sub so they will be substituted at CFN deploymen time
+ * If the string still contains placeholders, wrap it in a Fn::Sub so they will be substituted at CFN deployment time
  *
  * (This happens to work because the placeholders we picked map directly onto CFN
  * placeholders. If they didn't we'd have to do a transformation here).
  */
 function cfnify(s: string): string {
   return s.indexOf('${') > -1 ? Fn.sub(s) : s;
+}
+
+/**
+ * Return the stack locations if they're concrete, or the original CFN intrisics otherwise
+ *
+ * We need to return these instead of the tokenized versions of the strings,
+ * since we must accept those same ${AWS::AccountId}/${AWS::Region} placeholders
+ * in bucket names and role names (in order to allow environment-agnostic stacks).
+ *
+ * We'll wrap a single {Fn::Sub} around the final string in order to replace everything,
+ * but we can't have the token system render part of the string to {Fn::Join} because
+ * the CFN specification doesn't allow the {Fn::Sub} template string to be an arbitrary
+ * expression--it must be a string literal.
+ */
+function stackLocationOrInstrinsics(stack: Stack) {
+  return {
+    account: resolvedOr(stack.account, '${AWS::AccountId}'),
+    region: resolvedOr(stack.region, '${AWS::Region}'),
+    urlSuffix: resolvedOr(stack.urlSuffix, '${AWS::URLSuffix}'),
+  };
 }

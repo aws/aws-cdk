@@ -374,7 +374,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
             service: 'sagemaker',
             resource: 'training-job',
             // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-            resourceName: sfn.Data.isJsonPathString(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
           }),
         ],
       }),

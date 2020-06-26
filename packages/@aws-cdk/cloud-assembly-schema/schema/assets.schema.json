@@ -1,0 +1,184 @@
+{
+    "$ref": "#/definitions/AssetManifest",
+    "definitions": {
+        "AssetManifest": {
+            "description": "Definitions for the asset manifest",
+            "type": "object",
+            "properties": {
+                "version": {
+                    "description": "Version of the manifest",
+                    "type": "string"
+                },
+                "files": {
+                    "description": "The file assets in this manifest (Default - No files)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/FileAsset"
+                    }
+                },
+                "dockerImages": {
+                    "description": "The Docker image assets in this manifest (Default - No Docker images)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/DockerImageAsset"
+                    }
+                }
+            },
+            "required": [
+                "version"
+            ]
+        },
+        "FileAsset": {
+            "description": "A file asset",
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/FileSource",
+                    "description": "Source description for file assets"
+                },
+                "destinations": {
+                    "description": "Destinations for this file asset",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/FileDestination"
+                    }
+                }
+            },
+            "required": [
+                "destinations",
+                "source"
+            ]
+        },
+        "FileSource": {
+            "description": "Describe the source of a file asset",
+            "type": "object",
+            "properties": {
+                "path": {
+                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
+                    "type": "string"
+                },
+                "packaging": {
+                    "description": "Packaging method (Default FILE)",
+                    "enum": [
+                        "file",
+                        "zip"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "path"
+            ]
+        },
+        "FileDestination": {
+            "description": "Where in S3 a file asset needs to be published",
+            "type": "object",
+            "properties": {
+                "bucketName": {
+                    "description": "The name of the bucket",
+                    "type": "string"
+                },
+                "objectKey": {
+                    "description": "The destination object key",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "The region where this asset will need to be published (Default - Current region)",
+                    "type": "string"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed while publishing this asset (Default - No role will be assumed)",
+                    "type": "string"
+                },
+                "assumeRoleExternalId": {
+                    "description": "The ExternalId that needs to be supplied while assuming this role (Default - No ExternalId will be supplied)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "bucketName",
+                "objectKey"
+            ]
+        },
+        "DockerImageAsset": {
+            "description": "A file asset",
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/DockerImageSource",
+                    "description": "Source description for file assets"
+                },
+                "destinations": {
+                    "description": "Destinations for this file asset",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/DockerImageDestination"
+                    }
+                }
+            },
+            "required": [
+                "destinations",
+                "source"
+            ]
+        },
+        "DockerImageSource": {
+            "description": "Properties for how to produce a Docker image from a source",
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "description": "The directory containing the Docker image build instructions.\n\nThis path is relative to the asset manifest location.",
+                    "type": "string"
+                },
+                "dockerFile": {
+                    "description": "The name of the file with build instructions (Default Dockerfile)",
+                    "type": "string"
+                },
+                "dockerBuildTarget": {
+                    "description": "Target build stage in a Dockerfile with multiple build stages (Default - The last stage in the Dockerfile)",
+                    "type": "string"
+                },
+                "dockerBuildArgs": {
+                    "description": "Additional build arguments (Default - No additional build arguments)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "directory"
+            ]
+        },
+        "DockerImageDestination": {
+            "description": "Where to publish docker images",
+            "type": "object",
+            "properties": {
+                "repositoryName": {
+                    "description": "Name of the ECR repository to publish to",
+                    "type": "string"
+                },
+                "imageTag": {
+                    "description": "Tag of the image to publish",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "The region where this asset will need to be published (Default - Current region)",
+                    "type": "string"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed while publishing this asset (Default - No role will be assumed)",
+                    "type": "string"
+                },
+                "assumeRoleExternalId": {
+                    "description": "The ExternalId that needs to be supplied while assuming this role (Default - No ExternalId will be supplied)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "imageTag",
+                "repositoryName"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}
