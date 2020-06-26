@@ -414,9 +414,9 @@
         "AliasTarget": {
           "DNSName": {
             "Fn::Join": [
-              ".",
+              "",
               [
-                "dualstack",
+                "dualstack.",
                 {
                   "Fn::GetAtt": [
                     "LB8A12904C",

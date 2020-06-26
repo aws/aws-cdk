@@ -620,9 +620,9 @@
           "DNSName": {
             "Fn::Join":
             [
-              ".",
+              "",
               [
-                "dualstack",
+                "dualstack.",
                 {
                   "Fn::GetAtt": [
                     "myServiceLB168895E1",
