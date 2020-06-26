@@ -227,7 +227,17 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       throw new Error('Task Token is required in `containerOverrides` for callback. Use Context.taskToken to set the token.');
     }
 
-    this.validateLaunchTarget();
+    if (!this.props.taskDefinition.defaultContainer) {
+      throw new Error('A TaskDefinition must have at least one essential container');
+    }
+
+    if (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
+      this.configureAwsVpcNetworking();
+    } else {
+      // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
+      this.validateNoNetworkingProps();
+      this.connections.addSecurityGroup(...this.props.cluster.connections.securityGroups);
+    }
 
     for (const override of this.props.containerOverrides ?? []) {
       const name = override.containerDefinition.containerName;
@@ -269,20 +279,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     // Make sure we have a security group if we're using AWSVPC networking
     this.securityGroup = this.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.connections.addSecurityGroup(this.securityGroup);
-  }
-
-  private validateLaunchTarget() {
-    if (!this.props.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
-
-    if (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworking();
-    } else {
-      // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
-      this.validateNoNetworkingProps();
-      this.connections.addSecurityGroup(...this.props.cluster.connections.securityGroups);
-    }
   }
 
   private validateNoNetworkingProps() {
