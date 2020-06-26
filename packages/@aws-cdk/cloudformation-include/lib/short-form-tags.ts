@@ -5,7 +5,7 @@ const ref = {
   tag: '!Ref',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      Ref: (yaml.parse(cstNode.toString().substring('!Ref'.length))),
+      Ref: yaml.parse(cstNode.toString().substring('!Ref'.length)),
     };
   },
 };
@@ -14,7 +14,7 @@ const base64 = {
   tag: '!Base64',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Base64': (yaml.parse(cstNode.toString().substring('!Base64'.length))),
+      'Fn::Base64': yaml.parse(cstNode.toString().substring('!Base64'.length)),
     };
   },
 };
@@ -23,7 +23,7 @@ const cidr = {
   tag: '!Cidr',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Cidr': (yaml.parse(cstNode.toString().substring('!Cidr'.length))),
+      'Fn::Cidr': yaml.parse(cstNode.toString().substring('!Cidr'.length)),
     };
   },
 };
@@ -32,7 +32,7 @@ const findInMap = {
   tag: '!FindInMap',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::FindInMap': (yaml.parse(cstNode.toString().substring('!FindInMap'.length))),
+      'Fn::FindInMap': yaml.parse(cstNode.toString().substring('!FindInMap'.length)),
     };
   },
 };
@@ -46,13 +46,13 @@ const getAtt = {
       return {
         'Fn::GetAtt': [
           cstNode.toString().substring('!GetAtt '.length, lastDot),
-          yaml.parse((cstNode.toString().substring(lastDot + 1))),
+          yaml.parse(cstNode.toString().substring(lastDot + 1)),
         ],
       };
     }
 
     return {
-      'Fn::GetAtt': (yaml.parse(cstNode.toString().substring('!GetAtt'.length))),
+      'Fn::GetAtt': yaml.parse(cstNode.toString().substring('!GetAtt'.length)),
     };
   },
 };
@@ -61,7 +61,7 @@ const getAZs = {
   tag: '!GetAZs',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::GetAZs': (yaml.parse(cstNode.toString().substring('!GetAZs'.length))),
+      'Fn::GetAZs': yaml.parse(cstNode.toString().substring('!GetAZs'.length)),
     };
   },
 };
@@ -70,7 +70,7 @@ const importValue = {
   tag: '!ImportValue',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::ImportValue': (yaml.parse(cstNode.toString().substring('!ImportValue'.length))),
+      'Fn::ImportValue': yaml.parse(cstNode.toString().substring('!ImportValue'.length)),
     };
   },
 };
@@ -79,7 +79,7 @@ const join = {
   tag: '!Join',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Join': (yaml.parse(cstNode.toString().substring('!Join'.length))),
+      'Fn::Join': yaml.parse(cstNode.toString().substring('!Join'.length)),
     };
   },
 };
@@ -88,7 +88,7 @@ const select = {
   tag: '!Select',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Select': (yaml.parse(cstNode.toString().substring('!Select'.length))),
+      'Fn::Select': yaml.parse(cstNode.toString().substring('!Select'.length)),
     };
   },
 };
@@ -97,7 +97,7 @@ const split = {
   tag: '!Split',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Split': (yaml.parse(cstNode.toString().substring('!Split'.length))),
+      'Fn::Split': yaml.parse(cstNode.toString().substring('!Split'.length)),
     };
   },
 };
@@ -106,7 +106,7 @@ const transform = {
   tag: '!Transform',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Transform': (yaml.parse(cstNode.toString().substring('!Transform'.length))),
+      'Fn::Transform': yaml.parse(cstNode.toString().substring('!Transform'.length)),
     };
   },
 };
@@ -115,7 +115,7 @@ const fnAnd = {
   tag: '!And',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::And': (yaml.parse(cstNode.toString().substring('!And'.length))),
+      'Fn::And': yaml.parse(cstNode.toString().substring('!And'.length)),
     };
   },
 };
@@ -124,7 +124,7 @@ const fnEquals = {
   tag: '!Equals',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Equals': (yaml.parse(cstNode.toString().substring('!Equals'.length))),
+      'Fn::Equals': yaml.parse(cstNode.toString().substring('!Equals'.length)),
     };
   },
 };
@@ -133,7 +133,7 @@ const fnIf = {
   tag: '!If',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::If': (yaml.parse(cstNode.toString().substring('!If'.length))),
+      'Fn::If': yaml.parse(cstNode.toString().substring('!If'.length)),
     };
   },
 };
@@ -142,7 +142,7 @@ const fnNot = {
   tag: '!Not',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Not': (yaml.parse(cstNode.toString().substring('!Not'.length))),
+      'Fn::Not': yaml.parse(cstNode.toString().substring('!Not'.length)),
     };
   },
 };
@@ -151,7 +151,7 @@ const fnOr = {
   tag: '!Or',
   resolve: (_doc: any, cstNode: any) => {
     return {
-      'Fn::Or': (yaml.parse(cstNode.toString().substring('!Or'.length))),
+      'Fn::Or': yaml.parse(cstNode.toString().substring('!Or'.length)),
     };
   },
 };

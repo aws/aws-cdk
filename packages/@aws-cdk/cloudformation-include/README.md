@@ -19,6 +19,8 @@ It can be thought of as an extension of the capabilities of the
 
 Assume we have a file `my-template.json`, that contains the following CloudFormation template:
 
+We can also use YAML templates, instead of JSON.
+
 ```json
 {
   "Resources": {
@@ -32,6 +34,14 @@ Assume we have a file `my-template.json`, that contains the following CloudForma
 }
 ```
 
+```yaml
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: some-bucket-name
+```
+
 It can be included in a CDK application with the following code:
 
 ```typescript
@@ -39,6 +49,14 @@ import * as cfn_inc from '@aws-cdk/cloudformation-include';
 
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
   templateFile: 'my-template.json',
+});
+```
+
+Or, if our template is YAML, we can use
+
+```typescript
+const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
+  templateFile: 'my-template.yaml',
 });
 ```
 
@@ -87,8 +105,6 @@ resource by importing it by its name:
 const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
-You can also use YAML templates, instead of JSON.
-
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),

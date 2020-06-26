@@ -1,0 +1,32 @@
+Resources:
+  Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: SomeBucketName
+      ReplicationConfiguration:
+        Role: "some-role"
+        Rules:
+        - Destination:
+            Bucket: Bucket1
+            StorageClass: STANDARD
+          Status: Enabled
+  Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        !GetAtt [ Bucket1, BucketName ]
+  Bucket3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !GetAtt Bucket1.BucketName
+  Bucket4:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !GetAtt Bucket1.Rules.Destination
+  Bucket5:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        !GetAtt [ Bucket1, Rules.Destination ]
