@@ -7,7 +7,7 @@ import { ContainerOverride } from '..';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Basic properties for ECS Tasks
+ * Properties for ECS Tasks
  */
 export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
@@ -27,8 +27,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Container setting overrides
    *
-   * Key is the name of the container to override, value is the
-   * values you want to override.
+   * Specify the container to use and the overrides to apply.
    *
    * @default - No overrides
    */
@@ -37,8 +36,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Subnets to place the task's ENIs
    *
-   * @default - Private subnets.
-   *   Public subnets if assignPublicIp is set.
+   * @default - Public subnets if assignPublicIp is set. Private subnets otherwise.
    */
   readonly subnets?: ec2.SubnetSelection;
 
@@ -159,11 +157,11 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
    */
   public bind(_task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, cluster?: ecs.ICluster): EcsLaunchTargetConfig {
     if (!taskDefinition.isEc2Compatible) {
-      throw new Error('Supplied TaskDefinition is not compatible with Fargate');
+      throw new Error('Supplied TaskDefinition is not compatible with EC2');
     }
 
     if (!cluster?.hasEc2Capacity) {
-      throw new Error('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+      throw new Error('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.');
     }
 
     return {
