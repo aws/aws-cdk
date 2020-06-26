@@ -71,7 +71,25 @@ export interface IEcsLaunchTarget {
   /**
    * called when the ECS launch target is configured on RunTask
    */
-  bind(task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, cluster?: ecs.ICluster): EcsLaunchTargetConfig;
+  bind(task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig;
+}
+
+/**
+ * Options for binding a launch target to an ECS run job task
+ */
+export interface LaunchTargetBindOptions {
+  /**
+   * Task definition to run Docker containers in Amazon ECS
+   */
+  readonly taskDefinition: ecs.ITaskDefinition;
+
+  /**
+   * A regional grouping of one or more container instances on which you can run
+   * tasks and services.
+   *
+   * @default - No cluster
+   */
+  readonly cluster?: ecs.ICluster;
 }
 
 /**
@@ -131,8 +149,8 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the Fargate launch type configured on RunTask
    */
-  public bind(_task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, _cluster?: ecs.ICluster): EcsLaunchTargetConfig {
-    if (!taskDefinition.isFargateCompatible) {
+  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+    if (!launchTargetOptions.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not compatible with Fargate');
     }
 
@@ -155,12 +173,12 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
-  public bind(_task: EcsRunTask, taskDefinition: ecs.ITaskDefinition, cluster?: ecs.ICluster): EcsLaunchTargetConfig {
-    if (!taskDefinition.isEc2Compatible) {
+  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+    if (!launchTargetOptions.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not compatible with EC2');
     }
 
-    if (!cluster?.hasEc2Capacity) {
+    if (!launchTargetOptions.cluster?.hasEc2Capacity) {
       throw new Error('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.');
     }
 
@@ -258,7 +276,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this, this.props.taskDefinition, this.props.cluster).parameters,
+        ...this.props.launchTarget.bind(this, {taskDefinition: this.props.taskDefinition, cluster: this.props.cluster}).parameters,
       }),
     };
   }
