@@ -155,8 +155,6 @@ integTest('deploying new style synthesis to old style bootstrap fails', async ()
 integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack-1');
 
-  // deploy two toolkit stacks into the same environment (see #1416)
-  // one with tags
   await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--public-access-block-configuration', 'false', '--tags', 'Foo=Bar']);
 
   const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
