@@ -320,7 +320,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map((r) => r.roleArn) }),
+        resources: this.taskExecutionRoles().map((r) => r.roleArn),
       }),
     ];
 

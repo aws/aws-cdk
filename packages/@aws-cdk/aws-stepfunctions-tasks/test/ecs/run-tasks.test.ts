@@ -138,7 +138,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
+          Resource: { 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] },
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -242,7 +242,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
+          Resource: { 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] },
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
