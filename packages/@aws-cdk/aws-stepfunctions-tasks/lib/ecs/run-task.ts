@@ -37,7 +37,8 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Subnets to place the task's ENIs
    *
-   * @default - Private subnet if assignPublicIp, public subnets otherwise
+   * @default - Private subnets.
+   *   Public subnets if assignPublicIp is set.
    */
   readonly subnets?: ec2.SubnetSelection;
 
@@ -249,7 +250,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this, this.props.taskDefinition, this.props.cluster).parameters,
+        ...this.props.launchTarget.bind(this, this.props.taskDefinition, this.props.cluster),
       }),
     };
   }
@@ -271,7 +272,6 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 
   private validateLaunchTarget() {
-
     if (!this.props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
@@ -287,7 +287,9 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   private validateNoNetworkingProps() {
     if (this.props.subnets !== undefined || this.props.securityGroup !== undefined) {
-      throw new Error(`Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`);
+      throw new Error(
+        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`,
+      );
     }
   }
 
