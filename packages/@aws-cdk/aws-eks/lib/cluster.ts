@@ -844,7 +844,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * Installs the Neuron device plugin on the cluster if it's not
    * already added.
    */
   private addNeuronDevicePlugin() {
