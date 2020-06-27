@@ -14,18 +14,13 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const fileSystem = new efs.FileSystem(stack, 'Efs', {
   vpc,
-  // vpcSubnets: {
-  //   subnetType: ec2.SubnetType.PRIVATE,
-  // },
   throughputMode: efs.ThroughputMode.PROVISIONED,
   provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
 });
 
 fileSystem.connections.allowDefaultPortInternally();
 
-const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
-  fileSystem,
-});
+const accessPoint = fileSystem.addAccessPoint('AccessPoint');
 
 const fn = new lambda.Function(stack, 'MyLambda', {
   // sample code below from the blog post: https://go.aws/2Y6UgKe
@@ -76,9 +71,10 @@ def lambda_handler(event, context):
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
   securityGroups: fileSystem.connections.securityGroups,
-  filesystems: {
-    filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-  },
+  filesystems: [{
+    target: new lambda.EfsAccessPointTarget(accessPoint),
+    mountPath:  '/mnt/msg',
+  }],
 });
 
 fn.node.addDependency(accessPoint, fileSystem);

@@ -7,7 +7,7 @@ import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
-import { FileSystemOptions } from './filesystem';
+import { FileSystem, FilesystemConfig } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
@@ -281,7 +281,7 @@ export interface FunctionProps extends FunctionOptions {
    *
    * @default - will not mount any filesystem
    */
-  readonly filesystems?: FileSystemOptions;
+  readonly filesystems?: FileSystem[];
 }
 
 /**
@@ -468,6 +468,8 @@ export class Function extends FunctionBase {
 
   protected readonly canCreatePermissions = true;
 
+  protected readonly filesystems = new Array<FilesystemConfig>();
+
   private readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
@@ -479,7 +481,6 @@ export class Function extends FunctionBase {
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
-  private _resource: CfnResource;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -540,7 +541,6 @@ export class Function extends FunctionBase {
     });
 
     resource.node.addDependency(this.role);
-    this._resource = resource;
 
     this.functionName = this.getResourceNameAttribute(resource.ref);
     this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -585,9 +585,15 @@ export class Function extends FunctionBase {
 
     this.currentVersionOptions = props.currentVersionOptions;
 
-    // filesystem
+    // mount filesystems
     if (props.filesystems) {
-      this.mount(props.filesystems);
+      props.filesystems.map(fs => this.mount(fs));
+      resource.addPropertyOverride('FileSystemConfigs', this.filesystems.map(fs =>
+        ({
+          Arn: fs.arn,
+          LocalMountPath: fs.localMountPath,
+        }),
+      ));
     }
   }
 
@@ -667,13 +673,11 @@ export class Function extends FunctionBase {
   /**
    * mount the filesystem
    */
-  public mount(options: FileSystemOptions) {
-    this._resource.addPropertyOverride('FileSystemConfigs', [
-      {
-        Arn: options.filesystem.accessPointArn,
-        LocalMountPath: options.filesystem.targetPath,
-      },
-    ]);
+  public mount(options: FileSystem) {
+    this.filesystems.push({
+      arn: options.target.targetArn,
+      localMountPath: options.mountPath,
+    });
   }
   /**
    * The LogGroup where the Lambda function's logs are made available.
@@ -731,7 +735,7 @@ export class Function extends FunctionBase {
     // sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does
     // it).
-    const variables: { [key: string]: string } = { };
+    const variables: { [key: string]: string } = {};
     for (const key of Object.keys(this.environment).sort()) {
       variables[key] = this.environment[key];
     }
