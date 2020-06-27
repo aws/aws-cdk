@@ -287,7 +287,7 @@ export = testCase({
                   },
                   ':access-point/',
                   {
-                    Ref: 'Resource',
+                    Ref: 'AccessPointE936DE82',
                   },
                 ],
               ],

@@ -565,7 +565,7 @@
         }
       }
     },
-    "Resource": {
+    "EfsAccessPointE419FED9": {
       "Type": "AWS::EFS::AccessPoint",
       "Properties": {
         "FileSystemId": {
@@ -629,6 +629,7 @@
         ]
       },
       "DependsOn": [
+        "EfsAccessPointE419FED9",
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
@@ -692,7 +693,7 @@
                   },
                   ":access-point/",
                   {
-                    "Ref": "Resource"
+                    "Ref": "EfsAccessPointE419FED9"
                   }
                 ]
               ]
@@ -702,6 +703,7 @@
         ]
       },
       "DependsOn": [
+        "EfsAccessPointE419FED9",
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
