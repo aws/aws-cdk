@@ -293,9 +293,9 @@ so that clients can only access data in the specified directory or its subdirect
 The following sample enables the lambda function to mount the Amazon EFS filesystem via the `accessPoint` to `/mnt/msg` in the runtime environment.
 
 ```ts
-const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
-  fileSystem,
-});
+const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
+
+const accessPoint = fileSystem.addAccessPoint('AccessPoint');
 
 const fn = new lambda.Function(stack, 'MyLambda', {
   code,
@@ -303,9 +303,10 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime,
   vpc,
   securityGroups: fileSystem.connections.securityGroups,
-  filesystems: {
-    filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-  },
+  filesystems: [{
+    target: new lambda.EfsAccessPointTarget(accessPoint),
+    mountPath:  '/mnt/msg',
+  }],
 });
 
 fn.node.addDependency(accessPoint, fileSystem);
