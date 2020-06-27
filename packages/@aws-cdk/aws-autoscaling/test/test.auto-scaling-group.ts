@@ -7,7 +7,6 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
-import { GroupMetric } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -1132,6 +1131,9 @@ export = {
     // When
     asg.emitGroupMetrics(
       autoscaling.GroupMetric.MIN_SIZE,
+      autoscaling.GroupMetric.MAX_SIZE,
+      autoscaling.GroupMetric.DESIRED_CAPACITY,
+      autoscaling.GroupMetric.IN_SERVICE_INSTANCES,
     );
     asg.emitGroupMetrics(
       autoscaling.GroupMetric.PENDING_INSTANCES,
