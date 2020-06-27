@@ -591,7 +591,7 @@ export class Function extends FunctionBase {
       resource.addPropertyOverride('FileSystemConfigs', this.filesystems.map(fs =>
         ({
           Arn: fs.arn,
-          LocalMountPath: fs.localMountPath,
+          LocalMountPath: fs.mountPath,
         }),
       ));
     }
@@ -676,7 +676,7 @@ export class Function extends FunctionBase {
   public mount(options: FileSystem) {
     this.filesystems.push({
       arn: options.target.targetArn,
-      localMountPath: options.mountPath,
+      mountPath: options.mountPath,
     });
   }
   /**

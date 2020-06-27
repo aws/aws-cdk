@@ -37,7 +37,7 @@ export interface FilesystemConfig {
   /**
    * The mount path in the lambda runtime environment
    */
-  readonly localMountPath: string;
+  readonly mountPath: string;
 }
 
 /**
@@ -48,6 +48,6 @@ export class EfsAccessPointTarget implements IFilesystemTarget {
   constructor(readonly accessPoint: efs.IAccessPoint) {
   }
   public get targetArn(): string {
-    return this.accessPoint.accessPointArn
-  };
+    return this.accessPoint.accessPointArn;
+  }
 }
