@@ -5,16 +5,9 @@ Mappings:
       HVMG2: name2
 Conditions:
   AlwaysTrueCond:
-    Fn::Not:
-    - Fn::Equals:
-      - Ref: AWS::Region
-      - completely-made-up-region
-  AndCond:
     Fn::And:
-    - Condition: AlwaysTrueCond
-    - Fn::Or:
-      - Condition: AlwaysTrueCond
-      - Condition: AlwaysTrueCond
+      - Fn::Not: [ Fn::Equals: [ Ref: AWS::Region, completely-made-up-region] ]
+      - Fn::Or: [ Fn::Equals: [ Ref: AWS::Region, completely-made-up-region], Fn::Equals: [ Ref: AWS::Region, completely-made-up-region] ]
 Resources:
   Vpc:
     Type: AWS::EC2::VPC
@@ -35,7 +28,7 @@ Resources:
     Properties:
       BucketName:
         Fn::If:
-        - AndCond
+        - AlwaysTrueCond
         - Fn::FindInMap:
           - RegionMap
           - region-1

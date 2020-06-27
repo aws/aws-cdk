@@ -1,3 +1,9 @@
+Conditions:
+  AlwaysTrueCond:
+    !Not
+    - !Equals
+      - Ref: AWS::Region
+      - completely-made-up-region
 Resources:
   Bucket1:
     Type: AWS::S3::Bucket

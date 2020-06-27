@@ -3,6 +3,19 @@ import * as yaml from 'yaml';
 import * as yaml_cst from 'yaml/parse-cst';
 import * as yaml_types from 'yaml/types';
 
+export function readJsonSync(filePath: string): any {
+  const fileContents = fs.readFileSync(filePath);
+  return JSON.parse(fileContents.toString());
+}
+
+export function readYamlSync(filePath: string): any {
+  const fileContents = fs.readFileSync(filePath);
+
+  return yaml.parse(fileContents.toString(), {
+    customTags : shortForms,
+  });
+}
+
 function makeTagForCfnIntrinsic(
   intrinsicName: string, addFnPrefix: boolean = true,
   resolveFun?: (_doc: yaml.Document, cstNode: yaml_cst.CST.Node) => any): yaml_types.Schema.CustomTag {
@@ -20,7 +33,7 @@ function makeTagForCfnIntrinsic(
   };
 }
 
-export const shortForms: yaml_types.Schema.CustomTag[] = [
+const shortForms: yaml_types.Schema.CustomTag[] = [
   'Base64', 'Cidr', 'FindInMap', 'GetAZs', 'ImportValue', 'Join',
   'Select', 'Split', 'Transform', 'And', 'Equals', 'If', 'Not', 'Or',
 ].map(name => makeTagForCfnIntrinsic(name)).concat(
@@ -51,18 +64,6 @@ export const shortForms: yaml_types.Schema.CustomTag[] = [
 function parseYamlStrWithCfnTags(text: string): any {
   return yaml.parse(text, {
     customTags: shortForms,
-  });
-}
-
-export function readJsonSync(filePath: string): any {
-  const fileContents = fs.readFileSync(filePath);
-  return JSON.parse(fileContents.toString());
-}
-
-export function readYamlSync(filePath: string): any {
-  const fileContents = fs.readFileSync(filePath);
-
-  return yaml.parse(fileContents.toString(), {
-    customTags : shortForms,
+    schema: 'yaml-1.1',
   });
 }
