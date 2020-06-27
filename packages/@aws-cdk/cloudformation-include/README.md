@@ -17,9 +17,7 @@ It can be thought of as an extension of the capabilities of the
 
 ## Basic usage
 
-Assume we have a file `my-template.json`, that contains the following CloudFormation template:
-
-We can also use YAML templates, instead of JSON.
+Assume we have a file with an existing template. It could be in JSON format, in a file `my-template.json`:
 
 ```json
 {
@@ -33,6 +31,8 @@ We can also use YAML templates, instead of JSON.
   }
 }
 ```
+
+Or it could by in YAML format, in a file `my-template.yaml`:
 
 ```yaml
 Resources:
@@ -48,7 +48,7 @@ It can be included in a CDK application with the following code:
 import * as cfn_inc from '@aws-cdk/cloudformation-include';
 
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
-  templateFile: 'my-template.json',
+  templateFile: 'my-template.json', // or 'my-template.yaml' if your file is in that format
 });
 ```
 

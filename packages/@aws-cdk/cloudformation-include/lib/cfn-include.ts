@@ -10,7 +10,7 @@ export interface CfnIncludeProps {
   /**
    * Path to the template file.
    *
-   * JSON and YAML templates are supported.
+   * Both JSON and YAML template formats are supported.
    */
   readonly templateFile: string;
 }
