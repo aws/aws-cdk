@@ -222,7 +222,7 @@ about allowing connections between resources backed by instances.
 
 To enable the max instance lifetime support, specify `maxInstanceLifetime` property
 for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
-To clear a previously set value, just leave this property undefinied.
+To clear a previously set value, leave this property undefined.
 
 ### Instance Monitoring
 
@@ -230,52 +230,49 @@ To disable detailed instance monitoring, specify `instanceMonitoring` property
 for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
 will be enabled.
 
-### Mointoring Group Metrics
+### Monitoring Group Metrics
 
-Group metrics describe the group rather than any of its instances. To enable group metrics monitoring, you can use the `metricsCollections` property or the `emitAllMetricsCollections` and `emitMetricsCollection` methods.
+Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetricsCollections` property, or the `emitAllMetricsCollections` and `emitMetricsCollection` methods.
+All Group metrics are reported in a granularity of 1 minute at no additional charge.
 
-Enabling montoring for all group metircs using the `metricsCollections` property:
+See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics) for a list of all available group metrics.
+
+To enable group metrics monitoring using the `groupMetricsCollections` property:
 
 ```ts
+// Enable monitoring of all group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  metricsCollections: [
+  groupMetricsCollections: [
     {
-      metrics: GroupMetric.ALL
+      metrics: GroupMetric.ALL,
     }
   ]
   // ...
 });
-```
 
-Enabling monitoring for a specific list of group metrics:
-
-```ts
+// Enable monitoring for a subset of group metrics
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  metricsCollections: [
+  groupMetricsCollections: [
     {
       metrics: [
         autoscaling.GroupMetric.MIN_SIZE,
-        autoscaling.GroupMetric.MAX_SIZE
+        autoscaling.GroupMetric.MAX_SIZE,
       ]
     }
   ],
-  // ...
-});
 ```
 
 Or using the emitXxx methods:
 
 ```ts
-// enable monitoring for all group metrics
-asg.emitAllMetricsCollections();
+// Enable monitoring for all group metrics
+asg.emitAllGroupMetrics();
 
-// or enbale mointoring for a specific list of metrics 
-asg.emitMetricsCollection({
-  metrics: [
-    autoscaling.GroupMetric.MIN_SIZE,
-    autoscaling.GroupMetric.MAX_SIZE,
-  ]
-});
+// Enable monitoring for a subset of metrics 
+asg.emitGroupMetrics(
+  autoscaling.GroupMetric.MIN_SIZE,
+  autoscaling.GroupMetric.MAX_SIZE,
+);
 ```
 
 ### Future work

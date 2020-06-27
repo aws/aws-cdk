@@ -215,7 +215,7 @@ export interface CommonAutoScalingGroupProps {
    * it is terminated and replaced, and cannot be used again.
    *
    * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
-   * simply leave this property undefinied.
+   * leave this property undefined.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
    *
@@ -236,17 +236,17 @@ export interface CommonAutoScalingGroupProps {
   readonly instanceMonitoring?: Monitoring;
 
   /**
-   * Configurtion for monitoring group metrics.
+   * Enable monitoring for group metrics.
    *
-   * Group metrics describe the group rather than any of its instances.
-   * You can sepcify a list of group metrics to monitor, to monitor all group metric use GroupMetric.ALL e.g `metrics: GroupMetric.ALL`
+   * Group metrics describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size).
+   * You can enable monitoring for all group metrics using `GroupMetrics.ALL` or you can specify a subset of group metrics.
    *
-   * All Group metrics are reported in a granularity of 1 Miunte.
+   * Group metrics are reported in a granularity of 1 minute at no additional charge.
    *
    * You can also use the `emitAllMetricsCollections` and `emitMetricsCollection` methods
    * @default - disabled
    */
-  readonly metricsCollections?: MetricsCollection[];
+  readonly groupMetricsCollections?: MetricsCollection[];
 }
 
 /**
@@ -295,12 +295,14 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 }
 
 /**
- * Group metrics that an Amazon EC2 Auto Scaling group sends to Amazon CloudWatch.
+ * Group metrics that an Auto Scaling group sends to Amazon CloudWatch.
  */
 export class GroupMetric {
 
-  /** All available GroupMetrics. */
-  public static readonly ALL = [];
+  /**
+   * All available GroupMetrics.
+   */
+  public static readonly ALL = new Array();
 
   /**
    * The minimum size of the Auto Scaling group
@@ -315,16 +317,17 @@ export class GroupMetric {
   /**
    * The number of instances that the Auto Scaling group attempts to maintain
    */
-  public static readonly DESIERED_CAPACITY = new GroupMetric('GroupDesiredCapacity');
+  public static readonly DESIRED_CAPACITY = new GroupMetric('GroupDesiredCapacity');
 
   /**
    * The number of instances that are running as part of the Auto Scaling group
    * This metric does not include instances that are pending or terminating
    */
   public static readonly IN_SERVICE_INSTANCES = new GroupMetric('GroupInServiceInstances');
+
   /**
    * The number of instances that are pending
-   * A pending instance is not yet in serviceThis metric does not include instances that are in service or terminating
+   * A pending instance is not yet in service, this metric does not include instances that are in service or terminating
    */
   public static readonly PENDING_INSTANCES = new GroupMetric('GroupPendingInstances');
 
@@ -346,6 +349,9 @@ export class GroupMetric {
    */
   public static readonly TOTAL_INSTANCES = new GroupMetric('GroupTotalInstances');
 
+  /**
+   * The name of the group metric
+   */
   public readonly name: string;
 
   constructor(name: string) {
@@ -353,9 +359,13 @@ export class GroupMetric {
   }
 }
 
+/**
+ * A collection of group metrics
+ */
 export interface MetricsCollection {
+
   /**
-   * The list of Auto Scaling group metrics to collect
+   * The list of group metrics to monitor
    */
   readonly metrics: GroupMetric[];
 }
@@ -534,7 +544,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly userData: ec2.UserData;
 
   /**
-   * The maximum spot price configured for thie autoscaling group. `undefined`
+   * The maximum spot price configured for the autoscaling group. `undefined`
    * indicates that this group uses on-demand capacity.
    */
   public readonly spotPrice?: string;
@@ -570,8 +580,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.grantPrincipal = this.role;
 
-    if (props.metricsCollections) {
-      this.metricsCollections.push(...props.metricsCollections);
+    if (props.groupMetricsCollections) {
+      this.metricsCollections.push(...props.groupMetricsCollections);
     }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
@@ -663,7 +673,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       notificationConfigurations: this.renderNotificationConfiguration(),
       metricsCollection: Lazy.anyValue({ produce: () => this.metricsCollections.length === 0 ? undefined : this.metricsCollections.map(mc => ({
         granularity: '1Minute',
-        metrics: mc.metrics?.length !== 0 ? mc.metrics.map(m => m.name) : undefined
+        metrics: mc.metrics?.length !== 0 ? mc.metrics.map(m => m.name) : undefined,
       }))}),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
@@ -707,21 +717,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * @default - disabled
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
    */
-  public emitAllMetricsCollections() {
-    this.emitMetricsCollection({
-      metrics: []
-    });
+  public emitAllGroupMetrics() {
+    this.emitGroupMetrics(...[]);
   }
 
   /**
-   * Emit a specifc subset of group metrics, these metrics describe the group rather than a single instance
+   * Emit a specific subset of group metrics, these metrics describe the group rather than a single instance
    * to emit all group metrics use \`emitAllMetricsCollections\`
-   * @param collection which groups metrics to collect
+   * @param metrics which groups metrics to collect
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
    */
-  public emitMetricsCollection(collection: MetricsCollection) {
+  public emitGroupMetrics(...metrics: GroupMetric[]) {
     this.metricsCollections.push({
-      metrics: collection.metrics
+      metrics,
     });
   }
 
@@ -881,7 +889,7 @@ export interface NotificationConfiguration {
  */
 export enum ScalingEvent {
   /**
-   * Notify when an instance was launced
+   * Notify when an instance was launched
    */
   INSTANCE_LAUNCH = 'autoscaling:EC2_INSTANCE_LAUNCH',
 
@@ -983,7 +991,7 @@ export interface RollingUpdateConfiguration {
 
 /**
  * A list of ScalingEvents, you can use one of the predefined lists, such as ScalingEvents.ERRORS
- * or create a custome group by instantiating a `NotificationTypes` object, e.g: `new NotificationTypes(`NotificationType.INSTANCE_LAUNCH`)`.
+ * or create a custom group by instantiating a `NotificationTypes` object, e.g: `new NotificationTypes(`NotificationType.INSTANCE_LAUNCH`)`.
  */
 export class ScalingEvents {
   /**
