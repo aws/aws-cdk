@@ -109,12 +109,10 @@ export interface EcsLaunchTargetConfig {
  */
 export interface EcsFargateLaunchTargetOptions {
   /**
-   * Fargate platform version to run this service on
-   *
-   * Unless you have specific compatibility requirements, you don't need to
-   * specify this.
-   *
-   * @default FargatePlatformVersion.LATEST
+   * Refers to a specific runtime environment for Fargate task infrastructure.
+   * Fargate platform version is a combination of the kernel and container runtime versions.
+   * 
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
    */
   readonly platformVersion: ecs.FargatePlatformVersion;
 }
