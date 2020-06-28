@@ -72,7 +72,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !FindInMap', () => {
+  test('can ingest a template with the short form !FindInMap, in both hyphen and bracket notation', () => {
     includeTestTemplate(stack, 'short-form-find-in-map.yaml');
 
     expect(stack).toMatchTemplate({
@@ -85,7 +85,7 @@ describe('CDK Include', () => {
         },
       },
       "Resources": {
-        "Bucket": {
+        "Bucket1": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": {
@@ -93,6 +93,18 @@ describe('CDK Include', () => {
                 "RegionMap",
                 "region-1",
                 "HVM64",
+              ],
+            },
+          },
+        },
+        "Bucket2": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::FindInMap": [
+                "RegionMap",
+                "region-1",
+                "HVMG2",
               ],
             },
           },
