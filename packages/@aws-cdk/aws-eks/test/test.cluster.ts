@@ -2,7 +2,10 @@ import { countResources, expect, haveResource, haveResourceLike, not } from '@aw
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
+import * as path from 'path';
+import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
 import { testFixture, testFixtureNoVpc } from './util';
@@ -1153,6 +1156,25 @@ export = {
             'OpenIdConnectIssuerUrl',
           ],
         },
+      }));
+      test.done();
+    },
+    'inference instances are supported'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+      // WHEN
+      cluster.addCapacity('InferenceInstances', {
+        instanceType: new ec2.InstanceType('inf1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
       }));
       test.done();
     },
