@@ -14,6 +14,7 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    // just need one nat gateway to simplify the test
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
     // create the cluster with a default nodegroup capacity
@@ -24,7 +25,7 @@ class EksClusterStack extends TestStack {
       version: '1.16',
     });
 
-    // // fargate profile for resources in the "default" namespace
+    // fargate profile for resources in the "default" namespace
     cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
