@@ -542,7 +542,7 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: options.machineImageType,
     });
 
-    if (!this._neuronDevicePlugin && nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
+    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
       this.addNeuronDevicePlugin();
     }
 
