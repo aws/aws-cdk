@@ -85,8 +85,8 @@ export class HelmChart extends Construct {
 
     const provider = props.cluster._kubectlProvider;
 
-    const timeout = props.timeout?.toSeconds();
-    if (timeout && timeout > 900) {
+    const timeout = props.timeout;
+    if (timeout && timeout > Duration.minutes(15)) {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
 
@@ -100,7 +100,7 @@ export class HelmChart extends Construct {
         Chart: props.chart,
         Version: props.version,
         Wait: props.wait ?? false,
-        Timeout: timeout,
+        Timeout: timeout && `${timeout.toSeconds().toString()}s`, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
