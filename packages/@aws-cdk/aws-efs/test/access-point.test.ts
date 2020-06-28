@@ -15,7 +15,14 @@ beforeEach(() => {
   });
 });
 
-test('default access point is created correctly', () => {
+test('addAccessPoint correctly', () => {
+  // WHEN
+  fileSystem.addAccessPoint('MyAccessPoint');
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
+});
+
+test('new AccessPoint correctly', () => {
   // WHEN
   new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
