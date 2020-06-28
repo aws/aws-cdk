@@ -83,7 +83,7 @@ when working with native dependencies or when Parcel fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  installModules: ['native-module', 'other-module']
+  nodeModules: ['native-module', 'other-module']
 });
 ```
 
