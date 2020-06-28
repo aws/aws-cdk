@@ -849,7 +849,7 @@ export class Cluster extends Resource implements ICluster {
    */
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
-      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/assets/neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
       this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
     }

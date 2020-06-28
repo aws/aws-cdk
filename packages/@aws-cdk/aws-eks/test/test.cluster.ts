@@ -1169,7 +1169,7 @@ export = {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/assets/neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
 
       // THEN
