@@ -116,7 +116,7 @@ export interface EcsFargateLaunchTargetOptions {
    *
    * @default FargatePlatformVersion.LATEST
    */
-  readonly platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion: ecs.FargatePlatformVersion;
 }
 
 /**
