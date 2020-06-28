@@ -228,12 +228,22 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !Split', () => {
+  test('can ingest a template with the short form !Split that uses both brackets and hyphens', () => {
     includeTestTemplate(stack, 'short-form-split.yaml');
 
     expect(stack).toMatchTemplate({
       "Resources": {
-        "Bucket": {
+        "Bucket1": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Split": [' ', {
+                "Fn::ImportValue": "SomeSharedBucketName",
+              }],
+            },
+          },
+        },
+        "Bucket2": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": {
