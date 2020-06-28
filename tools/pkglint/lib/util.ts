@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { PackageJson } from "./packagejson";
+import { PackageJson, PKGLINT_IGNORES } from "./packagejson";
 
 /**
  * Expect a particular JSON key to be a given value
@@ -168,7 +168,7 @@ export function* findInnerPackages(dir: string): IterableIterator<string> {
       if (e.code !== 'ENOENT') { throw e; }
       continue;
     }
-    if (fname === 'node_modules') { continue; }
+    if (PKGLINT_IGNORES.includes(fname)) { continue; }
 
     if (fs.existsSync(path.join(dir, fname, 'package.json'))) {
       yield path.join(dir, fname);
