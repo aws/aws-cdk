@@ -12,7 +12,6 @@ os.environ['PATH'] = '/opt/helm:/opt/awscli:' + os.environ['PATH']
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
 
-
 def helm_handler(event, context):
     logger.info(json.dumps(event))
 
@@ -21,23 +20,22 @@ def helm_handler(event, context):
 
     # resource properties
     cluster_name = props['ClusterName']
-    role_arn = props['RoleArn']
-    release = props['Release']
-    chart = props['Chart']
-    version = props.get('Version', None)
-    wait = props.get('Wait', False)
-    timeout = props.get('Timeout', None)
-    namespace = props.get('Namespace', None)
-    create_namespace = props.get('CreateNamespace', None)
-    repository = props.get('Repository', None)
-    values_text = props.get('Values', None)
+    role_arn     = props['RoleArn']
+    release      = props['Release']
+    chart        = props['Chart']
+    version      = props.get('Version', None)
+    wait         = props.get('Wait', False)
+    timeout      = props.get('Timeout', None)
+    namespace    = props.get('Namespace', None)
+    repository   = props.get('Repository', None)
+    values_text  = props.get('Values', None)
 
     # "log in" to the cluster
-    subprocess.check_call(['aws', 'eks', 'update-kubeconfig',
-                           '--role-arn', role_arn,
-                           '--name', cluster_name,
-                           '--kubeconfig', kubeconfig
-                           ])
+    subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
+        '--role-arn', role_arn,
+        '--name', cluster_name,
+        '--kubeconfig', kubeconfig
+    ])
 
     # Write out the values to a file and include them with the install and upgrade
     values_file = None
@@ -48,17 +46,14 @@ def helm_handler(event, context):
             f.write(json.dumps(values, indent=2))
 
     if request_type == 'Create' or request_type == 'Update':
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, timeout=timeout)
         except Exception as e:
             logger.info("delete error: %s" % e)
 
-
-def helm(
-        verb, release, chart=None, repo=None, file=None, namespace=None, version=None, wait=False, timeout=None,
-        create_namespace=None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -66,8 +61,6 @@ def helm(
         cmnd.append(chart)
     if verb == 'upgrade':
         cmnd.append('--install')
-    if not create_namespace is None:
-        cmnd.append('--create-namespace')
     if not repo is None:
         cmnd.extend(['--repo', repo])
     if not file is None:
@@ -79,10 +72,8 @@ def helm(
     if wait:
         cmnd.append('--wait')
     if not timeout is None:
-        cmnd.extend(['--timeout', timeout])
+        cmnd.extend(['--timeout', timeout])  
     cmnd.extend(['--kubeconfig', kubeconfig])
-
-    logger.info(cmnd)
 
     retry = 3
     while retry > 0:

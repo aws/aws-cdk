@@ -53,12 +53,6 @@ export interface HelmChartOptions {
    * @default Duration.minutes(5)
    */
   readonly timeout?: Duration;
-
-  /**
-   * create namespace if not exist
-   * @default False
-   */
-  readonly createNamespace?: boolean;
 }
 
 /**
@@ -110,7 +104,6 @@ export class HelmChart extends Construct {
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
-        CreateNamespace: props.createNamespace ?? false,
       },
     });
   }
