@@ -2222,7 +2222,8 @@
         },
         "Release": "awscdkeksclustertestclusterchartnginxingressa7f70129",
         "Chart": "nginx-ingress",
-        "Wait": false,
+        "Wait": true,
+        "Timeout": "900s",
         "Namespace": "kube-system",
         "Repository": "https://helm.nginx.com/stable"
       },

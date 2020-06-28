@@ -85,7 +85,7 @@ export class HelmChart extends Construct {
 
     const provider = props.cluster._kubectlProvider;
 
-    const timeout = props.timeout?.toSeconds()
+    const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
