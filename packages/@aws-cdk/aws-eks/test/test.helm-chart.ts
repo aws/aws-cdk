@@ -52,17 +52,6 @@ export = {
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));
       test.done();
     },
-    'should support create namespaces'(test: Test) {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: true });
-
-      // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
-      test.done();
-    },
     'should support waiting until everything is completed before marking release as successful'(test: Test) {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();

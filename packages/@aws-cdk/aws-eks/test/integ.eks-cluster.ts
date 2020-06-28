@@ -71,7 +71,6 @@ class EksClusterStack extends TestStack {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
       namespace: 'custom-namespace',
-      createNamespace: true,
     });
 
     cluster.addChart('nginx-ingress', {
