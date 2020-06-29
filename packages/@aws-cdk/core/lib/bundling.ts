@@ -55,6 +55,8 @@ export interface BundlingOptions {
   readonly user?: string;
 }
 
+export type DockerConsistency = 'consistent' | 'delegated' | 'cached';
+
 /**
  * A Docker image used for asset bundling
  */
@@ -112,7 +114,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:delegated`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ? v.consistency : 'delegated'}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -138,6 +140,14 @@ export interface DockerVolume {
    * The path where the file or directory is mounted in the container
    */
   readonly containerPath: string;
+
+  /**
+   * Mount consistency. Only applicable for macOS
+   *
+   * @default delegated
+   * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
+   */
+  readonly consistency?: DockerConsistency;
 }
 
 /**
