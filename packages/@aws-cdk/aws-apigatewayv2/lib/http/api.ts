@@ -49,7 +49,7 @@ export interface HttpApiProps {
   /**
    * Configure a custom domain with the API mapping resource to the HTTP API
    *
-   * @default - no default domain mapping configured
+   * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
   readonly defaultDomainMapping?: DefaultDomainMappingOptions;
 }
