@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput } from '@aws-cdk/core';
+import { App, CfnOutput, Duration } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { TestStack } from './util';
@@ -69,12 +69,22 @@ class EksClusterStack extends TestStack {
       nodeRole: cluster.defaultCapacity ? cluster.defaultCapacity.role : undefined,
     });
 
-    // // apply a kubernetes manifest
+    // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    cluster.addChart('dashboard', {
+      chart: 'kubernetes-dashboard',
+      repository: 'https://kubernetes.github.io/dashboard/',
+    });
+
+    cluster.addChart('nginx-ingress', {
+      chart: 'nginx-ingress',
+      repository: 'https://helm.nginx.com/stable',
+      namespace: 'kube-system',
+      wait: true,
+      timeout: Duration.minutes(15),
+    });
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');
