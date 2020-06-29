@@ -24,6 +24,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
+  private readonly outputs: { [outputName: string]: core.CfnOutput } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
