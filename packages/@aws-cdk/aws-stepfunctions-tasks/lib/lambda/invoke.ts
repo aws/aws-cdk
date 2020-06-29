@@ -96,7 +96,10 @@ export class LambdaInvoke extends sfn.TaskStateBase {
   /**
    * Provides the Lambda Invoke service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
