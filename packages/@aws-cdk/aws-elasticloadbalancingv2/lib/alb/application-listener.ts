@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Construct, Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -185,6 +185,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
+    }
+
+    if (props.open !== false && this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
+      this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
     }
   }
 
@@ -539,6 +543,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
     }
 
+    // TODO: Allow this to accept connections that are IPv6 if dualstack
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
       defaultPort,
