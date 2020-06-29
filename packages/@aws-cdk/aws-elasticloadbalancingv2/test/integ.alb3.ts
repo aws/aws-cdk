@@ -3,10 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../lib';
 
-const valueOrDie = <T, C extends T = T>(
-  value: T | undefined,
-  err: Error,
-): C => {
+/* Credit to @TrueBrain and @misterjoshua for the IPv6 workaround */
+const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => {
   if (value === undefined) { throw err; }
   return value as C;
 };
@@ -20,34 +18,34 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 const ipv6Block = new ec2.CfnVPCCidrBlock(
   stack,
-  `IPv6_Block`,
+  'IPv6_Block',
   {
     vpcId: vpc.vpcId,
-    amazonProvidedIpv6CidrBlock: true
-  }
+    amazonProvidedIpv6CidrBlock: true,
+  },
 );
 
 // Get the vpc's internet gateway so we can create default routes for the
 // public subnets.
 const internetGateway = valueOrDie<cdk.IConstruct, ec2.CfnInternetGateway>(
   vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
-  new Error("Couldn't find an internet gateway"),
+  new Error('Couldnt find an internet gateway'),
 );
 
 vpc.publicSubnets.forEach((subnet, idx) => {
   // Add a default ipv6 route to the subnet's route table.
   const unboxedSubnet = subnet as ec2.Subnet;
-  unboxedSubnet.addRoute("IPv6Default", {
+  unboxedSubnet.addRoute('IPv6Default', {
     routerId: internetGateway.ref,
     routerType: ec2.RouterType.GATEWAY,
-    destinationIpv6CidrBlock: "::/0",
+    destinationIpv6CidrBlock: '::/0',
   });
 
   // Find a CfnSubnet (raw cloudformation resources) child to the public
   // subnet nodes.
   const cfnSubnet = valueOrDie<cdk.IConstruct, ec2.CfnSubnet>(
     subnet.node.children.find(c => c instanceof ec2.CfnSubnet),
-    new Error("Couldn't find a CfnSubnet"),
+    new Error('Couldnt find a CfnSubnet'),
   );
 
   // Use the intrinsic Fn::Cidr CloudFormation function on the VPC's
@@ -57,7 +55,7 @@ vpc.publicSubnets.forEach((subnet, idx) => {
   const ipv6Cidrs = cdk.Fn.cidr(
     vpcCidrBlock,
     vpc.publicSubnets.length,
-    "64",
+    '64',
   );
   cfnSubnet.ipv6CidrBlock = cdk.Fn.select(idx, ipv6Cidrs);
 
