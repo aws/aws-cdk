@@ -34,7 +34,7 @@ class CallDynamoDBStack extends cdk.Stack {
     const putItemTask = new tasks.DynamoPutItem(this, 'PutItem', {
       item: {
         MessageId: tasks.DynamoAttributeValue.fromString(MESSAGE_ID),
-        Text: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.bar')),
+        Text: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.bar')),
         TotalCount: tasks.DynamoAttributeValue.fromNumber(firstNumber),
       },
       table,
