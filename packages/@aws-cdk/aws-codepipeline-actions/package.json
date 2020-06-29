@@ -50,10 +50,8 @@
   },
   "keywords": [
     "aws",
-    "aws-clib",
-    "aws-cloudlib",
     "cdk",
-    "cloudlib",
+    "constructs",
     "codepipeline",
     "pipeline"
   ],
@@ -66,8 +64,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
-    "@types/lodash": "^4.14.150",
-    "@types/nodeunit": "^0.0.30",
+    "@types/lodash": "^4.14.157",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "lodash": "^4.17.15",
@@ -118,7 +116,7 @@
     "case"
   ],
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {

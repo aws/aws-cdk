@@ -1,8 +1,11 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
 import { Test } from 'nodeunit';
+import * as path from 'path';
+import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
 import { testFixture, testFixtureNoVpc } from './util';
@@ -159,10 +162,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Private' },
         { Key: 'aws-cdk:subnet-type', Value: 'Private' },
         { Key: 'kubernetes.io/role/internal-elb', Value: '1' },
+        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
       ],
     }));
 
@@ -180,10 +183,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
-        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Public' },
         { Key: 'aws-cdk:subnet-type', Value: 'Public' },
         { Key: 'kubernetes.io/role/elb', Value: '1' },
+        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
       ],
     }));
 
@@ -204,14 +207,14 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: 'Name',
-          PropagateAtLaunch: true,
-          Value: 'Stack/Cluster/Default',
-        },
-        {
           Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
           PropagateAtLaunch: true,
           Value: 'owned',
+        },
+        {
+          Key: 'Name',
+          PropagateAtLaunch: true,
+          Value: 'Stack/Cluster/Default',
         },
       ],
     }));
@@ -265,14 +268,14 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: 'Name',
-          PropagateAtLaunch: true,
-          Value: 'Stack/Cluster/Bottlerocket',
-        },
-        {
           Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
+        },
+        {
+          Key: 'Name',
+          PropagateAtLaunch: true,
+          Value: 'Stack/Cluster/Bottlerocket',
         },
       ],
     }));
@@ -306,6 +309,8 @@ export = {
       clusterName: cluster.clusterName,
       securityGroups: cluster.connections.securityGroups,
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
+      clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+      clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
     });
 
     // this should cause an export/import
@@ -334,6 +339,7 @@ export = {
     test.throws(() => cluster.addCapacity('boo', { instanceType: new ec2.InstanceType('r5d.24xlarge'), mapRole: true }),
       /Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster/);
     test.throws(() => new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' }), /Unable to perform this operation since kubectl is not enabled for this cluster/);
+    test.throws(() => cluster.openIdConnectProvider, /Cannot specify a OpenID Connect Provider if kubectl is disabled/);
     test.done();
   },
 
@@ -665,13 +671,13 @@ export = {
         },
 
         'if kubectl is enabled, the interrupt handler is added'(test: Test) {
-        // GIVEN
+          // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
 
           // WHEN
           cluster.addCapacity('MyCapcity', {
-            instanceType: new ec2.InstanceType('m3.xlargs'),
+            instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
 
@@ -684,6 +690,27 @@ export = {
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',
           }));
+          test.done();
+        },
+
+        'its possible to add two capacities with spot instances and only one stop handler will be installed'(test: Test) {
+          // GIVEN
+          const { stack } = testFixtureNoVpc();
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+          // WHEN
+          cluster.addCapacity('Spot1', {
+            instanceType: new ec2.InstanceType('m3.xlarge'),
+            spotPrice: '0.01',
+          });
+
+          cluster.addCapacity('Spot2', {
+            instanceType: new ec2.InstanceType('m4.xlarge'),
+            spotPrice: '0.01',
+          });
+
+          // THEN
+          expect(stack).to(countResources(eks.HelmChart.RESOURCE_TYPE, 1));
           test.done();
         },
 
@@ -721,6 +748,49 @@ export = {
       test.done();
     },
 
+    'EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+      const LATEST_KUBERNETES_VERSION = '1.14';
+
+      // WHEN
+      new eks.EksOptimizedImage().getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+        (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
+      ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
+      test.done();
+    },
+
+    'EksOptimizedImage() with specific kubernetesVersion return correct AMI'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.15' }).getImage(stack);
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/amazon-linux-2/'),
+      ), 'EKS STANDARD AMI should be in ssm parameters');
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('/1.15/'),
+      ), 'kubernetesVersion should be in ssm parameters');
+      test.done();
+    },
+
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
     // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -736,7 +806,7 @@ export = {
       const assembly = app.synth();
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu'),
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
@@ -791,18 +861,6 @@ export = {
                 ],
               },
             },
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::GetAtt': [
-                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
-                  ],
-                },
-              },
-            },
           ],
           Version: '2012-10-17',
         },
@@ -823,7 +881,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -934,7 +995,10 @@ export = {
               },
             },
             {
-              Action: 'ec2:DescribeSubnets',
+              Action: [
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -1060,6 +1124,57 @@ export = {
             'Arn',
           ],
         },
+      }));
+      test.done();
+    },
+    'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
+    // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+      // WHEN
+      const provider = cluster.openIdConnectProvider;
+
+      // THEN
+      test.equal(provider, cluster.openIdConnectProvider, 'openIdConnect provider is different and created more than once.');
+      expect(stack).to(haveResource('Custom::AWSCDKOpenIdConnectProvider', {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0',
+            'Arn',
+          ],
+        },
+        ClientIDList: [
+          'sts.amazonaws.com',
+        ],
+        ThumbprintList: [
+          '9e99a48a9960b14926bb7f3b02e22da2b0ab7280',
+        ],
+        Url: {
+          'Fn::GetAtt': [
+            'Cluster9EE0221C',
+            'OpenIdConnectIssuerUrl',
+          ],
+        },
+      }));
+      test.done();
+    },
+    'inference instances are supported'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+
+      // WHEN
+      cluster.addCapacity('InferenceInstances', {
+        instanceType: new ec2.InstanceType('inf1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
       }));
       test.done();
     },

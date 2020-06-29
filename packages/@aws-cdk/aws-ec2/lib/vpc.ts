@@ -1,17 +1,18 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
   IDependable, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { NetworkBuilder } from './network-util';
-import { allRouteTableIds, defaultSubnetName, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
+import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
-import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
+import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -105,6 +106,11 @@ export interface IVpc extends IResource {
    * error message otherwise.
    */
   selectSubnets(selection?: SubnetSelection): SelectedSubnets;
+
+  /**
+   * Adds a VPN Gateway to this VPC
+   */
+  enableVpnGateway(options: EnableVpnGatewayOptions): void;
 
   /**
    * Adds a new VPN connection to this VPC
@@ -306,11 +312,6 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly availabilityZones: string[];
 
   /**
-   * Identifier for the VPN gateway
-   */
-  public abstract readonly vpnGatewayId?: string;
-
-  /**
    * Dependencies for internet connectivity
    */
   public abstract readonly internetConnectivityEstablished: IDependable;
@@ -328,6 +329,13 @@ abstract class VpcBase extends Resource implements IVpc {
   protected incompleteSubnetDefinition: boolean = false;
 
   /**
+   * Mutable private field for the vpnGatewayId
+   *
+   * @internal
+   */
+  protected _vpnGatewayId?: string;
+
+  /**
    * Returns IDs of selected subnets
    */
   public selectSubnets(selection: SubnetSelection = {}): SelectedSubnets {
@@ -341,6 +349,44 @@ abstract class VpcBase extends Resource implements IVpc {
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
     };
+  }
+
+  /**
+   * Adds a VPN Gateway to this VPC
+   */
+  public enableVpnGateway(options: EnableVpnGatewayOptions): void {
+    if (this.vpnGatewayId) {
+      throw new Error('The VPN Gateway has already been enabled.');
+    }
+
+    const vpnGateway = new VpnGateway(this, 'VpnGateway', {
+      amazonSideAsn: options.amazonSideAsn,
+      type: VpnConnectionType.IPSEC_1,
+    });
+
+    this._vpnGatewayId = vpnGateway.gatewayId;
+
+    const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
+      vpcId: this.vpcId,
+      vpnGatewayId: this._vpnGatewayId,
+    });
+
+    // Propagate routes on route tables associated with the right subnets
+    const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
+    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
+
+    if (routeTableIds.length === 0) {
+      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+    }
+
+    const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+      routeTableIds,
+      vpnGatewayId: this._vpnGatewayId,
+    });
+    // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+    // until it has successfully attached to the VPC.
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+    routePropagation.node.addDependency(attachment);
   }
 
   /**
@@ -381,6 +427,13 @@ abstract class VpcBase extends Resource implements IVpc {
       resourceType: FlowLogResourceType.fromVpc(this),
       ...options,
     });
+  }
+
+  /**
+   * Returns the id of the VPN Gateway (if enabled)
+   */
+  public get vpnGatewayId(): string | undefined {
+    return this._vpnGatewayId;
   }
 
   /**
@@ -956,12 +1009,12 @@ export class Vpc extends VpcBase {
     }
 
     const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
-      provider: cxapi.VPC_PROVIDER,
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
       props: {
         filter,
         returnAsymmetricSubnets: true,
         subnetGroupNameTag: options.subnetGroupNameTag,
-      } as cxapi.VpcContextQuery,
+      } as cxschema.VpcContextQuery,
       dummyValue: undefined,
     }).value;
 
@@ -1028,11 +1081,6 @@ export class Vpc extends VpcBase {
    * AZs for this VPC
    */
   public readonly availabilityZones: string[];
-
-  /**
-   * Identifier for the VPN gateway
-   */
-  public readonly vpnGatewayId?: string;
 
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -1136,35 +1184,20 @@ export class Vpc extends VpcBase {
       }
     }
 
+    if (props.vpnGateway && this.publicSubnets.length === 0 && this.privateSubnets.length === 0 && this.isolatedSubnets.length === 0) {
+      throw new Error('Can not enable the VPN gateway while the VPC has no subnets at all');
+    }
+
     if ((props.vpnConnections || props.vpnGatewayAsn) && props.vpnGateway === false) {
       throw new Error('Cannot specify `vpnConnections` or `vpnGatewayAsn` when `vpnGateway` is set to false.');
     }
 
     if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {
-      const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
+      this.enableVpnGateway({
         amazonSideAsn: props.vpnGatewayAsn,
         type: VpnConnectionType.IPSEC_1,
+        vpnRoutePropagation: props.vpnRoutePropagation,
       });
-
-      const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
-        vpcId: this.vpcId,
-        vpnGatewayId: vpnGateway.ref,
-      });
-
-      this.vpnGatewayId = vpnGateway.ref;
-
-      // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
-      const routeTableIds = allRouteTableIds(...vpnRoutePropagation.map(s => this.selectSubnets(s)));
-      const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
-        routeTableIds,
-        vpnGatewayId: this.vpnGatewayId,
-      });
-
-      // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
-      // until it has successfully attached to the VPC.
-      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
-      routePropagation.node.addDependency(attachment);
 
       const vpnConnections = props.vpnConnections || {};
       for (const [connectionId, connection] of Object.entries(vpnConnections)) {
@@ -1684,7 +1717,6 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly vpnGatewayId?: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
@@ -1694,7 +1726,7 @@ class ImportedVpc extends VpcBase {
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
-    this.vpnGatewayId = props.vpnGatewayId;
+    this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     // tslint:disable:max-line-length
@@ -1718,7 +1750,7 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
-  public readonly vpnGatewayId?: string;
+  public readonly vpnGatewayId: string | undefined;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
@@ -1731,7 +1763,7 @@ class LookedUpVpc extends VpcBase {
 
     this.vpcId = props.vpcId;
     this.cidr = props.vpcCidrBlock;
-    this.vpnGatewayId = props.vpnGatewayId;
+    this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
     const subnetGroups = props.subnetGroups || [];
@@ -1869,7 +1901,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * They seem pointless but I see no reason to prevent it.
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
-  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE);
+  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
@@ -1910,13 +1942,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
       type: cxapi.VpcSubnetGroupType.PUBLIC,
       subnets: [
         {
-          availabilityZone: 'dummy-1a',
+          availabilityZone: 'dummy1a',
           subnetId: 's-12345',
           routeTableId: 'rtb-12345s',
           cidr: '1.2.3.4/5',
         },
         {
-          availabilityZone: 'dummy-1b',
+          availabilityZone: 'dummy1b',
           subnetId: 's-67890',
           routeTableId: 'rtb-67890s',
           cidr: '1.2.3.4/5',
@@ -1928,13 +1960,13 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
       type: cxapi.VpcSubnetGroupType.PRIVATE,
       subnets: [
         {
-          availabilityZone: 'dummy-1a',
+          availabilityZone: 'dummy1a',
           subnetId: 'p-12345',
           routeTableId: 'rtb-12345p',
           cidr: '1.2.3.4/5',
         },
         {
-          availabilityZone: 'dummy-1b',
+          availabilityZone: 'dummy1b',
           subnetId: 'p-67890',
           routeTableId: 'rtb-57890p',
           cidr: '1.2.3.4/5',

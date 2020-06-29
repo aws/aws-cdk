@@ -23,12 +23,12 @@ your instances will be launched privately or publicly:
 const cluster = new DatabaseCluster(this, 'Database', {
     engine: DatabaseClusterEngine.AURORA,
     masterUser: {
-        username: 'admin'
+        username: 'clusteradmin'
     },
     instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpcSubnets: {
-            subnetType: ec2.SubnetType.PUBLIC,
+            subnetType: ec2.SubnetType.PRIVATE,
         },
         vpc
     }
@@ -47,7 +47,7 @@ your instances will be launched privately or publicly:
 ```ts
 const instance = new DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     masterUsername: 'syscdk',
     vpc
 });
@@ -62,7 +62,7 @@ Example for max storage configuration:
 ```ts
 const instance = new DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     masterUsername: 'syscdk',
     vpc,
     maxAllocatedStorage: 200
@@ -76,14 +76,13 @@ a source database respectively:
 new DatabaseInstanceFromSnapshot(stack, 'Instance', {
     snapshotIdentifier: 'my-snapshot',
     engine: rds.DatabaseInstanceEngine.POSTGRES,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
     vpc
 });
 
 new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     sourceDatabaseInstance: sourceInstance,
-    engine: rds.DatabaseInstanceEngine.POSTGRES,
-    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
     vpc
 });
 ```

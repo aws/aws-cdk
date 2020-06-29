@@ -22,6 +22,11 @@ export class Fn {
     return new FnRef(logicalName).toString();
   }
 
+  /** @internal */
+  public static _ref(logicalId: string): IResolvable {
+    return new FnRef(logicalId);
+  }
+
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -165,6 +170,17 @@ export class Fn {
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
     return new FnFindInMap(mapName, topLevelKey, secondLevelKey).toString();
+  }
+
+  /**
+   * Creates a token representing the ``Fn::Transform`` expression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-transform.html
+   * @param macroName The name of the macro to perform the processing
+   * @param parameters The parameters to be passed to the macro
+   * @returns a token representing the transform expression
+   */
+  public static transform(macroName: string, parameters: { [name: string]: any }): IResolvable {
+    return new FnTransform(macroName, parameters);
   }
 
   /**
@@ -348,6 +364,20 @@ class FnFindInMap extends FnBase {
    */
   constructor(mapName: string, topLevelKey: any, secondLevelKey: any) {
     super('Fn::FindInMap', [ mapName, topLevelKey, secondLevelKey ]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Transform`` specifies a macro to perform custom processing on part of a stack template.
+ */
+class FnTransform extends FnBase {
+  /**
+   * creates an ``Fn::Transform`` function.
+   * @param macroName The name of the macro to be invoked
+   * @param parameters the parameters to pass to it
+   */
+  constructor(macroName: string, parameters: { [name: string]: any }) {
+    super('Fn::Transform', { Name: macroName, Parameters: parameters });
   }
 }
 

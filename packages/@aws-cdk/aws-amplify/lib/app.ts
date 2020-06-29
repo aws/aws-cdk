@@ -372,24 +372,35 @@ export enum RedirectStatus {
    * Not found (404)
    */
   NOT_FOUND = '404',
+
+  /**
+   * Not found rewrite (404)
+   */
+  NOT_FOUND_REWRITE = '404-200',
 }
 
 /**
- * Custom rewrite/redirect rule for an Amplify App.
+ * Options for a custom rewrite/redirect rule for an Amplify App.
  */
-export interface CustomRule {
+export interface CustomRuleOptions {
   /**
    * The source pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    */
   readonly source: string;
 
   /**
    * The target pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    */
   readonly target: string
 
   /**
    * The status code for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    *
    * @default PERMANENT_REDIRECT
    */
@@ -398,7 +409,65 @@ export interface CustomRule {
   /**
    * The condition for a URL rewrite or redirect rule, e.g. country code.
    *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
    * @default - no condition
    */
   readonly condition?: string;
+}
+
+/**
+ * Custom rewrite/redirect rule for an Amplify App.
+ *
+ * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+ */
+export class CustomRule {
+  /**
+   * Sets up a 200 rewrite for all paths to `index.html` except for path
+   * containing a file extension.
+   */
+  public static readonly SINGLE_PAGE_APPLICATION_REDIRECT = new CustomRule({
+    source: '</^[^.]+$/>',
+    target: '/index.html',
+    status: RedirectStatus.REWRITE,
+  });
+
+  /**
+   * The source pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   */
+  public readonly source: string;
+
+  /**
+   * The target pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   */
+  public readonly target: string;
+
+  /**
+   * The status code for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
+   * @default PERMANENT_REDIRECT
+   */
+  public readonly status?: RedirectStatus;
+
+  /**
+   * The condition for a URL rewrite or redirect rule, e.g. country code.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
+   * @default - no condition
+   */
+  public readonly condition?: string;
+
+  constructor(options: CustomRuleOptions) {
+    this.source = options.source;
+    this.target = options.target;
+    this.status = options.status;
+    this.condition = options.condition;
+  }
 }

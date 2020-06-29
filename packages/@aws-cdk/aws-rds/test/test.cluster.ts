@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -8,7 +8,7 @@ import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
-  'check that instantiation works'(test: Test) {
+  'creating a Cluster also creates 2 DB Instances'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -35,17 +35,19 @@ export = {
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
       },
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: ABSENT,
     }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
+
   'can create a cluster with a single instance'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -96,7 +98,7 @@ export = {
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
-        securityGroup: sg,
+        securityGroups: [sg],
       },
     });
 
@@ -142,6 +144,28 @@ export = {
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     }));
+
+    test.done();
+  },
+
+  "sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'"(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new DatabaseCluster(stack, 'Cluster', {
+      masterUser: { username: 'admin' },
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -218,7 +242,7 @@ export = {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      kmsKey: new kms.Key(stack, 'Key'),
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
     });
 
     // THEN
@@ -359,9 +383,9 @@ export = {
       instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false,
-      }),
+      })],
     });
 
     // WHEN
@@ -1020,6 +1044,35 @@ export = {
       s3ImportRole: importRole,
       s3ImportBuckets: [importBucket],
     }));
+
+    test.done();
+  },
+
+  'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        vpcSubnets: {
+          subnetName: 'DefinitelyDoesNotExist',
+        },
+      },
+    });
+
+    // THEN
+    const art = SynthUtils.synthesize(stack);
+    const meta = art.findMetadataByType('aws:cdk:error');
+    test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
 
     test.done();
   },

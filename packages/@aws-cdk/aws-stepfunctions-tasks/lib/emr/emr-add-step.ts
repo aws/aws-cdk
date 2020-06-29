@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Stack } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Aws, Construct, Stack } from '@aws-cdk/core';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The action to take when the cluster step fails.
@@ -35,7 +35,7 @@ export enum ActionOnFailure {
  *
  * @experimental
  */
-export interface EmrAddStepProps {
+export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to add the Step to.
    */
@@ -53,7 +53,7 @@ export interface EmrAddStepProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_StepConfig.html
    *
-   * @default CONTINUE
+   * @default ActionOnFailure.CONTINUE
    */
   readonly actionOnFailure?: ActionOnFailure;
 
@@ -69,7 +69,7 @@ export interface EmrAddStepProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
    *
-   * @default No mainClass
+   * @default - No mainClass
    */
   readonly mainClass?: string;
 
@@ -78,7 +78,7 @@ export interface EmrAddStepProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
    *
-   * @default No args
+   * @default - No args
    */
   readonly args?: string[];
 
@@ -87,18 +87,9 @@ export interface EmrAddStepProps {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_HadoopJarStepConfig.html
    *
-   * @default No properties
+   * @default - No properties
    */
   readonly properties?: { [key: string]: string };
-
-  /**
-   * The service integration pattern indicates different ways to call AddStep.
-   *
-   * The valid value is either FIRE_AND_FORGET or SYNC.
-   *
-   * @default SYNC
-   */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -110,30 +101,34 @@ export interface EmrAddStepProps {
  *
  * @experimental
  */
-export class EmrAddStep implements sfn.IStepFunctionsTask {
+export class EmrAddStep extends sfn.TaskStateBase {
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+    sfn.IntegrationPattern.REQUEST_RESPONSE,
+    sfn.IntegrationPattern.RUN_JOB,
+  ];
+
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
   private readonly actionOnFailure: ActionOnFailure;
-  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+  private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(private readonly props: EmrAddStepProps) {
-    this.actionOnFailure = props.actionOnFailure || ActionOnFailure.CONTINUE;
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
+  constructor(scope: Construct, id: string, private readonly props: EmrAddStepProps) {
+    super(scope, id, props);
+    this.actionOnFailure = props.actionOnFailure ?? ActionOnFailure.CONTINUE;
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
 
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
-
-    if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call AddStep.`);
-    }
+    validatePatternSupported(this.integrationPattern, EmrAddStep.SUPPORTED_INTEGRATION_PATTERNS);
+    this.taskPolicies = this.createPolicyStatements();
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'addStep', this.integrationPattern),
-      policyStatements: this.createPolicyStatements(_task),
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'addStep', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         Step: {
           Name: this.props.name,
@@ -152,15 +147,15 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
               ),
           },
         },
-      },
+      }),
     };
   }
 
   /**
    * This generates the PolicyStatements required by the Task to call AddStep.
    */
-  private createPolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
+  private createPolicyStatements(): iam.PolicyStatement[] {
+    const stack = Stack.of(this);
 
     const policyStatements = [
       new iam.PolicyStatement({
@@ -173,7 +168,7 @@ export class EmrAddStep implements sfn.IStepFunctionsTask {
       }),
     ];
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
         resources: [stack.formatArn({

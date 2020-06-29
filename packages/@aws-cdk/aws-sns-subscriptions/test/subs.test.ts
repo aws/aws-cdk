@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnParameter, Stack, Token } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
 // tslint:disable:object-literal-key-quotes
@@ -38,6 +38,88 @@ test('url subscription', () => {
           'TopicArn': {
             'Ref': 'MyTopic86869434',
           },
+        },
+      },
+    },
+  });
+});
+
+test('url subscription with user provided dlq', () => {
+  const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+    queueName: 'MySubscription_DLQ',
+    retentionPeriod: Duration.days(14),
+  });
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', {
+    deadLetterQueue: dlQueue,
+  }));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopichttpsfoobarcomDEA92AB5': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': 'https://foobar.com/',
+          'Protocol': 'https',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'RedrivePolicy': {
+            'deadLetterTargetArn': {
+              'Fn::GetAtt': [
+                'DeadLetterQueue9F481546',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+      'DeadLetterQueue9F481546': {
+        'Type': 'AWS::SQS::Queue',
+        'Properties': {
+          'MessageRetentionPeriod': 1209600,
+          'QueueName': 'MySubscription_DLQ',
+        },
+      },
+      'DeadLetterQueuePolicyB1FB890C': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'DeadLetterQueue9F481546',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'DeadLetterQueue9F481546',
+            },
+          ],
         },
       },
     },
@@ -215,6 +297,133 @@ test('queue subscription', () => {
               'Arn',
             ],
           },
+        },
+      },
+    },
+  });
+});
+
+test('queue subscription with user provided dlq', () => {
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+    queueName: 'MySubscription_DLQ',
+    retentionPeriod: Duration.days(14),
+  });
+
+  topic.addSubscription(new subs.SqsSubscription(queue, {
+    deadLetterQueue: dlQueue,
+  }));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueMyTopic9B00631B': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+          'RedrivePolicy': {
+            'deadLetterTargetArn': {
+              'Fn::GetAtt': [
+                'DeadLetterQueue9F481546',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+      'DeadLetterQueue9F481546': {
+        'Type': 'AWS::SQS::Queue',
+        'Properties': {
+          'MessageRetentionPeriod': 1209600,
+          'QueueName': 'MySubscription_DLQ',
+        },
+      },
+      'DeadLetterQueuePolicyB1FB890C': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'DeadLetterQueue9F481546',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'DeadLetterQueue9F481546',
+            },
+          ],
         },
       },
     },
@@ -736,7 +945,7 @@ test('with filter policy', () => {
   });
 });
 
-test('region property is present on an imported topic', () => {
+test('region property is present on an imported topic - sqs', () => {
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
   const queue = new sqs.Queue(stack, 'myqueue');
   imported.addSubscription(new subs.SqsSubscription(queue));
@@ -746,7 +955,7 @@ test('region property is present on an imported topic', () => {
   });
 });
 
-test('region property on an imported topic as a parameter', () => {
+test('region property on an imported topic as a parameter - sqs', () => {
   const topicArn = new CfnParameter(stack, 'topicArn');
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
   const queue = new sqs.Queue(stack, 'myqueue');
@@ -755,6 +964,92 @@ test('region property on an imported topic as a parameter', () => {
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
       'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+    },
+  });
+});
+
+test('region property is present on an imported topic - lambda', () => {
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
+  const func = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  imported.addSubscription(new subs.LambdaSubscription(func));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: 'us-east-1',
+  });
+});
+
+test('region property on an imported topic as a parameter - lambda', () => {
+  const topicArn = new CfnParameter(stack, 'topicArn');
+  const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
+  const func = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  imported.addSubscription(new subs.LambdaSubscription(func));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Region: {
+      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+    },
+  });
+});
+
+test('sms subscription', () => {
+  topic.addSubscription(new subs.SmsSubscription('+15551231234'));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopic155512312349C8DEEEE': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': '+15551231234',
+        },
+      },
+    },
+  });
+});
+
+test('sms subscription with unresolved', () => {
+  const smsToken = Token.asString({ Ref : 'my-sms-1' });
+  topic.addSubscription(new subs.SmsSubscription(smsToken));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-sms-1',
+          },
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
     },
   });
 });

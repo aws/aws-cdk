@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient } from '../lib';
+import { OAuthScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -17,6 +17,10 @@ describe('User Pool Client', () => {
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
+      AllowedOAuthFlows: [ 'implicit', 'code' ],
+      AllowedOAuthScopes: [ 'profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin' ],
+      CallbackURLs: [ 'https://example.com' ],
+      SupportedIdentityProviders: [ 'COGNITO' ],
     });
   });
 
@@ -91,21 +95,6 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('AllowedOAuthFlows is absent by default', () => {
-    // GIVEN
-    const stack = new Stack();
-    const pool = new UserPool(stack, 'Pool');
-
-    // WHEN
-    pool.addClient('Client');
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-      AllowedOAuthFlows: ABSENT,
-      // AllowedOAuthFlowsUserPoolClient: ABSENT,
-    });
-  });
-
   test('AllowedOAuthFlows are correctly named', () => {
     // GIVEN
     const stack = new Stack();
@@ -118,7 +107,6 @@ describe('User Pool Client', () => {
           authorizationCodeGrant: true,
           implicitCodeGrant: true,
         },
-        callbackUrls: [ 'redirect-url' ],
         scopes: [ OAuthScope.PHONE ],
       },
     });
@@ -127,7 +115,6 @@ describe('User Pool Client', () => {
         flows: {
           clientCredentials: true,
         },
-        callbackUrls: [ 'redirect-url' ],
         scopes: [ OAuthScope.PHONE ],
       },
     });
@@ -144,28 +131,72 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('fails when callbackUrls are not specified for codeGrant or implicitGrant', () => {
+  test('callbackUrl defaults are correctly chosen', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    pool.addClient('Client1', {
+      oAuth: {
+        flows: {
+          clientCredentials: true,
+        },
+      },
+    });
+
+    pool.addClient('Client2', {
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
+    });
+
+    pool.addClient('Client3', {
+      oAuth: {
+        flows: {
+          implicitCodeGrant: true,
+        },
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: [ 'client_credentials' ],
+      CallbackURLs: ABSENT,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: [ 'implicit' ],
+      CallbackURLs: [ 'https://example.com' ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: [ 'code' ],
+      CallbackURLs: [ 'https://example.com' ],
+    });
+  });
+
+  test('fails when callbackUrls is empty for codeGrant or implicitGrant', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
     expect(() => pool.addClient('Client1', {
       oAuth: {
-        flows: { authorizationCodeGrant: true },
-        scopes: [ OAuthScope.PHONE ],
-      },
-    })).toThrow(/callbackUrl must be specified/);
-
-    expect(() => pool.addClient('Client2', {
-      oAuth: {
         flows: { implicitCodeGrant: true },
-        scopes: [ OAuthScope.PHONE ],
+        callbackUrls: [],
       },
-    })).toThrow(/callbackUrl must be specified/);
+    })).toThrow(/callbackUrl must not be empty/);
 
     expect(() => pool.addClient('Client3', {
       oAuth: {
+        flows: { authorizationCodeGrant: true },
+        callbackUrls: [],
+      },
+    })).toThrow(/callbackUrl must not be empty/);
+
+    expect(() => pool.addClient('Client4', {
+      oAuth: {
         flows: { clientCredentials: true },
-        scopes: [ OAuthScope.PHONE ],
+        callbackUrls: [],
       },
     })).not.toThrow();
   });
@@ -180,7 +211,6 @@ describe('User Pool Client', () => {
           authorizationCodeGrant: true,
           clientCredentials: true,
         },
-        callbackUrls: [ 'redirect-url' ],
         scopes: [ OAuthScope.PHONE ],
       },
     })).toThrow(/clientCredentials OAuth flow cannot be selected/);
@@ -191,7 +221,6 @@ describe('User Pool Client', () => {
           implicitCodeGrant: true,
           clientCredentials: true,
         },
-        callbackUrls: [ 'redirect-url' ],
         scopes: [ OAuthScope.PHONE ],
       },
     })).toThrow(/clientCredentials OAuth flow cannot be selected/);
@@ -282,5 +311,146 @@ describe('User Pool Client', () => {
       ClientName: 'Client4',
       AllowedOAuthScopes: [ 'aws.cognito.signin.user.admin' ],
     });
+  });
+
+  test('enable user existence errors prevention', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      preventUserExistenceErrors: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: 'ENABLED',
+    });
+  });
+
+  test('disable user existence errors prevention', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      preventUserExistenceErrors: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: 'LEGACY',
+    });
+  });
+
+  test('user existence errors prevention is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      UserPoolId: stack.resolve(pool.userPoolId),
+      PreventUserExistenceErrors: ABSENT,
+    });
+  });
+
+  test('default supportedIdentityProviders', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    const idp = UserPoolIdentityProvider.fromProviderName(stack, 'imported', 'userpool-idp');
+    pool.registerIdentityProvider(idp);
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      SupportedIdentityProviders: [
+        'userpool-idp',
+        'COGNITO',
+      ],
+    });
+  });
+
+  test('supportedIdentityProviders', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('AllEnabled', {
+      userPoolClientName: 'AllEnabled',
+      supportedIdentityProviders: [
+        UserPoolClientIdentityProvider.COGNITO,
+        UserPoolClientIdentityProvider.FACEBOOK,
+        UserPoolClientIdentityProvider.AMAZON,
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'AllEnabled',
+      SupportedIdentityProviders: [ 'COGNITO', 'Facebook', 'LoginWithAmazon' ],
+    });
+  });
+
+  test('disableOAuth', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('OAuthDisabled', {
+      userPoolClientName: 'OAuthDisabled',
+      disableOAuth: true,
+    });
+    pool.addClient('OAuthEnabled', {
+      userPoolClientName: 'OAuthEnabled',
+      disableOAuth: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'OAuthDisabled',
+      AllowedOAuthFlows: ABSENT,
+      AllowedOAuthScopes: ABSENT,
+      AllowedOAuthFlowsUserPoolClient: false,
+    });
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'OAuthEnabled',
+      AllowedOAuthFlows: [ 'implicit', 'code' ],
+      AllowedOAuthScopes: [ 'profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin' ],
+      AllowedOAuthFlowsUserPoolClient: true,
+    });
+  });
+
+  test('fails when oAuth is specified but is disableOAuth is set', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addClient('Client', {
+      disableOAuth: true,
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
+    })).toThrow(/disableOAuth is set/);
   });
 });
