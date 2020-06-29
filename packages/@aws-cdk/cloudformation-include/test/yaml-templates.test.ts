@@ -118,40 +118,37 @@ describe('CDK Include', () => {
 
     expect(stack).toMatchTemplate({
       "Resources": {
+        "ELB": {
+          "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+          "Properties": {
+            "AvailabilityZones": [
+              "us-east-1a",
+            ],
+            "Listeners": [
+              {
+                "LoadBalancerPort": "80",
+                "InstancePort": "80",
+                "Protocol": "HTTP",
+              },
+            ],
+          },
+        },
+        "Bucket0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": { "BucketName": "some-bucket" },
+        },
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": "SomeBucketName",
-            "ReplicationConfiguration": {
-              "Role": "some-role",
-              "Rules": [
-                {
-                  "Destination": {
-                    "Bucket": "Bucket1",
-                    "StorageClass": "STANDARD",
-                  },
-                  "Status": "Enabled",
-                },
-              ],
-            },
+            "BucketName": { "Fn::GetAtt": ["Bucket0", "Arn"] },
+            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
           },
         },
         "Bucket2": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": { "Fn::GetAtt": ["Bucket1", "BucketName"] },
-            "ReplicationConfiguration": {
-              "Role": { "Fn::GetAtt": ["Bucket1", "Rules.Destination"] },
-              "Rules": [
-                {
-                  "Destination": {
-                    "Bucket": { "Fn::GetAtt": ["Bucket1", "Rules.Destination"] },
-                    "StorageClass": { "Fn::GetAtt": ["Bucket1", "BucketName"] },
-                  },
-                  "Status": "Enabled",
-                },
-              ],
-            },
+            "BucketName": { "Fn::GetAtt": ["Bucket1", "Arn"] },
+            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
           },
         },
       },
