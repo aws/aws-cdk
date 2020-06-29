@@ -19,7 +19,6 @@ async function main() {
   ];
 
   const args = process.argv.slice(2);
-
   for (const arg of args) {
     const files = await glob(arg, { ignore, matchBase: true });
     for (const file of files) {
