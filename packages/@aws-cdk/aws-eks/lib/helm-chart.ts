@@ -100,7 +100,7 @@ export class HelmChart extends Construct {
         Chart: props.chart,
         Version: props.version,
         Wait: props.wait ?? false,
-        Timeout: timeout && `${timeout.toString()}s`, // Helm v3 expects duration instead of integer
+        Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
