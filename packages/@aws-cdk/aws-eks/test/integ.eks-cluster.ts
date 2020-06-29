@@ -64,7 +64,22 @@ class EksClusterStack extends TestStack {
 
     // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
     cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+
+    const nginxNamespace = cluster.addResource('nginx-namespace', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: {
+        name: 'nginx',
+      },
+    });
+
+    const nginxIngress = cluster.addChart('nginx-ingress', {
+      chart: 'nginx-ingress',
+      repository: 'https://helm.nginx.com/stable',
+      namespace: 'nginx',
+    });
+
+    nginxIngress.node.addDependency(nginxNamespace);
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');
