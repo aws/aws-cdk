@@ -24,18 +24,22 @@
         },
         "AvailabilityZone": "test-region-1a",
         "Ipv6CidrBlock": {
-          "Fn::Select":[
-            0, {
-              "Fn::Cidr": [{
-                "Fn::Select":[
-                  "0", {
-                    "Fn::GetAtt": [
-                      "VPC89E5F0B4",
-                      "Ipv6CidrBlocks"
-                    ] 
-                  }
-                ]},
-                0,
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::GetAtt": [
+                        "VPCB9E5F0B4",
+                        "Ipv6CidrBlocks"
+                      ]
+                    }
+                  ]
+                },
+                2,
                 "64"
               ]
             }
@@ -55,11 +59,11 @@
             "Key": "Name",
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
-        ],
-        "DependsOn": [
-          "IPv6Block"
         ]
-      }
+      },
+      "DependsOn": [
+        "IPv6Block"
+      ]
     },
     "VPCPublicSubnet1RouteTableFEE4B781": {
       "Type": "AWS::EC2::RouteTable",
@@ -133,6 +137,18 @@
         ]
       }
     },
+    "VPCPublicSubnet1IPv6DefaultFD18367E": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationIpv6CidrBlock": "::/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -142,18 +158,22 @@
         },
         "AvailabilityZone": "test-region-1b",
         "Ipv6CidrBlock": {
-          "Fn::Select":[
-            0, {
-              "Fn::Cidr": [{
-                "Fn::Select":[
-                  "0", {
-                    "Fn::GetAtt": [
-                      "VPC89E5F0B4",
-                      "Ipv6CidrBlocks"
-                    ] 
-                  }
-                ]},
-                0,
+          "Fn::Select": [
+            1,
+            {
+              "Fn::Cidr": [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::GetAtt": [
+                        "VPCB9E5F0B4",
+                        "Ipv6CidrBlocks"
+                      ]
+                    }
+                  ]
+                },
+                2,
                 "64"
               ]
             }
@@ -173,11 +193,11 @@
             "Key": "Name",
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
-        ],
-        "DependsOn": [
-          "IPv6Block"
         ]
-      }
+      },
+      "DependsOn": [
+        "IPv6Block"
+      ]
     },
     "VPCPublicSubnet2RouteTable6F1A15F1": {
       "Type": "AWS::EC2::RouteTable",
@@ -249,6 +269,18 @@
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
         ]
+      }
+    },
+    "VPCPublicSubnet2IPv6DefaultDD0476C2": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationIpv6CidrBlock": "::/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -397,9 +429,19 @@
         }
       }
     },
+    "IPv6Block": {
+      "Type": "AWS::EC2::VPCCidrBlock",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AmazonProvidedIpv6CidrBlock": true
+      }
+    },
     "LB8A12904C": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "IpAddressType": "dualstack",
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -446,7 +488,7 @@
             "ToPort": 80
           },
           {
-            "CidrIp": "::/0",
+            "CidrIpv6": "::/0",
             "Description": "Allow from anyone on port 80",
             "FromPort": 80,
             "IpProtocol": "tcp",
