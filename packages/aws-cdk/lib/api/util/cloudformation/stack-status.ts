@@ -22,11 +22,7 @@ export class StackStatus {
   }
 
   get isFailure(): boolean {
-    return this.name.endsWith('FAILED');
-  }
-
-  get isRollback(): boolean {
-    return this.name.indexOf('ROLLBACK') !== -1;
+    return this.name.endsWith('_FAILED');
   }
 
   get isStable(): boolean {
@@ -37,8 +33,8 @@ export class StackStatus {
     return this.name === 'NOT_FOUND';
   }
 
-  get isSuccess(): boolean {
-    return !this.isNotFound && !this.isRollback && !this.isFailure;
+  get isComplete(): boolean {
+    return this.name.endsWith('_COMPLETE');
   }
 
   public toString(): string {

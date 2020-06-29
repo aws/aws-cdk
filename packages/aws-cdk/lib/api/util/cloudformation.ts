@@ -260,10 +260,8 @@ export async function waitForStack(
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
-  if (status.isCreationFailure) {
-    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (!status.isSuccess) {
-    throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
+  if (status.isFailure) {
+    throw new Error(`The stack named ${stackName} is in a failed state. You may need to "continue update rollback" or delete it from the AWS console : ${status}`);
   } else if (status.isDeleted) {
     if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
     return undefined;
