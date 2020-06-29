@@ -543,7 +543,6 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
     }
 
-    // TODO: Allow this to accept connections that are IPv6 if dualstack
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
       defaultPort,
