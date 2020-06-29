@@ -1,6 +1,6 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { DefaultDomainMappingOptions } from '../common';
+import { DefaultDomainMappingOptions } from '../http/stage';
 import { HttpApiMapping } from './api-mapping';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
@@ -179,17 +179,15 @@ export class HttpApi extends Resource implements IHttpApi {
         httpApi: this,
         autoDeploy: true,
       });
-    }
-
-    if (props?.defaultDomainMapping) {
-      const options = props.defaultDomainMapping;
-      new HttpApiMapping(this, `${options.domainName}${options.mappingKey}`, {
-        api: this,
-        domainName: options.domainName,
-        // use '$default' stage when we create a new API with defaultDomainMapping
-        stage: this.defaultStage!,
-      });
-
+      if (props?.defaultDomainMapping) {
+        const options = props.defaultDomainMapping;
+        new HttpApiMapping(this, `${options.domainName}${options.mappingKey}`, {
+          api: this,
+          domainName: options.domainName,
+          // use '$default' stage when we create a new API with defaultDomainMapping
+          stage: this.defaultStage!,
+        });
+      }
     }
   }
 
@@ -209,14 +207,6 @@ export class HttpApi extends Resource implements IHttpApi {
       httpApi: this,
       ...options,
     });
-    if (options.domainMapping) {
-      new HttpApiMapping(this, `${options.domainMapping.domainName}${options.domainMapping.mappingKey}`, {
-        api: this,
-        domainName: options.domainMapping.domainName,
-        stage,
-        apiMappingKey: options.domainMapping.mappingKey,
-      } );
-    }
     return stage;
   }
 

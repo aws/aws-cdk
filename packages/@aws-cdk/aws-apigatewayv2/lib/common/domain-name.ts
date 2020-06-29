@@ -1,7 +1,6 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
-import { IStage } from './stage';
 
 /**
  * Represents an APIGatewayV2 DomainName
@@ -52,37 +51,6 @@ export interface DomainNameAttributes {
 }
 
 /**
- * Options for defaultDomainMapping
- */
-export interface DefaultDomainMappingOptions {
-  /**
-   * The domain name for the mapping
-   *
-   */
-  readonly domainName: IDomainName;
-
-  /**
-   * The API mapping key
-   *
-   * @default - empty key
-   */
-  readonly mappingKey?: string;
-
-}
-
-/**
- * Options for DomainMapping
- */
-export interface DomainMappingOptions extends DefaultDomainMappingOptions {
-  /**
-   * The API Stage
-   *
-   * @default - the $default stage
-   */
-  readonly stage?: IStage;
-}
-
-/**
  * properties used for creating the DomainName
  */
 export interface DomainNameProps {
@@ -113,13 +81,6 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   /**
-   * the logical ID of the domain name
-   *
-   * @attribute
-   */
-  public readonly domainNameId: string;
-
-  /**
    * The custom domain name for your API in Amazon API Gateway.
    *
    * @attribute
@@ -139,8 +100,6 @@ export class DomainName extends Resource implements IDomainName {
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
-    this.domainName = props.domainName;
-
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
       domainNameConfigurations: [
@@ -151,7 +110,7 @@ export class DomainName extends Resource implements IDomainName {
       ],
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.domainNameId = resource.ref;
+    this.domainName = props.domainName ?? resource.ref;
     this.regionalDomainName = resource.getAtt('RegionalDomainName').toString();
     this.regionalHostedZoneId = resource.getAtt('RegionalHostedZoneId').toString();
   }

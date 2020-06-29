@@ -203,7 +203,7 @@
         "AutoDeploy": true
       }
     },
-    "HttpProxyProdApiinteghttpproxyDNtestingB047D1CC": {
+    "HttpProxyProdApitestinginteghttpproxyDNtestingBEBAEF7B": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
