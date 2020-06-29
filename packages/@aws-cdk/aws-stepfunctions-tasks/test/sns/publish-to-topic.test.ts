@@ -46,7 +46,7 @@ test('Publish JSON to SNS topic with task token', () => {
     integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
     message: sfn.TaskInput.fromObject({
       Input: 'Publish this message',
-      Token: sfn.Context.taskToken,
+      Token: sfn.JsonPath.taskToken,
     }),
   }) });
 
@@ -93,7 +93,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not inclu
 test('Publish to topic with ARN from payload', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const topic = sns.Topic.fromTopicArn(stack, 'Topic', sfn.Data.stringAt('$.topicArn'));
+  const topic = sns.Topic.fromTopicArn(stack, 'Topic', sfn.JsonPath.stringAt('$.topicArn'));
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {

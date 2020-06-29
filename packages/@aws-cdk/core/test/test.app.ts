@@ -293,7 +293,6 @@ export = {
     test.deepEqual(libs, {
       '@aws-cdk/core': version,
       '@aws-cdk/cx-api': version,
-      '@aws-cdk/cdk-assets-schema': version,
       '@aws-cdk/cloud-assembly-schema': version,
       'jsii-runtime': `node.js/${process.version}`,
     });
@@ -322,6 +321,32 @@ export = {
         template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
       },
     ]);
+
+    test.done();
+  },
+
+  'stacks are written to the assembly file in a topological order'(test: Test) {
+    // WHEN
+    const assembly = withApp({}, (app) => {
+      const stackC = new Stack(app, 'StackC');
+      const stackD = new Stack(app, 'StackD');
+      const stackA = new Stack(app, 'StackA');
+      const stackB = new Stack(app, 'StackB');
+
+      // Create the following dependency order:
+      // A ->
+      //      C -> D
+      // B ->
+      stackC.addDependency(stackA);
+      stackC.addDependency(stackB);
+      stackD.addDependency(stackC);
+    });
+
+    // THEN
+    const artifactsIds = assembly.artifacts.map(a => a.id);
+    test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
 
     test.done();
   },
