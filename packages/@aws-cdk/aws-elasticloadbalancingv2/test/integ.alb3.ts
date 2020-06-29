@@ -3,11 +3,66 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../lib';
 
+const valueOrDie = <T, C extends T = T>(
+  value: T | undefined,
+  err: Error,
+): C => {
+  if (value === undefined) { throw err; }
+  return value as C;
+};
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
+});
+
+const ipv6Block = new ec2.CfnVPCCidrBlock(
+  stack,
+  `IPv6_Block`,
+  {
+    vpcId: vpc.vpcId,
+    amazonProvidedIpv6CidrBlock: true
+  }
+);
+
+// Get the vpc's internet gateway so we can create default routes for the
+// public subnets.
+const internetGateway = valueOrDie<cdk.IConstruct, ec2.CfnInternetGateway>(
+  vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
+  new Error("Couldn't find an internet gateway"),
+);
+
+vpc.publicSubnets.forEach((subnet, idx) => {
+  // Add a default ipv6 route to the subnet's route table.
+  const unboxedSubnet = subnet as ec2.Subnet;
+  unboxedSubnet.addRoute("IPv6Default", {
+    routerId: internetGateway.ref,
+    routerType: ec2.RouterType.GATEWAY,
+    destinationIpv6CidrBlock: "::/0",
+  });
+
+  // Find a CfnSubnet (raw cloudformation resources) child to the public
+  // subnet nodes.
+  const cfnSubnet = valueOrDie<cdk.IConstruct, ec2.CfnSubnet>(
+    subnet.node.children.find(c => c instanceof ec2.CfnSubnet),
+    new Error("Couldn't find a CfnSubnet"),
+  );
+
+  // Use the intrinsic Fn::Cidr CloudFormation function on the VPC's
+  // first IPv6 block to determine ipv6 /64 cidrs for each subnet as
+  // a function of the public subnet's index.
+  const vpcCidrBlock = cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks);
+  const ipv6Cidrs = cdk.Fn.cidr(
+    vpcCidrBlock,
+    vpc.publicSubnets.length,
+    "64",
+  );
+  cfnSubnet.ipv6CidrBlock = cdk.Fn.select(idx, ipv6Cidrs);
+
+  // The subnet depends on the ipv6 cidr being allocated.
+  cfnSubnet.addDependsOn(ipv6Block);
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {

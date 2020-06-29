@@ -23,6 +23,24 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "Ipv6CidrBlock": {
+          "Fn::Select":[
+            0, {
+              "Fn::Cidr": [{
+                "Fn::Select":[
+                  "0", {
+                    "Fn::GetAtt": [
+                      "VPC89E5F0B4",
+                      "Ipv6CidrBlocks"
+                    ] 
+                  }
+                ]},
+                0,
+                "64"
+              ]
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -37,6 +55,9 @@
             "Key": "Name",
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
+        ],
+        "DependsOn": [
+          "IPv6Block"
         ]
       }
     },
@@ -120,6 +141,24 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "Ipv6CidrBlock": {
+          "Fn::Select":[
+            0, {
+              "Fn::Cidr": [{
+                "Fn::Select":[
+                  "0", {
+                    "Fn::GetAtt": [
+                      "VPC89E5F0B4",
+                      "Ipv6CidrBlocks"
+                    ] 
+                  }
+                ]},
+                0,
+                "64"
+              ]
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -134,6 +173,9 @@
             "Key": "Name",
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
+        ],
+        "DependsOn": [
+          "IPv6Block"
         ]
       }
     },
