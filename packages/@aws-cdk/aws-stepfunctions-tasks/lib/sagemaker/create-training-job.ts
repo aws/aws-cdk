@@ -204,7 +204,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     this.securityGroups.push(securityGroup);
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sagemaker', 'createTrainingJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
