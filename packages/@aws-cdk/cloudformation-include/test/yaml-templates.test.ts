@@ -256,7 +256,7 @@ describe('CDK Include', () => {
 
   // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
   test('can ingest a template with the short form !Transform', () => {
-    includeTestTemplate(stack, 'short-form-transform.yaml');
+    includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
     expect(stack).toMatchTemplate({
       "Resources": {
