@@ -3,10 +3,7 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock:
-        !Cidr
-          - 192.168.1.1/24
-          - 2
-          - 5
+        !Cidr [ 192.168.1.1/24, 2, 5 ]
   CidrVpc2:
     Type: AWS::EC2::VPC
     Properties:

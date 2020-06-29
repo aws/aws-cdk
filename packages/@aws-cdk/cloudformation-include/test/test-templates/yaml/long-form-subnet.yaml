@@ -13,7 +13,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: 
-        Fn::GetAtt: [ Bucket1, BucketName ]
+        Fn::GetAtt: [ Bucket1, Arn ]
       CorsConfiguration:
         CorsRules:
           - AllowedMethods:

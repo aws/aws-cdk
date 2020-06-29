@@ -6,8 +6,11 @@ Mappings:
 Conditions:
   AlwaysTrueCond:
     Fn::And:
-      - Fn::Not: [ Fn::Equals: [ Ref: AWS::Region, completely-made-up-region] ]
-      - Fn::Or: [ Fn::Equals: [ Ref: AWS::Region, completely-made-up-region], Fn::Equals: [ Ref: AWS::Region, completely-made-up-region] ]
+      - Fn::Not: 
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
+      - Fn::Or: 
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
 Resources:
   Vpc:
     Type: AWS::EC2::VPC

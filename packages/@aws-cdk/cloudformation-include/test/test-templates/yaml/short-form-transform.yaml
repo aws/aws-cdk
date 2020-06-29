@@ -3,10 +3,9 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        !Transform {
-          "Name": "SomeMacroName",
-          "Parameters": {
+        '!Transform':
+          Name: SomeMacroName,
+          Parameters: {
             key1: value1,
             key2: value2,
           }
-        }
