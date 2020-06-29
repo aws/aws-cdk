@@ -18,7 +18,7 @@ export = {
 
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
-      proxyTarget: rds.ProxyTarget.atInstance(instance),
+      proxyTarget: rds.ProxyTarget.forInstance(instance),
       secret: instance.secret!,
       vpc,
     });
@@ -91,7 +91,7 @@ export = {
 
     // WHEN
     new rds.DatabaseProxy(stack, 'Proxy', {
-      proxyTarget: rds.ProxyTarget.atCluster(cluster),
+      proxyTarget: rds.ProxyTarget.forCluster(cluster),
       secret: cluster.secret!,
       vpc,
     });
