@@ -11,8 +11,9 @@ export class FileSystem {
    */
   public static fromEfsAccessPoint(ap: efs.AccessPoint, mountPath: string): FileSystem {
     return new FileSystem({
-      LocalMountPath: mountPath,
-      Arn: ap.accessPointArn,
+      localMountPath: mountPath,
+      arn: ap.accessPointArn,
+      dependency: [ ap.filesystem ],
     });
   }
   protected constructor(public readonly config: any) { }

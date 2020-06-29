@@ -586,10 +586,14 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystems) {
+      // add dependency when necessary
+      // for (const fs of props.filesystems) {
+      //   this.node.addDependency(fs.config.dependency);
+      // }
       resource.addPropertyOverride('FileSystemConfigs',
         props.filesystems.map(fs => ({
-          LocalMountPath: fs.config.LocalMountPath,
-          Arn: fs.config.Arn,
+          LocalMountPath: fs.config.localMountPath,
+          Arn: fs.config.arn,
         })));
     }
   }
