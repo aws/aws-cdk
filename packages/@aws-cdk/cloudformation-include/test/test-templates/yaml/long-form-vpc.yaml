@@ -39,6 +39,6 @@ Resources:
         - Fn::Transform:
             Name: AWS::Include
             Parameters:
-              Location: location
+              Location: location,
               AnotherParameter:
                 Fn::Base64: AnotherValue
