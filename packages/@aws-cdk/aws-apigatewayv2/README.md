@@ -169,7 +169,7 @@ To associate a specifc `Stage` to a custom domain mapping -
 api.addStage('beta', {
   stageName: 'beta',
   autoDeploy: true,
-  // https://${dn.domainName}/beta goes to prodApi beta stage
+  // https://${dn.domainName}/beta goes to the beta stage
   domainMapping: {
     domainName: dn,
     mappingKey: 'beta',
