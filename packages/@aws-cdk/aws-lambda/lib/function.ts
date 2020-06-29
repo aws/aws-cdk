@@ -7,7 +7,7 @@ import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
-import { FileSystem, FilesystemConfig } from './filesystem';
+import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
@@ -468,7 +468,7 @@ export class Function extends FunctionBase {
 
   protected readonly canCreatePermissions = true;
 
-  protected readonly filesystems = new Array<FilesystemConfig>();
+  protected readonly filesystems: FileSystem[] = [];
 
   private readonly layers: ILayerVersion[] = [];
 
@@ -585,15 +585,12 @@ export class Function extends FunctionBase {
 
     this.currentVersionOptions = props.currentVersionOptions;
 
-    // mount filesystems
     if (props.filesystems) {
-      props.filesystems.map(fs => this.mount(fs));
-      resource.addPropertyOverride('FileSystemConfigs', this.filesystems.map(fs =>
-        ({
-          Arn: fs.arn,
-          LocalMountPath: fs.mountPath,
-        }),
-      ));
+      resource.addPropertyOverride('FileSystemConfigs',
+        props.filesystems.map(fs => ({
+          LocalMountPath: fs.config.LocalMountPath,
+          Arn: fs.config.Arn,
+        })));
     }
   }
 
@@ -670,15 +667,6 @@ export class Function extends FunctionBase {
     });
   }
 
-  /**
-   * mount the filesystem
-   */
-  public mount(options: FileSystem) {
-    this.filesystems.push({
-      arn: options.target.targetArn,
-      mountPath: options.mountPath,
-    });
-  }
   /**
    * The LogGroup where the Lambda function's logs are made available.
    *

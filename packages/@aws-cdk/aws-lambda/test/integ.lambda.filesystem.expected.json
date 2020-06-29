@@ -571,7 +571,18 @@
         "FileSystemId": {
           "Ref": "Efs9E8BF36B"
         },
-        "RootDirectory": {}
+        "PosixUser": {
+          "Gid": "1001",
+          "Uid": "1001"
+        },
+        "RootDirectory": {
+          "CreationInfo": {
+            "OwnerGid": "1001",
+            "OwnerUid": "1001",
+            "Permissions": "755"
+          },
+          "Path": "/mnt/msg"
+        }
       }
     },
     "MyLambdaServiceRole4539ECB6": {
@@ -675,6 +686,7 @@
         },
         "FileSystemConfigs": [
           {
+            "LocalMountPath": "/mnt/msg",
             "Arn": {
               "Fn::Join": [
                 "",
@@ -697,8 +709,7 @@
                   }
                 ]
               ]
-            },
-            "LocalMountPath": "/mnt/msg"
+            }
           }
         ]
       },

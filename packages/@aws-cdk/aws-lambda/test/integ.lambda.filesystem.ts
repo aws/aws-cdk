@@ -20,10 +20,29 @@ const fileSystem = new efs.FileSystem(stack, 'Efs', {
 
 fileSystem.connections.allowDefaultPortInternally();
 
-const accessPoint = fileSystem.addAccessPoint('AccessPoint');
+/**
+ * create a new accessPoint and create the new /mnt/msg folder with given permission
+ * settings.
+ *
+ * see blog post: https://go.aws/2Y6UgKe
+ */
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  path: '/mnt/msg',
+  // as /mnt/msg does not exist, the efs will create the directory with the following createAcl
+  createAcl: {
+    ownerUid: '1001',
+    ownerGid: '1001',
+    permissions: '755',
+  },
+  // enforce the POSIX identity so lambda function will access with this identity
+  posixUser: {
+    uid: '1001',
+    gid: '1001',
+  },
+});
 
+// this function will mount '/mnt/msg' and write content into /mnt/msg/content
 const fn = new lambda.Function(stack, 'MyLambda', {
-  // sample code below from the blog post: https://go.aws/2Y6UgKe
   code: new lambda.InlineCode(`
 import os
 import fcntl
@@ -71,12 +90,11 @@ def lambda_handler(event, context):
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
   securityGroups: fileSystem.connections.securityGroups,
-  filesystems: [{
-    target: new lambda.EfsAccessPointTarget(accessPoint),
-    mountPath:  '/mnt/msg',
-  }],
+  filesystems: [
+    lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+  ],
 });
 
-fn.node.addDependency(accessPoint, fileSystem);
+fn.node.addDependency(fileSystem);
 
 app.synth();

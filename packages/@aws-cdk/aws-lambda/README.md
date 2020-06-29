@@ -290,12 +290,29 @@ the access point. Access points can also enforce a different root directory for 
 so that clients can only access data in the specified directory or its subdirectories. See
 [Working with Amazon EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) for more details.
 
-The following sample enables the lambda function to mount the Amazon EFS filesystem via the `accessPoint` to `/mnt/msg` in the runtime environment.
+The following sample enables the lambda function to mount the Amazon EFS filesystem via the `accessPoint` to `/mnt/msg` in the runtime environment. We have to create an access point in Amaozn EFS and make sure Lambda function has
+read write access to it.
 
 ```ts
+// create a new Amaozn EFS filesystem
 const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
 
-const accessPoint = fileSystem.addAccessPoint('AccessPoint');
+// create a new access point from the filesystem
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  // set /mnt/msg as the root of the access point
+  path: '/mnt/msg',
+  // as /mnt/msg does not exist, the efs will create the directory with the following createAcl
+  createAcl: {
+    ownerUid: '1001',
+    ownerGid: '1001',
+    permissions: '755',
+  },
+  // enforce the POSIX identity so lambda function will access with this identity
+  posixUser: {
+    uid: '1001',
+    gid: '1001',
+  },
+});
 
 const fn = new lambda.Function(stack, 'MyLambda', {
   code,
@@ -303,13 +320,12 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime,
   vpc,
   securityGroups: fileSystem.connections.securityGroups,
-  filesystems: [{
-    target: new lambda.EfsAccessPointTarget(accessPoint),
-    mountPath:  '/mnt/msg',
-  }],
+  filesystems: [
+    lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+  ],
 });
 
-fn.node.addDependency(accessPoint, fileSystem);
+fn.node.addDependency(fileSystem);
 ```
 
 

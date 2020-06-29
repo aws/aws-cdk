@@ -1,53 +1,19 @@
 import * as efs from '@aws-cdk/aws-efs';
 
 /**
- * Represents a filesystem for lambda function
+ * Represents the filesystem for the Lambda function
  */
-export interface FileSystem {
+export class FileSystem {
   /**
-   * the mount target of the filesystem
+   * mount the filesystem from Amazon EFS
+   * @param ap the Amazon EFS access point
+   * @param mountPath the target path in the lambda runtime environment
    */
-  readonly target: IFilesystemTarget;
-
-  /**
-   * the target directory in the lambda runtime environment
-   */
-  readonly mountPath: string;
-}
-
-/**
- * Represents a filesystem target containing the resource ARN
- */
-export interface IFilesystemTarget {
-  /**
-   * ARN of the target
-   */
-  readonly targetArn: string;
-}
-
-/**
- * Represents the filesystem configuration of the lambda function
- */
-export interface FilesystemConfig {
-  /**
-   * The resource ARN of the filesystem target
-   */
-  readonly arn: string;
-
-  /**
-   * The mount path in the lambda runtime environment
-   */
-  readonly mountPath: string;
-}
-
-/**
- * Represents the mount target of the Amazon EFS access point
- * @param accessPoint the Amazon EFS access point
- */
-export class EfsAccessPointTarget implements IFilesystemTarget {
-  constructor(readonly accessPoint: efs.IAccessPoint) {
+  public static fromEfsAccessPoint(ap: efs.AccessPoint, mountPath: string): FileSystem {
+    return new FileSystem({
+      LocalMountPath: mountPath,
+      Arn: ap.accessPointArn,
+    });
   }
-  public get targetArn(): string {
-    return this.accessPoint.accessPointArn;
-  }
+  protected constructor(public readonly config: any) { }
 }

@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct, FileSystem, IResource, Resource, Stack } from '@aws-cdk/core';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 
@@ -139,6 +139,11 @@ export class AccessPoint extends Resource implements IAccessPoint {
    */
   public readonly accessPointId: string;
 
+  /**
+   * The filesystem of the access point
+   */
+  public readonly filesystem: FileSystem;
+
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
 
@@ -165,5 +170,6 @@ export class AccessPoint extends Resource implements IAccessPoint {
       resource: 'access-point',
       resourceName: this.accessPointId,
     });
+    this.filesystem = props.fileSystem;
   }
 }
