@@ -111,6 +111,7 @@ export class ApiStack extends Stack {
         type: AttributeType.STRING,
       },
     });
+    // If your table is already created you can also use use import table and use it as data source.
     const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
     customerDS.createResolver({
       typeName: 'Query',

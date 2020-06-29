@@ -71,9 +71,11 @@ const orderTable = new Table(stack, 'OrderTable', {
   },
   removalPolicy: RemovalPolicy.DESTROY,
 });
+const paymentTable =  Table.fromTableName(stack, 'PaymentTable', 'PaymentTable');
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
+const paymentDS = api.addDynamoDbDataSource('Payment', 'The payment data source', paymentTable);
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -146,6 +148,19 @@ orderDS.createResolver({
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+
+paymentDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getPayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+paymentDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'savePayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('payment')),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
 const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');

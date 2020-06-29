@@ -1,5 +1,5 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
-import { Table } from '@aws-cdk/aws-dynamodb';
+import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
   IGrantable,
   IPrincipal,
@@ -393,7 +393,7 @@ export class GraphQLApi extends Construct {
   public addDynamoDbDataSource(
     name: string,
     description: string,
-    table: Table,
+    table: ITable,
   ): DynamoDbDataSource {
     return new DynamoDbDataSource(this, `${name}DS`, {
       api: this,
@@ -730,7 +730,7 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
    * The DynamoDB table backing this data source
    * [disable-awslint:ref-via-interface]
    */
-  readonly table: Table;
+  readonly table: ITable;
   /**
    * Specify whether this DS is read only or has read and write permissions to the DynamoDB table
    *
