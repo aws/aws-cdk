@@ -15,7 +15,7 @@ class EksClusterStack extends TestStack {
     });
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc',  { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
@@ -53,6 +53,12 @@ class EksClusterStack extends TestStack {
         kubeletExtraArgs: '--node-labels foo=bar,goo=far',
         awsApiRetryAttempts: 5,
       },
+    });
+
+    // inference instances
+    cluster.addCapacity('InferenceInstances', {
+      instanceType: new ec2.InstanceType('inf1.2xlarge'),
+      minCapacity: 1,
     });
 
     // add a extra nodegroup
