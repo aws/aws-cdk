@@ -10,10 +10,7 @@ export function readJsonSync(filePath: string): any {
 
 export function readYamlSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);
-
-  return yaml.parse(fileContents.toString(), {
-    customTags : shortForms,
-  });
+  return parseYamlStrWithCfnTags(fileContents.toString());
 }
 
 function makeTagForCfnIntrinsic(

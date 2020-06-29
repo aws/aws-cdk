@@ -48,7 +48,7 @@ It can be included in a CDK application with the following code:
 import * as cfn_inc from '@aws-cdk/cloudformation-include';
 
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
-  templateFile: 'my-template.json', // or 'my-template.yaml' if your file is in that format
+  templateFile: 'my-template.json',
 });
 ```
 

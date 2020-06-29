@@ -22,7 +22,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with the short form !Base64', () => {
+  test('can ingest a template with the short form Base64 function', () => {
     includeTestTemplate(stack, 'short-form-base64.yaml');
 
     expect(stack).toMatchTemplate({
@@ -39,7 +39,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !Cidr', () => {
+  test('can ingest a template with the short form !Cidr function', () => {
     includeTestTemplate(stack, 'short-form-cidr.yaml');
 
     expect(stack).toMatchTemplate({
@@ -72,7 +72,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !FindInMap, in both hyphen and bracket notation', () => {
+  test('can ingest a template with the short form !FindInMap function, in both hyphen and bracket notation', () => {
     includeTestTemplate(stack, 'short-form-find-in-map.yaml');
 
     expect(stack).toMatchTemplate({
@@ -113,7 +113,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !GetAtt', () => {
+  test('can ingest a template with the short form !GetAtt function', () => {
     includeTestTemplate(stack, 'short-form-get-att.yaml');
 
     expect(stack).toMatchTemplate({
@@ -155,7 +155,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !Select, !GetAZs, and !Ref', () => {
+  test('can ingest a template with short form Select, GetAZs, and Ref functions', () => {
     includeTestTemplate(stack, 'short-form-select.yaml');
 
     expect(stack).toMatchTemplate({
@@ -188,7 +188,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !ImportValue', () => {
+  test('can ingest a template with the short form !ImportValue function', () => {
     includeTestTemplate(stack, 'short-form-import-value.yaml');
 
     expect(stack).toMatchTemplate({
@@ -205,7 +205,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !Join', () => {
+  test('can ingest a template with the short form !Join function', () => {
     includeTestTemplate(stack, 'short-form-join.yaml');
 
     expect(stack).toMatchTemplate({
@@ -225,7 +225,7 @@ describe('CDK Include', () => {
     });
   });
 
-  test('can ingest a template with the short form !Split that uses both brackets and hyphens', () => {
+  test('can ingest a template with the short form !Split function that uses both brackets and hyphens', () => {
     includeTestTemplate(stack, 'short-form-split.yaml');
 
     expect(stack).toMatchTemplate({
@@ -255,7 +255,7 @@ describe('CDK Include', () => {
   });
 
   // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
-  test('can ingest a template with the short form !Transform', () => {
+  test('can ingest a template with the short form !Transform function', () => {
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
     expect(stack).toMatchTemplate({

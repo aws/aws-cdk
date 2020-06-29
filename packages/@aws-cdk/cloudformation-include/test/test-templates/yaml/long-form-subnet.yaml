@@ -1,7 +1,7 @@
 Conditions:
   AlwaysTrueCond:
-    !Not
-    - !Equals
+    Fn::Not:
+    - Fn::Equals:
       - Ref: AWS::Region
       - completely-made-up-region
 Resources:
@@ -30,9 +30,11 @@ Resources:
       VpcId:
         Fn::If:
         - AlwaysTrueCond
-        - Fn::Split:
-          - ","
-          - Fn::ImportValue: ImportedVpcId
+        - Fn::Select:
+          - 0
+          - Fn::Split:
+            - ","
+            - Fn::ImportValue: ImportedVpcId
         - Fn::Select:
           - 0
           - Fn::GetAZs: eu-west-2
