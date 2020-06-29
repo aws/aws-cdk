@@ -138,7 +138,7 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 
 
 
-### Custom Domain Name
+### Custom Domain
 
 Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Custom domains name are associated to API stages.
 
