@@ -174,7 +174,7 @@ api.addStage('beta', {
     domainName: dn,
     mappingKey: 'beta',
   },
-} );
+});
 ```
 
 The same domain name can be associated with stages across different `HttpApi` as so -
