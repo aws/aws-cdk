@@ -16,17 +16,7 @@ test('create a vault', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Backup::BackupVault', {
-    BackupVaultName: {
-      'Fn::Join': [
-        '',
-        [
-          'Vault',
-          {
-            Ref: 'AWS::StackName',
-          },
-        ],
-      ],
-    },
+    BackupVaultName: 'Vault',
   });
 });
 

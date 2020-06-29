@@ -82,7 +82,7 @@ export = {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', timeout: Duration.minutes(10) });
 
       // THEN
-      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Timeout: 600 }));
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Timeout: '600s' }));
       test.done();
     },
   },
