@@ -72,7 +72,7 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // deploy the Kkbernetes dashboard through a helm chart
+    // deploy the Kubernetes dashboard through a helm chart
     cluster.addChart('dashboard', {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
