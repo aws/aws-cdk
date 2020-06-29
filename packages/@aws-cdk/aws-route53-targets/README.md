@@ -13,7 +13,7 @@ This library contains Route53 Alias Record targets for:
   new route53.ARecord(this, 'AliasRecord', {
     zone,
     target: route53.RecordTarget.fromAlias(new alias.ApiGateway(restApi)),
-    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
+    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),
   });
   ```
 * CloudFront distributions
@@ -28,7 +28,7 @@ This library contains Route53 Alias Record targets for:
   new route53.ARecord(this, 'AliasRecord', {
     zone,
     target: route53.RecordTarget.fromAlias(new alias.LoadBalancerTarget(elbv2)),
-    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
+    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),
   });
   ```
 * Classic load balancers
@@ -36,9 +36,14 @@ This library contains Route53 Alias Record targets for:
   new route53.ARecord(this, 'AliasRecord', {
     zone,
     target: route53.RecordTarget.fromAlias(new alias.ClassicLoadBalancerTarget(elb)),
-    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomainName(domainName)),
+    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),
   });
   ```
+
+**Important:** Based on [AWS documentation](https://aws.amazon.com/de/premiumsupport/knowledge-center/alias-resource-record-set-route53-cli/), all alias record in Route 53 that points to a Elastic Load Balancer will always include *dualstack* for the DNSName to resolve IPv4/IPv6 addresses (without *dualstack* IPv6 will not resolve).
+
+For example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us-west-2.elb.amazonaws.com`, CDK will create alias target in Route 53 will be `dualstack.ALB-xxxxxxx.us-west-2.elb.amazonaws.com`.
+
 * InterfaceVpcEndpoints
 
 **Important:** Based on the CFN docs for VPCEndpoints - [see here](attrDnsEntries) - the attributes returned for DnsEntries in CloudFormation is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.

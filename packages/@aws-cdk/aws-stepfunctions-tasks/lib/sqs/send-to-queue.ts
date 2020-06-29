@@ -77,7 +77,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
     if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+        throw new Error('Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)');
       }
     }
   }

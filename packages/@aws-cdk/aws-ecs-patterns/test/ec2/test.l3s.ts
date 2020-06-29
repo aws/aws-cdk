@@ -436,7 +436,7 @@ export = {
       Type: 'A',
       AliasTarget: {
         HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
-        DNSName: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] },
+        DNSName: { 'Fn::Join': ['', [ 'dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] } ] ] },
       },
     }));
 
@@ -500,7 +500,7 @@ export = {
       Type: 'A',
       AliasTarget: {
         HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
-        DNSName: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] },
+        DNSName: { 'Fn::Join': [ '', [ 'dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] } ] ] },
       },
     }));
 
