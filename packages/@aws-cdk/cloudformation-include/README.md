@@ -17,7 +17,7 @@ It can be thought of as an extension of the capabilities of the
 
 ## Basic usage
 
-Assume we have a file `my-template.json`, that contains the following CloudFormation template:
+Assume we have a file with an existing template. It could be in JSON format, in a file `my-template.json`:
 
 ```json
 {
@@ -32,6 +32,16 @@ Assume we have a file `my-template.json`, that contains the following CloudForma
 }
 ```
 
+Or it could by in YAML format, in a file `my-template.yaml`:
+
+```yaml
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: some-bucket-name
+```
+
 It can be included in a CDK application with the following code:
 
 ```typescript
@@ -39,6 +49,14 @@ import * as cfn_inc from '@aws-cdk/cloudformation-include';
 
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
   templateFile: 'my-template.json',
+});
+```
+
+Or, if our template is YAML, we can use
+
+```typescript
+const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
+  templateFile: 'my-template.yaml',
 });
 ```
 
