@@ -266,7 +266,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     this.taskPolicies = this.makePolicyStatements();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
