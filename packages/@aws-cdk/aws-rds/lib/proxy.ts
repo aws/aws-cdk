@@ -7,24 +7,6 @@ import { IDatabaseInstance } from './instance';
 import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
- * The kinds of databases that the proxy can connect to.
- * This value determines which database network protocol the proxy recognizes when it interprets network traffic to
- * and from the database.
- * The engine family applies to MySQL and PostgreSQL for both RDS and Aurora.
- */
-export enum ProxyEngineFamily {
-  /**
-   * MYSQL
-   */
-  MYSQL = 'MYSQL',
-
-  /**
-   * POSTGRESQL
-   */
-  POSTGRESQL = 'POSTGRESQL',
-}
-
-/**
  * SessionPinningFilter
  *
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html#rds-proxy-pinning
@@ -64,10 +46,8 @@ export class ProxyTarget {
    *
    * @param instance RDS database instance
    */
-  public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
-    const _instance = instance.node.defaultChild as CfnDBInstance;
-    const engine = ProxyTarget.fromEngine(_instance.engine!);
-    return new ProxyTarget(engine, [instance.instanceIdentifier]);
+  public static atInstance(instance: IDatabaseInstance): ProxyTarget {
+    return new ProxyTarget(instance);
   }
 
   /**
@@ -75,50 +55,68 @@ export class ProxyTarget {
    *
    * @param cluster RDS database cluster
    */
-  public static fromCluster(cluster: IDatabaseCluster): ProxyTarget {
-    const _cluster = cluster.node.defaultChild as CfnDBCluster;
-    const engine = ProxyTarget.fromEngine(_cluster.engine);
-    return new ProxyTarget(engine, cluster.instanceIdentifiers, [cluster.clusterIdentifier]);
+  public static atCluster(cluster: IDatabaseCluster): ProxyTarget {
+    return new ProxyTarget(undefined, cluster);
   }
 
+  private constructor(private readonly dbInstance?: IDatabaseInstance, private readonly dbCluster?: IDatabaseCluster) {}
+
   /**
-   * @deprecated - will be removed after https://github.com/aws/aws-cdk/pull/8686
+   * Bind this target to the specified database proxy.
    */
-  private static fromEngine(engine: string): ProxyEngineFamily {
+  public bind(_: DatabaseProxy): ProxyTargetConfig {
+    let engine: string | undefined;
+    if (this.dbCluster && this.dbInstance) {
+      throw new Error('Proxy cannot target both database cluster and database instance.');
+    } else if (this.dbCluster) {
+      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
+    } else if (this.dbInstance) {
+      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
+    }
+
+    let engineFamily;
     switch (engine) {
       case 'aurora':
       case 'aurora-mysql':
       case 'mysql':
-        return ProxyEngineFamily.MYSQL;
+        engineFamily = 'MYSQL';
+        break;
       case 'aurora-postgresql':
       case 'postgres':
-        return ProxyEngineFamily.POSTGRESQL;
+        engineFamily = 'POSTGRESQL';
+        break;
       default:
         throw new Error(`Unsupported engine type - ${engine}`);
     }
+
+    return {
+      engineFamily,
+      dbClusters: this.dbCluster ? [ this.dbCluster ] : undefined,
+      dbInstances: this.dbInstance ? [ this.dbInstance ] : undefined,
+    };
   }
+}
 
-  private constructor(
-    /**
-     * The kinds of databases that the proxy can connect to.
-     * This value determines which database network protocol the proxy recognizes when it interprets network traffic to
-     * and from the database.
-     * The engine family applies to MySQL and PostgreSQL for both RDS and Aurora.
-     */
-    public readonly engineFamily: ProxyEngineFamily,
-
-    /**
-     * One or more DB instance identifiers.
-     */
-    public readonly dbInstanceIdentifiers: string[],
-
-    /**
-     * One or more DB cluster identifiers.
-     *
-     * @default undefined
-     */
-    public readonly dbClusterIdentifiers?: string[],
-  ) {}
+/**
+ * The result of binding a `ProxyTarget` to a `DatabaseProxy`.
+ */
+export interface ProxyTargetConfig {
+  /**
+   * The engine family of the database instance or cluster this proxy connects with.
+   */
+  readonly engineFamily: string;
+  /**
+   * The database instances to which this proxy connects.
+   * Either this or `dbClusters` will be set and the other `undefined`.
+   * @default - `undefined` if `dbClusters` is set.
+   */
+  readonly dbInstances?: IDatabaseInstance[];
+  /**
+   * The database clusters to which this proxy connects.
+   * Either this or `dbInstances` will be set and the other `undefined`.
+   * @default - `undefined` if `dbInstances` is set.
+   */
+  readonly dbClusters?: IDatabaseCluster[];
 }
 
 /**
@@ -385,6 +383,8 @@ export class DatabaseProxy extends cdk.Resource
 
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
 
+    const bindResult = props.proxyTarget.bind(this);
+
     this.resource = new CfnDBProxy(this, 'Resource', {
       auth: [
         {
@@ -395,7 +395,7 @@ export class DatabaseProxy extends cdk.Resource
       ],
       dbProxyName: this.physicalName,
       debugLogging: props.debugLogging,
-      engineFamily: props.proxyTarget.engineFamily,
+      engineFamily: bindResult.engineFamily,
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
       requireTls: props.requireTLS ?? true,
       roleArn: role.roleArn,
@@ -407,11 +407,19 @@ export class DatabaseProxy extends cdk.Resource
     this.dbProxyArn = this.resource.attrDbProxyArn;
     this.endpoint = this.resource.attrEndpoint;
 
-    const { dbInstanceIdentifiers, dbClusterIdentifiers } = props.proxyTarget;
+    let dbInstanceIdentifiers: string[] | undefined;
+    if (bindResult.dbClusters) {
+      // support for only instances of a single cluster
+      dbInstanceIdentifiers = bindResult.dbClusters[0].instanceIdentifiers;
+    } else if (bindResult.dbInstances) {
+      // support for only single instance
+      dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+    }
+
     new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
-      dbClusterIdentifiers,
+      dbClusterIdentifiers: bindResult.dbClusters?.map((c) => c.clusterIdentifier),
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
   }

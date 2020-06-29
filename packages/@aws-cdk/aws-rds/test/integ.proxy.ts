@@ -18,7 +18,7 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   borrowTimeout: cdk.Duration.seconds(30),
   maxConnectionsPercent: 50,
   secret: dbInstance.secret!,
-  proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
+  proxyTarget: rds.ProxyTarget.atInstance(dbInstance),
   vpc,
 });
 

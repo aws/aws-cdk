@@ -245,7 +245,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
    */
   public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
     return new DatabaseProxy(this, id, {
-      proxyTarget: ProxyTarget.fromCluster(this),
+      proxyTarget: ProxyTarget.atCluster(this),
       ...options,
     });
   }
