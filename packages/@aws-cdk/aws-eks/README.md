@@ -369,7 +369,7 @@ service.node.addDependency(namespace); // will apply `my-namespace` before `my-s
 ```
 
 NOTE: when a `KuberentesResource` includes multiple resources (either directly
-or through `cluster.addResource`) (e.g. `cluster.addResource('foo', r1, r2,
+or through `cluster.addResource()`) (e.g. `cluster.addResource('foo', r1, r2,
 r3,...))`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
