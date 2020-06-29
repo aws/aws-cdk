@@ -53,7 +53,7 @@ export function nodeMajorVersion(): number {
 /**
  * Finds the closest path containg a path
  */
-function findClosestPathContaining(p: string): string | undefined {
+export function findClosestPathContaining(p: string): string | undefined {
   for (const nodeModulesPath of module.paths) {
     if (fs.existsSync(path.join(path.dirname(nodeModulesPath), p))) {
       return path.dirname(nodeModulesPath);
@@ -61,18 +61,4 @@ function findClosestPathContaining(p: string): string | undefined {
   }
 
   return undefined;
-}
-
-/**
- * Finds closest package.json path
- */
-export function findPkgPath(): string | undefined {
-  return findClosestPathContaining('package.json');
-}
-
-/**
- * Finds closest .git/
- */
-export function findGitPath(): string | undefined {
-  return findClosestPathContaining(`.git${path.sep}`);
 }
