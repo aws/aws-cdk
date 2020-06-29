@@ -18,6 +18,9 @@
 # to run the command only against the current module and its dependencies:
 #     foreach.sh --up COMMAND
 #
+# to run the command only against the current module and its consumers:
+#     foreach.sh --down COMMAND
+#
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
@@ -61,31 +64,24 @@ if [[ "${1:-}" == "--skip" ]]; then
     exit 0
 fi
 
-up=""
-up_desc=""
-if [[ "${1:-}" == "--up" ]]; then
+direction=""
+direction_desc=""
+if [[ "${1:-}" == "--up" || "${1:-}" == "--down" ]]; then
     if [ ! -f package.json ]; then
-      echo "--up can only be executed from within a module directory (looking for package.json)"
+      echo "--up or --down can only be executed from within a module directory (looking for package.json)"
       exit 1
     fi
 
     scope=$(node -p "require('./package.json').name")
-    up=" --scope ${scope} --include-dependencies"
-    up_desc="('${scope}' and its dependencies)"
-    shift
-fi
 
-down=""
-down_desc=""
-if [[ "${1:-}" == "--down" ]]; then
-    if [ ! -f package.json ]; then
-      echo "--down can only be executed from within a module directory (looking for package.json)"
-      exit 1
+    if [[ "${1:-}" == "--up" ]]; then
+      direction=" --scope ${scope} --include-dependencies"
+      direction_desc="('${scope}' and its dependencies)"
+    else # --down
+      direction=" --scope ${scope} --include-dependents"
+      direction_desc="('${scope}' and its consumers)"
     fi
 
-    scope=$(node -p "require('./package.json').name")
-    up=" --scope ${scope} --include-dependents"
-    up_desc="('${scope}' and its consumers)"
     shift
 fi
 
@@ -103,8 +99,8 @@ fi
 if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
-    success "starting new session ${up_desc}"
-    ${scriptdir}/../node_modules/.bin/lerna ls --all ${up} ${down} --toposort -p > ${statefile}
+    success "starting new session ${direction_desc}"
+    ${scriptdir}/../node_modules/.bin/lerna ls --all ${direction} --toposort -p > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"
