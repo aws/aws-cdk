@@ -105,6 +105,7 @@ resource by importing it by its name:
 const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
