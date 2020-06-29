@@ -99,6 +99,7 @@ describe('DomainName', () => {
       createDefaultStage: true,
       defaultDomainMapping: {
         domainName: dn,
+        mappingKey: '/',
       },
     });
 

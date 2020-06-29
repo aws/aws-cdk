@@ -159,6 +159,7 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
   // https://${dn.domainName} goes to prodApi $default stage
   defaultDomainMapping: {
     domainName: dn,
+    mappingKey: '/',
   },
 });
 ```
@@ -190,9 +191,9 @@ const apiDemo = new HttpApi(stack, 'DemoApi', {
 });
 ```
 
-The optional `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed
-to have one API mapping with empty `mappingKey`. In the sample above, the custom domain is associated with 3 API
-mapping resources across different APIs and Stages.
+The `mappingKey` determines the `path` of the URL with the custom domain. Each custom domain is only allowed
+to have one API mapping with the root(/) `mappingKey`. In the sample above, the custom domain is associated
+with 3 API mapping resources across different APIs and Stages.
 
 |        API     |     Stage   |   URL  |
 | :------------: | :---------: | :----: |

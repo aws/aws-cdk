@@ -45,11 +45,10 @@ export interface DefaultDomainMappingOptions {
   readonly domainName: IDomainName;
 
   /**
-   * The API mapping key
+   * The API mapping key. Specify '/' for the root path mapping.
    *
-   * @default - empty key
    */
-  readonly mappingKey?: string;
+  readonly mappingKey: string;
 
 }
 

@@ -186,6 +186,7 @@ export class HttpApi extends Resource implements IHttpApi {
           domainName: options.domainName,
           // use '$default' stage when we create a new API with defaultDomainMapping
           stage: this.defaultStage!,
+          apiMappingKey: '/',
         });
       }
     }

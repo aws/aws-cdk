@@ -26,6 +26,7 @@ const prodApi = new HttpApi(stack, 'HttpProxyProdApi', {
   // https://${dn.domainName} goes to prodApi $default stage
   defaultDomainMapping: {
     domainName: dn,
+    mappingKey: '/',
   },
 });
 
