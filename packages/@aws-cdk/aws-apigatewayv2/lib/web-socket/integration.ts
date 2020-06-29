@@ -1,13 +1,15 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Duration, Resource } from '@aws-cdk/core';
 
-import { IApi } from './api';
-import { CfnIntegration } from './apigatewayv2.generated';
-import { IntegrationResponse, IntegrationResponseOptions, KnownIntegrationResponseKey } from './integration-response';
+import { CfnIntegration } from '../apigatewayv2.generated';
+import { IIntegration } from '../common/integration';
+
+import { IWebSocketApi } from './api';
+import { WebSocketIntegrationResponse, WebSocketIntegrationResponseOptions } from './integration-response';
 
 /**
  * The type of the network connection to the integration endpoint.
  */
-export enum ConnectionType {
+export enum WebSocketConnectionType {
   /**
    * Internet connectivity through the public routable internet
    */
@@ -22,7 +24,7 @@ export enum ConnectionType {
 /**
  * The integration type of an integration.
  */
-export enum IntegrationType {
+export enum WebSocketIntegrationType {
   /**
    * Integration of the route or method request with an AWS service action, including the Lambda function-invoking action.
    * With the Lambda function-invoking action, this is referred to as the Lambda custom integration.
@@ -60,7 +62,7 @@ export enum IntegrationType {
  * If this property is not defined, the response payload will be passed through from the integration response
  * to the route response or method response without modification.
  */
-export enum ContentHandlingStrategy {
+export enum WebSocketContentHandlingStrategy {
   /**
    * Converts a response payload from a Base64-encoded string to the corresponding binary blob
    */
@@ -77,7 +79,7 @@ export enum ContentHandlingStrategy {
  * Content-Type header in the request, and the available mapping templates
  * specified as the requestTemplates property on the Integration resource.
  */
-export enum PassthroughBehavior {
+export enum WebSocketPassthroughBehavior {
   /**
    * Passes the request body for unmapped content types through to the
    * integration backend without transformation
@@ -92,69 +94,39 @@ export enum PassthroughBehavior {
   /**
    * Rejects unmapped content types with an HTTP 415 Unsupported Media Type response
    */
-  NEVER = 'NEVER'
+  NEVER = 'NEVER',
 }
 
 /**
  * Defines a set of common template patterns known to the system
  */
-export enum KnownTemplateKey {
+export enum WebSocketKnownTemplateKey {
   /**
    * Default template, when no other pattern matches
    */
-  DEFAULT = '$default'
+  DEFAULT = '$default',
 }
 
 /**
- * Specifies the integration's HTTP method type (only GET is supported for WebSocket)
+ * Payload format version for lambda proxy integration
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
  */
-export enum HttpApiIntegrationMethod {
+export enum WebSocketPayloadFormatVersion {
   /**
-   * All HTTP Methods are supported
+   * Version 1.0
    */
-  ANY = 'ANY',
-
+  VERSION_1_0 = '1.0',
   /**
-   * GET HTTP Method
+   * Version 2.0
    */
-  GET = 'GET',
-
-  /**
-   * POST HTTP Method
-   */
-  POST = 'POST',
-
-  /**
-   * PUT HTTP Method
-   */
-  PUT = 'PUT',
-
-  /**
-   * DELETE HTTP Method
-   */
-  DELETE = 'DELETE',
-
-  /**
-   * OPTIONS HTTP Method
-   */
-  OPTIONS = 'OPTIONS',
-
-  /**
-   * HEAD HTTP Method
-   */
-  HEAD = 'HEAD',
-
-  /**
-   * PATCH HTTP Method
-   */
-  PATCH = 'PATCH'
+  VERSION_2_0 = '2.0',
 }
 
 /**
  * The TLS configuration for a private integration. If you specify a TLS configuration,
  * private integration traffic uses the HTTPS protocol.
  */
-export interface TlsConfig {
+export interface WebSocketTlsConfig {
   /**
    * If you specify a server name, API Gateway uses it to verify the hostname on
    * the integration's certificate.
@@ -166,28 +138,17 @@ export interface TlsConfig {
 }
 
 /**
- * Defines the contract for an Api Gateway V2 Deployment.
- */
-export interface IIntegration extends IResource {
-  /**
-   * The ID of this API Gateway Integration.
-   * @attribute
-   */
-  readonly integrationId: string;
-}
-
-/**
  * Defines the properties required for defining an Api Gateway V2 Integration.
  *
  * This interface is used by the helper methods in `Api` and the sub-classes
  */
-export interface BaseIntegrationOptions {
+export interface WebSocketIntegrationOptions {
   /**
    * The type of the network connection to the integration endpoint.
    *
    * @default 'INTERNET'
    */
-  readonly connectionType?: ConnectionType;
+  readonly connectionType?: WebSocketConnectionType;
 
   /**
    * Specifies the credentials required for the integration, if any.
@@ -214,20 +175,13 @@ export interface BaseIntegrationOptions {
    * @default - timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
    */
   readonly timeout?: Duration;
-}
 
-/**
- * Defines the properties required for defining an Api Gateway V2 Integration.
- *
- * This interface is used by the helper methods in `Api` and the sub-classes
- */
-export interface IntegrationOptions extends BaseIntegrationOptions {
   /**
    * Specifies how to handle response payload content type conversions.
    *
    * @default - Pass through unmodified
    */
-  readonly contentHandlingStrategy?: string;
+  readonly contentHandlingStrategy?: WebSocketContentHandlingStrategy;
 
   /**
    * Specifies the pass-through behavior for incoming requests based on the `Content-Type` header in the request,
@@ -235,7 +189,7 @@ export interface IntegrationOptions extends BaseIntegrationOptions {
    *
    * @default - the response payload will be passed through from the integration response to the route response or method response unmodified
    */
-  readonly passthroughBehavior?: string;
+  readonly passthroughBehavior?: WebSocketPassthroughBehavior;
 
   /**
    * A key-value map specifying request parameters that are passed from the method request to the backend.
@@ -273,11 +227,11 @@ export interface IntegrationOptions extends BaseIntegrationOptions {
   // TODO: readonly connectionId?: string;
 
   /**
-   * Specifies the format of the payload sent to an integration..
+   * Specifies the format of the payload sent to an integration.
    *
    * @default '1.0'
    */
-  readonly payloadFormatVersion?: string;
+  readonly payloadFormatVersion?: WebSocketPayloadFormatVersion;
 
   /**
    * The TlsConfig property specifies the TLS configuration for a private integration.
@@ -285,108 +239,22 @@ export interface IntegrationOptions extends BaseIntegrationOptions {
    *
    * @default - no private TLS configuration
    */
-  readonly tlsConfig?: TlsConfig;
-
-  /**
-   * Specifies the integration's HTTP method type.
-   *
-   * @default - 'ANY'
-   */
-  readonly integrationMethod?: string;
-}
-
-/**
- * Defines the properties required for defining an Api Gateway V2 Integration.
- *
- * This interface is used by the helper methods in `Api` and the sub-classes
- */
-export interface WebSocketApiIntegrationOptions extends BaseIntegrationOptions {
-  /**
-   * Specifies how to handle response payload content type conversions.
-   *
-   * @default - Pass through unmodified
-   */
-  readonly contentHandlingStrategy?: ContentHandlingStrategy | string;
-
-  /**
-   * Specifies the pass-through behavior for incoming requests based on the `Content-Type` header in the request,
-   * and the available mapping templates specified as the `requestTemplates` property on the `Integration` resource.
-   *
-   * @default - the response payload will be passed through from the integration response to the route response or method response unmodified
-   */
-  readonly passthroughBehavior?: PassthroughBehavior | string;
-
-  /**
-   * A key-value map specifying request parameters that are passed from the method request to the backend.
-   * The key is an integration request parameter name and the associated value is a method request parameter value or static value
-   * that must be enclosed within single quotes and pre-encoded as required by the backend.
-   *
-   * The method request parameter value must match the pattern of `method.request.{location}.{name}`, where `{location}` is
-   * `querystring`, `path`, or `header`; and `{name}` must be a valid and unique method request parameter name.
-   *
-   * @default - no parameter used
-   */
-  readonly requestParameters?: { [key: string]: string };
-
-  /**
-   * Represents a map of Velocity templates that are applied on the request payload based on the value of
-   * the `Content-Type` header sent by the client. The content type value is the key in this map, and the
-   * template is the value.
-   *
-   * @default - no templates used
-   */
-  readonly requestTemplates?: { [key: string]: string };
-
-  /**
-   * The template selection expression for the integration.
-   *
-   * @default - no template selected
-   */
-  readonly templateSelectionExpression?: KnownTemplateKey | string;
-}
-
-/**
- * Defines the properties required for defining an Api Gateway V2 Integration.
- *
- * This interface is used by the helper methods in `Api` and the sub-classes
- */
-export interface HttpApiIntegrationOptions extends BaseIntegrationOptions {
-  /**
-   * The ID of the VPC link for a private integration.
-   *
-   * @default - don't use a VPC link
-   */
-  // TODO: readonly connectionId?: string;
-
-  /**
-   * Specifies the format of the payload sent to an integration..
-   *
-   * @default '1.0'
-   */
-  readonly payloadFormatVersion?: string;
-
-  /**
-   * The TlsConfig property specifies the TLS configuration for a private integration.
-   * If you specify a TLS configuration, private integration traffic uses the HTTPS protocol.
-   *
-   * @default - no private TLS configuration
-   */
-  readonly tlsConfig?: TlsConfig;
+  readonly tlsConfig?: WebSocketTlsConfig;
 }
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Integration.
  */
-export interface IntegrationProps extends IntegrationOptions {
+export interface WebSocketIntegrationProps extends WebSocketIntegrationOptions {
   /**
    * Defines the api for this integration.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * The integration type of an integration.
    */
-  readonly type: IntegrationType | string;
+  readonly type: WebSocketIntegrationType;
 
   /**
    * For a Lambda integration, specify the URI of a Lambda function.
@@ -408,8 +276,10 @@ export interface IntegrationProps extends IntegrationOptions {
  * An integration for an API in Amazon API Gateway v2.
  *
  * Use `addResponse` and `addRoute` to configure integration.
+ *
+ * @resource AWS::ApiGatewayV2::Integration
  */
-export class Integration extends Resource implements IIntegration {
+export class WebSocketIntegration extends Resource implements IIntegration {
   /**
    * Creates a new imported API Integration
    *
@@ -430,10 +300,10 @@ export class Integration extends Resource implements IIntegration {
    */
   public readonly integrationId: string;
 
-  protected api: IApi;
+  protected api: IWebSocketApi;
   protected resource: CfnIntegration;
 
-  constructor(scope: Construct, id: string, props: IntegrationProps) {
+  constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
     this.api = props.api;
     this.resource = new CfnIntegration(this, 'Resource', {
@@ -444,7 +314,6 @@ export class Integration extends Resource implements IIntegration {
       contentHandlingStrategy: props.contentHandlingStrategy,
       credentialsArn: props.credentialsArn,
       description: props.description,
-      integrationMethod: props.integrationMethod,
       passthroughBehavior: props.passthroughBehavior,
       payloadFormatVersion: props.payloadFormatVersion,
       requestParameters: props.requestParameters,
@@ -452,7 +321,7 @@ export class Integration extends Resource implements IIntegration {
       templateSelectionExpression: props.templateSelectionExpression,
       tlsConfig: props.tlsConfig,
       timeoutInMillis: (props.timeout ? props.timeout.toMilliseconds() : undefined),
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
     });
 
     this.integrationId = this.resource.ref;
@@ -464,8 +333,8 @@ export class Integration extends Resource implements IIntegration {
    * @param key the key (predefined or not) that will select this response
    * @param props the properties for this response
    */
-  public addResponse(key: KnownIntegrationResponseKey | string, props?: IntegrationResponseOptions): IntegrationResponse {
-    return new IntegrationResponse(this, `Response.${key}`, {
+  public addResponse(key: string, props?: WebSocketIntegrationResponseOptions): WebSocketIntegrationResponse {
+    return new WebSocketIntegrationResponse(this, `Response.${key}`, {
       ...props,
       api: this.api,
       integration: this,

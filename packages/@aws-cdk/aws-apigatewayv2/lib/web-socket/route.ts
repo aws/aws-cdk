@@ -1,34 +1,17 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 
-import { IApi } from './api';
-import { CfnRoute } from './apigatewayv2.generated';
-import { IAuthorizer } from './authorizer';
-import { IIntegration } from './integration';
-import { IModel, KnownModelKey } from './model';
-import { KnownRouteResponseKey, RouteResponse, RouteResponseOptions } from './route-response';
-
-/**
- * Available authorization providers for ApiGateway V2 HTTP APIs
- */
-export enum HttpApiAuthorizationType {
-  /**
-   * Open access (Web Socket, HTTP APIs).
-   */
-  NONE = 'NONE',
-  /**
-   * Use JSON Web Tokens (HTTP APIs).
-   */
-  JWT = 'JWT'
-}
+import { CfnRoute } from '../apigatewayv2.generated';
+import { IAuthorizer } from '../common/authorizer';
+import { IIntegration } from '../common/integration';
+import { IRoute } from '../common/route';
+import { IWebSocketApi } from './api';
+import { IWebSocketModel } from './model';
+import { WebSocketRouteResponse, WebSocketRouteResponseOptions } from './route-response';
 
 /**
  * Available authorization providers for ApiGateway V2 APIs
  */
-export enum WebSocketApiAuthorizationType {
-  /**
-   * Open access (Web Socket, HTTP APIs).
-   */
-  NONE = 'NONE',
+export enum WebSocketAuthorizationType {
   /**
    * Use AWS IAM permissions (Web Socket APIs).
    */
@@ -46,7 +29,7 @@ export enum WebSocketApiAuthorizationType {
 /**
  * Defines a set of common route keys known to the system
  */
-export enum KnownRouteKey {
+export enum WebSocketKnownRouteKey {
   /**
    * Default route, when no other pattern matches
    */
@@ -64,52 +47,11 @@ export enum KnownRouteKey {
 /**
  * Known expressions for selecting a route in an API
  */
-export enum KnownRouteSelectionExpression {
+export enum WebSocketKnownRouteSelectionExpression {
   /**
    * Selects the route key from the request context
-   *
-   * Supported only for WebSocket APIs.
    */
   CONTEXT_ROUTE_KEY = '${context.routeKey}',
-
-  /**
-   * A string starting with the method ans containing the request path
-   *
-   * Only supported value for HTTP APIs, if not provided, will be the default
-   */
-  METHOD_PATH = '${request.method} ${request.path}'
-}
-
-/**
- * Defines the attributes for an Api Gateway V2 Route.
- */
-export interface RouteAttributes {
-  /**
-   * The ID of this API Gateway Route.
-   */
-  readonly routeId: string;
-
-  /**
-   * The key of this API Gateway Route.
-   */
-  readonly key: string;
-}
-
-/**
- * Defines the contract for an Api Gateway V2 Route.
- */
-export interface IRoute extends IResource {
-  /**
-   * The ID of this API Gateway Route.
-   * @attribute
-   */
-  readonly routeId: string;
-
-  /**
-   * The key of this API Gateway Route.
-   * @attribute
-   */
-  readonly key: KnownRouteKey | string;
 }
 
 /**
@@ -117,7 +59,7 @@ export interface IRoute extends IResource {
  *
  * This interface is used by the helper methods in `Api`
  */
-export interface BaseRouteOptions {
+export interface WebSocketRouteOptions {
   /**
    * The authorization scopes supported by this route.
    *
@@ -140,14 +82,7 @@ export interface BaseRouteOptions {
    * @default - no operation name
    */
   readonly operationName?: string;
-}
 
-/**
- * Defines the properties required for defining an Api Gateway V2 Route.
- *
- * This interface is used by the helper methods in `Api`
- */
-export interface RouteOptions extends BaseRouteOptions {
   /**
    * Specifies whether an API key is required for the route.
    *
@@ -160,21 +95,21 @@ export interface RouteOptions extends BaseRouteOptions {
    *
    * @default 'NONE'
    */
-  readonly authorizationType?: HttpApiAuthorizationType | WebSocketApiAuthorizationType;
+  readonly authorizationType?: WebSocketAuthorizationType;
 
   /**
    * The model selection expression for the route.
    *
    * @default - no selection key
    */
-  readonly modelSelectionExpression?: KnownModelKey | string;
+  readonly modelSelectionExpression?: string;
 
   /**
    * The request models for the route.
    *
    * @default - no models (for example passthrough)
    */
-  readonly requestModels?: { [key: string]: IModel | string };
+  readonly requestModels?: { [key: string]: IWebSocketModel };
 
   /**
    * The request parameters for the route.
@@ -188,85 +123,22 @@ export interface RouteOptions extends BaseRouteOptions {
    *
    * @default - no selection expression
    */
-  readonly routeResponseSelectionExpression?: KnownRouteResponseKey | string;
-}
-
-/**
- * Defines the properties required for defining an Api Gateway V2 WebSocket Route.
- *
- * This interface is used by the helper methods in `Api`
- */
-export interface WebSocketApiRouteOptions extends BaseRouteOptions {
-  /**
-   * Specifies whether an API key is required for the route.
-   *
-   * @default false
-   */
-  readonly apiKeyRequired?: boolean;
-
-  /**
-   * The authorization type for the route.
-   *
-   * @default 'NONE'
-   */
-  readonly authorizationType?: WebSocketApiAuthorizationType;
-
-  /**
-   * The model selection expression for the route.
-   *
-   * @default - no selection key
-   */
-  readonly modelSelectionExpression?: KnownModelKey | string;
-
-  /**
-   * The request models for the route.
-   *
-   * @default - no models (for example passthrough)
-   */
-  readonly requestModels?: { [key: string]: IModel | string };
-
-  /**
-   * The request parameters for the route.
-   *
-   * @default - no parameters
-   */
-  readonly requestParameters?: { [key: string]: boolean };
-
-  /**
-   * The route response selection expression for the route.
-   *
-   * @default - no selection expression
-   */
-  readonly routeResponseSelectionExpression?: KnownRouteResponseKey | string;
-}
-
-/**
- * Defines the properties required for defining an Api Gateway V2 HTTP Api Route.
- *
- * This interface is used by the helper methods in `Api`
- */
-export interface HttpApiRouteOptions extends BaseRouteOptions {
-  /**
-   * The authorization type for the route.
-   *
-   * @default 'NONE'
-   */
-  readonly authorizationType?: HttpApiAuthorizationType;
+  readonly routeResponseSelectionExpression?: string;
 }
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Route.
  */
-export interface RouteProps extends RouteOptions {
+export interface WebSocketRouteProps extends WebSocketRouteOptions {
   /**
    * The route key for the route.
    */
-  readonly key: KnownRouteKey | string;
+  readonly key: string;
 
   /**
    * Defines the api for this route.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * Defines the integration for this route.
@@ -278,19 +150,20 @@ export interface RouteProps extends RouteOptions {
  * An route for an API in Amazon API Gateway v2.
  *
  * Use `addResponse` to configure routes.
+ *
+ * @resource AWS::ApiGatewayV2::Route
  */
-export class Route extends Resource implements IRoute {
+export class WebSocketRoute extends Resource implements IRoute {
   /**
    * Creates a new imported API Deployment
    *
    * @param scope scope of this imported resource
    * @param id identifier of the resource
-   * @param attrs Attributes of the Route
+   * @param routeId identifier of the CloudFormation route resource
    */
-  public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
+  public static fromRouteId(scope: Construct, id: string, routeId: string): IRoute {
     class Import extends Resource implements IRoute {
-      public readonly routeId = attrs.routeId;
-      public readonly key = attrs.key;
+      public readonly routeId = routeId;
     }
 
     return new Import(scope, id);
@@ -306,10 +179,10 @@ export class Route extends Resource implements IRoute {
    */
   public readonly key: string;
 
-  protected api: IApi;
+  protected api: IWebSocketApi;
   protected resource: CfnRoute;
 
-  constructor(scope: Construct, id: string, props: RouteProps) {
+  constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
     this.api = props.api;
     this.key = props.key;
@@ -324,7 +197,7 @@ export class Route extends Resource implements IRoute {
     }
 
     this.resource = new CfnRoute(this, 'Resource', {
-      apiId: this.api.apiId,
+      apiId: this.api.webSocketApiId,
       routeKey: props.key,
       target: `integrations/${props.integration.integrationId}`,
       requestModels,
@@ -346,8 +219,8 @@ export class Route extends Resource implements IRoute {
    * @param key the key (predefined or not) that will select this response
    * @param props the properties for this response
    */
-  public addResponse(key: KnownRouteResponseKey | string, props?: RouteResponseOptions): RouteResponse {
-    return new RouteResponse(this, `Response.${key}`, {
+  public addResponse(key: string, props?: WebSocketRouteResponseOptions): WebSocketRouteResponse {
+    return new WebSocketRouteResponse(this, `Response.${key}`, {
       ...props,
       route: this,
       api: this.api,

@@ -1,75 +1,16 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 
-import { IApi } from './api';
-import { CfnAuthorizer } from './apigatewayv2.generated';
+import { CfnAuthorizer } from '../apigatewayv2.generated';
+import { IAuthorizer } from '../common/authorizer';
 
-/**
- * The authorizer type
- */
-export enum AuthorizerType {
-  /**
-   * For WebSocket APIs, specify REQUEST for a Lambda function using incoming request parameters
-   */
-  REQUEST = 'REQUEST',
-
-  /**
-   * For HTTP APIs, specify JWT to use JSON Web Tokens
-   */
-  JWT = 'JWT'
-}
-
-/**
- * Specifies the configuration of a `JWT` authorizer.
- *
- * Required for the `JWT` authorizer type.
- *
- * Supported only for HTTP APIs.
- */
-export interface JwtConfiguration {
-  /**
-   * A list of the intended recipients of the `JWT`.
-   *
-   * A valid `JWT` must provide an `aud` that matches at least one entry in this list.
-   *
-   * See RFC 7519.
-   *
-   * Supported only for HTTP APIs
-   *
-   * @default - no specified audience
-   */
-  readonly audience?: string[];
-
-  /**
-   * The base domain of the identity provider that issues JSON Web Tokens.
-   *
-   * For example, an Amazon Cognito user pool has the following format: `https://cognito-idp.{region}.amazonaws.com/{userPoolId}`.
-   *
-   * Required for the `JWT` authorizer type.
-   *
-   * Supported only for HTTP APIs.
-   *
-   * @default - no issuer
-   */
-  readonly issuer?: string;
-}
-
-/**
- * Defines the contract for an Api Gateway V2 Authorizer.
- */
-export interface IAuthorizer extends IResource {
-  /**
-   * The ID of this API Gateway Api Mapping.
-   * @attribute
-   */
-  readonly authorizerId: string;
-}
+import { IWebSocketApi } from './api';
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Authorizer.
  *
  * This interface is used by the helper methods in `Api` and the sub-classes
  */
-export interface AuthorizerOptions {
+export interface WebSocketAuthorizerOptions {
   /**
    * Specifies the required credentials as an IAM role for API Gateway to invoke the authorizer.
    *
@@ -80,11 +21,6 @@ export interface AuthorizerOptions {
    * @default - no credentials
    */
   readonly authorizerCredentialsArn?: string;
-
-  /**
-   * The authorizer type.
-   */
-  readonly authorizerType: AuthorizerType;
 
   /**
    * The authorizer's Uniform Resource Identifier (URI).
@@ -116,17 +52,6 @@ export interface AuthorizerOptions {
   readonly identitySource?: string[];
 
   /**
-   * The JWTConfiguration property specifies the configuration of a JWT authorizer.
-   *
-   * Required for the JWT authorizer type.
-   *
-   * Supported only for HTTP APIs.
-   *
-   * @default - only required for HTTP APIs
-   */
-  readonly jwtConfiguration?: JwtConfiguration;
-
-  /**
    * The name of the authorizer.
    */
   readonly authorizerName: string;
@@ -135,11 +60,11 @@ export interface AuthorizerOptions {
 /**
  * Defines the properties required for defining an Api Gateway V2 Authorizer.
  */
-export interface AuthorizerProps extends AuthorizerOptions {
+export interface WebSocketAuthorizerProps extends WebSocketAuthorizerOptions {
   /**
    * Defines the api for this deployment.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 }
 
 /**
@@ -148,8 +73,10 @@ export interface AuthorizerProps extends AuthorizerOptions {
  * A custom domain name can have multiple API mappings, but the paths can't overlap.
  *
  * A custom domain can map only to APIs of the same protocol type.
+ *
+ * @resource AWS::ApiGatewayV2::Authorizer
  */
-export class Authorizer extends Resource implements IAuthorizer {
+export class WebSocketAuthorizer extends Resource implements IAuthorizer {
 
   /**
    * Creates a new imported API
@@ -173,19 +100,18 @@ export class Authorizer extends Resource implements IAuthorizer {
 
   protected resource: CfnAuthorizer;
 
-  constructor(scope: Construct, id: string, props: AuthorizerProps) {
+  constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
     super(scope, id);
 
     this.resource = new CfnAuthorizer(this, 'Resource', {
       identitySource: (props.identitySource ? props.identitySource : []),
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
       name: props.authorizerName,
-      authorizerType: props.authorizerType,
+      authorizerType: 'REQUEST',
       authorizerCredentialsArn: props.authorizerCredentialsArn,
       // TODO: authorizerResultTtlInSeconds: props.authorizerResultTtl.toSeconds(),
       authorizerUri: props.authorizerUri,
       // TODO: identityValidationExpression: props.identityValidationExpression
-      jwtConfiguration: props.jwtConfiguration,
     });
     this.authorizerId = this.resource.ref;
   }

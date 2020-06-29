@@ -1,12 +1,12 @@
 import { CfnResource, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { CfnDeployment } from '../apigatewayv2.generated';
 
-import { IApi } from './api';
-import { CfnDeployment } from './apigatewayv2.generated';
+import { IWebSocketApi } from './api';
 
 /**
  * Defines the contract for an Api Gateway V2 Deployment.
  */
-export interface IDeployment extends IResource {
+export interface IWebSocketDeployment extends IResource {
   /**
    * The ID of this API Gateway Deployment.
    * @attribute
@@ -17,11 +17,11 @@ export interface IDeployment extends IResource {
 /**
  * Defines the properties required for defining an Api Gateway V2 Deployment.
  */
-export interface DeploymentProps {
+export interface WebSocketDeploymentProps {
   /**
    * Defines the api for this deployment.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * A description for this Deployment.
@@ -67,8 +67,10 @@ export interface DeploymentProps {
  * resources are created, which means that it will represent a "half-baked"
  * model. Use the `registerDependency(dep)` method to circumvent that. This is done
  * automatically for the `api.latestDeployment` deployment.
+ *
+ * @resource AWS::ApiGatewayV2::Deployment
  */
-export class Deployment extends Resource implements IDeployment {
+export class WebSocketDeployment extends Resource implements IWebSocketDeployment {
   /**
    * Creates a new imported API Deployment
    *
@@ -76,8 +78,8 @@ export class Deployment extends Resource implements IDeployment {
    * @param id identifier of the resource
    * @param deploymentId Identifier of the Deployment
    */
-  public static fromDeploymentId(scope: Construct, id: string, deploymentId: string): IDeployment {
-    class Import extends Resource implements IDeployment {
+  public static fromDeploymentId(scope: Construct, id: string, deploymentId: string): IWebSocketDeployment {
+    class Import extends Resource implements IWebSocketDeployment {
       public readonly deploymentId = deploymentId;
     }
 
@@ -91,11 +93,11 @@ export class Deployment extends Resource implements IDeployment {
 
   protected resource: CfnDeployment;
 
-  constructor(scope: Construct, id: string, props: DeploymentProps) {
+  constructor(scope: Construct, id: string, props: WebSocketDeploymentProps) {
     super(scope, id);
 
     this.resource = new CfnDeployment(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
       description: props.description,
       stageName: props.stageName,
     });

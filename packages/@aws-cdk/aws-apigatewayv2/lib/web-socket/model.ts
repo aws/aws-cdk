@@ -1,13 +1,12 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
-
-import { IApi } from './api';
-import { CfnModel } from './apigatewayv2.generated';
-import { JsonSchema, JsonSchemaMapper } from './json-schema';
+import { CfnModel } from '../apigatewayv2.generated';
+import { JsonSchema, JsonSchemaMapper } from '../common/json-schema';
+import { IWebSocketApi } from './api';
 
 /**
  * Defines a set of common model patterns known to the system
  */
-export enum KnownModelKey {
+export enum WebSocketKnownModelKey {
   /**
    * Default model, when no other pattern matches
    */
@@ -22,7 +21,7 @@ export enum KnownModelKey {
 /**
  * Defines a set of common content types for APIs
  */
-export enum KnownContentTypes {
+export enum WebSocketKnownContentTypes {
   /**
    * JSON request or response (default)
    */
@@ -48,7 +47,7 @@ export enum KnownContentTypes {
 /**
  * Defines the attributes for an Api Gateway V2 Model.
  */
-export interface ModelAttributes {
+export interface WebSocketModelAttributes {
   /**
    * The ID of this API Gateway Model.
    */
@@ -63,7 +62,7 @@ export interface ModelAttributes {
 /**
  * Defines the contract for an Api Gateway V2 Model.
  */
-export interface IModel extends IResource {
+export interface IWebSocketModel extends IResource {
   /**
    * The ID of this API Gateway Model.
    * @attribute
@@ -82,13 +81,13 @@ export interface IModel extends IResource {
  *
  * This interface is used by the helper methods in `Api`
  */
-export interface ModelOptions {
+export interface WebSocketModelOptions {
   /**
    * The content-type for the model, for example, `application/json`.
    *
    * @default "application/json"
    */
-  readonly contentType?: KnownContentTypes | string;
+  readonly contentType?: string;
 
   /**
    * The name of the model.
@@ -108,11 +107,11 @@ export interface ModelOptions {
 /**
  * Defines the properties required for defining an Api Gateway V2 Model.
  */
-export interface ModelProps extends ModelOptions {
+export interface WebSocketModelProps extends WebSocketModelOptions {
   /**
    * Defines the api for this response.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * The schema for the model. For `application/json` models, this should be JSON schema draft 4 model.
@@ -122,8 +121,10 @@ export interface ModelProps extends ModelOptions {
 
 /**
  * A model for an API in Amazon API Gateway v2.
+ *
+ * @resource AWS::ApiGatewayV2::Model
  */
-export class Model extends Resource implements IModel {
+export class WebSocketModel extends Resource implements IWebSocketModel {
   /**
    * Creates a new imported Model
    *
@@ -131,8 +132,8 @@ export class Model extends Resource implements IModel {
    * @param id identifier of the resource
    * @param attrs attributes of the API Model
    */
-  public static fromModelAttributes(scope: Construct, id: string, attrs: ModelAttributes): IModel {
-    class Import extends Resource implements IModel {
+  public static fromModelAttributes(scope: Construct, id: string, attrs: WebSocketModelAttributes): IWebSocketModel {
+    class Import extends Resource implements IWebSocketModel {
       public readonly modelId = attrs.modelId;
       public readonly modelName = attrs.modelName;
     }
@@ -144,15 +145,15 @@ export class Model extends Resource implements IModel {
   public readonly modelName: string;
   protected resource: CfnModel;
 
-  constructor(scope: Construct, id: string, props: ModelProps) {
+  constructor(scope: Construct, id: string, props: WebSocketModelProps) {
     super(scope, id, {
       physicalName: props.modelName || id,
     });
 
     this.modelName = this.physicalName;
     this.resource = new CfnModel(this, 'Resource', {
-      contentType: props.contentType || KnownContentTypes.JSON,
-      apiId: props.api.apiId,
+      contentType: props.contentType || WebSocketKnownContentTypes.JSON,
+      apiId: props.api.webSocketApiId,
       name: this.modelName,
       schema: JsonSchemaMapper.toCfnJsonSchema(props.schema),
     });

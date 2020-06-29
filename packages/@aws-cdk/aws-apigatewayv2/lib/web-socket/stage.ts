@@ -1,13 +1,13 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-
-import { IApi } from './api';
-import { CfnStage } from './apigatewayv2.generated';
-import { IDeployment } from './deployment';
+import { Construct, Resource } from '@aws-cdk/core';
+import { CfnStage } from '../apigatewayv2.generated';
+import { CommonStageOptions, IStage } from '../common/stage';
+import { IWebSocketApi } from './api';
+import { IWebSocketDeployment } from './deployment';
 
 /**
  * Specifies the logging level for this route. This property affects the log entries pushed to Amazon CloudWatch Logs.
  */
-export enum LoggingLevel {
+export enum WebSocketRouteLoggingLevel {
   /**
    * Displays all log information
    */
@@ -27,7 +27,7 @@ export enum LoggingLevel {
 /**
  * Route settings for the stage.
  */
-export interface RouteSettings {
+export interface WebSocketRouteSettings {
   /**
    * Specifies whether (true) or not (false) data trace logging is enabled for this route.
    *
@@ -53,7 +53,7 @@ export interface RouteSettings {
    *
    * @default - default logging level
    */
-  readonly loggingLevel?: LoggingLevel | string;
+  readonly loggingLevel?: WebSocketRouteLoggingLevel;
 
   /**
    * Specifies the throttling burst limit.
@@ -73,7 +73,7 @@ export interface RouteSettings {
 /**
  * Settings for logging access in a stage.
  */
-export interface AccessLogSettings {
+export interface WebSocketAccessLogSettings {
   /**
    * The ARN of the CloudWatch Logs log group to receive access logs.
    *
@@ -91,38 +91,15 @@ export interface AccessLogSettings {
 }
 
 /**
- * Defines the contract for an Api Gateway V2 Stage.
- */
-export interface IStage extends IResource {
-  /**
-   * The name of this API Gateway Stage.
-   * @attribute
-   */
-  readonly stageName: string;
-}
-
-/**
  * Defines the properties required for defining an Api Gateway V2 Stage.
  */
-export interface StageOptions {
-  /**
-   * The stage name. Stage names can only contain alphanumeric characters, hyphens, and underscores. Maximum length is 128 characters.
-   */
-  readonly stageName: string;
-
-  /**
-   * Specifies whether updates to an API automatically trigger a new deployment.
-   *
-   * @default false
-   */
-  readonly autoDeploy?: boolean;
-
+export interface WebSocketStageOptions extends CommonStageOptions {
   /**
    * Settings for logging access in this stage
    *
-   * @default - default nog settings
+   * @default - default log settings
    */
-  readonly accessLogSettings?: AccessLogSettings;
+  readonly accessLogSettings?: WebSocketAccessLogSettings;
 
   /**
    * The identifier of a client certificate for a Stage.
@@ -138,14 +115,14 @@ export interface StageOptions {
    *
    * @default - default values
    */
-  readonly defaultRouteSettings?: RouteSettings;
+  readonly defaultRouteSettings?: WebSocketRouteSettings;
 
   /**
    * Route settings for the stage.
    *
    * @default - default route settings
    */
-  readonly routeSettings?: { [key: string]: RouteSettings };
+  readonly routeSettings?: { [key: string]: WebSocketRouteSettings };
 
   /**
    * The description for the API stage.
@@ -169,22 +146,24 @@ export interface StageOptions {
 /**
  * Defines the properties required for defining an Api Gateway V2 Stage.
  */
-export interface StageProps extends StageOptions {
+export interface WebSocketStageProps extends WebSocketStageOptions {
   /**
    * Defines the api for this stage.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * The deployment for the API stage. Can't be updated if autoDeploy is enabled.
    */
-  readonly deployment: IDeployment;
+  readonly deployment: IWebSocketDeployment;
 }
 
 /**
  * A stage for a route for an API in Amazon API Gateway v2.
+ *
+ * @resource AWS::ApiGatewayV2::Stage
  */
-export class Stage extends Resource implements IStage {
+export class WebSocketStage extends Resource implements IStage {
   /**
    * Creates a new imported Stage
    *
@@ -207,13 +186,13 @@ export class Stage extends Resource implements IStage {
 
   protected resource: CfnStage;
 
-  constructor(scope: Construct, id: string, props: StageProps) {
+  constructor(scope: Construct, id: string, props: WebSocketStageProps) {
     super(scope, id);
 
     this.resource = new CfnStage(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
       deploymentId: props.deployment.deploymentId,
-      stageName: props.stageName,
+      stageName: props.stageName || '$default',
       accessLogSettings: props.accessLogSettings,
       autoDeploy: props.autoDeploy,
       clientCertificateId: props.clientCertificateId,

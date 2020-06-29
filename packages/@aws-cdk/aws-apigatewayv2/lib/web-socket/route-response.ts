@@ -1,14 +1,14 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { CfnRouteResponse } from '../apigatewayv2.generated';
+import { IRoute } from '../common/route';
 
-import { IApi } from './api';
-import { CfnRouteResponse } from './apigatewayv2.generated';
-import { IModel, KnownModelKey } from './model';
-import { IRoute } from './route';
+import { IWebSocketApi } from './api';
+import { IWebSocketModel } from './model';
 
 /**
  * Defines a set of common response patterns known to the system
  */
-export enum KnownRouteResponseKey {
+export enum WebSocketKnownRouteResponseKey {
   /**
    * Default response, when no other pattern matches
    */
@@ -28,7 +28,12 @@ export enum KnownRouteResponseKey {
 /**
  * Defines the contract for an Api Gateway V2 Route Response.
  */
-export interface IRouteResponse extends IResource {
+export interface IWebSocketRouteResponse extends IResource {
+  /**
+   * The Route Response resource ID.
+   * @attribute
+   */
+  readonly routeResponseId: string;
 }
 
 /**
@@ -36,7 +41,7 @@ export interface IRouteResponse extends IResource {
  *
  * This interface is used by the helper methods in `Route`
  */
-export interface RouteResponseOptions {
+export interface WebSocketRouteResponseOptions {
   /**
    * The route response parameters.
    *
@@ -51,7 +56,7 @@ export interface RouteResponseOptions {
    *
    * @default - no models
    */
-  readonly responseModels?: { [key: string]: IModel | string };
+  readonly responseModels?: { [key: string]: IWebSocketModel };
 
   /**
    * The model selection expression for the route response.
@@ -60,13 +65,13 @@ export interface RouteResponseOptions {
    *
    * @default - no selection expression
    */
-  readonly modelSelectionExpression?: KnownModelKey | string;
+  readonly modelSelectionExpression?: string;
 }
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Route Response.
  */
-export interface RouteResponseProps extends RouteResponseOptions {
+export interface WebSocketRouteResponseProps extends WebSocketRouteResponseOptions {
   /**
    * Defines the route for this response.
    */
@@ -75,21 +80,29 @@ export interface RouteResponseProps extends RouteResponseOptions {
   /**
    * Defines the api for this response.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * The route response key.
    */
-  readonly key: KnownRouteResponseKey | string;
+  readonly key: string;
 }
 
 /**
  * A response for a route for an API in Amazon API Gateway v2.
+ *
+ * @resource AWS::ApiGatewayV2::RouteResponse
  */
-export class RouteResponse extends Resource implements IRouteResponse {
+export class WebSocketRouteResponse extends Resource implements IWebSocketRouteResponse {
+  /**
+   * The Route Response resource ID.
+   * @attribute
+   */
+  public readonly routeResponseId: string;
+
   protected resource: CfnRouteResponse;
 
-  constructor(scope: Construct, id: string, props: RouteResponseProps) {
+  constructor(scope: Construct, id: string, props: WebSocketRouteResponseProps) {
     super(scope, id, {
       physicalName: props.key || id,
     });
@@ -102,12 +115,14 @@ export class RouteResponse extends Resource implements IRouteResponse {
     }
 
     this.resource = new CfnRouteResponse(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
       routeId: props.route.routeId,
       routeResponseKey: props.key,
       responseModels,
       modelSelectionExpression: props.modelSelectionExpression,
       responseParameters: props.responseParameters,
     });
+
+    this.routeResponseId = this.resource.ref;
   }
 }

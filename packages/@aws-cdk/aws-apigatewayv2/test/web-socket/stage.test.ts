@@ -1,7 +1,7 @@
 import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import * as apigw from '../lib';
+import * as apigw from '../../lib';
 
 // tslint:disable:max-line-length
 
@@ -10,15 +10,14 @@ test('minimal setup', () => {
   const stack = new Stack();
 
   // WHEN
-  const api = new apigw.Api(stack, 'my-api', {
-    protocolType: apigw.ProtocolType.WEBSOCKET,
-    routeSelectionExpression: apigw.KnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+  const api = new apigw.WebSocketApi(stack, 'my-api', {
+    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
-  const deployment = new apigw.Deployment(stack, 'deployment', {
+  const deployment = new apigw.WebSocketDeployment(stack, 'deployment', {
     api,
   });
-  new apigw.Stage(stack, 'stage', {
+  new apigw.WebSocketStage(stack, 'stage', {
     api,
     deployment,
     stageName: 'dev',

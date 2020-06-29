@@ -1,16 +1,18 @@
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, IConstruct } from '@aws-cdk/core';
+import { CfnResource, Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { CfnApi } from '../apigatewayv2.generated';
+import { JsonSchema } from '../common/json-schema';
+import { IStage } from '../common/stage';
 
-import { Api, KnownApiKeySelectionExpression, ProtocolType } from './api';
-import { Integration } from './integration';
-import { HttpIntegration, WebSocketApiHttpIntegrationOptions } from './integrations/http-integration';
-import { LambdaIntegration, WebSocketApiLambdaIntegrationOptions } from './integrations/lambda-integration';
-import { MockIntegration, WebSocketApiMockIntegrationOptions } from './integrations/mock-integration';
-import { ServiceIntegration, WebSocketApiServiceIntegrationOptions } from './integrations/service-integration';
-import { JsonSchema } from './json-schema';
-import { Model, ModelOptions } from './model';
-import { IRoute, KnownRouteKey, KnownRouteSelectionExpression, Route, WebSocketApiRouteOptions } from './route';
-import { IStage, StageOptions } from './stage';
+import { WebSocketDeployment } from './deployment';
+import { WebSocketIntegration } from './integration';
+import { WebSocketHttpIntegration, WebSocketHttpIntegrationOptions } from './integrations/http';
+import { WebSocketLambdaIntegration, WebSocketLambdaIntegrationOptions } from './integrations/lambda';
+import { WebSocketMockIntegration, WebSocketMockIntegrationOptions } from './integrations/mock';
+import { WebSocketServiceIntegration, WebSocketServiceIntegrationOptions } from './integrations/service';
+import { WebSocketModel, WebSocketModelOptions } from './model';
+import { WebSocketKnownRouteKey, WebSocketRoute, WebSocketRouteOptions } from './route';
+import { WebSocketStage, WebSocketStageOptions } from './stage';
 
 /**
  * Defines a default handler for the Api
@@ -45,12 +47,12 @@ export interface WebSocketApiDefaultTarget {
 /**
  * Defines the contract for an Api Gateway V2 HTTP Api.
  */
-export interface IWebSocketApi extends IConstruct {
+export interface IWebSocketApi extends IResource {
   /**
    * The ID of this API Gateway Api.
    * @attribute
    */
-  readonly apiId: string;
+  readonly webSocketApiId: string;
 }
 
 /**
@@ -87,7 +89,7 @@ export interface WebSocketApiProps {
    *
    * @default - default options
    */
-  readonly deployOptions?: StageOptions;
+  readonly deployOptions?: WebSocketStageOptions;
 
   /**
    * Retains old deployment resources when the API changes. This allows
@@ -108,14 +110,14 @@ export interface WebSocketApiProps {
   /**
    * Expression used to select the route for this API
    */
-  readonly routeSelectionExpression: KnownRouteSelectionExpression | string;
+  readonly routeSelectionExpression: string;
 
   /**
    * Expression used to select the Api Key to use for metering
    *
    * @default - No Api Key
    */
-  readonly apiKeySelectionExpression?: KnownApiKeySelectionExpression | string;
+  readonly apiKeySelectionExpression?: string;
 
   /**
    * A description of the purpose of this API Gateway Api resource.
@@ -153,27 +155,27 @@ export interface WebSocketApiProps {
   readonly defaultTarget?: WebSocketApiDefaultTarget;
 }
 
-export declare type WebSocketRouteName = KnownRouteKey | string;
-
 /**
- * Represents an HTTP API in Amazon API Gateway v2.
+ * Represents a Web Socket API in Amazon API Gateway v2.
  *
  * Use `addModel` and `addLambdaIntegration` to configure the API model.
  *
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
+ *
+ * @resource AWS::ApiGatewayV2::Api
  */
-export class WebSocketApi extends Construct implements IWebSocketApi {
+export class WebSocketApi extends Resource implements IWebSocketApi {
   /**
    * Creates a new imported API
    *
    * @param scope scope of this imported resource
    * @param id identifier of the resource
-   * @param apiId Identifier of the API
+   * @param webSocketApiId Identifier of the API
    */
-  public static fromApiId(scope: Construct, id: string, apiId: string): IWebSocketApi {
-    class Import extends Construct implements IWebSocketApi {
-      public readonly apiId = apiId;
+  public static fromApiId(scope: Construct, id: string, webSocketApiId: string): IWebSocketApi {
+    class Import extends Resource implements IWebSocketApi {
+      public readonly webSocketApiId = webSocketApiId;
     }
 
     return new Import(scope, id);
@@ -182,20 +184,65 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
   /**
    * The ID of this API Gateway Api.
    */
-  public readonly apiId: string;
+  public readonly webSocketApiId: string;
 
-  protected readonly resource: Api;
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   */
+  public deploymentStage?: WebSocketStage;
+
+  /**
+   * API Gateway deployment (if defined).
+   */
+  public deployment?: WebSocketDeployment;
+
+  protected resource: CfnApi;
 
   constructor(scope: Construct, id: string, props: WebSocketApiProps) {
-    super(scope, id);
-
-    this.resource = new Api(this, 'Default', {
-      ...props,
-      apiName: props.apiName ?? id,
-      protocolType: ProtocolType.WEBSOCKET,
+    super(scope, id, {
+      physicalName: props.apiName || id,
     });
 
-    this.apiId = this.resource.apiId;
+    this.resource = new CfnApi(this, 'Resource', {
+      name: this.physicalName,
+      apiKeySelectionExpression: props.apiKeySelectionExpression,
+      description: props.description,
+      disableSchemaValidation: props.disableSchemaValidation,
+      failOnWarnings: props.failOnWarnings,
+      protocolType: 'WEBSOCKET',
+      routeSelectionExpression: props.routeSelectionExpression,
+      // TODO: tags: props.tags,
+      version: props.version,
+    });
+
+    this.webSocketApiId = this.resource.ref;
+
+    const deploy = props.deploy === undefined ? true : props.deploy;
+    if (deploy) {
+      const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
+
+      this.deployment = new WebSocketDeployment(this, 'Deployment', {
+        api: this,
+        description: 'Automatically created by the Api construct',
+      });
+
+      this.deploymentStage = new WebSocketStage(this, 'DefaultStage', {
+        deployment: this.deployment,
+        api: this,
+        stageName,
+        description: 'Automatically created by the Api construct',
+        accessLogSettings: props.deployOptions?.accessLogSettings,
+        autoDeploy: props.deployOptions?.autoDeploy,
+        clientCertificateId: props.deployOptions?.clientCertificateId,
+        defaultRouteSettings: props.deployOptions?.defaultRouteSettings,
+        routeSettings: props.deployOptions?.routeSettings,
+        stageVariables: props.deployOptions?.stageVariables,
+      });
+    } else {
+      if (props.deployOptions) {
+        throw new Error('Cannot set "deployOptions" if "deploy" is disabled');
+      }
+    }
 
     if (props.defaultTarget !== undefined) {
       let integration;
@@ -225,7 +272,7 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
         throw new Error('You must specify an ARN, a URL, "MOCK", or a Lambda Function');
       }
 
-      this.addRoute(KnownRouteKey.DEFAULT, integration, {});
+      this.addRoute(WebSocketKnownRouteKey.DEFAULT, integration, {});
     }
   }
 
@@ -235,13 +282,13 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param id the id of this integration
    * @param props the properties for this integration
    */
-  public addLambdaIntegration(id: string, props: WebSocketApiLambdaIntegrationOptions): LambdaIntegration {
-    const integration = new LambdaIntegration(this, `${id}.lambda.integration`, {
+  public addLambdaIntegration(id: string, props: WebSocketLambdaIntegrationOptions): WebSocketLambdaIntegration {
+    const integration = new WebSocketLambdaIntegration(this, `${id}.lambda.integration`, {
       ...props,
-      api: this.resource,
+      api: this,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(integration.resource.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(integration.node.defaultChild as CfnResource);
     }
     return integration;
   }
@@ -252,13 +299,13 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param id the id of this integration
    * @param props the properties for this integration
    */
-  public addHttpIntegration(id: string, props: WebSocketApiHttpIntegrationOptions): HttpIntegration {
-    const integration = new HttpIntegration(this, `${id}.http.integration`, {
+  public addHttpIntegration(id: string, props: WebSocketHttpIntegrationOptions): WebSocketHttpIntegration {
+    const integration = new WebSocketHttpIntegration(this, `${id}.http.integration`, {
       ...props,
-      api: this.resource,
+      api: this,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(integration.resource.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(integration.node.defaultChild as CfnResource);
     }
     return integration;
   }
@@ -269,13 +316,13 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param id the id of this integration
    * @param props the properties for this integration
    */
-  public addServiceIntegration(id: string, props: WebSocketApiServiceIntegrationOptions): ServiceIntegration {
-    const integration = new ServiceIntegration(this, `${id}.service.integration`, {
+  public addServiceIntegration(id: string, props: WebSocketServiceIntegrationOptions): WebSocketServiceIntegration {
+    const integration = new WebSocketServiceIntegration(this, `${id}.service.integration`, {
       ...props,
-      api: this.resource,
+      api: this,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(integration.resource.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(integration.node.defaultChild as CfnResource);
     }
     return integration;
   }
@@ -286,13 +333,13 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param id the id of this integration
    * @param props the properties for this integration
    */
-  public addMockIntegration(id: string, props: WebSocketApiMockIntegrationOptions): MockIntegration {
-    const integration = new MockIntegration(this, `${id}.service.integration`, {
+  public addMockIntegration(id: string, props: WebSocketMockIntegrationOptions): WebSocketMockIntegration {
+    const integration = new WebSocketMockIntegration(this, `${id}.service.integration`, {
       ...props,
-      api: this.resource,
+      api: this,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(integration.resource.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(integration.node.defaultChild as CfnResource);
     }
     return integration;
   }
@@ -304,18 +351,15 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param integration [disable-awslint:ref-via-interface] the integration to use for this route
    * @param props the properties for this route
    */
-  public addRoute(
-    key: WebSocketRouteName,
-    integration: Integration | LambdaIntegration | HttpIntegration | ServiceIntegration,
-    props?: WebSocketApiRouteOptions): Route {
-    const route = new Route(this, `${key}.route`, {
+  public addRoute(key: string, integration: WebSocketIntegration, props?: WebSocketRouteOptions): WebSocketRoute {
+    const route = new WebSocketRoute(this, `${key}.route`, {
       ...props,
-      api: this.resource,
-      integration: ((integration instanceof Integration) ? integration : integration.resource),
+      api: this,
+      integration,
       key,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(route.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(route.node.defaultChild as CfnResource);
     }
     return route;
   }
@@ -325,15 +369,15 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param schema The model schema
    * @param props The model integration options
    */
-  public addModel(schema: JsonSchema, props?: ModelOptions): Model {
-    const model = new Model(this, `Model.${schema.title}`, {
+  public addModel(schema: JsonSchema, props?: WebSocketModelOptions): WebSocketModel {
+    const model = new WebSocketModel(this, `Model.${schema.title}`, {
       ...props,
       modelName: schema.title,
-      api: this.resource,
+      api: this,
       schema,
     });
-    if (this.resource.deployment !== undefined) {
-      this.resource.deployment.registerDependency(model.node.defaultChild as CfnResource);
+    if (this.deployment !== undefined) {
+      this.deployment.registerDependency(model.node.defaultChild as CfnResource);
     }
     return model;
   }
@@ -344,8 +388,19 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param route The route for this ARN ('*' if not defined)
    * @param stage The stage for this ARN (if not defined, defaults to the deployment stage if defined, or to '*')
    */
-  public executeApiArn(route?: IRoute, stage?: IStage) {
-    return this.resource.executeApiArn(route, stage);
+  public executeApiArn(route?: string, stage?: IStage) {
+    const stack = Stack.of(this);
+    const apiId = this.webSocketApiId;
+    const routeKey = ((route === undefined) ? '*' : route);
+    const stageName = ((stage === undefined) ?
+      ((this.deploymentStage === undefined) ? '*' : this.deploymentStage.stageName) :
+      stage.stageName);
+    return stack.formatArn({
+      service: 'execute-api',
+      resource: apiId,
+      sep: '/',
+      resourceName: `${stageName}/${routeKey}`,
+    });
   }
 
   /**
@@ -355,7 +410,17 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param stage The stage for this ARN (if not defined, defaults to the deployment stage if defined, or to '*')
    */
   public connectionsApiArn(connectionId: string = '*', stage?: IStage) {
-    return this.resource.webSocketConnectionsApiArn(connectionId, stage);
+    const stack = Stack.of(this);
+    const apiId = this.webSocketApiId;
+    const stageName = ((stage === undefined) ?
+      ((this.deploymentStage === undefined) ? '*' : this.deploymentStage.stageName) :
+      stage.stageName);
+    return stack.formatArn({
+      service: 'execute-api',
+      resource: apiId,
+      sep: '/',
+      resourceName: `${stageName}/POST/${connectionId}`,
+    });
   }
 
   /**
@@ -365,7 +430,17 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param stage The stage for this URL (if not defined, defaults to the deployment stage)
    */
   public connectionsUrl(stage?: IStage): string {
-    return this.resource.webSocketConnectionsUrl(stage);
+    const stack = Stack.of(this);
+    let stageName: string | undefined;
+    if (stage === undefined) {
+      if (this.deploymentStage === undefined) {
+        throw Error('No stage defined for this Api');
+      }
+      stageName = this.deploymentStage.stageName;
+    } else {
+      stageName = stage.stageName;
+    }
+    return `https://${this.webSocketApiId}.execute-api.${stack.region}.amazonaws.com/${stageName}/@connections`;
   }
 
   /**
@@ -375,6 +450,16 @@ export class WebSocketApi extends Construct implements IWebSocketApi {
    * @param stage The stage for this URL (if not defined, defaults to the deployment stage)
    */
   public clientUrl(stage?: IStage): string {
-    return this.resource.webSocketClientUrl(stage);
+    const stack = Stack.of(this);
+    let stageName: string | undefined;
+    if (stage === undefined) {
+      if (this.deploymentStage === undefined) {
+        throw Error('No stage defined for this Api');
+      }
+      stageName = this.deploymentStage.stageName;
+    } else {
+      stageName = stage.stageName;
+    }
+    return `wss://${this.webSocketApiId}.execute-api.${stack.region}.amazonaws.com/${stageName}`;
   }
 }

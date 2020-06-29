@@ -1,7 +1,7 @@
 import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import * as apigw from '../lib';
+import * as apigw from '../../lib';
 
 // tslint:disable:max-line-length
 

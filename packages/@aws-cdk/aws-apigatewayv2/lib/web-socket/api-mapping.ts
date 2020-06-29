@@ -1,27 +1,17 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 
-import { IApi } from './api';
-import { CfnApiMapping } from './apigatewayv2.generated';
-import { IDomainName } from './domain-name';
-import { IStage } from './stage';
-
-/**
- * Defines the contract for an Api Gateway V2 Api Mapping.
- */
-export interface IApiMapping extends IResource {
-  /**
-   * The ID of this API Gateway Api Mapping.
-   * @attribute
-   */
-  readonly apiMappingId: string;
-}
+import { CfnApiMapping } from '../apigatewayv2.generated';
+import { IApiMapping } from '../common/api-mapping';
+import { IDomainName } from '../common/domain-name';
+import { IStage } from '../common/stage';
+import { IWebSocketApi } from './api';
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Api Mapping.
  *
  * This interface is used by the helper methods in `Api` and the sub-classes
  */
-export interface ApiMappingOptions {
+export interface WebSocketApiMappingOptions {
   /**
    * The API mapping key.
    *
@@ -32,7 +22,7 @@ export interface ApiMappingOptions {
   /**
    * The associated domain name
    */
-  readonly domainName: IDomainName | string;
+  readonly domainName: IDomainName;
 
   /**
    * The API stage.
@@ -43,11 +33,11 @@ export interface ApiMappingOptions {
 /**
  * Defines the properties required for defining an Api Gateway V2 Api Mapping.
  */
-export interface ApiMappingProps extends ApiMappingOptions {
+export interface WebSocketApiMappingProps extends WebSocketApiMappingOptions {
   /**
    * Defines the api for this deployment.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 }
 
 /**
@@ -56,8 +46,10 @@ export interface ApiMappingProps extends ApiMappingOptions {
  * A custom domain name can have multiple API mappings, but the paths can't overlap.
  *
  * A custom domain can map only to APIs of the same protocol type.
+ *
+ * @resource AWS::ApiGatewayV2::ApiMapping
  */
-export class ApiMapping extends Resource implements IApiMapping {
+export class WebSocketApiMapping extends Resource implements IApiMapping {
 
   /**
    * Creates a new imported API
@@ -81,12 +73,12 @@ export class ApiMapping extends Resource implements IApiMapping {
 
   protected resource: CfnApiMapping;
 
-  constructor(scope: Construct, id: string, props: ApiMappingProps) {
+  constructor(scope: Construct, id: string, props: WebSocketApiMappingProps) {
     super(scope, id);
 
     this.resource = new CfnApiMapping(this, 'Resource', {
-      apiId: props.api.apiId,
-      domainName: ((typeof(props.domainName) === 'string') ? props.domainName : props.domainName.domainName),
+      apiId: props.api.webSocketApiId,
+      domainName: props.domainName.domainName,
       stage: props.stage.stageName,
       apiMappingKey: props.apiMappingKey,
     });

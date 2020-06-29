@@ -157,7 +157,6 @@
         },
         "IntegrationType": "AWS",
         "Description": "WebSocket Api Connection Integration",
-        "IntegrationMethod": "POST",
         "IntegrationUri": {
           "Fn::Join": [
             "",

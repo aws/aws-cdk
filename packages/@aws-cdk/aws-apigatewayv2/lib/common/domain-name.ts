@@ -1,6 +1,6 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 
-import { CfnDomainName } from './apigatewayv2.generated';
+import { CfnDomainName } from '../apigatewayv2.generated';
 
 /**
  * Represents an endpoint type
@@ -42,16 +42,6 @@ export interface DomainNameConfiguration {
    * @default 'REGIONAL'
    */
   readonly endpointType?: EndpointType;
-}
-
-/**
- * Defines the attributes for an Api Gateway V2 Domain Name.
- */
-export interface DomainNameAttributes {
-  /**
-   * The custom domain name for your API in Amazon API Gateway.
-   */
-  readonly domainName: string;
 }
 
 /**
@@ -97,11 +87,11 @@ export class DomainName extends Resource implements IDomainName {
    *
    * @param scope scope of this imported resource
    * @param id identifier of the resource
-   * @param attrs domain name attributes
+   * @param domainName name of the domain
    */
-  public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
+  public static fromDomainName(scope: Construct, id: string, domainName: string): IDomainName {
     class Import extends Resource implements IDomainName {
-      public readonly domainName = attrs.domainName;
+      public readonly domainName = domainName;
     }
 
     return new Import(scope, id);

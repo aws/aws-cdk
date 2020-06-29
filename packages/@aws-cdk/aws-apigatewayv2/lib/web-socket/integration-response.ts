@@ -1,13 +1,14 @@
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 
-import { IApi } from './api';
-import { CfnIntegrationResponse } from './apigatewayv2.generated';
-import { ContentHandlingStrategy, IIntegration, KnownTemplateKey } from './integration';
+import { CfnIntegrationResponse } from '../apigatewayv2.generated';
+import { IIntegration } from '../common/integration';
+
+import { IWebSocketApi } from './api';
 
 /**
  * Defines a set of common response patterns known to the system
  */
-export enum KnownIntegrationResponseKey {
+export enum WebSocketKnownIntegrationResponseKey {
   /**
    * Default response, when no other pattern matches
    */
@@ -27,7 +28,7 @@ export enum KnownIntegrationResponseKey {
 /**
  * Defines the contract for an Api Gateway V2 Deployment.
  */
-export interface IIntegrationResponse extends IResource {
+export interface IWebSocketIntegrationResponse extends IResource {
 }
 
 /**
@@ -35,7 +36,7 @@ export interface IIntegrationResponse extends IResource {
  *
  * This interface is used by the helper methods in `Integration`
  */
-export interface IntegrationResponseOptions {
+export interface WebSocketIntegrationResponseOptions {
   /**
    * Specifies how to handle response payload content type conversions.
    *
@@ -43,7 +44,7 @@ export interface IntegrationResponseOptions {
    *
    * @default - Pass through unmodified
    */
-  readonly contentHandlingStrategy?: ContentHandlingStrategy | string;
+  readonly contentHandlingStrategy?: string;
 
   /**
    * A key-value map specifying response parameters that are passed to the method response from the backend.
@@ -76,17 +77,17 @@ export interface IntegrationResponseOptions {
    *
    * @default - no template selected
    */
-  readonly templateSelectionExpression?: KnownTemplateKey | string;
+  readonly templateSelectionExpression?: string;
 }
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Integration.
  */
-export interface IntegrationResponseProps extends IntegrationResponseOptions {
+export interface WebSocketIntegrationResponseProps extends WebSocketIntegrationResponseOptions {
   /**
    * Defines the api for this response.
    */
-  readonly api: IApi;
+  readonly api: IWebSocketApi;
 
   /**
    * Defines the parent integration for this response.
@@ -96,19 +97,21 @@ export interface IntegrationResponseProps extends IntegrationResponseOptions {
   /**
    * The integration response key.
    */
-  readonly key: KnownIntegrationResponseKey | string;
+  readonly key: string;
 }
 
 /**
  * A response for an integration for an API in Amazon API Gateway v2.
+ *
+ * @resource AWS::ApiGatewayV2::IntegrationResponse
  */
-export class IntegrationResponse extends Resource implements IIntegrationResponse {
+export class WebSocketIntegrationResponse extends Resource implements IWebSocketIntegrationResponse {
   protected resource: CfnIntegrationResponse;
 
-  constructor(scope: Construct, id: string, props: IntegrationResponseProps) {
+  constructor(scope: Construct, id: string, props: WebSocketIntegrationResponseProps) {
     super(scope, id);
     this.resource = new CfnIntegrationResponse(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: props.api.webSocketApiId,
       integrationId: props.integration.integrationId,
       integrationResponseKey: props.key,
       contentHandlingStrategy: props.contentHandlingStrategy,

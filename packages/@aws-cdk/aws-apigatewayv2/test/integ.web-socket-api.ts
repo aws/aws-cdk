@@ -28,14 +28,14 @@ const api = new apigatewayv2.WebSocketApi(stack, 'WebSocketApi', {
   },
 });
 
-const defaultStatusIntegrationResponse: apigatewayv2.IntegrationResponseOptions = {
+const defaultStatusIntegrationResponse: apigatewayv2.WebSocketIntegrationResponseOptions = {
   responseTemplates: {
     default: '#set($inputRoot = $input.path(\'$\')) { "status": "${inputRoot.status}", "message": "$util.escapeJavaScript(${inputRoot.message})" }',
   },
   templateSelectionExpression: 'default',
 };
 
-const defaultStatusRouteResponse: apigatewayv2.RouteResponseOptions = {
+const defaultStatusRouteResponse: apigatewayv2.WebSocketRouteResponseOptions = {
   modelSelectionExpression: 'default',
   responseModels: {
     default: api.addModel({ schema: apigatewayv2.JsonSchemaVersion.DRAFT4, title: 'statusResponse', type: apigatewayv2.JsonSchemaType.OBJECT, properties: { status: { type: apigatewayv2.JsonSchemaType.STRING }, message: { type: apigatewayv2.JsonSchemaType.STRING } } }),
@@ -45,16 +45,16 @@ const defaultStatusRouteResponse: apigatewayv2.RouteResponseOptions = {
 const webSocketConnectIntegration = api.addLambdaIntegration('default', {
   handler: webSocketHandler,
   proxy: false,
-  passthroughBehavior: apigatewayv2.PassthroughBehavior.NEVER,
+  passthroughBehavior: apigatewayv2.WebSocketPassthroughBehavior.NEVER,
   requestTemplates: {
     connect: '{ "action": "${context.routeKey}", "userId": "${context.identity.cognitoIdentityId}", "connectionId": "${context.connectionId}", "domainName": "${context.domainName}", "stageName": "${context.stage}" }',
   },
   templateSelectionExpression: 'connect',
   description: 'WebSocket Api Connection Integration',
 });
-webSocketConnectIntegration.addResponse(apigatewayv2.KnownRouteResponseKey.DEFAULT, defaultStatusIntegrationResponse);
+webSocketConnectIntegration.addResponse(apigatewayv2.WebSocketKnownRouteResponseKey.DEFAULT, defaultStatusIntegrationResponse);
 
-api.addRoute(apigatewayv2.KnownRouteKey.CONNECT, webSocketConnectIntegration, {
-  authorizationType: apigatewayv2.WebSocketApiAuthorizationType.IAM,
-  routeResponseSelectionExpression: apigatewayv2.KnownRouteResponseKey.DEFAULT,
-}).addResponse(apigatewayv2.KnownRouteResponseKey.DEFAULT, defaultStatusRouteResponse);
+api.addRoute(apigatewayv2.WebSocketKnownRouteKey.CONNECT, webSocketConnectIntegration, {
+  authorizationType: apigatewayv2.WebSocketAuthorizationType.IAM,
+  routeResponseSelectionExpression: apigatewayv2.WebSocketKnownRouteResponseKey.DEFAULT,
+}).addResponse(apigatewayv2.WebSocketKnownRouteResponseKey.DEFAULT, defaultStatusRouteResponse);
