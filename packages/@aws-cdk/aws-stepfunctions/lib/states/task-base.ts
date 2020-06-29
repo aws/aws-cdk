@@ -140,7 +140,7 @@ export abstract class TaskStateBase extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this.renderTask(),
+      ...this._renderTask(),
     };
   }
 
@@ -247,7 +247,10 @@ export abstract class TaskStateBase extends State implements INextable {
     }
   }
 
-  protected abstract renderTask(): any;
+  /**
+   * @internal
+   */
+  protected abstract _renderTask(): any;
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
