@@ -52,15 +52,26 @@ export = {
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' }));
       test.done();
     },
-    'should support create namespaces'(test: Test) {
+    'should support create namespaces by default'(test: Test) {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: true });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
       // THEN
       expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));
+      test.done();
+    },
+    'should not create namespaces when disabled'(test: Test) {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false });
+
+      // THEN
+      expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: false }));
       test.done();
     },
     'should support waiting until everything is completed before marking release as successful'(test: Test) {
