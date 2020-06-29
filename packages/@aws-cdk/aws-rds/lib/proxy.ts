@@ -46,7 +46,7 @@ export class ProxyTarget {
    *
    * @param instance RDS database instance
    */
-  public static forInstance(instance: IDatabaseInstance): ProxyTarget {
+  public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
     return new ProxyTarget(instance);
   }
 
@@ -55,7 +55,7 @@ export class ProxyTarget {
    *
    * @param cluster RDS database cluster
    */
-  public static forCluster(cluster: IDatabaseCluster): ProxyTarget {
+  public static fromCluster(cluster: IDatabaseCluster): ProxyTarget {
     return new ProxyTarget(undefined, cluster);
   }
 

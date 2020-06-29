@@ -122,7 +122,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
     return new DatabaseProxy(this, id, {
-      proxyTarget: ProxyTarget.forInstance(this),
+      proxyTarget: ProxyTarget.fromInstance(this),
       ...options,
     });
   }
