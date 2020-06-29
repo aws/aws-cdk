@@ -12,7 +12,7 @@ export interface IRuleTarget {
    * Returns the rule target specification.
    * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
    *
-   * @param rule The CloudWatch Event Rule that would trigger this target.
+   * @param rule The EventBridge Rule that would trigger this target.
    * @param id The id of the target that will be attached to the rule.
    */
   bind(rule: IRule, id?: string): RuleTargetConfig;
@@ -87,7 +87,7 @@ export interface RuleTargetConfig {
    * if so, we generate a more complex setup,
    * including an additional stack containing the EventBusPolicy.
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html
    * @default the target is not backed by any resource
    */
   readonly targetResource?: IConstruct;

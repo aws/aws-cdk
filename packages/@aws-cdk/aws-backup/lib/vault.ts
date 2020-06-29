@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { CfnBackupVault } from './backup.generated';
 
 /**
@@ -21,7 +21,9 @@ export interface IBackupVault extends IResource {
  */
 export interface BackupVaultProps {
   /**
-   * The name of a logical container where backups are stored.
+   * The name of a logical container where backups are stored. Backup vaults
+   * are identified by names that are unique to the account used to create
+   * them and the AWS Region where they are created.
    *
    * @default - A CDK generated name
    */
@@ -158,7 +160,7 @@ export class BackupVault extends Resource implements IBackupVault {
 
   private uniqueVaultName() {
     // Max length of 50 chars, get the last 50 chars
-    const id = `${this.node.uniqueId}${Aws.STACK_NAME}`;
+    const id = this.node.uniqueId;
     return id.substring(Math.max(id.length - 50, 0), id.length);
   }
 }

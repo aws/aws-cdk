@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, Tag } from '@aws-cdk/core';
+import { Construct, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
+import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
 // tslint:disable:max-line-length
@@ -158,6 +159,13 @@ export interface FileSystemProps {
    * @default - none, errors out
    */
   readonly provisionedThroughputPerSecond?: Size;
+
+  /**
+   * The removal policy to apply to the file system.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -237,6 +245,7 @@ export class FileSystem extends Resource implements IFileSystem {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
     });
+    filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
     Tag.add(this, 'Name', props.fileSystemName || this.node.path);
@@ -262,6 +271,16 @@ export class FileSystem extends Resource implements IFileSystem {
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId,
         });
+    });
+  }
+
+  /**
+   * create access point from this filesystem
+   */
+  public addAccessPoint(id: string, accessPointOptions: AccessPointOptions = {}): AccessPoint {
+    return new AccessPoint(this, id, {
+      fileSystem: this,
+      ...accessPointOptions,
     });
   }
 }
