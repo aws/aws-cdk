@@ -136,8 +136,7 @@ export = {
     const stagingTmp = path.join('.', '.cdk.staging');
     test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
     test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
-    // tslint:disable-next-line:no-bitwise
-    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777 & ~process.umask()));
+    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
 
     test.done();
   },
