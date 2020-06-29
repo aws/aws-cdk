@@ -75,6 +75,20 @@ if [[ "${1:-}" == "--up" ]]; then
     shift
 fi
 
+down=""
+down_desc=""
+if [[ "${1:-}" == "--down" ]]; then
+    if [ ! -f package.json ]; then
+      echo "--down can only be executed from within a module directory (looking for package.json)"
+      exit 1
+    fi
+
+    scope=$(node -p "require('./package.json').name")
+    up=" --scope ${scope} --include-dependents"
+    up_desc="('${scope}' and its consumers)"
+    shift
+fi
+
 command_arg="${@:-}"
 
 if [ -f "${statefile}" ] && [ -f "${commandfile}" ]; then
@@ -90,7 +104,7 @@ if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
     success "starting new session ${up_desc}"
-    ${scriptdir}/../node_modules/.bin/lerna ls --all ${up} --toposort -p > ${statefile}
+    ${scriptdir}/../node_modules/.bin/lerna ls --all ${up} ${down} --toposort -p > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"
