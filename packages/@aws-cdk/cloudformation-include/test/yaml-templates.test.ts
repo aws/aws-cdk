@@ -61,7 +61,7 @@ describe('CDK Include', () => {
           "Properties": {
             "CidrBlock": {
               "Fn::Cidr": [
-                "92.168.1.1/24",
+                "192.168.1.1/24",
                 "2",
                 "5",
               ],
