@@ -417,15 +417,37 @@ nodeunitShim({
       test.done();
     },
 
-    'natGateways = 0 requires there to be no PRIVATE subnets'(test: Test) {
+    'natGateways = 0 requires there to be no configured PRIVATE subnets'(test: Test) {
       const stack = getTestStack();
       test.throws(() => {
         new Vpc(stack, 'VPC', {
           natGateways: 0,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE,
+            },
+          ],
         });
       }, /make sure you don't configure any PRIVATE subnets/);
       test.done();
 
+    },
+
+    'natGateways = 0 allows constructs public not private'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        natGateways: 0,
+      });
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Isolated',
+      }])));
+      test.done();
     },
 
     'natGateways = 0 allows RESERVED PRIVATE subnets'(test: Test) {
