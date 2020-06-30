@@ -14,9 +14,9 @@ interface ApplicationAddonProps {
 
 export class Application implements ServiceAddon {
   readonly name: string;
-  public container: ecs.ContainerDefinition;
+  public container!: ecs.ContainerDefinition;
   private props: ApplicationAddonProps;
-  private parentService: Service;
+  private parentService!: Service;
   readonly trafficPort: number;
 
   // List of registered hooks from other addons that want to
@@ -47,7 +47,7 @@ export class Application implements ServiceAddon {
       image: this.props.image,
       cpu: Number(this.props.cpu),
       memoryLimitMiB: Number(this.props.memoryMiB),
-      environment: this.props.environment
+      environment: this.props.environment,
     };
 
     // Let other addons mutate the container definition. This is
@@ -60,7 +60,7 @@ export class Application implements ServiceAddon {
     // Create a port mapping for the container
     this.container.addPortMappings({
       containerPort: this.trafficPort,
-      hostPort: this.trafficPort
+      hostPort: this.trafficPort,
     })
 
     // Raise the ulimits for this main application container
@@ -68,7 +68,7 @@ export class Application implements ServiceAddon {
     this.container.addUlimits({
       softLimit: 1024000,
       hardLimit: 1024000,
-      name: ecs.UlimitName.NOFILE
+      name: ecs.UlimitName.NOFILE,
     });
   }
 
@@ -77,7 +77,7 @@ export class Application implements ServiceAddon {
     if (firelens && firelens.container) {
       this.container.addContainerDependencies({
         container: firelens.container,
-        condition: ecs.ContainerDependencyCondition.START
+        condition: ecs.ContainerDependencyCondition.START,
       })
     }
 
@@ -85,7 +85,7 @@ export class Application implements ServiceAddon {
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
-        condition: ecs.ContainerDependencyCondition.HEALTHY
+        condition: ecs.ContainerDependencyCondition.HEALTHY,
       })
     }
 
@@ -93,7 +93,7 @@ export class Application implements ServiceAddon {
     if (cloudwatchAddon && cloudwatchAddon.container) {
       this.container.addContainerDependencies({
         container: cloudwatchAddon.container,
-        condition: ecs.ContainerDependencyCondition.START
+        condition: ecs.ContainerDependencyCondition.START,
       })
     }
 
@@ -101,7 +101,7 @@ export class Application implements ServiceAddon {
     if (xrayAddon && xrayAddon.container) {
       this.container.addContainerDependencies({
         container: xrayAddon.container,
-        condition: ecs.ContainerDependencyCondition.HEALTHY
+        condition: ecs.ContainerDependencyCondition.HEALTHY,
       })
     }
   }
