@@ -128,4 +128,24 @@ export = {
 
     test.done();
   },
+
+  'throws if path and Protocol.GRPC'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
+      healthCheck: {
+        protocol,
+        path: '/',
+      },
+    });
+
+    // THEN
+    test.doesNotThrow(() => toThrow(appmesh.Protocol.HTTP));
+    test.throws(() => toThrow(appmesh.Protocol.GRPC), /The path property cannot be set with Protocol.GRPC/);
+
+    test.done();
+  },
+
 };

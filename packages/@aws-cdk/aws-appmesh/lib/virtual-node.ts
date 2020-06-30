@@ -167,6 +167,10 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     throw new Error('The path property cannot be set with Protocol.TCP');
   }
 
+  if (hc.protocol === Protocol.GRPC && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.GRPC');
+  }
+
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
