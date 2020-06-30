@@ -93,11 +93,43 @@ elements: [
 
 For configsets, a single config is the common use case:
 
+{
+  config: {
+    files: {
+      '/bla.txt': {
+        ...
+      }
+    },
+    packages: {
+      sysvinit: {
+        nginx: {
+          ...
+        }
+      }
+    }
+  }
+}
+
+
+
+
 ```ts
-CloudFormationInit.simpleConfig([
+CloudFormationInit.simpleConfig(
   InitFile.from(...),
   InitPackage.from(...),
-])
+  InitFile.from(...),
+  InitCommand.shellScript(...),
+  InitCommand.argvCommand(...),
+)
+
+CloudFormationInit.simpleConfig({
+  files: [
+    InitFile.from(...),
+  ],
+  packages: [
+    InitPackage.from(...),
+  ],
+})
 ```
 
 For more complex cases, we can do:
@@ -109,8 +141,53 @@ CloudFormationInit.withConfigSets({
     'reverse': ['cs2', 'cs1'],
   },
   configs: {
-    cs1: [ ... ],
-    cs2: [ ... ],
+    nested: {
+      files: [...],
+      packages: [...]
+    },
+    flatList: [ ... ],
   }
 ])
+
+init.addConfigSet();
+init.addConfigKey('bla', new ConfigKey(...));
+init.addKeyToConfigSet('default', 'bla');
 ```
+
+CloudFormationInitConfigSet({
+
+  configs: Record<string, Config> = {
+    nested: new CloudFormationInitConfig({ ... })
+  }
+})
+
+Config implements IConfigSet
+ConfigSet implements IConfigSet
+
+
+CloudFormationInit.fromConfigKeys([]) -> { configSet: { default: ['a', 'b', 'c', ... }}
+CloudFormationInit.withConfigSets({ configSet: { default: ['a', 'b', 'c', )
+
+configKey.append(rhs): ConfigKey
+
+
+class EnableCfnHup extends ConfigKey {
+  constructor() {
+    super([
+      InitFile...
+      InitFile..
+      InitService...
+    ]);
+  }
+}
+
+const myHup = new EnableCfnHup();
+myHup.add(...);
+
+
+class BonesCfnInit {
+  public readonly afterIsengard: ConfigKey;
+  public readonly sharedConfig: ConfigKey;
+}
+
+bonesInit.afterIsengard.add(InitFile(...));

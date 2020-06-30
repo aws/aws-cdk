@@ -9,6 +9,8 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
+import { CloudFormationInit } from './cfn-init';
+import { CidrBlock } from './network-util';
 
 /**
  * Name tag constant
@@ -362,6 +364,12 @@ export class Instance extends Resource implements IInstance {
   }
 
   /**
+   * Use a CloudFormation Init configuration at instance startup
+   */
+  public addCloudFormationInit(init: CloudFormationInit, options: AddCloudFormationInitOptions = {}) {
+  }
+
+  /**
    * Apply CloudFormation update policies for the instance
    */
   private applyUpdatePolicies(props: InstanceProps) {
@@ -374,4 +382,24 @@ export class Instance extends Resource implements IInstance {
       };
     }
   }
+}
+
+
+/**
+ * Options for adding a CloudFormation init
+ */
+export interface AddCloudFormationInitOptions {
+  /**
+   * ConfigSet to activate
+   *
+   * @default 'default'
+   */
+  readonly configSet?: string;
+
+  /**
+   * Timeout waiting for the configuration to be applied
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
 }
