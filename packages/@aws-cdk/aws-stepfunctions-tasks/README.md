@@ -37,6 +37,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [UpdateItem](#updateitem)
 - [ECS](#ecs)
   - [RunTask](#runtask)
+    - [EC2](#ec2)
+    - [Fargate](#fargate)
 - [EMR](#emr)
   - [Create Cluster](#create-cluster)
   - [Termination Protection](#termination-protection)
@@ -305,31 +307,105 @@ Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions
 
 [RunTask](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) starts a new task using the specified task definition.
 
+#### EC2
+
+The EC2 launch type allows you to run your containerized applications on a cluster
+of Amazon EC2 instances that you manage.
+
+When a task that uses the EC2 launch type is launched, Amazon ECS must determine where
+to place the task based on the requirements specified in the task definition, such as
+CPU and memory. Similarly, when you scale down the task count, Amazon ECS must determine
+which tasks to terminate. You can apply task placement strategies and constraints to
+customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
+
+The following example runs a job from a task definition on EC2
+
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
-
-new ecs.RunEcsFargateTask({
-  cluster,
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
-        {
-          name: 'CONTAINER_INPUT',
-          value: JsonPath.stringAt('$.valueFromStateData'),
-        }
-      ]
-    }
-  ]
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
 });
 
-fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
+const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
 
-new sfn.Task(this, 'CallFargate', {
-  task: fargateTask
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinition,
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      placementStrategies: [
+        ecs.PlacementStrategy.spreadAcrossInstances(),
+        ecs.PlacementStrategy.packedByCpu(),
+        ecs.PlacementStrategy.randomly(),
+      ],
+      placementConstraints: [
+        ecs.PlacementConstraint.memberOf('blieptuut')
+      ],
+    }),
+  });
+```
+
+#### Fargate
+
+AWS Fargate is a serverless compute engine for containers that works with Amazon
+Elastic Container Service (ECS). Fargate makes it easy for you to focus on building
+your applications. Fargate removes the need to provision and manage servers, lets you
+specify and pay for resources per application, and improves security through application
+isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
+
+The Fargate launch type allows you to run your containerized applications without the need
+to provision and manage the backend infrastructure. Just register your task definition and
+Fargate launches the container for you.
+
+The following example runs a job from a task definition on Fargate
+
+```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
+});
+
+const containerDefinition = taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  containerOverrides: [{
+    containerDefinition,
+    environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+  }],
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
 });
 ```
 
