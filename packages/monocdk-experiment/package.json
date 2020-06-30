@@ -24,7 +24,9 @@
     "compat": "cdk-compat"
   },
   "awslint": {
-    "exclude": ["*:*"]
+    "exclude": [
+      "*:*"
+    ]
   },
   "cdk-build": {
     "eslint": {
