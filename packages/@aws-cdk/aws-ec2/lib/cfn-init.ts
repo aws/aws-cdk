@@ -1,3 +1,4 @@
+import { Construct } from'@aws-cdk/core';
 import { InitElement } from './cfn-init-elements';
 
 /**
@@ -41,15 +42,54 @@ export class CloudFormationInit {
   public addConfigSet(configSetName: string) {
   }
 
-  public addConfigToSet(configSetName: string) {
+  public addConfigToSet(configSetName: string, ...configNames: string[]) {
   }
 }
 
 export class InitConfig {
-  constructor(private readonly elements: InitElement[]) {
+  private readonly elements = new Array<InitElement>();
+
+  constructor(elements: InitElement[]) {
+    this.add(...elements);
   }
 
   public add(...elements: InitElement[]) {
+    for (const element of elements) {
+      element.renderInto(this);
+    }
+    this.elements.push(...elements);
+  }
+
+  public bind(scope: Construct) {
+    for (const element of this.elements) {
+      element.bind(scope);
+    }
+  }
+
+  public addCommand() {
+  }
+
+  public addPackage() {
+  }
+
+  public renderConfig(): any {
+    for (const element of this.elements) {
+      const rendered = element.renderInto(configJson);
+
+      {
+        common: {
+          'key_001': {
+          },
+          'mycommand': {
+          },
+        },
+        service: {
+          sysvinit: {
+            nginx: { ... }
+          },
+        },
+      }
+    }
   }
 }
 

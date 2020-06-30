@@ -7,6 +7,9 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
  * Base class for all CloudFormation Init elements
  */
 export abstract class InitElement {
+
+  public abstract renderElement(): any;
+  public abstract bind(scope: Construct): void;
 }
 
 /**
@@ -91,6 +94,15 @@ export class InitCommand extends InitElement {
 
   protected constructor() {
     super();
+  }
+
+  public renderInto(json: InitJson) {
+    json.addServiceKey('...');
+    if (!this.key) {
+      const key = json.commands.length;
+      json.addCommand(key, { ... });
+    } else {
+    }
   }
 }
 
@@ -392,6 +404,7 @@ export class InitSource extends InitElement {
    * Create an asset from the given directory and use that
    */
   public static fromDirectoryAsset(targetDirectory: string, sourceDirectory: string): InitSource {
+    new s3_assets.Asset(scope, 'Asset', targetDiretory)
   }
 
   /**
