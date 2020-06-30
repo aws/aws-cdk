@@ -107,6 +107,7 @@ export = {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
     const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
+    const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -135,6 +136,7 @@ export = {
     const stagingTmp = path.join('.', '.cdk.staging');
     test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
     test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
+    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
 
     test.done();
   },
