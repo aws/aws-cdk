@@ -335,12 +335,7 @@ export class GraphQLApi extends Construct {
             props.authorizationConfig.defaultAuthorization.userPoolConfig!,
           )
           : undefined,
-      additionalAuthenticationProviders: props.authorizationConfig
-        ?.additionalAuthorizationModes!.length
-        ? this.formatAdditionalAuthorizationModes(
-          props.authorizationConfig!.additionalAuthorizationModes!,
-        )
-        : undefined,
+      additionalAuthenticationProviders: this.formatAdditionalAuthenticationProviders(props),
     });
 
     this.apiId = this.api.attrApiId;
@@ -405,6 +400,21 @@ export class GraphQLApi extends Construct {
       description,
       name,
       table,
+    });
+  }
+
+  /**
+   * add a new http data source to this API
+   * @param name The name of the data source
+   * @param description The description of the data source
+   * @param endpoint The http endpoint
+   */
+  public addHttpDataSource(name: string, description: string, endpoint: string): HttpDataSource {
+    return new HttpDataSource(this, `${name}DS`, {
+      api: this,
+      description,
+      endpoint,
+      name,
     });
   }
 
@@ -553,6 +563,11 @@ export class GraphQLApi extends Construct {
       ],
       [],
     );
+  }
+
+  private formatAdditionalAuthenticationProviders(props: GraphQLApiProps): CfnGraphQLApi.AdditionalAuthenticationProviderProperty[] | undefined {
+    const authModes = props.authorizationConfig?.additionalAuthorizationModes;
+    return authModes ? this.formatAdditionalAuthorizationModes(authModes) : undefined;
   }
 }
 
@@ -748,6 +763,30 @@ export class DynamoDbDataSource extends BackedDataSource {
     } else {
       props.table.grantReadWriteData(this);
     }
+  }
+}
+
+/**
+ * Properties for an AppSync http datasource
+ */
+export interface HttpDataSourceProps extends BaseDataSourceProps {
+  /**
+   * The http endpoint
+   */
+  readonly endpoint: string;
+}
+
+/**
+ * An AppSync datasource backed by a http endpoint
+ */
+export class HttpDataSource extends BaseDataSource {
+  constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    super(scope, id, props, {
+      httpConfig: {
+        endpoint: props.endpoint,
+      },
+      type: 'HTTP',
+    });
   }
 }
 
@@ -986,7 +1025,7 @@ export class Assign {
    * Renders the assignment as a map element.
    */
   public putInMap(map: string): string {
-    return `$util.qr($${map}.put("${this.attr}", "${this.arg}"))`;
+    return `$util.qr($${map}.put("${this.attr}", ${this.arg}))`;
   }
 }
 
@@ -1057,8 +1096,8 @@ export class PrimaryKey {
       assignments.push(this.skey.renderAsAssignment());
     }
     return `"key" : {
-            ${assignments.join(',')}
-        }`;
+      ${assignments.join(',')}
+    }`;
   }
 }
 
@@ -1093,13 +1132,18 @@ export class AttributeValues {
   }
 
   /**
+   * Renders the variables required for `renderTemplate`.
+   */
+  public renderVariables(): string {
+    return `#set($input = ${this.container})
+      ${this.assignments.map(a => a.putInMap('input')).join('\n')}`;
+  }
+
+  /**
    * Renders the attribute value assingments to a VTL string.
    */
   public renderTemplate(): string {
-    return `
-            #set($input = ${this.container})
-            ${this.assignments.map(a => a.putInMap('input')).join('\n')}
-            "attributeValues": $util.dynamodb.toMapValuesJson($input)`;
+    return '"attributeValues": $util.dynamodb.toMapValuesJson($input)';
   }
 }
 
@@ -1216,12 +1260,14 @@ export abstract class MappingTemplate {
    * @param values the assignment of Mutation values to the table attributes
    */
   public static dynamoDbPutItem(key: PrimaryKey, values: AttributeValues): MappingTemplate {
-    return this.fromString(`{
-            "version" : "2017-02-28",
-            "operation" : "PutItem",
-            ${key.renderTemplate()},
-            ${values.renderTemplate()}
-        }`);
+    return this.fromString(`
+      ${values.renderVariables()}
+      {
+        "version": "2017-02-28",
+        "operation": "PutItem",
+        ${key.renderTemplate()},
+        ${values.renderTemplate()}
+      }`);
   }
 
   /**

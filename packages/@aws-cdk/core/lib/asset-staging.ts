@@ -1,11 +1,14 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
+import * as crypto from 'crypto';
+import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { Construct, ISynthesisSession } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
+
+const STAGING_TMP = '.cdk.staging';
 
 /**
  * Initialization properties for `AssetStaging`.
@@ -117,22 +120,9 @@ export class AssetStaging extends Construct {
 
     // Asset has been bundled
     if (this.bundleDir) {
-      // Try to rename bundling directory to staging directory
-      try {
-        fs.renameSync(this.bundleDir, targetPath);
-        return;
-      } catch (err) {
-        // /tmp and cdk.out could be mounted across different mount points
-        // in this case we will fallback to copying. This can happen in Windows
-        // Subsystem for Linux (WSL).
-        if (err.code === 'EXDEV') {
-          fs.mkdirSync(targetPath);
-          FileSystem.copyDirectory(this.bundleDir, targetPath, this.fingerprintOptions);
-          return;
-        }
-
-        throw err;
-      }
+      // Move bundling directory to staging directory
+      fs.moveSync(this.bundleDir, targetPath);
+      return;
     }
 
     // Copy file/directory to staging directory
@@ -148,8 +138,14 @@ export class AssetStaging extends Construct {
   }
 
   private bundle(options: BundlingOptions): string {
-    // Create temporary directory for bundling
-    const bundleDir = FileSystem.mkdtemp('cdk-asset-bundle-');
+    // Temp staging directory in the working directory
+    const stagingTmp = path.join('.', STAGING_TMP);
+    fs.ensureDirSync(stagingTmp);
+
+    // Create temp directory for bundling inside the temp staging directory
+    const bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-')));
+    // Chmod the bundleDir to full access.
+    fs.chmodSync(bundleDir, 0o777);
 
     let user: string;
     if (options.user) {
@@ -219,7 +215,9 @@ export class AssetStaging extends Construct {
         if (!props.assetHash) {
           throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
         }
-        return props.assetHash;
+        // Hash the hash to make sure we can use it in a file/directory name.
+        // The resulting hash will also have the same length as for the other hash types.
+        return crypto.createHash('sha256').update(props.assetHash).digest('hex');
       default:
         throw new Error('Unknown asset hash type.');
     }
