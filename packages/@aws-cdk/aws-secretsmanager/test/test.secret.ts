@@ -344,7 +344,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -369,97 +372,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
-          Effect: 'Allow',
-          Resource: { Ref: 'SecretA720EF05' },
-        }],
-      },
-    }));
-    expectStack.to(haveResourceLike('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {},
-          {},
-          {},
-          {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            Condition: {
-              StringEquals: {
-                'kms:ViaService': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'secretsmanager.',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      '.amazonaws.com',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::GetAtt': [
-                  'Role1ABCC5F0',
-                  'Arn',
-                ],
-              },
-            },
-            Resource: '*',
-          },
-        ],
-      },
-    }));
-    test.done();
-  },
-
-  'grantUpdate'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const secret = new secretsmanager.Secret(stack, 'Secret', {});
-    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
-
-    // WHEN
-    secret.grantUpdate(role);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [{
-          Action: 'secretsmanager:UpdateSecret',
-          Effect: 'Allow',
-          Resource: { Ref: 'SecretA720EF05' },
-        }],
-      },
-    }));
-    test.done();
-  },
-
-  'grantUpdate with kms'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'KMS');
-    const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
-    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
-
-    // WHEN
-    secret.grantUpdate(role);
-
-    // THEN
-    const expectStack = expect(stack);
-    expectStack.to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [{
-          Action: 'secretsmanager:UpdateSecret',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
