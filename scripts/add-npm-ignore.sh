@@ -12,7 +12,7 @@ cd ${rootdir}
 
 statement=${1:-}
 
-if [ -z ${statement} ]; then
+if [ -z "${statement}" ]; then
   echo "Usage: add-npm-ignore.sh STATEMENT"
   exit 1
 fi
