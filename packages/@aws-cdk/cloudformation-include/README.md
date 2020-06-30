@@ -135,7 +135,7 @@ All items unchecked below are currently not supported.
 - [x] Resources
 - [x] Parameters
 - [x] Conditions
-- [ ] Outputs
+- [x] Outputs
 
 ### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
 
