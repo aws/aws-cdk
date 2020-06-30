@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -107,6 +107,35 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = {logGroupName: 'my-log-group'};
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'table',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
 
@@ -274,6 +303,37 @@ export = {
     test.done();
   },
 
+  'specify liveData property on graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My live graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
+      liveData: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My live graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        liveData: true,
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'can use imported alarm with graph'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -362,6 +422,35 @@ export = {
 
     test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
     test.deepEqual(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0], { yAxis: 'left', value: 100, color: '#d62728' });
+    test.done();
+  },
+
+  'legend position is respected in constructor'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' }) ],
+      legendPosition: LegendPosition.RIGHT,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        legend: {
+          position: 'right',
+        },
+      },
+    }]);
+
     test.done();
   },
 };

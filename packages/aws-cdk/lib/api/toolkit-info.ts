@@ -3,11 +3,17 @@ import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
 import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap';
-import { waitForStack } from './util/cloudformation';
+import { stabilizeStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
-/** @experimental */
+/**
+ * Information on the Bootstrap stack
+ *
+ * Called "ToolkitInfo" for historical reasons.
+ *
+ * @experimental
+ */
 export class ToolkitInfo {
   public static determineName(overrideName?: string) {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
@@ -16,9 +22,15 @@ export class ToolkitInfo {
   /** @experimental */
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo | undefined> {
     const cfn = sdk.cloudFormation();
-    const stack = await waitForStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+    const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
+        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+      return undefined;
+    }
+    if (stack.stackStatus.isCreationFailure) {
+      // Treat a "failed to create" bootstrap stack as an absent one.
+      debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
         environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
       return undefined;
     }

@@ -17,6 +17,9 @@ export class LambdaSubscription implements sns.ITopicSubscription {
   constructor(private readonly fn: lambda.IFunction, private readonly props: LambdaSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for a Lambda function to subscribe to an SNS topic
+   */
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
@@ -36,6 +39,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 

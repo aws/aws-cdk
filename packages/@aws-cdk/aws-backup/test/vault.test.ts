@@ -16,17 +16,7 @@ test('create a vault', () => {
 
   // THEN
   expect(stack).toHaveResource('AWS::Backup::BackupVault', {
-    BackupVaultName: {
-      'Fn::Join': [
-        '',
-        [
-          'Vault',
-          {
-            Ref: 'AWS::StackName',
-          },
-        ],
-      ],
-    },
+    BackupVaultName: 'Vault',
   });
 });
 
@@ -148,5 +138,17 @@ test('defaults to all notifications', () => {
 test('throws with invalid name', () => {
   expect(() => new BackupVault(stack, 'Vault', {
     backupVaultName: 'Hello!Inv@lid',
+  })).toThrow(/Expected vault name to match pattern/);
+});
+
+test('throws with whitespace in name', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    backupVaultName: 'Hello Invalid',
+  })).toThrow(/Expected vault name to match pattern/);
+});
+
+test('throws with too short name', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    backupVaultName: 'x',
   })).toThrow(/Expected vault name to match pattern/);
 });

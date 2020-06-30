@@ -1,15 +1,15 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Builder } from './builder';
+import { Bundling, ParcelBaseOptions } from './bundling';
+import { PackageJsonManager } from './package-json-manager';
 import { nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -35,36 +35,6 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * `NODEJS_10_X` otherwise.
    */
   readonly runtime?: lambda.Runtime;
-
-  /**
-   * Whether to minify files when bundling.
-   *
-   * @default false
-   */
-  readonly minify?: boolean;
-
-  /**
-   * Whether to include source maps when bundling.
-   *
-   * @default false
-   */
-  readonly sourceMaps?: boolean;
-
-  /**
-   * The build directory
-   *
-   * @default - `.build` in the entry file directory
-   */
-  readonly buildDir?: string;
-
-  /**
-   * The cache directory
-   *
-   * Parcel uses a filesystem cache for fast rebuilds.
-   *
-   * @default - `.cache` in the root directory
-   */
-  readonly cacheDir?: string;
 }
 
 /**
@@ -76,33 +46,32 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
+    // Entry and defaults
     const entry = findEntry(id, props.entry);
-    const handler = props.handler || 'handler';
-    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
-    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
+    const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime || defaultRunTime;
+    const runtime = props.runtime ?? defaultRunTime;
 
-    // Build with Parcel
-    const builder = new Builder({
-      entry,
-      outDir: handlerDir,
-      global: handler,
-      minify: props.minify,
-      sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-    });
-    builder.build();
+    // We need to restore the package.json after bundling
+    const packageJsonManager = new PackageJsonManager();
 
-    super(scope, id, {
-      ...props,
-      runtime,
-      code: lambda.Code.fromAsset(handlerDir),
-      handler: `index.${handler}`,
-    });
+    try {
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: Bundling.parcel({
+          entry,
+          runtime,
+          ...props,
+        }),
+        handler: `index.${handler}`,
+      });
+    } finally {
+      // We can only restore after the code has been bound to the function
+      packageJsonManager.restore();
+    }
   }
 }
 
@@ -151,17 +120,4 @@ function findDefiningFile(): string {
   }
 
   return stackTrace[functionIndex + 1].file;
-}
-
-/**
- * Extracts the version from the runtime
- */
-function extractVersion(runtime: lambda.Runtime): string | undefined {
-  const match = runtime.name.match(/nodejs(\d+)/);
-
-  if (!match) {
-    return undefined;
-  }
-
-  return match[1];
 }

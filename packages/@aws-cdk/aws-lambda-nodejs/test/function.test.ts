@@ -1,42 +1,34 @@
 import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { NodejsFunction } from '../lib';
-import { Builder, BuilderOptions } from '../lib/builder';
+import { Bundling } from '../lib/bundling';
 
-jest.mock('../lib/builder', () => {
+jest.mock('../lib/bundling', () => {
   return {
-    Builder: jest.fn().mockImplementation((options: BuilderOptions) => {
-      return {
-        build: jest.fn(() => {
-          require('fs-extra').ensureDirSync(options.outDir); // eslint-disable-line @typescript-eslint/no-require-imports
-        }),
-      };
-    }),
+    Bundling: {
+      parcel: jest.fn().mockReturnValue({
+        bind: () => {
+          return { inlineCode: 'code' };
+        },
+        bindToResource: () => { return; },
+      }),
+    },
   };
 });
 
 let stack: Stack;
-const buildDir = path.join(__dirname, '.build');
 beforeEach(() => {
   stack = new Stack();
-  fs.removeSync(buildDir);
-});
-
-afterEach(() => {
-  fs.removeSync(buildDir);
+  jest.clearAllMocks();
 });
 
 test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-    global: 'handler',
-    outDir: expect.stringContaining(buildDir),
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -49,8 +41,23 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Builder).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+  }));
+});
+
+test('NodejsFunction with container env vars', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    parcelEnvironment: {
+      KEY: 'VALUE',
+    },
+  });
+
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+    parcelEnvironment: {
+      KEY: 'VALUE',
+    },
   }));
 });
 

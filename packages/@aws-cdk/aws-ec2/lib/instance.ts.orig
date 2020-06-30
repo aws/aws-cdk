@@ -1,0 +1,420 @@
+import * as iam from '@aws-cdk/aws-iam';
+
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Connections, IConnectable } from './connections';
+import { CfnInstance } from './ec2.generated';
+import { InstanceType } from './instance-types';
+import { ILaunchTemplate } from './launch-template';
+import { IMachineImage, OperatingSystemType } from './machine-image';
+import { instanceBlockDeviceMappings } from './private/ebs-util';
+import { ISecurityGroup, SecurityGroup } from './security-group';
+import { UserData } from './user-data';
+<<<<<<< HEAD
+import { BlockDevice } from './volume';
+import { IVpc, SubnetSelection } from './vpc';
+=======
+import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { IVpc, Subnet, SubnetSelection } from './vpc';
+>>>>>>> master
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
+
+export interface IInstance extends IResource, IConnectable, iam.IGrantable {
+  /**
+   * The instance's ID
+   *
+   * @attribute
+   */
+  readonly instanceId: string;
+
+  /**
+   * The availability zone the instance was launched in
+   *
+   * @attribute
+   */
+  readonly instanceAvailabilityZone: string;
+
+  /**
+   * Private DNS name for this instance
+   * @attribute
+   */
+  readonly instancePrivateDnsName: string;
+
+  /**
+   * Private IP for this instance
+   *
+   * @attribute
+   */
+  readonly instancePrivateIp: string;
+
+  /**
+   * Publicly-routable DNS name for this instance.
+   *
+   * (May be an empty string if the instance does not have a public name).
+   *
+   * @attribute
+   */
+  readonly instancePublicDnsName: string;
+
+  /**
+   * Publicly-routable IP  address for this instance.
+   *
+   * (May be an empty string if the instance does not have a public IP).
+   *
+   * @attribute
+   */
+  readonly instancePublicIp: string;
+}
+
+export interface InstanceProps extends InstanceBaseProps {
+
+  /**
+   * Where to place the instance within the VPC
+   *
+   * @default - Private subnets.
+   */
+  readonly vpcSubnets?: SubnetSelection;
+
+  /**
+   * In which AZ to place the instance within the VPC
+   *
+   * @default - Random zone.
+   */
+  readonly availabilityZone?: string;
+
+  /**
+   * The name of the instance
+   *
+   * @default - CDK generated name
+   */
+  readonly instanceName?: string;
+
+  /**
+   * Specifies whether to enable an instance launched in a VPC to perform NAT.
+   * This controls whether source/destination checking is enabled on the instance.
+   * A value of true means that checking is enabled, and false means that checking is disabled.
+   * The value must be false for the instance to perform NAT.
+   *
+   * @default - true
+   */
+  readonly sourceDestCheck?: boolean;
+
+  /**
+   * Defines a private IP address to associate with an instance.
+   *
+   * Private IP should be available within the VPC that the instance is build within.
+   *
+   * @default - no association
+   */
+  readonly privateIpAddress?: string;
+
+  /**
+   * Launch template to use unspecified fields from
+   *
+   * @default - Don't use a Launch Template
+   */
+  readonly launchTemplate?: ILaunchTemplate;
+}
+/**
+ * Properties of an EC2 Instance
+ */
+interface InstanceBaseProps {
+
+  /**
+   * Name of SSH keypair to grant access to instance
+   *
+   * @default - Use key from Launch Template if available, otherwise no SSH access will be possible.
+   */
+  readonly keyName?: string;
+
+  /**
+   * Whether the instance could initiate connections to anywhere by default.
+   * This property is only used when you do not provide a security group.
+   *
+   * @default true
+   */
+  readonly allowAllOutbound?: boolean;
+
+  /**
+   * The length of time to wait for the resourceSignalCount
+   *
+   * The maximum value is 43200 (12 hours).
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly resourceSignalTimeout?: Duration;
+
+  /**
+   * VPC to launch the instance in.
+   */
+  readonly vpc: IVpc;
+
+  /**
+   * Security Group to assign to this instance
+   *
+   * @default - create new security group
+   */
+  readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Type of instance to launch
+   *
+   * @default - Use instance type from Launch Template (which must be set).
+   */
+  readonly instanceType?: InstanceType;
+
+  /**
+   * AMI to launch
+   *
+   * @default - Use AMI from Launch Template (which must be set).
+   */
+  readonly machineImage?: IMachineImage;
+
+  /**
+   * Specific UserData to use
+   *
+   * The UserData may still be mutated after creation.
+   *
+   * @default - Use the UserData from the Launch Template, or no user data.
+   */
+  readonly userData?: UserData;
+
+  /**
+   * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
+   *
+   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * @example
+   * const role = new iam.Role(this, 'MyRole', {
+   *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   * });
+   *
+   * @default - Use the Role from the Launch Template, otherwise a role will automatically be created, it can be accessed via the `role` property
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+   *
+   * Each instance that is launched has an associated root device volume,
+   * either an Amazon EBS volume or an instance store volume.
+   * You can use block device mappings to specify additional EBS volumes or
+   * instance store volumes to attach to an instance when it is launched.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
+   *
+   * @default - Uses the block device mapping from the Launch Template, otherwise from the AMI
+   */
+  readonly blockDevices?: BlockDevice[];
+}
+
+/**
+ * This represents a single EC2 instance
+ */
+export class Instance extends Resource implements IInstance {
+
+  /**
+   * Allows specify security group connections for the instance.
+   */
+  public readonly connections: Connections;
+
+  /**
+   * The IAM role assumed by the instance.
+   */
+  public readonly role: iam.IRole;
+
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * the underlying instance resource
+   */
+  public readonly instance: CfnInstance;
+  /**
+   * @attribute
+   */
+  public readonly instanceId: string;
+  /**
+   * @attribute
+   */
+  public readonly instanceAvailabilityZone: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePrivateDnsName: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePrivateIp: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePublicDnsName: string;
+  /**
+   * @attribute
+   */
+  public readonly instancePublicIp: string;
+
+  private readonly securityGroup: ISecurityGroup;
+  private readonly securityGroups: ISecurityGroup[] = [];
+  private readonly _userData?: UserData;
+  private readonly _osType?: OperatingSystemType;
+
+  constructor(scope: Construct, id: string, props: InstanceProps) {
+    super(scope, id);
+
+    if (props.securityGroup) {
+      this.securityGroup = props.securityGroup;
+    } else {
+      this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
+        vpc: props.vpc,
+        allowAllOutbound: props.allowAllOutbound !== false,
+      });
+    }
+    this.connections = new Connections({ securityGroups: [this.securityGroup] });
+    this.securityGroups.push(this.securityGroup);
+    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
+
+    if (!props.launchTemplate && !props.instanceType) {
+      throw new Error('If \'launchTemplate\' is not given, \'instanceType\' is required');
+    }
+
+    if (!props.launchTemplate && !props.machineImage) {
+      throw new Error('If \'launchTemplate\' is not given, \'machineImage\' is required');
+    }
+
+    // FIXME: What if role is not given, and Launch Template is given?
+    this.role = props.role ?? new iam.Role(this, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+    this.grantPrincipal = this.role;
+
+    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+      roles: [this.role.roleName],
+    });
+
+    // use delayed evaluation
+    const imageConfig = props.machineImage?.getImage(this);
+    this._userData = props.userData ?? imageConfig?.userData;
+    const userDataToken = this._userData ? Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) }) : undefined;
+    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+
+    const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
+    let subnet;
+    if (props.availabilityZone) {
+      const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
+      if (selected.length === 1) {
+        subnet = selected[0];
+      } else {
+        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+      }
+    } else {
+      if (subnets.length > 0) {
+        subnet = subnets[0];
+      } else {
+        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+      }
+    }
+    if (!subnet) {
+      // We got here and we don't have a subnet because of validation errors.
+      // Invent one on the spot so the code below doesn't fail.
+      subnet = Subnet.fromSubnetAttributes(this, 'DummySubnet', {
+        subnetId: 's-notfound',
+        availabilityZone: 'az-notfound',
+      });
+    }
+
+    this.instance = new CfnInstance(this, 'Resource', {
+      imageId: imageConfig?.imageId,
+      keyName: props.keyName,
+      instanceType: props.instanceType?.toString(),
+      securityGroupIds: securityGroupsToken,
+      iamInstanceProfile: iamProfile.ref,
+      userData: userDataToken,
+      subnetId: subnet.subnetId,
+      availabilityZone: subnet.availabilityZone,
+      sourceDestCheck: props.sourceDestCheck,
+      blockDeviceMappings: instanceBlockDeviceMappings(this, props.blockDevices),
+      privateIpAddress: props.privateIpAddress,
+      launchTemplate: props.launchTemplate ? {
+        version: props.launchTemplate.versionNumber,
+        launchTemplateId: props.launchTemplate.launchTemplateId,
+        launchTemplateName: props.launchTemplate.launchTemplateName,
+      } : undefined,
+    });
+    this.instance.node.addDependency(this.role);
+
+    this._osType = imageConfig?.osType;
+    this.node.defaultChild = this.instance;
+
+    this.instanceId = this.instance.ref;
+    this.instanceAvailabilityZone = this.instance.attrAvailabilityZone;
+    this.instancePrivateDnsName = this.instance.attrPrivateDnsName;
+    this.instancePrivateIp = this.instance.attrPrivateIp;
+    this.instancePublicDnsName = this.instance.attrPublicDnsName;
+    this.instancePublicIp = this.instance.attrPublicIp;
+
+    this.applyUpdatePolicies(props);
+  }
+
+  /**
+   * Add the security group to the instance.
+   *
+   * @param securityGroup: The security group to add
+   */
+  public addSecurityGroup(securityGroup: ISecurityGroup): void {
+    this.securityGroups.push(securityGroup);
+  }
+  /**
+   * Add command to the startup script of the instance.
+   * The command must be in the scripting language supported by the instance's OS (i.e. Linux/Windows).
+   */
+  public addUserData(...commands: string[]) {
+    this.userData.addCommands(...commands);
+  }
+
+  /**
+   * Adds a statement to the IAM role assumed by the instance.
+   */
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.role.addToPolicy(statement);
+  }
+
+  public get userData() {
+    // FIXME: Does this suck?
+    if (!this._userData) {
+      throw new Error('Cannot access UserData on instance if it was set on LaunchTemplate');
+    }
+    return this._userData;
+  }
+
+  /**
+   * The type of OS the instance is running.
+   */
+  public get osType() {
+    // FIXME: Does this suck?
+    if (!this._osType) {
+      throw new Error('Cannot access osType on instance if a Machine Image was not given');
+    }
+    return this._osType;
+  }
+
+  /**
+   * Apply CloudFormation update policies for the instance
+   */
+  private applyUpdatePolicies(props: InstanceProps) {
+    if (props.resourceSignalTimeout !== undefined) {
+      this.instance.cfnOptions.creationPolicy = {
+        ...this.instance.cfnOptions.creationPolicy,
+        resourceSignal: {
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+        },
+      };
+    }
+  }
+}

@@ -29,8 +29,10 @@ new Bucket(this, 'MyFirstBucket');
  * `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
    `arn:aws:s3:::bucket_name/exampleobject.png` or
    `arn:aws:s3:::bucket_name/Development/*`)
- * `urlForObject(key)` - the URL of an object within the bucket (i.e.
+ * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
    `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+ * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
+   `s3://bucket/mykey`)
 
 ### Encryption
 
@@ -80,6 +82,13 @@ bucket.addToResourcePolicy(new iam.PolicyStatement({
   resources: [bucket.arnForObjects('file.txt')],
   principals: [new iam.AccountRootPrincipal()],
 }));
+```
+
+The bucket policy can be directly accessed after creation to add statements or
+adjust the removal policy.
+
+```ts
+bucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
 ```
 
 Most of the time, you won't have to manipulate the bucket policy directly.

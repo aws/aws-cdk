@@ -1,7 +1,6 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Construct, Duration, NestedStack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as path from 'path';
 import { KubectlLayer } from './kubectl-layer';
@@ -25,7 +24,7 @@ export class KubectlProvider extends NestedStack {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0-beta2' }) ],
+      layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0' }) ],
       memorySize: 256,
     });
 
@@ -40,4 +39,9 @@ export class KubectlProvider extends NestedStack {
       resources: [ '*' ],
     }));
   }
+
+  /**
+   * The custom resource provider service token.
+   */
+  public get serviceToken() { return this.provider.serviceToken; }
 }

@@ -218,6 +218,19 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
 
+### Max Instance Lifetime
+
+To enable the max instance lifetime support, specify `maxInstanceLifetime` property
+for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
+To clear a previously set value, just leave this property undefinied.
+
+### Instance Monitoring
+
+To disable detailed instance monitoring, specify `instanceMonitoring` property
+for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
+will be enabled.
+
+
 ### Future work
 
 - [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

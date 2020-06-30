@@ -52,6 +52,17 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+To connect your `App` to GitLab, use the `GitLabSourceCodeProvider`:
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: cdk.SecretValue.secretsManager('my-gitlab-token')
+  })
+});
+```
+
 To connect your `App` to CodeCommit, use the `CodeCommitSourceCodeProvider`:
 ```ts
 const repository = new codecommit.Repository(this, 'Repo', {
@@ -83,9 +94,20 @@ amplifyApp.addCustomRule({
 });
 ```
 
+When working with a single page application (SPA), use the
+`CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT` to set up a 200
+rewrite for all files to `index.html` except for the following
+file extensions: css, gif, ico, jpg, js, png, txt, svg, woff,
+ttf, map, json, webmanifest.
+
+```ts
+mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+```
+
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');
+domain.mapRoot(master); // map master branch to domain root
 domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```

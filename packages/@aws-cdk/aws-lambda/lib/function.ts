@@ -12,7 +12,7 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetention } from './log-retention';
+import { LogRetention, LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -98,6 +98,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * This is the role that will be assumed by the function upon execution.
    * It controls the permissions that the function will have. The Role must
    * be assumable by the 'lambda.amazonaws.com' service principal.
+   *
+   * The default Role automatically has permissions granted for Lambda execution. If you
+   * provide a Role, you must add the relevant AWS managed policies yourself.
+   *
+   * The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole" and
+   * "service-role/AWSLambdaVPCAccessExecutionRole".
    *
    * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
@@ -225,6 +231,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
+
+  /**
+   * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
+   * These options control the retry policy when interacting with CloudWatch APIs.
+   *
+   * @default - Default AWS SDK retry options.
+   */
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
    * Options for the `lambda.Version` resource automatically created by the
@@ -538,6 +552,7 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
+        logRetentionRetryOptions: props.logRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
     }

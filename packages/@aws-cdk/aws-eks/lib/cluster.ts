@@ -3,6 +3,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -12,6 +15,7 @@ import { KubernetesPatch } from './k8s-patch';
 import { KubernetesResource } from './k8s-resource';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions  } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -51,6 +55,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   * @attribute
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 }
 
 /**
@@ -82,6 +98,16 @@ export interface ClusterAttributes {
    * The certificate-authority-data for your cluster.
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  readonly clusterEncryptionConfigKeyArn: string;
 
   /**
    * The security groups associated with this cluster.
@@ -299,6 +325,16 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroupId: string;
+
+  /**
+   * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
+   */
+  public readonly clusterEncryptionConfigKeyArn: string;
+
+  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -331,6 +367,12 @@ export class Cluster extends Resource implements ICluster {
   public readonly defaultNodegroup?: Nodegroup;
 
   /**
+   * If the cluster has one (or more) FargateProfiles associated, this array
+   * will hold a reference to each.
+   */
+  private readonly _fargateProfiles: FargateProfile[] = [];
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -341,6 +383,12 @@ export class Cluster extends Resource implements ICluster {
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
+
+  private _openIdConnectProvider?: iam.OpenIdConnectProvider;
+
+  private _spotInterruptHandler?: HelmChart;
+
+  private _neuronDevicePlugin?: KubernetesResource;
 
   private readonly version: string | undefined;
 
@@ -409,6 +457,8 @@ export class Cluster extends Resource implements ICluster {
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
+    this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
@@ -492,6 +542,10 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: options.machineImageType,
     });
 
+    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
+      this.addNeuronDevicePlugin();
+    }
+
     return asg;
   }
 
@@ -505,8 +559,6 @@ export class Cluster extends Resource implements ICluster {
    * @param options options for creating a new nodegroup
    */
   public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
-    // initialize the awsAuth for this cluster
-    this._awsAuth = this._awsAuth ?? this.awsAuth;
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
@@ -596,15 +648,7 @@ export class Cluster extends Resource implements ICluster {
 
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && this.kubectlEnabled) {
-      this.addChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.7.3',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
-        },
-      });
+      this.addSpotInterruptHandler();
     }
   }
 
@@ -621,6 +665,63 @@ export class Cluster extends Resource implements ICluster {
     }
 
     return this._awsAuth;
+  }
+
+  /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuerUrl(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer URL. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+  }
+
+  /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuer(): string {
+    if (!this._clusterResource) {
+      throw new Error('unable to obtain OpenID Connect issuer. Cluster must be kubectl-enabled');
+    }
+
+    return this._clusterResource.attrOpenIdConnectIssuer;
+  }
+
+  /**
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get openIdConnectProvider() {
+    if (!this.kubectlEnabled) {
+      throw new Error('Cannot specify a OpenID Connect Provider if kubectl is disabled');
+    }
+
+    if (!this._openIdConnectProvider) {
+      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this.clusterOpenIdConnectIssuerUrl,
+        clientIds: [ 'sts.amazonaws.com' ],
+        /**
+         * For some reason EKS isn't validating the root certificate but a intermediat certificate
+         * which is one level up in the tree. Because of the a constant thumbprint value has to be
+         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+         */
+        thumbprints: [ '9e99a48a9960b14926bb7f3b02e22da2b0ab7280' ],
+      });
+    }
+
+    return this._openIdConnectProvider;
   }
 
   /**
@@ -664,6 +765,19 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Adds a service account to this cluster.
+   *
+   * @param id the id of this service account
+   * @param options service account options
+   */
+  public addServiceAccount(id: string, options: ServiceAccountOptions = { }) {
+    return new ServiceAccount(this, id, {
+      ...options,
+      cluster: this,
+    });
+  }
+
+  /**
    * Returns the role ARN for the cluster creation role for kubectl-enabled
    * clusters.
    * @param assumedBy The IAM that will assume this role. If omitted, the
@@ -671,12 +785,12 @@ export class Cluster extends Resource implements ICluster {
    *
    * @internal
    */
-  public _getKubectlCreationRoleArn(assumedBy?: iam.IRole) {
+  public get _kubectlCreationRole() {
     if (!this._clusterResource) {
       throw new Error('Unable to perform this operation since kubectl is not enabled for this cluster');
     }
 
-    return this._clusterResource.getCreationRoleArn(assumedBy);
+    return this._clusterResource.creationRole;
   }
 
   /**
@@ -689,7 +803,58 @@ export class Cluster extends Resource implements ICluster {
     }
 
     const uid = '@aws-cdk/aws-eks.KubectlProvider';
-    return this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+    const provider = this.stack.node.tryFindChild(uid) as KubectlProvider || new KubectlProvider(this.stack, uid);
+
+    // allow the kubectl provider to assume the cluster creation role.
+    this._clusterResource.addTrustedRole(provider.role);
+
+    return provider;
+  }
+
+  /**
+   * Internal API used by `FargateProfile` to keep inventory of Fargate profiles associated with
+   * this cluster, for the sake of ensuring the profiles are created sequentially.
+   *
+   * @returns the list of FargateProfiles attached to this cluster, including the one just attached.
+   * @internal
+   */
+  public _attachFargateProfile(fargateProfile: FargateProfile): FargateProfile[] {
+    this._fargateProfiles.push(fargateProfile);
+    return this._fargateProfiles;
+  }
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
+  private addSpotInterruptHandler() {
+    if (!this._spotInterruptHandler) {
+      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+        chart: 'aws-node-termination-handler',
+        version: '0.7.3',
+        repository: 'https://aws.github.io/eks-charts',
+        namespace: 'kube-system',
+        values: {
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+        },
+      });
+    }
+
+    return this._spotInterruptHandler;
+  }
+
+  /**
+   * Installs the Neuron device plugin on the cluster if it's not
+   * already added.
+   */
+  private addNeuronDevicePlugin() {
+    if (!this._neuronDevicePlugin) {
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
+    }
+
+    return this._neuronDevicePlugin;
   }
 
   /**
@@ -905,6 +1070,8 @@ export interface AutoScalingGroupOptions {
 class ImportedCluster extends Resource implements ICluster {
   public readonly vpc: ec2.IVpc;
   public readonly clusterCertificateAuthorityData: string;
+  public readonly clusterSecurityGroupId: string;
+  public readonly clusterEncryptionConfigKeyArn: string;
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
@@ -918,6 +1085,8 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.clusterCertificateAuthorityData = props.clusterCertificateAuthorityData;
+    this.clusterSecurityGroupId = props.clusterSecurityGroupId;
+    this.clusterEncryptionConfigKeyArn = props.clusterEncryptionConfigKeyArn;
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
@@ -966,6 +1135,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
+      + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
   }
 
@@ -1030,6 +1200,11 @@ export enum NodeType {
    * GPU instances
    */
   GPU = 'GPU',
+
+  /**
+   * Inferentia instances
+   */
+  INFERENTIA = 'INFERENTIA',
 }
 
 /**
@@ -1076,7 +1251,10 @@ export enum MachineImageType {
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+const INFERENTIA_INSTANCETYPES = ['inf1'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+      NodeType.STANDARD;
 }

@@ -63,4 +63,18 @@ export interface BootstrappingParameters {
    * @default - the role will have no policies attached
    */
   readonly cloudFormationExecutionPolicies?: string[];
+
+  /**
+   * Identifier to distinguish multiple bootstrapped environments
+   *
+   * @default - Default qualifier
+   */
+  readonly qualifier?: string;
+
+  /**
+   * Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+   *
+   * @default true
+   */
+  readonly publicAccessBlockConfiguration?: boolean;
 }

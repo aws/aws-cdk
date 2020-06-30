@@ -1,5 +1,5 @@
-lib/*.js
-test/*.js
+lib/**/*.js
+test/**/*.js
 scripts/*.js
 *.js.map
 *.d.ts
@@ -16,3 +16,4 @@ tslint.json
 coverage
 nyc.config.js
 !.eslintrc.js
+!jest.config.js

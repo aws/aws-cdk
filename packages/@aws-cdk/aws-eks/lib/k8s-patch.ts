@@ -1,5 +1,4 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 /**
@@ -74,7 +73,7 @@ export class KubernetesPatch extends Construct {
     const provider = props.cluster._kubectlProvider;
 
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: 'Custom::AWSCDK-EKS-KubernetesPatch',
       properties: {
         ResourceName: props.resourceName,
@@ -82,7 +81,7 @@ export class KubernetesPatch extends Construct {
         ApplyPatchJson: stack.toJsonString(props.applyPatch),
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+        RoleArn: props.cluster._kubectlCreationRole.roleArn,
         PatchType: props.patchType ?? PatchType.STRATEGIC,
       },
     });

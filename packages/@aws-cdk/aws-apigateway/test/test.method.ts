@@ -207,15 +207,77 @@ export = {
     test.done();
   },
 
-  '"methodArn" fails if the API does not have a deployment stage'(test: Test) {
+  '"methodArn" returns an arn with "*" as its stage when deploymentStage is not set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
     const method = new apigw.Method(stack, 'my-method', { httpMethod: 'POST', resource: api.root });
 
-    // WHEN + THEN
-    test.throws(() => method.methodArn,
-      /Unable to determine ARN for method "my-method" since there is no stage associated with this API./);
+    // THEN
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/*/POST/',
+        ],
+      ],
+    });
+
+    test.done();
+  },
+
+  '"methodArn" and "testMethodArn" replace path parameters with asterisks'(test: Test) {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api');
+    const petId = api.root.addResource('pets').addResource('{petId}');
+    const commentId = petId.addResource('comments').addResource('{commentId}');
+    const method = commentId.addMethod('GET');
+
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/',
+          { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+          '/GET/pets/*/comments/*',
+        ],
+      ],
+    });
+
+    test.deepEqual(stack.resolve(method.testMethodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/test-invoke-stage/GET/pets/*/comments/*',
+        ],
+      ],
+    });
 
     test.done();
   },
@@ -879,6 +941,40 @@ export = {
     // THEN
     test.throws(() => new apigw.Method(stack, 'method', methodProps),
       /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
+
+    test.done();
+  },
+
+  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'test-api');
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.ok(method.restApi);
+    test.ok(method.api);
+    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+
+    test.done();
+  },
+
+  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
+      restApiId: 'test-rest-api-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
+    test.ok(method.api);
 
     test.done();
   },

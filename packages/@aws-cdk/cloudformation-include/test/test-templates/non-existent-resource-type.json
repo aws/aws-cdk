@@ -1,0 +1,7 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::FakeService::DoesNotExist"
+    }
+  }
+}

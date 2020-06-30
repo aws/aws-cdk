@@ -482,6 +482,58 @@ export class ViewerCertificate {
     public readonly aliases: string[] = []) { }
 }
 
+/**
+ * Controls the countries in which your content is distributed.
+ */
+export class GeoRestriction {
+
+  /**
+   * Whitelist specific countries which you want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static whitelist(...locations: string[]) {
+    return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
+  }
+
+  /**
+   * Blacklist specific countries which you don't want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static blacklist(...locations: string[]) {
+    return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
+  }
+
+  private static LOCATION_REGEX = /^[A-Z]{2}$/;
+
+  private static validateLocations(locations: string[]) {
+    if (locations.length === 0) {
+      throw new Error('Should provide at least 1 location');
+    }
+    locations.forEach(location => {
+      if (!GeoRestriction.LOCATION_REGEX.test(location)) {
+        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+      }
+    });
+    return locations;
+  }
+
+  /**
+   * Creates an instance of GeoRestriction for internal use
+   *
+   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist/blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}
+}
+
 export interface CloudFrontWebDistributionProps {
 
   /**
@@ -523,7 +575,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PRICE_CLASS_100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
@@ -576,6 +628,13 @@ export interface CloudFrontWebDistributionProps {
    * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
    */
   readonly viewerCertificate?: ViewerCertificate;
+
+  /**
+   * Controls the countries in which your content is distributed.
+   *
+   * @default No geo restriction
+   */
+  readonly geoRestriction?: GeoRestriction;
 }
 
 /**
@@ -814,6 +873,18 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix,
+        },
+      };
+    }
+
+    if (props.geoRestriction) {
+      distributionConfig = {
+        ...distributionConfig,
+        restrictions: {
+          geoRestriction: {
+            restrictionType: props.geoRestriction.restrictionType,
+            locations: props.geoRestriction.locations,
+          },
         },
       };
     }
