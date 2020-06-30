@@ -1169,11 +1169,8 @@ export class Vpc extends VpcBase {
     this.vpcId = this.resource.ref;
 
     // If natGateways = 0 ==> no private subnets, made them isolated instead
-    if (props.natGateways !== undefined && props.natGateways === 0) {
-      this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS_NO_NAT);
-    } else {
-      this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
-    }
+    const defaultSubnet = props.natGateways === 0 ? Vpc.DEFAULT_SUBNETS_NO_NAT : Vpc.DEFAULT_SUBNETS;
+    this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
