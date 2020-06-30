@@ -1,3 +1,4 @@
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as cdk from '@aws-cdk/core';
@@ -32,7 +33,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
   createAcl: {
     ownerUid: '1001',
     ownerGid: '1001',
-    permissions: '755',
+    permissions: '750',
   },
   // enforce the POSIX identity so lambda function will access with this identity
   posixUser: {
@@ -42,7 +43,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
 });
 
 // this function will mount '/mnt/msg' and write content into /mnt/msg/content
-new lambda.Function(stack, 'MyLambda', {
+const handler = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode(`
 import os
 import fcntl
@@ -89,10 +90,15 @@ def lambda_handler(event, context):
   handler: 'index.lambda_handler',
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
-  securityGroups: fileSystem.connections.securityGroups,
   filesystems: [
     lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   ],
 });
+
+const api = new apigatewayv2.HttpApi(stack, 'Api', {
+  defaultIntegration: new apigatewayv2.LambdaProxyIntegration({ handler })
+});
+
+new cdk.CfnOutput(stack, 'ApiUrl', { value: api.url!});
 
 app.synth();

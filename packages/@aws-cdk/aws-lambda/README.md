@@ -319,13 +319,10 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   handler,
   runtime,
   vpc,
-  securityGroups: fileSystem.connections.securityGroups,
   filesystems: [
     lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   ],
 });
-
-fn.node.addDependency(fileSystem);
 ```
 
 

@@ -586,12 +586,13 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystems) {
-      // add dependency when necessary
       for (const fs of props.filesystems) {
+        // add dependency when necessary
         if (fs.config.dependency) {
           this.node.addDependency(...fs.config.dependency);
         }
       }
+
       resource.addPropertyOverride('FileSystemConfigs',
         props.filesystems.map(fs => ({
           LocalMountPath: fs.config.localMountPath,
@@ -769,6 +770,14 @@ export class Function extends FunctionBase {
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
+    }
+
+    if (props.filesystems) {
+      for (const fs of props.filesystems) {
+        if (fs.config.securityGroups) {
+          securityGroups.push(...fs.config.securityGroups);
+        }
+      }
     }
 
     this._connections = new ec2.Connections({ securityGroups });

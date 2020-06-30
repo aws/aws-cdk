@@ -1,3 +1,4 @@
+import { ISecurityGroup } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import { IDependable } from '@aws-cdk/core';
 
@@ -21,6 +22,13 @@ export interface FileSystemConfig {
    * @default - no dependency
    */
   readonly dependency?: IDependable[]
+
+  /**
+   * the security groups to be shared with the lambda function
+   *
+   * @default - no security groups
+   */
+  readonly securityGroups?: ISecurityGroup[]
 }
 
 /**
@@ -37,6 +45,7 @@ export class FileSystem {
       localMountPath: mountPath,
       arn: ap.accessPointArn,
       dependency: [ap.filesystem],
+      securityGroups: ap.filesystem.connections.securityGroups
     });
   }
   protected constructor(public readonly config: FileSystemConfig) { }

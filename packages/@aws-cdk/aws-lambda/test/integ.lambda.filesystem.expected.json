@@ -649,6 +649,31 @@
         "Efs9E8BF36B"
       ]
     },
+    "MyLambdaSecurityGroup1E71A818": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function awscdklambda1MyLambda82056696",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      },
+      "DependsOn": [
+        "EfsAccessPointE419FED9",
+        "EfsEfsMountTarget195B2DD2E",
+        "EfsEfsMountTarget2315C927F",
+        "EfsEfsMountTarget36646B9A0",
+        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
+        "EfsEfsSecurityGroup6F40EA3B",
+        "Efs9E8BF36B"
+      ]
+    },
     "MyLambdaCCE802FB": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -665,6 +690,12 @@
         "Runtime": "python3.7",
         "VpcConfig": {
           "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "MyLambdaSecurityGroup1E71A818",
+                "GroupId"
+              ]
+            },
             {
               "Fn::GetAtt": [
                 "EfsEfsSecurityGroup6F40EA3B",
@@ -723,6 +754,129 @@
         "Efs9E8BF36B",
         "MyLambdaServiceRole4539ECB6"
       ]
+    },
+    "MyLambdaawscdklambda1ApiDefaultRoute140619C9PermissionDB37C30F": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyLambdaCCE802FB",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiF70053CD"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "EfsAccessPointE419FED9",
+        "EfsEfsMountTarget195B2DD2E",
+        "EfsEfsMountTarget2315C927F",
+        "EfsEfsMountTarget36646B9A0",
+        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
+        "EfsEfsSecurityGroup6F40EA3B",
+        "Efs9E8BF36B"
+      ]
+    },
+    "ApiF70053CD": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "Api",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "ApiDefaultRouteDefaultRouteIntegrationABD448B2": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiF70053CD"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "MyLambdaCCE802FB",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "ApiDefaultRoute1D83B0D8": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiF70053CD"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "ApiDefaultRouteDefaultRouteIntegrationABD448B2"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ApiDefaultStage189A7074": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiF70053CD"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    }
+  },
+  "Outputs": {
+    "ApiUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiF70053CD"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
     }
   }
 }
