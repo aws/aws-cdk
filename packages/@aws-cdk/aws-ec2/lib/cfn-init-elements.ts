@@ -2,13 +2,22 @@ import { Construct } from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 
+export enum InitRenderPlatform { WINDOWS, LINUX };
+
+export interface InitRenderOptions {
+  /**
+   * Which OS platform (Linux, Windows) are we rendering for. Impacts
+   * which config types are available and how they are rendered.
+   */
+  platform: InitRenderPlatform;
+}
 
 /**
  * Base class for all CloudFormation Init elements
  */
 export abstract class InitElement {
 
-  public abstract renderElement(): any;
+  public abstract renderElement(renderedConfig: any, options: InitRenderOptions): any;
   public abstract bind(scope: Construct): void;
 }
 
@@ -19,8 +28,8 @@ export interface InitCommandOptions {
   /**
    * Identifier key for this command
    *
-   * You can use this to order commands, or to restart a service after this
-   * command runs.
+   * You can use this to order commands, or to reference this command in a service
+   * definition to restart a service after this command runs.
    *
    * @default - Automatically generated
    */
@@ -45,7 +54,7 @@ export interface InitCommandOptions {
   /**
    * Command to determine whether this command should be run
    *
-   * If the test passes (exits with error code 0), the command is run.
+   * If the test passes (exits with error code or %ERRORLEVEL% of 0), the command is run.
    *
    * @default - Always run this command
    */
@@ -82,6 +91,7 @@ export class InitCommand extends InitElement {
    * You must escape the string appropriately.
    */
   public static shellCommand(shellCommand: string, options: InitCommandOptions = {}): InitCommand {
+    return new InitCommand(shellCommand, options);
   }
 
   /**
@@ -90,20 +100,32 @@ export class InitCommand extends InitElement {
    * You do not need to escape space characters or enclose command parameters in quotes.
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
+    return new InitCommand(JSON.stringify(argv), options);
   }
 
-  protected constructor() {
+  protected constructor(private readonly command: string, private readonly options: InitCommandOptions) {
     super();
   }
 
-  public renderInto(json: InitJson) {
-    json.addServiceKey('...');
-    if (!this.key) {
-      const key = json.commands.length;
-      json.addCommand(key, { ... });
-    } else {
+  public renderElement(renderedConfig: any, _renderOptions: InitRenderOptions): any {
+    renderedConfig.commands = renderedConfig.commands || [];
+    const commandCount = renderedConfig.commands.length;
+    const commandKey = this.options.key || (commandCount + '').padStart(3, '0'); // 001, 005, etc.
+
+    const renderedCommand = {} as Record<string, any>;
+    renderedCommand[commandKey] = {
+      command: this.command,
+      ...this.options,
     }
+
+    renderedConfig.commands.push(renderedCommand);
   }
+
+  /**
+   * No-op for Commands
+   */
+  public bind(_scope: Construct): void {}
+
 }
 
 /**
