@@ -215,4 +215,48 @@ export = {
 
     test.done();
   },
+
+  'fingerprint is computed when functionName is specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      functionName: 'ThisFunction',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.ok(bindResult?.deploymentFingerprint);
+    test.equals(bindResult!.deploymentFingerprint, '2092bc5e2b20cfce7e5eea5952f10c50');
+
+    test.done();
+  },
+
+  'fingerprint is not computed when functionName is not specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.equals(bindResult?.deploymentFingerprint, undefined);
+
+    test.done();
+  },
 };

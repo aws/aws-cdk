@@ -139,11 +139,12 @@ export interface IntegrationProps {
  */
 export interface IntegrationConfig {
   /**
-   * Triggers a new Deployment if the value of this property changes.
-   * Use this property to trigger new deployments for changes to values in this integration.
+   * This value is included in computing the Deployment's fingerprint. When the fingerprint
+   * changes a new deployment is triggered.
+   * This property should carry a different value when the Deployment needs to be refreshed.
    * @default - deployments are not triggered for any change of this integration.
    */
-  readonly triggerDeployment?: any;
+  readonly deploymentFingerprint?: string;
 }
 
 /**
@@ -168,8 +169,8 @@ export class Integration {
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method): IntegrationConfig {
-    return {};
+  public bind(_method: Method): IntegrationConfig | undefined {
+    return;
   }
 }
 

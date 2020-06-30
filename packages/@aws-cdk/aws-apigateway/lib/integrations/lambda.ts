@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Lazy, Token } from '@aws-cdk/core';
+import * as crypto from 'crypto';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -52,7 +53,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.enableTest = options.allowTestInvoke === undefined ? true : false;
   }
 
-  public bind(method: Method): IntegrationConfig {
+  public bind(method: Method): IntegrationConfig | undefined {
     super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -74,12 +75,14 @@ export class LambdaIntegration extends AwsIntegration {
     }
 
     const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
-    let triggerDeployment;
+    let deploymentFingerprint;
     if (!Token.isUnresolved(cfnFunction.functionName)) {
-      triggerDeployment = { functionName: cfnFunction.functionName };
+      const md5 = crypto.createHash('md5');
+      md5.update(JSON.stringify({ functionName: cfnFunction.functionName }));
+      deploymentFingerprint = md5.digest('hex');
     }
     return {
-      triggerDeployment,
+      deploymentFingerprint,
     };
   }
 }
