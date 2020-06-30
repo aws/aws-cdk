@@ -1,4 +1,4 @@
-import {spawnSync} from 'child_process';
+import { spawnSync } from 'child_process';
 
 /**
  * Bundling options
@@ -95,8 +95,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {
-  }
+  private constructor(public readonly image: string) {}
 
   /**
    * Runs a Docker image
@@ -111,13 +110,13 @@ export class BundlingDockerImage {
     const dockerArgs: string[] = [
       'run', '--rm',
       ...options.user
-          ? ['-u', options.user]
-          : [],
+        ? ['-u', options.user]
+        : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerConsistency.DEFAULT}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
-          ? ['-w', options.workingDirectory]
-          : [],
+        ? ['-w', options.workingDirectory]
+        : [],
       this.image,
       ...command,
     ];
