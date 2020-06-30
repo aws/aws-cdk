@@ -20,5 +20,6 @@ fi
 npm_ignore_files=$(find . -name '*.npmignore' | grep -v node_modules)
 
 for ignore in ${npm_ignore_files}; do
+  echo ${ignore}
   echo ${statement} >> ${ignore}
 done
