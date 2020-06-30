@@ -143,7 +143,7 @@ export interface DockerVolume {
   /**
    * Mount consistency. Only applicable for macOS
    *
-   * @default delegated
+   * @default DockerConsistency.DELEGATED
    * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
    */
   readonly consistency?: DockerConsistency;
