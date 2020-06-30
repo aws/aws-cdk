@@ -1,10 +1,13 @@
-import { AssetManifestSchema, FileAssetPackaging } from '../lib';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import { FileAssetPackaging, Manifest } from '../lib';
 
 describe('Docker image asset', () => {
   test('valid input', () => {
     expect(() => {
-      AssetManifestSchema.validate({
-        version: AssetManifestSchema.currentVersion(),
+      validate({
+        version: Manifest.version(),
         dockerImages: {
           asset: {
             source: {
@@ -25,8 +28,8 @@ describe('Docker image asset', () => {
 
   test('invalid input', () => {
     expect(() => {
-      AssetManifestSchema.validate({
-        version: AssetManifestSchema.currentVersion(),
+      validate({
+        version: Manifest.version(),
         dockerImages: {
           asset: {
             source: {},
@@ -34,7 +37,7 @@ describe('Docker image asset', () => {
           },
         },
       });
-    }).toThrow(/dockerImages: source: Expected key 'directory' missing/);
+    }).toThrow(/instance\.dockerImages\.asset\.source requires property \"directory\"/);
   });
 });
 
@@ -42,8 +45,8 @@ describe('File asset', () => {
   describe('valid input', () => {
     test('without packaging', () => {
       expect(() => {
-        AssetManifestSchema.validate({
-          version: AssetManifestSchema.currentVersion(),
+        validate({
+          version: Manifest.version(),
           files: {
             asset: {
               source: {
@@ -65,8 +68,8 @@ describe('File asset', () => {
     for (const packaging of Object.values(FileAssetPackaging)) {
       test(`with "${packaging}" packaging`, () => {
         expect(() => {
-          AssetManifestSchema.validate({
-            version: AssetManifestSchema.currentVersion(),
+          validate({
+            version: Manifest.version(),
             files: {
               asset: {
                 source: {
@@ -91,8 +94,8 @@ describe('File asset', () => {
   describe('invalid input', () => {
     test('bad "source.path" property', () => {
       expect(() => {
-        AssetManifestSchema.validate({
-          version: AssetManifestSchema.currentVersion(),
+        validate({
+          version: Manifest.version(),
           files: {
             asset: {
               source: {
@@ -108,13 +111,13 @@ describe('File asset', () => {
             },
           },
         });
-      }).toThrow(/Expected a string, got '3'/);
+      }).toThrow(/instance\.files\.asset\.source\.path is not of a type\(s\) string/);
     });
 
     test('bad "source.packaging" property', () => {
       expect(() => {
-        AssetManifestSchema.validate({
-          version: AssetManifestSchema.currentVersion(),
+        validate({
+          version: Manifest.version(),
           files: {
             asset: {
               source: {
@@ -131,7 +134,19 @@ describe('File asset', () => {
             },
           },
         });
-      }).toThrow(/Expected a FileAssetPackaging \(one of [^)]+\), got 'BLACK_HOLE'/);
+      }).toThrow(/instance\.files\.asset\.source\.packaging is not one of enum values: file,zip/);
     });
   });
 });
+
+function validate(manifest: any) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'assets.test.'));
+  const filePath = path.join(dir, 'manifest.json');
+  fs.writeFileSync(filePath, JSON.stringify(manifest, undefined, 2));
+  try {
+    Manifest.loadAssetManifest(filePath);
+  } finally {
+    fs.unlinkSync(filePath);
+    fs.rmdirSync(dir);
+  }
+}
