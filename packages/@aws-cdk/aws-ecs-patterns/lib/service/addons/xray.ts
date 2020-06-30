@@ -6,8 +6,8 @@ import iam = require('@aws-cdk/aws-iam');
 
 export class XRayAddon implements ServiceAddon {
   readonly name: string;
-  public container: ecs.ContainerDefinition;
-  private parentService: Service;
+  public container!: ecs.ContainerDefinition;
+  private parentService!: Service;
 
   // List of registered hooks from other addons that want to
   // mutate the application's container definition prior to
@@ -29,17 +29,17 @@ export class XRayAddon implements ServiceAddon {
       essential: true,
       memoryReservationMiB: 256,
       environment: {
-        AWS_REGION: cdk.Stack.of(this.parentService).region
+        AWS_REGION: cdk.Stack.of(this.parentService).region,
       },
       healthCheck: {
         command: [
           'CMD-SHELL',
-          'curl -s http://localhost:2000'
+          'curl -s http://localhost:2000',
         ],
         startPeriod: cdk.Duration.seconds(10),
         interval: cdk.Duration.seconds(5),
         timeout: cdk.Duration.seconds(2),
-        retries: 3
+        retries: 3,
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: 'xray' }),
       user: '1337', // X-Ray traffic should not go through Envoy proxy
@@ -47,7 +47,7 @@ export class XRayAddon implements ServiceAddon {
 
     // Add permissions to this task to allow it to talk to X-Ray
     taskDefinition.taskRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess')
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'),
     );
   }
 
@@ -56,7 +56,7 @@ export class XRayAddon implements ServiceAddon {
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
-        condition: ecs.ContainerDependencyCondition.HEALTHY
+        condition: ecs.ContainerDependencyCondition.HEALTHY,
       })
     }
   }

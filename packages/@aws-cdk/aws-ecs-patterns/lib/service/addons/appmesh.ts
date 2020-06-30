@@ -13,9 +13,9 @@ interface MeshProps {
 
 export class AppMeshAddon implements ServiceAddon {
   readonly name: string;
-  public container: ecs.ContainerDefinition;
-  private parentService: Service;
-  private scope: cdk.Stack;
+  public container!: ecs.ContainerDefinition;
+  private parentService!: Service;
+  private scope!: cdk.Stack;
   private mesh: appmesh.Mesh;
   protected virtualNode: appmesh.VirtualNode;
   protected virtualService: appmesh.VirtualService;
@@ -56,14 +56,14 @@ export class AppMeshAddon implements ServiceAddon {
         ignoredGID: 1338,
         egressIgnoredIPs: [
           '169.254.170.2', // Allow services to talk directly to ECS metadata endpoints
-          '169.254.169.254' // and EC2 instance endpoint
+          '169.254.169.254', // and EC2 instance endpoint
         ],
         // Note that at some point we will need other addons like
         // MySQL to be able to add their ports to this egress ignored
         // ports automatically.
         egressIgnoredPorts: [
-        ]
-      }
+        ],
+      },
     })
   }
 
@@ -82,7 +82,7 @@ export class AppMeshAddon implements ServiceAddon {
       healthCheck: {
         command: [
           'CMD-SHELL',
-          'curl -s http://localhost:9901/server_info | grep state | grep -q LIVE'
+          'curl -s http://localhost:9901/server_info | grep state | grep -q LIVE',
         ],
         startPeriod: cdk.Duration.seconds(10),
         interval: cdk.Duration.seconds(5),
@@ -97,7 +97,7 @@ export class AppMeshAddon implements ServiceAddon {
     this.container.addUlimits({
       softLimit: 1024000,
       hardLimit: 1024000,
-      name: ecs.UlimitName.NOFILE
+      name: ecs.UlimitName.NOFILE,
     });
   }
 
@@ -114,7 +114,7 @@ export class AppMeshAddon implements ServiceAddon {
       dnsRecordType: 'A',
       dnsTtl: cdk.Duration.seconds(10),
       failureThreshold: 2,
-      name: this.parentService.id
+      name: this.parentService.id,
     }
   }
 
@@ -161,7 +161,7 @@ export class AppMeshAddon implements ServiceAddon {
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
       mesh: this.mesh,
       virtualNode: this.virtualNode,
-      virtualServiceName: `${this.parentService.id}.${cloudmapNamespace.namespaceName}`
+      virtualServiceName: `${this.parentService.id}.${cloudmapNamespace.namespaceName}`,
     });
   }
 
@@ -183,7 +183,7 @@ export class AppMeshAddon implements ServiceAddon {
     this.parentService.service.connections.allowTo(
       otherService.service,
       ec2.Port.tcp(otherApplication.trafficPort),
-      `Accept inbound traffic from ${this.parentService.id}`
+      `Accept inbound traffic from ${this.parentService.id}`,
     );
 
     // Next update the app mesh config so that the local Envoy

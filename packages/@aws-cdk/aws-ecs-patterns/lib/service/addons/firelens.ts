@@ -6,9 +6,9 @@ import awslogs = require('@aws-cdk/aws-logs');
 
 export class FireLensAddon implements ServiceAddon {
   readonly name: string;
-  public container: ecs.ContainerDefinition;
-  private parentService: Service;
-  private logGroup: awslogs.LogGroup;
+  public container!: ecs.ContainerDefinition;
+  private parentService!: Service;
+  private logGroup!: awslogs.LogGroup;
 
   // List of registered hooks from other addons that want to
   // mutate the application's container definition prior to
@@ -27,7 +27,7 @@ export class FireLensAddon implements ServiceAddon {
     this.logGroup = new awslogs.LogGroup(scope, `${service.id}-logs`, {
       logGroupName: `${service.id}-logs`,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      retention: awslogs.RetentionDays.ONE_WEEK
+      retention: awslogs.RetentionDays.ONE_WEEK,
     });
   }
 
@@ -53,8 +53,8 @@ export class FireLensAddon implements ServiceAddon {
           Name: 'cloudwatch',
           region: cdk.Stack.of(self.parentService).region,
           log_group_name: self.logGroup.logGroupName,
-          log_stream_prefix: `${self.parentService.id}/`
-        }
+          log_stream_prefix: `${self.parentService.id}/`,
+        },
       })
     });
   }
@@ -66,15 +66,15 @@ export class FireLensAddon implements ServiceAddon {
       image: ecs.obtainDefaultFluentBitECRImage(taskDefinition, {
         logDriver: 'awsfirelens',
         options: {
-          Name: 'cloudwatch'
-        }
+          Name: 'cloudwatch',
+        },
       }),
       firelensConfig: {
         type: ecs.FirelensLogRouterType.FLUENTBIT,
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
       memoryReservationMiB: 50,
-      user: '0:1338' // Give Firelens a group ID that allows its outbound logs to bypass Envoy
+      user: '0:1338', // Give Firelens a group ID that allows its outbound logs to bypass Envoy
     });
   }
 
@@ -83,7 +83,7 @@ export class FireLensAddon implements ServiceAddon {
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
-        condition: ecs.ContainerDependencyCondition.HEALTHY
+        condition: ecs.ContainerDependencyCondition.HEALTHY,
       })
     }
   }

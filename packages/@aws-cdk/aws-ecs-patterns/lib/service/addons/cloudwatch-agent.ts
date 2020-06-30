@@ -6,21 +6,21 @@ const iam = require('@aws-cdk/aws-iam');
 
 export class CloudwatchAgentAddon implements ServiceAddon {
   readonly name: string;
-  public container: ecs.ContainerDefinition;
-  private parentService: Service;
-  private scope: cdk.Stack;
+  public container!: ecs.ContainerDefinition;
+  private parentService!: Service;
+  private scope!: cdk.Stack;
 
   private CW_CONFIG_CONTENT = {
-    "logs": {
-      "metrics_collected": {
-        "emf": {}
-      }
+    'logs': {
+      'metrics_collected': {
+        'emf': {},
+      },
     },
-    "metrics": {
-      "metrics_collected": {
-        "statsd": {}
-      }
-    }
+    'metrics': {
+      'metrics_collected': {
+        'statsd': {},
+      },
+    },
   }
 
   // List of registered hooks from other addons that want to
@@ -46,7 +46,7 @@ export class CloudwatchAgentAddon implements ServiceAddon {
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: 'cloudwatch-agent' }),
       user: '0:1338', // Ensure that CloudWatch agent outbound traffic doesn't go through proxy
-      memoryReservationMiB: 50
+      memoryReservationMiB: 50,
     });
 
     // Add permissions that allow the cloudwatch agent to publish metrics
@@ -55,7 +55,7 @@ export class CloudwatchAgentAddon implements ServiceAddon {
     const statement = new iam.PolicyStatement();
     statement.addResources('*');
     statement.addActions([
-      'cloudwatch:PutMetricData'
+      'cloudwatch:PutMetricData',
     ]);
 
     policy.addStatements(statement);
@@ -67,7 +67,7 @@ export class CloudwatchAgentAddon implements ServiceAddon {
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
-        condition: ecs.ContainerDependencyCondition.HEALTHY
+        condition: ecs.ContainerDependencyCondition.HEALTHY,
       })
     }
   }
