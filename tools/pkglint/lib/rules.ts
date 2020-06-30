@@ -48,6 +48,37 @@ export class DescriptionIsRequired extends ValidationRule {
 }
 
 /**
+ * Verify cdk.out directory is included in npmignore since we should not be
+ * publihsing it.
+ */
+export class CdkOutMustBeNpmIgnored extends ValidationRule {
+
+  public readonly name = 'package-info/npm-ignore-cdk-out';
+
+  public validate(pkg: PackageJson): void {
+
+    const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
+
+    if (fs.existsSync(npmIgnorePath)) {
+
+      const npmIgnore = fs.readFileSync(npmIgnorePath);
+
+      if (!npmIgnore.includes('**/cdk.out')) {
+        pkg.report({
+          ruleName: this.name,
+          message: `${npmIgnorePath}: Must exclude **/cdk.out`,
+          fix: () => fs.writeFileSync(
+            npmIgnorePath,
+            `${npmIgnore}\n# exclude cdk artifacts\n**/cdk.out`
+          )
+        });
+      }
+    }
+  }
+
+}
+
+/**
  * Repository must be our GitHub repo
  */
 export class RepositoryCorrect extends ValidationRule {
