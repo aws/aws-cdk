@@ -17,8 +17,8 @@ export class AppMeshAddon implements ServiceAddon {
   private parentService!: Service;
   private scope!: cdk.Stack;
   private mesh: appmesh.Mesh;
-  protected virtualNode: appmesh.VirtualNode;
-  protected virtualService: appmesh.VirtualService;
+  protected virtualNode!: appmesh.VirtualNode;
+  protected virtualService!: appmesh.VirtualService;
 
   // List of registered hooks from other addons that want to
   // mutate the application's container definition prior to

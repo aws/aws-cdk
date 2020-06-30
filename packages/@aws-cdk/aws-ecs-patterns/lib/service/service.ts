@@ -18,8 +18,8 @@ interface ServiceProps {
 
 export class Service extends cdk.Construct implements ServiceInterface {
   public addons: Map<string, ServiceAddon>;
-  protected taskDefinition: ecs.Ec2TaskDefinition;
-  public service: ecs.Ec2Service;
+  protected taskDefinition!: ecs.Ec2TaskDefinition;
+  public service!: ecs.Ec2Service;
   readonly scope: cdk.Stack;
   readonly id: string;
   readonly vpc: ec2.Vpc;
@@ -128,7 +128,7 @@ export class Service extends cdk.Construct implements ServiceInterface {
 
     let serviceProps = {
       cluster: this.cluster,
-      taskDefinition: this.taskDefinition
+      taskDefinition: this.taskDefinition,
     };
 
     // Give each addon a chance to mutate the service props before
