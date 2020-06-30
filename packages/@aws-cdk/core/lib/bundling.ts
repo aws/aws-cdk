@@ -156,7 +156,7 @@ export enum DockerConsistency {
   /**
    * @see DockerConsistency.DELEGATED
    */
-  DEFAULT = 'consistent',
+  DEFAULT = 'delegated',
   /**
    * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
    */
