@@ -6,7 +6,6 @@ import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
-import { CfnCondition } from '@aws-cdk/core';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
@@ -473,7 +472,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
 
     expect(stack).toMatchTemplate(loadTestFileToJsObject('outputs-with-references.json'));
-    expect(() => { 
+    expect(() => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
