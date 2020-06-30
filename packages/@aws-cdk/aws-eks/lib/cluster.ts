@@ -3,6 +3,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -385,6 +388,8 @@ export class Cluster extends Resource implements ICluster {
 
   private _spotInterruptHandler?: HelmChart;
 
+  private _neuronDevicePlugin?: KubernetesResource;
+
   private readonly version: string | undefined;
 
   /**
@@ -536,6 +541,10 @@ export class Cluster extends Resource implements ICluster {
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
     });
+
+    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
+      this.addNeuronDevicePlugin();
+    }
 
     return asg;
   }
@@ -835,6 +844,20 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Installs the Neuron device plugin on the cluster if it's not
+   * already added.
+   */
+  private addNeuronDevicePlugin() {
+    if (!this._neuronDevicePlugin) {
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+      this._neuronDevicePlugin = this.addResource('NeuronDevicePlugin', sanitized);
+    }
+
+    return this._neuronDevicePlugin;
+  }
+
+  /**
    * Opportunistically tag subnets with the required tags.
    *
    * If no subnets could be found (because this is an imported VPC), add a warning.
@@ -1112,6 +1135,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
       + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
       + ( this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '' )
+      + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
   }
 
@@ -1176,6 +1200,11 @@ export enum NodeType {
    * GPU instances
    */
   GPU = 'GPU',
+
+  /**
+   * Inferentia instances
+   */
+  INFERENTIA = 'INFERENTIA',
 }
 
 /**
@@ -1222,7 +1251,10 @@ export enum MachineImageType {
 }
 
 const GPU_INSTANCETYPES = ['p2', 'p3', 'g4'];
+const INFERENTIA_INSTANCETYPES = ['inf1'];
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU : NodeType.STANDARD;
+  return GPU_INSTANCETYPES.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
+    INFERENTIA_INSTANCETYPES.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
+      NodeType.STANDARD;
 }

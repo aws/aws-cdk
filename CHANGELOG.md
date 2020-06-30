@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.47.1](https://github.com/aws/aws-cdk/compare/v1.47.0...v1.47.1) (2020-06-30)
+
+### Bug Fixes
+
+* Don't publish cdk.out directories ([#8803](https://github.com/aws/aws-cdk/pull/8803)) ([aa21858](https://github.com/aws/aws-cdk/commit/c337d4a89dfad2080e7efa1d37c751fcbaa21858))
+
+## [1.47.0](https://github.com/aws/aws-cdk/compare/v1.46.0...v1.47.0) (2020-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **stepfunctions-tasks:** `Dynamo*` tasks no longer implement`IStepFunctionsTask` and have been replaced by constructs that can be instantiated directly. See README for examples
+
+### Features
+
+* **cfn-include:** add support for retrieving parameter objects ([#8658](https://github.com/aws/aws-cdk/issues/8658)) ([52dc123](https://github.com/aws/aws-cdk/commit/52dc123ba8696abcfad99d8093e98cd39b5b104f)), closes [#8657](https://github.com/aws/aws-cdk/issues/8657)
+* **cfn-include:** support logical id overrides ([#8529](https://github.com/aws/aws-cdk/issues/8529)) ([d9c4f5e](https://github.com/aws/aws-cdk/commit/d9c4f5e67c54e1a2a436978fbc28fffd92b24cd6)), closes [#7375](https://github.com/aws/aws-cdk/issues/7375)
+* **cloudwatch:** CompositeAlarm ([#8498](https://github.com/aws/aws-cdk/issues/8498)) ([1e6d293](https://github.com/aws/aws-cdk/commit/1e6d293f4c445318b11bd6fe998325688a675807))
+* **efs:** access point ([#8631](https://github.com/aws/aws-cdk/issues/8631)) ([dde0ef5](https://github.com/aws/aws-cdk/commit/dde0ef52cc0cdbc40fd212f518f3cee4f30450b9))
+* **stepfunctions:** grant APIs for state machine construct ([#8486](https://github.com/aws/aws-cdk/issues/8486)) ([fe71364](https://github.com/aws/aws-cdk/commit/fe71364b6cd8274e937cc2dc9185249dcbbb9388)), closes [#5933](https://github.com/aws/aws-cdk/issues/5933)
+* **stepfunctions-tasks:** task constructs to call DynamoDB APIs ([#8466](https://github.com/aws/aws-cdk/issues/8466)) ([a7cb3b7](https://github.com/aws/aws-cdk/commit/a7cb3b7633c433ecb0619c030914bfa497ee39bc)), closes [#8108](https://github.com/aws/aws-cdk/issues/8108)
+
+
+### Bug Fixes
+
+* **appsync:** Not to throw an Error even if 'additionalAuthorizationModes' is undefined ([#8673](https://github.com/aws/aws-cdk/issues/8673)) ([6b5d77b](https://github.com/aws/aws-cdk/commit/6b5d77b452bccb35564d6acee118112156149eb0)), closes [#8666](https://github.com/aws/aws-cdk/issues/8666) [#8668](https://github.com/aws/aws-cdk/issues/8668)
+* **cli:** cannot change policies or trust after initial bootstrap ([#8677](https://github.com/aws/aws-cdk/issues/8677)) ([6e6b23e](https://github.com/aws/aws-cdk/commit/6e6b23e329d8a1b6455210768371a5ab9de478ef)), closes [#6581](https://github.com/aws/aws-cdk/issues/6581)
+* **cli:** crash on tiny reported terminal width ([#8675](https://github.com/aws/aws-cdk/issues/8675)) ([a186c24](https://github.com/aws/aws-cdk/commit/a186c24918fddc697270b794b6603add5a47e947)), closes [#8667](https://github.com/aws/aws-cdk/issues/8667)
+* **toolkit:** CLI tool fails on CloudFormation Throttling ([#8711](https://github.com/aws/aws-cdk/issues/8711)) ([e512a40](https://github.com/aws/aws-cdk/commit/e512a4057b21d32432d4dc7ac14ae7caa812265d)), closes [#5637](https://github.com/aws/aws-cdk/issues/5637)
+
 ## [1.46.0](https://github.com/aws/aws-cdk/compare/v1.45.0...v1.46.0) (2020-06-19)
 
 
