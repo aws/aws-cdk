@@ -438,7 +438,7 @@ nodeunitShim({
 
     },
 
-    'natGateways = 0 allows constructs public not private'(test: Test) {
+    'natGateways = 0 constructs with ISOLATED subnet'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         natGateways: 0,
@@ -446,6 +446,16 @@ nodeunitShim({
       expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
         Key: 'aws-cdk:subnet-type',
         Value: 'Isolated',
+      }])));
+      test.done();
+    },
+
+    'unspecified natGateways constructs with PRIVATE subnet'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC');
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Private',
       }])));
       test.done();
     },
