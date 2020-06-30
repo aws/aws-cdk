@@ -1,9 +1,9 @@
 import { Bucket } from '@aws-cdk/aws-s3';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Stack } from '../../core/lib';
 import * as ec2 from '../lib';
 
-export = {
+nodeunitShim({
   'can create Windows user data'(test: Test) {
     // GIVEN
 
@@ -273,4 +273,4 @@ export = {
     test.done();
   },
 
-};
+});
