@@ -59,34 +59,62 @@ export class CfnOutput extends CfnElement {
     this._export = props.exportName;
   }
 
+  /**
+   * Returns the description of this Output
+   */
   public getDescription(): string | undefined {
     return this._description;
   }
 
+  /**
+   * Returns the value of this Output
+   */
   public getValue(): any {
     return this._value;
   }
 
+  /**
+   * Returns the condition of this Output
+   */
   public getCondition(): CfnCondition | undefined {
     return this._condition;
   }
 
+  /**
+   * Returns the export of this Output
+   */
   public getExport(): string | undefined {
     return this._export;
   }
 
+  /**
+   * Sets this output's description to the parameter
+   * @param newDescription the description to update this Output's description to
+   */
   public setDescription(newDescription: string | undefined): void {
     this._description = newDescription;
   }
 
-  setValue(newValue: any): void {
+  /**
+   * Sets this output's value to the parameter
+   * @param newValue the value to update this Output's value to
+   */
+  public setValue(newValue: any): void {
     this._value = newValue;
   }
 
+  /**
+   * Sets this output's condition to the parameter
+   * @param newCondition the condition to update this Output's condition to
+   */
   public setCondition(newCondition: CfnCondition | undefined): void {
     this._condition = newCondition;
   }
 
+  /**
+   * Sets this output's export to the parameter
+   * @param newRxport the export to update this Output's export to
+   */
   public setExport(newExport: string): void {
     this._export = newExport;
   }
