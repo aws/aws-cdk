@@ -44,7 +44,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 ### Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to 
-use a secret. This can be achieved with the `Secret.grantRead`, `Secret.grantWrite`, and/or `Secret.grantUpdate`
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
  method, depending on your need:
 
 ```ts
@@ -52,7 +52,6 @@ const role = new iam.Role(stack, 'SomeRole', { assumedBy: new iam.AccountRootPri
 const secret = new secretsmanager.Secret(stack, 'Secret');
 secret.grantRead(role);
 secret.grantWrite(role);
-secret.grantUpdate(role);
 ```
 
 If, as in the following example, your secret was created with a KMS key:
@@ -61,9 +60,8 @@ const key = new kms.Key(stack, 'KMS');
 const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 secret.grantRead(role);
 secret.grantWrite(role);
-secret.grantUpdate(role);
 ```
-then `Secret.grantRead`, `Secret.grantWrite`, and `Secret.grantUpdate` will also grant the role the
+then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
