@@ -21,7 +21,7 @@ class TestStack extends Stack {
       definition: new sfn.Task(this, 'Task', {
         task: new tasks.StartExecution(child, {
           input: {
-            hello: sfn.Data.stringAt('$.hello'),
+            hello: sfn.JsonPath.stringAt('$.hello'),
           },
           integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
         }),
