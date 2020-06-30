@@ -1,8 +1,10 @@
 import { Construct } from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { isTagPropertyJson } from '@aws-cdk/cfnspec/lib/schema';
 
 export enum InitRenderPlatform { WINDOWS, LINUX };
+export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE };
 
 export interface InitRenderOptions {
   /**
@@ -10,6 +12,11 @@ export interface InitRenderOptions {
    * which config types are available and how they are rendered.
    */
   platform: InitRenderPlatform;
+  /**
+   * Ordered index of current element type. Primarily used to auto-generate
+   * command keys and retain ordering.
+   */
+  index: number;
 }
 
 /**
@@ -17,7 +24,22 @@ export interface InitRenderOptions {
  */
 export abstract class InitElement {
 
-  public abstract renderElement(renderedConfig: any, options: InitRenderOptions): any;
+  /**
+   * Returns the init element type for this element.
+   */
+  public abstract getElementType(): InitElementType;
+
+  /**
+   * Render the CloudFormation representation of this init element.
+   *
+   * @param options
+   */
+  public abstract renderElement(options: InitRenderOptions): any;
+
+  /**
+   *
+   * @param scope
+   */
   public abstract bind(scope: Construct): void;
 }
 
@@ -107,18 +129,29 @@ export class InitCommand extends InitElement {
     super();
   }
 
-  public renderElement(renderedConfig: any, _renderOptions: InitRenderOptions): any {
-    renderedConfig.commands = renderedConfig.commands || [];
-    const commandCount = renderedConfig.commands.length;
-    const commandKey = this.options.key || (commandCount + '').padStart(3, '0'); // 001, 005, etc.
+  public getElementType(): InitElementType {
+    return InitElementType.COMMAND;
+  }
 
+  public renderElement(renderOptions: InitRenderOptions): any {
+    const commandKey = this.options.key || (renderOptions.index + '').padStart(3, '0'); // 001, 005, etc.
+
+    if (renderOptions.platform === InitRenderPlatform.LINUX && this.options.waitAfterCompletion !== undefined) {
+      throw new Error('waitAfterCompletion is only valid for Linux systems.');
+    }
+
+    // TODO: Is there a more idiomatic way to do this?
     const renderedCommand = {} as Record<string, any>;
     renderedCommand[commandKey] = {
       command: this.command,
-      ...this.options,
-    }
+      env: this.options.env,
+      cwd: this.options.cwd,
+      test: this.options.test,
+      ignoreErrors: this.options.ignoreErrors,
+      waitAfterCompletion: this.options.waitAfterCompletion,
+    };
 
-    renderedConfig.commands.push(renderedCommand);
+    return renderedCommand;
   }
 
   /**
@@ -239,15 +272,33 @@ export class InitFile extends InitElement {
  * Not supported for Windows systems.
  */
 export class InitGroup extends InitElement {
+
   /**
    * Map a group name to a group id
    */
-  public static fromName(groupName: string, gid: number): InitGroup {
+  public static fromName(groupName: string, groupId?: number): InitGroup {
+    return new InitGroup(groupName, groupId);
   }
 
-  protected constructor() {
+  protected constructor(private groupName: string, private groupId?: number) {
     super();
   }
+
+  public getElementType(): InitElementType { return InitElementType.GROUP; }
+
+  public renderElement(options: InitRenderOptions): any {
+    if (options.platform === InitRenderPlatform.WINDOWS) {
+      throw new Error('Init groups are not supported on Windows');
+    }
+
+    // TODO: Is there a more idiomatic way to do this?
+    const element = {} as Record<string, any>;
+    element[this.groupName] = this.groupId !== undefined ? { gid: this.groupId } : {};
+    return element;
+  }
+
+  // No-op
+  public bind(_scope: Construct): void {}
 }
 
 /**
@@ -263,11 +314,42 @@ export class InitUser extends InitElement {
    * Map a user name to a user id
    */
   public static fromName(userName: string, uid: number, groups?: string[], homeDir?: string): InitUser {
+    return new InitUser(userName, uid, groups, homeDir);
   }
 
-  protected constructor() {
+  private readonly userName: string;
+  private readonly uid: number;
+  private readonly groups?: string[];
+  private readonly homeDir?: string;
+
+  protected constructor(userName: string, uid: number, groups?: string[], homeDir?: string) {
     super();
+
+    this.userName = userName;
+    this.uid = uid;
+    this.groups = groups;
+    this.homeDir = homeDir;
   }
+
+  public getElementType(): InitElementType { return InitElementType.USER; }
+
+  public renderElement(options: InitRenderOptions): any {
+    if (options.platform === InitRenderPlatform.WINDOWS) {
+      throw new Error('Init users are not supported on Windows');
+    }
+
+    // TODO: Is there a more idiomatic way to do this?
+    const element = {} as Record<string, any>;
+    element[this.userName] = {
+      uid: this.uid,
+      groups: this.groups,
+      homeDir: this.homeDir,
+    };
+    return element;
+  }
+
+  // No-op
+  public bind(_scope: Construct): void {}
 }
 
 /**
@@ -406,13 +488,14 @@ export class InitSource extends InitElement {
    * Retrieve a URL and extract it into the given directory
    */
   public static fromUrl(targetDirectory: string, url: string): InitSource {
+    return new InitSource(targetDirectory, url);
   }
 
   /**
    * Extract a GitHub branch into a given directory
    */
   public static fromGitHub(targetDirectory: string, owner: string, repo: string, refSpec?: string): InitSource {
-    return InitSource.fromUrl(targetDirectory, `https://github.com/${owner}:${repo}/tarball)/${refSpec ?? 'master'}`);
+    return InitSource.fromUrl(targetDirectory, `https://github.com/${owner}:${repo}/tarball/${refSpec ?? 'master'}`);
   }
 
   /**
@@ -426,12 +509,35 @@ export class InitSource extends InitElement {
    * Create an asset from the given directory and use that
    */
   public static fromDirectoryAsset(targetDirectory: string, sourceDirectory: string): InitSource {
-    new s3_assets.Asset(scope, 'Asset', targetDiretory)
+    throw new Error('Not implemented');
   }
 
   /**
    * Extract a diretory from an existing directory asset
    */
   public static fromAsset(targetDirectory: string, asset: s3_assets.Asset): InitSource {
+    throw new Error('Not implemented');
+  }
+
+  private readonly targetDirectory: string;
+  private readonly url: string;
+
+  protected constructor(targetDirectory: string, url: string) {
+    super();
+
+    this.targetDirectory = targetDirectory;
+    this.url = url;
+  }
+
+  public getElementType(): InitElementType { return InitElementType.SOURCE; }
+
+  public renderElement(_options: InitRenderOptions): any {
+    const element = {} as Record<string, any>;
+    element[this.targetDirectory] = this.url;
+    return element;
+  }
+
+  public bind(_scope: Construct): void {
+    throw new Error('Not yet implemented');
   }
 }

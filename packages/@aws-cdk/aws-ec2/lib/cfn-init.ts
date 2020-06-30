@@ -1,5 +1,5 @@
 import { Construct } from'@aws-cdk/core';
-import { InitElement } from './cfn-init-elements';
+import { InitElement, InitRenderPlatform, InitElementType } from './cfn-init-elements';
 
 /**
  * A CloudFormation-init configuration
@@ -54,9 +54,6 @@ export class InitConfig {
   }
 
   public add(...elements: InitElement[]) {
-    for (const element of elements) {
-      element.renderInto(this);
-    }
     this.elements.push(...elements);
   }
 
@@ -66,31 +63,25 @@ export class InitConfig {
     }
   }
 
-  public addCommand() {
-  }
+  public renderConfig(platform: InitRenderPlatform): any {
+    const renderOptions = { platform };
 
-  public addPackage() {
-  }
-
-  public renderConfig(): any {
-    for (const element of this.elements) {
-      const rendered = element.renderInto(configJson);
-
-      {
-        common: {
-          'key_001': {
-          },
-          'mycommand': {
-          },
-        },
-        service: {
-          sysvinit: {
-            nginx: { ... }
-          },
-        },
-      }
+    return {
+      packages: this.renderConfigForType(InitElementType.PACKAGE, renderOptions),
+      groups: this.renderConfigForType(InitElementType.GROUP, renderOptions),
+      users: this.renderConfigForType(InitElementType.USER, renderOptions),
+      sources: this.renderConfigForType(InitElementType.SOURCE, renderOptions),
+      files: this.renderConfigForType(InitElementType.FILE, renderOptions),
+      commands: this.renderConfigForType(InitElementType.COMMAND, renderOptions),
+      services: this.renderConfigForType(InitElementType.SERVICE, renderOptions),
     }
   }
+
+  private renderConfigForType(elementType: InitElementType, renderOptions: any): any[] {
+    return this.elements.filter(elem => elem.getElementType() === elementType)
+      .map((elem, index) => elem.renderElement({index: index, ...renderOptions}));
+  }
+
 }
 
 /**
