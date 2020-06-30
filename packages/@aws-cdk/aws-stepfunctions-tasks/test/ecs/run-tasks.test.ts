@@ -9,6 +9,8 @@ let stack: Stack;
 let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
+// tslint:disable: object-literal-key-quotes
+
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
@@ -30,7 +32,9 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
     memoryLimitMiB: 256,
   });
 
-  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/not configured for compatibility with Fargate/);
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+  ).toThrowError(/Supplied TaskDefinition is not compatible with Fargate/);
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -39,7 +43,9 @@ test('Cannot create a Fargate task without a default container', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/must have at least one essential container/);
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+  ).toThrowError(/must have at least one essential container/);
 });
 
 test('Running a Fargate Task', () => {
@@ -54,19 +60,20 @@ test('Running a Fargate Task', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'RunFargate', { task: new tasks.RunEcsFargateTask({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
       {
         containerDefinition,
-        environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
-        ],
+        environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
       },
     ],
-  }) });
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+  });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask,
@@ -84,13 +91,14 @@ test('Running a Fargate Task', () => {
           Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
+      PlatformVersion: '1.4.0',
       TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
           {
             Environment: [
               {
-                'Name': 'SOME_KEY',
+                Name: 'SOME_KEY',
                 'Value.$': '$.SomeKey',
               },
             ],
@@ -130,7 +138,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
+          Resource: { 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] },
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -165,19 +173,18 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
       {
         containerDefinition,
-        environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
-        ],
+        environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
       },
     ],
-  }) });
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+  });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask,
@@ -195,7 +202,7 @@ test('Running an EC2 Task with bridge network', () => {
           {
             Environment: [
               {
-                'Name': 'SOME_KEY',
+                Name: 'SOME_KEY',
                 'Value.$': '$.SomeKey',
               },
             ],
@@ -235,7 +242,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
+          Resource: { 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] },
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -269,16 +276,16 @@ test('Running an EC2 Task with placement strategies', () => {
     memoryLimitMiB: 256,
   });
 
-  const ec2Task = new tasks.RunEcsEc2Task({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
-    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
-    placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+      placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
+    }),
   });
-
-  // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask,
@@ -319,8 +326,9 @@ test('Running an EC2 Task with overridden number values', () => {
     memoryLimitMiB: 256,
   });
 
-  const ec2Task = new tasks.RunEcsEc2Task({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -331,10 +339,8 @@ test('Running an EC2 Task with overridden number values', () => {
         memoryLimit: sfn.JsonPath.numberAt('$.MemoryLimit'),
       },
     ],
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
   });
-
-  // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
   // THEN
   expect(stack.resolve(runTask.toStateJson())).toEqual({
@@ -347,9 +353,9 @@ test('Running an EC2 Task with overridden number values', () => {
         ContainerOverrides: [
           {
             'Command.$': '$.TheCommand',
-            'Cpu': 5,
+            Cpu: 5,
             'Memory.$': '$.MemoryLimit',
-            'Name': 'TheContainer',
+            Name: 'TheContainer',
           },
         ],
       },
