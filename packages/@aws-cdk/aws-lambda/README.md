@@ -305,7 +305,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
   createAcl: {
     ownerUid: '1001',
     ownerGid: '1001',
-    permissions: '755',
+    permissions: '750',
   },
   // enforce the POSIX identity so lambda function will access with this identity
   posixUser: {
