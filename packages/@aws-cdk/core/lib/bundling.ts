@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import {spawnSync} from 'child_process';
 
 /**
  * Bundling options
@@ -55,7 +55,27 @@ export interface BundlingOptions {
   readonly user?: string;
 }
 
-export type DockerConsistency = 'consistent' | 'delegated' | 'cached';
+/**
+ * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
+ */
+export enum DockerConsistency {
+  /**
+   * @see DockerConsistency.DELEGATED
+   */
+  DEFAULT = 'consistent',
+  /**
+   * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
+   */
+  CONSISTENT = 'consistent',
+  /**
+   * Read/write operations on mounted Docker volumes are first written inside the container and then synchronized to the host machine
+   */
+  DELEGATED = 'delegated',
+  /**
+   * Read/write operations on mounted Docker volumes are first applied on the host machine and then synchronized to the container
+   */
+  CACHED = 'cached',
+}
 
 /**
  * A Docker image used for asset bundling
@@ -97,7 +117,8 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {}
+  private constructor(public readonly image: string) {
+  }
 
   /**
    * Runs a Docker image
@@ -112,13 +133,13 @@ export class BundlingDockerImage {
     const dockerArgs: string[] = [
       'run', '--rm',
       ...options.user
-        ? ['-u', options.user]
-        : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ? v.consistency : 'delegated'}`])),
+          ? ['-u', options.user]
+          : [],
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerConsistency.DEFAULT}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
-        ? ['-w', options.workingDirectory]
-        : [],
+          ? ['-w', options.workingDirectory]
+          : [],
       this.image,
       ...command,
     ];
