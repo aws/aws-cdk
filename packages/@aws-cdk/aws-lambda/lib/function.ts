@@ -587,9 +587,11 @@ export class Function extends FunctionBase {
 
     if (props.filesystems) {
       // add dependency when necessary
-      // for (const fs of props.filesystems) {
-      //   this.node.addDependency(fs.config.dependency);
-      // }
+      for (const fs of props.filesystems) {
+        if (fs.config.dependency) {
+          this.node.addDependency(...fs.config.dependency);
+        }
+      }
       resource.addPropertyOverride('FileSystemConfigs',
         props.filesystems.map(fs => ({
           LocalMountPath: fs.config.localMountPath,

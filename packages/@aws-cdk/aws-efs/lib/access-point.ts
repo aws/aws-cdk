@@ -1,5 +1,5 @@
 import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
-import { FileSystem, IFileSystem } from './efs-file-system';
+import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 
 /**

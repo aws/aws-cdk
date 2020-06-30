@@ -1,4 +1,11 @@
 import * as efs from '@aws-cdk/aws-efs';
+import { IDependable } from '@aws-cdk/core';
+
+export interface FileSystemConfig {
+  readonly localMountPath: string;
+  readonly arn: string;
+  readonly dependency?: IDependable[]
+}
 
 /**
  * Represents the filesystem for the Lambda function
@@ -13,8 +20,8 @@ export class FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,
-      dependency: [ ap.filesystem ],
+      dependency: [ap.filesystem],
     });
   }
-  protected constructor(public readonly config: any) { }
+  protected constructor(public readonly config: FileSystemConfig) { }
 }

@@ -42,7 +42,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
 });
 
 // this function will mount '/mnt/msg' and write content into /mnt/msg/content
-const fn = new lambda.Function(stack, 'MyLambda', {
+new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode(`
 import os
 import fcntl
@@ -94,7 +94,5 @@ def lambda_handler(event, context):
     lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   ],
 });
-
-fn.node.addDependency(fileSystem);
 
 app.synth();
