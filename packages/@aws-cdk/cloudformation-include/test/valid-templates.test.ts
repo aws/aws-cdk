@@ -420,7 +420,6 @@ describe('CDK Include', () => {
     const output = cfnTemplate.getOutput('Output1');
     const bucket = cfnTemplate.getResource('Bucket');
 
-    output.getValue();
     output.setValue('a mutated value');
     output.setDescription(undefined);
     output.setExport("an export");
