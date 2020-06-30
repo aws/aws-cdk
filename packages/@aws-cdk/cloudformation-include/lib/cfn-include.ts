@@ -2,7 +2,6 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-import { CfnCondition } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -123,15 +122,15 @@ export class CfnInclude extends core.CfnElement {
    * section of the included template
    * Any modifications performed on that object will be reflected in the resulting CDK template.
    *
-   * If a Parameter with the given name is not present in the template,
+   * If an Output with the given name is not present in the template,
    * throws an exception.
    *
-   * @param outputName the name of the output to retrieve
+   * @param logicalId the name of the output to retrieve
    */
-  public getOutput(outputName: string): core.CfnOutput {
-    const ret = this.outputs[outputName];
+  public getOutput(logicalId: string): core.CfnOutput {
+    const ret = this.outputs[logicalId];
     if (!ret) {
-      throw new Error(`Output with logical ID '${outputName}' was not found in the template`);
+      throw new Error(`Output with logical ID '${logicalId}' was not found in the template`);
     }
     return ret;
   }
@@ -202,7 +201,7 @@ export class CfnInclude extends core.CfnElement {
       value: expression.Value,
       description: expression.Description,
       exportName: expression.Export,
-      condition: expression.Condition ? self.getCondition(expression.Condition) as CfnCondition : undefined
+      condition: expression.Condition ? self.getCondition(expression.Condition) : undefined,
     });
 
     cfnOutput.overrideLogicalId(logicalId);
