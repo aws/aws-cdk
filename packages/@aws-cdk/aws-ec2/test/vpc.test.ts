@@ -1,11 +1,11 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
   InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
   RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'When creating a VPC': {
     'with the default CIDR range': {
 
@@ -1244,7 +1244,7 @@ export = {
     },
 
   },
-};
+});
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
