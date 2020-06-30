@@ -1,0 +1,28 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-referenced-bucket-name"
+      }
+    }
+  },
+  "Outputs": {
+    "Output1": {
+      "Description": "the description of the output value",
+      "Value": "the output value",
+      "Export": "the export",
+      "Condition": "AlwaysFalseCond"
+    }
+  }
+}

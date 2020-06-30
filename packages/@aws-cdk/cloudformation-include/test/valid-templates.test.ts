@@ -6,6 +6,7 @@ import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
+import { CfnCondition } from '@aws-cdk/core';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
@@ -413,6 +414,68 @@ describe('CDK Include', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
+  });
+
+  test("can ingest a template that contains outputs and modify them", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs.json');
+    const output = cfnTemplate.getOutput('Output1');
+    const bucket = cfnTemplate.getResource('Bucket');
+
+    output.getValue();
+    output.setValue('a mutated value');
+    output.setDescription(undefined);
+    output.setExport("an export");
+    output.setCondition(new core.CfnCondition(stack, 'MyCondition', {}));
+
+    new core.CfnOutput(stack, 'Output2', {
+      value: bucket.ref,
+      description: "a description",
+    });
+
+    const originalTemplate = loadTestFileToJsObject('outputs.json');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        ...originalTemplate.Conditions,
+      },
+      "Outputs": {
+        "Output1": {
+          "Value": "a mutated value",
+          "Export": {
+            "Name": "an export",
+          },
+          "Condition": "MyCondition",
+        },
+        "Output2": {
+          "Value": {
+            "Ref": "Bucket",
+          },
+          "Description": "a description",
+        },
+      },
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+    });
+  });
+
+  test("can ingest a template that contains outputs and get those outputs", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs.json');
+    const output = cfnTemplate.getOutput('Output1');
+
+    expect(output.getDescription()).toBe("the description of the output value");
+    expect(output.getValue()).toBe("the output value");
+    expect(output.getExport()).toBe("the export");
+    expect(output.getCondition()).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+  });
+
+  test('can ingest a template with outputs that reference resources', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    expect(stack).toMatchTemplate(loadTestFileToJsObject('outputs-with-references.json'));
+    expect(() => { 
+      cfnTemplate.getOutput('FakeOutput');
+    }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 });
 

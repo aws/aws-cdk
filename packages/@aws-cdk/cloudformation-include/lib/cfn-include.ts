@@ -2,6 +2,7 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+import { CfnCondition } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -24,7 +25,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
-  private readonly outputs: { [outputName: string]: core.CfnOutput } = {};
+  private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -45,6 +46,10 @@ export class CfnInclude extends core.CfnElement {
     // instantiate the conditions
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.createCondition(conditionName);
+    }
+
+    for (const logicalId of Object.keys(this.template.Outputs || {})) {
+      this.createOutput(logicalId);
     }
 
     // instantiate all resources as CDK L1 objects
@@ -113,14 +118,32 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnOutput object from the 'Outputs'
+   * section of the included template
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If a Parameter with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param outputName the name of the output to retrieve
+   */
+  public getOutput(outputName: string): core.CfnOutput {
+    const ret = this.outputs[outputName];
+    if (!ret) {
+      throw new Error(`Output with logical ID '${outputName}' was not found in the template`);
+    }
+    return ret;
+  }
+
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
-      // except Conditions, Resources, and Parameters, which will be taken care of by the created L1s
-      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters') {
+      // except Conditions, Resources, Parameters, and Outputs which will be taken care of by the created L1s
+      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters' && section !== 'Outputs') {
         ret[section] = this.template[section];
       }
     }
@@ -151,6 +174,39 @@ export class CfnInclude extends core.CfnElement {
 
     cfnParameter.overrideLogicalId(logicalId);
     this.parameters[logicalId] = cfnParameter;
+  }
+
+  private createOutput(logicalId: string): void {
+    const self = this;
+    const expression = new cfn_parse.CfnParser({
+      finder: {
+        findResource(lId: string): core.CfnResource | undefined {
+          if (!(lId in (self.template.Resources || {}))) {
+            return undefined;
+          }
+          return self.getOrCreateResource(lId);
+        },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          if (elementName in self.parameters) {
+            return self.parameters[elementName];
+          }
+
+          return this.findResource(elementName);
+        },
+        findCondition(): undefined {
+          return undefined;
+        },
+      },
+    }).parseValue(this.template.Outputs[logicalId]);
+    const cfnOutput = new core.CfnOutput(this, logicalId, {
+      value: expression.Value,
+      description: expression.Description,
+      exportName: expression.Export,
+      condition: expression.Condition ? self.getCondition(expression.Condition) as CfnCondition : undefined
+    });
+
+    cfnOutput.overrideLogicalId(logicalId);
+    this.outputs[logicalId] = cfnOutput;
   }
 
   private createCondition(conditionName: string): void {

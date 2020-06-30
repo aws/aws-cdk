@@ -36,10 +36,10 @@ export interface CfnOutputProps {
 }
 
 export class CfnOutput extends CfnElement {
-  private readonly _description?: string;
-  private readonly _condition?: CfnCondition;
-  private readonly _value?: any;
-  private readonly _export?: string;
+  private _description?: string;
+  private _condition?: CfnCondition;
+  private _value?: any;
+  private _export?: string;
 
   /**
    * Creates an CfnOutput value for this stack.
@@ -57,6 +57,38 @@ export class CfnOutput extends CfnElement {
     this._value = props.value;
     this._condition = props.condition;
     this._export = props.exportName;
+  }
+
+  public getDescription(): string | undefined {
+    return this._description;
+  }
+
+  public getValue(): any {
+    return this._value;
+  }
+
+  public getCondition(): CfnCondition | undefined {
+    return this._condition;
+  }
+
+  public getExport(): string | undefined {
+    return this._export;
+  }
+
+  public setDescription(newDescription: string | undefined): void {
+    this._description = newDescription;
+  }
+
+  setValue(newValue: any): void {
+    this._value = newValue;
+  }
+
+  public setCondition(newCondition: CfnCondition | undefined): void {
+    this._condition = newCondition;
+  }
+
+  public setExport(newExport: string): void {
+    this._export = newExport;
   }
 
   /**

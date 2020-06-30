@@ -1,0 +1,42 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Parameters": {
+    "MyParam": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-referenced-bucket-name"
+      },
+      "Condition": "AlwaysFalseCond"
+    }
+  },
+  "Outputs": {
+    "Output1": {
+      "Value": { "Ref": "Bucket" },
+      "Description": { "Ref": "MyParam" },
+      "Condition": "AlwaysFalseCond"
+    },
+    "Output2": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Bucket",
+          "Arn"
+        ]
+      },
+      "Condition": "AlwaysFalseCond"
+    }
+  }
+}
