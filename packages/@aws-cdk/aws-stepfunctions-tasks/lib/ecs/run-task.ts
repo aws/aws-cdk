@@ -183,6 +183,10 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     return {
       parameters: {
         LaunchType: 'EC2',
+        // takes an array of placement constraints each of which contain a single item array of constraints, flattens it
+        // and renders the Json to be passed as a parameter in the state machine.
+        // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]
+        // output: {Type: 'distinctInstance'}
         PlacementConstraints: noEmpty(flatten((this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
         PlacementStrategy: noEmpty(flatten((this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
       },
