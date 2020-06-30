@@ -1,14 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Aws, Construct } from '@aws-cdk/core';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for EmrSetClusterTerminationProtection
  *
  * @experimental
  */
-export interface EmrSetClusterTerminationProtectionProps {
+export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to update.
    */
@@ -25,24 +25,33 @@ export interface EmrSetClusterTerminationProtectionProps {
  *
  * @experimental
  */
-export class EmrSetClusterTerminationProtection implements sfn.IStepFunctionsTask {
+export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
 
-  constructor(private readonly props: EmrSetClusterTerminationProtectionProps) {}
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  constructor(scope: Construct, id: string, private readonly props: EmrSetClusterTerminationProtectionProps) {
+    super(scope, id, props);
+
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        actions: ['elasticmapreduce:SetTerminationProtection'],
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+      }),
+    ];
+  }
+
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
-        sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
-      policyStatements: [
-        new iam.PolicyStatement({
-          actions: ['elasticmapreduce:SetTerminationProtection'],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
-        }),
-      ],
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
+        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         TerminationProtected: this.props.terminationProtected,
-      },
+      }),
     };
   }
 }

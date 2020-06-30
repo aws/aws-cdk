@@ -22,6 +22,21 @@ import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
 const NAME_TAG: string = 'Name';
 
 /**
+ * The monitoring mode for instances launched in an autoscaling group
+ */
+export enum Monitoring {
+  /**
+   * Generates metrics every 5 minutes
+   */
+  BASIC,
+
+  /**
+   * Generates metrics every minute
+   */
+  DETAILED,
+}
+
+/**
  * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
  *
  * Constructs that want to create AutoScalingGroups can inherit
@@ -207,6 +222,18 @@ export interface CommonAutoScalingGroupProps {
    * @default none
    */
   readonly maxInstanceLifetime?: Duration;
+
+  /**
+   * Controls whether instances in this group are launched with detailed or basic monitoring.
+   *
+   * When detailed monitoring is enabled, Amazon CloudWatch generates metrics every minute and your account
+   * is charged a fee. When you disable detailed monitoring, CloudWatch generates metrics every 5 minutes.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/latest/userguide/as-instance-monitoring.html#enable-as-instance-metrics
+   *
+   * @default - Monitoring.DETAILED
+   */
+  readonly instanceMonitoring?: Monitoring;
 }
 
 /**
@@ -227,6 +254,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * AMI to launch
    */
   readonly machineImage: ec2.IMachineImage;
+
+  /**
+   * Security group to launch the instances in.
+   *
+   * @default - A SecurityGroup will be created if none is specified.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Specific UserData to use
@@ -448,7 +482,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
-    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false,
     });
@@ -477,6 +511,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
+      instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
       securityGroups: securityGroupsToken,
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,

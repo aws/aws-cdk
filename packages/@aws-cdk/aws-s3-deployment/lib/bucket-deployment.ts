@@ -161,11 +161,11 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    const assetHash = calcSourceHash(handlerSourceDirectory);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
@@ -174,8 +174,10 @@ export class BucketDeployment extends cdk.Construct {
       memorySize: props.memoryLimit,
     });
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
-    sources.forEach(source => source.bucket.grantRead(handler));
+    const handlerRole = handler.role;
+    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {

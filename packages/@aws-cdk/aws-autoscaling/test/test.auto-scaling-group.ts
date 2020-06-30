@@ -658,6 +658,28 @@ export = {
     test.done();
   },
 
+  'an existing security group can be specified instead of auto-created'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      securityGroup,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      SecurityGroups: ['most-secure'],
+    },
+    ));
+    test.done();
+  },
+
   'an existing role can be specified instead of auto-created'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -828,6 +850,45 @@ export = {
       });
     }, /maxInstanceLifetime must be between 7 and 365 days \(inclusive\)/);
 
+    test.done();
+  },
+
+  'can configure instance monitoring'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      instanceMonitoring: autoscaling.Monitoring.BASIC,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      InstanceMonitoring: false,
+    }));
+    test.done();
+  },
+
+  'instance monitoring defaults to absent'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      InstanceMonitoring: ABSENT,
+    }));
     test.done();
   },
 

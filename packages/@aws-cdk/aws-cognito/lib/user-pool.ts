@@ -386,6 +386,47 @@ export interface EmailSettings {
 }
 
 /**
+ * How will a user be able to recover their account?
+ *
+ * When a user forgets their password, they can have a code sent to their verified email or verified phone to recover their account.
+ * You can choose the preferred way to send codes below.
+ * We recommend not allowing phone to be used for both password resets and multi-factor authentication (MFA).
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html
+ */
+export enum AccountRecovery {
+  /**
+   * Email if available, otherwise phone, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  EMAIL_AND_PHONE_WITHOUT_MFA,
+
+  /**
+   * Phone if available, otherwise email, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_WITHOUT_MFA_AND_EMAIL,
+
+  /**
+   * Email only
+   */
+  EMAIL_ONLY,
+
+  /**
+   * Phone only, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_ONLY_WITHOUT_MFA,
+
+  /**
+   * (Not Recommended) Phone if available, otherwise email, and do allow a user to reset their password via phone if they are also using it for MFA.
+   */
+  PHONE_AND_EMAIL,
+
+  /**
+   * None – users will have to contact an administrator to reset their passwords
+   */
+  NONE,
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -509,6 +550,13 @@ export interface UserPoolProps {
    * @default true
    */
   readonly signInCaseSensitive?: boolean;
+
+  /**
+   * How will a user be able to recover their account?
+   *
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
+   */
+  readonly accountRecovery?: AccountRecovery;
 }
 
 /**
@@ -622,7 +670,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -683,6 +731,7 @@ export class UserPool extends UserPoolBase {
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
+      accountRecoverySetting: this.accountRecovery(props),
     });
 
     this.userPoolId = userPool.ref;
@@ -907,6 +956,42 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
     return schema;
+  }
+
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
+    switch (accountRecovery) {
+      case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_email', priority: 1 },
+            { name: 'verified_phone_number', priority: 2 },
+          ],
+        };
+      case AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_phone_number', priority: 1 },
+            { name: 'verified_email', priority: 2 },
+          ],
+        };
+      case AccountRecovery.EMAIL_ONLY:
+        return {
+          recoveryMechanisms: [{ name: 'verified_email', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_ONLY_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [{ name: 'verified_phone_number', priority: 1 }],
+        };
+      case AccountRecovery.NONE:
+        return {
+          recoveryMechanisms: [{ name: 'admin_only', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_AND_EMAIL:
+        return undefined;
+      default:
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
+    }
   }
 }
 

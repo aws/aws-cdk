@@ -170,7 +170,6 @@
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
-    "@aws-cdk/cdk-assets-schema": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -179,18 +178,18 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.2",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.6.0",
+    "jsii-reflect": "^1.7.0",
     "jsonschema": "^1.2.6",
     "yaml": "1.9.2",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.3",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.5",
     "jest": "^25.5.4",
-    "jsii": "^1.6.0"
+    "jsii": "^1.7.0"
   },
   "keywords": [
     "aws",
