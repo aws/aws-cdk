@@ -50,7 +50,7 @@ describe('Publish', () => {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       message: sfn.TaskInput.fromObject({
         Input: 'Publish this message',
-        Token: sfn.Context.taskToken,
+        Token: sfn.JsonPath.taskToken,
       }),
     });
 
@@ -128,7 +128,7 @@ describe('Publish', () => {
   test('topic ARN supplied through the task input', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const topic = sns.Topic.fromTopicArn(stack, 'Topic', sfn.Data.stringAt('$.topicArn'));
+    const topic = sns.Topic.fromTopicArn(stack, 'Topic', sfn.JsonPath.stringAt('$.topicArn'));
 
     // WHEN
     const task = new SnsPublish(stack, 'Publish', {
@@ -172,7 +172,7 @@ describe('Publish', () => {
         message: sfn.TaskInput.fromText('Publish this message'),
       });
       // THEN
-    }).toThrow(/Task Token is required in `message` Use Context.taskToken to set the token./);
+    }).toThrow(/Task Token is required in `message` Use JsonPath.taskToken to set the token./);
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {

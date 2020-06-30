@@ -73,7 +73,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new Error('Task Token is required in `payload` for callback. Use Context.taskToken to set the token.');
+      throw new Error('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     this.taskMetrics = {
@@ -96,7 +96,10 @@ export class LambdaInvoke extends sfn.TaskStateBase {
   /**
    * Provides the Lambda Invoke service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

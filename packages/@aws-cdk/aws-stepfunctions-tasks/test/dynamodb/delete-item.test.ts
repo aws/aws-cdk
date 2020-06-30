@@ -26,7 +26,7 @@ test('DeleteItem task', () => {
     conditionExpression: 'ForumName <> :f and Subject <> :s',
     expressionAttributeNames: { OTHER_KEY: '#OK' },
     expressionAttributeValues: {
-      ':val': tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.Item.TotalCount.N')),
+      ':val': tasks.DynamoAttributeValue.numberFromString(sfn.JsonPath.stringAt('$.Item.TotalCount.N')),
     },
     returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
     returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,

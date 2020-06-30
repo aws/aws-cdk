@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config';
-import { debug } from '../../logging';
+import { debug, trace } from '../../logging';
 import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
@@ -60,7 +60,7 @@ export class SDK implements ISDK {
       ...this.retryOptions,
       credentials,
       region,
-      logger: { log: (...messages) => messages.forEach(m => debug('%s', m)) },
+      logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
     this.currentRegion = region;
   }
