@@ -189,7 +189,6 @@ export class CfnInclude extends core.CfnElement {
           if (elementName in self.parameters) {
             return self.parameters[elementName];
           }
-
           return this.findResource(elementName);
         },
         findCondition(): undefined {
