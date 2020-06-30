@@ -4,26 +4,24 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:root"
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":iam::12345678:root"
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         }
       }
@@ -35,12 +33,10 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-eks-cluster-test/Vpc"
-          }
-        ]
+        "Tags": [{
+          "Key": "Name",
+          "Value": "aws-cdk-eks-cluster-test/Vpc"
+        }]
       }
     },
     "VpcPublicSubnet1Subnet5C2D37C4": {
@@ -52,8 +48,7 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -78,8 +73,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -120,8 +114,7 @@
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -144,8 +137,7 @@
         "SubnetId": {
           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -165,8 +157,7 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -191,8 +182,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -238,8 +228,7 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -264,8 +253,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
           },
@@ -311,8 +299,7 @@
         },
         "AvailabilityZone": "test-region-1a",
         "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -337,8 +324,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -381,8 +367,7 @@
         },
         "AvailabilityZone": "test-region-1b",
         "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -407,8 +392,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -451,8 +435,7 @@
         },
         "AvailabilityZone": "test-region-1c",
         "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -477,8 +460,7 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
           },
@@ -515,12 +497,10 @@
     "VpcIGWD7BA715C": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-eks-cluster-test/Vpc"
-          }
-        ]
+        "Tags": [{
+          "Key": "Name",
+          "Value": "aws-cdk-eks-cluster-test/Vpc"
+        }]
       }
     },
     "VpcVPCGWBF912B6E": {
@@ -538,44 +518,38 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "eks.amazonaws.com"
-              }
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "eks.amazonaws.com"
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKSClusterPolicy"
-              ]
+        "ManagedPolicyArns": [{
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/AmazonEKSClusterPolicy"
             ]
-          }
-        ]
+          ]
+        }]
       }
     },
     "ClusterControlPlaneSecurityGroupD274242C": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "EKS Control Plane Security Group",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
+        "SecurityGroupEgress": [{
+          "CidrIp": "0.0.0.0/0",
+          "Description": "Allow all outbound traffic by default",
+          "IpProtocol": "-1"
+        }],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
@@ -669,13 +643,11 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
+          "Statement": [{
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "AWS": [
-                  {
+                "AWS": [{
                     "Fn::GetAtt": [
                       "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
                       "Outputs.awscdkeksclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole5B783C71Arn"
@@ -711,8 +683,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Statement": [
-            {
+          "Statement": [{
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
@@ -779,11 +750,9 @@
           "Version": "2012-10-17"
         },
         "PolicyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-        "Roles": [
-          {
-            "Ref": "ClusterCreationRole360249B6"
-          }
-        ]
+        "Roles": [{
+          "Ref": "ClusterCreationRole360249B6"
+        }]
       }
     },
     "Cluster9EE0221C": {
@@ -804,16 +773,13 @@
           },
           "version": "1.16",
           "resourcesVpcConfig": {
-            "securityGroupIds": [
-              {
-                "Fn::GetAtt": [
-                  "ClusterControlPlaneSecurityGroupD274242C",
-                  "GroupId"
-                ]
-              }
-            ],
-            "subnetIds": [
-              {
+            "securityGroupIds": [{
+              "Fn::GetAtt": [
+                "ClusterControlPlaneSecurityGroupD274242C",
+                "GroupId"
+              ]
+            }],
+            "subnetIds": [{
                 "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
               },
               {
@@ -932,29 +898,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -1005,8 +968,7 @@
             "Arn"
           ]
         },
-        "Subnets": [
-          {
+        "Subnets": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1031,31 +993,27 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "eks-fargate-pods.amazonaws.com"
-              }
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "eks-fargate-pods.amazonaws.com"
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-              ]
+        "ManagedPolicyArns": [{
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
             ]
-          }
-        ]
+          ]
+        }]
       }
     },
     "ClusterfargateprofiledefaultEFC59F14": {
@@ -1083,11 +1041,9 @@
               "Arn"
             ]
           },
-          "selectors": [
-            {
-              "namespace": "default"
-            }
-          ]
+          "selectors": [{
+            "namespace": "default"
+          }]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -1097,15 +1053,12 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/Nodes/InstanceSecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "Tags": [
-          {
+        "SecurityGroupEgress": [{
+          "CidrIp": "0.0.0.0/0",
+          "Description": "Allow all outbound traffic by default",
+          "IpProtocol": "-1"
+        }],
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1194,29 +1147,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -1253,8 +1203,7 @@
             ]
           }
         ],
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1278,11 +1227,9 @@
     "ClusterNodesInstanceProfileF2DD0E21": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [
-          {
-            "Ref": "ClusterNodesInstanceRoleC3C01328"
-          }
-        ]
+        "Roles": [{
+          "Ref": "ClusterNodesInstanceRoleC3C01328"
+        }]
       }
     },
     "ClusterNodesLaunchConfig7C420A27": {
@@ -1295,14 +1242,12 @@
         "IamInstanceProfile": {
           "Ref": "ClusterNodesInstanceProfileF2DD0E21"
         },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "ClusterNodesInstanceSecurityGroup899246BD",
-              "GroupId"
-            ]
-          }
-        ],
+        "SecurityGroups": [{
+          "Fn::GetAtt": [
+            "ClusterNodesInstanceSecurityGroup899246BD",
+            "GroupId"
+          ]
+        }],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -1330,8 +1275,7 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterNodesLaunchConfig7C420A27"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1352,8 +1296,7 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/Nodes"
           }
         ],
-        "VPCZoneIdentifier": [
-          {
+        "VPCZoneIdentifier": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1385,15 +1328,12 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "Tags": [
-          {
+        "SecurityGroupEgress": [{
+          "CidrIp": "0.0.0.0/0",
+          "Description": "Allow all outbound traffic by default",
+          "IpProtocol": "-1"
+        }],
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1482,29 +1422,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -1541,8 +1478,7 @@
             ]
           }
         ],
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1566,11 +1502,9 @@
     "ClusterBottlerocketNodesInstanceProfileB6E2F25A": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [
-          {
-            "Ref": "ClusterBottlerocketNodesInstanceRole68E4BCFB"
-          }
-        ]
+        "Roles": [{
+          "Ref": "ClusterBottlerocketNodesInstanceRole68E4BCFB"
+        }]
       }
     },
     "ClusterBottlerocketNodesLaunchConfig76D7BEBE": {
@@ -1583,14 +1517,12 @@
         "IamInstanceProfile": {
           "Ref": "ClusterBottlerocketNodesInstanceProfileB6E2F25A"
         },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
-              "GroupId"
-            ]
-          }
-        ],
+        "SecurityGroups": [{
+          "Fn::GetAtt": [
+            "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
+            "GroupId"
+          ]
+        }],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -1632,8 +1564,7 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1654,8 +1585,7 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes"
           }
         ],
-        "VPCZoneIdentifier": [
-          {
+        "VPCZoneIdentifier": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1687,15 +1617,12 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/spot/InstanceSecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "Tags": [
-          {
+        "SecurityGroupEgress": [{
+          "CidrIp": "0.0.0.0/0",
+          "Description": "Allow all outbound traffic by default",
+          "IpProtocol": "-1"
+        }],
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1784,29 +1711,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -1843,8 +1767,7 @@
             ]
           }
         ],
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1868,11 +1791,9 @@
     "ClusterspotInstanceProfileAB88D077": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [
-          {
-            "Ref": "ClusterspotInstanceRole39043830"
-          }
-        ]
+        "Roles": [{
+          "Ref": "ClusterspotInstanceRole39043830"
+        }]
       }
     },
     "ClusterspotLaunchConfigCC19F2E6": {
@@ -1885,14 +1806,12 @@
         "IamInstanceProfile": {
           "Ref": "ClusterspotInstanceProfileAB88D077"
         },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "ClusterspotInstanceSecurityGroup01F7B1CE",
-              "GroupId"
-            ]
-          }
-        ],
+        "SecurityGroups": [{
+          "Fn::GetAtt": [
+            "ClusterspotInstanceSecurityGroup01F7B1CE",
+            "GroupId"
+          ]
+        }],
         "SpotPrice": "0.1094",
         "UserData": {
           "Fn::Base64": {
@@ -1921,8 +1840,7 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterspotLaunchConfigCC19F2E6"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -1943,8 +1861,7 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/spot"
           }
         ],
-        "VPCZoneIdentifier": [
-          {
+        "VPCZoneIdentifier": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -1993,7 +1910,6 @@
         "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
         "Chart": "aws-node-termination-handler",
         "Version": "0.7.3",
-        "Wait": false,
         "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
         "Namespace": "kube-system",
         "Repository": "https://aws.github.io/eks-charts",
@@ -2006,15 +1922,12 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-eks-cluster-test/Cluster/InferenceInstances/InstanceSecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "Tags": [
-          {
+        "SecurityGroupEgress": [{
+          "CidrIp": "0.0.0.0/0",
+          "Description": "Allow all outbound traffic by default",
+          "IpProtocol": "-1"
+        }],
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -2103,29 +2016,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -2162,8 +2072,7 @@
             ]
           }
         ],
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -2187,11 +2096,9 @@
     "ClusterInferenceInstancesInstanceProfile5A1209B4": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
-        "Roles": [
-          {
-            "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
-          }
-        ]
+        "Roles": [{
+          "Ref": "ClusterInferenceInstancesInstanceRole59AC6F56"
+        }]
       }
     },
     "ClusterInferenceInstancesLaunchConfig03BF48FE": {
@@ -2204,14 +2111,12 @@
         "IamInstanceProfile": {
           "Ref": "ClusterInferenceInstancesInstanceProfile5A1209B4"
         },
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
-              "GroupId"
-            ]
-          }
-        ],
+        "SecurityGroups": [{
+          "Fn::GetAtt": [
+            "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
+            "GroupId"
+          ]
+        }],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -2239,8 +2144,7 @@
         "LaunchConfigurationName": {
           "Ref": "ClusterInferenceInstancesLaunchConfig03BF48FE"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": {
               "Fn::Join": [
                 "",
@@ -2261,8 +2165,7 @@
             "Value": "aws-cdk-eks-cluster-test/Cluster/InferenceInstances"
           }
         ],
-        "VPCZoneIdentifier": [
-          {
+        "VPCZoneIdentifier": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -2317,29 +2220,26 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "ec2.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ec2.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
                   ]
-                }
+                ]
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Fn::Join": [
               "",
               [
@@ -2390,8 +2290,7 @@
             "Arn"
           ]
         },
-        "Subnets": [
-          {
+        "Subnets": [{
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
@@ -2455,7 +2354,6 @@
         },
         "Release": "awscdkeksclustertestclusterchartdashboard1f3d83fe",
         "Chart": "kubernetes-dashboard",
-        "Wait": false,
         "Namespace": "default",
         "Repository": "https://kubernetes.github.io/dashboard/",
         "CreateNamespace": true
@@ -2531,25 +2429,23 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": {
-                "StringEquals": {
-                  "Fn::GetAtt": [
-                    "ClusterMyServiceAccountConditionJson671C0633",
-                    "Value"
-                  ]
-                }
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "Federated": {
-                  "Ref": "ClusterOpenIdConnectProviderE7EB0530"
-                }
+          "Statement": [{
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "Fn::GetAtt": [
+                  "ClusterMyServiceAccountConditionJson671C0633",
+                  "Value"
+                ]
+              }
+            },
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": {
+                "Ref": "ClusterOpenIdConnectProviderE7EB0530"
               }
             }
-          ],
+          }],
           "Version": "2012-10-17"
         }
       }
@@ -2743,21 +2639,17 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
             }
-          ]
+          }]
         },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-          }
-        ]
+        "ManagedPolicyArns": [{
+          "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        }]
       }
     },
     "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57": {
@@ -2770,8 +2662,7 @@
           "S3Key": {
             "Fn::Join": [
               "",
-              [
-                {
+              [{
                   "Fn::Select": [
                     0,
                     {
@@ -2821,42 +2712,34 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
             }
-          ]
+          }]
         },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-          }
-        ],
-        "Policies": [
-          {
-            "PolicyName": "Inline",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Resource": "*",
-                  "Action": [
-                    "iam:CreateOpenIDConnectProvider",
-                    "iam:DeleteOpenIDConnectProvider",
-                    "iam:UpdateOpenIDConnectProviderThumbprint",
-                    "iam:AddClientIDToOpenIDConnectProvider",
-                    "iam:RemoveClientIDFromOpenIDConnectProvider"
-                  ]
-                }
+        "ManagedPolicyArns": [{
+          "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        }],
+        "Policies": [{
+          "PolicyName": "Inline",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Resource": "*",
+              "Action": [
+                "iam:CreateOpenIDConnectProvider",
+                "iam:DeleteOpenIDConnectProvider",
+                "iam:UpdateOpenIDConnectProviderThumbprint",
+                "iam:AddClientIDToOpenIDConnectProvider",
+                "iam:RemoveClientIDFromOpenIDConnectProvider"
               ]
-            }
+            }]
           }
-        ]
+        }]
       }
     },
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0": {
@@ -2869,8 +2752,7 @@
           "S3Key": {
             "Fn::Join": [
               "",
-              [
-                {
+              [{
                   "Fn::Select": [
                     0,
                     {
