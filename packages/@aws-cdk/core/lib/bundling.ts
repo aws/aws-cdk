@@ -56,28 +56,6 @@ export interface BundlingOptions {
 }
 
 /**
- * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
- */
-export enum DockerConsistency {
-  /**
-   * @see DockerConsistency.DELEGATED
-   */
-  DEFAULT = 'consistent',
-  /**
-   * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
-   */
-  CONSISTENT = 'consistent',
-  /**
-   * Read/write operations on mounted Docker volumes are first written inside the container and then synchronized to the host machine
-   */
-  DELEGATED = 'delegated',
-  /**
-   * Read/write operations on mounted Docker volumes are first applied on the host machine and then synchronized to the container
-   */
-  CACHED = 'cached',
-}
-
-/**
  * A Docker image used for asset bundling
  */
 export class BundlingDockerImage {
@@ -169,6 +147,28 @@ export interface DockerVolume {
    * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
    */
   readonly consistency?: DockerConsistency;
+}
+
+/**
+ * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
+ */
+export enum DockerConsistency {
+  /**
+   * @see DockerConsistency.DELEGATED
+   */
+  DEFAULT = 'consistent',
+  /**
+   * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
+   */
+  CONSISTENT = 'consistent',
+  /**
+   * Read/write operations on mounted Docker volumes are first written inside the container and then synchronized to the host machine
+   */
+  DELEGATED = 'delegated',
+  /**
+   * Read/write operations on mounted Docker volumes are first applied on the host machine and then synchronized to the container
+   */
+  CACHED = 'cached',
 }
 
 /**
