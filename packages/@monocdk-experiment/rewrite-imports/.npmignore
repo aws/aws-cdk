@@ -10,3 +10,6 @@ tsconfig.json
 !*.d.ts
 .eslintrc.js
 jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
