@@ -1,7 +1,7 @@
 import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
-import { ConnectionType, Integration } from './integration';
+import { Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
@@ -266,23 +266,10 @@ export class Method extends Resource {
       return this.renderIntegration(new MockIntegration());
     }
 
-    integration.bind(this);
-
-    const options = integration._props.options || { };
+    const bindResult = integration.bind(this);
+    const options = bindResult.options || { };
 
     let credentials;
-    if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
-    }
-
-    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
-    }
-
-    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
-    }
-
     if (options.credentialsRole) {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
@@ -292,12 +279,12 @@ export class Method extends Resource {
     }
 
     return {
-      type: integration._props.type,
-      uri: integration._props.uri,
+      type: bindResult.type,
+      uri: bindResult.uri,
       cacheKeyParameters: options.cacheKeyParameters,
       cacheNamespace: options.cacheNamespace,
       contentHandling: options.contentHandling,
-      integrationHttpMethod: integration._props.integrationHttpMethod,
+      integrationHttpMethod: bindResult.integrationHttpMethod,
       requestParameters: options.requestParameters,
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,
