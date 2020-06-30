@@ -9,6 +9,16 @@ const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => 
   return value as C;
 };
 
+/**
+ * Integration test to deployability and use of dualstack ALB. Creates an ALB
+ * with dualstack ipAddresType and an ipv6Block to add to VPC subnets. Main
+ * test is for the inclusion of default IPv6 ingress rule.
+ *
+ * Stack Verification steps:
+ * VPC is created with subnets that allow for IPv6 connection and then dualstack
+ * ALB attaches a listener with dualstack that defaults IPv4/IPv6 ingress rule.
+ *
+ */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
