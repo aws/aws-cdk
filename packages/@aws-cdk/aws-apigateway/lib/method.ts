@@ -192,6 +192,9 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
+    const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
+    const bindResult = integration.bind(this);
+
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
       restApiId: this.api.restApiId,
@@ -201,7 +204,7 @@ export class Method extends Resource {
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
-      integration: this.renderIntegration(props.integration),
+      integration: this.renderIntegration(integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
@@ -219,7 +222,12 @@ export class Method extends Resource {
     const deployment = props.resource.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
-      deployment.addToLogicalId({ method: methodProps });
+      deployment.addToLogicalId({
+        method: {
+          ...methodProps,
+          ...bindResult?.triggerDeployment,
+        },
+      });
     }
   }
 
@@ -255,19 +263,7 @@ export class Method extends Resource {
     return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
-  private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
-    if (!integration) {
-      // use defaultIntegration from API if defined
-      if (this.resource.defaultIntegration) {
-        return this.renderIntegration(this.resource.defaultIntegration);
-      }
-
-      // fallback to mock
-      return this.renderIntegration(new MockIntegration());
-    }
-
-    integration.bind(this);
-
+  private renderIntegration(integration: Integration): CfnMethod.IntegrationProperty {
     const options = integration._props.options || { };
 
     let credentials;

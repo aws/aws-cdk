@@ -135,6 +135,18 @@ export interface IntegrationProps {
 }
 
 /**
+ * Result of binding an Integration to the Method
+ */
+export interface IntegrationConfig {
+  /**
+   * Triggers a new Deployment if the value of this property changes.
+   * Use this property to trigger new deployments for changes to values in this integration.
+   * @default - deployments are not triggered for any change of this integration.
+   */
+  readonly triggerDeployment?: any;
+}
+
+/**
  * Base class for backend integrations for an API Gateway method.
  *
  * Use one of the concrete classes such as `MockIntegration`, `AwsIntegration`, `LambdaIntegration`
@@ -156,8 +168,8 @@ export class Integration {
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method) {
-    return;
+  public bind(_method: Method): IntegrationConfig {
+    return {};
   }
 }
 

@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Integration, IntegrationOptions, IntegrationType } from '../integration';
+import { Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
 
@@ -92,7 +92,8 @@ export class AwsIntegration extends Integration {
     });
   }
 
-  public bind(method: Method) {
+  public bind(method: Method): IntegrationConfig {
     this.scope = method;
+    return {};
   }
 }
