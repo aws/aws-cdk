@@ -10,6 +10,7 @@ export * from './sqs/send-to-queue';
 export * from './sqs/send-message';
 export * from './ecs/run-ecs-ec2-task';
 export * from './ecs/run-ecs-fargate-task';
+export * from './ecs/run-task';
 export * from './sagemaker/base-types';
 export * from './sagemaker/create-training-job';
 export * from './sagemaker/create-transform-job';
