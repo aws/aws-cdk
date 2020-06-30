@@ -12,18 +12,18 @@ test('route', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
     handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
   });
-  api.addRoute(apigw.WebSocketKnownRouteKey.CONNECT, integration, {
-    modelSelectionExpression: apigw.WebSocketKnownModelKey.DEFAULT,
+  api.addRoute(apigw.WebSocketRouteKey.CONNECT, integration, {
+    modelSelectionExpression: apigw.WebSocketRouteModelSelectionExpression.DEFAULT,
     requestModels: {
-      [apigw.WebSocketKnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusInputModel', type: apigw.JsonSchemaType.OBJECT, properties: { action: { type: apigw.JsonSchemaType.STRING } } }),
+      [apigw.WebSocketModelKey.DEFAULT.toString()]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusInputModel', type: apigw.JsonSchemaType.OBJECT, properties: { action: { type: apigw.JsonSchemaType.STRING } } }),
     },
-    routeResponseSelectionExpression: apigw.WebSocketKnownRouteResponseKey.DEFAULT,
+    routeResponseSelectionExpression: apigw.WebSocketRouteResponseSelectionExpression.DEFAULT,
   });
 
   // THEN
@@ -39,7 +39,7 @@ test('route', () => {
 
   cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::Model', {
     ApiId: { Ref: 'myapi4C7BF186' },
-    ContentType: apigw.WebSocketKnownContentTypes.JSON,
+    ContentType: 'application/json',
     Name: 'statusInputModel',
   }));
 });
@@ -50,17 +50,17 @@ test('route response', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
     handler: lambda.Function.fromFunctionArn(stack, 'handler', `arn:aws:lambda:${stack.region}:${stack.account}:function:my-function`),
   });
-  const route = api.addRoute(apigw.WebSocketKnownRouteKey.CONNECT, integration, {});
-  route.addResponse(apigw.WebSocketKnownRouteKey.CONNECT, {
-    modelSelectionExpression: apigw.WebSocketKnownModelKey.DEFAULT,
+  const route = api.addRoute(apigw.WebSocketRouteKey.CONNECT, integration, {});
+  route.addResponse(apigw.WebSocketRouteResponseKey.DEFAULT, {
+    modelSelectionExpression: apigw.WebSocketRouteResponseModelSelectionExpression.DEFAULT,
     responseModels: {
-      [apigw.WebSocketKnownModelKey.DEFAULT]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusResponse', type: apigw.JsonSchemaType.NUMBER, properties: { status: { type: apigw.JsonSchemaType.STRING }, message: { type: apigw.JsonSchemaType.STRING } } }),
+      [apigw.WebSocketModelKey.DEFAULT.toString()]: api.addModel({ schema: apigw.JsonSchemaVersion.DRAFT4, title: 'statusResponse', type: apigw.JsonSchemaType.NUMBER, properties: { status: { type: apigw.JsonSchemaType.STRING }, message: { type: apigw.JsonSchemaType.STRING } } }),
     },
   });
 
@@ -68,7 +68,7 @@ test('route response', () => {
   cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::RouteResponse', {
     ApiId: { Ref: 'myapi4C7BF186' },
     RouteId: { Ref: 'myapiconnectrouteC62A8B0B' },
-    RouteResponseKey: '$connect',
+    RouteResponseKey: '$default',
     ModelSelectionExpression: '$default',
     ResponseModels: {
       $default: 'statusResponse',

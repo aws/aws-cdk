@@ -6,7 +6,7 @@ import { IIntegration } from '../common/integration';
 import { IRoute } from '../common/route';
 import { IWebSocketApi } from './api';
 import { IWebSocketModel } from './model';
-import { WebSocketRouteResponse, WebSocketRouteResponseOptions } from './route-response';
+import { WebSocketRouteResponse, WebSocketRouteResponseKey, WebSocketRouteResponseOptions } from './route-response';
 
 /**
  * Available authorization providers for ApiGateway V2 APIs
@@ -27,31 +27,117 @@ export enum WebSocketAuthorizationType {
 }
 
 /**
- * Defines a set of common route keys known to the system
+ * Defines a set of common template patterns known to the system
  */
-export enum WebSocketKnownRouteKey {
+export class WebSocketRouteKey {
   /**
    * Default route, when no other pattern matches
    */
-  DEFAULT = '$default',
+  public static readonly DEFAULT = new WebSocketRouteKey('$default');
+
   /**
    * This route is a reserved route, used when a client establishes a connection to the WebSocket API
    */
-  CONNECT = '$connect',
+  public static readonly CONNECT = new WebSocketRouteKey('$connect');
+
   /**
    * This route is a reserved route, used when a client disconnects from the WebSocket API
    */
-  DISCONNECT = '$disconnect'
+  public static readonly DISCONNECT = new WebSocketRouteKey('$disconnect');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteKey {
+    return new WebSocketRouteKey(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
  * Known expressions for selecting a route in an API
  */
-export enum WebSocketKnownRouteSelectionExpression {
+export class WebSocketRouteResponseSelectionExpression {
   /**
-   * Selects the route key from the request context
+   * Default route, when no other pattern matches
    */
-  CONTEXT_ROUTE_KEY = '${context.routeKey}',
+  public static readonly DEFAULT = new WebSocketRouteResponseSelectionExpression('$default');
+
+  /**
+   * Use the context route key
+   */
+  public static readonly CONTEXT_ROUTE_KEY = new WebSocketRouteResponseSelectionExpression('${context.routeKey}');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteResponseSelectionExpression {
+    return new WebSocketRouteResponseSelectionExpression(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+/**
+ * Known expressions for selecting a route in an API
+ */
+export class WebSocketRouteModelSelectionExpression {
+  /**
+   * Default route, when no other pattern matches
+   */
+  public static readonly DEFAULT = new WebSocketRouteModelSelectionExpression('$default');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteModelSelectionExpression {
+    return new WebSocketRouteModelSelectionExpression(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
@@ -102,7 +188,7 @@ export interface WebSocketRouteOptions {
    *
    * @default - no selection key
    */
-  readonly modelSelectionExpression?: string;
+  readonly modelSelectionExpression?: WebSocketRouteModelSelectionExpression;
 
   /**
    * The request models for the route.
@@ -123,7 +209,7 @@ export interface WebSocketRouteOptions {
    *
    * @default - no selection expression
    */
-  readonly routeResponseSelectionExpression?: string;
+  readonly routeResponseSelectionExpression?: WebSocketRouteResponseSelectionExpression;
 }
 
 /**
@@ -133,7 +219,7 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
   /**
    * The route key for the route.
    */
-  readonly key: string;
+  readonly key: WebSocketRouteKey;
 
   /**
    * Defines the api for this route.
@@ -177,7 +263,7 @@ export class WebSocketRoute extends Resource implements IRoute {
   /**
    * The key of this API Gateway Route.
    */
-  public readonly key: string;
+  public readonly key: WebSocketRouteKey;
 
   protected api: IWebSocketApi;
   protected resource: CfnRoute;
@@ -198,17 +284,17 @@ export class WebSocketRoute extends Resource implements IRoute {
 
     this.resource = new CfnRoute(this, 'Resource', {
       apiId: this.api.webSocketApiId,
-      routeKey: props.key,
+      routeKey: props.key.toString(),
       target: `integrations/${props.integration.integrationId}`,
       requestModels,
       authorizerId,
       apiKeyRequired: props.apiKeyRequired,
       authorizationScopes: props.authorizationScopes,
       authorizationType: props.authorizationType,
-      modelSelectionExpression: props.modelSelectionExpression,
+      modelSelectionExpression: props.modelSelectionExpression?.toString(),
       operationName: props.operationName,
       requestParameters: props.requestParameters,
-      routeResponseSelectionExpression: props.routeResponseSelectionExpression,
+      routeResponseSelectionExpression: props.routeResponseSelectionExpression?.toString(),
     });
     this.routeId = this.resource.ref;
   }
@@ -219,7 +305,7 @@ export class WebSocketRoute extends Resource implements IRoute {
    * @param key the key (predefined or not) that will select this response
    * @param props the properties for this response
    */
-  public addResponse(key: string, props?: WebSocketRouteResponseOptions): WebSocketRouteResponse {
+  public addResponse(key: WebSocketRouteResponseKey, props?: WebSocketRouteResponseOptions): WebSocketRouteResponse {
     return new WebSocketRouteResponse(this, `Response.${key}`, {
       ...props,
       route: this,

@@ -8,21 +8,77 @@ import { IWebSocketModel } from './model';
 /**
  * Defines a set of common response patterns known to the system
  */
-export enum WebSocketKnownRouteResponseKey {
+export class WebSocketRouteResponseKey {
   /**
-   * Default response, when no other pattern matches
+   * Default route response, when no other pattern matches
    */
-  DEFAULT = '$default',
+  public static readonly DEFAULT = new WebSocketRouteResponseKey('$default');
 
   /**
    * Empty response
    */
-  EMPTY = 'empty',
+  public static readonly EMPTY = new WebSocketRouteResponseKey('empty');
 
   /**
    * Error response
    */
-  ERROR = 'error'
+  public static readonly ERROR = new WebSocketRouteResponseKey('error');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteResponseKey {
+    return new WebSocketRouteResponseKey(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+/**
+ * Known expressions for selecting a route in an API
+ */
+export class WebSocketRouteResponseModelSelectionExpression {
+  /**
+   * Default route, when no other pattern matches
+   */
+  public static readonly DEFAULT = new WebSocketRouteResponseModelSelectionExpression('$default');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteResponseModelSelectionExpression {
+    return new WebSocketRouteResponseModelSelectionExpression(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
@@ -65,7 +121,7 @@ export interface WebSocketRouteResponseOptions {
    *
    * @default - no selection expression
    */
-  readonly modelSelectionExpression?: string;
+  readonly modelSelectionExpression?: WebSocketRouteResponseModelSelectionExpression;
 }
 
 /**
@@ -85,7 +141,7 @@ export interface WebSocketRouteResponseProps extends WebSocketRouteResponseOptio
   /**
    * The route response key.
    */
-  readonly key: string;
+  readonly key: WebSocketRouteResponseKey;
 }
 
 /**
@@ -104,7 +160,7 @@ export class WebSocketRouteResponse extends Resource implements IWebSocketRouteR
 
   constructor(scope: Construct, id: string, props: WebSocketRouteResponseProps) {
     super(scope, id, {
-      physicalName: props.key || id,
+      physicalName: props.key?.toString() || id,
     });
 
     let responseModels: { [key: string]: string } | undefined;
@@ -117,9 +173,9 @@ export class WebSocketRouteResponse extends Resource implements IWebSocketRouteR
     this.resource = new CfnRouteResponse(this, 'Resource', {
       apiId: props.api.webSocketApiId,
       routeId: props.route.routeId,
-      routeResponseKey: props.key,
+      routeResponseKey: props.key.toString(),
       responseModels,
-      modelSelectionExpression: props.modelSelectionExpression,
+      modelSelectionExpression: props.modelSelectionExpression?.toString(),
       responseParameters: props.responseParameters,
     });
 

@@ -11,8 +11,55 @@ import { WebSocketLambdaIntegration, WebSocketLambdaIntegrationOptions } from '.
 import { WebSocketMockIntegration, WebSocketMockIntegrationOptions } from './integrations/mock';
 import { WebSocketServiceIntegration, WebSocketServiceIntegrationOptions } from './integrations/service';
 import { WebSocketModel, WebSocketModelOptions } from './model';
-import { WebSocketKnownRouteKey, WebSocketRoute, WebSocketRouteOptions } from './route';
+import { WebSocketRoute, WebSocketRouteKey, WebSocketRouteOptions } from './route';
 import { WebSocketStage, WebSocketStageOptions } from './stage';
+
+/**
+ * Available Api Key Selectors for ApiGateway V2 APIs
+ */
+export enum WebSocketApiKeySelectionExpression {
+  /**
+   * Use the request header x-api-key.
+   */
+  HEADER_X_API_KEY = '$request.header.x-api-key',
+  /**
+   * Use the authorizer's usage identifier key.
+   */
+  AUTHORIZER_USAGE_IDENTIFIER_KEY = '$context.authorizer.usageIdentifierKey',
+}
+
+/**
+ * Known expressions for selecting a route in an API
+ */
+export class WebSocketRouteSelectionExpression {
+  /**
+   * Default route, when no other pattern matches
+   */
+  public static readonly CONTEXT_ROUTE_KEY = new WebSocketRouteSelectionExpression('${context.routeKey}');
+
+  /**
+   * Creates a custom route key
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketRouteSelectionExpression {
+    return new WebSocketRouteSelectionExpression(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
 
 /**
  * Defines a default handler for the Api
@@ -110,14 +157,14 @@ export interface WebSocketApiProps {
   /**
    * Expression used to select the route for this API
    */
-  readonly routeSelectionExpression: string;
+  readonly routeSelectionExpression: WebSocketRouteSelectionExpression;
 
   /**
    * Expression used to select the Api Key to use for metering
    *
    * @default - No Api Key
    */
-  readonly apiKeySelectionExpression?: string;
+  readonly apiKeySelectionExpression?: WebSocketApiKeySelectionExpression;
 
   /**
    * A description of the purpose of this API Gateway Api resource.
@@ -210,7 +257,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
       disableSchemaValidation: props.disableSchemaValidation,
       failOnWarnings: props.failOnWarnings,
       protocolType: 'WEBSOCKET',
-      routeSelectionExpression: props.routeSelectionExpression,
+      routeSelectionExpression: props.routeSelectionExpression.toString(),
       // TODO: tags: props.tags,
       version: props.version,
     });
@@ -272,7 +319,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
         throw new Error('You must specify an ARN, a URL, "MOCK", or a Lambda Function');
       }
 
-      this.addRoute(WebSocketKnownRouteKey.DEFAULT, integration, {});
+      this.addRoute(WebSocketRouteKey.DEFAULT, integration, {});
     }
   }
 
@@ -351,7 +398,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
    * @param integration [disable-awslint:ref-via-interface] the integration to use for this route
    * @param props the properties for this route
    */
-  public addRoute(key: string, integration: WebSocketIntegration, props?: WebSocketRouteOptions): WebSocketRoute {
+  public addRoute(key: WebSocketRouteKey, integration: WebSocketIntegration, props?: WebSocketRouteOptions): WebSocketRoute {
     const route = new WebSocketRoute(this, `${key}.route`, {
       ...props,
       api: this,
@@ -388,10 +435,10 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
    * @param route The route for this ARN ('*' if not defined)
    * @param stage The stage for this ARN (if not defined, defaults to the deployment stage if defined, or to '*')
    */
-  public executeApiArn(route?: string, stage?: IStage) {
+  public executeApiArn(route?: WebSocketRouteKey, stage?: IStage) {
     const stack = Stack.of(this);
     const apiId = this.webSocketApiId;
-    const routeKey = ((route === undefined) ? '*' : route);
+    const routeKey = ((route === undefined) ? '*' : route.toString());
     const stageName = ((stage === undefined) ?
       ((this.deploymentStage === undefined) ? '*' : this.deploymentStage.stageName) :
       stage.stageName);

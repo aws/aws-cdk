@@ -12,7 +12,7 @@ test('Http integration (WebSocket)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addHttpIntegration('myFunction', {
@@ -33,7 +33,7 @@ test('Http integration (WebSocket, proxy)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addHttpIntegration('myFunction', {
@@ -55,7 +55,7 @@ test('Lambda integration (WebSocket)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addLambdaIntegration('myFunction', {
@@ -76,7 +76,7 @@ test('Lambda integration (WebSocket, proxy)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addLambdaIntegration('myFunction', {
@@ -98,7 +98,7 @@ test('Mock integration (WebSocket)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addMockIntegration('myMock', { });
@@ -117,7 +117,7 @@ test('Service integration (WebSocket)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addServiceIntegration('myService', {
@@ -138,7 +138,7 @@ test('Service integration (WebSocket, proxy)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addServiceIntegration('myService', {
@@ -160,7 +160,7 @@ test('Lambda integration (WebSocket, with extra params)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   api.addLambdaIntegration('myFunction', {
@@ -183,13 +183,13 @@ test('Integration response', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   const integration = api.addLambdaIntegration('myFunction', {
     handler: lambda.Function.fromFunctionArn(stack, 'handler', stack.formatArn({ service: 'lambda', resource: 'function', resourceName: 'my-function', sep: ':'})),
   });
-  integration.addResponse(apigw.WebSocketKnownIntegrationResponseKey.DEFAULT);
+  integration.addResponse(apigw.WebSocketIntegrationResponseKey.DEFAULT);
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::ApiGatewayV2::IntegrationResponse', {

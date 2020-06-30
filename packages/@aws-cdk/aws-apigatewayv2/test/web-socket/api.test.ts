@@ -11,7 +11,7 @@ test('minimal setup (WebSocket)', () => {
 
   // WHEN
   new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
   });
 
   // THEN
@@ -38,7 +38,7 @@ test('minimal setup (WebSocket, no deploy)', () => {
 
   // WHEN
   new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
 
@@ -58,7 +58,7 @@ test('minimal setup (no deploy, error)', () => {
   // WHEN
   expect(() => {
     return new apigw.WebSocketApi(stack, 'my-api', {
-      routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+      routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
       deploy: false,
       deployOptions: {
         stageName: 'testStage',
@@ -72,7 +72,7 @@ test('URLs and ARNs (WebSocket)', () => {
   const stack = new Stack();
 
   // WHEN
-  const api = new apigw.WebSocketApi(stack, 'my-api', { routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY });
+  const api = new apigw.WebSocketApi(stack, 'my-api', { routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY });
   const importedStage = apigw.WebSocketStage.fromStageName(stack, 'devStage', 'dev');
 
   // THEN
@@ -83,9 +83,9 @@ test('URLs and ARNs (WebSocket)', () => {
   expect(stack.resolve(api.connectionsUrl(importedStage))).toEqual({ 'Fn::Join': [ '', [ 'https://', { Ref: 'myapi4C7BF186' }, '.execute-api.', { Ref: 'AWS::Region' }, '.amazonaws.com/dev/@connections' ] ] });
 
   expect(stack.resolve(api.executeApiArn())).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/', { Ref: 'myapiDefaultStage51F6D7C3' }, '/*' ] ] });
-  expect(stack.resolve(api.executeApiArn('routeKey'))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/', { Ref: 'myapiDefaultStage51F6D7C3' }, '/routeKey' ] ] });
+  expect(stack.resolve(api.executeApiArn(apigw.WebSocketRouteKey.custom('routeKey')))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/', { Ref: 'myapiDefaultStage51F6D7C3' }, '/routeKey' ] ] });
   expect(stack.resolve(api.executeApiArn(undefined, importedStage))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/dev/*' ] ] });
-  expect(stack.resolve(api.executeApiArn('routeKey', importedStage))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/dev/routeKey' ] ] });
+  expect(stack.resolve(api.executeApiArn(apigw.WebSocketRouteKey.custom('routeKey'), importedStage))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/dev/routeKey' ] ] });
 
   expect(stack.resolve(api.connectionsApiArn())).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/', { Ref: 'myapiDefaultStage51F6D7C3' }, '/POST/*' ] ] });
   expect(stack.resolve(api.connectionsApiArn('my-connection'))).toEqual({ 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'myapi4C7BF186' }, '/', { Ref: 'myapiDefaultStage51F6D7C3' }, '/POST/my-connection' ] ] });
@@ -99,7 +99,7 @@ test('URLs and ARNs (WebSocket, no deploy)', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: false,
   });
   const importedStage = apigw.WebSocketStage.fromStageName(stack, 'devStage', 'dev');

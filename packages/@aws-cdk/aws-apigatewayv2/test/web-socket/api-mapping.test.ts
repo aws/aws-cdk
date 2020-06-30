@@ -11,7 +11,7 @@ test('minimal setup', () => {
 
   // WHEN
   const api = new apigw.WebSocketApi(stack, 'my-api', {
-    routeSelectionExpression: apigw.WebSocketKnownRouteSelectionExpression.CONTEXT_ROUTE_KEY,
+    routeSelectionExpression: apigw.WebSocketRouteSelectionExpression.CONTEXT_ROUTE_KEY,
     deploy: true,
   });
   const domainName = new apigw.DomainName(stack, 'domain-name', { domainName: 'test.example.com' });

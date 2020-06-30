@@ -6,42 +6,80 @@ import { IWebSocketApi } from './api';
 /**
  * Defines a set of common model patterns known to the system
  */
-export enum WebSocketKnownModelKey {
+export class WebSocketModelKey {
   /**
    * Default model, when no other pattern matches
    */
-  DEFAULT = '$default',
+  public static readonly DEFAULT = new WebSocketModelKey('$default');
 
   /**
    * Default model, when no other pattern matches
    */
-  EMPTY = ''
+  public static readonly EMPTY = new WebSocketModelKey('');
+
+  /**
+   * Creates a custom selection expression
+   * @param value the name of the model key
+   */
+  public static custom(value: string): WebSocketModelKey {
+    return new WebSocketModelKey(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
  * Defines a set of common content types for APIs
  */
-export enum WebSocketKnownContentTypes {
+export class WebSocketContentTypes {
   /**
    * JSON request or response (default)
    */
-  JSON = 'application/json',
+  public static readonly JSON = new WebSocketContentTypes('application/json');
   /**
    * XML request or response
    */
-  XML = 'application/xml',
+  public static readonly XML = new WebSocketContentTypes('application/xml');
   /**
    * Pnain text request or response
    */
-  TEXT = 'text/plain',
+  public static readonly TEXT = new WebSocketContentTypes('text/plain');
   /**
    * URL encoded web form
    */
-  FORM_URL_ENCODED = 'application/x-www-form-urlencoded',
+  public static readonly FORM_URL_ENCODED = new WebSocketContentTypes('application/x-www-form-urlencoded');
   /**
    * Data from a web form
    */
-  FORM_DATA = 'multipart/form-data'
+  public static readonly FORM_DATA = new WebSocketContentTypes('multipart/form-data');
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
@@ -87,7 +125,7 @@ export interface WebSocketModelOptions {
    *
    * @default "application/json"
    */
-  readonly contentType?: string;
+  readonly contentType?: WebSocketContentTypes;
 
   /**
    * The name of the model.
@@ -152,7 +190,7 @@ export class WebSocketModel extends Resource implements IWebSocketModel {
 
     this.modelName = this.physicalName;
     this.resource = new CfnModel(this, 'Resource', {
-      contentType: props.contentType || WebSocketKnownContentTypes.JSON,
+      contentType: (props.contentType || WebSocketContentTypes.JSON).toString(),
       apiId: props.api.webSocketApiId,
       name: this.modelName,
       schema: JsonSchemaMapper.toCfnJsonSchema(props.schema),

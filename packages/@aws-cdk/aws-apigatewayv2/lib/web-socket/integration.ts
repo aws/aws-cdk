@@ -4,7 +4,7 @@ import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common/integration';
 
 import { IWebSocketApi } from './api';
-import { WebSocketIntegrationResponse, WebSocketIntegrationResponseOptions } from './integration-response';
+import { WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationResponseOptions } from './integration-response';
 
 /**
  * The type of the network connection to the integration endpoint.
@@ -100,11 +100,34 @@ export enum WebSocketPassthroughBehavior {
 /**
  * Defines a set of common template patterns known to the system
  */
-export enum WebSocketKnownTemplateKey {
+export class WebSocketIntegrationTemplateSelectionExpression {
   /**
    * Default template, when no other pattern matches
    */
-  DEFAULT = '$default',
+  public static readonly DEFAULT = new WebSocketIntegrationTemplateSelectionExpression('$default');
+
+  /**
+   * Creates a custom selection expression
+   * @param value the name of the route key
+   */
+  public static custom(value: string): WebSocketIntegrationTemplateSelectionExpression {
+    return new WebSocketIntegrationTemplateSelectionExpression(value);
+  }
+
+  /**
+   * Contains the template key
+   */
+  private readonly value: string;
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the current value of the template key
+   */
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /**
@@ -217,7 +240,7 @@ export interface WebSocketIntegrationOptions {
    *
    * @default - no template selected
    */
-  readonly templateSelectionExpression?: string;
+  readonly templateSelectionExpression?: WebSocketIntegrationTemplateSelectionExpression;
 
   /**
    * The ID of the VPC link for a private integration.
@@ -318,9 +341,9 @@ export class WebSocketIntegration extends Resource implements IIntegration {
       payloadFormatVersion: props.payloadFormatVersion,
       requestParameters: props.requestParameters,
       requestTemplates: props.requestTemplates,
-      templateSelectionExpression: props.templateSelectionExpression,
+      templateSelectionExpression: props.templateSelectionExpression?.toString(),
       tlsConfig: props.tlsConfig,
-      timeoutInMillis: (props.timeout ? props.timeout.toMilliseconds() : undefined),
+      timeoutInMillis: props.timeout?.toMilliseconds(),
       apiId: props.api.webSocketApiId,
     });
 
@@ -333,7 +356,7 @@ export class WebSocketIntegration extends Resource implements IIntegration {
    * @param key the key (predefined or not) that will select this response
    * @param props the properties for this response
    */
-  public addResponse(key: string, props?: WebSocketIntegrationResponseOptions): WebSocketIntegrationResponse {
+  public addResponse(key: WebSocketIntegrationResponseKey, props?: WebSocketIntegrationResponseOptions): WebSocketIntegrationResponse {
     return new WebSocketIntegrationResponse(this, `Response.${key}`, {
       ...props,
       api: this.api,
