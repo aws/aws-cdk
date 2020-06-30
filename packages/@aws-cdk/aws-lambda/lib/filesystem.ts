@@ -1,9 +1,25 @@
 import * as efs from '@aws-cdk/aws-efs';
 import { IDependable } from '@aws-cdk/core';
 
+/**
+ * FileSystem configurations for the Lambda function
+ */
 export interface FileSystemConfig {
+  /**
+   * mount path in the lambda runtime environment
+   */
   readonly localMountPath: string;
+
+  /**
+   * ARN of the access point
+   */
   readonly arn: string;
+
+  /**
+   * the resources lambda function depends on
+   *
+   * @default - no dependency
+   */
   readonly dependency?: IDependable[]
 }
 
