@@ -11,6 +11,8 @@ import { renderJsonPath, State } from './state';
 
 /**
  * Props that are common to all tasks
+ *
+ * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
 export interface TaskProps {
   /**
@@ -98,6 +100,8 @@ export interface TaskProps {
  *
  * For some resource types, more specific subclasses of Task may be available
  * which are more convenient to use.
+ *
+ * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
 export class Task extends State implements INextable {
   public readonly endStates: INextable[];
