@@ -19,7 +19,7 @@ else
   fi
 fi
 
-${scriptdir}/foreach.sh --down yarn build
+${scriptdir}/foreach.sh --down yarn ${1:-build}
 ${scriptdir}/foreach.sh --reset
 
 echo "************************************************************"
