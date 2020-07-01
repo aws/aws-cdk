@@ -140,11 +140,12 @@ export interface IntegrationProps {
 export interface IntegrationConfig {
   /**
    * This value is included in computing the Deployment's fingerprint. When the fingerprint
-   * changes a new deployment is triggered.
-   * This property should carry a different value when the Deployment needs to be refreshed.
-   * @default - deployments are not triggered for any change of this integration.
+   * changes, a new deployment is triggered.
+   * This property should contain values associated with the Integration that upon changing
+   * should trigger a fresh the Deployment needs to be refreshed.
+   * @default undefined deployments are not triggered for any change to this integration.
    */
-  readonly deploymentFingerprint?: string;
+  readonly deploymentToken?: { [key: string]: string };
 }
 
 /**

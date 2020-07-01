@@ -233,8 +233,8 @@ export = {
     const bindResult = integration.bind(method);
 
     // THEN
-    test.ok(bindResult?.deploymentFingerprint);
-    test.equals(bindResult!.deploymentFingerprint, '2092bc5e2b20cfce7e5eea5952f10c50');
+    test.ok(bindResult?.deploymentToken);
+    test.deepEqual(bindResult!.deploymentToken, { functionName: 'ThisFunction' });
 
     test.done();
   },
@@ -255,7 +255,7 @@ export = {
     const bindResult = integration.bind(method);
 
     // THEN
-    test.equals(bindResult?.deploymentFingerprint, undefined);
+    test.equals(bindResult?.deploymentToken, undefined);
 
     test.done();
   },

@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Lazy, Token } from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -75,14 +74,12 @@ export class LambdaIntegration extends AwsIntegration {
     }
 
     const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
-    let deploymentFingerprint;
+    let deploymentToken;
     if (!Token.isUnresolved(cfnFunction.functionName)) {
-      const md5 = crypto.createHash('md5');
-      md5.update(JSON.stringify({ functionName: cfnFunction.functionName }));
-      deploymentFingerprint = md5.digest('hex');
+      deploymentToken = { functionName: cfnFunction.functionName! }; // exclamation (!) -> isUnresolved() returns true when undefined is passed.
     }
     return {
-      deploymentFingerprint,
+      deploymentToken,
     };
   }
 }

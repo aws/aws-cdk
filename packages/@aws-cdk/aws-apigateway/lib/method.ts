@@ -225,7 +225,7 @@ export class Method extends Resource {
       deployment.addToLogicalId({
         method: {
           ...methodProps,
-          integrationFingerprint: bindResult?.deploymentFingerprint,
+          integrationToken: bindResult?.deploymentToken,
         },
       });
     }
