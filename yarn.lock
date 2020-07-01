@@ -2143,25 +2143,10 @@ aws-sdk-mock@^5.0.0, aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.596.0:
+aws-sdk@^2.637.0, aws-sdk@^2.708.0:
   version "2.708.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.708.0.tgz#6d4345c6d7a06f3d076ce9f0c54958563b2a721e"
   integrity sha512-5xXOvbgBXUUKBaJlJUcJIFc2EVMa4Z4f7ILbKIpApoFonW1kHiwBLMBi0MarY4aco7RaodgbqhaOBar4kmSHKw==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.637.0, aws-sdk@^2.707.0:
-  version "2.707.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.707.0.tgz#c7506dadd1d60a73920ade9027645e166f444e25"
-  integrity sha512-nt55Z9wQKFodOuwElF3222Thc3kDVnaC4rwemPEHIM1cVGPQe6E5yBfc6AwtYmSo6eoMMEWd6XO5wG2am9PW0w==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -7025,21 +7010,10 @@ nise@^4.0.1:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
-nock@^11.7.0:
-  version "11.9.1"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-11.9.1.tgz#2b026c5beb6d0dbcb41e7e4cefa671bc36db9c61"
-  integrity sha512-U5wPctaY4/ar2JJ5Jg4wJxlbBfayxgKbiAeGh+a1kk6Pwnc2ZEuKviLyDSG6t0uXl56q7AALIxoM6FJrBSsVXA==
-  dependencies:
-    debug "^4.1.0"
-    json-stringify-safe "^5.0.1"
-    lodash "^4.17.13"
-    mkdirp "^0.5.0"
-    propagate "^2.0.0"
-
-nock@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-13.0.0.tgz#e07276d558245386a2872cebf4d5570583c0d225"
-  integrity sha512-FiW8t91Je5yG5MVT1r+go1Z9bX3rCYIEjenUYeZrEl2v8aTWdIX336itrmQaKUO8Ske5Z7RHR7OIzr/9p0Ujjg==
+nock@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-13.0.1.tgz#6e3db0801ca7595685f69f1e8925e7300c13a68f"
+  integrity sha512-45qR68yd+izs5D81klZrhDwfHx1wulnKotZZYEuEMjw2K6VWClHg9ROf8hBf0tvxe11hP3m6skQZcCpeGv87zg==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
