@@ -579,9 +579,9 @@
           "CreationInfo": {
             "OwnerGid": "1001",
             "OwnerUid": "1001",
-            "Permissions": "755"
+            "Permissions": "750"
           },
-          "Path": "/mnt/msg"
+          "Path": "/export/lambda"
         }
       }
     },
@@ -678,7 +678,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "\nimport os\nimport fcntl\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef get_messages():\n    try:\n        with open(MSG_FILE_PATH, 'r') as msg_file:\n            fcntl.flock(msg_file, fcntl.LOCK_SH)\n            messages = msg_file.read()\n            fcntl.flock(msg_file, fcntl.LOCK_UN)\n    except:\n        messages = 'No message yet.'\n    return messages\n\ndef add_message(new_message):\n    with open(MSG_FILE_PATH, 'a') as msg_file:\n        fcntl.flock(msg_file, fcntl.LOCK_EX)\n        msg_file.write(new_message + \"\\n\")\n        fcntl.flock(msg_file, fcntl.LOCK_UN)\n\ndef delete_messages():\n    try:\n        os.remove(MSG_FILE_PATH)\n    except:\n        pass\n\ndef lambda_handler(event, context):\n    method = event['requestContext']['http']['method']\n    if method == 'GET':\n        messages = get_messages()\n    elif method == 'POST':\n        new_message = event['body']\n        add_message(new_message)\n        messages = get_messages()\n    elif method == 'DELETE':\n        delete_messages()\n        messages = 'Messages deleted.'\n    else:\n        messages = 'Method unsupported.'\n    return messages\n  "
+          "ZipFile": "\nimport json\nimport os\nimport string\nimport random\nimport datetime\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef randomString(stringLength=10):\n  letters = string.ascii_lowercase\n  return ''.join(random.choice(letters) for i in range(stringLength))\n\ndef lambda_handler(event, context):\n  with open(MSG_FILE_PATH, 'a') as f:\n      f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n  file = open(MSG_FILE_PATH, \"r\")\n  file_content = file.read()\n  file.close()\n\n  return {\n    'statusCode': 200,\n    'body': str(file_content)\n  }\n  "
         },
         "Handler": "index.lambda_handler",
         "Role": {
@@ -754,129 +754,6 @@
         "Efs9E8BF36B",
         "MyLambdaServiceRole4539ECB6"
       ]
-    },
-    "MyLambdaawscdklambda1ApiDefaultRoute140619C9PermissionDB37C30F": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyLambdaCCE802FB",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiF70053CD"
-              },
-              "/*/*"
-            ]
-          ]
-        }
-      },
-      "DependsOn": [
-        "EfsAccessPointE419FED9",
-        "EfsEfsMountTarget195B2DD2E",
-        "EfsEfsMountTarget2315C927F",
-        "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
-        "EfsEfsSecurityGroup6F40EA3B",
-        "Efs9E8BF36B"
-      ]
-    },
-    "ApiF70053CD": {
-      "Type": "AWS::ApiGatewayV2::Api",
-      "Properties": {
-        "Name": "Api",
-        "ProtocolType": "HTTP"
-      }
-    },
-    "ApiDefaultRouteDefaultRouteIntegrationABD448B2": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "ApiF70053CD"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "MyLambdaCCE802FB",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0"
-      }
-    },
-    "ApiDefaultRoute1D83B0D8": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "ApiF70053CD"
-        },
-        "RouteKey": "$default",
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "ApiDefaultRouteDefaultRouteIntegrationABD448B2"
-              }
-            ]
-          ]
-        }
-      }
-    },
-    "ApiDefaultStage189A7074": {
-      "Type": "AWS::ApiGatewayV2::Stage",
-      "Properties": {
-        "ApiId": {
-          "Ref": "ApiF70053CD"
-        },
-        "StageName": "$default",
-        "AutoDeploy": true
-      }
-    }
-  },
-  "Outputs": {
-    "ApiUrl": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "ApiF70053CD"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/"
-          ]
-        ]
-      }
     }
   }
 }
