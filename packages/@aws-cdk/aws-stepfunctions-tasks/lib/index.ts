@@ -16,6 +16,7 @@ export * from './sagemaker/create-training-job';
 export * from './sagemaker/create-transform-job';
 export * from './start-execution';
 export * from './stepfunctions/start-execution';
+export * from './stepfunctions/invoke-activity';
 export * from './evaluate-expression';
 export * from './emr/emr-create-cluster';
 export * from './emr/emr-set-cluster-termination-protection';
