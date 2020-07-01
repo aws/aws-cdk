@@ -34,7 +34,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
   },
 });
 
-// this function will mount '/mnt/msg' and write content into /mnt/msg/content
+// this function will mount the access point to '/mnt/msg' and write content onto /mnt/msg/content
 new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode(`
 import json
