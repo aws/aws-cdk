@@ -30,8 +30,7 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
     memoryLimitMiB: 256,
   });
 
-  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
-    .toThrowError(/not configured for compatibility with Fargate/);
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/not configured for compatibility with Fargate/);
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -40,8 +39,7 @@ test('Cannot create a Fargate task without a default container', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
-    .toThrowError(/must have at least one essential container/);
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/must have at least one essential container/);
 });
 
 test('Running a Fargate Task', () => {
@@ -50,7 +48,7 @@ test('Running a Fargate Task', () => {
     cpu: '256',
     compatibility: ecs.Compatibility.FARGATE,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
@@ -62,9 +60,9 @@ test('Running a Fargate Task', () => {
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
+        containerDefinition,
         environment: [
-          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')},
+          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
         ],
       },
     ],
@@ -78,18 +76,15 @@ test('Running a Fargate Task', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'FARGATE',
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          SecurityGroups: [{'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId']}],
-          Subnets: [
-            {Ref: 'VpcPrivateSubnet1Subnet536B997A'},
-            {Ref: 'VpcPrivateSubnet2Subnet3788AAA1'},
-          ],
+          SecurityGroups: [{ 'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId'] }],
+          Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
-      TaskDefinition: {Ref: 'TD49C78F36'},
+      TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
           {
@@ -125,7 +120,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {Ref: 'TD49C78F36'},
+          Resource: { Ref: 'TD49C78F36' },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -135,20 +130,25 @@ test('Running a Fargate Task', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}],
+          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
           Effect: 'Allow',
-          Resource: {'Fn::Join': ['', [
-            'arn:',
-            {Ref: 'AWS::Partition'},
-            ':events:',
-            {Ref: 'AWS::Region'},
-            ':',
-            {Ref: 'AWS::AccountId'},
-            ':rule/StepFunctionsGetEventsForECSTaskRule',
-          ]]},
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
         },
       ],
     },
@@ -159,7 +159,7 @@ test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
@@ -171,9 +171,9 @@ test('Running an EC2 Task with bridge network', () => {
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
+        containerDefinition,
         environment: [
-          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')},
+          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
         ],
       },
     ],
@@ -187,9 +187,9 @@ test('Running an EC2 Task with bridge network', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: {Ref: 'TD49C78F36'},
+      TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
           {
@@ -225,7 +225,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {Ref: 'TD49C78F36'},
+          Resource: { Ref: 'TD49C78F36' },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -235,20 +235,25 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: [{'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn']}],
+          Resource: [{ 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] }],
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
           Effect: 'Allow',
-          Resource: {'Fn::Join': ['', [
-            'arn:',
-            {Ref: 'AWS::Partition'},
-            ':events:',
-            {Ref: 'AWS::Region'},
-            ':',
-            {Ref: 'AWS::AccountId'},
-            ':rule/StepFunctionsGetEventsForECSTaskRule',
-          ]]},
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
         },
       ],
     },
@@ -268,11 +273,7 @@ test('Running an EC2 Task with placement strategies', () => {
     integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
     cluster,
     taskDefinition,
-    placementStrategies: [
-      ecs.PlacementStrategy.spreadAcrossInstances(),
-      ecs.PlacementStrategy.packedByCpu(),
-      ecs.PlacementStrategy.randomly(),
-    ],
+    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
     placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
   });
 
@@ -287,17 +288,11 @@ test('Running an EC2 Task with placement strategies', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: {Ref: 'TD49C78F36'},
-      PlacementConstraints: [
-        { Type: 'memberOf', Expression: 'blieptuut' },
-      ],
-      PlacementStrategy: [
-        { Field: 'instanceId', Type: 'spread' },
-        { Field: 'cpu', Type: 'binpack' },
-        { Type: 'random' },
-      ],
+      TaskDefinition: { Ref: 'TD49C78F36' },
+      PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
+      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     },
     Resource: {
       'Fn::Join': [
@@ -319,7 +314,7 @@ test('Running an EC2 Task with overridden number values', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,
   });
-  taskDefinition.addContainer('TheContainer', {
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
@@ -330,10 +325,10 @@ test('Running an EC2 Task with overridden number values', () => {
     taskDefinition,
     containerOverrides: [
       {
-        containerName: 'TheContainer',
-        command: sfn.Data.listAt('$.TheCommand'),
+        containerDefinition,
+        command: sfn.JsonPath.listAt('$.TheCommand'),
         cpu: 5,
-        memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
+        memoryLimit: sfn.JsonPath.numberAt('$.MemoryLimit'),
       },
     ],
   });
@@ -345,9 +340,9 @@ test('Running an EC2 Task with overridden number values', () => {
   expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
-      Cluster: {'Fn::GetAtt': ['ClusterEB0386A7', 'Arn']},
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: {Ref: 'TD49C78F36'},
+      TaskDefinition: { Ref: 'TD49C78F36' },
       Overrides: {
         ContainerOverrides: [
           {
