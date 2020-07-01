@@ -66,7 +66,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       ipAddressType: props.ipAddressType,
     });
 
-    this.ipAddressType = props.ipAddressType || IpAddressType.IPV4;
+    this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
@@ -462,6 +462,8 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
 
   /**
    * The IP Address Type for this load balancer
+   *
+   * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
 

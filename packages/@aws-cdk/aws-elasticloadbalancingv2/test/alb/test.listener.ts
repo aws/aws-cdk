@@ -76,7 +76,7 @@ export = {
     test.done();
   },
 
-  'Listener default to open - Dualstack'(test: Test) {
+  'Listener default to open - IPv4 and IPv6 (dualstack)'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');

@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../lib';
 
-/* Credit to @TrueBrain and @misterjoshua for the IPv6 workaround */
+/* IPv6 workaround found here: https://github.com/aws/aws-cdk/issues/894 */
 const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => {
   if (value === undefined) { throw err; }
   return value as C;
