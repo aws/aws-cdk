@@ -10,13 +10,13 @@ echo ""
 echo " for advanced usage, see ${scriptdir}/foreach.sh"
 echo "************************************************************"
 
-if [[ "$#" -eq 0 ]]; then
+if [ "$#" -eq 0 ]; then
   ${scriptdir}/foreach.sh --reset
-else	
-  if [ "$1" != "--resume" ]; then	
-    echo "Unknown option: $1"	
-    exit 1	
-  fi	
+else
+  if [ "$1" != "--resume" ]; then
+    echo "Unknown option: $1"
+    exit 1
+  fi
 fi
 
 ${scriptdir}/foreach.sh --up yarn build
