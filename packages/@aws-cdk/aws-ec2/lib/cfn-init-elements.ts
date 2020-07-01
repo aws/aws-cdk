@@ -2,6 +2,7 @@ import { Construct, Duration } from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as fs from 'fs';
 
 export enum InitRenderPlatform { WINDOWS, LINUX };
 export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE };
@@ -211,40 +212,38 @@ export class InitFileOptions {
    * @default '000644'
    */
   readonly mode?: string;
+
+  /**
+   * True if the inlined content (from a string or file) should be treated as base64 encoded.
+   * Only applicable for inlined string and file content.
+   *
+   * @default false
+   */
+  readonly base64Encoded?: boolean;
 }
 
 /**
  * Create files on the EC2 instance.
  */
 export class InitFile extends InitElement {
+
   /**
    * Use a literal string as the file content
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
-    class InitFileString extends InitFile {
-      public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
-        return {
-          [fileName]: {
-            content,
-            ...this.renderOptions(options, renderOptions),
-          },
-        };
-      }
-    }
-    return new InitFileString();
+    return new InitFile(fileName, content, options, true);
   }
 
   /**
    * Write a symlink with the given symlink target
    */
   public static symlink(fileName: string, target: string, options: InitFileOptions = {}): InitFile {
-
-  }
-
-  /**
-   * Use a base64 string as the file content
-   */
-  public static fromBase64String(fileName: string, base64: string, options: InitFileOptions = {}): InitFile {
+    let { mode, ...otherOptions } = options;
+    if (mode && mode.slice(0, 3) !== '120') {
+      throw new Error('File mode for symlinks must begin with 120XXX');
+    }
+    mode = mode || '120664';
+    return new InitFile(fileName, target, { mode, ...otherOptions }, true);
   }
 
   /**
@@ -253,6 +252,8 @@ export class InitFile extends InitElement {
    * May contain tokens.
    */
   public static fromJsonObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
+    // TODO - Confirm this is functionally equivalent.
+    return new InitFile(fileName, JSON.stringify(obj), options, true);
   }
 
   /**
@@ -261,9 +262,12 @@ export class InitFile extends InitElement {
    * The file will be embedded in the template, so care should be taken to not
    * exceed the template size.
    *
-   * The file will be base64-encoded if it contains nonprintable characters.
+   * If options.base64encoded is set to true, this will base64-encode the file's contents.
    */
   public static fromFileInline(targetFileName: string, sourceFileName: string, options: InitFileOptions = {}): InitFile {
+    const encoding = options.base64Encoded ? 'base64' : 'utf8';
+    const fileContents = fs.readFileSync(sourceFileName).toString(encoding);
+    return new InitFile(targetFileName, fileContents, options, true);
   }
 
   /**
@@ -271,25 +275,59 @@ export class InitFile extends InitElement {
    *
    * This is appropriate for files that are too large to embed into the template.
    */
-  public static fromFileAsset(targetFileName: string, sourceFileName: string, options: InitFileOptions = {}): InitFile {
+  public static fromFileAsset(_targetFileName: string, _sourceFileName: string, _options: InitFileOptions = {}): InitFile {
+    // TODO - No scope here, so can't create the Asset directly. Need to delay creation until bind() is called,
+    // or find some other clever solution if we're going to support this.
+    throw new Error('Not implemented.');
   }
 
   /**
    * Download from a URL at instance startup time
    */
-  public static fromUrl(targetFileName: string, url: string, options: InitFileOptions = {}): InitFile {
+  public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
+    return new InitFile(fileName, url, options, false);
   }
 
   /**
    * Use a file from an asset at instance startup time
    */
   public static fromAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
+    class InitFileAsset extends InitFile {
+      constructor() {
+        super(targetFileName, asset.httpUrl, options, false);
+      }
+
+      public bind(_scope: Construct, _bindOptions: InitBindOptions) {
+        // FIXME
+        throw new Error('Not implemented.');
+      }
+    }
+    return new InitFileAsset();
   }
 
   public readonly elementType = InitElementType.FILE;
 
-  protected constructor() {
+  protected constructor(private readonly fileName: string, private readonly content: string,
+    private readonly options: InitFileOptions, private readonly isInlineContent: boolean = false) {
     super();
+  }
+
+  public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
+    return {
+      [this.fileName]: {
+        ...this.renderContentOrSource(),
+        ...this.renderOptions(this.options, renderOptions),
+      },
+    };
+  }
+
+  private renderContentOrSource(): Record<string, any> {
+    return this.isInlineContent ? {
+      content: this.content,
+      encoding: this.options.base64Encoded ? 'base64' : 'plain',
+    } : {
+      source: this.content,
+    };
   }
 
   private renderOptions(fileOptions: InitFileOptions, renderOptions: InitRenderOptions): Record<string, any> {
