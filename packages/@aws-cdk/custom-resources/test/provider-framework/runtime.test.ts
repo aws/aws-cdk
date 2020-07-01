@@ -254,7 +254,7 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
       RequestType: 'Create',
     });
 
-    expectCloudFormationFailed('CREATE FAILED\nLogs: /aws/lambda/event\n', {
+    expectCloudFormationFailed('CREATE FAILED\n\nLogs: /aws/lambda/event\n', {
       PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
     });
   });
