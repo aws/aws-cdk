@@ -112,7 +112,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerConsistency.DEFAULT}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -145,17 +145,13 @@ export interface DockerVolume {
    * @default DockerConsistency.DELEGATED
    * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
    */
-  readonly consistency?: DockerConsistency;
+  readonly consistency?: DockerVolumeConsistency;
 }
 
 /**
  * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
  */
-export enum DockerConsistency {
-  /**
-   * @see DockerConsistency.DELEGATED
-   */
-  DEFAULT = 'delegated',
+export enum DockerVolumeConsistency {
   /**
    * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
    */
