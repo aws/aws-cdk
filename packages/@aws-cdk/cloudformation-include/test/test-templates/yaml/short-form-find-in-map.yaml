@@ -1,0 +1,19 @@
+Mappings:
+  RegionMap:
+    region-1:
+      HVM64: name1
+      HVMG2: name2
+Resources:
+  Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !FindInMap
+          - RegionMap
+          - region-1
+          - HVM64
+  Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !FindInMap [ RegionMap, region-1, HVMG2 ]

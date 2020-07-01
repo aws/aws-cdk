@@ -43,7 +43,7 @@ describe('DynamoAttributeValue', () => {
     const s = '$.string';
 
     // WHEN
-    const attribute = tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt(s));
+    const attribute = tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt(s));
 
     // THEN
     expect(sfn.FieldUtils.renderObject(attribute)).toEqual({

@@ -1,4 +1,4 @@
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   CidrBlock,
   InvalidCidrRangeError,
@@ -6,8 +6,7 @@ import {
   NetworkUtils,
 } from '../lib/network-util';
 
-export = {
-
+nodeunitShim({
   IP: {
     'should convert a valid IP Address to an integer'(test: Test) {
       test.strictEqual(NetworkUtils.ipToNum('174.66.173.168'), 2923605416);
@@ -16,7 +15,7 @@ export = {
     'should throw on invalid IP Address'(test: Test) {
       test.throws(() => {
         NetworkUtils.ipToNum('174.266.173.168');
-      }, Error, 'is not valid');
+      }, 'is not valid');
       test.done();
     },
     'should convert a valid IP integer to a staring'(test: Test) {
@@ -188,4 +187,4 @@ export = {
       test.strictEqual(18, builder5.maskForRemainingSubnets(3)); test.done();
     },
   },
-};
+});
