@@ -1,0 +1,98 @@
+import * as core from '@aws-cdk/core';
+import { BuildSpec } from './build-spec';
+import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
+import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType } from './project';
+
+/**
+ * A CodeBuild GPU image running Linux.
+ *
+ * This class has public constants that represent the most popular GPU images from AWS Deep Learning Containers.
+ * Please note that these constants are not available in the following regions: ap-east-1, me-south-1, cn-north-1, cn-northwest-1.
+ *
+ * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
+ */
+export class LinuxGpuBuildImage implements IBuildImage {
+  /** Tensorflow 1.14.0 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_1_14_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '1.14.0-gpu-py36-cu100-ubuntu16.04');
+  /** Tensorflow 1.15.0 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_1_15_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '1.15.0-gpu-py36-cu100-ubuntu18.04');
+  /** Tensorflow 1.15.2 GPU training image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_1_15_2_TRAINING = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '1.15.2-gpu-py37-cu100-ubuntu18.04');
+  /** Tensorflow 1.15.2 GPU inference image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_1_15_2_INFERENCE = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-inference',
+    '1.15.2-gpu-py36-cu100-ubuntu18.04');
+  /** Tensorflow 2.0.0 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_2_0_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '2.0.0-gpu-py36-cu100-ubuntu18.04');
+  /** Tensorflow 2.0.1 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_2_0_1 = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '2.0.1-gpu-py36-cu100-ubuntu18.04');
+  /** Tensorflow 2.1.0 GPU training image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_2_1_0_TRAINING = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '2.1.0-gpu-py36-cu101-ubuntu18.04');
+  /** Tensorflow 2.1.0 GPU inference image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_2_1_0_INFERENCE = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-inference',
+    '2.1.0-gpu-py36-cu101-ubuntu18.04');
+  /** Tensorflow 2.2.0 GPU training image from AWS Deep Learning Containers. */
+  public static readonly DLC_TENSORFLOW_2_2_0_TRAINING = LinuxGpuBuildImage.awsDeepLearningContainersImage('tensorflow-training',
+    '2.2.0-gpu-py37-cu101-ubuntu18.04');
+
+  /** PyTorch 1.2.0 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_2_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-training',
+    '1.2.0-gpu-py36-cu100-ubuntu16.04');
+  /** PyTorch 1.3.1 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_3_1 = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-training',
+    '1.3.1-gpu-py36-cu101-ubuntu16.04');
+  /** PyTorch 1.4.0 GPU training image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_4_0_TRAINING = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-training',
+    '1.4.0-gpu-py36-cu101-ubuntu16.04');
+  /** PyTorch 1.4.0 GPU inference image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_4_0_INFERENCE = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-inference',
+    '1.4.0-gpu-py36-cu101-ubuntu16.04');
+  /** PyTorch 1.5.0 GPU training image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_5_0_TRAINING = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-training',
+    '1.5.0-gpu-py36-cu101-ubuntu16.04');
+  /** PyTorch 1.5.0 GPU inference image from AWS Deep Learning Containers. */
+  public static readonly DLC_PYTORCH_1_5_0_INFERENCE = LinuxGpuBuildImage.awsDeepLearningContainersImage('pytorch-inference',
+    '1.5.0-gpu-py36-cu101-ubuntu16.04');
+
+  /** MXNet 1.4.1 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_MXNET_1_4_1 = LinuxGpuBuildImage.awsDeepLearningContainersImage('mxnet-training',
+    '1.4.1-gpu-py36-cu100-ubuntu16.04');
+  /** MXNet 1.6.0 GPU image from AWS Deep Learning Containers. */
+  public static readonly DLC_MXNET_1_6_0 = LinuxGpuBuildImage.awsDeepLearningContainersImage('mxnet-training',
+    '1.6.0-gpu-py36-cu101-ubuntu16.04');
+
+  /**
+   * Returns a Linux GPU image from AWS Deep Learning Containers.
+   */
+  private static awsDeepLearningContainersImage(repositoryName: string, tag: string): IBuildImage {
+    return new LinuxGpuBuildImage(repositoryName, tag);
+  }
+
+  public readonly type = 'LINUX_GPU_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
+
+  private constructor(repositoryName: string, tag: string) {
+    this.imageId = `763104351884.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const ret = [];
+    if (buildEnvironment.computeType &&
+      buildEnvironment.computeType !== ComputeType.LARGE) {
+      ret.push(`GPU images only support ComputeType '${ComputeType.LARGE}' - ` +
+        `'${buildEnvironment.computeType}' was given`);
+    }
+    return ret;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return runScriptLinuxBuildSpec(entrypoint);
+  }
+}
