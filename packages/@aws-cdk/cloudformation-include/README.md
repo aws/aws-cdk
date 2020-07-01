@@ -139,7 +139,7 @@ The `CfnOutput` object is mutable,
 and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
-output.value = "some new value");
+output.value = cfnBucket.attrArn;
 ```
 
 ## Known limitations
