@@ -31,7 +31,7 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
   posixUser: {
     gid: '1001',
     uid: '1001',
-  }
+  },
 });
 
 // this function will mount '/mnt/msg' and write content into /mnt/msg/content
