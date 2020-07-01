@@ -76,7 +76,8 @@ export class LambdaIntegration extends AwsIntegration {
     const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
     let deploymentToken;
     if (!Token.isUnresolved(cfnFunction.functionName)) {
-      deploymentToken = { functionName: cfnFunction.functionName! }; // exclamation (!) -> isUnresolved() returns true when undefined is passed.
+      // functionName cannot be undefined since isUnresolved() filteres undefined. So use exclamation (!)
+      deploymentToken = JSON.stringify({ functionName: cfnFunction.functionName! });
     }
     return {
       deploymentToken,

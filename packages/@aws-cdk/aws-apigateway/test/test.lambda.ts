@@ -234,7 +234,7 @@ export = {
 
     // THEN
     test.ok(bindResult?.deploymentToken);
-    test.deepEqual(bindResult!.deploymentToken, { functionName: 'ThisFunction' });
+    test.deepEqual(bindResult!.deploymentToken, '{"functionName":"ThisFunction"}');
 
     test.done();
   },

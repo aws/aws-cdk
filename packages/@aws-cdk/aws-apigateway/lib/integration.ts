@@ -145,7 +145,7 @@ export interface IntegrationConfig {
    * should trigger a fresh the Deployment needs to be refreshed.
    * @default undefined deployments are not triggered for any change to this integration.
    */
-  readonly deploymentToken?: { [key: string]: string };
+  readonly deploymentToken?: string;
 }
 
 /**
