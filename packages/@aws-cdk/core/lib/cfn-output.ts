@@ -39,7 +39,7 @@ export class CfnOutput extends CfnElement {
   private _description?: string;
   private _condition?: CfnCondition;
   private _value?: any;
-  private _export?: string;
+  private _exportName?: string;
 
   /**
    * Creates an CfnOutput value for this stack.
@@ -56,7 +56,7 @@ export class CfnOutput extends CfnElement {
     this._description = props.description;
     this._value = props.value;
     this._condition = props.condition;
-    this._export = props.exportName;
+    this._exportName = props.exportName;
   }
 
   /**
@@ -68,7 +68,7 @@ export class CfnOutput extends CfnElement {
 
   /**
    * Sets this output's description to the parameter
-   * @param newDescription the description to update this Output's description to
+   * @param description the description to update this Output's description to
    */
   public set description(description: string | undefined) {
     this._description = description;
@@ -83,7 +83,7 @@ export class CfnOutput extends CfnElement {
 
   /**
    * Sets this output's value to the parameter
-   * @param newValue the value to update this Output's value to
+   * @param value the value to update this Output's value to
    */
   public set value(value: any) {
     this._value = value;
@@ -98,7 +98,7 @@ export class CfnOutput extends CfnElement {
 
   /**
    * Sets this output's condition to the parameter
-   * @param newCondition the condition to update this Output's condition to
+   * @param condition the condition to update this Output's condition to
    */
   public set condition(condition: CfnCondition | undefined) {
     this._condition = condition;
@@ -108,15 +108,15 @@ export class CfnOutput extends CfnElement {
    * Returns the export of this Output
    */
   public get exportName() {
-    return this._export;
+    return this._exportName;
   }
 
   /**
    * Sets this output's export to the parameter
-   * @param newRxport the export to update this Output's export to
+   * @param exportName the export to update this Output's export to
    */
   public set exportName(exportName: string | undefined) {
-    this._export = exportName;
+    this._exportName = exportName;
   }
 
   /**
@@ -128,7 +128,7 @@ export class CfnOutput extends CfnElement {
         [this.logicalId]: {
           Description: this._description,
           Value: this._value,
-          Export: this._export != null ? { Name: this._export } : undefined,
+          Export: this._exportName != null ? { Name: this._exportName } : undefined,
           Condition: this._condition ? this._condition.logicalId : undefined,
         },
       },

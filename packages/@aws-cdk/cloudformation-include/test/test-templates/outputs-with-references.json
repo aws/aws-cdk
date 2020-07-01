@@ -17,6 +17,9 @@
   "Resources": {
     "Bucket": {
       "Type": "AWS::S3::Bucket"
+    },
+    "Output1": {
+      "Type": "AWS::S3::Bucket"
     }
   },
   "Outputs": {
@@ -31,7 +34,10 @@
       "Description": {
         "Ref": "Bucket"
       },
-      "Condition": "AlwaysFalseCond"
+      "Condition": "AlwaysFalseCond",
+      "Export": {
+        "Name": "Bucket"
+      }
     }
   }
 }
