@@ -1,9 +1,9 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { CfnResource, Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnRouteResponse } from '../apigatewayv2.generated';
 import { IRoute } from '../common/route';
 
 import { IWebSocketApi } from './api';
-import { IWebSocketModel } from './model';
+import { IWebSocketModel, WebSocketModel } from './model';
 
 /**
  * Defines a set of common response patterns known to the system
@@ -178,6 +178,14 @@ export class WebSocketRouteResponse extends Resource implements IWebSocketRouteR
       modelSelectionExpression: props.modelSelectionExpression?.toString(),
       responseParameters: props.responseParameters,
     });
+
+    if (props.responseModels !== undefined) {
+      for (const model of Object.values(props.responseModels)) {
+        if ((model instanceof WebSocketModel) && (model.node.defaultChild instanceof CfnResource)) {
+          this.resource.addDependsOn(model.node.defaultChild);
+        }
+      }
+    }
 
     this.routeResponseId = this.resource.ref;
   }

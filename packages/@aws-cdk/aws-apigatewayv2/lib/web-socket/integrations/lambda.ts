@@ -2,8 +2,11 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Stack } from '@aws-cdk/core';
 
+import { IRoute } from '../../common/route';
+
 import { IWebSocketApi, WebSocketApi } from '../api';
 import { WebSocketIntegration, WebSocketIntegrationOptions, WebSocketIntegrationType } from '../integration';
+import { WebSocketRoute } from '../route';
 
 /**
  * Defines the properties required for defining an Api Gateway V2 Lambda Integration.
@@ -38,6 +41,8 @@ export interface WebSocketLambdaIntegrationProps extends WebSocketLambdaIntegrat
  * An AWS Lambda integration for an API in Amazon API Gateway v2.
  */
 export class WebSocketLambdaIntegration extends WebSocketIntegration {
+  protected handler: IFunction;
+
   constructor(scope: Construct, id: string, props: WebSocketLambdaIntegrationProps) {
     const stack = Stack.of(scope);
 
@@ -60,9 +65,16 @@ export class WebSocketLambdaIntegration extends WebSocketIntegration {
       uri,
     });
 
-    if (props.api instanceof WebSocketApi) {
-      const sourceArn = props.api.executeApiArn();
-      props.handler.addPermission(`ApiPermission.${this.node.uniqueId}`, {
+    this.handler = props.handler;
+  }
+
+  /**
+   * Bind this integration to the route.
+   */
+  public bind(route: IRoute) {
+    if ((this.api instanceof WebSocketApi) && (route instanceof WebSocketRoute)) {
+      const sourceArn = this.api.executeApiArn(route.key);
+      this.handler.addPermission(`ApiPermission.${this.node.uniqueId}`, {
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn,
       });

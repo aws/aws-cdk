@@ -85,7 +85,7 @@
               {
                 "Ref": "WebSocketApiDefaultStage734E750B"
               },
-              "/*"
+              "/$connect"
             ]
           ]
         }
@@ -239,7 +239,10 @@
         "ResponseModels": {
           "default": "statusResponse"
         }
-      }
+      },
+      "DependsOn": [
+        "WebSocketApiModelstatusResponseB7B1089E"
+      ]
     }
   }
 }

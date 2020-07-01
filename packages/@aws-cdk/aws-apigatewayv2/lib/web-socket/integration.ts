@@ -2,6 +2,7 @@ import { Construct, Duration, Resource } from '@aws-cdk/core';
 
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common/integration';
+import { IRoute } from '../common/route';
 
 import { IWebSocketApi } from './api';
 import { WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationResponseOptions } from './integration-response';
@@ -348,6 +349,13 @@ export class WebSocketIntegration extends Resource implements IIntegration {
     });
 
     this.integrationId = this.resource.ref;
+  }
+
+  /**
+   * Bind this integration to the route.
+   */
+  public bind(_: IRoute) {
+    // Pass
   }
 
   /**

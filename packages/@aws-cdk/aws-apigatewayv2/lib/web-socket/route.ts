@@ -1,11 +1,12 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { CfnResource, Construct, Resource } from '@aws-cdk/core';
 
 import { CfnRoute } from '../apigatewayv2.generated';
 import { IAuthorizer } from '../common/authorizer';
 import { IIntegration } from '../common/integration';
 import { IRoute } from '../common/route';
 import { IWebSocketApi } from './api';
-import { IWebSocketModel } from './model';
+import { WebSocketIntegration } from './integration';
+import { IWebSocketModel, WebSocketModel } from './model';
 import { WebSocketRouteResponse, WebSocketRouteResponseKey, WebSocketRouteResponseOptions } from './route-response';
 
 /**
@@ -282,6 +283,9 @@ export class WebSocketRoute extends Resource implements IRoute {
       }));
     }
 
+    if (props.integration instanceof WebSocketIntegration) {
+      props.integration.bind(this);
+    }
     this.resource = new CfnRoute(this, 'Resource', {
       apiId: this.api.webSocketApiId,
       routeKey: props.key.toString(),
@@ -296,6 +300,14 @@ export class WebSocketRoute extends Resource implements IRoute {
       requestParameters: props.requestParameters,
       routeResponseSelectionExpression: props.routeResponseSelectionExpression?.toString(),
     });
+
+    if (props.requestModels !== undefined) {
+      for (const model of Object.values(props.requestModels)) {
+        if ((model instanceof WebSocketModel) && (model.node.defaultChild instanceof CfnResource)) {
+          this.resource.addDependsOn(model.node.defaultChild);
+        }
+      }
+    }
     this.routeId = this.resource.ref;
   }
 
