@@ -1084,6 +1084,7 @@ export = {
       MetricsCollection: [
         {
           'Granularity': '1Minute',
+          Metrics: ABSENT,
         },
       ],
     }));
@@ -1118,7 +1119,7 @@ export = {
     test.done();
   },
 
-  'test emitMetricsCollections adds MetricsCollection with a list of specified Metrics'(test: Test) {
+  'test emitGroupMetrics adds MetricsCollection with a list of specified Metrics'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1157,7 +1158,7 @@ export = {
     test.done();
   },
 
-  'can configure metricsCollection on the constructor and using emitMetricsCollection simultaneously'(test: Test) {
+  'can configure metricsCollection on the constructor and using emitGroupMetrics simultaneously'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);

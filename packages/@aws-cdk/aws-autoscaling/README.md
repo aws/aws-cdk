@@ -232,7 +232,7 @@ will be enabled.
 
 ### Monitoring Group Metrics
 
-Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetricsCollections` property, or the `emitAllMetricsCollections` and `emitMetricsCollection` methods.
+Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetricsCollections` property, or the `emitAllGroupMetrics` and `emitGroupMetrics` methods.
 All Group metrics are reported in a granularity of 1 minute at no additional charge.
 
 See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics) for a list of all available group metrics.

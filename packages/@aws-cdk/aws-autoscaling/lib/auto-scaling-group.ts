@@ -243,7 +243,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * Group metrics are reported in a granularity of 1 minute at no additional charge.
    *
-   * You can also use the `emitAllMetricsCollections` and `emitMetricsCollection` methods
+   * You can also use the `emitAllGroupMetrics` and `emitGroupMetrics` methods
    * @default - disabled
    */
   readonly groupMetricsCollections?: MetricsCollection[];
@@ -718,12 +718,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
    */
   public emitAllGroupMetrics() {
-    this.emitGroupMetrics(...[]);
+    this.emitGroupMetrics(...GroupMetric.ALL);
   }
 
   /**
    * Emit a specific subset of group metrics, these metrics describe the group rather than a single instance
-   * to emit all group metrics use \`emitAllMetricsCollections\`
+   * to emit all group metrics use \`emitAllGroupMetrics\`
    * @param metrics which groups metrics to collect
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-metricscollection.html
    */
