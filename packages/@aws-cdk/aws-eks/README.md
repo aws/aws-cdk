@@ -336,6 +336,8 @@ new KubernetesResource(this, 'hello-kub', {
 cluster.addResource('hello-kub', service, deployment);
 ```
 
+#### Adding resources from a URL
+
 The following example will deploy the resource manifest hosting on remote server:
 
 ```ts
