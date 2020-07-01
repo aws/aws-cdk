@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { Context, Data, FieldUtils } from '../lib';
+import { FieldUtils, JsonPath } from '../lib';
 
 describe('Fields', () => {
   test('deep replace correctly handles fields in arrays', () => {
@@ -8,12 +8,12 @@ describe('Fields', () => {
         unknown: undefined,
         bool: true,
         literal: 'literal',
-        field: Data.stringAt('$.stringField'),
-        listField: Data.listAt('$.listField'),
+        field: JsonPath.stringAt('$.stringField'),
+        listField: JsonPath.listAt('$.listField'),
         deep: [
           'literal',
           {
-            deepField: Data.numberAt('$.numField'),
+            deepField: JsonPath.numberAt('$.numField'),
           },
         ],
       }),
@@ -33,10 +33,10 @@ describe('Fields', () => {
   test('exercise contextpaths', () => {
     expect(
       FieldUtils.renderObject({
-        str: Context.stringAt('$$.Execution.StartTime'),
-        count: Context.numberAt('$$.State.RetryCount'),
-        token: Context.taskToken,
-        entire: Context.entireContext,
+        str: JsonPath.stringAt('$$.Execution.StartTime'),
+        count: JsonPath.numberAt('$$.State.RetryCount'),
+        token: JsonPath.taskToken,
+        entire: JsonPath.entireContext,
       }),
     ).toStrictEqual({
       'str.$': '$$.Execution.StartTime',
@@ -50,13 +50,13 @@ describe('Fields', () => {
       FieldUtils.findReferencedPaths({
         bool: false,
         literal: 'literal',
-        field: Data.stringAt('$.stringField'),
-        listField: Data.listAt('$.listField'),
+        field: JsonPath.stringAt('$.stringField'),
+        listField: JsonPath.listAt('$.listField'),
         deep: [
           'literal',
           {
-            field: Data.stringAt('$.stringField'),
-            deepField: Data.numberAt('$.numField'),
+            field: JsonPath.stringAt('$.stringField'),
+            deepField: JsonPath.numberAt('$.numField'),
           },
         ],
       }),
@@ -64,39 +64,39 @@ describe('Fields', () => {
   }),
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
-      deep: [Data.stringAt('$.hello')],
+      deep: [JsonPath.stringAt('$.hello')],
     })).toThrowError(/Cannot use JsonPath fields in an array/);
   }),
   test('datafield path must be correct', () => {
-    expect(Data.stringAt('$')).toBeDefined();
+    expect(JsonPath.stringAt('$')).toBeDefined();
 
-    expect(() => Data.stringAt('$hello')).toThrowError(/exactly equal to '\$' or start with '\$.'/);
+    expect(() => JsonPath.stringAt('$hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
 
-    expect(() => Data.stringAt('hello')).toThrowError(/exactly equal to '\$' or start with '\$.'/);
+    expect(() => JsonPath.stringAt('hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
   }),
   test('context path must be correct', () => {
-    expect(Context.stringAt('$$')).toBeDefined();
+    expect(JsonPath.stringAt('$$')).toBeDefined();
 
-    expect(() => Context.stringAt('$$hello')).toThrowError(/exactly equal to '\$\$' or start with '\$\$.'/);
+    expect(() => JsonPath.stringAt('$$hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
 
-    expect(() => Context.stringAt('hello')).toThrowError(/exactly equal to '\$\$' or start with '\$\$.'/);
+    expect(() => JsonPath.stringAt('hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
   }),
   test('test contains task token', () => {
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
-        field: Context.taskToken,
+        field: JsonPath.taskToken,
       }),
     );
 
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
-        field: Context.stringAt('$$.Task'),
+        field: JsonPath.stringAt('$$.Task'),
       }),
     );
 
     expect(true).toEqual(
       FieldUtils.containsTaskToken({
-        field: Context.entireContext,
+        field: JsonPath.entireContext,
       }),
     );
 
@@ -108,7 +108,7 @@ describe('Fields', () => {
 
     expect(false).toEqual(
       FieldUtils.containsTaskToken({
-        oops: Context.stringAt('$$.Execution.StartTime'),
+        oops: JsonPath.stringAt('$$.Execution.StartTime'),
       }),
     );
   }),
@@ -123,7 +123,7 @@ describe('Fields', () => {
   }),
   test('fields cannot be used somewhere in a string interpolation', () => {
     expect(() => FieldUtils.renderObject({
-      field: `contains ${Data.stringAt('$.hello')}`,
+      field: `contains ${JsonPath.stringAt('$.hello')}`,
     })).toThrowError(/Field references must be the entire string/);
   });
 });

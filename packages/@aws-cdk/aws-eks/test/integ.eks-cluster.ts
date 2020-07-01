@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput } from '@aws-cdk/core';
+import { App, CfnOutput, Duration } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { TestStack } from './util';
@@ -14,14 +14,18 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    // just need one nat gateway to simplify the test
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
+      vpc,
       mastersRole,
       defaultCapacity: 2,
       version: '1.16',
     });
 
-    // // fargate profile for resources in the "default" namespace
+    // fargate profile for resources in the "default" namespace
     cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
@@ -51,6 +55,12 @@ class EksClusterStack extends TestStack {
       },
     });
 
+    // inference instances
+    cluster.addCapacity('InferenceInstances', {
+      instanceType: new ec2.InstanceType('inf1.2xlarge'),
+      minCapacity: 1,
+    });
+
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng', {
       instanceType: new ec2.InstanceType('t3.small'),
@@ -59,12 +69,22 @@ class EksClusterStack extends TestStack {
       nodeRole: cluster.defaultCapacity ? cluster.defaultCapacity.role : undefined,
     });
 
-    // // apply a kubernetes manifest
+    // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    cluster.addChart('dashboard', {
+      chart: 'kubernetes-dashboard',
+      repository: 'https://kubernetes.github.io/dashboard/',
+    });
+
+    cluster.addChart('nginx-ingress', {
+      chart: 'nginx-ingress',
+      repository: 'https://helm.nginx.com/stable',
+      namespace: 'kube-system',
+      wait: true,
+      timeout: Duration.minutes(15),
+    });
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');

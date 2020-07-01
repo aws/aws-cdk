@@ -134,7 +134,10 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     this.taskPolicies = this.makePolicyStatements();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sagemaker', 'createTransformJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),

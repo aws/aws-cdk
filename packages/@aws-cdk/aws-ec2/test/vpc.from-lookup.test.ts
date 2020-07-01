@@ -1,10 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'Vpc.fromLookup()': {
     'requires concrete values'(test: Test) {
       // GIVEN
@@ -210,7 +210,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 interface MockVcpContextResponse {
   readonly vpcId: string;

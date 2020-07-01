@@ -1,9 +1,9 @@
 import { expect, haveResource, not } from '@aws-cdk/assert';
 import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'security group can allows all outbound traffic by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -293,4 +293,4 @@ export = {
       test.done();
     },
   },
-};
+});

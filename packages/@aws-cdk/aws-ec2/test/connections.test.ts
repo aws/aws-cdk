@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { App, ConstructNode, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 
 import {
   Connections,
@@ -10,7 +10,7 @@ import {
   Vpc,
 } from '../lib';
 
-export = {
+nodeunitShim({
   'peering between two security groups does not recursive infinitely'(test: Test) {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
@@ -326,7 +326,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 class SomethingConnectable implements IConnectable {
   constructor(public readonly connections: Connections) {

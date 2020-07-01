@@ -1,9 +1,9 @@
 import { expect, haveResource  } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
-export = {
+nodeunitShim({
   'can add a vpn connection to a vpc with a vpn gateway'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -322,4 +322,4 @@ export = {
     }));
     test.done();
   },
-};
+});

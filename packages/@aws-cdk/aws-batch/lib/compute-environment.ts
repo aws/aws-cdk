@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
@@ -493,7 +493,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         return props.computeResources.spotFleetRole;
       } else if (props.computeResources.type === ComputeResourceType.SPOT) {
         return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
-          `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+          `arn:${this.stack.partition}:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
       }
     }
 

@@ -30,7 +30,7 @@
     "yaml": "1.10.0"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^26.0.3",
     "@types/yaml": "1.9.7",
     "jest": "^25.5.4"
   },
