@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { findClosestPathContaining } from './util';
+import { findUp } from './util';
 
 /**
  * A package.json manager to act on the closest package.json file.
@@ -13,8 +13,8 @@ export class PackageJsonManager {
   private readonly pkg: Buffer;
   private readonly pkgJson: PackageJson;
 
-  constructor() {
-    const pkgPath = findClosestPathContaining('package.json');
+  constructor(directory: string) {
+    const pkgPath = findUp('package.json', directory);
     if (!pkgPath) {
       throw new Error('Cannot find a `package.json` in this project.');
     }
