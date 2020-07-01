@@ -1912,7 +1912,8 @@
         "Version": "0.7.3",
         "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
         "Namespace": "kube-system",
-        "Repository": "https://aws.github.io/eks-charts"
+        "Repository": "https://aws.github.io/eks-charts",
+        "CreateNamespace": true
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -2406,8 +2407,7 @@
         "Wait": true,
         "Timeout": "900s",
         "Namespace": "nginx",
-        "Repository": "https://helm.nginx.com/stable",
-        "CreateNamespace": true
+        "Repository": "https://helm.nginx.com/stable"
       },
       "DependsOn": [
         "ClustermanifestnginxnamespaceA68B4CE0"
