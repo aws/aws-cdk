@@ -44,8 +44,8 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 ### Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to 
-use a secret. This can be achieved with the `Secret.grantRead` and/or 
-`Secret.grantWrite` method, depending on your need:
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
+ method, depending on your need:
 
 ```ts
 const role = new iam.Role(stack, 'SomeRole', { assumedBy: new iam.AccountRootPrincipal() });

@@ -1,5 +1,4 @@
 // tslint:disable-next-line:max-line-length
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors';
@@ -60,7 +59,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
         asset,
         assetManifest,
         toolkitInfo,
-        asset.packaging === 'zip' ? asset_schema.FileAssetPackaging.ZIP_DIRECTORY : asset_schema.FileAssetPackaging.FILE);
+        asset.packaging === 'zip' ? cxschema.FileAssetPackaging.ZIP_DIRECTORY : cxschema.FileAssetPackaging.FILE);
     case 'container-image':
       return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
     default:
@@ -73,9 +72,9 @@ function prepareFileAsset(
   asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
-  packaging: asset_schema.FileAssetPackaging): Record<string, string> {
+  packaging: cxschema.FileAssetPackaging): Record<string, string> {
 
-  const extension = packaging === asset_schema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
+  const extension = packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
   // Simplify key: assets/abcdef/abcdef.zip is kinda silly and unnecessary, so if they're the same just pick one component.
   const s3Prefix = asset.id === asset.sourceHash ? 'assets/' : `assets/${asset.id}/`;

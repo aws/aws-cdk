@@ -23,9 +23,6 @@
     ],
     "exclude": [
         "lib/init-templates/*/typescript/**/*.ts"
-    ],
-    "references": [
-        { "path": "../@aws-cdk/cdk-assets-schema" }
     ]
 }
 

@@ -1,5 +1,5 @@
 // Separate test file since the archiving module doesn't work well with 'mock-fs'
-import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { AssetManifest, AssetPublishing } from '../lib';
 import * as bockfs from './bockfs';
 import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
@@ -8,7 +8,7 @@ let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
   bockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         theAsset: {
           source: {

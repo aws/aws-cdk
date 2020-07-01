@@ -308,7 +308,7 @@ export abstract class S3Location {
    * @param expression the JSON expression resolving to an S3 location URI.
    */
   public static fromJsonExpression(expression: string): S3Location {
-    return new StandardS3Location({ uri: sfn.Data.stringAt(expression) });
+    return new StandardS3Location({ uri: sfn.JsonPath.stringAt(expression) });
   }
 
   /**

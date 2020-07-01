@@ -83,6 +83,8 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   public readonly domainName: string;
   private isCognitoDomain: boolean;
 
+  private cloudFrontCustomResource?: AwsCustomResource;
+
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
 
@@ -113,25 +115,27 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    * The domain name of the CloudFront distribution associated with the user pool domain.
    */
   public get cloudFrontDomainName(): string {
-    const sdkCall: AwsSdkCall = {
-      service: 'CognitoIdentityServiceProvider',
-      action: 'describeUserPoolDomain',
-      parameters: {
-        Domain: this.domainName,
-      },
-      physicalResourceId: PhysicalResourceId.of(this.domainName),
-    };
-    const customResource = new AwsCustomResource(this, 'CloudFrontDomainName', {
-      resourceType: 'Custom::UserPoolCloudFrontDomainName',
-      onCreate: sdkCall,
-      onUpdate: sdkCall,
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        // DescribeUserPoolDomain only supports access level '*'
-        // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncognitouserpools.html#amazoncognitouserpools-actions-as-permissions
-        resources: [ '*' ],
-      }),
-    });
-    return customResource.getResponseField('DomainDescription.CloudFrontDistribution');
+    if (!this.cloudFrontCustomResource) {
+      const sdkCall: AwsSdkCall = {
+        service: 'CognitoIdentityServiceProvider',
+        action: 'describeUserPoolDomain',
+        parameters: {
+          Domain: this.domainName,
+        },
+        physicalResourceId: PhysicalResourceId.of(this.domainName),
+      };
+      this.cloudFrontCustomResource = new AwsCustomResource(this, 'CloudFrontDomainName', {
+        resourceType: 'Custom::UserPoolCloudFrontDomainName',
+        onCreate: sdkCall,
+        onUpdate: sdkCall,
+        policy: AwsCustomResourcePolicy.fromSdkCalls({
+          // DescribeUserPoolDomain only supports access level '*'
+          // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncognitouserpools.html#amazoncognitouserpools-actions-as-permissions
+          resources: [ '*' ],
+        }),
+      });
+    }
+    return this.cloudFrontCustomResource.getResponseField('DomainDescription.CloudFrontDistribution');
   }
 
   /**

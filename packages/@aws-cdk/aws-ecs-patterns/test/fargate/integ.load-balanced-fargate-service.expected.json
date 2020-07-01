@@ -618,9 +618,18 @@
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::GetAtt": [
-              "myServiceLB168895E1",
-              "DNSName"
+            "Fn::Join":
+            [
+              "",
+              [
+                "dualstack.",
+                {
+                  "Fn::GetAtt": [
+                    "myServiceLB168895E1",
+                    "DNSName"
+                  ]
+                }
+              ]
             ]
           },
           "HostedZoneId": {
