@@ -195,8 +195,17 @@ export class CfnInclude extends core.CfnElement {
     const cfnOutput = new core.CfnOutput(scope, logicalId, {
       value: outputAttributes.Value,
       description: outputAttributes.Description,
-      exportName: outputAttributes.Export ? outputAttributes.Export.Name: undefined,
-      condition: outputAttributes.Condition ? self.getCondition(outputAttributes.Condition) : undefined,
+      exportName: outputAttributes.Export ? outputAttributes.Export.Name : undefined,
+      condition: (() => {
+        if (!outputAttributes.Condition) {
+          return undefined;
+        } else if (this.conditions[outputAttributes.Condition]) {
+          return self.getCondition(outputAttributes.Condition);
+        }
+
+        throw new Error(`Output with name '${logicalId}' refers to a Condition with name\
+ '${outputAttributes.Condition}' which was not found in this template`);
+      })(),
     });
 
     cfnOutput.overrideLogicalId(logicalId);
