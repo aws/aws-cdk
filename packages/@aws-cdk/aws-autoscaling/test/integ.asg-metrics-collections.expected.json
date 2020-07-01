@@ -615,12 +615,14 @@
         },
         "MetricsCollection": [
           {
+            "Granularity": "1Minute"
+          },
+          {
             "Granularity": "1Minute",
             "Metrics": [
               "GroupPendingInstances",
               "GroupStandbyInstances",
               "GroupTotalInstances",
-              "GroupTerminatingInstances",
               "GroupTerminatingInstances"
             ]
           }

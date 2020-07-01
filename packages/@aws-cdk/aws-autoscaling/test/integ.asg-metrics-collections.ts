@@ -13,7 +13,11 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc,
-  groupMetricsCollections: autoscaling.GroupMetric.ALL,
+  groupMetricsCollections: [
+    {
+      metrics: autoscaling.GroupMetric.ALL,
+    },
+  ],
 });
 asg.emitGroupMetrics(
   autoscaling.GroupMetric.PENDING_INSTANCES,

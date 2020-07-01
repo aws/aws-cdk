@@ -1066,7 +1066,7 @@ export = {
     test.done();
   },
 
-  'test emitAllMetricsCollections adds a single MetricsCollection with no Metrics specified'(test: Test) {
+  'test emitAllGroupMetrics adds a single MetricsCollection with no Metrics specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);

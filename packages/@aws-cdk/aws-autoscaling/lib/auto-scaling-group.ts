@@ -302,7 +302,7 @@ export class GroupMetric {
   /**
    * All available GroupMetrics.
    */
-  public static readonly ALL = new Array();
+  public static readonly ALL = new Array<GroupMetric>();
 
   /**
    * The minimum size of the Auto Scaling group
