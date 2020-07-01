@@ -11,6 +11,7 @@ import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { DatabaseClusterEngine, RotationMultiUserOptions } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -45,6 +46,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    * The instance endpoint.
    */
   readonly instanceEndpoint: Endpoint;
+
+  /**
+   * Add a new db proxy to this instance.
+   */
+  addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
@@ -110,6 +116,16 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * Access to network connections.
    */
   public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Add a new db proxy to this instance.
+   */
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromInstance(this),
+      ...options,
+    });
+  }
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
