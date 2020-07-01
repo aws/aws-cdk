@@ -48,5 +48,9 @@ export class FileSystem {
       securityGroups: ap.filesystem.connections.securityGroups,
     });
   }
+
+  /**
+   * @param config the FileSystem configurations for the Lambda function
+   */
   protected constructor(public readonly config: FileSystemConfig) { }
 }

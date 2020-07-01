@@ -120,7 +120,6 @@
       "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind",
       "props-physical-name:@aws-cdk/aws-lambda.VersionProps",
       "props-physical-name:@aws-cdk/aws-lambda.EventSourceMappingProps",
-      "docs-public-apis:@aws-cdk/aws-lambda.FileSystem.config",
       "docs-public-apis:@aws-cdk/aws-lambda.Runtime.runtimeEquals",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.OTHER",
       "docs-public-apis:@aws-cdk/aws-lambda.RuntimeFamily.RUBY",
