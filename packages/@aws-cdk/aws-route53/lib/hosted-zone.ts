@@ -59,6 +59,8 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known and hosted zone name is undesirable.
+   *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
    * @param hostedZoneId the ID of the hosted zone to import
@@ -79,6 +81,12 @@ export class HostedZone extends Resource implements IHostedZone {
 
   /**
    * Imports a hosted zone from another stack.
+   *
+   * Use when both hosted zone ID and hosted zone name are known.
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param attrs the HostedZoneAttributes (hosted zone ID and hosted zone name)
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
     class Import extends Resource implements IHostedZone {
@@ -94,6 +102,11 @@ export class HostedZone extends Resource implements IHostedZone {
 
   /**
    * Lookup a hosted zone in the current account/region based on query parameters.
+   * Requires explicit environment, you must specify env in the stack.
+   *
+   * Use to easily query hosted zones.
+   *
+   * Look at README for more documentation.
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {

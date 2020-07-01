@@ -83,7 +83,19 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-### Adding records to existing hosted zones
+### Imports
+
+If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
+to discover and import it:
+
+Note that this requires an explicit environment to query an AWS account. Check
+out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for an overview of environments and how to implement.
+
+```ts
+HostedZone.fromLookup(this, 'MyZone', {
+  domainName: 'example.com'
+});
+```
 
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
@@ -94,11 +106,11 @@ const zone = HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 });
 ```
 
-If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
-to discover and import it:
+Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
+you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-HostedZone.fromLookup(this, 'MyZone', {
-  domainName: 'example.com'
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
+  hostedZoneId: 'ZOJJZC49E0EPZ',
 });
 ```
