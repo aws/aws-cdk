@@ -51,7 +51,7 @@ export function nodeMajorVersion(): number {
 }
 
 /**
- * Find a file or directory by walking up parent directories
+ * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
   const { root } = path.parse(directory);
