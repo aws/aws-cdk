@@ -417,7 +417,7 @@ nodeunitShim({
       test.done();
     },
 
-    'natGateways = 0 requires there to be no configured PRIVATE subnets'(test: Test) {
+    'natGateways = 0 throws if no PRIVATE subnets configured'(test: Test) {
       const stack = getTestStack();
       test.throws(() => {
         new Vpc(stack, 'VPC', {
@@ -438,7 +438,7 @@ nodeunitShim({
 
     },
 
-    'natGateways = 0 constructs with ISOLATED subnet'(test: Test) {
+    'natGateway = 0 defaults with ISOLATED subnet'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         natGateways: 0,
