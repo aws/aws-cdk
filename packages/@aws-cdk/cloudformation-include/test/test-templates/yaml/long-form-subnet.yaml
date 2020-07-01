@@ -1,0 +1,45 @@
+Conditions:
+  AlwaysTrueCond:
+    Fn::Not:
+    - Fn::Equals:
+      - Ref: AWS::Region
+      - completely-made-up-region
+Resources:
+  Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: SomeBucketName
+  Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        Fn::GetAtt: [ Bucket1, Arn ]
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+            - GET
+            - POST
+            AllowedOrigins:
+            - Fn::Join: ['', [{ Ref: Bucket1 }, '1']]
+            - origin2
+            MaxAge:
+              2
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Fn::If:
+        - AlwaysTrueCond
+        - Fn::Select:
+          - 0
+          - Fn::Split:
+            - ","
+            - Fn::ImportValue: ImportedVpcId
+        - Fn::Select:
+          - 0
+          - Fn::GetAZs: eu-west-2
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone:
+        Fn::Select:
+        - '0'
+        - Fn::GetAZs: ''
