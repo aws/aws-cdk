@@ -1912,8 +1912,7 @@
         "Version": "0.7.3",
         "Values": "{\"nodeSelector.lifecycle\":\"Ec2Spot\"}",
         "Namespace": "kube-system",
-        "Repository": "https://aws.github.io/eks-charts",
-        "CreateNamespace": true
+        "Repository": "https://aws.github.io/eks-charts"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
