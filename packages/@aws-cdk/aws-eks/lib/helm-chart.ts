@@ -53,6 +53,12 @@ export interface HelmChartOptions {
    * @default Duration.minutes(5)
    */
   readonly timeout?: Duration;
+
+  /**
+   * create namespace if not exist
+   * @default true
+   */
+  readonly createNamespace?: boolean;
 }
 
 /**
@@ -90,6 +96,11 @@ export class HelmChart extends Construct {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
 
+    // default not to wait
+    const wait = props.wait ?? false;
+    // default to create new namespace
+    const createNamespace = props.createNamespace ?? true;
+
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
@@ -99,11 +110,12 @@ export class HelmChart extends Construct {
         Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
-        Wait: props.wait ?? false,
-        Timeout: timeout,
+        Wait: wait || undefined, // props are stringified so we encode “false” as undefined
+        Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',
         Repository: props.repository,
+        CreateNamespace: createNamespace || undefined,
       },
     });
   }
