@@ -7,29 +7,19 @@ echo " buildup usage:"
 echo " - execute 'buildup --resume' to resume after failure"
 echo " - execute 'buildup' to restart the build from the start"
 echo ""
-echo " - execute 'buildup [yarn argument]' to run specifc script"
-echo " - i.e. 'buildup test' to run topo. sorted 'yarn test'"
-echo ""
 echo " for advanced usage, see ${scriptdir}/foreach.sh"
 echo "************************************************************"
 
-RESUME=0
-YARN_ARGS=""
-
-for arg in "$@"
-do
-  case "$arg" in
-    -r | --resume)  RESUME=1 ;;
-    *)  YARN_ARGS="$YARN_ARGS$arg" ;;
-  esac
-  shift
-done
-
-if [ "$RESUME" -eq 0 ]; then
+if [[ "$#" -eq 0 ]]; then
   ${scriptdir}/foreach.sh --reset
+else	
+  if [ "$1" != "--resume" ]; then	
+    echo "Unknown option: $1"	
+    exit 1	
+  fi	
 fi
 
-${scriptdir}/foreach.sh --up yarn ${YARN_ARGS:-build}
+${scriptdir}/foreach.sh --up yarn build
 ${scriptdir}/foreach.sh --reset
 
 echo "************************************************************"
