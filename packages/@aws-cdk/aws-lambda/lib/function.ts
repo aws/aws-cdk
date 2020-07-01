@@ -500,7 +500,12 @@ export class Function extends FunctionBase {
     }
 
     if (props.filesystems) {
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'));
+      for (const fs of props.filesystems) {
+        // add additonal managed policies when necessary
+        if (fs.config.managedPolicies) {
+          managedPolicies.push(...fs.config.managedPolicies);
+        }
+      }
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -590,6 +595,10 @@ export class Function extends FunctionBase {
         // add dependency when necessary
         if (fs.config.dependency) {
           this.node.addDependency(...fs.config.dependency);
+        }
+        // add additonal managed policies when necessary
+        if (fs.config.managedPolicies) {
+          managedPolicies.push(...fs.config.managedPolicies);
         }
       }
 

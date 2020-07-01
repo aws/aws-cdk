@@ -1,5 +1,6 @@
 import { ISecurityGroup } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
+import { IManagedPolicy, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { IDependable } from '@aws-cdk/core';
 
 /**
@@ -29,6 +30,13 @@ export interface FileSystemConfig {
    * @default - no security groups
    */
   readonly securityGroups?: ISecurityGroup[]
+
+  /**
+   * additional managed policies required for the lambda function
+   *
+   * @default - no additional policies required
+   */
+  readonly managedPolicies?: IManagedPolicy[]
 }
 
 /**
@@ -46,6 +54,9 @@ export class FileSystem {
       arn: ap.accessPointArn,
       dependency: [ap.filesystem],
       securityGroups: ap.filesystem.connections.securityGroups,
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess')
+      ]
     });
   }
 
