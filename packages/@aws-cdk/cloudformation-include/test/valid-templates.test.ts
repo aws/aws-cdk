@@ -474,7 +474,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with outputs that reference resources', () => {
+  test("throws an exception when attempting to retrieve an Output that doesn't exist", () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
 
     expect(() => {
