@@ -89,6 +89,7 @@ export class InitConfig {
     elements.forEach((elem, index) => {
       deepMerge(ret, elem.renderElement({ index, ...renderOptions }));
     });
+    return ret;
   }
 }
 

@@ -172,11 +172,6 @@ export class InitCommand extends InitElement {
     };
   }
 
-  /**
-   * No-op for Commands
-   */
-  public bind(_scope: Construct): void {}
-
 }
 
 /**
@@ -225,13 +220,25 @@ export class InitFile extends InitElement {
   /**
    * Use a literal string as the file content
    */
-  public static fromString(fileName: string, s: string, options: InitFileOptions = {}): InitFile {
+  public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
+    class InitFileString extends InitFile {
+      public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
+        return {
+          [fileName]: {
+            content,
+            ...this.renderOptions(options, renderOptions),
+          },
+        };
+      }
+    }
+    return new InitFileString();
   }
 
   /**
    * Write a symlink with the given symlink target
    */
   public static symlink(fileName: string, target: string, options: InitFileOptions = {}): InitFile {
+
   }
 
   /**
@@ -279,8 +286,25 @@ export class InitFile extends InitElement {
   public static fromAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
   }
 
+  public readonly elementType = InitElementType.FILE;
+
   protected constructor() {
     super();
+  }
+
+  private renderOptions(fileOptions: InitFileOptions, renderOptions: InitRenderOptions): Record<string, any> {
+    if (renderOptions.platform === InitRenderPlatform.WINDOWS) {
+      if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
+        throw new Error('Owner, group, and mode options not supported for Windows.');
+      }
+      return {};
+    }
+
+    return {
+      mode: fileOptions.mode || '000644',
+      owner: fileOptions.owner || 'root',
+      group: fileOptions.group || 'root',
+    }
   }
 }
 
@@ -309,14 +333,11 @@ export class InitGroup extends InitElement {
       throw new Error('Init groups are not supported on Windows');
     }
 
-    // TODO: Is there a more idiomatic way to do this?
-    const element = {} as Record<string, any>;
-    element[this.groupName] = this.groupId !== undefined ? { gid: this.groupId } : {};
-    return element;
+    return {
+      [this.groupName]: this.groupId !== undefined ? { gid: this.groupId } : {},
+    }
   }
 
-  // No-op
-  public bind(_scope: Construct): void {}
 }
 
 /**
@@ -356,18 +377,15 @@ export class InitUser extends InitElement {
       throw new Error('Init users are not supported on Windows');
     }
 
-    // TODO: Is there a more idiomatic way to do this?
-    const element = {} as Record<string, any>;
-    element[this.userName] = {
-      uid: this.uid,
-      groups: this.groups,
-      homeDir: this.homeDir,
+    return {
+      [this.userName]: {
+        uid: this.uid,
+        groups: this.groups,
+        homeDir: this.homeDir,
+      },
     };
-    return element;
   }
 
-  // No-op
-  public bind(_scope: Construct): void {}
 }
 
 /**
@@ -377,65 +395,75 @@ export class InitPackage extends InitElement {
   /**
    * Install an RPM from an HTTP URL or a location on disk
    */
-  public static rpm(location: string, key?: string): InitPackage {
+  public static rpm(location: string, name?: string): InitPackage {
+    return new InitPackage('rpm', [location], name);
   }
 
   /**
    * Install a package using Yum
    */
   public static yum(packageName: string, ...versions: string[]): InitPackage {
+    return new InitPackage('yum', versions, packageName);
   }
 
   /**
    * Install a package from RubyGems
    */
   public static rubyGem(gemName: string, ...versions: string[]): InitPackage {
+    return new InitPackage('rubygems', versions, gemName);
   }
 
   /**
    * Install a package from PyPI
    */
   public static python(packageName: string, ...versions: string[]): InitPackage {
+    return new InitPackage('python', versions, packageName);
   }
 
   /**
    * Install a package using APT
    */
   public static apt(packageName: string, ...versions: string[]): InitPackage {
+    return new InitPackage('apt', versions, packageName);
   }
 
   /**
    * Install an MSI package from an HTTP URL or a location on disk
    */
-  public static msi(location: string, key?: string): InitPackage {
+  public static msi(location: string, name?: string): InitPackage {
+    return new InitPackage('msi', [location], name);
   }
 
-  protected constructor() {
+  public readonly elementType = InitElementType.PACKAGE;
+
+  protected constructor(private readonly type: string, private readonly versions: string[],
+    private readonly packageName?: string) {
     super();
   }
-}
 
-/**
- * A services that be enabled, disabled or restarted when the instance is launched.
- */
-export class InitService extends InitElement {
-  /**
-   * Enable and start the given service, optionally restarting it
-   */
-  public static enable(serviceName: string, options: InitServiceOptions = {}): InitService {
+  public renderElement(options: InitRenderOptions): any {
+    if ((this.type === 'msi') !== (options.platform === InitRenderPlatform.WINDOWS)) {
+      if (this.type === 'msi') {
+        throw new Error('MSI installers are only supported on Windows systems.');
+      }
+      else {
+        throw new Error('Windows only supports the MSI package type');
+      }
+    }
+
+    if (!this.packageName && !['rpm', 'msi'].includes(this.type)) {
+      throw new Error('Package name must be specified for all package types besides RPM and MSI.');
+    }
+
+    const packageName = this.packageName || (options.index + '').padStart(3, '0');
+
+    return {
+      [this.type]: {
+        [packageName]: this.versions,
+      },
+    };
   }
 
-  /**
-   * Disable and stop the given service, optionally restarting it
-   */
-  public static disable(serviceName: string, options: InitServiceOptions = {}): InitService {
-  }
-
-  /**
-   * Leave the running state of the service alone, optionally restarting it
-   */
-  public static restart(serviceName: string, options: InitServiceOptions = {}): InitService {
-  }
 }
 
 export interface InitServiceOptions {
@@ -499,6 +527,46 @@ export interface InitServiceOptions {
 }
 
 /**
+ * A services that be enabled, disabled or restarted when the instance is launched.
+ */
+export class InitService extends InitElement {
+  /**
+   * Enable and start the given service, optionally restarting it
+   */
+  public static enable(serviceName: string, options: InitServiceOptions = {}): InitService {
+  }
+
+  /**
+   * Disable and stop the given service
+   */
+  public static disable(serviceName: string): InitService {
+  }
+
+  /**
+   * Leave the running state of the service alone, optionally restarting it
+   */
+  public static custom(serviceName: string, options: InitServiceOptions = {}): InitService {
+  }
+
+  /**
+   * What other interface(s) might someone expect here? I feel like something like this might be useful:
+   * - restartAfter(elements: InitElement[])
+   * Or:
+   * - restartAfterFiles(files: InitFile[])
+   * - restartAFterSources(sources: InitSource[])
+   *
+   * This assumes we're not doing the all-at-once construction, because it is cross-referencing elements,
+   * but it's a hell of a friendly interface than providing the other keys.
+   *
+   * What if the other supporting elements had a "restartServices(services: string[])" helper which generates
+   * an InitService elements?
+   *
+   * const file = InitFile.fromUrl(.... { restartServices: ['httpd'] });
+   * fie.restartServices('httpd');
+   */
+}
+
+/**
  * Extract an archive into a directory
  */
 export class InitSource extends InitElement {
@@ -526,23 +594,21 @@ export class InitSource extends InitElement {
   /**
    * Create an asset from the given directory and use that
    */
-  public static fromDirectoryAsset(targetDirectory: string, sourceDirectory: string): InitSource {
-    throw new class extends InitSource {
-      bind() {
-      },
-      renderElement() {
-      },
-    }
+  public static fromDirectoryAsset(_targetDirectory: string, _sourceDirectory: string): InitSource {
+    // TODO - No scope here, so can't create the Asset directly. Need to delay creation until bind() is called,
+    // or find some other clever solution if we're going to support this.
+    throw new Error('Not implemented');
   }
 
   /**
    * Extract a diretory from an existing directory asset
    */
   public static fromAsset(targetDirectory: string, asset: s3_assets.Asset): InitSource {
-    throw new Error('Not implemented');
+    return new InitSource(targetDirectory, asset.httpUrl, asset);
   }
 
-  protected constructor(private readonly targetDirectory: string, private readonly url: string) {
+  protected constructor(private readonly targetDirectory: string, private readonly url: string,
+    private readonly asset?: s3_assets.Asset) {
     super();
   }
 
@@ -555,6 +621,7 @@ export class InitSource extends InitElement {
   }
 
   public bind(_scope: Construct): void {
+    if (this.asset === undefined) { return; }
     throw new Error('Not yet implemented');
   }
 }
