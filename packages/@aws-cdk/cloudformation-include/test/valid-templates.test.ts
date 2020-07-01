@@ -396,8 +396,8 @@ describe('CDK Include', () => {
               ],
             },
           },
-          "Metadata" : {
-            "Object1" : "Location1",
+          "Metadata": {
+            "Object1": "Location1",
             "KeyRef": { "Ref": "TotallyDifferentKey" },
             "KeyArn": { "Fn::GetAtt": ["TotallyDifferentKey", "Arn"] },
           },
@@ -416,25 +416,36 @@ describe('CDK Include', () => {
   });
 
   test("can ingest a template that contains outputs and modify them", () => {
-    const cfnTemplate = includeTestTemplate(stack, 'outputs.json');
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
     const output = cfnTemplate.getOutput('Output1');
-    const bucket = cfnTemplate.getResource('Bucket');
 
-    output.setValue('a mutated value');
-    output.setDescription(undefined);
-    output.setExport("an export");
-    output.setCondition(new core.CfnCondition(stack, 'MyCondition', {}));
+    const ifCond = core.Fn.conditionIf("AlwaysFalseCond", 'AWS::NoValue', 'AWS::NoValue');
 
-    new core.CfnOutput(stack, 'Output2', {
-      value: bucket.ref,
-      description: "a description",
+    output.value = 'a mutated value';
+    output.description = undefined;
+    output.exportName = "an export";
+    output.condition = new core.CfnCondition(stack, 'MyCondition', {
+      expression: ifCond,
     });
 
-    const originalTemplate = loadTestFileToJsObject('outputs.json');
+    const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
 
     expect(stack).toMatchTemplate({
       "Conditions": {
         ...originalTemplate.Conditions,
+        "MyCondition": {
+          "Fn::If": [
+            "AlwaysFalseCond",
+            "AWS::NoValue",
+            "AWS::NoValue",
+          ],
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+      "Resources": {
+        ...originalTemplate.Resources,
       },
       "Outputs": {
         "Output1": {
@@ -444,27 +455,18 @@ describe('CDK Include', () => {
           },
           "Condition": "MyCondition",
         },
-        "Output2": {
-          "Value": {
-            "Ref": "Bucket",
-          },
-          "Description": "a description",
-        },
-      },
-      "Resources": {
-        ...originalTemplate.Resources,
       },
     });
   });
 
   test("can ingest a template that contains outputs and get those outputs", () => {
-    const cfnTemplate = includeTestTemplate(stack, 'outputs.json');
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
     const output = cfnTemplate.getOutput('Output1');
 
-    expect(output.getDescription()).toBe("the description of the output value");
-    expect(output.getValue()).toBe("the output value");
-    expect(output.getExport()).toBe("the export");
-    expect(output.getCondition()).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+    expect(output.condition).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+    expect(output.description).toBeDefined();
+    expect(output.value).toBeDefined();
+    expect(output.exportName).toBeUndefined();
   });
 
   test('can ingest a template with outputs that reference resources', () => {
