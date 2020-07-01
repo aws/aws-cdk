@@ -251,7 +251,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test("correctly parses templates with parameters", () => {
+  test('correctly parses templates with parameters', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
@@ -415,17 +415,15 @@ describe('CDK Include', () => {
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
   });
 
-  test("can ingest a template that contains outputs and modify them", () => {
+  test('can ingest a template that contains outputs and modify them', () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
     const output = cfnTemplate.getOutput('Output1');
-
-    const ifCond = core.Fn.conditionIf("AlwaysFalseCond", 'AWS::NoValue', 'AWS::NoValue');
-
     output.value = 'a mutated value';
     output.description = undefined;
-    output.exportName = "an export";
+    output.exportName = 'an export';
     output.condition = new core.CfnCondition(stack, 'MyCondition', {
-      expression: ifCond,
+      expression: core.Fn.conditionIf('AlwaysFalseCond', 'AWS::NoValue', 'AWS::NoValue'),
     });
 
     const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
@@ -455,11 +453,14 @@ describe('CDK Include', () => {
           },
           "Condition": "MyCondition",
         },
+        "OutputWithNoCondition": {
+          "Value": "some-value",
+        },
       },
     });
   });
 
-  test("can ingest a template that contains outputs and get those outputs", () => {
+  test('can ingest a template that contains outputs and get those outputs', () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
     const output = cfnTemplate.getOutput('Output1');
 
@@ -467,12 +468,15 @@ describe('CDK Include', () => {
     expect(output.description).toBeDefined();
     expect(output.value).toBeDefined();
     expect(output.exportName).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('outputs-with-references.json'),
+    );
   });
 
   test('can ingest a template with outputs that reference resources', () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
 
-    expect(stack).toMatchTemplate(loadTestFileToJsObject('outputs-with-references.json'));
     expect(() => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);

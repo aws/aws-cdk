@@ -26,9 +26,8 @@
     "Output1": {
       "Value": {
         "Fn::Join": [ "", [
-            { "Ref": "MyParam" },
-            { "Fn::GetAtt": [ "Bucket", "Arn" ] }
-          ]
+          { "Ref": "MyParam" },
+          { "Fn::GetAtt": [ "Bucket", "Arn" ] } ]
         ]
       },
       "Description": {
@@ -38,6 +37,9 @@
       "Export": {
         "Name": "Bucket"
       }
+    },
+    "OutputWithNoCondition": {
+      "Value": "some-value"
     }
   }
 }
