@@ -7,3 +7,5 @@ coverage
 
 *.snk
 .eslintrc.js
+# exclude cdk artifacts
+**/cdk.out

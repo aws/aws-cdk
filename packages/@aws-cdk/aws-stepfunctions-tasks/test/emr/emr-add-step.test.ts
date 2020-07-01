@@ -51,7 +51,7 @@ test('Add Step with static ClusterId and Step configuration', () => {
 test('Terminate cluster with ClusterId from payload and static Step configuration', () => {
   // WHEN
   const task = new tasks.EmrAddStep(stack, 'Task', {
-    clusterId: sfn.Data.stringAt('$.ClusterId'),
+    clusterId: sfn.JsonPath.stringAt('$.ClusterId'),
     name: 'StepName',
     jar: 'Jar',
     actionOnFailure: tasks.ActionOnFailure.CONTINUE,
@@ -91,7 +91,7 @@ test('Add Step with static ClusterId and Step Name from payload', () => {
   // WHEN
   const task = new tasks.EmrAddStep(stack, 'Task', {
     clusterId: 'ClusterId',
-    name: sfn.Data.stringAt('$.StepName'),
+    name: sfn.JsonPath.stringAt('$.StepName'),
     jar: 'Jar',
     actionOnFailure: tasks.ActionOnFailure.CONTINUE,
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,

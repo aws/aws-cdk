@@ -181,7 +181,7 @@ test('Execute State Machine - Wait For Task Token', () => {
     task: new tasks.StartExecution(child, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       input: {
-        token: sfn.Context.taskToken,
+        token: sfn.JsonPath.taskToken,
       },
     }),
   });
@@ -223,5 +223,5 @@ test('Execute State Machine - Wait For Task Token - Missing Task Token', () => {
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       }),
     });
-  }).toThrow('Task Token is missing in input (pass Context.taskToken somewhere in input');
+  }).toThrow('Task Token is missing in input (pass JsonPath.taskToken somewhere in input');
 });
