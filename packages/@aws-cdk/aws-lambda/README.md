@@ -283,15 +283,7 @@ You can configure a function to mount an Amazon Elastic File System (Amazon EFS)
 directory in your runtime environment with the `filesystems` property. To access Amaozn EFS
 from lambda function, the Amazon EFS access point will be required. 
 
-Amazon EFS _access points_ are application-specific entry points into an EFS file system that
-make it easier to manage application access to shared datasets. Access points can enforce a user
-identity, including the user's POSIX groups, for all file system requests that are made through
-the access point. Access points can also enforce a different root directory for the file system
-so that clients can only access data in the specified directory or its subdirectories. See
-[Working with Amazon EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) for more details.
-
-The following sample enables the lambda function to mount the Amazon EFS filesystem via the `accessPoint` to `/mnt/msg` in the runtime environment. We have to create an access point in Amaozn EFS and make sure Lambda function has
-read write access to it.
+The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
 
 ```ts
 // create a new Amaozn EFS filesystem
@@ -299,9 +291,9 @@ const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
 
 // create a new access point from the filesystem
 const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
-  // set /mnt/msg as the root of the access point
-  path: '/mnt/msg',
-  // as /mnt/msg does not exist, the efs will create the directory with the following createAcl
+  // set /export/lambda as the root of the access point
+  path: '/export/lambda',
+  // as /export/lambda does not exist in a new efs filesystem, the efs will create the directory with the following createAcl
   createAcl: {
     ownerUid: '1001',
     ownerGid: '1001',
@@ -320,6 +312,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime,
   vpc,
   filesystems: [
+    // mount the access point to /mnt/msg in the lambda runtime enironment
     lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
   ],
 });

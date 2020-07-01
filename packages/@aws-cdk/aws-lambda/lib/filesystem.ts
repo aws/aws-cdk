@@ -45,7 +45,7 @@ export class FileSystem {
       localMountPath: mountPath,
       arn: ap.accessPointArn,
       dependency: [ap.filesystem],
-      securityGroups: ap.filesystem.connections.securityGroups
+      securityGroups: ap.filesystem.connections.securityGroups,
     });
   }
   protected constructor(public readonly config: FileSystemConfig) { }
