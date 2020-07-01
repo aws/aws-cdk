@@ -62,61 +62,61 @@ export class CfnOutput extends CfnElement {
   /**
    * Returns the description of this Output
    */
-  public getDescription(): string | undefined {
+  public get description() {
     return this._description;
-  }
-
-  /**
-   * Returns the value of this Output
-   */
-  public getValue(): any {
-    return this._value;
-  }
-
-  /**
-   * Returns the condition of this Output
-   */
-  public getCondition(): CfnCondition | undefined {
-    return this._condition;
-  }
-
-  /**
-   * Returns the export of this Output
-   */
-  public getExport(): string | undefined {
-    return this._export;
   }
 
   /**
    * Sets this output's description to the parameter
    * @param newDescription the description to update this Output's description to
    */
-  public setDescription(newDescription: string | undefined): void {
-    this._description = newDescription;
+  public set description(description: string | undefined) {
+    this._description = description;
+  }
+
+  /**
+   * Returns the value of this Output
+   */
+  public get value() {
+    return this._value;
   }
 
   /**
    * Sets this output's value to the parameter
    * @param newValue the value to update this Output's value to
    */
-  public setValue(newValue: any): void {
-    this._value = newValue;
+  public set value(value: any) {
+    this._value = value;
+  }
+
+  /**
+   * Returns the condition of this Output
+   */
+  public get condition() {
+    return this._condition;
   }
 
   /**
    * Sets this output's condition to the parameter
    * @param newCondition the condition to update this Output's condition to
    */
-  public setCondition(newCondition: CfnCondition | undefined): void {
-    this._condition = newCondition;
+  public set condition(condition: CfnCondition | undefined) {
+    this._condition = condition;
+  }
+
+  /**
+   * Returns the export of this Output
+   */
+  public get exportName() {
+    return this._export;
   }
 
   /**
    * Sets this output's export to the parameter
    * @param newRxport the export to update this Output's export to
    */
-  public setExport(newExport: string): void {
-    this._export = newExport;
+  public set exportName(exportName: string | undefined) {
+    this._export = exportName;
   }
 
   /**

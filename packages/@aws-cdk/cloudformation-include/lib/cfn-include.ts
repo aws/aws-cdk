@@ -47,13 +47,13 @@ export class CfnInclude extends core.CfnElement {
       this.createCondition(conditionName);
     }
 
-    for (const logicalId of Object.keys(this.template.Outputs || {})) {
-      this.createOutput(logicalId);
-    }
-
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
+    }
+
+    for (const logicalId of Object.keys(this.template.Outputs || {})) {
+      this.createOutput(logicalId);
     }
   }
 
@@ -177,19 +177,13 @@ export class CfnInclude extends core.CfnElement {
 
   private createOutput(logicalId: string): void {
     const self = this;
-    const expression = new cfn_parse.CfnParser({
+    const outputAttributes = new cfn_parse.CfnParser({
       finder: {
-        findResource(lId: string): core.CfnResource | undefined {
-          if (!(lId in (self.template.Resources || {}))) {
-            return undefined;
-          }
-          return self.getOrCreateResource(lId);
+        findResource(lId): core.CfnResource | undefined {
+          return self.resources[lId];
         },
         findRefTarget(elementName: string): core.CfnElement | undefined {
-          if (elementName in self.parameters) {
-            return self.parameters[elementName];
-          }
-          return this.findResource(elementName);
+          return self.resources[elementName] ?? self.parameters[elementName];
         },
         findCondition(): undefined {
           return undefined;
@@ -197,10 +191,10 @@ export class CfnInclude extends core.CfnElement {
       },
     }).parseValue(this.template.Outputs[logicalId]);
     const cfnOutput = new core.CfnOutput(this, logicalId, {
-      value: expression.Value,
-      description: expression.Description,
-      exportName: expression.Export,
-      condition: expression.Condition ? self.getCondition(expression.Condition) : undefined,
+      value: outputAttributes.Value,
+      description: outputAttributes.Description,
+      exportName: outputAttributes.Export,
+      condition: outputAttributes.Condition ? self.getCondition(outputAttributes.Condition) : undefined,
     });
 
     cfnOutput.overrideLogicalId(logicalId);
