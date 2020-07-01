@@ -434,7 +434,7 @@ describe('CDK Include', () => {
         "MyCondition": {
           "Fn::If": [
             "AlwaysFalseCond",
-            { "AWS::NoValue" },
+            { "Ref": "AWS::NoValue" },
             true,
           ],
         },
