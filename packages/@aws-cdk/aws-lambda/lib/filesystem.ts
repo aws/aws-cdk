@@ -55,8 +55,8 @@ export class FileSystem {
       dependency: [ap.filesystem],
       securityGroups: ap.filesystem.connections.securityGroups,
       managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess')
-      ]
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'),
+      ],
     });
   }
 
