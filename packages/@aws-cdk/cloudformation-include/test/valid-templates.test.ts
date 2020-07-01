@@ -466,7 +466,7 @@ describe('CDK Include', () => {
     expect(output.condition).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
     expect(output.description).toBeDefined();
     expect(output.value).toBeDefined();
-    expect(output.exportName).toBeUndefined();
+    expect(output.exportName).toBeDefined();
   });
 
   test('can ingest a template with outputs that reference resources', () => {

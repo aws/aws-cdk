@@ -52,8 +52,10 @@ export class CfnInclude extends core.CfnElement {
       this.getOrCreateResource(logicalId);
     }
 
+    const outputScope = new core.Construct(this, '$Ouputs');
+
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
-      this.createOutput(logicalId);
+      this.createOutput(logicalId, outputScope);
     }
   }
 
@@ -175,7 +177,7 @@ export class CfnInclude extends core.CfnElement {
     this.parameters[logicalId] = cfnParameter;
   }
 
-  private createOutput(logicalId: string): void {
+  private createOutput(logicalId: string, scope: core.Construct): void {
     const self = this;
     const outputAttributes = new cfn_parse.CfnParser({
       finder: {
@@ -190,10 +192,10 @@ export class CfnInclude extends core.CfnElement {
         },
       },
     }).parseValue(this.template.Outputs[logicalId]);
-    const cfnOutput = new core.CfnOutput(this, logicalId, {
+    const cfnOutput = new core.CfnOutput(scope, logicalId, {
       value: outputAttributes.Value,
       description: outputAttributes.Description,
-      exportName: outputAttributes.Export,
+      exportName: outputAttributes.Export ? outputAttributes.Export.Name: undefined,
       condition: outputAttributes.Condition ? self.getCondition(outputAttributes.Condition) : undefined,
     });
 
