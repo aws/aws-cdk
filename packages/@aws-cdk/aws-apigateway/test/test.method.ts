@@ -6,7 +6,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
-import { AuthorizationType, Authorizer } from '../lib';
+import { AuthorizationType } from '../lib';
 
 const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
   authorizerId: 'dummyauthorizer',
