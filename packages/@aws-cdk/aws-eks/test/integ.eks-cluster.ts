@@ -93,6 +93,7 @@ class EksClusterStack extends TestStack {
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
       wait: true,
+      createNamespace: false,
       timeout: Duration.minutes(15),
     });
 
