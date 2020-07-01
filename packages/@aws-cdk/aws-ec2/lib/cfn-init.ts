@@ -1,5 +1,5 @@
 import { Construct } from'@aws-cdk/core';
-import { InitElement, InitRenderPlatform, InitElementType } from './cfn-init-elements';
+import { InitElement, InitRenderPlatform, InitElementType, InitRenderOptions, InitBindOptions } from './cfn-init-elements';
 
 /**
  * A CloudFormation-init configuration
@@ -53,13 +53,17 @@ export class InitConfig {
     this.add(...elements);
   }
 
+  public get isEmpty() {
+    return this.elements.length === 0;
+  }
+
   public add(...elements: InitElement[]) {
     this.elements.push(...elements);
   }
 
-  public bind(scope: Construct) {
+  public bind(scope: Construct, options: InitBindOptions) {
     for (const element of this.elements) {
-      element.bind(scope);
+      element.bind(scope, options);
     }
   }
 
@@ -77,11 +81,15 @@ export class InitConfig {
     }
   }
 
-  private renderConfigForType(elementType: InitElementType, renderOptions: any): any[] {
-    return this.elements.filter(elem => elem.getElementType() === elementType)
-      .map((elem, index) => elem.renderElement({index: index, ...renderOptions}));
-  }
+  private renderConfigForType(elementType: InitElementType, renderOptions: Omit<InitRenderOptions, 'index'>): Record<string, any> | undefined {
+    const elements = this.elements.filter(elem => elem.elementType === elementType);
+    if (elements.length === 0) { return undefined; }
 
+    const ret: Record<string, any> = {};
+    elements.forEach((elem, index) => {
+      deepMerge(ret, elem.renderElement({ index, ...renderOptions }));
+    });
+  }
 }
 
 /**
@@ -97,4 +105,15 @@ export interface ConfigSetProps {
    * The sets of configs to pick from
    */
   configs: Record<string, InitConfig>;
+}
+
+function deepMerge(target: Record<string, any>, src: Record<string, any>) {
+  for (const [key, value] of Object.entries(src)) {
+    if (typeof value === 'object' && value) {
+      target[key] = {};
+      deepMerge(target[key], value);
+    } else {
+      target[key] = value;
+    }
+  }
 }

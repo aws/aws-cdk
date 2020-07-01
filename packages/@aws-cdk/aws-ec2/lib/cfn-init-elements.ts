@@ -1,22 +1,36 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct, Duration } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { isTagPropertyJson } from '@aws-cdk/cfnspec/lib/schema';
 
 export enum InitRenderPlatform { WINDOWS, LINUX };
 export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE };
 
+/**
+ * Context options passed when an InitElement is being rendered
+ */
 export interface InitRenderOptions {
   /**
    * Which OS platform (Linux, Windows) are we rendering for. Impacts
    * which config types are available and how they are rendered.
    */
-  platform: InitRenderPlatform;
+  readonly platform: InitRenderPlatform;
+
   /**
    * Ordered index of current element type. Primarily used to auto-generate
    * command keys and retain ordering.
    */
-  index: number;
+  readonly index: number;
+}
+
+/**
+ * Context information passed when an InitElement is being consumed
+ */
+export interface InitBindOptions {
+  /**
+   * Instance role of the consuming instance or fleet
+   */
+  readonly instanceRole: iam.IRole;
 }
 
 /**
@@ -27,20 +41,24 @@ export abstract class InitElement {
   /**
    * Returns the init element type for this element.
    */
-  public abstract getElementType(): InitElementType;
+  public abstract readonly elementType: InitElementType;
 
   /**
    * Render the CloudFormation representation of this init element.
    *
+   * Should return an object with a single key: `{ key: { ...details... }}`
+   *
    * @param options
    */
-  public abstract renderElement(options: InitRenderOptions): any;
+  public abstract renderElement(options: InitRenderOptions): Record<string, any>;
 
   /**
+   * Called when the Init config is being consumed.
    *
    * @param scope
    */
-  public abstract bind(scope: Construct): void;
+  public bind(_scope: Construct, _options: InitBindOptions): void {
+  }
 }
 
 /**
@@ -98,9 +116,9 @@ export interface InitCommandOptions {
    *
    * For Windows systems only.
    *
-   * @default "60"
+   * @default Duration.seconds(60)
    */
-  readonly waitAfterCompletion?: string;
+  readonly waitAfterCompletion?: Duration;
 }
 
 /**
@@ -122,36 +140,36 @@ export class InitCommand extends InitElement {
    * You do not need to escape space characters or enclose command parameters in quotes.
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
-    return new InitCommand(JSON.stringify(argv), options);
+    return new InitCommand(argv, options);
   }
 
-  protected constructor(private readonly command: string, private readonly options: InitCommandOptions) {
+  public readonly elementType = InitElementType.COMMAND;
+
+  protected constructor(private readonly command: any, private readonly options: InitCommandOptions) {
     super();
-  }
 
-  public getElementType(): InitElementType {
-    return InitElementType.COMMAND;
+    if (typeof this.command !== 'string' && !(Array.isArray(command) && command.every(s => typeof s === 'string'))) {
+      throw new Error('\'command\' must be either a string or an array of strings');
+    }
   }
 
   public renderElement(renderOptions: InitRenderOptions): any {
     const commandKey = this.options.key || (renderOptions.index + '').padStart(3, '0'); // 001, 005, etc.
 
-    if (renderOptions.platform === InitRenderPlatform.LINUX && this.options.waitAfterCompletion !== undefined) {
-      throw new Error('waitAfterCompletion is only valid for Linux systems.');
+    if (renderOptions.platform !== InitRenderPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
+      throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
     }
 
-    // TODO: Is there a more idiomatic way to do this?
-    const renderedCommand = {} as Record<string, any>;
-    renderedCommand[commandKey] = {
-      command: this.command,
-      env: this.options.env,
-      cwd: this.options.cwd,
-      test: this.options.test,
-      ignoreErrors: this.options.ignoreErrors,
-      waitAfterCompletion: this.options.waitAfterCompletion,
+    return {
+      [commandKey]: {
+        command: this.command,
+        env: this.options.env,
+        cwd: this.options.cwd,
+        test: this.options.test,
+        ignoreErrors: this.options.ignoreErrors,
+        waitAfterCompletion: this.options.waitAfterCompletion?.toSeconds(),
+      },
     };
-
-    return renderedCommand;
   }
 
   /**
@@ -284,7 +302,7 @@ export class InitGroup extends InitElement {
     super();
   }
 
-  public getElementType(): InitElementType { return InitElementType.GROUP; }
+  public readonly elementType = InitElementType.GROUP;
 
   public renderElement(options: InitRenderOptions): any {
     if (options.platform === InitRenderPlatform.WINDOWS) {
@@ -331,7 +349,7 @@ export class InitUser extends InitElement {
     this.homeDir = homeDir;
   }
 
-  public getElementType(): InitElementType { return InitElementType.USER; }
+  public readonly elementType = InitElementType.USER;
 
   public renderElement(options: InitRenderOptions): any {
     if (options.platform === InitRenderPlatform.WINDOWS) {
@@ -509,7 +527,12 @@ export class InitSource extends InitElement {
    * Create an asset from the given directory and use that
    */
   public static fromDirectoryAsset(targetDirectory: string, sourceDirectory: string): InitSource {
-    throw new Error('Not implemented');
+    throw new class extends InitSource {
+      bind() {
+      },
+      renderElement() {
+      },
+    }
   }
 
   /**
@@ -519,22 +542,16 @@ export class InitSource extends InitElement {
     throw new Error('Not implemented');
   }
 
-  private readonly targetDirectory: string;
-  private readonly url: string;
-
-  protected constructor(targetDirectory: string, url: string) {
+  protected constructor(private readonly targetDirectory: string, private readonly url: string) {
     super();
-
-    this.targetDirectory = targetDirectory;
-    this.url = url;
   }
 
-  public getElementType(): InitElementType { return InitElementType.SOURCE; }
+  public readonly elementType = InitElementType.SOURCE;
 
-  public renderElement(_options: InitRenderOptions): any {
-    const element = {} as Record<string, any>;
-    element[this.targetDirectory] = this.url;
-    return element;
+  public renderElement(_options: InitRenderOptions): Record<string, any> {
+    return {
+      [this.targetDirectory]: this.url,
+    }
   }
 
   public bind(_scope: Construct): void {
