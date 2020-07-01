@@ -1,5 +1,6 @@
 import * as nodeunit from 'nodeunit';
 import * as core from '../lib';
+import { Duration } from '../lib';
 
 export = nodeunit.testCase({
   '._toCloudFormation': {
@@ -70,6 +71,59 @@ export = nodeunit.testCase({
         },
       },
     });
+
+    test.done();
+  },
+
+  'can add metadata'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.addMetadata('Beep', 'Boop');
+
+    // THEN
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          Metadata: {
+            Beep: 'Boop',
+          },
+        },
+      },
+    });
+
+
+    test.done();
+  },
+
+  'can add resource signal wait'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.addCreationPolicySignalWait(Duration.minutes(5));
+
+    // THEN
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          CreationPolicy: {
+            ResourceSignal: {
+              Count: 1,
+              Timeout: 'PT5M',
+            },
+          },
+        },
+      },
+    });
+
 
     test.done();
   },

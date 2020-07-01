@@ -11,6 +11,7 @@ import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
+import { Duration } from './duration';
 
 export interface CfnResourceProps {
   /**
@@ -93,9 +94,7 @@ export class CfnResource extends CfnRefElement {
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
     if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.cfnOptions.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.node.path,
-      };
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
     }
   }
 
@@ -236,6 +235,37 @@ export class CfnResource extends CfnRefElement {
    */
   public addDependsOn(target: CfnResource) {
     addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
+  }
+
+  /**
+   * Add a value to the CloudFormation Resource Metadata
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.cfnOptions.metadata) {
+      this.cfnOptions.metadata = {};
+    }
+
+    this.cfnOptions.metadata[key] = value;
+  }
+
+  /**
+   * Wait for a single additional resource signal
+   *
+   * Add 1 to the current ResourceSignal Count and add the given timeout to the current timeout.
+   */
+  public addCreationPolicySignalWait(timeout: Duration) {
+    const oldResourceSignal = this.cfnOptions.creationPolicy?.resourceSignal;
+    this.cfnOptions.creationPolicy = {
+      ...this.cfnOptions.creationPolicy,
+      resourceSignal: {
+        count: (oldResourceSignal?.count ?? 0) + 1,
+        timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
+      },
+    };
   }
 
   /**

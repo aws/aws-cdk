@@ -10,7 +10,7 @@ import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import { CloudFormationInit } from './cfn-init';
-import { CidrBlock } from './network-util';
+import { InitRenderPlatform } from './cfn-init-elements';
 
 /**
  * Name tag constant
@@ -192,6 +192,22 @@ export interface InstanceProps {
    * @default - no association
    */
   readonly privateIpAddress?: string
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instance at startup
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
 }
 
 /**
@@ -255,9 +271,14 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
+  private readonly isWindows: boolean;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
+
+    if (props.initOptions && !props.init) {
+      throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
+    }
 
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
@@ -282,6 +303,7 @@ export class Instance extends Resource implements IInstance {
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
+    this.isWindows = imageConfig.osType === OperatingSystemType.WINDOWS;
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
@@ -336,6 +358,10 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
+    if (props.init) {
+      this.applyCloudFormationInit(props.init, props.initOptions);
+    }
+
     this.applyUpdatePolicies(props);
   }
 
@@ -365,8 +391,22 @@ export class Instance extends Resource implements IInstance {
 
   /**
    * Use a CloudFormation Init configuration at instance startup
+   *
+   * This does the following:
+   *
+   * - Attaches the CloudFormation Init metadata to the Instance resource.
+   * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
+   * - Update the instance's CreationPolicy to wait for `cfn-init` to finish
+   *   before reporting success.
    */
-  public addCloudFormationInit(init: CloudFormationInit, options: AddCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+    const platform = this.isWindows ? InitRenderPlatform.WINDOWS : InitRenderPlatform.LINUX;
+    init.attach(this.instance, { platform }).apply(this.instance, {
+      instanceRole: this.role,
+      userData: this.userData,
+      configSets: options.configSets,
+      timeout: options.timeout,
+    });
   }
 
   /**
@@ -384,17 +424,16 @@ export class Instance extends Resource implements IInstance {
   }
 }
 
-
 /**
  * Options for adding a CloudFormation init
  */
-export interface AddCloudFormationInitOptions {
+export interface ApplyCloudFormationInitOptions {
   /**
    * ConfigSet to activate
    *
-   * @default 'default'
+   * @default ['default']
    */
-  readonly configSet?: string;
+  readonly configSets?: string[];
 
   /**
    * Timeout waiting for the configuration to be applied
