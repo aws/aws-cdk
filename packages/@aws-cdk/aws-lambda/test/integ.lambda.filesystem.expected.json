@@ -458,12 +458,10 @@
             "Key": "Name",
             "Value": "aws-cdk-lambda-1/Efs"
           }
-        ],
-        "ProvisionedThroughputInMibps": 1024,
-        "ThroughputMode": "provisioned"
+        ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "EfsEfsSecurityGroup6F40EA3B": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -487,11 +485,11 @@
         }
       }
     },
-    "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B": {
+    "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
-        "Description": "from awscdklambda1EfsEfsSecurityGroup75BEE04E:2049",
+        "Description": "from awscdklambda1MyLambdaSecurityGroup86B085EE:2049",
         "FromPort": 2049,
         "GroupId": {
           "Fn::GetAtt": [
@@ -501,7 +499,7 @@
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "EfsEfsSecurityGroup6F40EA3B",
+            "MyLambdaSecurityGroup1E71A818",
             "GroupId"
           ]
         },
@@ -640,13 +638,9 @@
         ]
       },
       "DependsOn": [
-        "EfsAccessPointE419FED9",
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
-        "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
-        "EfsEfsSecurityGroup6F40EA3B",
-        "Efs9E8BF36B"
+        "EfsEfsMountTarget36646B9A0"
       ]
     },
     "MyLambdaSecurityGroup1E71A818": {
@@ -665,13 +659,9 @@
         }
       },
       "DependsOn": [
-        "EfsAccessPointE419FED9",
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
-        "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
-        "EfsEfsSecurityGroup6F40EA3B",
-        "Efs9E8BF36B"
+        "EfsEfsMountTarget36646B9A0"
       ]
     },
     "MyLambdaCCE802FB": {
@@ -693,12 +683,6 @@
             {
               "Fn::GetAtt": [
                 "MyLambdaSecurityGroup1E71A818",
-                "GroupId"
-              ]
-            },
-            {
-              "Fn::GetAtt": [
-                "EfsEfsSecurityGroup6F40EA3B",
                 "GroupId"
               ]
             }
@@ -745,13 +729,9 @@
         ]
       },
       "DependsOn": [
-        "EfsAccessPointE419FED9",
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
-        "EfsEfsSecurityGroupfromawscdklambda1EfsEfsSecurityGroup75BEE04E20492175C51B",
-        "EfsEfsSecurityGroup6F40EA3B",
-        "Efs9E8BF36B",
         "MyLambdaServiceRole4539ECB6"
       ]
     }

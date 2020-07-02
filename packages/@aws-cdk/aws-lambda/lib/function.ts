@@ -781,15 +781,16 @@ export class Function extends FunctionBase {
       securityGroups = [securityGroup];
     }
 
+    this._connections = new ec2.Connections({ securityGroups });
+
     if (props.filesystems) {
       for (const fs of props.filesystems) {
-        if (fs.config.securityGroups) {
-          securityGroups.push(...fs.config.securityGroups);
+        // add an ingress rule from the filesystem security group to allow ingress traffic from the lambda function
+        if (fs.config.connections) {
+          fs.config.connections.allowDefaultPortFrom(this);
         }
       }
     }
-
-    this._connections = new ec2.Connections({ securityGroups });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.

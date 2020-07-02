@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
+import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -83,6 +83,12 @@ export interface IFileSystem extends ec2.IConnectable, IResource {
    * @attribute
    */
   readonly fileSystemId: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  readonly mountTargetsAvailable: IDependable;
+
 }
 
 /**
@@ -205,6 +211,7 @@ export class FileSystem extends Resource implements IFileSystem {
         securityGroups: [attrs.securityGroup],
         defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
       });
+      public readonly mountTargetsAvailable = new ConcreteDependable();
     }
 
     return new Import(scope, id);
@@ -224,6 +231,10 @@ export class FileSystem extends Resource implements IFileSystem {
    * @attribute
    */
   public readonly fileSystemId: string;
+
+  public readonly mountTargetsAvailable: IDependable;
+
+  private readonly _mountTargetsAvailable = new ConcreteDependable();
 
   /**
    * Constructor for creating a new EFS FileSystem.
@@ -263,15 +274,18 @@ export class FileSystem extends Resource implements IFileSystem {
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;
+    this.mountTargetsAvailable = [];
     subnets.subnetIds.forEach((subnetId: string) => {
-      new CfnMountTarget(this,
+      const mountTarget = new CfnMountTarget(this,
         'EfsMountTarget' + (++mountTargetCount),
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId,
         });
+      this._mountTargetsAvailable.add(mountTarget);
     });
+    this.mountTargetsAvailable = this._mountTargetsAvailable;
   }
 
   /**

@@ -14,11 +14,8 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const fileSystem = new efs.FileSystem(stack, 'Efs', {
   vpc,
-  throughputMode: efs.ThroughputMode.PROVISIONED,
-  provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-
-fileSystem.connections.allowDefaultPortInternally();
 
 // create an access point and expose the root of the filesystem
 const accessPoint = fileSystem.addAccessPoint('AccessPoint', {

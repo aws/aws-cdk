@@ -245,15 +245,8 @@ export = testCase({
 
       const fs = new efs.FileSystem(stack, 'Efs', {
         vpc,
-        vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE,
-        },
-        throughputMode: efs.ThroughputMode.PROVISIONED,
-        provisionedThroughputPerSecond: cdk.Size.mebibytes(1024),
       });
-      const accessPoint = new efs.AccessPoint(stack, 'AccessPoint', {
-        fileSystem: fs,
-      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
         handler: 'foo',
@@ -286,7 +279,7 @@ export = testCase({
                   },
                   ':access-point/',
                   {
-                    Ref: 'AccessPointE936DE82',
+                    Ref: 'EfsAccessPointE419FED9',
                   },
                 ],
               ],

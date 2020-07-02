@@ -1,4 +1,4 @@
-import { ISecurityGroup } from '@aws-cdk/aws-ec2';
+import { Connections } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import { IManagedPolicy, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { IDependable } from '@aws-cdk/core';
@@ -18,18 +18,16 @@ export interface FileSystemConfig {
   readonly arn: string;
 
   /**
-   * the resources lambda function depends on
+   * array of IDependable that lambda function depends on
    *
    * @default - no dependency
    */
   readonly dependency?: IDependable[]
 
   /**
-   * the security groups to be shared with the lambda function
-   *
-   * @default - no security groups
+   * connections object used to allow ingress traffic from lambda function
    */
-  readonly securityGroups?: ISecurityGroup[]
+  readonly connections?: Connections;
 
   /**
    * additional managed policies required for the lambda function
@@ -52,8 +50,8 @@ export class FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,
-      dependency: [ap.filesystem],
-      securityGroups: ap.filesystem.connections.securityGroups,
+      dependency: [ ap.filesystem.mountTargetsAvailable ],
+      connections: ap.filesystem.connections,
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'),
       ],
