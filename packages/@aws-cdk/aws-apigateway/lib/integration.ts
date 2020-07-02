@@ -135,29 +135,76 @@ export interface IntegrationProps {
 }
 
 /**
+ * Result of binding an Integration to a Method.
+ */
+export interface IntegrationConfig {
+  /**
+   * Integration options.
+   * @default - no integration options
+   */
+  readonly options?: IntegrationOptions;
+
+  /**
+   * Specifies an API method integration type.
+   */
+  readonly type: IntegrationType;
+
+  /**
+   * The Uniform Resource Identifier (URI) for the integration.
+   * @see https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
+   * @default - no URI. Usually applies to MOCK integration
+   */
+  readonly uri?: string;
+
+  /**
+   * The integration's HTTP method type.
+   * @default - no integration method specified.
+   */
+  readonly integrationHttpMethod?: string;
+
+  /**
+   * This value is included in computing the Deployment's fingerprint. When the fingerprint
+   * changes, a new deployment is triggered.
+   * This property should contain values associated with the Integration that upon changing
+   * should trigger a fresh the Deployment needs to be refreshed.
+   * @default undefined deployments are not triggered for any change to this integration.
+   */
+  readonly deploymentToken?: string;
+}
+
+/**
  * Base class for backend integrations for an API Gateway method.
  *
  * Use one of the concrete classes such as `MockIntegration`, `AwsIntegration`, `LambdaIntegration`
  * or implement on your own by specifying the set of props.
  */
 export class Integration {
-  constructor(private readonly props: IntegrationProps) { }
+  constructor(private readonly props: IntegrationProps) {
+    const options = this.props.options || { };
+    if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
+      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+    }
 
-  /**
-   * Allows `Method` to access the integration props.
-   *
-   * @internal
-   */
-  public get _props() {
-    return this.props;
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
+      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+    }
+
+    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
+      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+    }
   }
 
   /**
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method) {
-    return;
+  public bind(_method: Method): IntegrationConfig {
+    return {
+      options: this.props.options,
+      type: this.props.type,
+      uri: this.props.uri,
+      integrationHttpMethod: this.props.integrationHttpMethod,
+    };
   }
 }
 
