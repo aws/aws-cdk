@@ -392,7 +392,7 @@ export = {
             Resource: '*',
           },
           {
-            Action: 'iam:GetRole',
+            Action: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
             Effect: 'Allow',
             Resource: '*',
           },
