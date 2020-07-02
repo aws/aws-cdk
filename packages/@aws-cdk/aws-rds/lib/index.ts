@@ -6,6 +6,7 @@ export * from './database-secret';
 export * from './endpoint';
 export * from './option-group';
 export * from './instance';
+export * from './proxy';
 
 // AWS::RDS CloudFormation Resources:
 export * from './rds.generated';
