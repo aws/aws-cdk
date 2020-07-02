@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Lazy } from '@aws-cdk/core';
+import { Lazy, Token } from '@aws-cdk/core';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -72,6 +72,15 @@ export class LambdaIntegration extends AwsIntegration {
         sourceArn: method.testMethodArn,
       });
     }
-    return bindResult;
+
+    const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
+    let deploymentToken;
+    if (!Token.isUnresolved(cfnFunction.functionName)) {
+      deploymentToken = JSON.stringify({ functionName: cfnFunction.functionName });
+    }
+    return {
+      ...bindResult,
+      deploymentToken,
+    };
   }
 }

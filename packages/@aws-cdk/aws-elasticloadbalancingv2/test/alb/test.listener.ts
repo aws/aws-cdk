@@ -48,7 +48,7 @@ export = {
     test.done();
   },
 
-  'Listener default to open'(test: Test) {
+  'Listener default to open - IPv4'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -66,6 +66,41 @@ export = {
         {
           Description: 'Allow from anyone on port 80',
           CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Listener default to open - IPv4 and IPv6 (dualstack)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, ipAddressType: elbv2.IpAddressType.DUAL_STACK});
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIpv6: '::/0',
           FromPort: 80,
           IpProtocol: 'tcp',
           ToPort: 80,
