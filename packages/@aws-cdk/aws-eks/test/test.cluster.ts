@@ -1225,4 +1225,35 @@ export = {
 
       test.done();
     },
+
+    'kubectl provider role is trusted to assume cluster creation role'(test: Test) {
+      // GIVEN
+      const { stack, app } = testFixture();
+      const c1 = new eks.Cluster(stack, 'Cluster1');
+      const c2 = new eks.Cluster(stack, 'Cluster2');
+
+      // WHEN
+
+      // activate kubectl provider
+      c1.addResource('c1a', { foo: 123 });
+      c1.addResource('c1b', { foo: 123 });
+      c2.addResource('c2', { foo: 123 });
+
+      // THEN
+      const template = app.synth().getStackArtifact(stack.artifactId).template;
+
+      const creationRoleToKubectlRole = {
+        Cluster1CreationRoleA231BE8D: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+        Cluster2CreationRole9254EAB6: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+      };
+
+      // verify that the kubectl role appears as the 2nd IAM trust policy statement
+      for (const [ creationRole, kubectlRole ] of Object.entries(creationRoleToKubectlRole)) {
+        const trustPolicy = template.Resources[creationRole].Properties.AssumeRolePolicyDocument.Statement;
+        test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
+        test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
+      }
+
+      test.done();
+    },
   }};

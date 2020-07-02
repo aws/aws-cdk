@@ -861,10 +861,10 @@ export class Cluster extends Resource implements ICluster {
     if (!provider) {
       // create the provider.
       provider = new KubectlProvider(this.stack, uid);
-
-      // allow the kubectl provider to assume the cluster creation role.
-      this._clusterResource.addTrustedRole(provider.role);
     }
+
+    // allow the kubectl provider to assume the cluster creation role.
+    this._clusterResource.addTrustedRole(provider.role);
 
     if (!this._kubectlReadyBarrier) {
       throw new Error('unexpected: kubectl enabled clusters should have a kubectl-ready barrier resource');
