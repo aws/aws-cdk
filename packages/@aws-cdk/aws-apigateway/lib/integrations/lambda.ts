@@ -52,8 +52,8 @@ export class LambdaIntegration extends AwsIntegration {
     this.enableTest = options.allowTestInvoke === undefined ? true : false;
   }
 
-  public bind(method: Method): IntegrationConfig | undefined {
-    super.bind(method);
+  public bind(method: Method): IntegrationConfig {
+    const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
     const desc = `${method.api.node.uniqueId}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
@@ -89,6 +89,7 @@ export class LambdaIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ functionName });
     }
     return {
+      ...bindResult,
       deploymentToken,
     };
   }
