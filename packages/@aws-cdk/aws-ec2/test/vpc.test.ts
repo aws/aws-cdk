@@ -1,11 +1,11 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
 import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
   InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
   RouterType, Subnet, SubnetType, TrafficDirection, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'When creating a VPC': {
     'with the default CIDR range': {
 
@@ -417,15 +417,47 @@ export = {
       test.done();
     },
 
-    'natGateways = 0 requires there to be no PRIVATE subnets'(test: Test) {
+    'natGateways = 0 throws if no PRIVATE subnets configured'(test: Test) {
       const stack = getTestStack();
       test.throws(() => {
         new Vpc(stack, 'VPC', {
           natGateways: 0,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE,
+            },
+          ],
         });
       }, /make sure you don't configure any PRIVATE subnets/);
       test.done();
 
+    },
+
+    'natGateway = 0 defaults with ISOLATED subnet'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        natGateways: 0,
+      });
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Isolated',
+      }])));
+      test.done();
+    },
+
+    'unspecified natGateways constructs with PRIVATE subnet'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC');
+      expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+        Key: 'aws-cdk:subnet-type',
+        Value: 'Private',
+      }])));
+      test.done();
     },
 
     'natGateways = 0 allows RESERVED PRIVATE subnets'(test: Test) {
@@ -1244,7 +1276,7 @@ export = {
     },
 
   },
-};
+});
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });

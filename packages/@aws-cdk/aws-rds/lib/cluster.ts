@@ -9,6 +9,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
@@ -238,6 +239,16 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
    * Access to the network connections
    */
   public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Add a new db proxy to this cluster.
+   */
+  public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
+    return new DatabaseProxy(this, id, {
+      proxyTarget: ProxyTarget.fromCluster(this),
+      ...options,
+    });
+  }
 
   /**
    * Renders the secret attachment target specifications.

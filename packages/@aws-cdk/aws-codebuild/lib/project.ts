@@ -940,6 +940,9 @@ export class Project extends ProjectBase {
         this.buildImage.repository.addToResourcePolicy(statement);
       }
     }
+    if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
+      this.buildImage.secretsManagerCredentials?.grantRead(this);
+    }
 
     return {
       type: this.buildImage.type,
