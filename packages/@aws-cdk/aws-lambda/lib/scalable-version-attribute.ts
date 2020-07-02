@@ -57,9 +57,9 @@ export interface EnableScalingProps {
   /**
    * Minimum capacity to scale to
    */
-  minCapacity: number;
+  readonly minCapacity: number;
   /**
    * Maximum capacity to scale to
    */
-  maxCapacity: number;
+  readonly maxCapacity: number;
 }

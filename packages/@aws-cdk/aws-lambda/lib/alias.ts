@@ -201,6 +201,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     });
   }
 
+  /**
+   * Enable autoscaling for the given lambda version. Requires that lambda version has provisioned concurrency.
+   * @param props The properties for autoscaling
+   */
   public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute {
     if (!this.provisionedConcurrency) {
       throw new Error('Autoscaling is available for aliases with provisioned concurrency only');

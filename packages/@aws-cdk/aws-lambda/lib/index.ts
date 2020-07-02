@@ -12,6 +12,7 @@ export * from './event-source';
 export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
+export * from './scalable-version-attribute';
 
 export * from './log-retention';
 
