@@ -449,6 +449,28 @@ export class InitGroup extends InitElement {
 }
 
 /**
+ * Optional parameters used when creating a user
+ */
+interface InitUserOptions {
+  /**
+   * The user's home directory.
+   */
+  readonly homeDir?: string;
+
+  /**
+   * A user ID. The creation process fails if the user name exists with a different user ID.
+   * If the user ID is already assigned to an existing user the operating system may
+   * reject the creation request.
+   */
+  readonly userId?: number;
+
+  /**
+   * A list of group names. The user will be added to each group in the list.
+   */
+  readonly groups?: string[];
+}
+
+/**
  * Create Linux/UNIX users and to assign user IDs.
  *
  * Users are created as non-interactive system users with a shell of
@@ -460,24 +482,14 @@ export class InitUser extends InitElement {
   /**
    * Map a user name to a user id
    */
-  public static fromName(userName: string, uid: number, groups?: string[], homeDir?: string): InitUser {
-    return new InitUser(userName, uid, groups, homeDir);
+  public static fromName(userName: string, options: InitUserOptions = {}): InitUser {
+    return new InitUser(userName, options);
   }
 
   public readonly elementType = InitElementType.USER;
 
-  private readonly userName: string;
-  private readonly uid: number;
-  private readonly groups?: string[];
-  private readonly homeDir?: string;
-
-  protected constructor(userName: string, uid: number, groups?: string[], homeDir?: string) {
+  protected constructor(private readonly userName: string, private readonly userOptions: InitUserOptions) {
     super();
-
-    this.userName = userName;
-    this.uid = uid;
-    this.groups = groups;
-    this.homeDir = homeDir;
   }
 
   public renderElement(options: InitRenderOptions): Record<string, any> {
@@ -487,9 +499,9 @@ export class InitUser extends InitElement {
 
     return {
       [this.userName]: {
-        uid: this.uid,
-        groups: this.groups,
-        homeDir: this.homeDir,
+        uid: this.userOptions.userId,
+        groups: this.userOptions.groups,
+        homeDir: this.userOptions.homeDir,
       },
     };
   }
@@ -708,7 +720,7 @@ export class InitSource extends InitElement {
    * Extract a GitHub branch into a given directory
    */
   public static fromGitHub(targetDirectory: string, owner: string, repo: string, refSpec?: string): InitSource {
-    return InitSource.fromUrl(targetDirectory, `https://github.com/${owner}:${repo}/tarball/${refSpec ?? 'master'}`);
+    return InitSource.fromUrl(targetDirectory, `https://github.com/${owner}/${repo}/tarball/${refSpec ?? 'master'}`);
   }
 
   /**
