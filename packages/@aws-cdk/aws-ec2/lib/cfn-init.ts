@@ -106,7 +106,7 @@ export class CloudFormationInit {
         // To identify the resources that (a) have the metadata and (b) where the signal needs to be sent
         // (may be different), we need { region, stackName, logicalId }
         const initLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${definingResource.logicalId}`;
-        const signalLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} -resource ${consumingResource.logicalId}`;
+        const signalLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${consumingResource.logicalId}`;
         const configSets = (useOptions.configSets ?? ['default']).join(',');
 
         if (useOptions.embedFingerprint ?? true) {
