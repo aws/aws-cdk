@@ -341,6 +341,38 @@ CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources will be deleted.
 
+#### Dependencies
+
+There are cases where Kubernetes resources must be deployed in a specific order.
+For example, you cannot define a resource in a Kubernetes namespace before the
+namespace was created.
+
+You can represent dependencies between `KubernetesResource`s using
+`resource.node.addDependency()`:
+
+```ts
+const namespace = cluster.addResource('my-namespace', {
+  apiVersion: 'v1',
+  kind: 'Namespace',
+  metadata: { name: 'my-app' }
+});
+
+const service = cluster.addResource('my-service', {
+  metadata: {
+    name: 'myservice',
+    namespace: 'my-app'
+  },
+  spec: // ...
+});
+
+service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
+```
+
+NOTE: when a `KubernetesResource` includes multiple resources (either directly
+or through `cluster.addResource()`) (e.g. `cluster.addResource('foo', r1, r2,
+r3,...))`), these resources will be applied as a single manifest via `kubectl`
+and will be applied sequentially (the standard behavior in `kubectl`).
+
 ### Patching Kubernetes Resources
 
 The KubernetesPatch construct can be used to update existing kubernetes
@@ -524,8 +556,20 @@ deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
 When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cassed and truncated to the last 63 characters.
+which will be lower cased and truncated to the last 63 characters.
 
+By default, all Helm charts will be installed concurrently. In some cases, this
+could cause race conditions where two Helm charts attempt to deploy the same
+resource or if Helm charts depend on each other. You can use
+`chart.node.addDependency()` in order to declare a dependency order between
+charts:
+
+```ts
+const chart1 = cluster.addChart(...);
+const chart2 = cluster.addChart(...);
+
+chart2.node.addDependency(chart1);
+```
 
 ### Bottlerocket
 
