@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Lazy } from '@aws-cdk/core';
-import { IntegrationOptions } from '../integration';
+import { Lazy, Token } from '@aws-cdk/core';
+import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
 
@@ -52,7 +52,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.enableTest = options.allowTestInvoke === undefined ? true : false;
   }
 
-  public bind(method: Method) {
+  public bind(method: Method): IntegrationConfig | undefined {
     super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -72,5 +72,14 @@ export class LambdaIntegration extends AwsIntegration {
         sourceArn: method.testMethodArn,
       });
     }
+
+    const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
+    let deploymentToken;
+    if (!Token.isUnresolved(cfnFunction.functionName)) {
+      deploymentToken = JSON.stringify({ functionName: cfnFunction.functionName });
+    }
+    return {
+      deploymentToken,
+    };
   }
 }
