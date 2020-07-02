@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import {
-  App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
+  App, CfnCondition, CfnInclude, CfnOutput,
+  CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
@@ -863,6 +863,111 @@ export = {
     const artifact = assembly.getStackArtifact(stack.artifactId);
 
     test.equals(artifact.terminationProtection, true);
+
+    test.done();
+  },
+
+  'weak references across stacks correctly resolve to ssm parameters'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new Stack(app, 'Stack2');
+    const resource = new CfnResource(stack1, 'Resource1', {
+      type: 'Foo::Bar',
+    });
+    resource.node.enableWeakReference();
+
+    // WHEN
+    new CfnResource(stack2, 'Resource2', {
+      type: 'Foo::Baz',
+      properties: {
+        Value: resource.ref,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    test.deepEqual(template1, {
+      Resources: {
+        Resource1: { Type: 'Foo::Bar' },
+        SSMExportRefResource149D6AE9B: {
+          Type: 'AWS::SSM::Parameter',
+          Properties: {
+            Name: '/stacks/Stack1/RefResource1',
+            Description: '[cdk] exported from stack "Stack1" for use as parameter in a different stack',
+            Type: 'String',
+            Value: { Ref: 'Resource1' },
+          },
+        },
+      },
+    });
+    test.deepEqual(template2, {
+      Resources: {
+        Resource2: {
+          Type: 'Foo::Baz',
+          Properties: {
+            Value: {
+              Ref: 'SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118',
+            },
+          },
+        },
+      },
+      Parameters: {
+        SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/stacks/Stack1/RefResource1',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'weak references across stacks with lazy tokens work'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const resource = new CfnResource(stack1, 'Resource1', {
+      type: 'Foo::Bar',
+      properties: {
+        Key1: 'Value1',
+      },
+    });
+    resource.node.enableWeakReference();
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'Resource2', {
+      type: 'Foo::Bar',
+      properties: {
+        Key1: Lazy.stringValue({ produce: () => resource.ref }),
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    test.deepEqual(template2, {
+      Resources: {
+        Resource2: {
+          Type: 'Foo::Bar',
+          Properties: {
+            Key1: {
+              Ref: 'SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118',
+            },
+          },
+        },
+      },
+      Parameters: {
+        SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: '/stacks/Stack1/RefResource1',
+        },
+      },
+    });
 
     test.done();
   },

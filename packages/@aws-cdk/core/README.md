@@ -94,8 +94,28 @@ nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
 
 Nested stacks also support the use of Docker image and file assets.
 
+## Weak References
 
-## Durations
+The CDK automatically wires up cross-stack references within a single app. By default, the CDK uses the CloudFormation's
+[`Fn::ImportValue`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
+instrinsic to achieve this. To prevent interruption, CloudFormation restricts modification of any `Output` of a stack
+that is imported via this intrinsic.
+
+In many cases, this can be too restrictive. Some resources guarantee that change to its physical name does not entirely
+delete the resource. Weak references relax this restriction for specific Constructs. Instead of using the
+`Fn::ImportValue` intrinsic, [SSM Parameter
+Types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types)
+are used instead.
+
+Enable weak reference for a resource:
+
+```ts
+resource.node.enableWeakReferences();
+```
+
+## CDK Types
+
+### Durations
 
 To make specifications of time intervals unambiguous, a single class called
 `Duration` is used throughout the AWS Construct Library by all constructs
@@ -113,7 +133,7 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
-## Size (Digital Information Quantity)
+### Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
 `Size` is available.
@@ -137,7 +157,7 @@ Size.mebibytes(2).toKibibytes()                      // yields 2048
 Size.kibibytes(2050).toMebibyte({ integral: false }) // yields 2
 ```
 
-## Secrets
+### Secrets
 
 To help avoid accidental storage of secrets as plain text, we use the `SecretValue` type to
 represent secrets. Any construct that takes a value that should be a secret (such as

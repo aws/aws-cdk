@@ -12,6 +12,7 @@ import { Token } from '../token';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
+import { SsmStringParameter } from './ssm-parameter';
 import { makeUniqueId } from './uniqueid';
 
 /**
@@ -99,6 +100,10 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
+  if (reference.target.node.weakReference) {
+    return createSsmParameter(consumer, reference);
+  }
+
   return createImportValue(reference);
 }
 
@@ -156,11 +161,36 @@ function findAllReferences(root: IConstruct) {
 // export/import
 // ------------------------------------------------------------------------------------------------
 
+function createSsmParameter(consumer: Stack, reference: CfnReference): Intrinsic {
+  const exportingStack = Stack.of(reference.target);
+  const id = makeUniqueId([ JSON.stringify(exportingStack.resolve(reference)) ]);
+
+  // include the stack name, SSM parameters are not stack-local.
+  // use SSM hierarchy format - https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-su-organize.html
+  const parameterName = `/stacks/${exportingStack.stackName}/${id}`;
+
+  new SsmStringParameter(exportingStack, `SSMExport${id}`, {
+    name: parameterName,
+    value: Token.asString(reference),
+    description: `[cdk] exported from stack "${exportingStack.stackName}" for use as parameter in a different stack`,
+  });
+
+  const parameterId = `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
+  let cfnparameter = consumer.node.tryFindChild(parameterId);
+  if (!cfnparameter) {
+    cfnparameter = new CfnParameter(consumer, parameterId, {
+      type: 'AWS::SSM::Parameter::Value<String>',
+      default: parameterName,
+    });
+  }
+  return new Intrinsic({ Ref: (cfnparameter as CfnElement).logicalId });
+}
+
 /**
  * Imports a value from another stack by creating an "Output" with an "ExportName"
  * and returning an "Fn::ImportValue" token.
  */
-function createImportValue(reference: Reference): Intrinsic {
+function createImportValue(reference: CfnReference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
   // Ensure a singleton "Exports" scoping Construct
