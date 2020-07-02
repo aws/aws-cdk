@@ -121,7 +121,6 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    process.stderr.write(dockerArgs.join(' ') + '\n');
     dockerExec(dockerArgs);
   }
 }
