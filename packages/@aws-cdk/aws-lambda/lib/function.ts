@@ -1,4 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -188,6 +189,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Tracing.Disabled
    */
   readonly tracing?: Tracing;
+
+  /**
+   * Option to enable profiling for lambda.
+   * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
+   *
+   * @default - No profiling.
+   */
+  readonly profiling?: boolean;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -464,6 +473,8 @@ export class Function extends FunctionBase {
 
   private _logGroup?: logs.ILogGroup;
 
+  private readonly profilingGroup?: ProfilingGroup;
+
   /**
    * Environment variables for this function
    */
@@ -476,8 +487,6 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
-
-    this.environment = props.environment || {};
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
@@ -501,6 +510,18 @@ export class Function extends FunctionBase {
 
     const code = props.code.bind(this);
     verifyCodeConfig(code, props.runtime);
+
+    let profilingGroupEnvironmentVariables = {};
+    if (props.profiling) {
+      this.profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      this.profilingGroup.grantPublish(this.role);
+      profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: this.profilingGroup.profilingGroupArn,
+        AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+      };
+    }
+
+    this.environment = { ...(props.environment || {}), ...profilingGroupEnvironmentVariables };
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
