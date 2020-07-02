@@ -51,8 +51,8 @@ export class FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,
-      dependency: [ ap.filesystem.mountTargetsAvailable ],
-      connections: ap.filesystem.connections,
+      dependency: [ ap.fileSystem.mountTargetsAvailable ],
+      connections: ap.fileSystem.connections,
       managedPolicies: [
         'AmazonElasticFileSystemClientFullAccess',
       ],
