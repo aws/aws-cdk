@@ -89,7 +89,7 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = props.cluster._kubectlProvider;
+    const provider = props.cluster._attachKubectlResourceScope(this);
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
