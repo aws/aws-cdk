@@ -1,8 +1,8 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { Construct, Duration } from '@aws-cdk/core';
 import * as fs from 'fs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as s3 from '@aws-cdk/aws-s3';
+import { Construct, Duration } from '@aws-cdk/core';
 
 /**
  * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
@@ -147,6 +147,9 @@ export class InitCommand extends InitElement {
    * You do not need to escape space characters or enclose command parameters in quotes.
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
+    if (argv.length == 0) {
+      throw new Error('Cannot define argvCommand with an empty arguments');
+    }
     return new InitCommand(argv, options);
   }
 
@@ -247,17 +250,26 @@ export class InitFile extends InitElement {
     if (mode && mode.slice(0, 3) !== '120') {
       throw new Error('File mode for symlinks must begin with 120XXX');
     }
-    return new InitFile(fileName, target, { mode: (mode || '120664'), ...otherOptions }, true);
+    return new InitFile(fileName, target, { mode: (mode || '120644'), ...otherOptions }, true);
   }
 
   /**
-   * Use a JSON object as the file content, write it to a JSON file.
+   * Use a JSON-compatible object as the file content, write it to a JSON file.
    *
    * May contain tokens.
    */
-  public static fromJsonObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
-    // TODO - Confirm this is functionally equivalent.
-    return new InitFile(fileName, JSON.stringify(obj), options, true);
+  public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
+    class InitFileObject extends InitFile {
+      public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
+        return {
+          [fileName]: {
+            content: obj,
+            ...this.renderOptions(options, renderOptions),
+          },
+        };
+      }
+    }
+    return new InitFileObject(fileName, '', options);
   }
 
   /**
