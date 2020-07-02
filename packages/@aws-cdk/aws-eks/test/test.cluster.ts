@@ -9,7 +9,6 @@ import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { KubectlLayer } from '../lib/kubectl-layer';
 import { testFixture, testFixtureNoVpc } from './util';
-import { HelmChart, KubernetesPatch } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -1188,9 +1187,9 @@ export = {
       cluster.addFargateProfile('profile1', { selectors: [ { namespace: 'profile1' } ]});
       cluster.addResource('resource1', { foo: 123 });
       cluster.addFargateProfile('profile2', { selectors: [ { namespace: 'profile2' } ]});
-      new HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
+      new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
       cluster.addFargateProfile('profile3', { selectors: [ { namespace: 'profile3' } ]});
-      new KubernetesPatch(stack, 'patch1', {
+      new eks.KubernetesPatch(stack, 'patch1', {
         cluster,
         applyPatch: { foo: 123 },
         restorePatch: { bar: 123 },
