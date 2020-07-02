@@ -125,12 +125,7 @@ export class LinuxGpuBuildImage implements IBuildImage {
 
         const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
           repositoryName,
-          repositoryArn: scopeStack.formatArn({
-            account: accountExpression,
-            service: 'ecr',
-            resource: 'repository',
-            resourceName: repositoryName,
-          }),
+          repositoryArn: ecr.Repository.arnForLocalRepository(repositoryName, scope, accountExpression),
         });
         repository.grantPull(project);
         return {
