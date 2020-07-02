@@ -1,7 +1,8 @@
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType } from './project';
+import { BuildEnvironment, BuildImageConfig, ComputeType, IBuildImage, IBuildImageBind, ImagePullPrincipalType, IProject } from './project';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -67,7 +68,12 @@ export class LinuxGpuBuildImage implements IBuildImage {
     '1.6.0-gpu-py36-cu101-ubuntu16.04');
 
   /**
-   * Returns a Linux GPU image from AWS Deep Learning Containers.
+   * Returns a Linux GPU build image from AWS Deep Learning Containers.
+   *
+   * @param repositoryName the name of the repository,
+   *   for example "pytorch-inference"
+   * @param tag the tag of the image, for example "1.5.0-gpu-py36-cu101-ubuntu16.04"
+   * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
    */
   private static awsDeepLearningContainersImage(repositoryName: string, tag: string): IBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag);
@@ -77,9 +83,27 @@ export class LinuxGpuBuildImage implements IBuildImage {
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
+  public readonly bind?: IBuildImageBind;
 
   private constructor(repositoryName: string, tag: string) {
     this.imageId = `763104351884.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
+    this.bind = {
+      bind(scope: core.Construct, project: IProject): BuildImageConfig {
+        const scopeStack = core.Stack.of(scope);
+        const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
+          repositoryName,
+          repositoryArn: scopeStack.formatArn({
+            account: '763104351884',
+            service: 'ecr',
+            resource: 'repository',
+            resourceName: repositoryName,
+          }),
+        });
+        repository.grantPull(project);
+        return {
+        };
+      },
+    };
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {

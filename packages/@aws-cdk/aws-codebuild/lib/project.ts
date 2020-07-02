@@ -794,6 +794,9 @@ export class Project extends ProjectBase {
     if (props.encryptionKey) {
       this.encryptionKey = props.encryptionKey;
     }
+
+    // bind
+    this.buildImage.bind?.bind(this, this, {});
   }
 
   /**
@@ -1136,6 +1139,24 @@ export interface BuildEnvironment {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
+/** Optional arguments to {@link IBuildImage.bind} - currently empty. */
+export interface BuildImageBindOptions {}
+
+/** The return type from {@link IBuildImage.bind} - currently empty. */
+export interface BuildImageConfig {}
+
+// Normally, I would just have IBuildImage have an optional bind property
+// of a function type,
+// but JSII doesn't allow that, hence this workaround
+
+/** The type of the optional {@link IBuildImage.bind} property. */
+export interface IBuildImageBind {
+  /**
+   * Function that allows the image access to the construct tree.
+   */
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
+}
+
 /**
  * Represents a Docker image used for the CodeBuild Project builds.
  * Use the concrete subclasses, either:
@@ -1180,6 +1201,9 @@ export interface IBuildImage {
    * @default no repository
    */
   readonly repository?: ecr.IRepository;
+
+  /** Optional bind function. */
+  readonly bind?: IBuildImageBind;
 
   /**
    * Allows the image a chance to validate whether the passed configuration is correct.
