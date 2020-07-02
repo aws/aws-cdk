@@ -1,8 +1,8 @@
 // tslint:disable:no-console no-eval
 import { Event } from '../evaluate-expression';
 
-function escapeRegex(string) {
-  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+function escapeRegex(x: string) {
+  return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 export async function handler(event: Event): Promise<any> {
@@ -10,7 +10,7 @@ export async function handler(event: Event): Promise<any> {
 
   const expression = Object.entries(event.expressionAttributeValues)
     .reduce(
-      (exp, [k, v]) => exp.replace(new RegExp(escapeRegex(k), 'g'), JSON.stringify(v)),
+      (exp: string, [k, v]) => exp.replace(new RegExp(escapeRegex(k), 'g'), JSON.stringify(v)),
       event.expression,
     );
   console.log(`Expression: ${expression}`);
