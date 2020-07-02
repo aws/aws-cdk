@@ -73,10 +73,20 @@ export class LambdaIntegration extends AwsIntegration {
       });
     }
 
-    const cfnFunction = this.handler.node.defaultChild as lambda.CfnFunction;
+    let functionName;
+
+    if (this.handler instanceof lambda.Function) {
+      // if not imported, extract the name from the CFN layer to reach
+      // the literal value if it is given (rather than a token)
+      functionName = (this.handler.node.defaultChild as lambda.CfnFunction).functionName;
+    } else {
+      // imported, just take the function name.
+      functionName = this.handler.functionName;
+    }
+
     let deploymentToken;
-    if (!Token.isUnresolved(cfnFunction.functionName)) {
-      deploymentToken = JSON.stringify({ functionName: cfnFunction.functionName });
+    if (!Token.isUnresolved(functionName)) {
+      deploymentToken = JSON.stringify({ functionName });
     }
     return {
       ...bindResult,
