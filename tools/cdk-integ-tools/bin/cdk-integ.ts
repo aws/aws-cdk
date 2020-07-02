@@ -22,7 +22,7 @@ async function main() {
   }
 
   for (const test of tests) {
-    console.error(`Deploying ${test.name}...`);
+    console.error(`Synthesizing ${test.name}.`);
 
     const stackToDeploy = await test.determineTestStack();
     console.error(`Selected stack: ${stackToDeploy}`);
@@ -39,13 +39,14 @@ async function main() {
     try {
 
       if (dryRun) {
-        console.error('--dry-run: skipping actual deployment, updating snapshot');
+        console.error('Skipping deployment (--dry-run), updating snapshot.');
       } else {
+        console.error(`Deploying ${test.name}...`);
         await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
           verbose: argv.verbose,
           // Note: no "context" and "env", so use default user settings!
         });
-        console.error('Success! Writing out reference synth.');
+        console.error('Deployment succeeded, updating snapshot.');
       }
 
       // If this all worked, write the new expectation file
