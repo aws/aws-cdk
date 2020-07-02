@@ -124,6 +124,24 @@ and any changes you make to it will be reflected in the resulting template:
 condition.expression = core.Fn.conditionEquals(1, 2);
 ```
 
+## Outputs
+
+If your template uses [CloudFormation Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const output: core.CfnOutput = cfnTemplate.getOutput('MyOutput');
+```
+
+The `CfnOutput` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+output.value = cfnBucket.attrArn;
+```
+
 ## Known limitations
 
 This module is still in its early, experimental stage,
@@ -135,7 +153,7 @@ All items unchecked below are currently not supported.
 - [x] Resources
 - [x] Parameters
 - [x] Conditions
-- [ ] Outputs
+- [x] Outputs
 
 ### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
 
