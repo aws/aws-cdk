@@ -278,4 +278,27 @@ export = {
     test.done();
   },
 
+  'bind works for integration with new functions with given name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+      functionName: 'myfunc',
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // the deployment token should be defined since the function name
+    // should be a literal string.
+    test.equal(bindResult?.deploymentToken, JSON.stringify({functionName: 'myfunc'}));
+
+    test.done();
+  },
+
 };
