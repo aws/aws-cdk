@@ -24,6 +24,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
+  private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -49,6 +50,12 @@ export class CfnInclude extends core.CfnElement {
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
+    }
+
+    const outputScope = new core.Construct(this, '$Ouputs');
+
+    for (const logicalId of Object.keys(this.template.Outputs || {})) {
+      this.createOutput(logicalId, outputScope);
     }
   }
 
@@ -112,14 +119,32 @@ export class CfnInclude extends core.CfnElement {
     return ret;
   }
 
+  /**
+   * Returns the CfnOutput object from the 'Outputs'
+   * section of the included template
+   * Any modifications performed on that object will be reflected in the resulting CDK template.
+   *
+   * If an Output with the given name is not present in the template,
+   * throws an exception.
+   *
+   * @param logicalId the name of the output to retrieve
+   */
+  public getOutput(logicalId: string): core.CfnOutput {
+    const ret = this.outputs[logicalId];
+    if (!ret) {
+      throw new Error(`Output with logical ID '${logicalId}' was not found in the template`);
+    }
+    return ret;
+  }
+
   /** @internal */
   public _toCloudFormation(): object {
     const ret: { [section: string]: any } = {};
 
     for (const section of Object.keys(this.template)) {
       // render all sections of the template unchanged,
-      // except Conditions, Resources, and Parameters, which will be taken care of by the created L1s
-      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters') {
+      // except Conditions, Resources, Parameters, and Outputs which will be taken care of by the created L1s
+      if (section !== 'Conditions' && section !== 'Resources' && section !== 'Parameters' && section !== 'Outputs') {
         ret[section] = this.template[section];
       }
     }
@@ -150,6 +175,41 @@ export class CfnInclude extends core.CfnElement {
 
     cfnParameter.overrideLogicalId(logicalId);
     this.parameters[logicalId] = cfnParameter;
+  }
+
+  private createOutput(logicalId: string, scope: core.Construct): void {
+    const self = this;
+    const outputAttributes = new cfn_parse.CfnParser({
+      finder: {
+        findResource(lId): core.CfnResource | undefined {
+          return self.resources[lId];
+        },
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          return self.resources[elementName] ?? self.parameters[elementName];
+        },
+        findCondition(): undefined {
+          return undefined;
+        },
+      },
+    }).parseValue(this.template.Outputs[logicalId]);
+    const cfnOutput = new core.CfnOutput(scope, logicalId, {
+      value: outputAttributes.Value,
+      description: outputAttributes.Description,
+      exportName: outputAttributes.Export ? outputAttributes.Export.Name : undefined,
+      condition: (() => {
+        if (!outputAttributes.Condition) {
+          return undefined;
+        } else if (this.conditions[outputAttributes.Condition]) {
+          return self.getCondition(outputAttributes.Condition);
+        }
+
+        throw new Error(`Output with name '${logicalId}' refers to a Condition with name\
+ '${outputAttributes.Condition}' which was not found in this template`);
+      })(),
+    });
+
+    cfnOutput.overrideLogicalId(logicalId);
+    this.outputs[logicalId] = cfnOutput;
   }
 
   private createCondition(conditionName: string): void {
