@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Stack, Duration } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 

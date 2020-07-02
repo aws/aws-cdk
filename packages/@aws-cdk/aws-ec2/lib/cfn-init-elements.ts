@@ -7,12 +7,57 @@ import * as fs from 'fs';
 /**
  * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
  */
-export enum InitRenderPlatform { WINDOWS, LINUX }
+export enum InitRenderPlatform {
+  /**
+   * Render the config for a Windows platform
+   */
+  WINDOWS = 'WINDOWS',
+
+  /**
+   * Render the config for a Linux platform
+   */
+  LINUX = 'LINUX',
+}
 
 /**
  * The type of the init element.
  */
-export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE }
+export enum InitElementType {
+  /**
+   * A package
+   */
+  PACKAGE = 'PACKAGE',
+
+  /**
+   * A group
+   */
+  GROUP = 'GROUP',
+
+  /**
+   * A user
+   */
+  USER = 'USER',
+
+  /**
+   * A source
+   */
+  SOURCE = 'SOURCE',
+
+  /**
+   * A file
+   */
+  FILE = 'FILE',
+
+  /**
+   * A command
+   */
+  COMMAND = 'COMMAND',
+
+  /**
+   * A service
+   */
+  SERVICE = 'SERVICE',
+}
 
 /**
  * Context options passed when an InitElement is being rendered

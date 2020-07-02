@@ -1,6 +1,6 @@
-import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
+import * as crypto from 'crypto';
 import { InitBindOptions, InitElement, InitElementType, InitRenderOptions, InitRenderPlatform } from './cfn-init-elements';
 import { UserData } from './user-data';
 
@@ -11,14 +11,14 @@ export class CloudFormationInit {
   /**
    * Build a new config from a set of Init Elements
    */
-  public static fromElements(...elements: InitElement[]) {
+  public static fromElements(...elements: InitElement[]): CloudFormationInit {
     return CloudFormationInit.fromConfig(new InitConfig(elements));
   }
 
   /**
    * Use an existing InitConfig object as the default and only config
    */
-  public static fromConfig(config: InitConfig) {
+  public static fromConfig(config: InitConfig): CloudFormationInit {
     return CloudFormationInit.fromConfigSets({
       configSets: {
         default: ['config'],
@@ -30,26 +30,44 @@ export class CloudFormationInit {
   /**
    * Build a CloudFormationInit from config sets
    */
-  public static fromConfigSets(_config: ConfigSetProps) {
-    // TODO
+  public static fromConfigSets(props: ConfigSetProps): CloudFormationInit {
+    return new CloudFormationInit(props.configSets, props.configs);
   }
 
   private readonly _configSets: Record<string, string[]> = {};
   private readonly _configs: Record<string, InitConfig> = {};
 
-  protected constructor() {
+  protected constructor(configSets: Record<string, string[]>, configs: Record<string, InitConfig>) {
+    Object.assign(this._configSets, configSets);
+    Object.assign(this._configs, configs);
   }
 
-  public addConfig(_configName: string, _config: InitConfig) {
-    // TODO
+  /**
+   * Add a config with the given name to this CloudFormationInit object
+   */
+  public addConfig(configName: string, config: InitConfig) {
+    if (this._configs[configName]) {
+      throw new Error(`CloudFormationInit already contains a config named '${configName}'`);
+    }
+    this._configs[configName] = config;
   }
 
-  public addConfigSet(_configSetName: string) {
-    // TODO
-  }
+  /**
+   * Add a config set with the given name to this CloudFormationInit object
+   *
+   * The new configset will reference the given configs in the given order.
+   */
+  public addConfigSet(configSetName: string, configNames: string[] = []) {
+    if (this._configSets[configSetName]) {
+      throw new Error(`CloudFormationInit already contains a configSet named '${configSetName}'`);
+    }
 
-  public addConfigToSet(_configSetName: string, ..._configNames: string[]) {
-    // TODO
+    const unk = configNames.filter(c => !this._configs[c]);
+    if (unk.length > 0) {
+      throw new Error(`Unknown configs referenced in definition of '${configSetName}': ${unk}`);
+    }
+
+    this._configSets[configSetName] = [...configNames];
   }
 
   /**
@@ -113,7 +131,6 @@ export class CloudFormationInit {
         }
       }
     };
-
   }
 
   private bind(scope: Construct, options: InitBindOptions) {
@@ -123,9 +140,11 @@ export class CloudFormationInit {
   }
 
   private renderInit(platform: InitRenderPlatform): any {
+    const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
+
     return {
-      configSets: this._configSets,
-      ...mapValues(this._configs, c => c.renderConfig(platform)),
+      configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
+      ...mapValues(nonEmptyConfigs, c => c.renderConfig(platform)),
     };
   }
 }
@@ -188,13 +207,9 @@ export interface ApplyInitOptions {
   readonly embedFingerprint?: boolean;
 }
 
-export interface InitBindRenderResult {
-  /**
-   * Commands to add to UserData to activate CloudFormation Init config
-   */
-  readonly userDataCommands: string[];
-}
-
+/**
+ * A collection of configuration elements
+ */
 export class InitConfig {
   private readonly elements = new Array<InitElement>();
 
@@ -202,20 +217,32 @@ export class InitConfig {
     this.add(...elements);
   }
 
+  /**
+   * Whether this configset has elements or not
+   */
   public get isEmpty() {
     return this.elements.length === 0;
   }
 
+  /**
+   * Add one or more elements to the config
+   */
   public add(...elements: InitElement[]) {
     this.elements.push(...elements);
   }
 
+  /**
+   * Called when the config is applied to an instance
+   */
   public bind(scope: Construct, options: InitBindOptions) {
     for (const element of this.elements) {
       element.bind(scope, options);
     }
   }
 
+  /**
+   * Render the config
+   */
   public renderConfig(platform: InitRenderPlatform): any {
     const renderOptions = { platform };
 
@@ -268,10 +295,18 @@ function deepMerge(target: Record<string, any>, src: Record<string, any>) {
   }
 }
 
-function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
+/**
+ * Map a function over values of an object
+ *
+ * If the mapping function returns undefined, remove the key
+ */
+function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B | undefined): Record<string, B> {
   const ret: Record<string, B> = {};
   for (const [k, v] of Object.entries(xs)) {
-    ret[k] = fn(v);
+    const mapped = fn(v);
+    if (mapped !== undefined) {
+      ret[k] = mapped;
+    }
   }
   return ret;
 }

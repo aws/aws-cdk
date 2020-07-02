@@ -6,8 +6,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 
 import {
-  CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved, CfnCreationPolicy, CfnUpdatePolicy,
+  CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy, Construct,
+  Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tag,
+  Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -371,9 +372,9 @@ export abstract class Signals {
     validatePercentage(options.minSuccessPercentage);
     return new class extends Signals {
       public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
-        return this.doRender(renderOptions.desiredCapacity ?? renderOptions.minCapacity, options);
+        return this.doRender(options, renderOptions.desiredCapacity ?? renderOptions.minCapacity);
       }
-    };
+    }();
   }
 
   /**
@@ -386,9 +387,9 @@ export abstract class Signals {
     validatePercentage(options.minSuccessPercentage);
     return new class extends Signals {
       public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
-        return this.doRender(renderOptions.minCapacity, options);
+        return this.doRender(options, renderOptions.minCapacity);
       }
-    };
+    }();
   }
 
   /**
@@ -404,9 +405,9 @@ export abstract class Signals {
     validatePercentage(options.minSuccessPercentage);
     return new class extends Signals {
       public renderCreationPolicy(): CfnCreationPolicy {
-        return this.doRender(count, options);
+        return this.doRender(options, count);
       }
-    };
+    }();
   }
 
   /**
@@ -417,7 +418,7 @@ export abstract class Signals {
   /**
    * Helper to render the actual creation policy, as the logic between them is quite similar
    */
-  protected doRender(count: number | undefined, options: SignalsOptions): CfnCreationPolicy {
+  protected doRender(options: SignalsOptions, count?: number): CfnCreationPolicy {
     const minSuccessfulInstancesPercent = validatePercentage(options.minSuccessPercentage);
     return {
       ...options.minSuccessPercentage !== undefined ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } } : { },
@@ -436,11 +437,15 @@ export abstract class Signals {
 export interface RenderSignalsOptions {
   /**
    * The desiredCapacity of the ASG
+   *
+   * @default - desired capacity not configured
    */
   readonly desiredCapacity?: number;
 
   /**
    * The minSize of the ASG
+   *
+   * @default - minCapacity not configured
    */
   readonly minCapacity?: number;
 }
@@ -484,7 +489,7 @@ export abstract class UpdatePolicy {
           autoScalingReplacingUpdate: { willReplace: true },
         };
       }
-    };
+    }();
   }
 
   /**
@@ -500,13 +505,14 @@ export abstract class UpdatePolicy {
             maxBatchSize: options.maxBatchSize,
             minInstancesInService: options.minInstancesInService,
             suspendProcesses: options.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
-            minSuccessfulInstancesPercent: minSuccessPercentage ?? renderOptions.creationPolicy?.autoScalingCreationPolicy?.minSuccessfulInstancesPercent,
+            minSuccessfulInstancesPercent:
+              minSuccessPercentage ?? renderOptions.creationPolicy?.autoScalingCreationPolicy?.minSuccessfulInstancesPercent,
             waitOnResourceSignals: options.waitOnResourceSignals ?? renderOptions.creationPolicy?.resourceSignal !== undefined ? true : undefined,
             pauseTime: options.pauseTime?.toIsoString() ?? renderOptions.creationPolicy?.resourceSignal?.timeout,
           },
         };
       }
-    };
+    }();
   }
 
   /**
@@ -521,13 +527,10 @@ export abstract class UpdatePolicy {
 export interface RenderUpdateOptions {
   /**
    * The Creation Policy already created
+   *
+   * @default - no CreationPolicy configured
    */
   readonly creationPolicy?: CfnCreationPolicy;
-
-  /**
-   * Scaling processes to be suspended
-   */
-  readonly suspendProcesses?: ScalingProcess[];
 }
 
 /**
@@ -1000,7 +1003,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // UserData will change if the config changes, which will cause
   }
 
-
   /**
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
@@ -1292,7 +1294,6 @@ export enum ScalingProcess {
 // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
 const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
   ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS];
-
 
 /**
  * EC2 Heath check options
