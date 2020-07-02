@@ -658,6 +658,28 @@ export = {
     test.done();
   },
 
+  'an existing security group can be specified instead of auto-created'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      securityGroup,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      SecurityGroups: ['most-secure'],
+    },
+    ));
+    test.done();
+  },
+
   'an existing role can be specified instead of auto-created'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

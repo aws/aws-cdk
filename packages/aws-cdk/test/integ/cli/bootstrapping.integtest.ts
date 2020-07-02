@@ -152,6 +152,17 @@ integTest('deploying new style synthesis to old style bootstrap fails', async ()
   })).rejects.toThrow('exited with error');
 });
 
+integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack-1');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--public-access-block-configuration', 'false', '--tags', 'Foo=Bar']);
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
+});
+
 integTest('can create multiple legacy bootstrap stacks', async () => {
   const bootstrapStackName1 = fullStackName('bootstrap-stack-1');
   const bootstrapStackName2 = fullStackName('bootstrap-stack-2');

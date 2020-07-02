@@ -21,7 +21,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### TypeScript example
+### Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -158,7 +158,7 @@ and also injects a field called `otherData`.
 ```ts
 const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.DataAt('$.input.greeting')
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
     otherData: 'some-extra-stuff'
   },
 });
@@ -277,7 +277,7 @@ execute the same steps for multiple entries of an array in the state input.
 ```ts
 const map = new stepfunctions.Map(this, 'Map State', {
     maxConcurrency: 1,
-    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap')
 });
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
 ```
@@ -458,6 +458,22 @@ const activity = new stepfunctions.Activity(this, 'Activity');
 new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
+### Activity-Level Permissions
+
+Granting IAM permissions to an activity can be achieved by calling the `grant(principal, actions)` API:
+
+```ts
+const activity = new stepfunctions.Activity(this, 'Activity');
+
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+activity.grant(role, 'states:SendTaskSuccess');
+```
+
+This will grant the IAM principal the specified actions onto the activity.
+
 ## Metrics
 
 `Task` object expose various metrics on the execution of that particular task. For example,
@@ -508,6 +524,122 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
+## State Machine Permission Grants
+
+IAM roles, users, or groups which need to be able to work with a State Machine should be granted IAM permissions.
+
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
+- `stateMachine.grantRead(principal)` - grants the principal read access
+- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
+- `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified 
+- `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
+
+### Start Execution Permission 
+
+Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+```
+
+The following permission is provided to a service principal by the `grantStartExecution()` API:
+
+- `states:StartExecution` - to state machine
+
+### Read Permissions
+
+Grant `read` access to a state machine by calling the `grantRead()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role read access to state machine
+stateMachine.grantRead(role);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `states:ListExecutions` - to state machine
+- `states:ListStateMachines` - to state machine
+- `states:DescribeExecution` - to executions
+- `states:DescribeStateMachineForExecution` - to executions
+- `states:GetExecutionHistory` - to executions
+- `states:ListActivities` - to `*`
+- `states:DescribeStateMachine` - to `*`
+- `states:DescribeActivity` - to `*`
+
+### Task Response Permissions
+
+Grant permission to allow task responses to a state machine by calling the `grantTaskResponse()` API:
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role task response permissions to the state machine
+stateMachine.grantTaskResponse(role);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `states:SendTaskSuccess` - to state machine
+- `states:SendTaskFailure` - to state machine
+- `states:SendTaskHeartbeat` - to state machine
+
+### Execution-level Permissions
+
+Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role permission to get execution history of ALL executions for the state machine
+stateMachine.grantExecution(role, 'states:GetExecutionHistory');
+```
+
+### Custom Permissions
+
+You can add any set of permissions to a state machine by calling the `grant()` API.
+
+```ts
+const user = new iam.User(stack, 'MyUser');
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give user permission to send task success to the state machine
+stateMachine.grant(user, 'states:SendTaskSuccess');
+```
+
 ## Import
 
 Any Step Functions state machine that has been created outside the stack can be imported
@@ -524,12 +656,3 @@ sfn.StateMachine.fromStateMachineArn(
   'ImportedStateMachine',
   'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
 ```
-
-## Future work
-
-Contributions welcome:
-
-- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one
-  might make for a nice API.
-- [ ] Expression parser for Conditions.
-- [ ] Simulate state machines in unit tests.

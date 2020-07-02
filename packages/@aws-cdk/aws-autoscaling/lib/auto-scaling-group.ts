@@ -269,6 +269,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly machineImage: ec2.IMachineImage;
 
   /**
+   * Security group to launch the instances in.
+   *
+   * @default - A SecurityGroup will be created if none is specified.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
    * Specific UserData to use
    *
    * The UserData may still be mutated after creation.
@@ -565,7 +572,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
-    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false,
     });
