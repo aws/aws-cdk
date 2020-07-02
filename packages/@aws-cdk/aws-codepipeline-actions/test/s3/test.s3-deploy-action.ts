@@ -108,7 +108,7 @@ export = {
         cacheControl: [
           cpactions.CacheControl.setPublic(),
           cpactions.CacheControl.maxAge(Duration.hours(12)),
-          cpactions.CacheControl.sMaxAge(Duration.hours(12))
+          cpactions.CacheControl.sMaxAge(Duration.hours(12)),
         ],
       });
 
