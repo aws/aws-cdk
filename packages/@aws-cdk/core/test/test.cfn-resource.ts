@@ -1,6 +1,5 @@
 import * as nodeunit from 'nodeunit';
 import * as core from '../lib';
-import { Duration } from '../lib';
 
 export = nodeunit.testCase({
   '._toCloudFormation': {
@@ -96,7 +95,6 @@ export = nodeunit.testCase({
       },
     });
 
-
     test.done();
   },
 
@@ -107,7 +105,7 @@ export = nodeunit.testCase({
     const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
 
     // WHEN
-    resource.addCreationPolicySignalWait(Duration.minutes(5));
+    resource.addCreationPolicySignalWait(core.Duration.minutes(5));
 
     // THEN
     test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
@@ -123,7 +121,6 @@ export = nodeunit.testCase({
         },
       },
     });
-
 
     test.done();
   },

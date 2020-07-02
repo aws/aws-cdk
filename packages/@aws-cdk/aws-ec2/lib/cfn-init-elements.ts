@@ -1,11 +1,18 @@
-import { Construct, Duration } from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { Construct, Duration } from '@aws-cdk/core';
 import * as fs from 'fs';
 
-export enum InitRenderPlatform { WINDOWS, LINUX };
-export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE };
+/**
+ * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
+ */
+export enum InitRenderPlatform { WINDOWS, LINUX }
+
+/**
+ * The type of the init element.
+ */
+export enum InitElementType { PACKAGE, GROUP, USER, SOURCE, FILE, COMMAND, SERVICE }
 
 /**
  * Context options passed when an InitElement is being rendered
@@ -55,10 +62,9 @@ export abstract class InitElement {
 
   /**
    * Called when the Init config is being consumed.
-   *
-   * @param scope
    */
   public bind(_scope: Construct, _options: InitBindOptions): void {
+    // Default is no-op
   }
 }
 
@@ -154,7 +160,7 @@ export class InitCommand extends InitElement {
     }
   }
 
-  public renderElement(renderOptions: InitRenderOptions): any {
+  public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
     const commandKey = this.options.key || (renderOptions.index + '').padStart(3, '0'); // 001, 005, etc.
 
     if (renderOptions.platform !== InitRenderPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
@@ -176,11 +182,10 @@ export class InitCommand extends InitElement {
 }
 
 /**
- *
  * The content can be either inline in the template or the content can be
  * pulled from a URL.
  */
-export class InitFileOptions {
+export interface InitFileOptions {
   /**
    * The name of the owning group for this file.
    *
@@ -238,12 +243,11 @@ export class InitFile extends InitElement {
    * Write a symlink with the given symlink target
    */
   public static symlink(fileName: string, target: string, options: InitFileOptions = {}): InitFile {
-    let { mode, ...otherOptions } = options;
+    const { mode, ...otherOptions } = options;
     if (mode && mode.slice(0, 3) !== '120') {
       throw new Error('File mode for symlinks must begin with 120XXX');
     }
-    mode = mode || '120664';
-    return new InitFile(fileName, target, { mode, ...otherOptions }, true);
+    return new InitFile(fileName, target, { mode: (mode || '120664'), ...otherOptions }, true);
   }
 
   /**
@@ -307,9 +311,18 @@ export class InitFile extends InitElement {
 
   public readonly elementType = InitElementType.FILE;
 
-  protected constructor(private readonly fileName: string, private readonly content: string,
-    private readonly options: InitFileOptions, private readonly isInlineContent: boolean = false) {
+  private readonly fileName: string;
+  private readonly content: string;
+  private readonly options: InitFileOptions;
+  private readonly isInlineContent: boolean;
+
+  protected constructor(fileName: string, content: string, options: InitFileOptions, isInlineContent: boolean = true) {
     super();
+
+    this.fileName = fileName;
+    this.content = content;
+    this.options = options;
+    this.isInlineContent = isInlineContent;
   }
 
   public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
@@ -342,7 +355,7 @@ export class InitFile extends InitElement {
       mode: fileOptions.mode || '000644',
       owner: fileOptions.owner || 'root',
       group: fileOptions.group || 'root',
-    }
+    };
   }
 }
 
@@ -360,20 +373,20 @@ export class InitGroup extends InitElement {
     return new InitGroup(groupName, groupId);
   }
 
+  public readonly elementType = InitElementType.GROUP;
+
   protected constructor(private groupName: string, private groupId?: number) {
     super();
   }
 
-  public readonly elementType = InitElementType.GROUP;
-
-  public renderElement(options: InitRenderOptions): any {
+  public renderElement(options: InitRenderOptions): Record<string, any> {
     if (options.platform === InitRenderPlatform.WINDOWS) {
       throw new Error('Init groups are not supported on Windows');
     }
 
     return {
       [this.groupName]: this.groupId !== undefined ? { gid: this.groupId } : {},
-    }
+    };
   }
 
 }
@@ -394,6 +407,8 @@ export class InitUser extends InitElement {
     return new InitUser(userName, uid, groups, homeDir);
   }
 
+  public readonly elementType = InitElementType.USER;
+
   private readonly userName: string;
   private readonly uid: number;
   private readonly groups?: string[];
@@ -408,9 +423,7 @@ export class InitUser extends InitElement {
     this.homeDir = homeDir;
   }
 
-  public readonly elementType = InitElementType.USER;
-
-  public renderElement(options: InitRenderOptions): any {
+  public renderElement(options: InitRenderOptions): Record<string, any> {
     if (options.platform === InitRenderPlatform.WINDOWS) {
       throw new Error('Init users are not supported on Windows');
     }
@@ -474,17 +487,15 @@ export class InitPackage extends InitElement {
 
   public readonly elementType = InitElementType.PACKAGE;
 
-  protected constructor(private readonly type: string, private readonly versions: string[],
-    private readonly packageName?: string) {
+  protected constructor(private readonly type: string, private readonly versions: string[], private readonly packageName?: string) {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): any {
+  public renderElement(options: InitRenderOptions): Record<string, any> {
     if ((this.type === 'msi') !== (options.platform === InitRenderPlatform.WINDOWS)) {
       if (this.type === 'msi') {
         throw new Error('MSI installers are only supported on Windows systems.');
-      }
-      else {
+      } else {
         throw new Error('Windows only supports the MSI package type');
       }
     }
@@ -504,6 +515,9 @@ export class InitPackage extends InitElement {
 
 }
 
+/**
+ * Options for an InitService
+ */
 export interface InitServiceOptions {
   /**
    * Enable or disable this service
@@ -572,36 +586,54 @@ export class InitService extends InitElement {
    * Enable and start the given service, optionally restarting it
    */
   public static enable(serviceName: string, options: InitServiceOptions = {}): InitService {
+    const { enabled, ensureRunning, ...otherOptions } = options;
+    return new InitService(serviceName, {
+      enabled: true,
+      ensureRunning: true,
+      ...otherOptions,
+    });
   }
 
   /**
    * Disable and stop the given service
    */
   public static disable(serviceName: string): InitService {
+    return new InitService(serviceName, { enabled: false, ensureRunning: false });
   }
 
   /**
-   * Leave the running state of the service alone, optionally restarting it
+   * Create a service restart definition from the given options, not imposing any defaults.
+   *
+   * @param serviceName the name of the service to restart
+   * @param options service options
    */
-  public static custom(serviceName: string, options: InitServiceOptions = {}): InitService {
+  public static fromOptions(serviceName: string, options: InitServiceOptions = {}): InitService {
+    return new InitService(serviceName, options);
   }
 
-  /**
-   * What other interface(s) might someone expect here? I feel like something like this might be useful:
-   * - restartAfter(elements: InitElement[])
-   * Or:
-   * - restartAfterFiles(files: InitFile[])
-   * - restartAFterSources(sources: InitSource[])
-   *
-   * This assumes we're not doing the all-at-once construction, because it is cross-referencing elements,
-   * but it's a hell of a friendly interface than providing the other keys.
-   *
-   * What if the other supporting elements had a "restartServices(services: string[])" helper which generates
-   * an InitService elements?
-   *
-   * const file = InitFile.fromUrl(.... { restartServices: ['httpd'] });
-   * fie.restartServices('httpd');
-   */
+  public readonly elementType = InitElementType.SERVICE;
+
+  protected constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
+    super();
+  }
+
+  public renderElement(options: InitRenderOptions): Record<string, any> {
+    const serviceManager = options.platform === InitRenderPlatform.LINUX ? 'sysvinit' : 'windows';
+
+    return {
+      [serviceManager]: {
+        [this.serviceName]: {
+          enabled: this.serviceOptions.enabled,
+          ensureRunning: this.serviceOptions.ensureRunning,
+          files: this.serviceOptions.restartAfterFiles,
+          sources: this.serviceOptions.restartAfterSources,
+          commands: this.serviceOptions.restartAfterCommands,
+          packages: this.serviceOptions.restartAfterPackages,
+        },
+      },
+    };
+  }
+
 }
 
 /**
@@ -645,20 +677,19 @@ export class InitSource extends InitElement {
     return new InitSource(targetDirectory, asset.httpUrl, asset);
   }
 
-  protected constructor(private readonly targetDirectory: string, private readonly url: string,
-    private readonly asset?: s3_assets.Asset) {
+  public readonly elementType = InitElementType.SOURCE;
+
+  protected constructor(private readonly targetDirectory: string, private readonly url: string, private readonly asset?: s3_assets.Asset) {
     super();
   }
-
-  public readonly elementType = InitElementType.SOURCE;
 
   public renderElement(_options: InitRenderOptions): Record<string, any> {
     return {
       [this.targetDirectory]: this.url,
-    }
+    };
   }
 
-  public bind(_scope: Construct): void {
+  public bind(_scope: Construct, _options: InitBindOptions): void {
     if (this.asset === undefined) { return; }
     throw new Error('Not yet implemented');
   }

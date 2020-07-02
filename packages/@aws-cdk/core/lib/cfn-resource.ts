@@ -6,12 +6,12 @@ import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct-compat';
 import { addDependency } from './deps';
+import { Duration } from './duration';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
-import { Duration } from './duration';
 
 export interface CfnResourceProps {
   /**
