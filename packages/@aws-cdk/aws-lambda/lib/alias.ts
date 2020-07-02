@@ -1,9 +1,12 @@
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Construct, Stack} from '@aws-cdk/core';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
+import { EnableScalingProps, IScalableVersionAttribute, ScalableVersionAttribute } from './scalable-version-attribute';
 
 export interface IAlias extends IFunction {
   /**
@@ -129,6 +132,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   protected readonly canCreatePermissions: boolean = true;
 
+  private provisionedConcurrency: boolean;
+  private scalableAlias?: ScalableVersionAttribute;
+
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
       physicalName: props.aliasName,
@@ -146,6 +152,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       routingConfig: this.determineRoutingConfig(props),
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+
+    this.provisionedConcurrency = props.provisionedConcurrentExecutions ? true : false;
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
       service: 'lambda',
@@ -190,6 +198,32 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
         Resource: `${this.lambda.functionName}:${this.aliasName}`,
       },
       ...props,
+    });
+  }
+
+  public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute {
+    if (!this.provisionedConcurrency) {
+      throw new Error('Autoscaling is available for aliases with provisioned concurrency only');
+    }
+    if (this.scalableAlias) {
+      throw new Error('Autoscaling already enabled for this alias');
+    }
+    // Use a Service Linked Role
+    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+    const role = iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
+    }));
+
+    return this.scalableAlias = new ScalableVersionAttribute(this, 'VersionScaling', {
+      serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
+      dimension: 'lambda:function:ProvisionedConcurrency',
+      minCapacity: props.minCapacity,
+      maxCapacity: props.maxCapacity,
+      resourceId: `function:${this.lambda.functionName}:${this.aliasName}`,
+      role,
     });
   }
 
