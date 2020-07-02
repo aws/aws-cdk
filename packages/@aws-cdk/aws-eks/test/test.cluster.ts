@@ -956,7 +956,7 @@ export = {
               },
             },
             {
-              Action: 'iam:GetRole',
+              Action: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -1025,7 +1025,7 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'iam:GetRole',
+              Action: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -1175,6 +1175,85 @@ export = {
       expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
         Manifest: JSON.stringify([sanitized]),
       }));
+      test.done();
+    },
+
+    'kubectl resources are always created after all fargate profiles'(test: Test) {
+      // GIVEN
+      const { stack, app } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster');
+
+      // WHEN
+      cluster.addFargateProfile('profile1', { selectors: [ { namespace: 'profile1' } ]});
+      cluster.addResource('resource1', { foo: 123 });
+      cluster.addFargateProfile('profile2', { selectors: [ { namespace: 'profile2' } ]});
+      new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
+      cluster.addFargateProfile('profile3', { selectors: [ { namespace: 'profile3' } ]});
+      new eks.KubernetesPatch(stack, 'patch1', {
+        cluster,
+        applyPatch: { foo: 123 },
+        restorePatch: { bar: 123 },
+        resourceName: 'foo/bar',
+      });
+      cluster.addFargateProfile('profile4', { selectors: [ { namespace: 'profile4' } ]});
+
+      // THEN
+      const template = app.synth().getStackArtifact(stack.artifactId).template;
+
+      const barrier = template.Resources.ClusterKubectlReadyBarrier200052AF;
+
+      test.deepEqual(barrier.DependsOn, [
+        'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5',
+        'Clusterfargateprofileprofile129AEA3C6',
+        'Clusterfargateprofileprofile2PodExecutionRole22670AF8',
+        'Clusterfargateprofileprofile233B9A117',
+        'Clusterfargateprofileprofile3PodExecutionRole475C0D8F',
+        'Clusterfargateprofileprofile3D06F3076',
+        'Clusterfargateprofileprofile4PodExecutionRole086057FB',
+        'Clusterfargateprofileprofile4A0E3BBE8',
+        'ClusterCreationRoleDefaultPolicyE8BDFC7B',
+        'ClusterCreationRole360249B6',
+        'Cluster9EE0221C',
+      ]);
+
+      const kubectlResources = [ 'chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505', 'ClusterAwsAuthmanifestFE51F8AE' ];
+
+      // check that all kubectl resources depend on the barrier
+      for (const r of kubectlResources) {
+        test.deepEqual(template.Resources[r].DependsOn, [ 'ClusterKubectlReadyBarrier200052AF' ]);
+      }
+
+      test.done();
+    },
+
+    'kubectl provider role is trusted to assume cluster creation role'(test: Test) {
+      // GIVEN
+      const { stack, app } = testFixture();
+      const c1 = new eks.Cluster(stack, 'Cluster1');
+      const c2 = new eks.Cluster(stack, 'Cluster2');
+
+      // WHEN
+
+      // activate kubectl provider
+      c1.addResource('c1a', { foo: 123 });
+      c1.addResource('c1b', { foo: 123 });
+      c2.addResource('c2', { foo: 123 });
+
+      // THEN
+      const template = app.synth().getStackArtifact(stack.artifactId).template;
+
+      const creationRoleToKubectlRole = {
+        Cluster1CreationRoleA231BE8D: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+        Cluster2CreationRole9254EAB6: 'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+      };
+
+      // verify that the kubectl role appears as the 2nd IAM trust policy statement
+      for (const [ creationRole, kubectlRole ] of Object.entries(creationRoleToKubectlRole)) {
+        const trustPolicy = template.Resources[creationRole].Properties.AssumeRolePolicyDocument.Statement;
+        test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
+        test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
+      }
+
       test.done();
     },
   }};
