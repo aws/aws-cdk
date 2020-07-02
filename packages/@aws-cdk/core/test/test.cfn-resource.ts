@@ -1,6 +1,5 @@
 import * as nodeunit from 'nodeunit';
 import * as core from '../lib';
-import { Duration } from '../lib';
 
 export = nodeunit.testCase({
   '._toCloudFormation': {
@@ -96,8 +95,6 @@ export = nodeunit.testCase({
       },
     });
 
-
     test.done();
   },
-
 });

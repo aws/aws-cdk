@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { CloudFormationInit } from './cfn-init';
+import { InitRenderPlatform } from './cfn-init-elements';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -9,8 +11,6 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
-import { CloudFormationInit } from './cfn-init';
-import { InitRenderPlatform } from './cfn-init-elements';
 
 /**
  * Name tag constant

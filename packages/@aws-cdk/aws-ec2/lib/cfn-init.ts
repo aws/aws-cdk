@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, CfnResource, Aws, Duration } from'@aws-cdk/core';
-import { InitElement, InitRenderPlatform, InitElementType, InitRenderOptions, InitBindOptions } from './cfn-init-elements';
+import { Aws, CfnResource, Construct } from '@aws-cdk/core';
+import { InitBindOptions, InitElement, InitElementType, InitRenderOptions, InitRenderPlatform } from './cfn-init-elements';
 import { UserData } from './user-data';
 
 /**
@@ -29,22 +29,26 @@ export class CloudFormationInit {
   /**
    * Build a CloudFormationInit from config sets
    */
-  public static fromConfigSets(config: ConfigSetProps) {
-  }
-
-  protected constructor() {
+  public static fromConfigSets(_config: ConfigSetProps) {
+    // TODO
   }
 
   private readonly _configSets: Record<string, string[]> = {};
   private readonly _configs: Record<string, InitConfig> = {};
 
-  public addConfig(configName: string, config: InitConfig) {
+  protected constructor() {
   }
 
-  public addConfigSet(configSetName: string) {
+  public addConfig(_configName: string, _config: InitConfig) {
+    // TODO
   }
 
-  public addConfigToSet(configSetName: string, ...configNames: string[]) {
+  public addConfigSet(_configSetName: string) {
+    // TODO
+  }
+
+  public addConfigToSet(_configSetName: string, ..._configNames: string[]) {
+    // TODO
   }
 
   /**
@@ -69,6 +73,7 @@ export class CloudFormationInit {
 
     // Anonymous subclass of an abstract class because I don't want users to be able to
     // instantiate this. It is a type that represents an action you took.
+    // tslint:disable-next-line:new-parens
     return new class extends AttachedCloudFormationInit {
       public apply(consumingResource: CfnResource, useOptions: ApplyInitOptions): void {
         self.bind(consumingResource, { instanceRole: useOptions.instanceRole });
@@ -200,7 +205,7 @@ export class InitConfig {
       files: this.renderConfigForType(InitElementType.FILE, renderOptions),
       commands: this.renderConfigForType(InitElementType.COMMAND, renderOptions),
       services: this.renderConfigForType(InitElementType.SERVICE, renderOptions),
-    }
+    };
   }
 
   private renderConfigForType(elementType: InitElementType, renderOptions: Omit<InitRenderOptions, 'index'>): Record<string, any> | undefined {
@@ -222,12 +227,12 @@ export interface ConfigSetProps {
   /**
    * The definitions of each config set
    */
-  configSets: Record<string, string[]>;
+  readonly configSets: Record<string, string[]>;
 
   /**
    * The sets of configs to pick from
    */
-  configs: Record<string, InitConfig>;
+  readonly configs: Record<string, InitConfig>;
 }
 
 function deepMerge(target: Record<string, any>, src: Record<string, any>) {
