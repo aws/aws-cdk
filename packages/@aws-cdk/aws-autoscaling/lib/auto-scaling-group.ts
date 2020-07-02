@@ -234,6 +234,13 @@ export interface CommonAutoScalingGroupProps {
    * @default - Monitoring.DETAILED
    */
   readonly instanceMonitoring?: Monitoring;
+
+  /**
+   * The name of the Auto Scaling group. This name must be unique per Region per account.
+   * @default
+   */
+  readonly autoScalingGroupName?: string;
+
 }
 
 /**
@@ -576,6 +583,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
+      autoScalingGroupName: props.autoScalingGroupName,
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
