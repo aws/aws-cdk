@@ -1,6 +1,5 @@
 import { Connections } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { IManagedPolicy, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { IDependable } from '@aws-cdk/core';
 
 /**
@@ -26,6 +25,8 @@ export interface FileSystemConfig {
 
   /**
    * connections object used to allow ingress traffic from lambda function
+   *
+   * @default - no connections required to add extra ingress rules for Lambda function
    */
   readonly connections?: Connections;
 
@@ -34,7 +35,7 @@ export interface FileSystemConfig {
    *
    * @default - no additional policies required
    */
-  readonly managedPolicies?: IManagedPolicy[]
+  readonly managedPolicies?: string[]
 }
 
 /**
@@ -53,7 +54,7 @@ export class FileSystem {
       dependency: [ ap.filesystem.mountTargetsAvailable ],
       connections: ap.filesystem.connections,
       managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticFileSystemClientFullAccess'),
+        'AmazonElasticFileSystemClientFullAccess',
       ],
     });
   }

@@ -499,11 +499,17 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
+    // add additonal managed policies when necessary
     if (props.filesystems) {
+      const pushedPolicy: string[] = [];
       for (const fs of props.filesystems) {
-        // add additonal managed policies when necessary
         if (fs.config.managedPolicies) {
-          managedPolicies.push(...fs.config.managedPolicies);
+          fs.config.managedPolicies.forEach(p => {
+            if (pushedPolicy.indexOf(p) === -1) {
+              managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName(p));
+              pushedPolicy.push(p);
+            }
+          });
         }
       }
     }
@@ -591,14 +597,15 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystems) {
+      // max 1 filesystem allowed
+      if (props.filesystems.length > 1) {
+        throw new Error('max 1 filesystem allowed');
+      }
+
       for (const fs of props.filesystems) {
         // add dependency when necessary
         if (fs.config.dependency) {
           this.node.addDependency(...fs.config.dependency);
-        }
-        // add additonal managed policies when necessary
-        if (fs.config.managedPolicies) {
-          managedPolicies.push(...fs.config.managedPolicies);
         }
       }
 

@@ -289,5 +289,31 @@ export = testCase({
       }));
       test.done();
     },
+    'max 1 filesystem allowed'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      const accessPoint2 = fs.addAccessPoint('AccessPoint2');
+      // WHEN/THEN
+      test.throws(() => new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystems: [
+          lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+          lambda.FileSystem.fromEfsAccessPoint(accessPoint2, '/mnt/msg2'),
+        ],
+      }), /max 1 filesystem allowed/);
+
+      test.done();
+    },
   },
 });
