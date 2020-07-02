@@ -70,7 +70,7 @@ export class KubernetesPatch extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster._kubectlProvider;
+    const provider = props.cluster._attachKubectlResourceScope(this);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
