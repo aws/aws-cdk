@@ -45,12 +45,12 @@ test('with lists', async () => {
   expect(evaluated).toEqual([2, 4, 6]);
 });
 
-test('with duplacated entries', async () => {
+test('with duplicated entries', async () => {
   // GIVEN
   const event: Event = {
     expression: '$.a + $.a',
     expressionAttributeValues: {
-      '$.a': 1
+      '$.a': 1,
     },
   };
 
