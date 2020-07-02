@@ -73,10 +73,13 @@ export class LinuxGpuBuildImage implements IBuildImage {
    * @param repositoryName the name of the repository,
    *   for example "pytorch-inference"
    * @param tag the tag of the image, for example "1.5.0-gpu-py36-cu101-ubuntu16.04"
+   * @param account the AWS account ID where the DLC repository for this region is hosted in.
+   *   In many cases, the CDK can infer that for you, but for some newer region our information
+   *   might be out of date; in that case, you can specify the region explicitly using this optional parameter
    * @see https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
    */
-  private static awsDeepLearningContainersImage(repositoryName: string, tag: string): IBuildImage {
-    return new LinuxGpuBuildImage(repositoryName, tag);
+  public static awsDeepLearningContainersImage(repositoryName: string, tag: string, account?: string): IBuildImage {
+    return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
   public readonly type = 'LINUX_GPU_CONTAINER';
@@ -85,42 +88,44 @@ export class LinuxGpuBuildImage implements IBuildImage {
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
   public readonly bind?: IBuildImageBind;
 
-  private constructor(repositoryName: string, tag: string) {
+  private constructor(repositoryName: string, tag: string, account: string | undefined) {
     const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
-    const accountExpression = core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
+    const accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'account');
     this.imageId = `${accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
     this.bind = {
       bind(scope: core.Construct, project: IProject): BuildImageConfig {
-        const scopeStack = core.Stack.of(scope);
-        // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
-        // Because of that, use a (singleton) Mapping to find the correct account
-        if (!scopeStack.node.tryFindChild(mappingName)) {
-          new core.CfnMapping(scopeStack, mappingName, {
-            mapping: {
-              'us-east-1':      { account: '763104351884' },
-              'us-east-2':      { account: '763104351884' },
-              'us-west-1':      { account: '763104351884' },
-              'us-west-2':      { account: '763104351884' },
-              'ca-central-1':   { account: '763104351884' },
-              'eu-west-1':      { account: '763104351884' },
-              'eu-west-2':      { account: '763104351884' },
-              'eu-west-3':      { account: '763104351884' },
-              'eu-central-1':   { account: '763104351884' },
-              'eu-north-1':     { account: '763104351884' },
-              'sa-east-1':      { account: '763104351884' },
-              'ap-south-1':     { account: '763104351884' },
-              'ap-northeast-1': { account: '763104351884' },
-              'ap-northeast-2': { account: '763104351884' },
-              'ap-southeast-1': { account: '763104351884' },
-              'ap-southeast-2': { account: '763104351884' },
+        if (!account) {
+          const scopeStack = core.Stack.of(scope);
+          // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
+          // Because of that, use a (singleton) Mapping to find the correct account
+          if (!scopeStack.node.tryFindChild(mappingName)) {
+            new core.CfnMapping(scopeStack, mappingName, {
+              mapping: {
+                'us-east-1': { account: '763104351884' },
+                'us-east-2': { account: '763104351884' },
+                'us-west-1': { account: '763104351884' },
+                'us-west-2': { account: '763104351884' },
+                'ca-central-1': { account: '763104351884' },
+                'eu-west-1': { account: '763104351884' },
+                'eu-west-2': { account: '763104351884' },
+                'eu-west-3': { account: '763104351884' },
+                'eu-central-1': { account: '763104351884' },
+                'eu-north-1': { account: '763104351884' },
+                'sa-east-1': { account: '763104351884' },
+                'ap-south-1': { account: '763104351884' },
+                'ap-northeast-1': { account: '763104351884' },
+                'ap-northeast-2': { account: '763104351884' },
+                'ap-southeast-1': { account: '763104351884' },
+                'ap-southeast-2': { account: '763104351884' },
 
-              'ap-east-1':      { account: '871362719292' },
-              'me-south-1':     { account: '217643126080' },
+                'ap-east-1': { account: '871362719292' },
+                'me-south-1': { account: '217643126080' },
 
-              'cn-north-1':     { account: '727897471807' },
-              'cn-northwest-1': { account: '727897471807' },
-            },
-          });
+                'cn-north-1': { account: '727897471807' },
+                'cn-northwest-1': { account: '727897471807' },
+              },
+            });
+          }
         }
 
         const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
