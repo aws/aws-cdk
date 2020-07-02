@@ -21,7 +21,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### TypeScript example
+### Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -158,7 +158,7 @@ and also injects a field called `otherData`.
 ```ts
 const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.DataAt('$.input.greeting')
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
     otherData: 'some-extra-stuff'
   },
 });
@@ -656,12 +656,3 @@ sfn.StateMachine.fromStateMachineArn(
   'ImportedStateMachine',
   'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
 ```
-
-## Future work
-
-Contributions welcome:
-
-- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one
-  might make for a nice API.
-- [ ] Expression parser for Conditions.
-- [ ] Simulate state machines in unit tests.
