@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
 import { InitBindOptions, InitElement, InitElementType, InitRenderOptions, InitRenderPlatform } from './cfn-init-elements';
@@ -67,7 +68,9 @@ export class CloudFormationInit {
   public attach(definingResource: CfnResource, attachOptions: AttachInitOptions): AttachedCloudFormationInit {
     // FIXME: This this eagerly renders, it will not reflect mutations made after attaching.
     // Is that okay?
-    definingResource.addMetadata('AWS::CloudFormation::Init', this.renderInit(attachOptions.platform));
+    const configData = this.renderInit(attachOptions.platform);
+    definingResource.addMetadata('AWS::CloudFormation::Init', configData);
+    const fingerprint = contentHash(JSON.stringify(configData)).substr(0, 16);
 
     const self = this;
 
@@ -87,6 +90,11 @@ export class CloudFormationInit {
         const initLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${definingResource.logicalId}`;
         const signalLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} -resource ${consumingResource.logicalId}`;
         const configSets = (useOptions.configSets ?? ['default']).join(',');
+
+        if (useOptions.embedFingerprint ?? true) {
+          // It just so happens that the comment char is '#' for both bash and PowerShell
+          useOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
+        }
 
         if (attachOptions.platform === InitRenderPlatform.WINDOWS) {
           useOptions.userData.addCommands(
@@ -164,6 +172,20 @@ export interface ApplyInitOptions {
    * @default ['default']
    */
   readonly configSets?: string[];
+
+  /**
+   * Whether to embed a hash into the userData
+   *
+   * If `true` (the default), a hash of the config will be embedded into the
+   * UserData, so that if the config changes, the UserData changes and
+   * the instance will be replaced.
+   *
+   * If `false`, no such hash will be embedded, and if the CloudFormation Init
+   * config changes nothing will happen to the running instance.
+   *
+   * @default true
+   */
+  readonly embedFingerprint?: boolean;
 }
 
 export interface InitBindRenderResult {
@@ -252,4 +274,8 @@ function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string,
     ret[k] = fn(v);
   }
   return ret;
+}
+
+function contentHash(content: string) {
+  return crypto.createHash('sha256').update(content).digest('hex');
 }

@@ -993,7 +993,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,
+      embedFingerprint: options.embedFingerprint,
     });
+
+    // Attach a hash of the CloudFormationInit config to the UserData, so that the
+    // UserData will change if the config changes, which will cause
   }
 
 
@@ -1037,6 +1041,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   private applyNewSignalUpdatePolicies(props: AutoScalingGroupProps, signalOptions: RenderSignalsOptions) {
     this.autoScalingGroup.cfnOptions.creationPolicy = props.signals?.renderCreationPolicy(signalOptions);
+    this.autoScalingGroup.cfnOptions.updatePolicy = props.updatePolicy?.renderUpdatePolicy({
+      creationPolicy: this.autoScalingGroup.cfnOptions.creationPolicy,
+    });
   }
 
   private applyLegacySignalUpdatePolicies(props: AutoScalingGroupProps) {
@@ -1510,4 +1517,22 @@ export interface ApplyCloudFormationInitOptions {
    * @default ['default']
    */
   readonly configSets?: string[];
+
+  /**
+   * Force instance replacement by embedding a config fingerprint
+   *
+   * If `true` (the default), a hash of the config will be embedded into the
+   * UserData, so that if the config changes, the UserData changes and
+   * instances will be replaced (given an UpdatePolicy has been configured on
+   * the AutoScalingGroup).
+   *
+   * If `false`, no such hash will be embedded, and if the CloudFormation Init
+   * config changes nothing will happen to the running instances. If a
+   * config update introduces errors, you will not notice until after the
+   * CloudFormation deployment successfully finishes and the next instance
+   * fails to launch.
+   *
+   * @default true
+   */
+  readonly embedFingerprint?: boolean;
 }

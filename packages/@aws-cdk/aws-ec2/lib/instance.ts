@@ -404,6 +404,7 @@ export class Instance extends Resource implements IInstance {
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,
+      embedFingerprint: options.embedFingerprint,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -461,4 +462,21 @@ export interface ApplyCloudFormationInitOptions {
    * @default Duration.minutes(5)
    */
   readonly timeout?: Duration;
+
+  /**
+   * Force instance replacement by embedding a config fingerprint
+   *
+   * If `true` (the default), a hash of the config will be embedded into the
+   * UserData, so that if the config changes, the UserData changes and
+   * the instance will be replaced.
+   *
+   * If `false`, no such hash will be embedded, and if the CloudFormation Init
+   * config changes nothing will happen to the running instance. If a
+   * config update introduces errors, you will not notice until after the
+   * CloudFormation deployment successfully finishes and the next instance
+   * fails to launch.
+   *
+   * @default true
+   */
+  readonly embedFingerprint?: boolean;
 }

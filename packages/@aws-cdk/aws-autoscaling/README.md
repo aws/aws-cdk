@@ -11,8 +11,6 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Fleet
-
 ### Auto Scaling Group
 
 An `AutoScalingGroup` represents a number of instances on which you run your code. You
@@ -223,6 +221,42 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
   minCapacity: 1
 });
 ```
+
+### Configuring Instances using CloudFormation Init
+
+It is possible to use the CloudFormation Init mechanism to configure the
+instances in the AutoScalingGroup. You can write files to it, run commands,
+start services, etc. See the documentation of
+[AWS::CloudFormation::Init](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html)
+and the documentation of CDK's `aws-ec2` library for more information.
+
+When you specify a CloudFormation Init configuration for an AutoScalingGroup:
+
+* you *must* also specify `signals` to configure how long CloudFormation
+  should wait for the instances to successfully configure themselves.
+* you *should* also specify an `updatePolicy` to configure how instances
+  should be updated when the AutoScalingGroup is updated (for example,
+  when the AMI is updated).
+
+Here's an example of using CloudFormation Init to write a file to the
+instance hosts on startup:
+
+```ts
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  // ...
+
+  init: ec2.CloudFormationInit.fromElements(
+    ec2.InitFile.fromString('/etc/my_instance', 'This got written during instance startup'),
+  ),
+  signals: autoscaling.Signals.waitForAll({
+    timeout: Duration.minutes(10),
+  }),
+  updatePolicy: autoscaling.UpdatePolicy.rollingUpdate(),
+});
+```
+
+```
+
 
 ### Allowing Connections
 
