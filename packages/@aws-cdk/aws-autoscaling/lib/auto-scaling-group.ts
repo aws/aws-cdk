@@ -7,7 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved,
+  Tag, Tokenization, withResolved, CfnCreationPolicy, CfnUpdatePolicy,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -114,6 +114,7 @@ export interface CommonAutoScalingGroupProps {
    * is done and only new instances are launched with the new config.
    *
    * @default UpdateType.None
+   * @deprecated Use `updatePolicy` instead
    */
   readonly updateType?: UpdateType;
 
@@ -123,6 +124,7 @@ export interface CommonAutoScalingGroupProps {
    * Only used if updateType == UpdateType.RollingUpdate.
    *
    * @default - RollingUpdateConfiguration with defaults.
+   * @deprecated Use `updatePolicy` instead
    */
   readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
@@ -133,6 +135,7 @@ export interface CommonAutoScalingGroupProps {
    * many instances must signal success for the update to succeed.
    *
    * @default minSuccessfulInstancesPercent
+   * @deprecated Use `signals` instead
    */
   readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
@@ -152,7 +155,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * How many ResourceSignal calls CloudFormation expects before the resource is considered created
    *
-   * @default 1
+   * @default 1 if resourceSignalTimeout is set, 0 otherwise
+   * @deprecated Use `signals` instead.
    */
   readonly resourceSignalCount?: number;
 
@@ -161,7 +165,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * The maximum value is 43200 (12 hours).
    *
-   * @default Duration.minutes(5)
+   * @default Duration.minutes(5) if resourceSignalCount is set, N/A otherwise
+   * @deprecated Use `signals` instead.
    */
   readonly resourceSignalTimeout?: Duration;
 
@@ -234,6 +239,42 @@ export interface CommonAutoScalingGroupProps {
    * @default - Monitoring.DETAILED
    */
   readonly instanceMonitoring?: Monitoring;
+
+  /**
+   * Configure waiting for signals during deployment
+   *
+   * Use this to pause the CloudFormation deployment to wait for the instances
+   * in the AutoScalingGroup to report successful startup during
+   * creation and updates. The UserData script needs to invoke `cfn-signal`
+   * with a success or failure code after it is done setting up the instance.
+   *
+   * Without waiting for signals, the CloudFormation deployment will proceed as
+   * soon as the AutoScalingGroup has been created or updated but before the
+   * instances in the group have been started.
+   *
+   * For example, to have instances wait for an Elastic Load Balancing health check before
+   * they signal success, add a health-check verification by using the
+   * cfn-init helper script. For an example, see the verify_instance_health
+   * command in the Auto Scaling rolling updates sample template:
+   *
+   * https://github.com/awslabs/aws-cloudformation-templates/blob/master/aws/services/AutoScaling/AutoScalingRollingUpdates.yaml
+   *
+   * @default - Do not wait for signals
+   */
+  readonly signals?: Signals;
+
+  /**
+   * What to do when an AutoScalingGroup's instance configuration is changed
+   *
+   * This is applied when any of the settings on the ASG are changed that
+   * affect how the instances should be created (VPC, instance type, startup
+   * scripts, etc.). It indicates how the existing instances should be
+   * replaced with new instances matching the new config. By default, nothing
+   * is done and only new instances are launched with the new config.
+   *
+   * @default - Do not restart existing instances
+   */
+  readonly updatePolicy?: UpdatePolicy;
 }
 
 /**
@@ -286,6 +327,261 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instances in the AutoScalingGroup at startup
+   *
+   * If you specify `init`, you must also specify `signals` to configure
+   * the number of instances to wait for and the timeout for waiting for the
+   * init process.
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: ec2.CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
+}
+
+/**
+ * Configure whether the AutoScalingGroup waits for signals
+ *
+ * If you do configure waiting for signals, you should make sure the instances
+ * invoke `cfn-signal` somewhere in their UserData to signal that they have
+ * started up (either successfully or unsuccessfully).
+ *
+ * Signals are used both during intial creation and subsequent updates.
+ */
+export abstract class Signals {
+  /**
+   * Wait for the desiredCapacity of the AutoScalingGroup amount of signals to have been received
+   *
+   * If no desiredCapacity has been configured, wait for minCapacity signals intead.
+   *
+   * This number is used during initial creation and during replacing updates.
+   * During rolling updates, all updated instances must send a signal.
+   */
+  public static waitForAll(options: SignalsOptions = {}): Signals {
+    validatePercentage(options.minSuccessPercentage);
+    return new class extends Signals {
+      public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
+        return this.doRender(renderOptions.desiredCapacity ?? renderOptions.minCapacity, options);
+      }
+    };
+  }
+
+  /**
+   * Wait for the minCapacity of the AutoScalingGroup amount of signals to have been received
+   *
+   * This number is used during initial creation and during replacing updates.
+   * During rolling updates, all updated instances must send a signal.
+   */
+  public static waitForMinCapacity(options: SignalsOptions = {}): Signals {
+    validatePercentage(options.minSuccessPercentage);
+    return new class extends Signals {
+      public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
+        return this.doRender(renderOptions.minCapacity, options);
+      }
+    };
+  }
+
+  /**
+   * Wait for a specific amount of signals to have been received
+   *
+   * You should send one signal per instance, so this represents the number of
+   * instances to wait for.
+   *
+   * This number is used during initial creation and during replacing updates.
+   * During rolling updates, all updated instances must send a signal.
+   */
+  public static waitForCount(count: number, options: SignalsOptions = {}): Signals {
+    validatePercentage(options.minSuccessPercentage);
+    return new class extends Signals {
+      public renderCreationPolicy(): CfnCreationPolicy {
+        return this.doRender(count, options);
+      }
+    };
+  }
+
+  /**
+   * Render the ASG's CreationPolicy
+   */
+  public abstract renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy;
+
+  /**
+   * Helper to render the actual creation policy, as the logic between them is quite similar
+   */
+  protected doRender(count: number | undefined, options: SignalsOptions): CfnCreationPolicy {
+    const minSuccessfulInstancesPercent = validatePercentage(options.minSuccessPercentage);
+    return {
+      ...options.minSuccessPercentage !== undefined ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } } : { },
+      resourceSignal: {
+        count,
+        timeout: options.timeout?.toIsoString(),
+      },
+    };
+  }
+
+}
+
+/**
+ * Input for Signals.renderCreationPolicy
+ */
+export interface RenderSignalsOptions {
+  /**
+   * The desiredCapacity of the ASG
+   */
+  readonly desiredCapacity?: number;
+
+  /**
+   * The minSize of the ASG
+   */
+  readonly minCapacity?: number;
+}
+
+/**
+ * Customization options for Signal handling
+ */
+export interface SignalsOptions {
+  /**
+   * The percentage of signals that need to be successful
+   *
+   * If this number is less than 100, a percentage of signals may be failure
+   * signals while still succeeding the creation or update in CloudFormation.
+   *
+   * @default 100
+   */
+  readonly minSuccessPercentage?: number;
+
+  /**
+   * How long to wait for the signals to be sent
+   *
+   * This should reflect how long it takes your instances to start up
+   * (including instance start time and instance initialization time).
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+}
+
+/**
+ * How existing instances should be update
+ */
+export abstract class UpdatePolicy {
+  /**
+   * Create a new AutoScalingGroup and switch over to it
+   */
+  public static replacingUpdate(): UpdatePolicy {
+    return new class extends UpdatePolicy {
+      public renderUpdatePolicy(): CfnUpdatePolicy {
+        return {
+          autoScalingReplacingUpdate: { willReplace: true },
+        };
+      }
+    };
+  }
+
+  /**
+   * Replace the instances in the AutoScalingGroup one by one
+   */
+  public static rollingUpdate(options: RollingUpdateOptions = {}): UpdatePolicy {
+    const minSuccessPercentage = validatePercentage(options.minSuccessPercentage);
+
+    return new class extends UpdatePolicy {
+      public renderUpdatePolicy(renderOptions: RenderUpdateOptions): CfnUpdatePolicy {
+        return {
+          autoScalingRollingUpdate: {
+            maxBatchSize: options.maxBatchSize,
+            minInstancesInService: options.minInstancesInService,
+            suspendProcesses: options.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
+            minSuccessfulInstancesPercent: minSuccessPercentage ?? renderOptions.creationPolicy?.autoScalingCreationPolicy?.minSuccessfulInstancesPercent,
+            waitOnResourceSignals: options.waitOnResourceSignals ?? renderOptions.creationPolicy?.resourceSignal !== undefined ? true : undefined,
+            pauseTime: options.pauseTime?.toIsoString() ?? renderOptions.creationPolicy?.resourceSignal?.timeout,
+          },
+        };
+      }
+    };
+  }
+
+  /**
+   * Render the ASG's CreationPolicy
+   */
+  public abstract renderUpdatePolicy(renderOptions: RenderUpdateOptions): CfnUpdatePolicy;
+}
+
+/**
+ * Options for rendering UpdatePolicy
+ */
+export interface RenderUpdateOptions {
+  /**
+   * The Creation Policy already created
+   */
+  readonly creationPolicy?: CfnCreationPolicy;
+
+  /**
+   * Scaling processes to be suspended
+   */
+  readonly suspendProcesses?: ScalingProcess[];
+}
+
+/**
+ * Options for customizing the rolling update
+ */
+export interface RollingUpdateOptions {
+  /**
+   * The maximum number of instances that AWS CloudFormation updates at once.
+   *
+   * This number affects the speed of the replacement.
+   *
+   * @default 1
+   */
+  readonly maxBatchSize?: number;
+
+  /**
+   * The minimum number of instances that must be in service before more instances are replaced.
+   *
+   * This number affects the speed of the replacement.
+   *
+   * @default 0
+   */
+  readonly minInstancesInService?: number;
+
+  /**
+   * Specifies the Auto Scaling processes to suspend during a stack update.
+   *
+   * Suspending processes prevents Auto Scaling from interfering with a stack
+   * update.
+   *
+   * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
+   */
+  readonly suspendProcesses?: ScalingProcess[];
+
+  /**
+   * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
+   *
+   * @default true if you configured `signals` on the AutoScalingGroup, false otherwise
+   */
+  readonly waitOnResourceSignals?: boolean;
+
+  /**
+   * The pause time after making a change to a batch of instances.
+   *
+   * @default - The `timeout` configured for `signals` on the AutoScalingGroup
+   */
+  readonly pauseTime?: Duration;
+
+  /**
+   * The percentage of instances that must signal success for the update to succeed.
+   *
+   * @default - The `minSuccessPercentage` configured for `signals` on the AutoScalingGroup
+   */
+  readonly minSuccessPercentage?: number;
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
@@ -478,9 +774,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
+  private readonly isWindows: boolean;
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
+
+    if (props.initOptions && !props.init) {
+      throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
+    }
 
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
@@ -503,6 +804,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
+    this.isWindows = imageConfig.osType === ec2.OperatingSystemType.WINDOWS;
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
@@ -604,7 +906,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.node.defaultChild = this.autoScalingGroup;
 
-    this.applyUpdatePolicies(props);
+    this.applyUpdatePolicies(props, { desiredCapacity, minCapacity });
+    if (props.init) {
+      this.applyCloudFormationInit(props.init, props.initOptions);
+    }
 
     this.spotPrice = props.spotPrice;
   }
@@ -669,9 +974,72 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
+   * Use a CloudFormation Init configuration at instance startup
+   *
+   * This does the following:
+   *
+   * - Attaches the CloudFormation Init metadata to the AutoScalingGroup resource.
+   * - Add commands to the UserData to run `cfn-init` and `cfn-signal`.
+   * - Update the instance's CreationPolicy to wait for `cfn-init` to finish
+   *   before reporting success.
+   */
+  public applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+    if (!this.autoScalingGroup.cfnOptions.creationPolicy?.resourceSignal) {
+      throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
+    }
+
+    const platform = this.isWindows ? ec2.InitRenderPlatform.WINDOWS : ec2.InitRenderPlatform.LINUX;
+    init.attach(this.autoScalingGroup, { platform }).apply(this.autoScalingGroup, {
+      instanceRole: this.role,
+      userData: this.userData,
+      configSets: options.configSets,
+    });
+  }
+
+
+  /**
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
-  private applyUpdatePolicies(props: AutoScalingGroupProps) {
+  private applyUpdatePolicies(props: AutoScalingGroupProps, signalOptions: RenderSignalsOptions) {
+    // Make sure people are not using the old and new properties together
+    const oldProps: Array<keyof AutoScalingGroupProps> = [
+      'updateType',
+      'rollingUpdateConfiguration',
+      'resourceSignalCount',
+      'resourceSignalTimeout',
+      'replacingUpdateMinSuccessfulInstancesPercent',
+    ];
+    for (const prop of oldProps) {
+      if ((props.signals || props.updatePolicy) && props[prop] !== undefined) {
+        throw new Error(`Cannot set 'signals'/'updatePolicy' and '${prop}' together. Prefer 'signals'/'updatePolicy'`);
+      }
+    }
+
+    if (props.signals || props.updatePolicy) {
+      this.applyNewSignalUpdatePolicies(props, signalOptions);
+    } else {
+      this.applyLegacySignalUpdatePolicies(props);
+    }
+
+    // This the following is technically part of the "update policy" but it's also a completely
+    // separate aspect of rolling/replacing update, so it's just its own top-level property.
+    // Default is 'true' because that's what you're most likely to want
+    if (props.ignoreUnmodifiedSizeProperties !== false) {
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
+        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
+      };
+    }
+  }
+
+  /**
+   * Use 'signals' and 'updatePolicy' to determine the creation and update policies
+   */
+  private applyNewSignalUpdatePolicies(props: AutoScalingGroupProps, signalOptions: RenderSignalsOptions) {
+    this.autoScalingGroup.cfnOptions.creationPolicy = props.signals?.renderCreationPolicy(signalOptions);
+  }
+
+  private applyLegacySignalUpdatePolicies(props: AutoScalingGroupProps) {
     if (props.updateType === UpdateType.REPLACING_UPDATE) {
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
@@ -700,14 +1068,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
 
-    // undefined is treated as 'true'
-    if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.autoScalingGroup.cfnOptions.updatePolicy = {
-        ...this.autoScalingGroup.cfnOptions.updatePolicy,
-        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
-      };
-    }
-
     if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
       this.autoScalingGroup.cfnOptions.creationPolicy = {
         ...this.autoScalingGroup.cfnOptions.creationPolicy,
@@ -733,6 +1093,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
 /**
  * The type of update to perform on instances in this AutoScalingGroup
+ *
+ * @deprecated Use UpdatePolicy instead
  */
 export enum UpdateType {
   /**
@@ -919,6 +1281,12 @@ export enum ScalingProcess {
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
 }
 
+// Recommended list of processes to suspend from here:
+// https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
+const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
+  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS];
+
+
 /**
  * EC2 Heath check options
  */
@@ -987,11 +1355,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
     pauseTime: pauseTime && pauseTime.toISOString(),
-    suspendProcesses: config.suspendProcesses !== undefined ? config.suspendProcesses :
-      // Recommended list of processes to suspend from here:
-      // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
-      [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
-        ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS],
+    suspendProcesses: config.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
   };
 }
 
@@ -1134,4 +1498,16 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       deviceName, ebs, virtualName,
     };
   });
+}
+
+/**
+ * Options for applying CloudFormation init to an instance or instance group
+ */
+export interface ApplyCloudFormationInitOptions {
+  /**
+   * ConfigSet to activate
+   *
+   * @default ['default']
+   */
+  readonly configSets?: string[];
 }

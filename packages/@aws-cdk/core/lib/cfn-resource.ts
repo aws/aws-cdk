@@ -253,22 +253,6 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
-   * Wait for a single additional resource signal
-   *
-   * Add 1 to the current ResourceSignal Count and add the given timeout to the current timeout.
-   */
-  public addCreationPolicySignalWait(timeout: Duration) {
-    const oldResourceSignal = this.cfnOptions.creationPolicy?.resourceSignal;
-    this.cfnOptions.creationPolicy = {
-      ...this.cfnOptions.creationPolicy,
-      resourceSignal: {
-        count: (oldResourceSignal?.count ?? 0) + 1,
-        timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
-      },
-    };
-  }
-
-  /**
    * @returns a string representation of this resource
    */
   public toString() {

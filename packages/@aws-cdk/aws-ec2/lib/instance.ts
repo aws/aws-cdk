@@ -396,8 +396,7 @@ export class Instance extends Resource implements IInstance {
    *
    * - Attaches the CloudFormation Init metadata to the Instance resource.
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
-   * - Update the instance's CreationPolicy to wait for `cfn-init` to finish
-   *   before reporting success.
+   * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
   public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     const platform = this.isWindows ? InitRenderPlatform.WINDOWS : InitRenderPlatform.LINUX;
@@ -405,8 +404,29 @@ export class Instance extends Resource implements IInstance {
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,
-      timeout: options.timeout,
     });
+    this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
+  }
+
+  /**
+   * Wait for a single additional resource signal
+   *
+   * Add 1 to the current ResourceSignal Count and add the given timeout to the current timeout.
+   *
+   * Use this to pause the CloudFormation deployment to wait for the instances
+   * in the AutoScalingGroup to report successful startup during
+   * creation and updates. The UserData script needs to invoke `cfn-signal`
+   * with a success or failure code after it is done setting up the instance.
+   */
+  public waitForResourceSignal(timeout: Duration) {
+    const oldResourceSignal = this.instance.cfnOptions.creationPolicy?.resourceSignal;
+    this.instance.cfnOptions.creationPolicy = {
+      ...this.instance.cfnOptions.creationPolicy,
+      resourceSignal: {
+        count: (oldResourceSignal?.count ?? 0) + 1,
+        timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
+      },
+    };
   }
 
   /**
@@ -425,7 +445,7 @@ export class Instance extends Resource implements IInstance {
 }
 
 /**
- * Options for adding a CloudFormation init
+ * Options for applying CloudFormation init to an instance or instance group
  */
 export interface ApplyCloudFormationInitOptions {
   /**

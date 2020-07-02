@@ -51,7 +51,9 @@ export class CloudFormationInit {
    * Attach the CloudFormation Init config to the given resource
    *
    * This returns an `AttachedCloudFormationInit` object, which can be used to apply
-   * the init to one or more instances and/or autoscaling groups.
+   * the init to one or more instances and/or autoscaling groups. Applying the
+   * `AttachedCloudFormationInit` does NOT increase the ResourceSignalCount for
+   * the attached resource, you have to do that separately.
    *
    * You only need to use this API if want to reuse the same init config for
    * multiple resources. If not, `instance.applyCloudFormationInit()` or
@@ -64,14 +66,21 @@ export class CloudFormationInit {
     definingResource.addMetadata('AWS::CloudFormation::Init', this.renderInit(attachOptions.platform));
 
     const self = this;
+
+    // Anonymous subclass of an abstract class because I don't want users to be able to
+    // instantiate this. It is a type that represents an action you took.
     return new class extends AttachedCloudFormationInit {
       public apply(consumingResource: CfnResource, useOptions: ApplyInitOptions): void {
         self.bind(consumingResource, { instanceRole: useOptions.instanceRole });
+        useOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
+          actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
+          resources: [Aws.STACK_ID],
+        }));
 
         // To identify the resources that (a) have the metadata and (b) where the signal needs to be sent
         // (may be different), we need { region, stackName, logicalId }
-        const initLocator = `--region ${Aws.REGION} -s ${Aws.STACK_NAME} -r ${definingResource.logicalId}`;
-        const signalLocator = `--region ${Aws.REGION} -s ${Aws.STACK_NAME} -r ${consumingResource.logicalId}`;
+        const initLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${definingResource.logicalId}`;
+        const signalLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} -resource ${consumingResource.logicalId}`;
         const configSets = (useOptions.configSets ?? ['default']).join(',');
 
         if (attachOptions.platform === InitRenderPlatform.WINDOWS) {
@@ -84,13 +93,11 @@ export class CloudFormationInit {
             // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
             '(',
             '  set +e',
-            `  cfn-init -v ${initLocator} -c ${configSets}`,
-            `  cfn-signal -e $? ${signalLocator}`,
+            `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
+            `  /opt/aws/bin/cfn-signal -e $? ${signalLocator}`,
             ')',
           );
         }
-
-        consumingResource.addCreationPolicySignalWait(useOptions.timeout ?? Duration.minutes(5));
       }
     };
 
@@ -133,7 +140,7 @@ export interface AttachInitOptions {
 }
 
 /**
- * Options for applying a CloudFormationInit to a resource
+ * Options for applying a CloudFormationInit to an arbitrary resource
  */
 export interface ApplyInitOptions {
   /**
@@ -152,13 +159,6 @@ export interface ApplyInitOptions {
    * @default ['default']
    */
   readonly configSets?: string[];
-
-  /**
-   * Resource to send the wait signal to
-   *
-   * @default Duration.minutes(5)
-   */
-  readonly timeout?: Duration;
 }
 
 export interface InitBindRenderResult {

@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Duration } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
@@ -292,4 +292,28 @@ nodeunitShim({
 
     test.done();
   },
+});
+
+test('can add resource signal wait', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new Vpc(stack, 'VPC');
+  const instance = new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+  });
+
+  // WHEN
+  instance.waitForResourceSignal(Duration.minutes(5));
+
+  // THEN
+  expect(stack).to(haveResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT5M',
+      },
+    },
+  }));
 });
