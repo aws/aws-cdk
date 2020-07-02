@@ -76,6 +76,12 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'getting-attribute-of-a-non-existent-resource.json');
     }).toThrow(/Resource used in GetAtt expression with logical ID: 'DoesNotExist' not found/);
   });
+
+  test("throws a validation exception when an output references a condition that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
+    }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
