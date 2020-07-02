@@ -108,6 +108,7 @@ export = {
         cacheControl: [
           cpactions.CacheControl.setPublic(),
           cpactions.CacheControl.maxAge(Duration.hours(12)),
+          cpactions.CacheControl.sMaxAge(Duration.hours(12))
         ],
       });
 
@@ -118,7 +119,7 @@ export = {
             'Actions': [
               {
                 'Configuration': {
-                  'CacheControl': 'public, max-age: 43200',
+                  'CacheControl': 'public, max-age=43200, s-maxage=43200',
                 },
               },
             ],
