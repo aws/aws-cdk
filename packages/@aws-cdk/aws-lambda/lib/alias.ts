@@ -221,7 +221,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
     }));
 
-    return this.scalableAlias = new ScalableVersionAttribute(this, 'VersionScaling', {
+    this.scalableAlias = new ScalableVersionAttribute(this, 'VersionScaling', {
       serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
       dimension: 'lambda:function:ProvisionedConcurrency',
       minCapacity: props.minCapacity,
@@ -229,6 +229,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       resourceId: `function:${this.lambda.functionName}:${this.aliasName}`,
       role,
     });
+
+    // Make sure that alias is created before the autoscale resources
+    this.scalableAlias.node.addDependency(this);
   }
 
   /**
