@@ -92,8 +92,9 @@ export class AwsIntegration extends Integration {
     });
   }
 
-  public bind(method: Method): IntegrationConfig | undefined {
+  public bind(method: Method): IntegrationConfig {
+    const bindResult = super.bind(method);
     this.scope = method;
-    return;
+    return bindResult;
   }
 }
