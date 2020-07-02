@@ -112,7 +112,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -138,6 +138,32 @@ export interface DockerVolume {
    * The path where the file or directory is mounted in the container
    */
   readonly containerPath: string;
+
+  /**
+   * Mount consistency. Only applicable for macOS
+   *
+   * @default DockerConsistency.DELEGATED
+   * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
+   */
+  readonly consistency?: DockerVolumeConsistency;
+}
+
+/**
+ * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
+ */
+export enum DockerVolumeConsistency {
+  /**
+   * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
+   */
+  CONSISTENT = 'consistent',
+  /**
+   * Read/write operations on mounted Docker volumes are first written inside the container and then synchronized to the host machine
+   */
+  DELEGATED = 'delegated',
+  /**
+   * Read/write operations on mounted Docker volumes are first applied on the host machine and then synchronized to the container
+   */
+  CACHED = 'cached',
 }
 
 /**

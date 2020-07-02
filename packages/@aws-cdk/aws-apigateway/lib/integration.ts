@@ -135,6 +135,20 @@ export interface IntegrationProps {
 }
 
 /**
+ * Result of binding an Integration to the Method
+ */
+export interface IntegrationConfig {
+  /**
+   * This value is included in computing the Deployment's fingerprint. When the fingerprint
+   * changes, a new deployment is triggered.
+   * This property should contain values associated with the Integration that upon changing
+   * should trigger a fresh the Deployment needs to be refreshed.
+   * @default undefined deployments are not triggered for any change to this integration.
+   */
+  readonly deploymentToken?: string;
+}
+
+/**
  * Base class for backend integrations for an API Gateway method.
  *
  * Use one of the concrete classes such as `MockIntegration`, `AwsIntegration`, `LambdaIntegration`
@@ -156,7 +170,7 @@ export class Integration {
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method) {
+  public bind(_method: Method): IntegrationConfig | undefined {
     return;
   }
 }

@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PackageJsonManager } from './package-json-manager';
-import { findClosestPathContaining } from './util';
+import { findUp } from './util';
 
 /**
  * Base options for Parcel bundling
@@ -97,7 +97,7 @@ export class Bundling {
    */
   public static parcel(options: ParcelOptions): lambda.AssetCode {
     // Find project root
-    const projectRoot = options.projectRoot ?? findClosestPathContaining(`.git${path.sep}`);
+    const projectRoot = options.projectRoot ?? findUp(`.git${path.sep}`);
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
@@ -110,7 +110,7 @@ export class Bundling {
       },
     });
 
-    const packageJsonManager = new PackageJsonManager();
+    const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
 
     // Collect external and install modules
     let includeNodeModules: { [key: string]: boolean } | undefined;

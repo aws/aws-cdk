@@ -51,14 +51,15 @@ export function nodeMajorVersion(): number {
 }
 
 /**
- * Finds the closest path containg a path
+ * Find a file by walking up parent directories
  */
-export function findClosestPathContaining(p: string): string | undefined {
-  for (const nodeModulesPath of module.paths) {
-    if (fs.existsSync(path.join(path.dirname(nodeModulesPath), p))) {
-      return path.dirname(nodeModulesPath);
-    }
+export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  const { root } = path.parse(directory);
+  if (directory === root && !fs.existsSync(path.join(directory, name))) {
+    return undefined;
   }
-
-  return undefined;
+  if (fs.existsSync(path.join(directory, name))) {
+    return directory;
+  }
+  return findUp(name, path.dirname(directory));
 }
