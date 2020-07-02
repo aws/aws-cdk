@@ -336,6 +336,19 @@ new KubernetesResource(this, 'hello-kub', {
 cluster.addResource('hello-kub', service, deployment);
 ```
 
+#### Adding resources from a URL
+
+The following example will deploy the resource manifest hosting on remote server:
+
+```ts
+import * as yaml from 'js-yaml';
+import * as request from 'sync-request';
+
+const manifestUrl = 'https://url/of/manifest.yaml';
+const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
+cluster.addResource('my-resource', ...manifest);
+```
+
 Since Kubernetes resources are implemented as CloudFormation resources in the
 CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
