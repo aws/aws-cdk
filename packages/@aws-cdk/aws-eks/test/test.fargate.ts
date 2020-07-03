@@ -5,11 +5,13 @@ import { Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+
 export = {
   'can be added to a cluster'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -30,7 +32,7 @@ export = {
   'supports specifying a profile name'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -53,7 +55,7 @@ export = {
   'supports custom execution role'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
     const myRole = new iam.Role(stack, 'MyRole', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
@@ -76,7 +78,7 @@ export = {
   'supports tags through aspects'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -104,7 +106,7 @@ export = {
   'supports specifying vpc'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
     const vpc = ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
       vpcId: 'vpc123',
       availabilityZones: [ 'az1' ],
@@ -132,7 +134,7 @@ export = {
   'fails if there are no selectors or if there are more than 5'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // THEN
     test.throws(() => cluster.addFargateProfile('MyProfile', { selectors: [ ] }));
@@ -154,7 +156,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster');
+    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -196,6 +198,7 @@ export = {
       defaultProfile: {
         fargateProfileName: 'my-app', selectors: [{namespace: 'foo'}, {namespace: 'bar'}],
       },
+      version: CLUSTER_VERSION,
     });
 
     // THEN
@@ -229,6 +232,7 @@ export = {
       defaultProfile: {
         selectors: [{namespace: 'foo'}, {namespace: 'bar'}],
       },
+      version: CLUSTER_VERSION,
     });
 
     // THEN
@@ -255,7 +259,7 @@ export = {
   'multiple Fargate profiles added to a cluster are processed sequentially'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     cluster.addFargateProfile('MyProfile1', {
@@ -300,7 +304,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster');
+    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-KubernetesResource', {
@@ -326,7 +330,7 @@ export = {
   'cannot be added to a cluster without kubectl enabled'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { kubectlEnabled: false });
+    const cluster = new eks.Cluster(stack, 'MyCluster', { kubectlEnabled: false, version: CLUSTER_VERSION });
 
     // WHEN
     test.throws(() => new eks.FargateProfile(stack, 'MyFargateProfile', {
@@ -342,7 +346,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster');
+    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {

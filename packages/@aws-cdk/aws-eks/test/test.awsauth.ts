@@ -1,17 +1,19 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource } from '../lib';
+import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 
+const CLUSTER_VERSION = KubernetesVersion.V1_16;
+
 export = {
   'empty aws-auth'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster');
+    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new AwsAuth(stack, 'AwsAuth', { cluster });
@@ -31,7 +33,7 @@ export = {
   'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster');
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
     const user = new iam.User(stack, 'user');
 
@@ -104,7 +106,7 @@ export = {
   'imported users and roles can be also be used'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster');
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
     const user = iam.User.fromUserName(stack, 'import-user', 'MyUserName');
 

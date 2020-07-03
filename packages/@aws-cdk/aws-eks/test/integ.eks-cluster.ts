@@ -22,7 +22,7 @@ class EksClusterStack extends TestStack {
       vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: '1.16',
+      version: eks.KubernetesVersion.V1_16,
     });
 
     // fargate profile for resources in the "default" namespace
