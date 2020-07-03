@@ -15,9 +15,10 @@ export interface HttpApiMappingProps {
   readonly apiMappingName?: string;
 
   /**
-   * Api mapping key. Specify `/` for the root path of the domain.
+   * Api mapping key. The path where this stage should be mapped to on the domain
+   * @default '/'
    */
-  readonly apiMappingKey: string;
+  readonly apiMappingKey?: string;
 
   /**
    * The HttpApi to which this mapping is applied
