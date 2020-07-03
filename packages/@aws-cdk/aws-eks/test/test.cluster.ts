@@ -886,7 +886,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: "1.16",
+          version: '1.16',
           resourcesVpcConfig: {
             securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
             subnetIds: [

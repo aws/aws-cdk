@@ -292,6 +292,10 @@ export class KubernetesVersion {
    */
   public static readonly V1_16 = KubernetesVersion.of('1.16');
 
+  /**
+   * Custom cluster version
+   * @param version custom version number
+   */
   public static of(version: string) { return new KubernetesVersion(version); }
   /**
    *
