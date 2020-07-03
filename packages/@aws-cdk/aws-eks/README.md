@@ -47,7 +47,7 @@ cluster.addResource('mypod', {
 
 ### Capacity
 
-By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with `version` property.
+By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with the `version` property.
 
 ```ts
 new eks.Cluster(this, 'cluster-two-m5-large', {
