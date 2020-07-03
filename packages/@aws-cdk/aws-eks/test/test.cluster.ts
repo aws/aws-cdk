@@ -1331,7 +1331,7 @@ export = {
         instanceType: new ec2.InstanceType('t3.large'),
         bootstrapOptions: {
           enableDockerBridge: true,
-        }
+        },
       });
 
       // THEN
@@ -1343,13 +1343,13 @@ export = {
               [
                 '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ',
                 {
-                  Ref: 'ClusterEB0386A7'
+                  Ref: 'ClusterEB0386A7',
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true --enable-docker-bridge true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1"
-              ]
-            ]
-          }
-        }
+                ' --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true --enable-docker-bridge true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1',
+              ],
+            ],
+          },
+        },
       }));
       test.done();
     },
@@ -1363,7 +1363,7 @@ export = {
         instanceType: new ec2.InstanceType('t3.large'),
         bootstrapOptions: {
           enableDockerBridge: false,
-        }
+        },
       });
 
       // THEN
@@ -1375,15 +1375,15 @@ export = {
               [
                 '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ',
                 {
-                  Ref: 'ClusterEB0386A7'
+                  Ref: 'ClusterEB0386A7',
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1"
-              ]
-            ]
-          }
-        }
+                ' --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1'
+              ],
+            ],
+          },
+        },
       }));
       test.done();
-    }
+    },
   },
 };
