@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as crypto from 'crypto';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag, Stack } from '@aws-cdk/core';
 import { CloudFormationInit } from './cfn-init';
 import { InitRenderPlatform } from './cfn-init-elements';
 import { Connections, IConnectable } from './connections';
@@ -140,6 +141,26 @@ export interface InstanceProps {
   readonly userData?: UserData;
 
   /**
+   * Changes to the UserData force replacement
+   *
+   * Depending the EC2 instance type, changing UserData either
+   * restarts the instance or replaces the instance.
+   *
+   * - Instance store-backed instances are replaced.
+   * - EBS-backed instances are restarted.
+   *
+   * By default, restarting does not execute the new UserData so you
+   * will need a different mechanism to ensure the instance is restarted.
+   *
+   * Setting this to `true` will make the instance's Logical ID depend on the
+   * UserData, which will cause CloudFormation to replace it if the UserData
+   * changes.
+   *
+   * @default false
+   */
+  readonly userDataCausesReplacement?: boolean;
+
+  /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
@@ -272,6 +293,8 @@ export class Instance extends Resource implements IInstance {
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
   private readonly isWindows: boolean;
+  private readonly originalLogicalId: string;
+  private readonly userDataReplacement: boolean;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -363,6 +386,8 @@ export class Instance extends Resource implements IInstance {
     }
 
     this.applyUpdatePolicies(props);
+    this.originalLogicalId = Stack.of(this).getLogicalId(this.instance);
+    this.userDataReplacement = props.userDataCausesReplacement ?? false;
   }
 
   /**
@@ -405,6 +430,7 @@ export class Instance extends Resource implements IInstance {
       userData: this.userData,
       configSets: options.configSets,
       embedFingerprint: options.embedFingerprint,
+      printLog: options.printLog,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -428,6 +454,15 @@ export class Instance extends Resource implements IInstance {
         timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
       },
     };
+  }
+
+  protected prepare() {
+    if (this.userDataReplacement) {
+      const md5 = crypto.createHash('md5');
+      md5.update(this.userData.render());
+      this.instance.overrideLogicalId(this.originalLogicalId + md5.digest('hex').substr(0, 16));
+    }
+    super.prepare();
   }
 
   /**
@@ -467,10 +502,16 @@ export interface ApplyCloudFormationInitOptions {
    * Force instance replacement by embedding a config fingerprint
    *
    * If `true` (the default), a hash of the config will be embedded into the
-   * UserData, so that if the config changes, the UserData changes and
-   * the instance will be replaced.
+   * UserData, so that if the config changes, the UserData changes.
    *
-   * If `false`, no such hash will be embedded, and if the CloudFormation Init
+   * - If the EC2 instance is instance-store backed or
+   *   `userDataCausesReplacement` is set, this will cause the instance to be
+   *   replaced and the new configuration to be applied.
+   * - If the instance is EBS-backed and `userDataCausesReplacement` is not
+   *   set, the change of UserData will make the instance restart but not be
+   *   replaced, and the configuration will not be applied automatically.
+   *
+   * If `false`, no hash will be embedded, and if the CloudFormation Init
    * config changes nothing will happen to the running instance. If a
    * config update introduces errors, you will not notice until after the
    * CloudFormation deployment successfully finishes and the next instance
@@ -479,4 +520,15 @@ export interface ApplyCloudFormationInitOptions {
    * @default true
    */
   readonly embedFingerprint?: boolean;
+
+  /**
+   * Print the results of running cfn-init to the Instance System Log
+   *
+   * By default, the output of running cfn-init is written to a log file
+   * on the instance. Set this to `true` to print it to the System Log
+   * (visible from the EC2 Console), `false` to not print it.
+   *
+   * @default true
+   */
+  readonly printLog?: boolean;
 }

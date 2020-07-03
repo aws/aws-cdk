@@ -997,6 +997,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       userData: this.userData,
       configSets: options.configSets,
       embedFingerprint: options.embedFingerprint,
+      printLog: options.printLog,
     });
 
     // Attach a hash of the CloudFormationInit config to the UserData, so that the
@@ -1536,4 +1537,15 @@ export interface ApplyCloudFormationInitOptions {
    * @default true
    */
   readonly embedFingerprint?: boolean;
+
+  /**
+   * Print the results of running cfn-init to the Instance System Log
+   *
+   * By default, the output of running cfn-init is written to a log file
+   * on the instance. Set this to `true` to print it to the System Log
+   * (visible from the EC2 Console), `false` to not print it.
+   *
+   * @default true
+   */
+  readonly printLog?: boolean;
 }

@@ -114,20 +114,24 @@ export class CloudFormationInit {
           useOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
         }
 
+        const printLog = useOptions.printLog ?? true;
+
         if (attachOptions.platform === InitRenderPlatform.WINDOWS) {
-          useOptions.userData.addCommands(
+          useOptions.userData.addCommands(...[
             `cfn-init.exe -v ${initLocator} -c ${configSets}`,
             `cfn-signal.exe -e %ERRORLEVEL% ${signalLocator}`,
-          );
+            ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
+          ]);
         } else {
-          useOptions.userData.addCommands(
+          useOptions.userData.addCommands(...[
             // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
             '(',
             '  set +e',
             `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
             `  /opt/aws/bin/cfn-signal -e $? ${signalLocator}`,
+            ...printLog ? ['  cat /var/log/cfn-init-cmd.log >&2'] : [],
             ')',
-          );
+          ]);
         }
       }
     };
@@ -205,6 +209,17 @@ export interface ApplyInitOptions {
    * @default true
    */
   readonly embedFingerprint?: boolean;
+
+  /**
+   * Print the results of running cfn-init to the Instance System Log
+   *
+   * By default, the output of running cfn-init is written to a log file
+   * on the instance. Set this to `true` to print it to the System Log
+   * (visible from the EC2 Console), `false` to not print it.
+   *
+   * @default true
+   */
+  readonly printLog?: boolean;
 }
 
 /**
