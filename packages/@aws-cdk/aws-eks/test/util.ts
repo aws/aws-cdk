@@ -1,6 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import { Cluster } from '../lib';
+import { Cluster, KubernetesVersion } from '../lib';
+
+const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export function testFixture() {
   const { stack, app } = testFixtureNoVpc();
@@ -17,7 +19,7 @@ export function testFixtureNoVpc() {
 
 export function testFixtureCluster() {
   const { stack, app } = testFixtureNoVpc();
-  const cluster = new Cluster(stack, 'Cluster');
+  const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
 
   return { stack, app, cluster };
 }
