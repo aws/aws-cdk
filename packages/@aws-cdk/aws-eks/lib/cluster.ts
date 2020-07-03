@@ -280,17 +280,17 @@ export class KubernetesVersion {
   /**
    * Kubernetes version 1.14
    */
-  public static V1_14 = KubernetesVersion.of("1.14");
+  public static readonly V1_14 = KubernetesVersion.of("1.14");
 
   /**
    * Kubernetes version 1.15
    */
-  public static V1_15 = KubernetesVersion.of("1.15");
+  public static readonly V1_15 = KubernetesVersion.of("1.15");
 
   /**
    * Kubernetes version 1.16
    */
-  public static V1_16 = KubernetesVersion.of("1.16");
+  public static readonly V1_16 = KubernetesVersion.of("1.16");
 
   public static of(version: string) { return new KubernetesVersion(version); }
   /**
