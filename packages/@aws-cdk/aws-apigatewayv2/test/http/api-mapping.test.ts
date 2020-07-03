@@ -20,8 +20,6 @@ describe('ApiMapping', () => {
     new HttpApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
-      apiMappingName: 'myApiMapping',
-      apiMappingKey: '/',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::ApiMapping', {

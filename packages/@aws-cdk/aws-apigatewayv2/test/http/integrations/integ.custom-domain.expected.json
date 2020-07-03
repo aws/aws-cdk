@@ -183,7 +183,7 @@
         "AutoDeploy": true
       }
     },
-    "HttpProxyProdApiinteghttpproxyDNundefined1C0821CF": {
+    "HttpProxyProdApiDefaultStageinteghttpproxyDN4CD83A2F": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
@@ -267,12 +267,13 @@
         "AutoDeploy": true
       }
     },
-    "HttpProxyBetaApiinteghttpproxyDNbetaC724DC08": {
+    "HttpProxyBetaApiDefaultStageinteghttpproxyDNbeta0904192E": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
       "Properties": {
         "ApiId": {
           "Ref": "HttpProxyBetaApiBFB4DA5E"
         },
+        "ApiMappingKey": "beta",
         "DomainName": "apigv2.demo.com",
         "Stage": "$default"
       }

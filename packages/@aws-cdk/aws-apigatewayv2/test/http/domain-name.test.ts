@@ -1,14 +1,14 @@
 import '@aws-cdk/assert/jest';
+// import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import {  Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { Test, testCase } from 'nodeunit';
 import { DomainName, HttpApi } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
-export = testCase({
-  'create domain name correctly'(test: Test) {
+describe('DomainName', () => {
+  test('create domain name correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -28,10 +28,9 @@ export = testCase({
         },
       ],
     });
-    test.done();
-  },
+  });
 
-  'import domain name correctly'(test: Test) {
+  test('import domain name correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -47,14 +46,13 @@ export = testCase({
       regionalHostedZoneId: dn.regionalHostedZoneId,
     });
 
-    // THEN
+    // THEN;
     expect(imported.domainName).toEqual(dn.domainName);
     expect(imported.regionalDomainName).toEqual(dn.regionalDomainName);
     expect(imported.regionalHostedZoneId).toEqual(dn.regionalHostedZoneId);
-    test.done();
-  },
+  });
 
-  'addStage with domainNameMapping'(test: Test) {
+  test('addStage with domainNameMapping', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api', {
@@ -93,10 +91,9 @@ export = testCase({
       Stage: 'beta',
       ApiMappingKey: 'beta',
     });
-    test.done();
-  },
+  });
 
-  'api with defaultDomainMapping'(test: Test) {
+  test('api with defaultDomainMapping', () => {
     // GIVEN
     const stack = new Stack();
     const dn = new DomainName(stack, 'DN', {
@@ -131,21 +128,16 @@ export = testCase({
       DomainName: 'example.com',
       Stage: '$default',
     });
-    test.done();
-  },
+  });
 
-  'throws when defaultDomainMapping enabled with createDefaultStage disabled'(test: Test) {
+  test('throws when defaultDomainMapping enabled with createDefaultStage disabled', () => {
     // GIVEN
     const stack = new Stack();
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
-
-    // WHEN
-
-    // WHEN/THEN
-    test.throws(() => {
+    const t = () => {
       new HttpApi(stack, 'Api', {
         createDefaultStage: false,
         defaultDomainMapping: {
@@ -153,7 +145,10 @@ export = testCase({
           mappingKey: '/',
         },
       });
-    }, /defaultDomainMapping not supported with createDefaultStage disabled/);
-    test.done();
-  },
+    };
+
+    // WHEN/THEN
+    expect(t).toThrow('defaultDomainMapping not supported with createDefaultStage disabled');
+
+  });
 });

@@ -1,7 +1,6 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { HttpApiMapping } from './api-mapping';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -183,7 +182,7 @@ export class HttpApi extends Resource implements IHttpApi {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled'
+      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
       );
     }
   }
