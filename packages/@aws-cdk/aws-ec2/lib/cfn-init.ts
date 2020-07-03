@@ -253,6 +253,7 @@ export class InitConfig {
       sources: this.renderConfigForType(InitElementType.SOURCE, renderOptions),
       files: this.renderConfigForType(InitElementType.FILE, renderOptions),
       commands: this.renderConfigForType(InitElementType.COMMAND, renderOptions),
+      // Must be last!
       services: this.renderConfigForType(InitElementType.SERVICE, renderOptions),
     };
   }

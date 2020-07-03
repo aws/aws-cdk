@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -315,5 +315,5 @@ test('can add resource signal wait', () => {
         Timeout: 'PT5M',
       },
     },
-  }));
+  }, ResourcePart.CompleteDefinition));
 });

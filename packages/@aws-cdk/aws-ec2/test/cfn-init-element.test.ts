@@ -398,7 +398,7 @@ describe('InitPackage', () => {
 
   test('rpm uses name if provided', () => {
     // GIVEN
-    const pkg = ec2.InitPackage.rpm('https://example.com/rpm/mypkg.rpm', 'myPkg');
+    const pkg = ec2.InitPackage.rpm('https://example.com/rpm/mypkg.rpm', { key: 'myPkg' });
 
     // WHEN
     const rendered = pkg.renderElement(DEFAULT_LINUX_OPTIONS);
@@ -447,7 +447,7 @@ describe('InitPackage', () => {
     ['apt', ec2.InitPackage.apt],
   ])('%s accepts a package with versions', (pkgType, fn) => {
     // GIVEN
-    const pkg = fn('httpd', '1.0', '2.0');
+    const pkg = fn('httpd', { version: ['1.0', '2.0'] });
 
     // WHEN
     const rendered = pkg.renderElement(DEFAULT_LINUX_OPTIONS);
@@ -494,7 +494,7 @@ describe('InitPackage', () => {
 
   test('msi uses name if provided', () => {
     // GIVEN
-    const pkg = ec2.InitPackage.msi('https://example.com/rpm/mypkg.msi', 'myPkg');
+    const pkg = ec2.InitPackage.msi('https://example.com/rpm/mypkg.msi', { key: 'myPkg' });
 
     // WHEN
     const rendered = pkg.renderElement(DEFAULT_WINDOWS_OPTIONS);
@@ -560,18 +560,22 @@ describe('InitService', () => {
       },
     });
   });
+
   test.each([
     ['Linux', 'sysvinit', DEFAULT_LINUX_OPTIONS],
     ['Windows', 'windows', DEFAULT_WINDOWS_OPTIONS],
   ])('fromOptions renders all options for %s', (_platform, key, options) => {
     // GIVEN
+    const restartHandle = new ec2.RestartInitServiceHandle();
+    restartHandle.addFile('/etc/my.cnf');
+    restartHandle.addSource('/tmp/foo');
+    restartHandle.addPackage('yum', 'httpd');
+    restartHandle.addCommand('cmd_000');
+
     const service = ec2.InitService.fromOptions('httpd', {
       enabled: true,
       ensureRunning: true,
-      restartAfterFiles: ['/etc/my.cnf'],
-      restartAfterSources: ['/tmp/foo'],
-      restartAfterPackages: { 'yum': ['httpd'] },
-      restartAfterCommands: ['cmd_000'],
+      restartHandle,
     });
 
     // WHEN
@@ -649,7 +653,7 @@ describe('InitSource', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '/tmp/foo': 'TODOFIXME',
+      '/tmp/foo': expect.stringContaining('/MyBucket/myKey'),
     })
   });
 
