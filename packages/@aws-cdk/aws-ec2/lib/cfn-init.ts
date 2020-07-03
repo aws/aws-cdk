@@ -287,7 +287,7 @@ export interface ConfigSetProps {
 
 function deepMerge(target: Record<string, any>, src: Record<string, any>) {
   for (const [key, value] of Object.entries(src)) {
-    if (typeof value === 'object' && value) {
+    if (typeof value === 'object' && value && !Array.isArray(value)) {
       target[key] = {};
       deepMerge(target[key], value);
     } else {
