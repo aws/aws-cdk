@@ -169,11 +169,11 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    const assetHash = calcSourceHash(handlerSourceDirectory);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
@@ -182,8 +182,10 @@ export class BucketDeployment extends cdk.Construct {
       memorySize: props.memoryLimit,
     });
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
-    sources.forEach(source => source.bucket.grantRead(handler));
+    const handlerRole = handler.role;
+    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
@@ -292,7 +294,7 @@ export class CacheControl {
   public static setPrivate() { return new CacheControl('private'); }
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
-  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-max-age=${t.toSeconds()}`); }
+  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
   public static fromString(s: string) {  return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}

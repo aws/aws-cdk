@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -18,6 +18,25 @@ export = {
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {},
     }));
+
+    test.done();
+  },
+
+  'set removalPolicy to secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret',
+      {
+        DeletionPolicy: 'Retain',
+      }, ResourcePart.CompleteDefinition,
+    ));
 
     test.done();
   },
@@ -189,7 +208,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:GetSecretValue',
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -252,7 +274,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:GetSecretValue',
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
           Condition: {
@@ -319,7 +344,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],
@@ -344,7 +372,10 @@ export = {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
-          Action: 'secretsmanager:PutSecretValue',
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+          ],
           Effect: 'Allow',
           Resource: { Ref: 'SecretA720EF05' },
         }],

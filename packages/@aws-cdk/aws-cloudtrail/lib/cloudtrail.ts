@@ -41,7 +41,7 @@ export interface TrailProps {
    *
    * @param managementEvents the management configuration type to log
    *
-   * @default - Management events will not be logged.
+   * @default ReadWriteType.ALL
    */
   readonly managementEvents?: ReadWriteType;
 
@@ -79,10 +79,16 @@ export interface TrailProps {
   readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
+   * @default - No encryption.
+   * @deprecated - use encryptionKey instead.
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
    * @default - No encryption.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 
   /** SNS topic that is notified when new log files are published.
    *
@@ -131,7 +137,12 @@ export enum ReadWriteType {
   /**
    * All events
    */
-  ALL = 'All'
+  ALL = 'All',
+
+  /**
+   * No events
+   */
+  NONE = 'None',
 }
 
 /**
@@ -235,11 +246,22 @@ export class Trail extends Resource {
     }
 
     if (props.managementEvents) {
-      const managementEvent = {
-        includeManagementEvents: true,
-        readWriteType: props.managementEvents,
-      };
+      let managementEvent;
+      if (props.managementEvents === ReadWriteType.NONE) {
+        managementEvent = {
+          includeManagementEvents: false,
+        };
+      } else {
+        managementEvent = {
+          includeManagementEvents: true,
+          readWriteType: props.managementEvents,
+        };
+      }
       this.eventSelectors.push(managementEvent);
+    }
+
+    if (props.kmsKey && props.encryptionKey) {
+      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
     }
 
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
@@ -249,7 +271,7 @@ export class Trail extends Resource {
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
-      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
@@ -333,7 +355,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ 'arn:aws:lambda' ], options);
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ `arn:${this.stack.partition}:lambda` ], options);
   }
 
   /**
@@ -360,7 +382,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.S3_OBJECT, [ 'arn:aws:s3:::' ], options);
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [ `arn:${this.stack.partition}:s3:::` ], options);
   }
 
   /**

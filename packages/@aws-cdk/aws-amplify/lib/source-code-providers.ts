@@ -37,6 +37,40 @@ export class GitHubSourceCodeProvider implements ISourceCodeProvider {
 }
 
 /**
+ * Properties for a GitLab source code provider
+ */
+export interface GitLabSourceCodeProviderProps {
+  /**
+   * The user or organization owning the repository
+   */
+  readonly owner: string;
+
+  /**
+   * The name of the repository
+   */
+  readonly repository: string;
+
+  /**
+   * A personal access token with the `repo` scope
+   */
+  readonly oauthToken: SecretValue;
+}
+
+/**
+ * GitLab source code provider
+ */
+export class GitLabSourceCodeProvider implements ISourceCodeProvider {
+  constructor(private readonly props: GitLabSourceCodeProviderProps) { }
+
+  public bind(_app: App): SourceCodeProviderConfig {
+    return {
+      repository: `https://gitlab.com/${this.props.owner}/${this.props.repository}`,
+      oauthToken: this.props.oauthToken,
+    };
+  }
+}
+
+/**
  * Properties for a CodeCommit source code provider
  */
 export interface CodeCommitSourceCodeProviderProps {

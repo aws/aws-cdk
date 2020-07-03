@@ -1,3 +1,4 @@
+import { arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
@@ -355,7 +356,7 @@ test('cache control type has correct values', () => {
   expect(s3deploy.CacheControl.setPrivate().value).toEqual('private');
   expect(s3deploy.CacheControl.proxyRevalidate().value).toEqual('proxy-revalidate');
   expect(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value).toEqual('max-age=60');
-  expect(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value).toEqual('s-max-age=60');
+  expect(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value).toEqual('s-maxage=60');
   expect(s3deploy.CacheControl.fromString('only-if-cached').value).toEqual('only-if-cached');
 });
 
@@ -615,10 +616,36 @@ test('deploy without deleting missing files from destination', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    deleteMissingFiles: false
+    deleteMissingFiles: false,
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    'DeleteMissingFiles': false
+    'DeleteMissingFiles': false,
   });
+});
+
+test('Deployment role gets KMS permissions when using assets from new style synthesizer', () => {
+  const stack = new cdk.Stack(undefined, undefined, {
+    synthesizer: new cdk.DefaultStackSynthesizer(),
+  });
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: arrayWith({
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource:  { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
+      }),
+    },
+  });
+
 });

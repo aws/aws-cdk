@@ -86,7 +86,7 @@ test('isComplete throws in the first invocation', async () => {
     ResourceProperties: MOCK_PROPS,
   });
 
-  expectCloudFormationFailed('Some failure');
+  expectCloudFormationFailed('Some failure\n\nLogs: /aws/lambda/complete\n');
 });
 
 test('fails gracefully if "onEvent" throws an error', async () => {
@@ -100,7 +100,7 @@ test('fails gracefully if "onEvent" throws an error', async () => {
   });
 
   // THEN
-  expectCloudFormationFailed('error thrown during onEvent');
+  expectCloudFormationFailed('error thrown during onEvent\n\nLogs: /aws/lambda/event\n');
   expectNoWaiter();
 });
 
@@ -254,7 +254,7 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
       RequestType: 'Create',
     });
 
-    expectCloudFormationFailed('CREATE FAILED', {
+    expectCloudFormationFailed('CREATE FAILED\n\nLogs: /aws/lambda/event\n', {
       PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
     });
   });
