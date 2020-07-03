@@ -1,6 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -65,6 +67,18 @@ test('throws when entry is not js/ts', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'handler.py',
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
+});
+
+test('accepts tsx', () => {
+  const entry = path.join(__dirname, 'handler.tsx');
+
+  fs.symlinkSync(path.join(__dirname, 'function.test.handler1.ts'), entry);
+
+  expect(() => new NodejsFunction(stack, 'Fn', {
+    entry,
+  })).not.toThrow();
+
+  fs.unlinkSync(entry);
 });
 
 test('throws when entry does not exist', () => {
