@@ -1,5 +1,5 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 
 /**
@@ -111,7 +111,7 @@ export class DomainName extends Resource implements IDomainName {
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
     this.domainName = props.domainName ?? resource.ref;
-    this.regionalDomainName = resource.getAtt('RegionalDomainName').toString();
-    this.regionalHostedZoneId = resource.getAtt('RegionalHostedZoneId').toString();
+    this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
+    this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
   }
 }
