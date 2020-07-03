@@ -796,7 +796,7 @@ export = {
     'if bootstrap is disabled cannot specify options'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // THEN
       test.throws(() => cluster.addCapacity('MyCapcity', {
@@ -886,6 +886,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
+          version: "1.16",
           resourcesVpcConfig: {
             securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
             subnetIds: [
@@ -1193,7 +1194,7 @@ export = {
     'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
       const provider = cluster.openIdConnectProvider;
@@ -1225,7 +1226,7 @@ export = {
     'inference instances are supported'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
       cluster.addCapacity('InferenceInstances', {
@@ -1317,8 +1318,7 @@ export = {
         test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
         test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
       }
-
       test.done();
     },
-  }
+  },
 };
