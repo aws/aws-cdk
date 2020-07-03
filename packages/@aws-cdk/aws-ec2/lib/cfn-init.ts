@@ -117,18 +117,20 @@ export class CloudFormationInit {
         const printLog = useOptions.printLog ?? true;
 
         if (attachOptions.platform === InitRenderPlatform.WINDOWS) {
+          const errCode = useOptions.ignoreFailures ? '0' : '%ERRORLEVEL%';
           useOptions.userData.addCommands(...[
             `cfn-init.exe -v ${initLocator} -c ${configSets}`,
-            `cfn-signal.exe -e %ERRORLEVEL% ${signalLocator}`,
+            `cfn-signal.exe -e ${errCode} ${signalLocator}`,
             ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
           ]);
         } else {
+          const errCode = useOptions.ignoreFailures ? '0' : '$?';
           useOptions.userData.addCommands(...[
             // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
             '(',
             '  set +e',
             `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
-            `  /opt/aws/bin/cfn-signal -e $? ${signalLocator}`,
+            `  /opt/aws/bin/cfn-signal -e ${errCode} ${signalLocator}`,
             ...printLog ? ['  cat /var/log/cfn-init-cmd.log >&2'] : [],
             ')',
           ]);
@@ -220,6 +222,16 @@ export interface ApplyInitOptions {
    * @default true
    */
   readonly printLog?: boolean;
+
+  /**
+   * Don't fail the instance creation when cfn-init fails
+   *
+   * You can use this to prevent CloudFormation from rolling back when
+   * instances fail to start up, to help in debugging.
+   *
+   * @default false
+   */
+  readonly ignoreFailures?: boolean;
 }
 
 /**

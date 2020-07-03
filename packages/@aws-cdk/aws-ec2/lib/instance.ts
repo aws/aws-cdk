@@ -431,6 +431,7 @@ export class Instance extends Resource implements IInstance {
       configSets: options.configSets,
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
+      ignoreFailures: options.ignoreFailures,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -531,4 +532,14 @@ export interface ApplyCloudFormationInitOptions {
    * @default true
    */
   readonly printLog?: boolean;
+
+  /**
+   * Don't fail the instance creation when cfn-init fails
+   *
+   * You can use this to prevent CloudFormation from rolling back when
+   * instances fail to start up, to help in debugging.
+   *
+   * @default false
+   */
+  readonly ignoreFailures?: boolean;
 }
