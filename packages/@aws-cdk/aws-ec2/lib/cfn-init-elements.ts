@@ -1,8 +1,8 @@
-import * as fs from 'fs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct, Duration } from '@aws-cdk/core';
+import * as fs from 'fs';
 
 /**
  * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
@@ -257,7 +257,7 @@ export class InitCommand extends InitElement {
    * You do not need to escape space characters or enclose command parameters in quotes.
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
-    if (argv.length == 0) {
+    if (argv.length === 0) {
       throw new Error('Cannot define argvCommand with an empty arguments');
     }
     return new InitCommand(argv, options);
@@ -353,15 +353,28 @@ export interface InitFileOptions {
 }
 
 /**
+ * Additional options for creating an InitFile from an asset.
+ */
+export interface InitFileAssetOptions extends InitFileOptions, s3_assets.AssetOptions {
+}
+
+/**
  * Create files on the EC2 instance.
  */
-export class InitFile extends InitElement {
+export abstract class InitFile extends InitElement {
 
   /**
    * Use a literal string as the file content
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
-    return new InitFile(fileName, content, options, true);
+    return new class extends InitFile {
+      protected renderContentOrSource(): Record<string, any> {
+        return {
+          content,
+          encoding: this.options.base64Encoded ? 'base64' : 'plain',
+        };
+      }
+    }(fileName, options);
   }
 
   /**
@@ -372,7 +385,7 @@ export class InitFile extends InitElement {
     if (mode && mode.slice(0, 3) !== '120') {
       throw new Error('File mode for symlinks must begin with 120XXX');
     }
-    return new InitFile(fileName, target, { mode: (mode || '120644'), ...otherOptions }, true);
+    return InitFile.fromString(fileName, target, { mode: (mode || '120644'), ...otherOptions });
   }
 
   /**
@@ -381,17 +394,11 @@ export class InitFile extends InitElement {
    * May contain tokens.
    */
   public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
-    class InitFileObject extends InitFile {
-      public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
-        return {
-          [fileName]: {
-            content: obj,
-            ...this.renderOptions(options, renderOptions),
-          },
-        };
+    return new class extends InitFile {
+      protected renderContentOrSource(): Record<string, any> {
+        return { content: obj };
       }
-    }
-    return new InitFileObject(fileName, '', options);
+    }(fileName, options);
   }
 
   /**
@@ -405,7 +412,18 @@ export class InitFile extends InitElement {
   public static fromFileInline(targetFileName: string, sourceFileName: string, options: InitFileOptions = {}): InitFile {
     const encoding = options.base64Encoded ? 'base64' : 'utf8';
     const fileContents = fs.readFileSync(sourceFileName).toString(encoding);
-    return new InitFile(targetFileName, fileContents, options, true);
+    return InitFile.fromString(targetFileName, fileContents, options);
+  }
+
+  /**
+   * Download from a URL at instance startup time
+   */
+  public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
+    return new class extends InitFile {
+      protected renderContentOrSource(): Record<string, any> {
+        return { source: url };
+      }
+    }(fileName, options);
   }
 
   /**
@@ -413,50 +431,40 @@ export class InitFile extends InitElement {
    *
    * This is appropriate for files that are too large to embed into the template.
    */
-  public static fromFileAsset(_targetFileName: string, _sourceFileName: string, _options: InitFileOptions = {}): InitFile {
-    // TODO - No scope here, so can't create the Asset directly. Need to delay creation until bind() is called,
-    // or find some other clever solution if we're going to support this.
-    throw new Error('Not implemented.');
-  }
-
-  /**
-   * Download from a URL at instance startup time
-   */
-  public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
-    return new InitFile(fileName, url, options, false);
+  public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
+    return new class extends InitFile {
+      private asset!: s3_assets.Asset;
+      public bind(scope: Construct, bindOptions: InitBindOptions): void {
+        this.asset = new s3_assets.Asset(scope, 'InitFileAsset', {
+          path,
+          ...bindOptions,
+        });
+        this.asset.grantRead(bindOptions.instanceRole);
+      }
+      protected renderContentOrSource(): Record<string, any> {
+        return { source: this.asset.httpUrl };
+      }
+    }(targetFileName, options);
   }
 
   /**
    * Use a file from an asset at instance startup time
    */
-  public static fromAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
-    class InitFileAsset extends InitFile {
-      constructor() {
-        super(targetFileName, asset.httpUrl, options, false);
+  public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
+    return new class extends InitFile {
+      public bind(_scope: Construct, bindOptions: InitBindOptions) {
+        asset.grantRead(bindOptions.instanceRole);
       }
-
-      public bind(_scope: Construct, _bindOptions: InitBindOptions) {
-        // FIXME
-        throw new Error('Not implemented.');
+      protected renderContentOrSource(): Record<string, any> {
+        return { source: asset.httpUrl };
       }
-    }
-    return new InitFileAsset();
+    }(targetFileName, options);
   }
 
   public readonly elementType = InitElementType.FILE;
 
-  private readonly fileName: string;
-  private readonly content: string;
-  private readonly options: InitFileOptions;
-  private readonly isInlineContent: boolean;
-
-  protected constructor(fileName: string, content: string, options: InitFileOptions, isInlineContent: boolean = true) {
+  protected constructor(private readonly fileName: string, private readonly options: InitFileOptions) {
     super();
-
-    this.fileName = fileName;
-    this.content = content;
-    this.options = options;
-    this.isInlineContent = isInlineContent;
   }
 
   public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
@@ -473,14 +481,7 @@ export class InitFile extends InitElement {
     };
   }
 
-  private renderContentOrSource(): Record<string, any> {
-    return this.isInlineContent ? {
-      content: this.content,
-      encoding: this.options.base64Encoded ? 'base64' : 'plain',
-    } : {
-      source: this.content,
-    };
-  }
+  protected abstract renderContentOrSource(): Record<string, any>;
 
   private renderOptions(fileOptions: InitFileOptions, renderOptions: InitRenderOptions): Record<string, any> {
     if (renderOptions.platform === InitRenderPlatform.WINDOWS) {
@@ -533,9 +534,11 @@ export class InitGroup extends InitElement {
 /**
  * Optional parameters used when creating a user
  */
-interface InitUserOptions {
+export interface InitUserOptions {
   /**
    * The user's home directory.
+   *
+   * @default
    */
   readonly homeDir?: string;
 
@@ -807,14 +810,40 @@ export class InitService extends InitElement {
 }
 
 /**
+ * Additional options for an InitSource
+ */
+export interface InitSourceOptions {
+
+  /**
+   * Restart the given services after this archive has been extracted
+   *
+   * @default - Do not restart any service
+   */
+  readonly serviceHandles?: InitServiceRestartHandle[];
+}
+
+/**
+ * Additional options for an InitSource that builds an asset from local files.
+ *
+ * TODO - Check with Rico on if this is stupid/crazy or not.
+ * Motivation -- Users need to be able to specify the assetHash to refresh the deploy
+ * when the asset/directory contents change.
+ */
+export interface InitSourceAssetOptions extends InitSourceOptions, s3_assets.AssetOptions {
+
+}
+
+/**
  * Extract an archive into a directory
  */
-export class InitSource extends InitElement {
+export abstract class InitSource extends InitElement {
   /**
    * Retrieve a URL and extract it into the given directory
    */
   public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
-    return new InitSource(targetDirectory, url, undefined, options.serviceHandles);
+    return new class extends InitSource {
+      protected get url(): string { return url; }
+    }(targetDirectory, options.serviceHandles);
   }
 
   /**
@@ -832,29 +861,40 @@ export class InitSource extends InitElement {
   }
 
   /**
-   * Create an asset from the given directory and use that
+   * Create an InitSource from an asset created from the given path.
    */
-  public static fromDirectoryAsset(_targetDirectory: string, _sourceDirectory: string, _options: InitSourceOptions = {}): InitSource {
-    // TODO - No scope here, so can't create the Asset directly. Need to delay creation until bind() is called,
-    // or find some other clever solution if we're going to support this.
-    throw new Error('Not implemented');
+  public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
+    return new class extends InitSource {
+      private asset!: s3_assets.Asset;
+      protected get url(): string { return this.asset.httpUrl; }
+      public bind(scope: Construct, bindOptions: InitBindOptions): void {
+        this.asset = new s3_assets.Asset(scope, 'InitSourceAsset', {
+          path,
+          ...bindOptions,
+        });
+        this.asset.grantRead(bindOptions.instanceRole);
+      }
+    }(targetDirectory, options.serviceHandles);
   }
 
   /**
-   * Extract a diretory from an existing directory asset
+   * Extract a directory from an existing directory asset.
+   *
+   * FIXME/TODO - Rico: All other usages of creation of assets across the CDK use "fromAsset(path: string, options)". I think
+   * it'll be weird if we expose the below and call it fromAsset, so renamed to fromExistingAsset. That name sucks though. :/
    */
-  public static fromAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
-    return new InitSource(targetDirectory, asset.httpUrl, asset, options.serviceHandles);
+  public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
+    return new class extends InitSource {
+      protected get url(): string { return asset.httpUrl; }
+      public bind(_scope: Construct, bindOptions: InitBindOptions): void {
+        asset.grantRead(bindOptions.instanceRole);
+      }
+    }(targetDirectory, options.serviceHandles);
   }
 
   public readonly elementType = InitElementType.SOURCE;
 
-  private constructor(
-    private readonly targetDirectory: string,
-    private readonly url: string,
-    private readonly asset?: s3_assets.Asset,
-    private readonly serviceHandles?: InitServiceRestartHandle[],
-  ) {
+  protected constructor(private readonly targetDirectory: string, private readonly serviceHandles?: InitServiceRestartHandle[]) {
     super();
   }
 
@@ -869,21 +909,5 @@ export class InitSource extends InitElement {
     };
   }
 
-  public bind(_scope: Construct, _options: InitBindOptions): void {
-    if (this.asset === undefined) { return; }
-    throw new Error('Not yet implemented');
-  }
-}
-
-/**
- * Additional options for an InitSource
- */
-export interface InitSourceOptions {
-
-  /**
-   * Restart the given services after this archive has been extracted
-   *
-   * @default - Do not restart any service
-   */
-  readonly serviceHandles?: InitServiceRestartHandle[];
+  protected abstract get url(): string;
 }

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as crypto from 'crypto';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CloudFormationInit } from './cfn-init';
 import { InitRenderPlatform } from './cfn-init-elements';
 import { Connections, IConnectable } from './connections';

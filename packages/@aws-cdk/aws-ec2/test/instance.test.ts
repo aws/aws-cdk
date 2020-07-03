@@ -1,10 +1,11 @@
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { expect as cdkExpect, haveResource, ResourcePart, arrayWith } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc, CloudFormationInit, InitCommand, InitFile } from '../lib';
+import { AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
+  EbsDeviceVolumeType, InitCommand, InitFile, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
@@ -339,13 +340,13 @@ test('add CloudFormation Init to instance', () => {
       'Fn::Base64': {
         'Fn::Join': [ '', [
           '#!/bin/bash\n# fingerprint: 3e2adf845e3c856f\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
-          { 'Ref': 'AWS::Region' },
+          { Ref: 'AWS::Region' },
           ' --stack ',
-          { 'Ref': 'AWS::StackName' },
+          { Ref: 'AWS::StackName' },
           ' --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
-          { 'Ref': 'AWS::Region' },
+          { Ref: 'AWS::Region' },
           ' --stack ',
-          { 'Ref': 'AWS::StackName' },
+          { Ref: 'AWS::StackName' },
           ' --resource InstanceC1063A87\n)',
         ]],
       },
@@ -356,7 +357,7 @@ test('add CloudFormation Init to instance', () => {
       Statement: arrayWith({
         Action: [ 'cloudformation:DescribeStackResource', 'cloudformation:SignalResource' ],
         Effect: 'Allow',
-        Resource: { 'Ref': 'AWS::StackId' },
+        Resource: { Ref: 'AWS::StackId' },
       }),
       Version: '2012-10-17',
     },

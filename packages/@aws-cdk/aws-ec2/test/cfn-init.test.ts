@@ -13,17 +13,17 @@ test('whole config with restart handles', () => {
 
   // THEN
   expect(config.renderConfig(ec2.InitRenderPlatform.LINUX)).toEqual(expect.objectContaining({
-    'services': {
-      'sysvinit': {
-        'httpd': {
-          'enabled': true,
-          'ensureRunning': true,
-          'commands': ['000'],
-          'files': ['/etc/my.cnf'],
-          'packages': {
-            'yum': ['httpd'],
+    services: {
+      sysvinit: {
+        httpd: {
+          enabled: true,
+          ensureRunning: true,
+          commands: ['000'],
+          files: ['/etc/my.cnf'],
+          packages: {
+            yum: ['httpd'],
           },
-          'sources': ['/tmp/foo'],
+          sources: ['/tmp/foo'],
         },
       },
     },

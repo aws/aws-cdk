@@ -1,10 +1,10 @@
-import { App, Duration, Stack } from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as ec2 from '../lib';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as ec2 from '../lib';
 
 const DEFAULT_LINUX_OPTIONS = {
   platform: ec2.InitRenderPlatform.LINUX,
@@ -18,7 +18,7 @@ const DEFAULT_WINDOWS_OPTIONS = {
 describe('InitCommand', () => {
 
   test('throws error on empty argv command', () => {
-    expect(() => { ec2.InitCommand.argvCommand([]) }).toThrow();
+    expect(() => { ec2.InitCommand.argvCommand([]); }).toThrow();
   });
 
   test('auto-generates an indexed command key if none is provided', () => {
@@ -55,7 +55,7 @@ describe('InitCommand', () => {
     // GIVEN
     const command = ec2.InitCommand.shellCommand('/bin/sh', {
       key: 'command_0',
-      env: { 'SECRETS_FILE': '/tmp/secrets' },
+      env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
@@ -67,9 +67,9 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      'command_0': {
+      command_0: {
         command: '/bin/sh',
-        env: { 'SECRETS_FILE': '/tmp/secrets' },
+        env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',
         ignoreErrors: false,
@@ -82,7 +82,7 @@ describe('InitCommand', () => {
     // GIVEN
     const command = ec2.InitCommand.argvCommand(['/bin/sh', '-c', 'doStuff'], {
       key: 'command_0',
-      env: { 'SECRETS_FILE': '/tmp/secrets' },
+      env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
@@ -94,9 +94,9 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      'command_0': {
+      command_0: {
         command: ['/bin/sh', '-c', 'doStuff'],
-        env: { 'SECRETS_FILE': '/tmp/secrets' },
+        env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',
         ignoreErrors: false,
@@ -109,7 +109,7 @@ describe('InitCommand', () => {
     // GIVEN
     const command = ec2.InitCommand.shellCommand('/bin/sh', {
       key: 'command_0',
-      env: { 'SECRETS_FILE': '/tmp/secrets' },
+      env: { SECRETS_FILE: '/tmp/secrets' },
       cwd: '/home/myUser',
       test: 'test -d /home/myUser',
       ignoreErrors: false,
@@ -589,14 +589,13 @@ describe('InitService', () => {
         ensureRunning: true,
         files: ['/etc/my.cnf'],
         sources: ['/tmp/foo'],
-        packages: { 'yum': ['httpd'] },
+        packages: { yum: ['httpd'] },
         commands: ['cmd_000'],
       },
     });
   });
 
 });
-
 
 describe('InitSource', () => {
 
@@ -610,7 +609,7 @@ describe('InitSource', () => {
     // THEN
     expect(rendered).toEqual({
       '/tmp/foo': 'https://example.com/archive.zip',
-    })
+    });
   });
 
   test('fromGitHub builds a path to the tarball', () => {
@@ -623,7 +622,7 @@ describe('InitSource', () => {
     // THEN
     expect(rendered).toEqual({
       '/tmp/foo': 'https://github.com/aws/aws-cdk/tarball/master',
-    })
+    });
   });
 
   test('fromGitHub defaults to master if refspec is omitted', () => {
@@ -636,7 +635,7 @@ describe('InitSource', () => {
     // THEN
     expect(rendered).toEqual({
       '/tmp/foo': 'https://github.com/aws/aws-cdk/tarball/master',
-    })
+    });
   });
 
   test('fromS3Object uses object URL', () => {
@@ -654,7 +653,7 @@ describe('InitSource', () => {
     // THEN
     expect(rendered).toEqual({
       '/tmp/foo': expect.stringContaining('/MyBucket/myKey'),
-    })
+    });
   });
 
 });

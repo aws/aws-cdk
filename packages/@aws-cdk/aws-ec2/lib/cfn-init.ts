@@ -94,7 +94,6 @@ export class CloudFormationInit {
 
     // Anonymous subclass of an abstract class because I don't want users to be able to
     // instantiate this. It is a type that represents an action you took.
-    // tslint:disable-next-line:new-parens
     return new class extends AttachedCloudFormationInit {
       public apply(consumingResource: CfnResource, useOptions: ApplyInitOptions): void {
         self.bind(consumingResource, { instanceRole: useOptions.instanceRole });
@@ -136,7 +135,7 @@ export class CloudFormationInit {
           ]);
         }
       }
-    };
+    }();
   }
 
   private bind(scope: Construct, options: InitBindOptions) {
