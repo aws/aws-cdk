@@ -1,0 +1,179 @@
+{
+  "Resources": {
+    "InstanceInstanceSecurityGroupF0E2D5BE": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "integ-init/Instance/InstanceSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-init/Instance"
+          }
+        ],
+        "VpcId": "vpc-60900905"
+      }
+    },
+    "InstanceInstanceRoleE9785DE5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-init/Instance"
+          }
+        ]
+      }
+    },
+    "InstanceInstanceRoleDefaultPolicy4ACE9290": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudformation:DescribeStackResource",
+                "cloudformation:SignalResource"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AWS::StackId"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "InstanceInstanceRoleDefaultPolicy4ACE9290",
+        "Roles": [
+          {
+            "Ref": "InstanceInstanceRoleE9785DE5"
+          }
+        ]
+      }
+    },
+    "InstanceInstanceProfileAB5AEF02": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "InstanceInstanceRoleE9785DE5"
+          }
+        ]
+      }
+    },
+    "InstanceC1063A87": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1a",
+        "IamInstanceProfile": {
+          "Ref": "InstanceInstanceProfileAB5AEF02"
+        },
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "InstanceInstanceSecurityGroupF0E2D5BE",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetId": "subnet-e19455ca",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "integ-init/Instance"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n# fingerprint: 7c06760dd0086233\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " --stack ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                " --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " --stack ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                " --resource InstanceC1063A87\n)"
+              ]
+            ]
+          }
+        }
+      },
+      "DependsOn": [
+        "InstanceInstanceRoleDefaultPolicy4ACE9290",
+        "InstanceInstanceRoleE9785DE5"
+      ],
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": 1,
+          "Timeout": "PT5M"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "default": [
+              "config"
+            ]
+          },
+          "config": {
+            "commands": {
+              "000": {
+                "command": "echo hello"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+    }
+  }
+}
