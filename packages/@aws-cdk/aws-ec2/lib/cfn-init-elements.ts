@@ -66,7 +66,7 @@ export enum InitElementType {
  * `InitSource` and `InitPackage` objects that you want to restart
  * a service, and finally to the `InitService` itself as well.
  */
-export class RestartInitServiceHandle {
+export class InitServiceRestartHandle {
   private readonly commands = new Array<string>();
   private readonly files = new Array<string>();
   private readonly sources = new Array<string>();
@@ -231,11 +231,11 @@ export interface InitCommandOptions {
   readonly waitAfterCompletion?: Duration;
 
   /**
-   * Restart the given service after this command has run
+   * Restart the given service(s) after this command has run
    *
    * @default - Do not restart any service
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly serviceHandles?: InitServiceRestartHandle[];
 }
 
 /**
@@ -281,7 +281,9 @@ export class InitCommand extends InitElement {
     }
 
     // FIXME: Side effects in a render function... :(
-    this.options.restartHandle?.addCommand(commandKey);
+    for (const handle of this.options.serviceHandles ?? []) {
+      handle.addCommand(commandKey);
+    }
 
     return {
       [commandKey]: {
@@ -347,7 +349,7 @@ export interface InitFileOptions {
    *
    * @default - Do not restart any service
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly serviceHandles?: InitServiceRestartHandle[];
 }
 
 /**
@@ -459,7 +461,9 @@ export class InitFile extends InitElement {
 
   public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
     // FIXME: Side effects in a render function... :(
-    this.options.restartHandle?.addFile(this.fileName);
+    for (const handle of this.options.serviceHandles ?? []) {
+      handle.addFile(this.fileName);
+    }
 
     return {
       [this.fileName]: {
@@ -603,7 +607,7 @@ export interface LocationPackageOptions {
    *
    * @default - Do not restart any service
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly serviceHandles?: InitServiceRestartHandle[];
 }
 
 /**
@@ -618,11 +622,11 @@ export interface NamedPackageOptions {
   readonly version?: string[];
 
   /**
-   * Restart the given service after this command has run
+   * Restart the given services after this command has run
    *
    * @default - Do not restart any service
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly serviceHandles?: InitServiceRestartHandle[];
 }
 
 /**
@@ -633,42 +637,42 @@ export class InitPackage extends InitElement {
    * Install an RPM from an HTTP URL or a location on disk
    */
   public static rpm(location: string, options: LocationPackageOptions = {}): InitPackage {
-    return new InitPackage('rpm', [location], options.key, options.restartHandle);
+    return new InitPackage('rpm', [location], options.key, options.serviceHandles);
   }
 
   /**
    * Install a package using Yum
    */
   public static yum(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('yum', options.version ?? [], packageName, options.restartHandle);
+    return new InitPackage('yum', options.version ?? [], packageName, options.serviceHandles);
   }
 
   /**
    * Install a package from RubyGems
    */
   public static rubyGem(gemName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('rubygems', options.version ?? [], gemName, options.restartHandle);
+    return new InitPackage('rubygems', options.version ?? [], gemName, options.serviceHandles);
   }
 
   /**
    * Install a package from PyPI
    */
   public static python(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('python', options.version ?? [], packageName, options.restartHandle);
+    return new InitPackage('python', options.version ?? [], packageName, options.serviceHandles);
   }
 
   /**
    * Install a package using APT
    */
   public static apt(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('apt', options.version ?? [], packageName, options.restartHandle);
+    return new InitPackage('apt', options.version ?? [], packageName, options.serviceHandles);
   }
 
   /**
    * Install an MSI package from an HTTP URL or a location on disk
    */
   public static msi(location: string, options: LocationPackageOptions = {}): InitPackage {
-    return new InitPackage('msi', [location], options.key, options.restartHandle);
+    return new InitPackage('msi', [location], options.key, options.serviceHandles);
   }
 
   public readonly elementType = InitElementType.PACKAGE;
@@ -677,7 +681,7 @@ export class InitPackage extends InitElement {
     private readonly type: string,
     private readonly versions: string[],
     private readonly packageName?: string,
-    private readonly restartHandle?: RestartInitServiceHandle,
+    private readonly serviceHandles?: InitServiceRestartHandle[],
   ) {
     super();
   }
@@ -697,7 +701,9 @@ export class InitPackage extends InitElement {
 
     const packageName = this.packageName || `${options.index}`.padStart(3, '0');
 
-    this.restartHandle?.addPackage(this.type, packageName);
+    for (const handle of this.serviceHandles ?? []) {
+      handle.addPackage(this.type, packageName);
+    }
 
     return {
       [this.type]: {
@@ -742,7 +748,7 @@ export interface InitServiceOptions {
    *
    * @default - No files trigger restart
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly restartHandle?: InitServiceRestartHandle;
 }
 
 /**
@@ -808,7 +814,7 @@ export class InitSource extends InitElement {
    * Retrieve a URL and extract it into the given directory
    */
   public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
-    return new InitSource(targetDirectory, url, undefined, options.restartHandle);
+    return new InitSource(targetDirectory, url, undefined, options.serviceHandles);
   }
 
   /**
@@ -838,7 +844,7 @@ export class InitSource extends InitElement {
    * Extract a diretory from an existing directory asset
    */
   public static fromAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
-    return new InitSource(targetDirectory, asset.httpUrl, asset, options.restartHandle);
+    return new InitSource(targetDirectory, asset.httpUrl, asset, options.serviceHandles);
   }
 
   public readonly elementType = InitElementType.SOURCE;
@@ -847,14 +853,16 @@ export class InitSource extends InitElement {
     private readonly targetDirectory: string,
     private readonly url: string,
     private readonly asset?: s3_assets.Asset,
-    private readonly restartHandle?: RestartInitServiceHandle,
+    private readonly serviceHandles?: InitServiceRestartHandle[],
   ) {
     super();
   }
 
   public renderElement(_options: InitRenderOptions): Record<string, any> {
     // Side effect and all that
-    this.restartHandle?.addSource(this.targetDirectory);
+    for (const handle of this.serviceHandles ?? []) {
+      handle.addSource(this.targetDirectory);
+    }
 
     return {
       [this.targetDirectory]: this.url,
@@ -873,9 +881,9 @@ export class InitSource extends InitElement {
 export interface InitSourceOptions {
 
   /**
-   * Restart the given service after this archive has been extracted
+   * Restart the given services after this archive has been extracted
    *
    * @default - Do not restart any service
    */
-  readonly restartHandle?: RestartInitServiceHandle;
+  readonly serviceHandles?: InitServiceRestartHandle[];
 }

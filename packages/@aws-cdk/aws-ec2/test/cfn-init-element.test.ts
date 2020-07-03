@@ -566,7 +566,7 @@ describe('InitService', () => {
     ['Windows', 'windows', DEFAULT_WINDOWS_OPTIONS],
   ])('fromOptions renders all options for %s', (_platform, key, options) => {
     // GIVEN
-    const restartHandle = new ec2.RestartInitServiceHandle();
+    const restartHandle = new ec2.InitServiceRestartHandle();
     restartHandle.addFile('/etc/my.cnf');
     restartHandle.addSource('/tmp/foo');
     restartHandle.addPackage('yum', 'httpd');
