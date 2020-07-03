@@ -1377,7 +1377,7 @@ export = {
                 {
                   Ref: 'ClusterEB0386A7',
                 },
-                ' --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1'
+                ' --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterNGASG41E5B469 --region us-east-1',
               ],
             ],
           },
