@@ -9,12 +9,6 @@ import { IHttpStage } from './stage';
  */
 export interface HttpApiMappingProps {
   /**
-   * Api mapping name
-   * @default -  logical id
-   */
-  readonly apiMappingName?: string;
-
-  /**
    * Api mapping key. The path where this stage should be mapped to on the domain
    * @default '/'
    */
@@ -67,16 +61,8 @@ export class HttpApiMapping extends Resource implements IApiMapping {
    */
   public readonly apiMappingId: string;
 
-  /**
-   * Name of the API Mapping
-   * @attribute
-   */
-  public readonly apiMappingName: string;
-
   constructor(scope: Construct, id: string, props: HttpApiMappingProps) {
     super(scope, id);
-
-    this.apiMappingName = props.apiMappingName ?? id;
 
     const apiMappingProps: CfnApiMappingProps = {
       apiId: props.api.httpApiId,

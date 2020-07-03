@@ -178,17 +178,13 @@ export class HttpApi extends Resource implements IHttpApi {
       this.defaultStage = new HttpStage(this, 'DefaultStage', {
         httpApi: this,
         autoDeploy: true,
+        domainMapping: props?.defaultDomainMapping,
       });
-      if (props?.defaultDomainMapping) {
-        const options = props.defaultDomainMapping;
-        new HttpApiMapping(this, `${options.domainName}${options.mappingKey}`, {
-          api: this,
-          domainName: options.domainName,
-          // use '$default' stage when we create a new API with defaultDomainMapping
-          stage: this.defaultStage!,
-          apiMappingKey: '/',
-        });
-      }
+    }
+
+    if (props?.createDefaultStage === false && props.defaultDomainMapping) {
+      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled'
+      );
     }
   }
 
