@@ -67,6 +67,7 @@ export = {
             Ref: 'InstanceC1063A87',
           },
         ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
 
@@ -148,6 +149,7 @@ export = {
             Ref: 'DatabaseInstance2AA380DEE',
           },
         ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
 

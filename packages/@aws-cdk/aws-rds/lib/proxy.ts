@@ -416,12 +416,16 @@ export class DatabaseProxy extends cdk.Resource
       dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
     }
 
-    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers: bindResult.dbClusters?.map((c) => c.clusterIdentifier),
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
+
+    // Currently(2020-07-04), this property must be set to default.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html#TargetGroupName-fn::getatt
+    proxyTargetGroup.addOverride('Properties.TargetGroupName', 'default');
   }
 
   /**
