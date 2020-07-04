@@ -14,7 +14,7 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 version=${1:-minor}
-prerelease_tag=${2:-rc}
+prerelease_tag=${2:-}
 
 echo "Starting ${version} version bump"
 
