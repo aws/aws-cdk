@@ -38,3 +38,5 @@ yarn-error.log
 
 # Parcel default cache directory
 .parcel-cache
+
+.vscode/.history/
