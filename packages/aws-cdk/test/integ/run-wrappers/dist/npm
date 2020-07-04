@@ -4,7 +4,7 @@ set -eu
 
 install_command=$@
 
-NPM_INSTALL_PACKAGE_SUFFIX=${NPM_INSTALL_PACKAGE_SUFFIX:$(node -e "console.log(require('${dist_root}/build.json').version)")}
+NPM_INSTALL_PACKAGE_SUFFIX=${NPM_INSTALL_PACKAGE_SUFFIX:$(CANDIDATE_VERSION)}
 
 echo "We got here. Yey"
 echo "${install_command}${NPM_INSTALL_PACKAGE_SUFFIX}"

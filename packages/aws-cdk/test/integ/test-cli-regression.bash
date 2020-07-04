@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Run our integration tests in regression mode against the
-# local code of the framework and CLI.
+# Run our integration tests in regression mode.
 #
-#   1. Download the latest released version of the aws-cdk repo.
+#   1. Figure out what was the previous (relative to the current candidate) version we published.
+#   2. Download the integration tests artifact from that version.
 #   2. Copy its integration tests directory ((test/integ/cli)) here.
 #   3. Run the integration tests from the copied directory.
 #
@@ -39,20 +39,34 @@ function fetch_integration_tests() {
 
 }
 
-TEST_RUNNER=${TEST_RUNNER:-""}
-
-if [ "${TEST_RUNNER}" != "dist" ]; then
-  echo "Unsupported runner: ${TEST_RUNNER}. Regression tests can only run with the 'dist' runner"
-  exit 1
-fi
-
-CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
-SUPPLANT_VERSION=$(node helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
-
 function run() {
-  framework_version=$1
+
+  if [ "${TEST_RUNNER:-""}" != "dist" ]; then
+    echo "Unsupported runner: ${TEST_RUNNER}. Regression tests can only run with the 'dist' runner"
+    exit 1
+  fi
+
+  CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
+  SUPPLANT_VERSION=$(node helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
+
+  new_framework=$1
+
+  if [ ${new_framework} == true ]; then
+    framework_version=${CANDIDATE_VERSION}
+  else
+    framework_version=${SUPPLANT_VERSION}
+  fi
+
 
   integ_under_test=$(fetch_integration_tests ${SUPPLANT_VERSION})
 
   NPM_INSTALL_PACKAGE_SUFFIX=@${framework_version} ${integ_under_test}/test.sh "$@"
+}
+
+function run_new_framework() {
+  run true
+}
+
+function run old_framework() {
+  run false
 }
