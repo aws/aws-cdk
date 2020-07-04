@@ -1,5 +1,5 @@
 import { cloudFormation } from './aws-helpers';
-import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket } from './cdk-helpers';
+import { cdk, cdkDeploy, cleanup, fullStackName, log, prepareAppFixture, rememberToDeleteBucket } from './cdk-helpers';
 import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
@@ -7,7 +7,13 @@ jest.setTimeout(600_000);
 const QUALIFIER = randomString();
 
 beforeAll(async () => {
-  await prepareAppFixture();
+  // apparently: https://github.com/facebook/jest/issues/2713
+  try {
+    await prepareAppFixture();
+  } catch (err) {
+    log(`beforeAll() failed with error: ${err}. Exitin;g...`);
+    process.exit(1);
+  }
 });
 
 beforeEach(async () => {

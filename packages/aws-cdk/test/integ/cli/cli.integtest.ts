@@ -9,7 +9,13 @@ import { integTest } from './test-helpers';
 jest.setTimeout(600 * 1000);
 
 beforeAll(async () => {
-  await prepareAppFixture();
+  // apparently: https://github.com/facebook/jest/issues/2713
+  try {
+    await prepareAppFixture();
+  } catch (err) {
+    log(`beforeAll() failed with error: ${err}. Exitin;g...`);
+    process.exit(1);
+  }
 });
 
 beforeEach(async () => {
@@ -32,7 +38,7 @@ integTest('VPC Lookup', async () => {
   await cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' }});
 });
 
-integTest('Two ways of shoing the version', async () => {
+integTest('Two ways of showing the version', async () => {
   const version1 = await cdk(['version']);
   const version2 = await cdk(['--version']);
 
