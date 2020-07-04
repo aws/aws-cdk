@@ -1,0 +1,9 @@
+#!/bin/bash
+# Wrapper for 'npm' which will symlink packages from the monorepo.
+set -eu
+
+install_command=$@
+
+NPM_INSTALL_PACKAGE_SUFFIX=${NPM_INSTALL_PACKAGE_SUFFIX:$(node -e "console.log(require('${dist_root}/build.json').version)")}
+
+exec $ORIGINAL_NPM ${install_command}${NPM_INSTALL_PACKAGE_SUFFIX}
