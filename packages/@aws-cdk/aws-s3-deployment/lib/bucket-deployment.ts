@@ -32,11 +32,11 @@ export interface BucketDeploymentProps {
 
   /**
    * If this is set to false, files in the destination bucket that
-   * do not exist in the asset, will NOT be deleted.
+   * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
    * @default true
    */
-  readonly pruneOnCopy?: boolean
+  readonly pruneOnDeploy?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -205,7 +205,7 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        PruneOnCopy: props.pruneOnCopy ?? true,
+        PruneOnDeploy: props.pruneOnDeploy ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,

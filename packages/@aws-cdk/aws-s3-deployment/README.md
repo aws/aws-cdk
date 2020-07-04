@@ -66,31 +66,35 @@ in which case the contents will be deleted.
 
 ## Prune On Copy
 
-By default, files in the destination bucket that don't exist in the source will be deleted when the `BucketDeployment` resource is created or updated. You can use the option `pruneOnCopy: false` to disable this behavior, in which case the files will not be deleted.
+By default, files in the destination bucket that don't exist in the source will be deleted
+when the `BucketDeployment` resource is created or updated. You can use the option `pruneOnDeploy: false` to disable
+this behavior, in which case the files will not be deleted.
 
 ```typescript
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  pruneOnCopy: false,
+  pruneOnDeploy: false,
 });
 ```
 
-This option also enables you to specify multiple bucket deployments for the same destination bucket, each with its own characteristics. For example, you can set different cache-control headers based on file extensions:
+This option also enables you to specify multiple bucket deployments for the same destination bucket,
+each with its own characteristics. For example, you can set different cache-control headers
+based on file extensions:
 
 ```typescript
 new BucketDeployment(this, 'BucketDeployment', {
   sources: [Source.asset('./website', { exclude: ['index.html' })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
-  pruneOnCopy: false,
+  pruneOnDeploy: false,
 });
 
 new BucketDeployment(this, 'HTMLBucketDeployment', {
   sources: [Source.asset('./website', { exclude: ['!index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
-  pruneOnCopy: false,
+  pruneOnDeploy: false,
 });
 ```
 

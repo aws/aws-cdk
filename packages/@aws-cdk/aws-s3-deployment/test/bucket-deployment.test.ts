@@ -616,11 +616,11 @@ test('deploy without deleting missing files from destination', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    pruneOnCopy: false,
+    pruneOnDeploy: false,
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    'PruneOnCopy': false,
+    'PruneOnDeploy': false,
   });
 });
 

@@ -42,7 +42,7 @@ class TestBucketDeployment extends cdk.Stack {
     new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
-      pruneOnCopy: false,
+      pruneOnDeploy: false,
       retainOnDelete: false,
     });
 
