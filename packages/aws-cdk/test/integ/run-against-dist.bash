@@ -29,8 +29,6 @@ function header() {
   log "============================================================================================"
 }
 
-CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION env variable"}
-
 function serve_npm_packages() {
   if [ -n "${SERVE_NPM_TARBALLS_PID:-}" ]; then
     log >&2 "Verdaccio is already running"
@@ -49,7 +47,6 @@ function serve_npm_packages() {
   npm install serve-npm-tarballs
   eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
   TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
-
 }
 
 function install_cli() {
