@@ -25,6 +25,7 @@ fi
 
 
 serve_npm_packages
+install_cli
 
 prepare_java_packages
 prepare_nuget_packages
