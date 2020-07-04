@@ -9,7 +9,7 @@ class TestBucketDeployment extends cdk.Stack {
 
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
-      publicReadAccess: true,
+      publicReadAccess: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
@@ -42,7 +42,8 @@ class TestBucketDeployment extends cdk.Stack {
     new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
-      deleteMissingFiles: false
+      pruneOnCopy: false,
+      retainOnDelete: false,
     });
 
   }

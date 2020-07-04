@@ -31,12 +31,12 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
-   * If this is set to "false", files in the destination bucket that
+   * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted.
    *
-   * @default 'true'
+   * @default true
    */
-  readonly deleteMissingFiles?: boolean
+  readonly pruneOnCopy?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -205,13 +205,14 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        DeleteMissingFiles: props.deleteMissingFiles ?? true,
+        PruneOnCopy: props.pruneOnCopy ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths,
       },
     });
+
   }
 
   private renderSingletonUuid(memoryLimit?: number) {

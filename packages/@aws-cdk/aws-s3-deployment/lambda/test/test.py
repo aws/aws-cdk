@@ -16,7 +16,7 @@ from unittest.mock import patch
 class TestHandler(unittest.TestCase):
     def setUp(self):
         logger = logging.getLogger()
-        
+
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
         except OSError: pass
@@ -42,7 +42,7 @@ class TestHandler(unittest.TestCase):
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
-            "Delete": "false"
+            "PruneOnCopy": "false"
         })
 
         self.assertAwsCommands(
@@ -55,7 +55,7 @@ class TestHandler(unittest.TestCase):
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
-            "Delete": "false"
+            "PruneOnCopy": "false"
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
         }, physical_id="<physical-id>")
