@@ -16,7 +16,9 @@ phases:
       - /bin/bash ./fetch-dotnet-snk.sh
   build:
     commands:
-      - if 
+      # we bump here so that our master version won't be identical to the latest published version during tests.
+      # otherwise this causes problems with verdaccio mirroring.
+      - if [ "$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then /bin/bash ./bump.sh preminor; fi;
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
   post_build:
