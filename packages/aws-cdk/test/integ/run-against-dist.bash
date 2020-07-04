@@ -38,7 +38,7 @@ function serve_npm_packages() {
   #------------------------------------------------------------------------------
   # Start a mock npm repository from the given tarballs
   #------------------------------------------------------------------------------
-  header "Starting local NPM Repository"
+  header "Starting local NPM Repository (Serving version ${CANDIDATE_VERSION})"
 
   tarballs_glob="$dist_root/js/*.tgz"
 
