@@ -1,5 +1,4 @@
 const { Octokit } = require('@octokit/rest');
-const { Octokit } = require('@octokit/rest');
 const semver = require('semver');
 
 module.exports.fetchSupplantVersion = async function(base) {

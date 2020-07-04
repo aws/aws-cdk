@@ -50,6 +50,7 @@ function serve_npm_packages() {
 }
 
 function install_cli() {
+  echo "Installing CLI aws-cdk@${CANDIDATE_VERSION}"
   (cd ${npmws} && npm install --prefix $npmws aws-cdk@${CANDIDATE_VERSION})
   export PATH=$npmws/node_modules/.bin:$PATH
 }

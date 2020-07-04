@@ -10,44 +10,21 @@
 set -euo pipefail
 integdir=$(cd $(dirname $0) && pwd)
 
-function fetch_integration_tests() {
-
-  version=$1
-
-  temp_dir=$(mktemp -d)
-  integ_under_test=${integdir}/cli-backwards-tests-${version}
-
-  pushd ${temp_dir}
-
-  echo "Downloading aws-cdk ${version} tarball from npm"
-  npm pack aws-cdk@${version}
-  tar -zxvf aws-cdk-${version}.tgz
-
-  rm -rf ${integ_under_test}
-
-  echo "Copying integration tests of version ${version} to ${integ_under_test} (dont worry, its gitignored)"
-  cp -r ${temp_dir}/package/test/integ/cli "${integ_under_test}"
-
-  patch_dir="${integdir}/cli-regression-patches/${version}"
-  if [[ -d "$patch_dir" ]]; then
-      echo "Hotpatching the tests with files from $patch_dir" >&2
-      cp -r "$patch_dir"/* ${integ_under_test}
-  fi
-
-  popd
-
-
-}
-
 function run() {
 
-  if [ "${TEST_RUNNER:-""}" != "dist" ]; then
+  TEST_RUNNER=${TEST_RUNNER:-""}
+
+  if [ "${TEST_RUNNER}" != "dist" ]; then
     echo "Unsupported runner: ${TEST_RUNNER}. Regression tests can only run with the 'dist' runner"
     exit 1
   fi
 
   CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
-  SUPPLANT_VERSION=$(node helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
+
+  echo "Fetching supplant version for candidate: ${CANDIDATE_VERSION}"
+  SUPPLANT_VERSION=$(node ${integdir}/helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
+
+  echo "Supplant version is: ${SUPPLANT_VERSION}"
 
   new_framework=$1
 
@@ -57,8 +34,27 @@ function run() {
     framework_version=${SUPPLANT_VERSION}
   fi
 
+  temp_dir=$(mktemp -d)
+  integ_under_test=${integdir}/cli-backwards-tests-${SUPPLANT_VERSION}
 
-  integ_under_test=$(fetch_integration_tests ${SUPPLANT_VERSION})
+  pushd ${temp_dir}
+
+  echo "Downloading aws-cdk ${SUPPLANT_VERSION} tarball from npm"
+  npm pack aws-cdk@${SUPPLANT_VERSION}
+  tar -zxvf aws-cdk-${SUPPLANT_VERSION}.tgz
+
+  rm -rf ${integ_under_test}
+
+  echo "Copying integration tests of version ${SUPPLANT_VERSION} to ${integ_under_test} (dont worry, its gitignored)"
+  cp -r ${temp_dir}/package/test/integ/cli "${integ_under_test}"
+
+  patch_dir="${integdir}/cli-regression-patches/v${SUPPLANT_VERSION}"
+  if [[ -d "$patch_dir" ]]; then
+      echo "Hotpatching the tests with files from $patch_dir" >&2
+      cp -r "$patch_dir"/* ${integ_under_test}
+  fi
+
+  popd
 
   NPM_INSTALL_PACKAGE_SUFFIX=@${framework_version} ${integ_under_test}/test.sh "$@"
 }
@@ -67,6 +63,6 @@ function run_new_framework() {
   run true
 }
 
-function run old_framework() {
+function run_old_framework() {
   run false
 }
