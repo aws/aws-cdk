@@ -11,7 +11,7 @@ beforeAll(async () => {
   try {
     await prepareAppFixture();
   } catch (err) {
-    log(`beforeAll() failed with error: ${err}. Exitin;g...`);
+    log(`beforeAll() failed with error: ${err}. Exiting...`);
     process.exit(1);
   }
 });
