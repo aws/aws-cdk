@@ -26,5 +26,7 @@ if [ ! -z ${prerelease_tag} ]; then
   args="${args} --prerelease=${prerelease_tag}"
 fi
 
+echo ${args}
+
 # Generate CHANGELOG and create a commit (see .versionrc.json)
 npx standard-version ${args}
