@@ -14,10 +14,17 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 version=${1:-minor}
+prerelease_tag=${2:-rc}
 
 echo "Starting ${version} version bump"
 
 # /bin/bash ./install.sh
 
+args="--release-as ${version}"
+
+if [ ! -z ${prerelease_tag} ]; then
+  args="${args} --prerelease=${prerelease_tag}"
+fi
+
 # Generate CHANGELOG and create a commit (see .versionrc.json)
-npx standard-version --release-as ${version}
+npx standard-version ${args}
