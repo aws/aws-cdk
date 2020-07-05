@@ -33,6 +33,7 @@ export interface BucketDeploymentProps {
   /**
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
+   *   * @see ttps://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
    *
    * @default true
    */
