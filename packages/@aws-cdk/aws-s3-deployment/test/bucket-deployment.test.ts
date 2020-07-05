@@ -620,7 +620,7 @@ test('deploy without deleting missing files from destination', () => {
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    'PruneOnDeploy': false,
+    'Prune': false,
   });
 });
 
