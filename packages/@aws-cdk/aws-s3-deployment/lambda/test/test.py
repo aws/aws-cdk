@@ -42,7 +42,7 @@ class TestHandler(unittest.TestCase):
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
-            "PruneOnDeploy": "false"
+            "Prune": "false"
         })
 
         self.assertAwsCommands(
@@ -55,7 +55,7 @@ class TestHandler(unittest.TestCase):
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
             "DestinationBucketName": "<dest-bucket-name>",
-            "PruneOnDeploy": "false"
+            "Prune": "false"
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
         }, physical_id="<physical-id>")

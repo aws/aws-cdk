@@ -47,7 +47,7 @@ def handler(event, context):
             distribution_id     = props.get('DistributionId', '')
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
-            prune_on_deploy     = props.get('PruneOnDeploy', 'true').lower() == 'true'
+            prune               = props.get('Prune', 'true').lower() == 'true'
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -99,7 +99,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune_on_deploy)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -113,7 +113,7 @@ def handler(event, context):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune_on_deploy):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
     # create a temporary working directory
     workdir=tempfile.mkdtemp()
     logger.info("| workdir: %s" % workdir)
@@ -135,7 +135,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune_on_
 
     s3_command = ["s3", "sync"]
 
-    if prune_on_deploy:
+    if prune:
       s3_command.append("--delete")
 
     s3_command.extend([contents_dir, s3_dest])

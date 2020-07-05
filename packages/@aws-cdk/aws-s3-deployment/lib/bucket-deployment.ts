@@ -36,7 +36,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly pruneOnDeploy?: boolean
+  readonly prune?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -205,7 +205,7 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
-        PruneOnDeploy: props.pruneOnDeploy ?? true,
+        Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
