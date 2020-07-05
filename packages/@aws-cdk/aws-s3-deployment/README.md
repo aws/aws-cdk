@@ -64,7 +64,7 @@ By default, the contents of the destination bucket will **not** be deleted when 
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
 in which case the contents will be deleted.
 
-## Prune On Copy
+## Prune On Deploy
 
 By default, files in the destination bucket that don't exist in the source will be deleted
 when the `BucketDeployment` resource is created or updated. You can use the option `pruneOnDeploy: false` to disable
