@@ -408,18 +408,24 @@ export class DatabaseProxy extends cdk.Resource
     this.endpoint = this.resource.attrEndpoint;
 
     let dbInstanceIdentifiers: string[] | undefined;
-    if (bindResult.dbClusters) {
-      // support for only instances of a single cluster
-      dbInstanceIdentifiers = bindResult.dbClusters[0].instanceIdentifiers;
-    } else if (bindResult.dbInstances) {
+    if (bindResult.dbInstances) {
       // support for only single instance
       dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+    }
+
+    let dbClusterIdentifiers: string[] | undefined;
+    if (bindResult.dbClusters) {
+      dbClusterIdentifiers = bindResult.dbClusters.map((c) => c.clusterIdentifier);
+    }
+
+    if (!!dbInstanceIdentifiers && !!dbClusterIdentifiers) {
+      throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
     const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
-      dbClusterIdentifiers: bindResult.dbClusters?.map((c) => c.clusterIdentifier),
+      dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
 

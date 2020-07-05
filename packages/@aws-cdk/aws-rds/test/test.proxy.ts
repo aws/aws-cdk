@@ -141,14 +141,6 @@ export = {
             Ref: 'DatabaseB269D8BB',
           },
         ],
-        DBInstanceIdentifiers: [
-          {
-            Ref: 'DatabaseInstance1844F58FD',
-          },
-          {
-            Ref: 'DatabaseInstance2AA380DEE',
-          },
-        ],
         TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
