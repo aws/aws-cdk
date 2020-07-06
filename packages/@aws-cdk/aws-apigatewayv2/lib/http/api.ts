@@ -1,5 +1,6 @@
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -43,6 +44,13 @@ export interface HttpApiProps {
    * @default - CORS disabled.
    */
   readonly corsPreflight?: CorsPreflightOptions;
+
+  /**
+   * Configure a custom domain with the API mapping resource to the HTTP API
+   *
+   * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
+   */
+  readonly defaultDomainMapping?: DefaultDomainMappingOptions;
 }
 
 /**
@@ -118,6 +126,9 @@ export class HttpApi extends Resource implements IHttpApi {
   }
 
   public readonly httpApiId: string;
+  /**
+   * default stage of the api resource
+   */
   private readonly defaultStage: HttpStage | undefined;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
@@ -166,7 +177,13 @@ export class HttpApi extends Resource implements IHttpApi {
       this.defaultStage = new HttpStage(this, 'DefaultStage', {
         httpApi: this,
         autoDeploy: true,
+        domainMapping: props?.defaultDomainMapping,
       });
+    }
+
+    if (props?.createDefaultStage === false && props.defaultDomainMapping) {
+      throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
+      );
     }
   }
 
@@ -182,10 +199,11 @@ export class HttpApi extends Resource implements IHttpApi {
    * Add a new stage.
    */
   public addStage(id: string, options: HttpStageOptions): HttpStage {
-    return new HttpStage(this, id, {
+    const stage = new HttpStage(this, id, {
       httpApi: this,
       ...options,
     });
+    return stage;
   }
 
   /**
