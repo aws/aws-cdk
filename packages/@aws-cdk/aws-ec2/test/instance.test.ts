@@ -2,10 +2,10 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AmazonLinuxImage, BlockDeviceVolume, EbsDeviceVolumeType, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'instance is created correctly'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -292,4 +292,4 @@ export = {
 
     test.done();
   },
-};
+});

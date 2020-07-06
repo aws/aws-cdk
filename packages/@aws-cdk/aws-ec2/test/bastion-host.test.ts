@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { BastionHostLinux, BlockDeviceVolume, SubnetType, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'default instance is created in basic'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -85,4 +85,4 @@ export = {
 
     test.done();
   },
-};
+});

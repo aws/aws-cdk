@@ -2,11 +2,11 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 // tslint:disable-next-line:max-line-length
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'gateway endpoint': {
     'add an endpoint to a vpc'(test: Test) {
       // GIVEN
@@ -473,4 +473,4 @@ export = {
       test.done();
     },
   },
-};
+});

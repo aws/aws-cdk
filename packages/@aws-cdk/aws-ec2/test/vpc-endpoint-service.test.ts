@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 
 // tslint:disable-next-line:max-line-length
 import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
@@ -19,7 +19,7 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
   }
 }
 
-export = {
+nodeunitShim({
   'test vpc endpoint service': {
     'create endpoint service with no principals'(test: Test) {
       // GIVEN
@@ -104,4 +104,4 @@ export = {
       test.done();
     },
   },
-};
+});

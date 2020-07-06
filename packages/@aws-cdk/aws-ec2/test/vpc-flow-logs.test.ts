@@ -3,10 +3,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
 
-export = {
+nodeunitShim({
   'with defaults set, it successfully creates with cloudwatch logs destination'(
     test: Test,
   ) {
@@ -155,7 +155,7 @@ export = {
     );
     test.done();
   },
-};
+});
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', {

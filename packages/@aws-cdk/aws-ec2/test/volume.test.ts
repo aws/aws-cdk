@@ -10,7 +10,7 @@ import {
 } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -21,7 +21,7 @@ import {
   Vpc,
 } from '../lib';
 
-export = {
+nodeunitShim({
   'basic volume'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1182,13 +1182,13 @@ export = {
         volumeId: ' vol-0123456789abcdefABCDEF', // leading invalid character(s)
         availabilityZone: 'us-east-1a',
       });
-    }, Error, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
+    }, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
     test.throws(() => {
       Volume.fromVolumeAttributes(stack, `Volume${idx++}`, {
         volumeId: 'vol-0123456789abcdefABCDEF ', // trailing invalid character(s)
         availabilityZone: 'us-east-1a',
       });
-    }, Error, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
+    }, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
     test.done();
   },
 
@@ -1203,7 +1203,7 @@ export = {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
       });
-    }, Error, 'Must provide at least one of `size` or `snapshotId`');
+    }, 'Must provide at least one of `size` or `snapshotId`');
     test.doesNotThrow(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
@@ -1230,7 +1230,7 @@ export = {
         size: cdk.Size.gibibytes(8),
         encryptionKey: key,
       });
-    }, Error, '`encrypted` must be true when providing an `encryptionKey`.');
+    }, '`encrypted` must be true when providing an `encryptionKey`.');
     test.throws(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
@@ -1238,7 +1238,7 @@ export = {
         encrypted: false,
         encryptionKey: key,
       });
-    }, Error, '`encrypted` must be true when providing an `encryptionKey`.');
+    }, '`encrypted` must be true when providing an `encryptionKey`.');
     test.doesNotThrow(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
@@ -1272,22 +1272,22 @@ export = {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1',
       });
-    }, Error, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
+    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
     test.throws(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'Virginia',
       });
-    }, Error, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
+    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
     test.throws(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: ' us-east-1a', // leading character(s)
       });
-    }, Error, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
+    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
     test.throws(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a ', // trailing character(s)
       });
-    }, Error, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
+    }, '`availabilityZone` is a region followed by a letter (ex: `us-east-1a`), or a token');
 
     test.done();
   },
@@ -1320,13 +1320,13 @@ export = {
         availabilityZone: 'us-east-1a',
         snapshotId: ' snap-1234', // leading extra character(s)
       });
-    }, Error, '`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    }, '`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
     test.throws(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
         snapshotId: 'snap-1234 ', // trailing extra character(s)
       });
-    }, Error, '`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    }, '`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
 
     test.done();
   },
@@ -1351,7 +1351,7 @@ export = {
           iops: 100,
           volumeType,
         });
-      }, Error, '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`/`IO1`');
+      }, '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`/`IO1`');
     }
 
     // Test: iops in range
@@ -1362,7 +1362,7 @@ export = {
         iops: 99,
         volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
       });
-    }, Error, '`iops` must be in the range 100 to 64,000, inclusive.');
+    }, '`iops` must be in the range 100 to 64,000, inclusive.');
     test.doesNotThrow(() => {
       new Volume(stack, `Volume${idx++}`, {
         availabilityZone: 'us-east-1a',
@@ -1386,7 +1386,7 @@ export = {
         iops: 64001,
         volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
       });
-    }, Error, '`iops` must be in the range 100 to 64,000, inclusive.');
+    }, '`iops` must be in the range 100 to 64,000, inclusive.');
 
     // Test: iops ratio
     test.doesNotThrow(() => {
@@ -1404,7 +1404,7 @@ export = {
         iops: 501,
         volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
       });
-    }, Error, '`iops` has a maximum ratio of 50 IOPS/GiB.');
+    }, '`iops` has a maximum ratio of 50 IOPS/GiB.');
 
     test.done();
   },
@@ -1425,11 +1425,10 @@ export = {
         new Volume(stack, `Volume${idx++}`, {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(500),
-          iops: 100,
           enableMultiAttach: true,
           volumeType,
         });
-      }, Error, 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` volumes.');
+      }, 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` volumes.');
     }
 
     test.done();
@@ -1457,7 +1456,7 @@ export = {
           size: cdk.Size.gibibytes(min - 1),
           volumeType,
         });
-      }, Error, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
+      }, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
       test.doesNotThrow(() => {
         new Volume(stack, `Volume${idx++}`, {
           availabilityZone: 'us-east-1a',
@@ -1478,10 +1477,10 @@ export = {
           size: cdk.Size.gibibytes(max + 1),
           volumeType,
         });
-      }, Error, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
+      }, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
     }
 
     test.done();
   },
 
-};
+});
