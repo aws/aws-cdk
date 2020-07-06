@@ -71,6 +71,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -79,6 +80,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
@@ -89,7 +91,9 @@
     "exclude": [
       "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
+      "from-method:@aws-cdk/aws-apigatewayv2.HttpStage",
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
     ]

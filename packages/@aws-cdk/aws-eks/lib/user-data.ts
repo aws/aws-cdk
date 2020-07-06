@@ -20,7 +20,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   }
 
   if (options.enableDockerBridge) {
-    extraArgs.push('--enable-docker-bridge');
+    extraArgs.push('--enable-docker-bridge true');
   }
 
   if (options.dockerConfigJson) {

@@ -19,6 +19,8 @@ export interface InvokeActivityProps {
  * A Step Functions Task to invoke an Activity worker.
  *
  * An Activity can be used directly as a Resource.
+ *
+ * @deprecated - use `StepFunctionsInvokeActivity`
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
   constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {

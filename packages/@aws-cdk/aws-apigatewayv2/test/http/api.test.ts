@@ -25,6 +25,15 @@ describe('HttpApi', () => {
     expect(api.url).toBeDefined();
   });
 
+  test('import', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api', { apiName: 'customName' });
+    const imported = HttpApi.fromApiId(stack, 'imported', api.httpApiId );
+
+    expect(imported.httpApiId).toEqual(api.httpApiId);
+
+  });
+
   test('unsetting createDefaultStage', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api', {

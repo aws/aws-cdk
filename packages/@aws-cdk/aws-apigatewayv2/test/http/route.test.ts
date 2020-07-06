@@ -52,6 +52,29 @@ describe('HttpRoute', () => {
       IntegrationUri: 'some-uri',
     });
   });
+
+  test('throws when path not start with /', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('books', HttpMethod.GET),
+    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+  });
+
+  test('throws when path ends with /', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
+    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+  });
+
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
