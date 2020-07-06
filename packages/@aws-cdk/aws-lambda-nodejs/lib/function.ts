@@ -47,7 +47,7 @@ export class NodejsFunction extends lambda.Function {
     }
 
     // Entry and defaults
-    const entry = findEntry(id, props.entry);
+    const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
@@ -63,9 +63,9 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         runtime,
         code: Bundling.parcel({
+          ...props,
           entry,
           runtime,
-          ...props,
         }),
         handler: `index.${handler}`,
       });
