@@ -131,7 +131,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   protected readonly canCreatePermissions: boolean = true;
 
-  private provisionedConcurrency: boolean;
   private scalableAlias?: ScalableFunctionAttribute;
   private readonly scalingRole: iam.IRole;
 
@@ -153,7 +152,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
 
-    this.provisionedConcurrency = props.provisionedConcurrentExecutions ? true : false;
     // Use a Service Linked Role
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
     this.scalingRole = iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
@@ -216,10 +214,6 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * @param props The properties for autoscaling
    */
   public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableFunctionAttribute {
-
-    if (!this.provisionedConcurrency) {
-      throw new Error('Autoscaling is available for aliases with provisioned concurrency only');
-    }
     if (this.scalableAlias) {
       throw new Error('Autoscaling already enabled for this alias');
     }

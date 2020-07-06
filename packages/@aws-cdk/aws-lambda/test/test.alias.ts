@@ -1,6 +1,7 @@
-import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike, arrayWith } from '@aws-cdk/assert';
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Stack, } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -428,6 +429,128 @@ export = {
       MaximumRetryAttempts: 1,
     }));
 
+    test.done();
+  },
+
+  'can enable AutoScaling on aliases'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MinCapacity: 1,
+      MaxCapacity: 5,
+      ResourceId: objectLike({
+        'Fn::Join': arrayWith(arrayWith(
+          'function:', 
+          { Ref: 'MyLambdaCCE802FB' },
+          ':prod',
+        )),
+      }),
+    }));
+
+    test.done();
+  },
+
+  'cannot enable AutoScaling twice on same property'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
+
+    // THEN
+    test.throws(() => alias.autoScaleProvisionedConcurrency({ minCapacity: 3, maxCapacity: 8 }), /Autoscaling already enabled for this alias/);
+
+    test.done();
+  },
+
+  'error when specifying invalid utilizationPercent when AutoScaling on utilization'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    const target = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
+
+    // THEN
+    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 50}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and must be between 0 and 1./);
+
+    test.done();
+  },
+
+  'can autoscale on a schedule'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    // WHEN
+    const target = alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+    target.scaleOnSchedule({
+      schedule: appscaling.Schedule.cron({}),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ScheduledActions: [
+        {
+          ScalableTargetAction: { MaxCapacity: 10 },
+          Schedule: 'cron(* * * * ? *)',
+          ScheduledActionName: 'Scheduling',
+        },
+      ],
+    }));
+    
     test.done();
   },
 };
