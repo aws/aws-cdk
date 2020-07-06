@@ -52,6 +52,49 @@ export = {
     ));
     test.done();
   },
+  'aws-auth will be updated'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster });
+
+    // THEN
+    // THEN
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'NodegroupNodeGroupRole038A128B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
+        ],
+      },
+    }));
+    test.done();
+  },
   'create nodegroup correctly with security groups provided'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();

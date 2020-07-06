@@ -55,6 +55,13 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'roleC7B7E775',
                 'Arn',
               ],
@@ -120,7 +127,14 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]\",\"mapUsers\":\"[{\\"userarn\\":\\"arn:',
             {
               Ref: 'AWS::Partition',
             },
@@ -138,6 +152,53 @@ export = {
             },
             ':user/MyUserName\\",\\"groups\\":[\\"group2\\"]}]","mapAccounts":"[]"}}]',
           ],
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'addMastersRole after addNodegroup correctly'(test: Test) {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+    cluster.addNodegroup('NG');
+    const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
+
+    // WHEN
+    cluster.awsAuth.addMastersRole(role);
+
+    // THEN
+    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterNodegroupNGNodeGroupRole7C078920',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
         ],
       },
     }));
