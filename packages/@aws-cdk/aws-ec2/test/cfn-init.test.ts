@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
-import { AttachInitOptions } from '../lib';
 
 test('whole config with restart handles', () => {
   // WHEN
@@ -20,8 +19,8 @@ test('whole config with restart handles', () => {
 
   const instanceRole = new iam.Role(stack, 'InstanceRole', {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-  })
-  const attachOptions: AttachInitOptions = {
+  });
+  const attachOptions = {
     platform: ec2.InitPlatform.LINUX,
     instanceRole,
     userData: ec2.UserData.forLinux(),

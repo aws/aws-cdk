@@ -145,6 +145,10 @@ export interface InitBindOptions {
   readonly instanceRole: iam.IRole;
 }
 
+/**
+ * A return type for a configured InitElement. Both its CloudFormation representation, and any
+ * additional metadata needed to create the CloudFormation:Init.
+ */
 export interface InitElementConfig {
   /**
    * The CloudFormation representation of the configuration of an InitElement.
@@ -153,6 +157,8 @@ export interface InitElementConfig {
 
   /**
    * Optional set of S3 bucket names that must get a AWS::CloudFormation::Authentication reference to access.
+   *
+   * @default No buckets are associated with the config
    */
   readonly authBucketNames?: string[];
 }

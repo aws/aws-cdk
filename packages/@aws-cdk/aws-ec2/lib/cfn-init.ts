@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
 import * as crypto from 'crypto';
-import { InitBindOptions, InitElement, InitElementType, InitPlatform, InitElementConfig } from './cfn-init-elements';
+import { InitBindOptions, InitElement, InitElementConfig, InitElementType, InitPlatform } from './cfn-init-elements';
 import { UserData } from './user-data';
 
 /**
@@ -101,7 +101,7 @@ export class CloudFormationInit {
           roleName: attachOptions.instanceRole.roleName,
           buckets: bindResult.authBucketNames,
         },
-      }
+      };
       attachedResource.addMetadata('AWS::CloudFormation::Authentication', s3AuthConfig);
     }
 

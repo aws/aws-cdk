@@ -1,9 +1,9 @@
 {
   "Resources": {
-    "InstanceInstanceSecurityGroupF0E2D5BE": {
+    "Instance2InstanceSecurityGroupC6129B1D": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "integ-init/Instance/InstanceSecurityGroup",
+        "GroupDescription": "integ-init/Instance2/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -14,13 +14,13 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-init/Instance"
+            "Value": "integ-init/Instance2"
           }
         ],
         "VpcId": "vpc-60900905"
       }
     },
-    "InstanceInstanceRoleE9785DE5": {
+    "Instance2InstanceRole03DD7CB2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -48,16 +48,57 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-init/Instance"
+            "Value": "integ-init/Instance2"
           }
         ]
       }
     },
-    "InstanceInstanceRoleDefaultPolicy4ACE9290": {
+    "Instance2InstanceRoleDefaultPolicy610B37CD": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
             {
               "Action": [
                 "cloudformation:DescribeStackResource",
@@ -71,30 +112,30 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "InstanceInstanceRoleDefaultPolicy4ACE9290",
+        "PolicyName": "Instance2InstanceRoleDefaultPolicy610B37CD",
         "Roles": [
           {
-            "Ref": "InstanceInstanceRoleE9785DE5"
+            "Ref": "Instance2InstanceRole03DD7CB2"
           }
         ]
       }
     },
-    "InstanceInstanceProfileAB5AEF02": {
+    "Instance2InstanceProfile582F915C": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "InstanceInstanceRoleE9785DE5"
+            "Ref": "Instance2InstanceRole03DD7CB2"
           }
         ]
       }
     },
-    "InstanceC1063A87": {
+    "Instance255F3526517b476043f4ba6ab": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "us-east-1a",
         "IamInstanceProfile": {
-          "Ref": "InstanceInstanceProfileAB5AEF02"
+          "Ref": "Instance2InstanceProfile582F915C"
         },
         "ImageId": {
           "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -103,7 +144,7 @@
         "SecurityGroupIds": [
           {
             "Fn::GetAtt": [
-              "InstanceInstanceSecurityGroupF0E2D5BE",
+              "Instance2InstanceSecurityGroupC6129B1D",
               "GroupId"
             ]
           }
@@ -112,7 +153,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "integ-init/Instance"
+            "Value": "integ-init/Instance2"
           }
         ],
         "UserData": {
@@ -120,7 +161,7 @@
             "Fn::Join": [
               "",
               [
-                "#!/bin/bash\n# fingerprint: 7c06760dd0086233\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                "#!/bin/bash\n# fingerprint: 426ca395e920c409\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -128,7 +169,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                " --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+                " --resource Instance255F3526517b476043f4ba6ab -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -136,35 +177,125 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                " --resource InstanceC1063A87\n)"
+                " --resource Instance255F3526517b476043f4ba6ab\n  cat /var/log/cfn-init.log >&2\n)"
               ]
             ]
           }
         }
       },
       "DependsOn": [
-        "InstanceInstanceRoleDefaultPolicy4ACE9290",
-        "InstanceInstanceRoleE9785DE5"
+        "Instance2InstanceRoleDefaultPolicy610B37CD",
+        "Instance2InstanceRole03DD7CB2"
       ],
       "CreationPolicy": {
         "ResourceSignal": {
           "Count": 1,
-          "Timeout": "PT5M"
+          "Timeout": "PT30M"
         }
       },
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "configSets": {
             "default": [
+              "yumPreinstall",
               "config"
             ]
           },
-          "config": {
-            "commands": {
-              "000": {
-                "command": "echo hello"
+          "yumPreinstall": {
+            "packages": {
+              "yum": {
+                "git": []
               }
             }
+          },
+          "config": {
+            "groups": {
+              "group1": {},
+              "group2": {
+                "gid": 42
+              }
+            },
+            "users": {
+              "sysuser1": {
+                "groups": [
+                  "group1",
+                  "group2"
+                ],
+                "homeDir": "/home/sysuser1-custom"
+              },
+              "sysuser2": {}
+            },
+            "sources": {
+              "/tmp/sourceDir": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://s3.test-region.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+                    },
+                    "/",
+                    {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                ]
+              }
+            },
+            "files": {
+              "/tmp/file2": {
+                "content": {
+                  "stackId": {
+                    "Ref": "AWS::StackId"
+                  },
+                  "stackName": "integ-init",
+                  "region": "test-region"
+                },
+                "mode": "000644",
+                "owner": "root",
+                "group": "root"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Authentication": {
+          "S3AccessCreds": {
+            "type": "S3",
+            "roleName": {
+              "Ref": "Instance2InstanceRole03DD7CB2"
+            },
+            "buckets": [
+              {
+                "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
+              }
+            ]
           }
         }
       }
@@ -174,6 +305,18 @@
     "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
       "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+    },
+    "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
+    },
+    "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3VersionKey89F61A12": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
+    },
+    "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bArtifactHash088925E9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"f8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930b\""
     }
   }
 }

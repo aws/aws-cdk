@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
