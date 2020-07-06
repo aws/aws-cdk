@@ -68,8 +68,7 @@ export class HttpApiMapping extends Resource implements IApiMapping {
       apiId: props.api.httpApiId,
       domainName: props.domainName.domainName,
       stage: props.stage?.stageName ?? '$default',
-      // if apiMappingKey is '/' we set it as undefined which maps to the root path of the domain
-      apiMappingKey: props.apiMappingKey === '/' ? undefined : props.apiMappingKey,
+      apiMappingKey: props.apiMappingKey,
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);

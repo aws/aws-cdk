@@ -1,7 +1,7 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, LambdaProxyIntegration } from '../../../lib';
+import { DomainName, HttpApi, LambdaProxyIntegration } from '../../lib';
 
 const app = new App();
 

@@ -189,6 +189,7 @@
         "ApiId": {
           "Ref": "HttpProxyProdApi368B6161"
         },
+        "ApiMappingKey": "/",
         "DomainName": "apigv2.demo.com",
         "Stage": "$default"
       }
