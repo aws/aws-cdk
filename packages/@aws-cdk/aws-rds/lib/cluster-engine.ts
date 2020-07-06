@@ -87,7 +87,6 @@ export interface IClusterEngine {
 
 interface ClusterEngineBaseProps {
   readonly engineType: string;
-  readonly needsS3RolesInParameters: boolean;
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
@@ -102,13 +101,11 @@ abstract class ClusterEngineBase implements IClusterEngine {
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  private readonly needsS3RolesInParameters: boolean;
   private readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
   private readonly defaultPort?: number;
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
-    this.needsS3RolesInParameters = props.needsS3RolesInParameters;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.parameterGroupFamilies = props.parameterGroupFamilies;
@@ -118,34 +115,18 @@ abstract class ClusterEngineBase implements IClusterEngine {
   }
 
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
-    let parameterGroup: IParameterGroup | undefined;
-    if (options.parameterGroup) {
-      parameterGroup = options.parameterGroup;
-    } else if (this.needsS3RolesInParameters && (options.s3ImportRole || options.s3ExportRole)) {
-      // in this case, we need to create a new ParameterGroup to store the S3 Role parameters in
-      // (imported ParameterGroups, like the RDS default ones, don't allow adding parameters to them)
-      parameterGroup = new ClusterParameterGroup(scope, 'ClusterParameterGroup', {
-        family: this.parameterGroupFamily,
-      });
-    } else {
-      parameterGroup = this.defaultParameterGroup(scope);
-    }
-
-    if (this.needsS3RolesInParameters) {
-      if (options.s3ImportRole) {
-        parameterGroup?.addParameter('aurora_load_from_s3_role', options.s3ImportRole.roleArn);
-      }
-      if (options.s3ExportRole) {
-        parameterGroup?.addParameter('aurora_select_into_s3_role', options.s3ExportRole.roleArn);
-      }
-    }
-
+    const parameterGroup = options.parameterGroup ?? this.defaultParameterGroup(scope);
     return {
       parameterGroup,
       port: this.defaultPort,
     };
   }
 
+  /**
+   * Return an optional default ParameterGroup,
+   * possibly an imported one,
+   * if one wasn't provided by the customer explicitly.
+   */
   protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
 
   private establishParameterGroupFamily(): string {
@@ -181,6 +162,28 @@ abstract class ClusterEngineBase implements IClusterEngine {
   }
 }
 
+abstract class MySqlClusterEngineBase extends ClusterEngineBase {
+  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+    const config = super.bindToCluster(scope, options);
+    const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
+      ? new ClusterParameterGroup(scope, 'ClusterParameterGroup', {
+        family: this.parameterGroupFamily,
+      })
+      : config.parameterGroup);
+    if (options.s3ImportRole) {
+      parameterGroup?.addParameter('aurora_load_from_s3_role', options.s3ImportRole.roleArn);
+    }
+    if (options.s3ExportRole) {
+      parameterGroup?.addParameter('aurora_select_into_s3_role', options.s3ExportRole.roleArn);
+    }
+
+    return {
+      ...config,
+      parameterGroup,
+    };
+  }
+}
+
 /**
  * Creation properties of the plain Aurora database cluster engine.
  * Used in {@link DatabaseClusterEngine.aurora}.
@@ -195,11 +198,10 @@ export interface AuroraClusterEngineProps {
   readonly version?: string;
 }
 
-class AuroraClusterEngine extends ClusterEngineBase {
+class AuroraClusterEngine extends MySqlClusterEngineBase {
   constructor(props: AuroraClusterEngineProps = {}) {
     super({
       engineType: 'aurora',
-      needsS3RolesInParameters: true,
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       parameterGroupFamilies: [
@@ -213,13 +215,6 @@ class AuroraClusterEngine extends ClusterEngineBase {
     // the default.aurora5.6 ParameterGroup is actually the default,
     // so just return undefined in this case
     return undefined;
-  }
-}
-
-abstract class NonDefaultAuroraClusterEngine extends ClusterEngineBase {
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
-    return ParameterGroup.fromParameterGroupName(scope, 'DatabaseClusterEngineDefaultParameterGroup',
-      `default.${this.parameterGroupFamily}`);
   }
 }
 
@@ -237,11 +232,10 @@ export interface AuroraMySqlClusterEngineProps {
   readonly version?: string;
 }
 
-class AuroraMySqlClusterEngine extends NonDefaultAuroraClusterEngine {
+class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
   constructor(props: AuroraMySqlClusterEngineProps = {}) {
     super({
       engineType: 'aurora-mysql',
-      needsS3RolesInParameters: true,
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       parameterGroupFamilies: [
@@ -249,6 +243,11 @@ class AuroraMySqlClusterEngine extends NonDefaultAuroraClusterEngine {
       ],
       engineVersion: props.version,
     });
+  }
+
+  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+    return ParameterGroup.fromParameterGroupName(scope, 'AuroraMySqlDatabaseClusterEngineDefaultParameterGroup',
+      `default.${this.parameterGroupFamily}`);
   }
 }
 
@@ -266,21 +265,25 @@ export interface AuroraPostgresClusterEngineProps {
   readonly version?: string;
 }
 
-class AuroraPostgresClusterEngine extends NonDefaultAuroraClusterEngine {
+class AuroraPostgresClusterEngine extends ClusterEngineBase {
   constructor(props: AuroraPostgresClusterEngineProps = {}) {
     super({
       engineType: 'aurora-postgresql',
-      needsS3RolesInParameters: false,
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
       parameterGroupFamilies: [
         { engineMajorVersion: '9.6', parameterGroupFamily: 'aurora-postgresql9.6' },
-        { engineMajorVersion: '10', parameterGroupFamily: 'aurora-postgresql10' },
-        { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11' },
+        { engineMajorVersion: '10',  parameterGroupFamily: 'aurora-postgresql10'  },
+        { engineMajorVersion: '11',  parameterGroupFamily: 'aurora-postgresql11'  },
       ],
       defaultPort: 5432,
       engineVersion: props.version,
     });
+  }
+
+  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+    return ParameterGroup.fromParameterGroupName(scope, 'AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup',
+      `default.${this.parameterGroupFamily}`);
   }
 }
 
