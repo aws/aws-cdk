@@ -90,9 +90,6 @@ following to `cdk.json`:
 }
 ```
 
-When bootstrapping, the environment variable `CDK_NEW_BOOTSTRAP=1` should be
-set (see the section called **CDK Environment Bootstrapping**).
-
 ## Defining the Pipeline (Source and Synth)
 
 The pipeline is defined by instantiating `CdkPipeline` in a Stack. This defines the
@@ -428,6 +425,19 @@ other in different AWS accounts or regions.
 Before you can provision the pipeline, you have to *bootstrap* the environment you want
 to create it in. If you are deploying your application to different environments, you
 also have to bootstrap those and be sure to add a *trust* relationship.
+
+> This library requires a newer version of the bootstrapping stack which has
+> been updated specifically to support cross-account continous delivery. In the future,
+> this new bootstrapping stack will become the default, but for now it is still
+> opt-in.
+>
+> The commands below assume you are running `cdk bootstrap` in a directory
+> where `cdk.json` contains the `"@aws-cdk/core:newStyleStackSynthesis": true`
+> setting in its context, which will switch to the new bootstrapping stack
+> automatically.
+>
+> If run from another directory, be sure to run the bootstrap command with
+> the environment variable `CDK_NEW_BOOTSTRAP=1` set.
 
 To bootstrap an environment for provisioning the pipeline:
 
