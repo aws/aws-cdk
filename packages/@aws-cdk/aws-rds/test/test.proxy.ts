@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -67,6 +67,7 @@ export = {
             Ref: 'InstanceC1063A87',
           },
         ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
 
@@ -140,16 +141,41 @@ export = {
             Ref: 'DatabaseB269D8BB',
           },
         ],
-        DBInstanceIdentifiers: [
-          {
-            Ref: 'DatabaseInstance1844F58FD',
-          },
-          {
-            Ref: 'DatabaseInstance2AA380DEE',
-          },
-        ],
+        TargetGroupName: 'default',
       },
     }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
+  'Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+      engineVersion: '10.7',
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    test.doesNotThrow(() => {
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+        secret: cluster.secret!,
+        vpc,
+      });
+    }, /Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers/);
+
+    expect(stack).to(haveResource('AWS::RDS::DBProxyTargetGroup', {
+      DBInstanceIdentifiers: ABSENT,
+    }, ResourcePart.Properties));
 
     test.done();
   },
