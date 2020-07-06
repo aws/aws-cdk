@@ -252,10 +252,10 @@ class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
 }
 
 /**
- * Creation properties of the Aurora MySQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraMySql}.
+ * Creation properties of the Aurora PostgreSQL database cluster engine.
+ * Used in {@link DatabaseClusterEngine.auroraPostgreSql}.
  */
-export interface AuroraPostgresClusterEngineProps {
+export interface AuroraPostgreSqlClusterEngineProps {
   /**
    * The exact version of the engine.
    *
@@ -265,8 +265,8 @@ export interface AuroraPostgresClusterEngineProps {
   readonly version?: string;
 }
 
-class AuroraPostgresClusterEngine extends ClusterEngineBase {
-  constructor(props: AuroraPostgresClusterEngineProps = {}) {
+class AuroraPostgreSqlClusterEngine extends ClusterEngineBase {
+  constructor(props: AuroraPostgreSqlClusterEngineProps = {}) {
     super({
       engineType: 'aurora-postgresql',
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
@@ -296,7 +296,7 @@ export class DatabaseClusterEngine {
 
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMySqlClusterEngine();
 
-  public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
+  public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgreSqlClusterEngine();
 
   /** Creates a new plain Aurora database cluster engine. */
   public static aurora(props: AuroraClusterEngineProps): IClusterEngine {
@@ -308,8 +308,8 @@ export class DatabaseClusterEngine {
     return new AuroraMySqlClusterEngine(props);
   }
 
-  /** Creates a new Aurora Postgres database cluster engine. */
-  public static auroraPostgres(props: AuroraPostgresClusterEngineProps): IClusterEngine {
-    return new AuroraPostgresClusterEngine(props);
+  /** Creates a new Aurora PostgreSQL database cluster engine. */
+  public static auroraPostgreSql(props: AuroraPostgreSqlClusterEngineProps): IClusterEngine {
+    return new AuroraPostgreSqlClusterEngine(props);
   }
 }

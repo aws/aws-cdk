@@ -327,7 +327,7 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.auroraPostgres({
+      engine: DatabaseClusterEngine.auroraPostgreSql({
         version: '10.7',
       }),
       masterUser: {

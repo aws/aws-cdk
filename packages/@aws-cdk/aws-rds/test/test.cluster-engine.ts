@@ -73,7 +73,7 @@ export = {
 
   'cluster parameter group correctly determined for AURORA_POSTGRESQL and given version'(test: Test) {
     // GIVEN
-    const engine = DatabaseClusterEngine.auroraPostgres({
+    const engine = DatabaseClusterEngine.auroraPostgreSql({
       version: '11.6',
     });
 
@@ -90,22 +90,22 @@ export = {
     // the PostgreSQL engine knows about the following major versions: 9.6, 10 and 11
 
     test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '8' });
+      DatabaseClusterEngine.auroraPostgreSql({ version: '8' });
     }, /No parameter group family found for database engine aurora-postgresql with version 8/);
 
     test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '9' });
+      DatabaseClusterEngine.auroraPostgreSql({ version: '9' });
     }, /No parameter group family found for database engine aurora-postgresql with version 9/);
 
     test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '9.7' });
+      DatabaseClusterEngine.auroraPostgreSql({ version: '9.7' });
     }, /No parameter group family found for database engine aurora-postgresql with version 9\.7/);
 
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '9.6' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgreSql({ version: '9.6' }).parameterGroupFamily,
       'aurora-postgresql9.6');
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '9.6.1' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgreSql({ version: '9.6.1' }).parameterGroupFamily,
       'aurora-postgresql9.6');
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '10.0' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgreSql({ version: '10.0' }).parameterGroupFamily,
       'aurora-postgresql10');
 
     test.done();
