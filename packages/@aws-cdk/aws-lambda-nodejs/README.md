@@ -34,7 +34,7 @@ automatically transpiled and bundled whether it's written in JavaScript or TypeS
 Alternatively, an entry file and handler can be specified:
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts',
+  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
   handler: 'myExportedFunc'
 });
 ```
