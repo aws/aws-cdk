@@ -1,13 +1,10 @@
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
-import { EnableScalingProps, IScalableVersionAttribute, ScalableVersionAttribute } from './scalable-version-attribute';
 import { addAlias } from './util';
 
 export interface IVersion extends IFunction {
@@ -137,10 +134,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
       }
-
-      public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute {
-        return this.autoScaleProvisionedConcurrency(props);
-      }
     }
     return new Import(scope, id);
   }
@@ -160,11 +153,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
       }
-
-      public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute {
-        return this.autoScaleProvisionedConcurrency(props);
-      }
-
     }
     return new Import(scope, id);
   }
@@ -176,9 +164,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
-
-  private provisionedConcurrency: boolean;
-  private scalableVersion?: ScalableVersionAttribute;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
@@ -197,8 +182,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         default: RemovalPolicy.DESTROY,
       });
     }
-
-    this.provisionedConcurrency = props.provisionedConcurrentExecutions ? true : false;
 
     this.version = version.attrVersion;
     this.functionArn = version.ref;
@@ -244,36 +227,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    */
   public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
     return addAlias(this, this, aliasName, options);
-  }
-
-  /**
-   * Enable autoscaling for the given lambda version. Requires that lambda version has provisioned concurrency.
-   * @param props The properties for autoscaling
-   */
-  public autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute {
-    if (!this.provisionedConcurrency) {
-      throw new Error('Autoscaling is available for versions with provisioned concurrency only');
-    }
-    if (this.scalableVersion) {
-      throw new Error('Autoscaling already enabled for this version');
-    }
-    // Use a Service Linked Role
-    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-    const role = iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
-      service: 'iam',
-      region: '',
-      resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
-    }));
-
-    return this.scalableVersion = new ScalableVersionAttribute(this, 'VersionScaling', {
-      serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
-      dimension: 'lambda:function:ProvisionedConcurrency',
-      minCapacity: props.minCapacity,
-      maxCapacity: props.maxCapacity,
-      resourceId: `function:${this.lambda.functionName}:${this.version}`,
-      role,
-    });
   }
 
   /**
