@@ -11,7 +11,7 @@ export interface InstanceProps {
   /**
    * What type of instance to start for the replicas.
    *
-   * @default - the default instance type for the engine will be used
+   * @default - t3.medium (or, more precisely, db.t3.medium)
    */
   readonly instanceType?: ec2.InstanceType;
 

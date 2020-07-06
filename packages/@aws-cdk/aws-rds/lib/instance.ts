@@ -595,7 +595,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The name of the compute and memory capacity for the instance.
    *
-   * @default - the default instance type from the engine will be used
+   * @default - m5.large (or, more specifically, db.m5.large)
    */
   readonly instanceType?: ec2.InstanceType;
 
@@ -678,7 +678,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
     props.engine.bindToInstance(this, props);
-    this.instanceType = props.instanceType ?? props.engine.defaultInstanceType;
+    this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     this.sourceCfnProps = {
       ...this.newCfnProps,

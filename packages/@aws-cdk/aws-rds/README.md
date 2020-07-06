@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     username: 'clusteradmin'
   },
   instanceProps: {
-    // optional, defaults to the engine's default instance type
+    // optional, defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
       subnetType: ec2.SubnetType.PRIVATE,
@@ -71,7 +71,7 @@ your instances will be launched privately or publicly:
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-  // optional, defaults to the engine's default instance type
+  // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
   vpc,
@@ -101,7 +101,7 @@ Example for max storage configuration:
 ```ts
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.ORACLE_SE1,       
-  // optional, defaults to the engine's default instance type
+  // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   masterUsername: 'syscdk',
   vpc,
@@ -116,14 +116,14 @@ a source database respectively:
 new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
   engine: rds.DatabaseInstanceEngine.POSTGRES,     
-  // optional, defaults to the engine's default instance type
+  // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
 });
 
 new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
-  instanceType: rds.DatabaseInstanceEngine.POSTGRES.defaultInstanceType,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
 });
 ```

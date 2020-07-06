@@ -45,11 +45,6 @@ export interface IInstanceEngine {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /**
-   * The default instanceType to use with this engine.
-   */
-  readonly defaultInstanceType: ec2.InstanceType;
-
-  /**
    * Method called when the engine is used to create a new instance.
    */
   bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
@@ -60,7 +55,6 @@ interface InstanceEngineBaseProps {
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
-  readonly defaultInstanceType?: ec2.InstanceType;
   readonly engineVersion?: string;
 }
 
@@ -69,19 +63,16 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly engineVersion?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  public readonly defaultInstanceType: ec2.InstanceType;
 
   constructor(props: InstanceEngineBaseProps) {
     this.engineType = props.engineType;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
-    this.defaultInstanceType = props.defaultInstanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
     this.engineVersion = props.engineVersion;
   }
 
   public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
     return {
-      defaultInstanceType: this.defaultInstanceType,
     };
   }
 }

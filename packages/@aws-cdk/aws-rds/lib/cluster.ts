@@ -482,7 +482,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    const instanceType = props.instanceProps.instanceType ?? props.engine.defaultInstanceType;
+    const instanceType = props.instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 

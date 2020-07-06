@@ -1,4 +1,3 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
@@ -80,9 +79,6 @@ export interface IClusterEngine {
   /** The application used by this engine to perform rotation for a multi-user scenario. */
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  /** The default EC2 instance type to use for databases in this cluster. */
-  readonly defaultInstanceType: ec2.InstanceType;
-
   /**
    * Method called when the engine is used to create a new cluster.
    */
@@ -105,8 +101,6 @@ abstract class ClusterEngineBase implements IClusterEngine {
   public readonly parameterGroupFamily: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  // this works for all 3 cluster engines that are currently supported
-  public readonly defaultInstanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
 
   private readonly needsS3RolesInParameters: boolean;
   private readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
