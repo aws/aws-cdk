@@ -272,7 +272,7 @@ export class Metric implements IMetric {
    * If the scope we attach to is in an environment-agnostic stack,
    * nothing is done and the same Metric object is returned.
    */
-  public attachTo(scope: cdk.Construct): Metric {
+  public attachTo(scope: Construct): Metric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({
@@ -350,7 +350,7 @@ export class Metric implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -502,7 +502,7 @@ export class MathExpression implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         period: props.period,

@@ -1,6 +1,6 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
+import { ISynthesisSession } from '../private/synthesis-session';
 
 /**
  * Encodes information how a certain Stack should be deployed

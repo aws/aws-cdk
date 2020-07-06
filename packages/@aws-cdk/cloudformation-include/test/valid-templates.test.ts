@@ -6,6 +6,7 @@ import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
+import { Construct } from 'constructs';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
@@ -488,7 +489,7 @@ interface IncludeTestTemplateProps {
   readonly preserveLogicalIds?: boolean;
 }
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+function includeTestTemplate(scope: Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     // preserveLogicalIds: props.preserveLogicalIds,

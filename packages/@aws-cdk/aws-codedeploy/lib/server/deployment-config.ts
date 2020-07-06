@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { arnForDeploymentConfig } from '../utils';
 
@@ -93,7 +94,7 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
   public static fromServerDeploymentConfigName(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     serverDeploymentConfigName: string): IServerDeploymentConfig {
 
@@ -105,7 +106,7 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
+  constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {
     super(scope, id, {
       physicalName: props.deploymentConfigName,
     });

@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as destinations from '../lib';
 
 // Test success case with:

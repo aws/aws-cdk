@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { TaskDefinition } from '../base/task-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 

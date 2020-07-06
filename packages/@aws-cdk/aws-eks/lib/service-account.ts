@@ -1,5 +1,6 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct  } from '@aws-cdk/core';
+import { CfnJson } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 
 /**

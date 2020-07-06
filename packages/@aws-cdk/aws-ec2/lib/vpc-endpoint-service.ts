@@ -1,6 +1,7 @@
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
-import { Aws, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 
 /**

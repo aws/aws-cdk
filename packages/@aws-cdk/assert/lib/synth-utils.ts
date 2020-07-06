@@ -9,7 +9,7 @@ export class SynthUtils {
     const root = stack.node.root;
 
     // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof core.App ? root.synth() : core.ConstructNode.synth(root.node, options);
+    const assembly = core.Synthesis.synthesize(root, options);
 
     return assembly.getStackArtifact(stack.artifactId);
   }
@@ -54,7 +54,7 @@ export class SynthUtils {
     const root = stack.node.root;
 
     // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof core.App ? root.synth() : core.ConstructNode.synth(root.node, options);
+    const assembly = root instanceof core.App ? root.synth() : core.Synthesis.synthesize(root, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
     if (stack.nestedStackParent) {

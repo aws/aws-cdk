@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { EventBridgeDestination } from './event-bridge';
 
 /**

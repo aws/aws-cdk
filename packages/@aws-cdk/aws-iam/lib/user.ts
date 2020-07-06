@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';

@@ -11,6 +11,7 @@ import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
 import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
+import { Construct } from 'constructs';
 
 interface SelfUpdatingPipeline {
   synthesizedApp: codepipeline.Artifact;
@@ -459,7 +460,7 @@ class FakeAction implements codepipeline.IAction {
     this.outputArtifact = new codepipeline.Artifact('OutputArtifact');
   }
 
-  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {};
   }

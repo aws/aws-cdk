@@ -1,4 +1,5 @@
-import { Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';

@@ -1,4 +1,4 @@
-import { IConstruct } from '../construct-compat';
+import { IConstruct } from 'constructs';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
+import { Construct } from 'constructs';
 
 export = {
   'we can add a lifecycle hook to an ASG'(test: Test) {
@@ -71,7 +72,7 @@ export = {
 };
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
-  public bind(_scope: cdk.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
     lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
       resources: ['*'],

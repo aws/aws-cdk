@@ -1,13 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
   ApplicationConfigPropertyToJson,
   BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
   InstancesConfigPropertyToJson,
-  KerberosAttributesPropertyToJson,
+  KerberosAttributesPropertyToJson
 } from './private/cluster-utils';
 
 /**
@@ -170,7 +171,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private _clusterRole: iam.IRole;
   private _autoScalingRole?: iam.IRole;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EmrCreateClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
     this.visibleToAllUsers = this.props.visibleToAllUsers !== undefined ? this.props.visibleToAllUsers : true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;

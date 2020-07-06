@@ -1,5 +1,6 @@
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Deployment, LambdaRestApi, Stage } from '../lib';
 
 class LateBoundDeploymentStageStack extends Stack {

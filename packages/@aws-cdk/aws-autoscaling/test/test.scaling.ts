@@ -5,6 +5,7 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
+import { Construct } from 'constructs';
 
 export = {
   'target tracking policies': {
@@ -223,11 +224,11 @@ export = {
   },
 };
 
-class ASGFixture extends cdk.Construct {
+class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, 'VPC');

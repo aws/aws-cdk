@@ -1,6 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, SecretValue } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a BasicAuth

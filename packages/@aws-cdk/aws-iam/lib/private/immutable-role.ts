@@ -1,4 +1,5 @@
-import { ConcreteDependable, Construct, DependableTrait } from '@aws-cdk/core';
+import { ConcreteDependable, DependableTrait } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';

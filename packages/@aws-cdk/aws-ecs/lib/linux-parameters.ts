@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
@@ -23,7 +24,7 @@ export interface LinuxParametersProps {
 /**
  * Linux-specific options that are applied to the container.
  */
-export class LinuxParameters extends cdk.Construct {
+export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */
@@ -57,7 +58,7 @@ export class LinuxParameters extends cdk.Construct {
   /**
    * Constructs a new instance of the LinuxParameters class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
+  constructor(scope: Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
     this.sharedMemorySize = props.sharedMemorySize;

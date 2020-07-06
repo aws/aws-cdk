@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';

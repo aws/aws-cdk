@@ -9,7 +9,8 @@ import {
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
+import { Duration, IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { readFileSync } from 'fs';
 import {
   CfnApiKey,

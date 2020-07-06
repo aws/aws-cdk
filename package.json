@@ -11,7 +11,8 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "watch-all": "./scripts/build-typescript.sh -w",
+    "build-all": "./scripts/build-typescript.sh"
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.0.34",

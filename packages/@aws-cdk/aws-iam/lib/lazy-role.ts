@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -34,7 +35,7 @@ export class LazyRole extends cdk.Resource implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<IManagedPolicy>();
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
+  constructor(scope: Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
   }
 

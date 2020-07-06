@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
-import { Construct } from '../construct-compat';
 import { Duration } from '../duration';
 import { Size } from '../size';
 import { Stack } from '../stack';

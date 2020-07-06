@@ -1,10 +1,10 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
+import { Construct, IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { Construct, IConstruct } from '../construct-compat';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';

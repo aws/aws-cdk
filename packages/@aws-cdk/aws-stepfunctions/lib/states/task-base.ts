@@ -95,7 +95,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
+  constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;

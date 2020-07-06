@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase, UserPoolIdentityProviderProps } from './base';
 

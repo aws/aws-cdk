@@ -1,5 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { IBackupPlan } from './plan';

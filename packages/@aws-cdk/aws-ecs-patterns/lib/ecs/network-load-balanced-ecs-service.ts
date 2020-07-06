@@ -1,5 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
 /**

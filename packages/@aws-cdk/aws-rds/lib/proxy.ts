@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { IDatabaseInstance } from './instance';
 import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
@@ -332,7 +333,7 @@ export class DatabaseProxy extends cdk.Resource
    * Import an existing database proxy.
    */
   public static fromDatabaseProxyAttributes(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
@@ -372,7 +373,7 @@ export class DatabaseProxy extends cdk.Resource
 
   private readonly resource: CfnDBProxy;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseProxyProps) {
+  constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id, { physicalName: props.dbProxyName || id });
 
     const role = props.role || new iam.Role(this, 'IAMRole', {

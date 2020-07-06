@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -33,7 +33,7 @@ export interface LambdaDeploymentConfigImportProps {
  *
  * Note: This class currently stands as namespaced container of the default configurations
  * until CloudFormation supports custom Lambda Deployment Configs. Until then it is closed
- * (private constructor) and does not extend {@link cdk.Construct}
+ * (private constructor) and does not extend {@link Construct}
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
@@ -56,7 +56,7 @@ export class LambdaDeploymentConfig {
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(_scope: cdk.Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
+  public static import(_scope: Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
     return deploymentConfig(props.deploymentConfigName);
   }
 

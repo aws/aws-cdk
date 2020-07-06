@@ -58,13 +58,13 @@ export class JobDefinitionImageConfig {
    */
   public readonly imageName: string;
 
-  constructor(scope: cdk.Construct, container: JobDefinitionContainer) {
+  constructor(scope: Construct, container: JobDefinitionContainer) {
     const config = this.bindImageConfig(scope, container);
 
     this.imageName = config.imageName;
   }
 
-  private bindImageConfig(scope: cdk.Construct, container: JobDefinitionContainer): ecs.ContainerImageConfig {
+  private bindImageConfig(scope: Construct, container: JobDefinitionContainer): ecs.ContainerImageConfig {
     return container.image.bind(scope, new ecs.ContainerDefinition(scope, 'Resource-Batch-Job-Container-Definition', {
       command: container.command,
       cpu: container.vcpus,

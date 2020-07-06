@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -253,7 +254,7 @@ export interface AwsCustomResourceProps {
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
+export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
@@ -272,7 +273,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
-  constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
+  constructor(scope: Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {

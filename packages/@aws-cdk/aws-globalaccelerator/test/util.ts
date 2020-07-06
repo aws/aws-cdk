@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export function testFixture() {
   const { stack, app } = testFixtureNoVpc();

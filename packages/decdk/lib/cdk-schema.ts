@@ -22,7 +22,7 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
   // Find all constructs for which the props interface
   // (transitively) only consists of JSON primitives or interfaces
   // that consist of JSON primitives
-  const constructType = typeSystem.findClass('@aws-cdk/core.Construct');
+  const constructType = typeSystem.findClass('constructs.Construct');
   const constructs = typeSystem.classes.filter(c => c.extends(constructType));
 
   const deconstructs = constructs

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 
@@ -61,7 +62,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    *
    * @default - the construct in which this construct is defined
    */
-  readonly scope?: cdk.IConstruct;
+  readonly scope?: IConstruct;
 }
 
 /**
@@ -265,7 +266,7 @@ export class Grant implements cdk.IDependable {
    *
    * The same as construct.node.addDependency(grant), but slightly nicer to read.
    */
-  public applyBefore(...constructs: cdk.IConstruct[]) {
+  public applyBefore(...constructs: IConstruct[]) {
     for (const construct of constructs) {
       construct.node.addDependency(this);
     }
@@ -292,7 +293,7 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IConstruct {
+export interface IResourceWithPolicy extends IConstruct {
   /**
    * Add a statement to the resource's resource policy
    */
@@ -327,7 +328,7 @@ export interface AddToResourcePolicyResult {
 export class CompositeDependable implements cdk.IDependable {
   constructor(...dependables: cdk.IDependable[]) {
     cdk.DependableTrait.implement(this, {
-      get dependencyRoots(): cdk.IConstruct[] {
+      get dependencyRoots(): IConstruct[] {
         return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
       },
     });

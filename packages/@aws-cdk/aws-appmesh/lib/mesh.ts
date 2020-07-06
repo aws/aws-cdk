@@ -4,6 +4,7 @@ import { CfnMesh } from './appmesh.generated';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
+import { Construct } from 'constructs';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -129,7 +130,7 @@ export class Mesh extends MeshBase {
   /**
    * Import an existing mesh by arn
    */
-  public static fromMeshArn(scope: cdk.Construct, id: string, meshArn: string): IMesh {
+  public static fromMeshArn(scope: Construct, id: string, meshArn: string): IMesh {
     const parts = cdk.Stack.of(scope).parseArn(meshArn);
 
     class Import extends MeshBase {
@@ -143,7 +144,7 @@ export class Mesh extends MeshBase {
   /**
    * Import an existing mesh by name
    */
-  public static fromMeshName(scope: cdk.Construct, id: string, meshName: string): IMesh {
+  public static fromMeshName(scope: Construct, id: string, meshName: string): IMesh {
     const arn = cdk.Stack.of(scope).formatArn({
       service: 'appmesh',
       resource: 'mesh',
@@ -168,7 +169,7 @@ export class Mesh extends MeshBase {
    */
   public readonly meshArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
+  constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
       physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });

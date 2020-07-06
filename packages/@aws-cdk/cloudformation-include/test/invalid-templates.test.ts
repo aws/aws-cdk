@@ -3,6 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
+import { Construct } from 'constructs';
 
 describe('CDK Include', () => {
   let stack: core.Stack;
@@ -84,7 +85,7 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });

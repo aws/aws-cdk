@@ -1,4 +1,5 @@
-import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';

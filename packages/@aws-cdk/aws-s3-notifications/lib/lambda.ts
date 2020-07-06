@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnResource, Construct, Stack } from '@aws-cdk/core';
+import { CfnResource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Use a Lambda function as a bucket notification destination

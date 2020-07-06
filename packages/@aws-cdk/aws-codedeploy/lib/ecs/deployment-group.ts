@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { arnForDeploymentGroup } from '../utils';
 import { IEcsApplication } from './application';
 import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
@@ -35,7 +35,7 @@ export interface IEcsDeploymentGroup extends cdk.IResource {
  * Note: This class currently stands as a namespaced container for importing an ECS
  * Deployment Group defined outside the CDK app until CloudFormation supports provisioning
  * ECS Deployment Groups. Until then it is closed (private constructor) and does not
- * extend {@link cdk.Construct}.
+ * extend {@link Construct}.
  *
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
@@ -49,7 +49,7 @@ export class EcsDeploymentGroup {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
@@ -92,7 +92,7 @@ class ImportedEcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentG
   public readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 
-  constructor(scope: cdk.Construct, id: string, props: EcsDeploymentGroupAttributes) {
+  constructor(scope: Construct, id: string, props: EcsDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;

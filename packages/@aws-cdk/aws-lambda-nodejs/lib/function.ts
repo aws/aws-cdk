@@ -1,5 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Bundling, ParcelBaseOptions } from './bundling';
@@ -41,7 +41,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseO
  * A Node.js Lambda function bundled using Parcel
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }

@@ -2,6 +2,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export interface %name.PascalCased%Props {
   /**
@@ -12,11 +13,11 @@ export interface %name.PascalCased%Props {
   visibilityTimeout?: cdk.Duration;
 }
 
-export class %name.PascalCased% extends cdk.Construct {
+export class %name.PascalCased% extends Construct {
   /** @returns the ARN of the SQS queue */
   public readonly queueArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: %name.PascalCased%Props = {}) {
+  constructor(scope: Construct, id: string, props: %name.PascalCased%Props = {}) {
     super(scope, id);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {

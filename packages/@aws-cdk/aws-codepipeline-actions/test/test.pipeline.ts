@@ -7,7 +7,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
+import { App, Aws, CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
+import { Node } from 'constructs';
 import { Test } from 'nodeunit';
 import * as cpactions from '../lib';
 
@@ -46,7 +47,8 @@ export = {
     });
 
     test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
+    // TODO: this was ConstructNode.validate()
+    test.deepEqual([], pipeline.node.validate());
     test.done();
   },
 

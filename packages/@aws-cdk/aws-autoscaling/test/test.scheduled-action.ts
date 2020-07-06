@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
+import { Construct } from 'constructs';
 
 export = {
   'can schedule an action'(test: Test) {
@@ -107,7 +108,7 @@ export = {
   },
 };
 
-function makeAutoScalingGroup(scope: cdk.Construct) {
+function makeAutoScalingGroup(scope: Construct) {
   const vpc = new ec2.Vpc(scope, 'VPC');
   return new autoscaling.AutoScalingGroup(scope, 'ASG', {
     vpc,

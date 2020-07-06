@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
@@ -193,7 +194,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */
@@ -205,7 +206,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
+  constructor(scope: Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
     this.conditions = props.conditions || [];

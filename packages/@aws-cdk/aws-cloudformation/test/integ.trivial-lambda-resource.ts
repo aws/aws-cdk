@@ -15,10 +15,10 @@ interface DemoResourceProps {
   failCreate?: boolean;
 }
 
-class DemoResource extends cdk.Construct {
+class DemoResource extends Construct {
   public readonly response: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+  constructor(scope: Construct, id: string, props: DemoResourceProps) {
     super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {

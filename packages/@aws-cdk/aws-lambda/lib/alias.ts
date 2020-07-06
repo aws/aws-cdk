@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';

@@ -3,6 +3,7 @@ import * as hooks from '@aws-cdk/aws-autoscaling-hooktargets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ICluster } from '../cluster';
@@ -38,12 +39,12 @@ export interface InstanceDrainHookProps {
 /**
  * A hook to drain instances from ECS traffic before they're terminated
  */
-export class InstanceDrainHook extends cdk.Construct {
+export class InstanceDrainHook extends Construct {
 
   /**
    * Constructs a new instance of the InstanceDrainHook class.
    */
-  constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
+  constructor(scope: Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
     const drainTime = props.drainTime || cdk.Duration.minutes(5);

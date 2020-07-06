@@ -104,7 +104,7 @@ export class ReportGroup extends ReportGroupBase {
    * defined outside of the CDK code,
    * by name.
    */
-  public static fromReportGroupName(scope: cdk.Construct, id: string, reportGroupName: string): IReportGroup {
+  public static fromReportGroupName(scope: Construct, id: string, reportGroupName: string): IReportGroup {
     class Import extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
@@ -118,7 +118,7 @@ export class ReportGroup extends ReportGroupBase {
   public readonly reportGroupName: string;
   protected readonly exportBucket?: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: ReportGroupProps = {}) {
+  constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });

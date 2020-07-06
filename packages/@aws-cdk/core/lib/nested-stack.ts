@@ -1,10 +1,10 @@
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Construct } from './construct-compat';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { IResolveContext } from './resolvable';

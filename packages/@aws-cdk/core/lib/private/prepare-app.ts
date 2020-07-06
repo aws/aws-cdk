@@ -1,6 +1,5 @@
-import { ConstructOrder } from 'constructs';
+import { ConstructOrder, IConstruct } from 'constructs';
 import { CfnResource } from '../cfn-resource';
-import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { resolveReferences } from './refs';

@@ -208,10 +208,10 @@ export = testCase({
   },
 });
 
-class TestCustomResource extends cdk.Construct {
+class TestCustomResource extends Construct {
   public readonly resource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
+  constructor(scope: Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {

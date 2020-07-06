@@ -1,4 +1,5 @@
-import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as certmgr from '../lib';
 
 class CertStack extends Stack {

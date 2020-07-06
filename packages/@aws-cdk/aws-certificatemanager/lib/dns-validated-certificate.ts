@@ -60,7 +60,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
   private hostedZoneId: string;
   private domainName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DnsValidatedCertificateProps) {
+  constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
 
     this.domainName = props.domainName;

@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
+import { Construct, IConstruct } from 'constructs';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
+import { ISynthesisSession } from './synthesis-session';
 
 const FILE_PATH = 'tree.json';
 
@@ -20,7 +21,11 @@ export class TreeMetadata extends Construct {
     super(scope, 'Tree');
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  /**
+   * Create tree.json
+   * @internal
+   */
+  public _synthesizeTree(session: ISynthesisSession) {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {

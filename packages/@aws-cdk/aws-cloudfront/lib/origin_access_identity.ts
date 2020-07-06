@@ -62,14 +62,14 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    * Creates a OriginAccessIdentity by providing the OriginAccessIdentityName
    */
   public static fromOriginAccessIdentityName(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     originAccessIdentityName: string): IOriginAccessIdentity {
 
     class Import extends OriginAccessIdentityBase {
       public readonly originAccessIdentityName = originAccessIdentityName;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
-      constructor(s: cdk.Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i, { physicalName: originAccessIdentityName });
       }
     }
@@ -103,7 +103,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    */
   private readonly resource: CfnCloudFrontOriginAccessIdentity;
 
-  constructor(scope: cdk.Construct, id: string, props?: OriginAccessIdentityProps) {
+  constructor(scope: Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
 
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
