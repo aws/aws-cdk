@@ -423,7 +423,7 @@ describe('CDK Include', () => {
     output.description = undefined;
     output.exportName = 'an export';
     output.condition = new core.CfnCondition(stack, 'MyCondition', {
-      expression: core.Fn.conditionIf('AlwaysFalseCond', 'AWS::NoValue', 'AWS::NoValue'),
+      expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
     });
 
     const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
@@ -434,8 +434,8 @@ describe('CDK Include', () => {
         "MyCondition": {
           "Fn::If": [
             "AlwaysFalseCond",
-            "AWS::NoValue",
-            "AWS::NoValue",
+            { "Ref": "AWS::NoValue" },
+            true,
           ],
         },
       },
@@ -474,7 +474,7 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with outputs that reference resources', () => {
+  test("throws an exception when attempting to retrieve an Output that doesn't exist", () => {
     const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
 
     expect(() => {
