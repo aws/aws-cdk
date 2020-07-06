@@ -1,5 +1,7 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { AttachInitOptions } from '../lib';
 
 test('whole config with restart handles', () => {
   // WHEN
@@ -16,8 +18,17 @@ test('whole config with restart handles', () => {
     ec2.InitService.enable('httpd', { serviceRestartHandle: handle }),
   ]);
 
+  const instanceRole = new iam.Role(stack, 'InstanceRole', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  })
+  const attachOptions: AttachInitOptions = {
+    platform: ec2.InitPlatform.LINUX,
+    instanceRole,
+    userData: ec2.UserData.forLinux(),
+  };
+
   // THEN
-  expect(config.renderConfig(stack, ec2.InitRenderPlatform.LINUX)).toEqual(expect.objectContaining({
+  expect(config.bind(stack, attachOptions).config).toEqual(expect.objectContaining({
     services: {
       sysvinit: {
         httpd: {

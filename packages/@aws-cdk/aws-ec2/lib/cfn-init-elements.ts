@@ -7,7 +7,7 @@ import * as fs from 'fs';
 /**
  * Defines whether this Init template will is being rendered for Windows or Linux-based systems.
  */
-export enum InitRenderPlatform {
+export enum InitPlatform {
   /**
    * Render the config for a Windows platform
    */
@@ -119,35 +119,42 @@ export class InitServiceRestartHandle {
 }
 
 /**
- * Context options passed when an InitElement is being rendered
+ * Context information passed when an InitElement is being consumed
  */
-export interface InitRenderOptions {
+export interface InitBindOptions {
   /**
    * Scope in which to define any resources, if necessary.
    */
   readonly scope: Construct;
 
   /**
-   * Which OS platform (Linux, Windows) are we rendering for. Impacts
-   * which config types are available and how they are rendered.
+   * Which OS platform (Linux, Windows) the init block will be for.
+   * Impacts which config types are available and how they are created.
    */
-  readonly platform: InitRenderPlatform;
+  readonly platform: InitPlatform;
 
   /**
    * Ordered index of current element type. Primarily used to auto-generate
    * command keys and retain ordering.
    */
   readonly index: number;
-}
 
-/**
- * Context information passed when an InitElement is being consumed
- */
-export interface InitBindOptions {
   /**
    * Instance role of the consuming instance or fleet
    */
   readonly instanceRole: iam.IRole;
+}
+
+export interface InitElementConfig {
+  /**
+   * The CloudFormation representation of the configuration of an InitElement.
+   */
+  readonly config: Record<string, any>;
+
+  /**
+   * Optional set of S3 bucket names that must get a AWS::CloudFormation::Authentication reference to access.
+   */
+  readonly authBucketNames?: string[];
 }
 
 /**
@@ -161,33 +168,14 @@ export abstract class InitElement {
   public abstract readonly elementType: InitElementType;
 
   /**
-   * Render the CloudFormation representation of this init element.
+   * Called when the Init config is being consumed. Renders the CloudFormation
+   * representation of this init element, and calculates any authentication
+   * properties needed, if any.
    *
-   * Should return an object with a single key: `{ key: { ...details... }}`
-   *
-   * @param options
+   * @param options bind options for the element.
    */
-  public abstract renderElement(options: InitRenderOptions): Record<string, any>;
+  public abstract bind(options: InitBindOptions): InitElementConfig;
 
-  /**
-   * Render the CloudFormation representation of the CloudFormation::Authentication
-   * necessary for these elements, if any. This is primarily for elements that access
-   * resources on the instance as part of the init process (e.g., InitFile, InitSource).
-   */
-  public renderAuth(): Record<string, any> {
-    // Default no-op
-    return {};
-  }
-
-  /**
-   * Called when the Init config is being consumed.
-   *
-   * @returns the CloudFormation representation of the Authentication element for this element, if necessary.
-   */
-  public bind(_options: InitBindOptions): Record<string, any> {
-    // Default is no-op
-    return {};
-  }
 }
 
 /**
@@ -291,10 +279,10 @@ export class InitCommand extends InitElement {
     }
   }
 
-  public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
-    const commandKey = this.options.key || `${renderOptions.index}`.padStart(3, '0'); // 001, 005, etc.
+  public bind(options: InitBindOptions): InitElementConfig {
+    const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
-    if (renderOptions.platform !== InitRenderPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
+    if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
       throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
     }
 
@@ -304,13 +292,15 @@ export class InitCommand extends InitElement {
     }
 
     return {
-      [commandKey]: {
-        command: this.command,
-        env: this.options.env,
-        cwd: this.options.cwd,
-        test: this.options.test,
-        ignoreErrors: this.options.ignoreErrors,
-        waitAfterCompletion: this.options.waitAfterCompletion?.toSeconds(),
+      config: {
+        [commandKey]: {
+          command: this.command,
+          env: this.options.env,
+          cwd: this.options.cwd,
+          test: this.options.test,
+          ignoreErrors: this.options.ignoreErrors,
+          waitAfterCompletion: this.options.waitAfterCompletion?.toSeconds(),
+        },
       },
     };
   }
@@ -452,16 +442,19 @@ export abstract class InitFile extends InitElement {
   public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
     return new class extends InitFile {
       private asset!: s3_assets.Asset;
-      public bind(bindOptions: InitBindOptions): Record<string, any> {
-        this.asset.grantRead(bindOptions.instanceRole);
-        throw new Error('FIXME');
-      }
-      protected renderContentOrSource(renderOptions: InitRenderOptions): Record<string, any> {
-        this.asset = new s3_assets.Asset(renderOptions.scope, 'InitFileAsset', {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
+        this.asset = new s3_assets.Asset(bindOptions.scope, 'InitFileAsset', {
           path,
           ...options,
         });
+        this.asset.grantRead(bindOptions.instanceRole);
+        return super.bind(bindOptions);
+      }
+      protected renderContentOrSource(): Record<string, any> {
         return { source: this.asset.httpUrl };
+      }
+      protected renderAuthBucketNames(): string[] {
+        return [ this.asset.s3BucketName ];
       }
     }(targetFileName, options);
   }
@@ -471,12 +464,15 @@ export abstract class InitFile extends InitElement {
    */
   public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      public bind(bindOptions: InitBindOptions): Record<string, any> {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
         asset.grantRead(bindOptions.instanceRole);
-        throw new Error('FIXME');
+        return super.bind(bindOptions);
       }
-      protected renderContentOrSource(_renderOptions: InitRenderOptions): Record<string, any> {
+      protected renderContentOrSource(): Record<string, any> {
         return { source: asset.httpUrl };
+      }
+      protected renderAuthBucketNames(): string[] {
+        return [ asset.s3BucketName ];
       }
     }(targetFileName, options);
   }
@@ -487,24 +483,32 @@ export abstract class InitFile extends InitElement {
     super();
   }
 
-  public renderElement(renderOptions: InitRenderOptions): Record<string, any> {
-    // FIXME: Side effects in a render function... :(
+  public bind(bindOptions: InitBindOptions): InitElementConfig {
+    // Side effects in a render function... :(
     for (const handle of this.options.serviceRestartHandles ?? []) {
       handle.addFile(this.fileName);
     }
 
     return {
-      [this.fileName]: {
-        ...this.renderContentOrSource(renderOptions),
-        ...this.renderOptions(this.options, renderOptions),
+      config: {
+        [this.fileName]: {
+          ...this.renderContentOrSource(),
+          ...this.renderFileOptions(this.options, bindOptions.platform),
+        },
       },
+      authBucketNames: this.renderAuthBucketNames(),
     };
   }
 
-  protected abstract renderContentOrSource(_renderOptions: InitRenderOptions): Record<string, any>;
+  protected abstract renderContentOrSource(): Record<string, any>;
 
-  private renderOptions(fileOptions: InitFileOptions, renderOptions: InitRenderOptions): Record<string, any> {
-    if (renderOptions.platform === InitRenderPlatform.WINDOWS) {
+  protected renderAuthBucketNames(): string[] | undefined {
+    // Default no-op
+    return undefined;
+  }
+
+  private renderFileOptions(fileOptions: InitFileOptions, platform: InitPlatform): Record<string, any> {
+    if (platform === InitPlatform.WINDOWS) {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
         throw new Error('Owner, group, and mode options not supported for Windows.');
       }
@@ -539,13 +543,15 @@ export class InitGroup extends InitElement {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): Record<string, any> {
-    if (options.platform === InitRenderPlatform.WINDOWS) {
+  public bind(options: InitBindOptions): InitElementConfig {
+    if (options.platform === InitPlatform.WINDOWS) {
       throw new Error('Init groups are not supported on Windows');
     }
 
     return {
-      [this.groupName]: this.groupId !== undefined ? { gid: this.groupId } : {},
+      config: {
+        [this.groupName]: this.groupId !== undefined ? { gid: this.groupId } : {},
+      },
     };
   }
 
@@ -601,16 +607,18 @@ export class InitUser extends InitElement {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): Record<string, any> {
-    if (options.platform === InitRenderPlatform.WINDOWS) {
+  public bind(options: InitBindOptions): InitElementConfig {
+    if (options.platform === InitPlatform.WINDOWS) {
       throw new Error('Init users are not supported on Windows');
     }
 
     return {
-      [this.userName]: {
-        uid: this.userOptions.userId,
-        groups: this.userOptions.groups,
-        homeDir: this.userOptions.homeDir,
+      config: {
+        [this.userName]: {
+          uid: this.userOptions.userId,
+          groups: this.userOptions.groups,
+          homeDir: this.userOptions.homeDir,
+        },
       },
     };
   }
@@ -713,8 +721,8 @@ export class InitPackage extends InitElement {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): Record<string, any> {
-    if ((this.type === 'msi') !== (options.platform === InitRenderPlatform.WINDOWS)) {
+  public bind(options: InitBindOptions): InitElementConfig {
+    if ((this.type === 'msi') !== (options.platform === InitPlatform.WINDOWS)) {
       if (this.type === 'msi') {
         throw new Error('MSI installers are only supported on Windows systems.');
       } else {
@@ -733,8 +741,10 @@ export class InitPackage extends InitElement {
     }
 
     return {
-      [this.type]: {
-        [packageName]: this.versions,
+      config: {
+        [this.type]: {
+          [packageName]: this.versions,
+        },
       },
     };
   }
@@ -817,15 +827,17 @@ export class InitService extends InitElement {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): Record<string, any> {
-    const serviceManager = options.platform === InitRenderPlatform.LINUX ? 'sysvinit' : 'windows';
+  public bind(options: InitBindOptions): InitElementConfig {
+    const serviceManager = options.platform === InitPlatform.LINUX ? 'sysvinit' : 'windows';
 
     return {
-      [serviceManager]: {
-        [this.serviceName]: {
-          enabled: this.serviceOptions.enabled,
-          ensureRunning: this.serviceOptions.ensureRunning,
-          ...this.serviceOptions.serviceRestartHandle?.renderRestartHandles(),
+      config: {
+        [serviceManager]: {
+          [this.serviceName]: {
+            enabled: this.serviceOptions.enabled,
+            ensureRunning: this.serviceOptions.ensureRunning,
+            ...this.serviceOptions.serviceRestartHandle?.renderRestartHandles(),
+          },
         },
       },
     };
@@ -862,7 +874,7 @@ export abstract class InitSource extends InitElement {
    */
   public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected renderUrl(_renderOptions: InitRenderOptions): string { return url; }
+      protected renderUrl(): string { return url; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -886,23 +898,16 @@ export abstract class InitSource extends InitElement {
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new class extends InitSource {
       private asset!: s3_assets.Asset;
-      public bind(bindOptions: InitBindOptions): Record<string, any> {
-        this.asset.grantRead(bindOptions.instanceRole);
-        return {
-          S3AccessCreds: {
-            type: 'S3',
-            buckets: [ this.asset.s3BucketName ],
-            roleName: bindOptions.instanceRole.roleName,
-          },
-        };
-      }
-      protected renderUrl(renderOptions: InitRenderOptions): string {
-        this.asset = new s3_assets.Asset(renderOptions.scope, 'InitSourceAsset', {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
+        this.asset = new s3_assets.Asset(bindOptions.scope, 'InitSourceAsset', {
           path,
           ...options,
         });
-        return this.asset.httpUrl;
+        this.asset.grantRead(bindOptions.instanceRole);
+        return super.bind(bindOptions);
       }
+      protected renderUrl(): string { return this.asset.httpUrl; }
+      protected renderAuthBucketNames(): string[] { return [ this.asset.s3BucketName ]; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -911,11 +916,12 @@ export abstract class InitSource extends InitElement {
    */
   public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      public bind(bindOptions: InitBindOptions): Record<string, any> {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
         asset.grantRead(bindOptions.instanceRole);
-        throw new Error('FIXME');
+        return super.bind(bindOptions);
       }
-      protected renderUrl(_renderOptions: InitRenderOptions): string { return asset.s3ObjectUrl; }
+      protected renderUrl(): string { return asset.s3ObjectUrl; }
+      protected renderAuthBucketNames(): string[] { return [ asset.s3BucketName ]; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -925,16 +931,22 @@ export abstract class InitSource extends InitElement {
     super();
   }
 
-  public renderElement(options: InitRenderOptions): Record<string, any> {
+  public bind(_options: InitBindOptions): InitElementConfig {
     // Side effect and all that
     for (const handle of this.serviceHandles ?? []) {
       handle.addSource(this.targetDirectory);
     }
 
     return {
-      [this.targetDirectory]: this.renderUrl(options),
+      config: { [this.targetDirectory]: this.renderUrl() },
+      authBucketNames: this.renderAuthBucketNames(),
     };
   }
 
-  protected abstract renderUrl(renderOptions: InitRenderOptions): string;
+  protected abstract renderUrl(): string;
+
+  protected renderAuthBucketNames(): string[] | undefined {
+    // Default no-op
+    return undefined;
+  }
 }
