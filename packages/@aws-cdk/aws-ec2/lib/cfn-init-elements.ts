@@ -892,7 +892,7 @@ export abstract class InitSource extends InitElement {
           S3AccessCreds: {
             type: 'S3',
             buckets: [ this.asset.s3BucketName ],
-            roleName: bindOptions.instanceRole.roleArn,
+            roleName: bindOptions.instanceRole.roleName,
           },
         };
       }
