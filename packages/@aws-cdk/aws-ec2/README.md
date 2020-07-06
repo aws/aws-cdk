@@ -48,9 +48,11 @@ distinguishes three different subnet types:
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
 
-A default VPC configuration will create public and private subnets, but not
-isolated subnets. See *Advanced Subnet Configuration* below for information
-on how to change the default subnet configuration.
+
+A default VPC configuration will create public and **private** subnets. However, if
+`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration 
+will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration) 
+below for information on how to change the default subnet configuration.
 
 Constructs using the VPC will "launch instances" (or more accurately, create
 Elastic Network Interfaces) into one or more of the subnets. They all accept

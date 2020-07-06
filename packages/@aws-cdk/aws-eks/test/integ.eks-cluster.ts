@@ -22,7 +22,7 @@ class EksClusterStack extends TestStack {
       vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: '1.16',
+      version: eks.KubernetesVersion.V1_16,
     });
 
     // fargate profile for resources in the "default" namespace
@@ -72,19 +72,33 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
+    // deploy the Kubernetes dashboard through a helm chart
     cluster.addChart('dashboard', {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
 
-    cluster.addChart('nginx-ingress', {
+    // deploy an nginx ingress in a namespace
+
+    const nginxNamespace = cluster.addResource('nginx-namespace', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: {
+        name: 'nginx',
+      },
+    });
+
+    const nginxIngress = cluster.addChart('nginx-ingress', {
       chart: 'nginx-ingress',
       repository: 'https://helm.nginx.com/stable',
-      namespace: 'kube-system',
+      namespace: 'nginx',
       wait: true,
+      createNamespace: false,
       timeout: Duration.minutes(15),
     });
+
+    // make sure namespace is deployed before the chart
+    nginxIngress.node.addDependency(nginxNamespace);
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');

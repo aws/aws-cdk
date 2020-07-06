@@ -361,6 +361,11 @@ export enum AttachmentTargetType {
   RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
 
   /**
+   * AWS::RDS::DBProxy
+   */
+  RDS_DB_PROXY = 'AWS::RDS::DBProxy',
+
+  /**
    * AWS::Redshift::Cluster
    */
   REDSHIFT_CLUSTER = 'AWS::Redshift::Cluster',
