@@ -12,13 +12,15 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 // tslint:disable:max-line-length
 
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+
 export = {
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
@@ -42,7 +44,7 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0, version: CLUSTER_VERSION });
     const layer = KubectlLayer.getOrCreate(stack, {});
 
     // THEN
@@ -63,14 +65,14 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0, version: CLUSTER_VERSION });
     new KubectlLayer(stack, 'NewLayer');
     const layer = KubectlLayer.getOrCreate(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
     expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location:  {
+      Location: {
         ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
       },
     }));
@@ -83,7 +85,7 @@ export = {
     const { stack } = testFixtureNoVpc();
 
     // WHEN
-    new eks.Cluster(stack, 'cluster');
+    new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION }) ;
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::VPC'));
@@ -97,7 +99,7 @@ export = {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster');
+      const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
 
       // THEN
       test.ok(cluster.defaultNodegroup);
@@ -122,6 +124,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 10,
         defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
+        version: CLUSTER_VERSION,
       });
 
       // THEN
@@ -142,7 +145,7 @@ export = {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0 });
+      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // THEN
       test.ok(!cluster.defaultCapacity);
@@ -157,7 +160,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -177,7 +180,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0, version: CLUSTER_VERSION });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -196,7 +199,11 @@ export = {
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc, kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addCapacity('Default', {
@@ -207,7 +214,7 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -230,6 +237,7 @@ export = {
     const cluster = new eks.Cluster(stack, 'cluster', {
       defaultCapacity: 10,
       defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
+      version: CLUSTER_VERSION,
     });
 
     const existingRole = new iam.Role(stack, 'ExistingRole', {
@@ -256,7 +264,12 @@ export = {
   'adding bottlerocket capacity creates an ASG with tags'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addCapacity('Bottlerocket', {
@@ -285,7 +298,12 @@ export = {
   'adding bottlerocket capacity with bootstrapOptions throws error'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     test.throws(() => cluster.addCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
@@ -299,7 +317,12 @@ export = {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
-    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack1, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
@@ -332,7 +355,12 @@ export = {
   'disabled features when kubectl is disabled'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     test.throws(() => cluster.awsAuth, /Cannot define aws-auth mappings if kubectl is disabled/);
     test.throws(() => cluster.addResource('foo', {}), /Unable to perform this operation since kubectl is not enabled for this cluster/);
@@ -349,7 +377,12 @@ export = {
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role, defaultCapacity: 0 });
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      mastersRole: role,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
@@ -383,11 +416,15 @@ export = {
   'addResource can be used to apply k8s manifests on this cluster'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
+    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
@@ -404,13 +441,13 @@ export = {
   'kubectl resources can be created in a separate stack'(test: Test) {
     // GIVEN
     const { stack, app } = testFixture();
-    const cluster = new eks.Cluster(stack, 'cluster'); // cluster is under stack2
+    const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION }); // cluster is under stack2
 
     // WHEN resource is under stack2
     const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
     new eks.KubernetesResource(stack2, 'myresource', {
       cluster,
-      manifest: [ { foo: 'bar' } ],
+      manifest: [{ foo: 'bar' }],
     });
 
     // THEN
@@ -441,7 +478,11 @@ export = {
   'when kubectl is enabled (default) adding capacity will automatically map its IAM role'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -473,7 +514,11 @@ export = {
   'addCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -489,7 +534,12 @@ export = {
   'addCapacity will *not* map the IAM role if kubectl is disabled'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addCapacity('default', {
@@ -507,14 +557,14 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.Cluster(stack, 'Cluster');
+      new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
 
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
       });
       test.done();
     },
@@ -525,14 +575,17 @@ export = {
 
       // WHEN
       const mastersRole = new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() });
-      new eks.Cluster(stack, 'Cluster', { mastersRole });
+      new eks.Cluster(stack, 'Cluster', {
+        mastersRole,
+        version: CLUSTER_VERSION,
+      });
 
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
       });
       test.done();
     },
@@ -546,6 +599,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         mastersRole,
         outputConfigCommand: false,
+        version: CLUSTER_VERSION,
       });
 
       // THEN
@@ -563,6 +617,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         outputConfigCommand: false,
         outputClusterName: true,
+        version: CLUSTER_VERSION,
       });
 
       // THEN
@@ -583,13 +638,14 @@ export = {
         outputConfigCommand: false,
         outputMastersRoleArn: true,
         mastersRole: new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() }),
+        version: CLUSTER_VERSION,
       });
 
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } },
+        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] } },
       });
       test.done();
     },
@@ -597,9 +653,9 @@ export = {
     'boostrap user-data': {
 
       'rendered by default for ASGs'(test: Test) {
-      // GIVEN
+        // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
         cluster.addCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
@@ -607,14 +663,14 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
       'not rendered if bootstrap is disabled'(test: Test) {
-      // GIVEN
+        // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
         cluster.addCapacity('MyCapcity', {
@@ -631,9 +687,9 @@ export = {
 
       // cursory test for options: see test.user-data.ts for full suite
       'bootstrap options'(test: Test) {
-      // GIVEN
+        // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
         cluster.addCapacity('MyCapcity', {
@@ -646,16 +702,16 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
       'spot instances': {
 
         'nodes labeled an tainted accordingly'(test: Test) {
-        // GIVEN
+          // GIVEN
           const { app, stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
           cluster.addCapacity('MyCapcity', {
@@ -666,14 +722,14 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
           test.done();
         },
 
         'if kubectl is enabled, the interrupt handler is added'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
           cluster.addCapacity('MyCapcity', {
@@ -695,7 +751,7 @@ export = {
         'its possible to add two capacities with spot instances and only one stop handler will be installed'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
           cluster.addCapacity('Spot1', {
@@ -714,9 +770,13 @@ export = {
         },
 
         'if kubectl is disabled, interrupt handler is not added'(test: Test) {
-        // GIVEN
+          // GIVEN
           const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, kubectlEnabled: false });
+          const cluster = new eks.Cluster(stack, 'Cluster', {
+            defaultCapacity: 0,
+            kubectlEnabled: false,
+            version: CLUSTER_VERSION,
+          });
 
           // WHEN
           cluster.addCapacity('MyCapcity', {
@@ -736,7 +796,7 @@ export = {
     'if bootstrap is disabled cannot specify options'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // THEN
       test.throws(() => cluster.addCapacity('MyCapcity', {
@@ -760,7 +820,7 @@ export = {
       const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-        (v as any).Default.includes('/amazon-linux-2/'),
+          (v as any).Default.includes('/amazon-linux-2/'),
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
@@ -791,12 +851,13 @@ export = {
     },
 
     'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
-    // GIVEN
+      // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
+        version: CLUSTER_VERSION,
       }).addCapacity('GPUCapacity', {
         instanceType: new ec2.InstanceType('g4dn.xlarge'),
       });
@@ -811,21 +872,23 @@ export = {
     },
 
     'when using custom resource a creation role & policy is defined'(test: Test) {
-    // GIVEN
+      // GIVEN
       const { stack } = testFixture();
 
       // WHEN
       new eks.Cluster(stack, 'MyCluster', {
         clusterName: 'my-cluster-name',
+        version: CLUSTER_VERSION,
       });
 
       // THEN
       expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster', {
         Config: {
           name: 'my-cluster-name',
-          roleArn: { 'Fn::GetAtt': [ 'MyClusterRoleBA20FE72', 'Arn' ] },
+          roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
+          version: '1.16',
           resourcesVpcConfig: {
-            securityGroupIds: [ { 'Fn::GetAtt': [ 'MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId' ] } ],
+            securityGroupIds: [{ 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] }],
             subnetIds: [
               { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
               { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
@@ -858,6 +921,18 @@ export = {
                     ],
                   },
                 ],
+              },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::GetAtt': [
+                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+                  ],
+                },
               },
             },
           ],
@@ -900,7 +975,7 @@ export = {
                 'eks:UntagResource',
               ],
               Effect: 'Allow',
-              Resource: [ {
+              Resource: [{
                 'Fn::Join': [
                   '',
                   [
@@ -930,7 +1005,7 @@ export = {
                     ':cluster/my-cluster-name/*',
                   ],
                 ],
-              } ],
+              }],
             },
             {
               Action: [
@@ -956,7 +1031,7 @@ export = {
               },
             },
             {
-              Action: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -973,11 +1048,11 @@ export = {
     },
 
     'if an explicit cluster name is not provided, the creation role policy is wider (allows interacting with all clusters)'(test: Test) {
-    // GIVEN
+      // GIVEN
       const { stack } = testFixture();
 
       // WHEN
-      new eks.Cluster(stack, 'MyCluster');
+      new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -1014,7 +1089,7 @@ export = {
                 'eks:UntagResource',
               ],
               Effect: 'Allow',
-              Resource: [ '*' ],
+              Resource: ['*'],
             },
             {
               Action: [
@@ -1025,7 +1100,7 @@ export = {
               Resource: '*',
             },
             {
-              Action: [ 'iam:GetRole', 'iam:listAttachedRolePolicies' ],
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -1042,10 +1117,11 @@ export = {
     },
 
     'if helm charts are used, its resource provider is allowed to assume the creation role'(test: Test) {
-    // GIVEN
+      // GIVEN
       const { stack } = testFixture();
       const cluster = new eks.Cluster(stack, 'MyCluster', {
         clusterName: 'my-cluster-name',
+        version: CLUSTER_VERSION,
       });
 
       // WHEN
@@ -1100,12 +1176,13 @@ export = {
     },
 
     'coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal'(test: Test) {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
 
       // WHEN
       new eks.Cluster(stack, 'MyCluster', {
         coreDnsComputeType: eks.CoreDnsComputeType.FARGATE,
+        version: CLUSTER_VERSION,
       });
 
       // THEN
@@ -1127,9 +1204,9 @@ export = {
       test.done();
     },
     'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
-    // GIVEN
+      // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
       const provider = cluster.openIdConnectProvider;
@@ -1161,7 +1238,7 @@ export = {
     'inference instances are supported'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0 });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
       cluster.addCapacity('InferenceInstances', {
@@ -1181,21 +1258,21 @@ export = {
     'kubectl resources are always created after all fargate profiles'(test: Test) {
       // GIVEN
       const { stack, app } = testFixture();
-      const cluster = new eks.Cluster(stack, 'Cluster');
+      const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
 
       // WHEN
-      cluster.addFargateProfile('profile1', { selectors: [ { namespace: 'profile1' } ]});
+      cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
       cluster.addResource('resource1', { foo: 123 });
-      cluster.addFargateProfile('profile2', { selectors: [ { namespace: 'profile2' } ]});
+      cluster.addFargateProfile('profile2', { selectors: [{ namespace: 'profile2' }] });
       new eks.HelmChart(stack, 'chart', { cluster, chart: 'mychart' });
-      cluster.addFargateProfile('profile3', { selectors: [ { namespace: 'profile3' } ]});
+      cluster.addFargateProfile('profile3', { selectors: [{ namespace: 'profile3' }] });
       new eks.KubernetesPatch(stack, 'patch1', {
         cluster,
         applyPatch: { foo: 123 },
         restorePatch: { bar: 123 },
         resourceName: 'foo/bar',
       });
-      cluster.addFargateProfile('profile4', { selectors: [ { namespace: 'profile4' } ]});
+      cluster.addFargateProfile('profile4', { selectors: [{ namespace: 'profile4' }] });
 
       // THEN
       const template = app.synth().getStackArtifact(stack.artifactId).template;
@@ -1216,11 +1293,11 @@ export = {
         'Cluster9EE0221C',
       ]);
 
-      const kubectlResources = [ 'chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505', 'ClusterAwsAuthmanifestFE51F8AE' ];
+      const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505', 'ClusterAwsAuthmanifestFE51F8AE'];
 
       // check that all kubectl resources depend on the barrier
       for (const r of kubectlResources) {
-        test.deepEqual(template.Resources[r].DependsOn, [ 'ClusterKubectlReadyBarrier200052AF' ]);
+        test.deepEqual(template.Resources[r].DependsOn, ['ClusterKubectlReadyBarrier200052AF']);
       }
 
       test.done();
@@ -1229,8 +1306,8 @@ export = {
     'kubectl provider role is trusted to assume cluster creation role'(test: Test) {
       // GIVEN
       const { stack, app } = testFixture();
-      const c1 = new eks.Cluster(stack, 'Cluster1');
-      const c2 = new eks.Cluster(stack, 'Cluster2');
+      const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+      const c2 = new eks.Cluster(stack, 'Cluster2', { version: CLUSTER_VERSION });
 
       // WHEN
 
@@ -1248,12 +1325,12 @@ export = {
       };
 
       // verify that the kubectl role appears as the 2nd IAM trust policy statement
-      for (const [ creationRole, kubectlRole ] of Object.entries(creationRoleToKubectlRole)) {
+      for (const [creationRole, kubectlRole] of Object.entries(creationRoleToKubectlRole)) {
         const trustPolicy = template.Resources[creationRole].Properties.AssumeRolePolicyDocument.Statement;
         test.equal(trustPolicy.length, 2, 'expecting the creation role\'s trust policy to include two statements');
         test.deepEqual(trustPolicy[1].Principal.AWS['Fn::GetAtt'][1], kubectlRole);
       }
-
       test.done();
     },
-  }};
+  },
+};

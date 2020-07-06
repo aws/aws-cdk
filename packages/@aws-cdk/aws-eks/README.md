@@ -25,7 +25,9 @@ This example defines an Amazon EKS cluster with the following configuration:
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-const cluster = new eks.Cluster(this, 'hello-eks');
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+});
 
 cluster.addResource('mypod', {
   apiVersion: 'v1',
@@ -45,17 +47,20 @@ cluster.addResource('mypod', {
 
 ### Capacity
 
-By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances.
+By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with the `version` property.
 
 ```ts
-new eks.Cluster(this, 'cluster-two-m5-large');
+new eks.Cluster(this, 'cluster-two-m5-large', {
+  version: eks.KubernetesVersion.V1_16,
+});
 ```
 
 To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
 
 ```ts
 const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
-  defaultCapacityType: eks.DefaultCapacityType.EC2
+  defaultCapacityType: eks.DefaultCapacityType.EC2,
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
@@ -65,14 +70,18 @@ the `defaultCapacity` and `defaultCapacityInstance` props:
 ```ts
 new eks.Cluster(this, 'cluster', {
   defaultCapacity: 10,
-  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
 To disable the default capacity, simply set `defaultCapacity` to `0`:
 
 ```ts
-new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
+new eks.Cluster(this, 'cluster-with-no-capacity', { 
+  defaultCapacity: 0,
+  version: eks.KubernetesVersion.V1_16,
+});
 ```
 
 The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
@@ -145,7 +154,9 @@ The following code defines an Amazon EKS cluster without EC2 capacity and a defa
 Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns) through the `coreDnsComputeType` cluster option.
 
 ```ts
-const cluster = new eks.FargateCluster(this, 'MyCluster');
+const cluster = new eks.FargateCluster(this, 'MyCluster', {
+  version: eks.KubernetesVersion.V1_16,
+});
 
  // apply k8s resources on this cluster
 cluster.addResource(...);
@@ -219,7 +230,8 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  mastersRole: clusterAdmin
+  mastersRole: clusterAdmin,
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
@@ -334,6 +346,19 @@ new KubernetesResource(this, 'hello-kub', {
 
 // or, option2: use `addResource`
 cluster.addResource('hello-kub', service, deployment);
+```
+
+#### Adding resources from a URL
+
+The following example will deploy the resource manifest hosting on remote server:
+
+```ts
+import * as yaml from 'js-yaml';
+import * as request from 'sync-request';
+
+const manifestUrl = 'https://url/of/manifest.yaml';
+const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
+cluster.addResource('my-resource', ...manifest);
 ```
 
 Since Kubernetes resources are implemented as CloudFormation resources in the

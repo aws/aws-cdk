@@ -166,10 +166,8 @@ export interface ClusterOptions {
 
   /**
    * The Kubernetes version to run in the cluster
-   *
-   * @default - If not supplied, will use Amazon default version
    */
-  readonly version?: string;
+  readonly version: KubernetesVersion;
 
   /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
@@ -273,6 +271,37 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+}
+
+/**
+ * Kubernetes cluster version
+ */
+export class KubernetesVersion {
+  /**
+   * Kubernetes version 1.14
+   */
+  public static readonly V1_14 = KubernetesVersion.of('1.14');
+
+  /**
+   * Kubernetes version 1.15
+   */
+  public static readonly V1_15 = KubernetesVersion.of('1.15');
+
+  /**
+   * Kubernetes version 1.16
+   */
+  public static readonly V1_16 = KubernetesVersion.of('1.16');
+
+  /**
+   * Custom cluster version
+   * @param version custom version number
+   */
+  public static of(version: string) { return new KubernetesVersion(version); }
+  /**
+   *
+   * @param version cluster version number
+   */
+  private constructor(public readonly version: string) { }
 }
 
 /**
@@ -390,7 +419,7 @@ export class Cluster extends Resource implements ICluster {
 
   private _neuronDevicePlugin?: KubernetesResource;
 
-  private readonly version: string | undefined;
+  private readonly version: KubernetesVersion;
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -413,7 +442,7 @@ export class Cluster extends Resource implements ICluster {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: Construct, id: string, props: ClusterProps = { }) {
+  constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
@@ -450,7 +479,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterProps: CfnClusterProps = {
       name: this.physicalName,
       roleArn: this.role.roleArn,
-      version: props.version,
+      version: props.version.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
@@ -555,7 +584,7 @@ export class Cluster extends Resource implements ICluster {
         new BottleRocketImage() :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
-          kubernetesVersion: this.version,
+          kubernetesVersion: this.version.version,
         }),
       updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
