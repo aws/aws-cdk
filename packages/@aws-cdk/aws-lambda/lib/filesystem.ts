@@ -4,6 +4,7 @@ import { IDependable } from '@aws-cdk/core';
 
 /**
  * FileSystem configurations for the Lambda function
+ * @experimental
  */
 export interface FileSystemConfig {
   /**
