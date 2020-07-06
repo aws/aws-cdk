@@ -41,6 +41,7 @@ export interface FileSystemConfig {
 
 /**
  * Represents the filesystem for the Lambda function
+ * @experimental
  */
 export class FileSystem {
   /**
