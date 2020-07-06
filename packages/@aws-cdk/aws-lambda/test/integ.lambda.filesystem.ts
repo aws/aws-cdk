@@ -62,10 +62,7 @@ def lambda_handler(event, context):
   handler: 'index.lambda_handler',
   runtime: lambda.Runtime.PYTHON_3_7,
   vpc,
-  filesystems: [
-    // mount the access point to /mnt/msg in the lambda runtime enironment
-    lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-  ],
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
 });
 
 app.synth();

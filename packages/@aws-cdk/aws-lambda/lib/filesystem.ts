@@ -1,6 +1,7 @@
 import { Connections } from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { IDependable } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { IDependable, Stack } from '@aws-cdk/core';
 
 /**
  * FileSystem configurations for the Lambda function
@@ -32,11 +33,11 @@ export interface FileSystemConfig {
   readonly connections?: Connections;
 
   /**
-   * additional managed policies required for the lambda function
+   * additional IAM policies required for the lambda function
    *
    * @default - no additional policies required
    */
-  readonly managedPolicies?: string[]
+  readonly policies?: iam.PolicyStatement[];
 }
 
 /**
@@ -55,8 +56,24 @@ export class FileSystem {
       arn: ap.accessPointArn,
       dependency: [ ap.fileSystem.mountTargetsAvailable ],
       connections: ap.fileSystem.connections,
-      managedPolicies: [
-        'AmazonElasticFileSystemClientFullAccess',
+      policies: [
+        new iam.PolicyStatement({
+          actions: [ 'elasticfilesystem:ClientMount' ],
+          resources: [ '*' ],
+          conditions: {
+            StringEquals: {
+              'elasticfilesystem:AccessPointArn': ap.accessPointArn,
+            },
+          },
+        }),
+        new iam.PolicyStatement({
+          actions: ['elasticfilesystem:ClientWrite'],
+          resources: [ Stack.of(ap).formatArn({
+            service: 'elasticfilesystem',
+            resource: 'file-system',
+            resourceName: ap.fileSystem.fileSystemId,
+          }) ],
+        }),
       ],
     });
   }

@@ -281,7 +281,7 @@ export interface FunctionProps extends FunctionOptions {
    *
    * @default - will not mount any filesystem
    */
-  readonly filesystems?: FileSystem[];
+  readonly filesystem?: FileSystem;
 }
 
 /**
@@ -468,8 +468,6 @@ export class Function extends FunctionBase {
 
   protected readonly canCreatePermissions = true;
 
-  protected readonly filesystems: FileSystem[] = [];
-
   private readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
@@ -499,26 +497,21 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
-    // add additonal managed policies when necessary
-    if (props.filesystems) {
-      const pushedPolicy: string[] = [];
-      for (const fs of props.filesystems) {
-        if (fs.config.managedPolicies) {
-          fs.config.managedPolicies.forEach(p => {
-            if (pushedPolicy.indexOf(p) === -1) {
-              managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName(p));
-              pushedPolicy.push(p);
-            }
-          });
-        }
-      }
-    }
-
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies,
     });
     this.grantPrincipal = this.role;
+
+    // add additonal managed policies when necessary
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.policies) {
+        config.policies.forEach(p => {
+          this.role?.addToPolicy(p);
+        });
+      }
+    }
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
@@ -596,24 +589,20 @@ export class Function extends FunctionBase {
 
     this.currentVersionOptions = props.currentVersionOptions;
 
-    if (props.filesystems) {
-      // max 1 filesystem allowed
-      if (props.filesystems.length > 1) {
-        throw new Error('max 1 filesystem allowed');
-      }
-
-      for (const fs of props.filesystems) {
-        // add dependency when necessary
-        if (fs.config.dependency) {
-          this.node.addDependency(...fs.config.dependency);
-        }
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.dependency) {
+        this.node.addDependency(...config.dependency);
       }
 
       resource.addPropertyOverride('FileSystemConfigs',
-        props.filesystems.map(fs => ({
-          LocalMountPath: fs.config.localMountPath,
-          Arn: fs.config.arn,
-        })));
+        [
+          {
+            LocalMountPath: config.localMountPath,
+            Arn: config.arn,
+          },
+        ],
+      );
     }
   }
 
@@ -790,12 +779,9 @@ export class Function extends FunctionBase {
 
     this._connections = new ec2.Connections({ securityGroups });
 
-    if (props.filesystems) {
-      for (const fs of props.filesystems) {
-        // add an ingress rule from the filesystem security group to allow ingress traffic from the lambda function
-        if (fs.config.connections) {
-          fs.config.connections.allowDefaultPortFrom(this);
-        }
+    if (props.filesystem) {
+      if (props.filesystem.config.connections) {
+        props.filesystem.config.connections.allowDefaultPortFrom(this);
       }
     }
 
