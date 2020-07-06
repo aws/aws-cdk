@@ -96,3 +96,14 @@ test('throws with the wrong runtime family', () => {
     runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
+
+test('resolves entry to an absolute path', () => {
+  // WHEN
+  new NodejsFunction(stack, 'fn', {
+    entry: 'lib/index.ts',
+  });
+
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
+  }));
+});
