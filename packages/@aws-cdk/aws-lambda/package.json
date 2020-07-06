@@ -168,9 +168,9 @@
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
       "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
       "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
-      "props-struct-name:@aws-cdk/aws-lambda.IScalableVersionAttribute",
-      "construct-ctor-props-type:@aws-cdk/aws-lambda.ScalableVersionAttribute",
-      "construct-interface-extends-iconstruct:@aws-cdk/aws-lambda.IScalableVersionAttribute"
+      "props-struct-name:@aws-cdk/aws-lambda.IScalableFunctionAttribute",
+      "construct-ctor-props-type:@aws-cdk/aws-lambda.ScalableFunctionAttribute",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-lambda.IScalableFunctionAttribute"
     ]
   },
   "stability": "stable",

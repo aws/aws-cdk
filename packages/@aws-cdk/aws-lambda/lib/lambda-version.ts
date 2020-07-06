@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { Construct, Fn, RemovalPolicy } from '@aws-cdk/core';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
