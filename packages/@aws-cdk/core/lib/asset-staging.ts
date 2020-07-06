@@ -150,7 +150,7 @@ export class AssetStaging extends Construct {
     let bundleDir = '';
     if (assetHash !== undefined) {
       // When an asset hash is known in advance of bundling, bundling is done into a dedicated staging directory.
-      bundleDir = path.join(stagingTmp, 'asset-bundle-hash-' + assetHash);
+      bundleDir = path.resolve(path.join(stagingTmp, 'asset-bundle-hash-' + assetHash));
 
       if (fs.existsSync(bundleDir)) {
         // Pre-existing bundle directory. The bundle has already been generated once before, so lets provide it

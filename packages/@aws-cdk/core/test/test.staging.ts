@@ -140,7 +140,7 @@ export = {
 
     // asset is bundled in a directory inside .cdk.staging
     test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-    test.ok(ensureDirSyncSpy.calledWith(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00')));
+    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'))));
 
     test.done();
   },
@@ -180,7 +180,7 @@ export = {
 
     // asset is bundled in a directory inside .cdk.staging
     test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-    test.ok(ensureDirSyncSpy.calledWith(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00')));
+    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'))));
 
     test.done();
   },
