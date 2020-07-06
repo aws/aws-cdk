@@ -923,6 +923,18 @@ export = {
                 ],
               },
             },
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::GetAtt': [
+                    'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+                    'Outputs.StackawscdkawseksKubectlProviderHandlerServiceRole2C52B3ECArn',
+                  ],
+                },
+              },
+            },
           ],
           Version: '2012-10-17',
         },
