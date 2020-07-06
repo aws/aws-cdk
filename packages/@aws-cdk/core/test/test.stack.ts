@@ -875,7 +875,7 @@ export = {
     const resource = new CfnResource(stack1, 'Resource1', {
       type: 'Foo::Bar',
     });
-    resource.node.enableWeakReference();
+    resource.enableWeakReference();
 
     // WHEN
     new CfnResource(stack2, 'Resource2', {
@@ -936,7 +936,7 @@ export = {
         Key1: 'Value1',
       },
     });
-    resource.node.enableWeakReference();
+    resource.enableWeakReference();
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack

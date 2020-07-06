@@ -4,6 +4,7 @@
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { CfnResource } from '../cfn-resource';
 import { Construct, IConstruct } from '../construct-compat';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
@@ -100,7 +101,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-  if (reference.target.node.weakReference) {
+  if (CfnResource.isCfnResource(reference.target) && reference.target.weakReference) {
     return createSsmParameter(consumer, reference);
   }
 
@@ -175,15 +176,15 @@ function createSsmParameter(consumer: Stack, reference: CfnReference): Intrinsic
     description: `[cdk] exported from stack "${exportingStack.stackName}" for use as parameter in a different stack`,
   });
 
-  const parameterId = `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
-  let cfnparameter = consumer.node.tryFindChild(parameterId);
+  const parameterId = `SsmParameterValue:${parameterName}`;
+  let cfnparameter = consumer.node.tryFindChild(parameterId) as CfnParameter | undefined;
   if (!cfnparameter) {
     cfnparameter = new CfnParameter(consumer, parameterId, {
       type: 'AWS::SSM::Parameter::Value<String>',
       default: parameterName,
     });
   }
-  return new Intrinsic({ Ref: (cfnparameter as CfnElement).logicalId });
+  return new Intrinsic({ Ref: cfnparameter.logicalId });
 }
 
 /**

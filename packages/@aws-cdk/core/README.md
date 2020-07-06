@@ -110,7 +110,8 @@ are used instead.
 Enable weak reference for a resource:
 
 ```ts
-resource.node.enableWeakReferences();
+const resource = Cfn...(); // One of the constructs auto-generated from CloudFormation
+resource.enableWeakReferences();
 ```
 
 ## Durations

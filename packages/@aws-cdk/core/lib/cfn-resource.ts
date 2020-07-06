@@ -75,6 +75,8 @@ export class CfnResource extends CfnRefElement {
    */
   private readonly dependsOn = new Set<CfnResource>();
 
+  private _weakReference: boolean = false;
+
   /**
    * Creates a resource construct.
    * @param cfnResourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
@@ -319,6 +321,21 @@ export class CfnResource extends CfnRefElement {
       }
       return result;
     }
+  }
+
+  /**
+   * Calling this method will mark all cross-stack references to this node as weak references.
+   * See README.md to learn more about weak references.
+   */
+  public enableWeakReference() {
+    this._weakReference = true;
+  }
+
+  /**
+   * Whether this node should use weak references when referred across stacks.
+   */
+  public get weakReference() {
+    return this._weakReference;
   }
 
   protected get cfnProperties(): { [key: string]: any } {

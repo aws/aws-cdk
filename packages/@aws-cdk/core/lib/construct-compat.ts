@@ -267,8 +267,6 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
-  private _weakReference: boolean = false;
-
   constructor(host: Construct, scope: IConstruct, id: string) {
     this._actualNode = new constructs.Node(host, scope, id);
 
@@ -479,21 +477,6 @@ export class ConstructNode {
    * @experimental
    */
   public tryRemoveChild(childName: string): boolean { return this._actualNode.tryRemoveChild(childName); }
-
-  /**
-   * Calling this method will mark all cross-stack references to this node as weak references.
-   * See README.md to learn more about weak references.
-   */
-  public enableWeakReference() {
-    this._weakReference = true;
-  }
-
-  /**
-   * Whether this node should use weak references when referred across stacks.
-   */
-  public get weakReference() {
-    return this._weakReference;
-  }
 }
 
 /**
