@@ -21,7 +21,10 @@ A construct library for painless Continuous Delivery of CDK applications.
 Defining a pipeline for your application is as simple as defining a subclass
 of `Stage`, and calling `pipeline.addApplicationStage()` with instances of
 that class. Deploying to a different account or region looks exactly the
-same, the *CDK Pipelines* library takes care the differences.
+same, the *CDK Pipelines* library takes care of the details.
+
+(Note that have to *bootstrap* all environments before the following code
+will work, see the section **CDK Environment Bootstrapping** below).
 
 ```ts
 import { Construct, Stage } from '@aws-cdk/core';
@@ -75,10 +78,7 @@ stacks.
 
 ## CDK Versioning
 
-This library requires exactly CDK version `1.45.0`. The rest of your application must
-use the same version.
-
-It uses prerelease features of the CDK framework, which can be enabled by adding the
+This library uses prerelease features of the CDK framework, which can be enabled by adding the
 following to `cdk.json`:
 
 ```
@@ -91,7 +91,7 @@ following to `cdk.json`:
 ```
 
 When bootstrapping, the environment variable `CDK_NEW_BOOTSTRAP=1` should be
-set (see the section called **CDK Bootstrapping**).
+set (see the section called **CDK Environment Bootstrapping**).
 
 ## Defining the Pipeline (Source and Synth)
 
@@ -126,7 +126,6 @@ class MyPipelineStack extends Stack {
       synthAction: SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
-        projectName: 'MyAppPipeline-synth',
 
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
@@ -145,8 +144,10 @@ new MyPipelineStack(this, 'PipelineStack', {
 });
 ```
 
+## Initial pipeline deployment
+
 You provision this pipeline by making sure the target environment has been
-bootstrapped (see below), and then executing `cdk deploy PipelineStack`
+bootstrapped (see below), and then executing deploying the `PipelineStack`
 *once*. Afterwards, the pipeline will keep itself up-to-date.
 
 > **Important**: be sure to `git commit` and `git push` before deploying the
@@ -156,37 +157,56 @@ bootstrapped (see below), and then executing `cdk deploy PipelineStack`
 > right away based on the sources in the repository, so the sources it finds
 > in there should be the ones you want it to find.
 
+Run the following commands to get the pipeline going:
+
+```
+$ git commit -a
+$ git push
+$ cdk deploy PipelineStack
+```
+
+Administrative permissions to the account are only necessary up until
+this point. We recommend you shed access to these credentials after doing this.
+
 ### Sources
 
-Any of the regular sources from the `@aws-cdk/aws-codepipeline-actions` module can be used.
-
-#### GitHub
-
-If you want to use a GitHub repository as the source, you must also create:
-
-* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
-* A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
-  with the value of the **GitHub Access Token**. Pick whatever name you want
-  (for example `github-token`) and pass it as the argument of `oauthToken`.
+Any of the regular sources from the [`@aws-cdk/aws-codepipeline-actions`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-codepipeline-actions-readme.html#github) module can be used.
 
 ### Synths
 
-You define how to build and synth the project by specifying a `synthAction`. This can be
-any CodePipeline action that produces an artifact with a CDK Cloud Assembly in it. Pass
-the output artifact of the synth in the Pipeline's `cloudAssemblyArtifact` property.
+You define how to build and synth the project by specifying a `synthAction`.
+This can be any CodePipeline action that produces an artifact with a CDK
+Cloud Assembly in it (the contents of the `cdk.out` directory created when
+`cdk synth` is called). Pass the output artifact of the synth in the
+Pipeline's `cloudAssemblyArtifact` property.
 
 `SimpleSynthAction` is available for synths that can be performed by running a couple
-of simple shell commands (install, build, and synth). Available as factory functions
-on `SimpleSynthAction` are some common convention-based synth:
+of simple shell commands (install, build, and synth) using AWS CodeBuild. When
+using these, the source repository does not need to have a `buildspec.yml`. An example
+of using `SimpleSynthAction` to run a Maven build followed by a CDK synth:
+
+```ts
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  // ...
+  synthAction: new SimpleSynthAction({
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    installCommand: 'npm install -g aws-cdk',
+    buildCommand: 'mvn package',
+    synthCommand: 'cdk synth',
+  })
+});
+```
+
+Available as factory functions on `SimpleSynthAction` are some common
+convention-based synth:
 
 * `SimpleSynthAction.standardNpmSynth()`: build using NPM conventions. Expects a `package-lock.json`,
   a `cdk.json`, and expects the CLI to be a versioned dependency in `package.json`. Does
-  not perform a build step by default. The source repository does not need to
-  have a `buildspec.yml`.
+  not perform a build step by default.
 * `CdkSynth.standardYarnSynth()`: build using Yarn conventions. Expects a `yarn.lock`
   a `cdk.json`, and expects the CLI to be a versioned dependency in `package.json`. Does
-  not perform a build step by default. The source repository does not need to
-  have a `buildspec.yml`.
+  not perform a build step by default.
 
 If you need a custom build/synth step that is not covered by `SimpleSynthAction`, you can
 always add a custom CodeBuild project and pass a corresponding `CodeBuildAction` to the
@@ -229,17 +249,17 @@ pipeline.addApplicationStage(new MyApplication(this, 'Production', {
 
 Every *Application Stage* added by `addApplicationStage()` will lead to the addition of
 an individual *Pipeline Stage*, which is subsequently returned. You can add more
-actions to the stage by calling `addCustomAction()` on it. For example:
+actions to the stage by calling `addAction()` on it. For example:
 
 ```ts
 const testingStage = pipeline.addApplicationStage(new MyApplication(this, 'Testing', {
   env: { account: '111111111111', region: 'eu-west-1' }
 }));
 
-// Add a custom action -- in this case, a Manual Approval action
+// Add a action -- in this case, a Manual Approval action
 // (for illustration purposes: testingStage.addManualApprovalAction() is a
 // convenience shorthand that does the same)
-testingStage.addCustomAction(new ManualApprovalAction({
+testingStage.addAction(new ManualApprovalAction({
   actionName: 'ManualApproval',
   runOrder: testingStage.nextSequentialRunOrder(),
 }));
@@ -393,11 +413,17 @@ const validationAction = new ShellScriptAction({
 });
 ```
 
-## CDK Bootstrapping
+## CDK Environment Bootstrapping
 
-An *environment* is an *(account, region)* pair where you want to deploy a CDK
-stack (see [Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
-in the CDK Developer Guide).
+An *environment* is an *(account, region)* pair where you want to deploy a
+CDK stack (see
+[Environments](https://docs.aws.amazon.com/cdk/latest/guide/environments.html)
+in the CDK Developer Guide). In a Continuous Deployment pipeline, there are
+at least two environments involved: the environment where the pipeline is
+provisioned, and the environment where you want to deploy the application (or
+different stages of the application). These can be the same, though best
+practices recommend you isolate your different application stages from each
+other in different AWS accounts or regions.
 
 Before you can provision the pipeline, you have to *bootstrap* the environment you want
 to create it in. If you are deploying your application to different environments, you
@@ -522,7 +548,7 @@ they are all bootstrapped.
 Limitations that we are aware of and will address:
 
 * **No context queries**: context queries are not supported. That means that
-  Vpc.fromLookup() and other functions like it will not work.
+  Vpc.fromLookup() and other functions like it will not work [#8905](https://github.com/aws/aws-cdk/issues/8905).
 
 ## Known Issues
 
