@@ -89,10 +89,15 @@ export class AssetStaging extends Construct {
     this.fingerprintOptions = props;
 
     if (props.bundling) {
-      this.bundleDir = this.bundle(props.bundling);
-    }
+      const assetHashIfKnownInAdvance = props.assetHashType !== AssetHashType.BUNDLE
+        ? this.calculateHash(props)
+        : undefined;
 
-    this.assetHash = this.calculateHash(props);
+      this.bundleDir = this.bundle(props.bundling, assetHashIfKnownInAdvance);
+      this.assetHash = assetHashIfKnownInAdvance || this.calculateHash(props);
+    } else {
+      this.assetHash = this.calculateHash(props);
+    }
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
@@ -137,15 +142,31 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private bundle(options: BundlingOptions): string {
+  private bundle(options: BundlingOptions, assetHash?: string): string {
     // Temp staging directory in the working directory
     const stagingTmp = path.join('.', STAGING_TMP);
     fs.ensureDirSync(stagingTmp);
 
-    // Create temp directory for bundling inside the temp staging directory
-    const bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-')));
-    // Chmod the bundleDir to full access.
-    fs.chmodSync(bundleDir, 0o777);
+    let bundleDir = '';
+    if (assetHash !== undefined) {
+      // When an asset hash is known in advance of bundling, bundling is done into a dedicated staging directory.
+      bundleDir = path.join(stagingTmp, 'asset-bundle-hash-' + assetHash);
+
+      if (fs.existsSync(bundleDir)) {
+        // Pre-existing bundle directory. The bundle has already been generated once before, so lets provide it
+        // as-is to the caller.
+        return bundleDir;
+      }
+
+      fs.ensureDirSync(bundleDir);
+    } else {
+      // When the asset hash isn't known in advance, bundling is done into a temporary staging directory.
+
+      // Create temp directory for bundling inside the temp staging directory
+      bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-temp-')));
+      // Chmod the bundleDir to full access.
+      fs.chmodSync(bundleDir, 0o777);
+    }
 
     let user: string;
     if (options.user) {
