@@ -52,7 +52,7 @@ export = {
         'Fn::Join': [
           '',
           [
-           '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
