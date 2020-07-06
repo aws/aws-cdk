@@ -71,18 +71,12 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineVersion = props.engineVersion;
   }
 
-  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
-    return {
-    };
-  }
-}
-
-abstract class NonSqlServerInstanceEngine extends InstanceEngineBase {
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone) {
       throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${this.engineType}`);
     }
-    return super.bindToInstance(scope, options);
+    return {
+    };
   }
 }
 
@@ -99,7 +93,7 @@ export interface MariaDbInstanceEngineProps {
   readonly version?: string;
 }
 
-class MariaDbInstanceEngine extends NonSqlServerInstanceEngine {
+class MariaDbInstanceEngine extends InstanceEngineBase {
   constructor(props: MariaDbInstanceEngineProps = {}) {
     super({
       engineType: 'mariadb',
@@ -129,7 +123,7 @@ export interface MySqlInstanceEngineProps {
   readonly version?: string;
 }
 
-class MySqlInstanceEngine extends NonSqlServerInstanceEngine {
+class MySqlInstanceEngine extends InstanceEngineBase {
   constructor(props: MySqlInstanceEngineProps = {}) {
     super({
       engineType: 'mysql',
@@ -161,7 +155,7 @@ export interface PostgreSqlInstanceEngineProps {
 /**
  * The instance engine for PostgreSQL.
  */
-class PostgreSqlInstanceEngine extends NonSqlServerInstanceEngine {
+class PostgreSqlInstanceEngine extends InstanceEngineBase {
   constructor(props: PostgreSqlInstanceEngineProps = {}) {
     super({
       engineType: 'postgres',
@@ -186,7 +180,7 @@ interface OracleInstanceEngineProps {
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
 }
 
-abstract class OracleInstanceEngine extends NonSqlServerInstanceEngine {
+abstract class OracleInstanceEngine extends InstanceEngineBase {
   constructor(props: OracleInstanceEngineProps) {
     super({
       ...props,
@@ -266,8 +260,8 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
         { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
-        { engineMajorVersion: '18', parameterGroupFamily: 'oracle-se2-18' },
-        { engineMajorVersion: '19', parameterGroupFamily: 'oracle-se2-19' },
+        { engineMajorVersion: '18',   parameterGroupFamily: 'oracle-se2-18'   },
+        { engineMajorVersion: '19',   parameterGroupFamily: 'oracle-se2-19'   },
       ],
       engineVersion: props.version,
     });
@@ -295,8 +289,8 @@ class OracleEeInstanceEngine extends OracleInstanceEngine {
         { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-ee-11.2' },
         { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-ee-12.1' },
         { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-ee-12.2' },
-        { engineMajorVersion: '18', parameterGroupFamily: 'oracle-ee-18' },
-        { engineMajorVersion: '19', parameterGroupFamily: 'oracle-ee-19' },
+        { engineMajorVersion: '18',   parameterGroupFamily: 'oracle-ee-18'   },
+        { engineMajorVersion: '19',   parameterGroupFamily: 'oracle-ee-19'   },
       ],
       engineVersion: props.version,
     });
@@ -317,6 +311,11 @@ abstract class SqlServerInstanceEngine extends InstanceEngineBase {
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER,
     });
+  }
+
+  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
+    return {
+    };
   }
 }
 
