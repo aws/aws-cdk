@@ -185,7 +185,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
  * Creation properties of the plain Aurora database cluster engine.
  * Used in {@link DatabaseClusterEngine.aurora}.
  */
-export interface DefaultAuroraClusterEngineProps {
+export interface AuroraClusterEngineProps {
   /**
    * The exact version of the engine.
    *
@@ -195,8 +195,8 @@ export interface DefaultAuroraClusterEngineProps {
   readonly version?: string;
 }
 
-class DefaultAuroraClusterEngine extends ClusterEngineBase {
-  constructor(props: DefaultAuroraClusterEngineProps = {}) {
+class AuroraClusterEngine extends ClusterEngineBase {
+  constructor(props: AuroraClusterEngineProps = {}) {
     super({
       engineType: 'aurora',
       needsS3RolesInParameters: true,
@@ -289,15 +289,15 @@ class AuroraPostgresClusterEngine extends NonDefaultAuroraClusterEngine {
  * used for secret rotation.
  */
 export class DatabaseClusterEngine {
-  public static readonly AURORA: IClusterEngine = new DefaultAuroraClusterEngine();
+  public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
 
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMySqlClusterEngine();
 
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
 
   /** Creates a new plain Aurora database cluster engine. */
-  public static aurora(props: DefaultAuroraClusterEngineProps): IClusterEngine {
-    return new DefaultAuroraClusterEngine(props);
+  public static aurora(props: AuroraClusterEngineProps): IClusterEngine {
+    return new AuroraClusterEngine(props);
   }
 
   /** Creates a new Aurora MySQL database cluster engine. */
