@@ -195,7 +195,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleStandardEdition1({
+      engine: rds.DatabaseInstanceEngine.oracleSe1({
         version: '11.2',
       }),
       configurations: [

@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleStandardEdition1({
+      engine: DatabaseInstanceEngine.oracleSe1({
         version: '11.2',
       }),
       configurations: [
@@ -43,7 +43,7 @@ export = {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleStandardEdition({
+      engine: DatabaseInstanceEngine.oracleSe({
         version: '11.2',
       }),
       configurations: [
@@ -102,7 +102,7 @@ export = {
 
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleStandardEdition2({
+      engine: DatabaseInstanceEngine.oracleSe2({
         version: '11.2',
       }),
       configurations: [

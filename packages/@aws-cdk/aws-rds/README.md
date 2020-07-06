@@ -86,7 +86,7 @@ use the static factory methods on `DatabaseInstanceEngine`:
 
 ```typescript
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.oracleStandardEdition1({
+  engine: rds.DatabaseInstanceEngine.oracleSe1({
     version: '19.0.0.0',
   }),
   ...

@@ -198,7 +198,7 @@ abstract class OracleInstanceEngine extends NonSqlServerInstanceEngine {
 
 /**
  * Properties for Oracle Standard Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleStandardEdition}.
+ * Used in {@link DatabaseInstanceEngine.oracleSe}.
  */
 export interface OracleSeInstanceEngineProps {
   /**
@@ -223,7 +223,7 @@ class OracleSeInstanceEngine extends OracleInstanceEngine {
 
 /**
  * Properties for Oracle Standard Edition 1 instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleStandardEdition1}.
+ * Used in {@link DatabaseInstanceEngine.oracleSe1}.
  */
 export interface OracleSe1InstanceEngineProps {
   /**
@@ -248,7 +248,7 @@ class OracleSe1InstanceEngine extends OracleInstanceEngine {
 
 /**
  * Properties for Oracle Standard Edition 2 instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleStandardEdition2}.
+ * Used in {@link DatabaseInstanceEngine.oracleSe2}.
  */
 export interface OracleSe2InstanceEngineProps {
   /**
@@ -276,7 +276,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
 
 /**
  * Properties for Oracle Enterprise Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleEnterpriseEdition}.
+ * Used in {@link DatabaseInstanceEngine.oracleEe}.
  */
 export interface OracleEeInstanceEngineProps {
   /**
@@ -322,7 +322,7 @@ abstract class SqlServerInstanceEngine extends InstanceEngineBase {
 
 /**
  * Properties for SQL Server Standard Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerStandardEdition}.
+ * Used in {@link DatabaseInstanceEngine.sqlServerSe}.
  */
 export interface SqlServerSeInstanceEngineProps {
   /**
@@ -350,7 +350,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
 
 /**
  * Properties for SQL Server Express Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerExpressEdition}.
+ * Used in {@link DatabaseInstanceEngine.sqlServerEx}.
  */
 export interface SqlServerExInstanceEngineProps {
   /**
@@ -378,7 +378,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
 
 /**
  * Properties for SQL Server Web Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerWebEdition}.
+ * Used in {@link DatabaseInstanceEngine.sqlServerWeb}.
  */
 export interface SqlServerWebInstanceEngineProps {
   /**
@@ -406,7 +406,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
 
 /**
  * Properties for SQL Server Enterprise Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerEnterpriseEdition}.
+ * Used in {@link DatabaseInstanceEngine.sqlServerEe}.
  */
 export interface SqlServerEeInstanceEngineProps {
   /**
@@ -476,42 +476,42 @@ export class DatabaseInstanceEngine {
   }
 
   /** Creates a new Oracle Standard Edition instance engine. */
-  public static oracleStandardEdition(props: OracleSeInstanceEngineProps): IInstanceEngine {
+  public static oracleSe(props: OracleSeInstanceEngineProps): IInstanceEngine {
     return new OracleSeInstanceEngine(props);
   }
 
   /** Creates a new Oracle Standard Edition 1 instance engine. */
-  public static oracleStandardEdition1(props: OracleSe1InstanceEngineProps): IInstanceEngine {
+  public static oracleSe1(props: OracleSe1InstanceEngineProps): IInstanceEngine {
     return new OracleSe1InstanceEngine(props);
   }
 
   /** Creates a new Oracle Standard Edition 1 instance engine. */
-  public static oracleStandardEdition2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
+  public static oracleSe2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
     return new OracleSe2InstanceEngine(props);
   }
 
   /** Creates a new Oracle Enterprise Edition instance engine. */
-  public static oracleEnterpriseEdition(props: OracleEeInstanceEngineProps): IInstanceEngine {
+  public static oracleEe(props: OracleEeInstanceEngineProps): IInstanceEngine {
     return new OracleEeInstanceEngine(props);
   }
 
   /** Creates a new SQL Server Standard Edition instance engine. */
-  public static sqlServerStandardEdition(props: SqlServerSeInstanceEngineProps): IInstanceEngine {
+  public static sqlServerSe(props: SqlServerSeInstanceEngineProps): IInstanceEngine {
     return new SqlServerSeInstanceEngine(props);
   }
 
   /** Creates a new SQL Server Express Edition instance engine. */
-  public static sqlServerExpressEdition(props: SqlServerExInstanceEngineProps): IInstanceEngine {
+  public static sqlServerEx(props: SqlServerExInstanceEngineProps): IInstanceEngine {
     return new SqlServerExInstanceEngine(props);
   }
 
   /** Creates a new SQL Server Web Edition instance engine. */
-  public static sqlServerWebEdition(props: SqlServerWebInstanceEngineProps): IInstanceEngine {
+  public static sqlServerWeb(props: SqlServerWebInstanceEngineProps): IInstanceEngine {
     return new SqlServerWebInstanceEngine(props);
   }
 
   /** Creates a new SQL Server Enterprise Edition instance engine. */
-  public static sqlServerEnterpriseEdition(props: SqlServerEeInstanceEngineProps): IInstanceEngine {
+  public static sqlServerEe(props: SqlServerEeInstanceEngineProps): IInstanceEngine {
     return new SqlServerEeInstanceEngine(props);
   }
 }
