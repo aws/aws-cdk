@@ -1,3 +1,72 @@
+# CloudFormation Resource Specification v16.0.0
+
+## New Resource Types
+
+* AWS::AppConfig::HostedConfigurationVersion
+* AWS::ECS::CapacityProvider
+
+## Removed Resource Types
+
+* AWS::EC2::PrefixList
+
+## Attribute Changes
+
+* AWS::EC2::FlowLog Id (__added__)
+
+## Property Changes
+
+* AWS::ECS::Cluster CapacityProviders (__added__)
+* AWS::ECS::Cluster DefaultCapacityProviderStrategy (__added__)
+* AWS::SSM::MaintenanceWindow ScheduleOffset (__added__)
+* AWS::SSM::MaintenanceWindowTask TaskType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::HttpNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::Service Tags (__added__)
+* AWS::WAFv2::WebACLAssociation ResourceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::WebACLAssociation WebACLArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.GrpcTimeout (__added__)
+* AWS::AppMesh::Route.HttpTimeout (__added__)
+* AWS::AppMesh::Route.TcpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.Duration (__added__)
+* AWS::AppMesh::VirtualNode.GrpcTimeout (__added__)
+* AWS::AppMesh::VirtualNode.HttpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTimeout (__added__)
+* AWS::AppMesh::VirtualNode.TcpTimeout (__added__)
+* AWS::ECS::Cluster.CapacityProviderStrategyItem (__added__)
+* AWS::AppMesh::Route.GrpcRoute Timeout (__added__)
+* AWS::AppMesh::Route.HttpRoute Timeout (__added__)
+* AWS::AppMesh::Route.TcpRoute Timeout (__added__)
+* AWS::AppMesh::VirtualNode.Listener Timeout (__added__)
+* AWS::FMS::Policy.IEMap ORGUNIT (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api OpenApiVersion (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.EventBridgeRuleEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added EventBridgeRuleEvent
+
 # CloudFormation Resource Specification v15.1.0
 
 ## New Resource Types

@@ -31,6 +31,16 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * If this is set to false, files in the destination bucket that
+   * do not exist in the asset, will NOT be deleted during deployment (create/update).
+   *
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+   *
+   * @default true
+   */
+  readonly prune?: boolean
+
+  /**
    * If this is set to "false", the destination files will be deleted when the
    * resource is deleted or the destination is updated.
    *
@@ -197,12 +207,14 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths,
       },
     });
+
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
