@@ -52,7 +52,7 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\"rolearn\\":\\"',
+           '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
@@ -127,7 +127,7 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\"rolearn\\":\\"',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
@@ -174,7 +174,7 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\"rolearn\\":\\"',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
@@ -188,7 +188,7 @@ export = {
                 'Arn',
               ],
             },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"system:masters\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]',
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
           ],
         ],
       },
