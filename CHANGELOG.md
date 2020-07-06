@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.49.1](https://github.com/aws/aws-cdk/compare/v1.49.0...v1.49.1) (2020-07-02)
+
+### Bug Fixes
+
+* **apigateway:** Lambda integration for imported functions ([#8870](https://github.com/aws/aws-cdk/issues/8870)) ([c017f88](https://github.com/aws/aws-cdk/commit/c017f887770174437de3b772edf0034604890ac3)), closes [#8869](https://github.com/aws/aws-cdk/issues/8869)
+
+## [1.49.0](https://github.com/aws/aws-cdk/compare/v1.48.0...v1.49.0) (2020-07-02)
+
+
+### Features
+
+* **core:** improved docker bundling performance on mac os ([#8766](https://github.com/aws/aws-cdk/issues/8766)) ([99c12f5](https://github.com/aws/aws-cdk/commit/99c12f5de61ac328e9198c83398852c7a4f90628)), closes [#8544](https://github.com/aws/aws-cdk/issues/8544)
+* **eks:** document how to define dependencies for resources and charts ([#8780](https://github.com/aws/aws-cdk/issues/8780)) ([e38b692](https://github.com/aws/aws-cdk/commit/e38b692233c509a1ca36864e2d5f28bc90d465d3)), closes [#7592](https://github.com/aws/aws-cdk/issues/7592) [#6806](https://github.com/aws/aws-cdk/issues/6806)
+* **rds:** database proxy ([#8476](https://github.com/aws/aws-cdk/issues/8476)) ([e0e5e03](https://github.com/aws/aws-cdk/commit/e0e5e034a198425ec9c55c219398df0e71b10815)), closes [#8475](https://github.com/aws/aws-cdk/issues/8475)
+
+
+### Bug Fixes
+
+* **apigateway:** permission error in lambda integration when function name is modified ([#8813](https://github.com/aws/aws-cdk/issues/8813)) ([f1b37ef](https://github.com/aws/aws-cdk/commit/f1b37ef8c75d055efea9b2f862555e9dd64634ff)), closes [#5306](https://github.com/aws/aws-cdk/issues/5306)
+* **codebuild:** project didn't have permissions to retrieve secret of image with credentials ([#8845](https://github.com/aws/aws-cdk/issues/8845)) ([4326f24](https://github.com/aws/aws-cdk/commit/4326f245e0d89f6ec250334a74a254fbfb742ee1))
+* **elasticloadbalancingv2:** dualstack ALB missing default IPv6 ingress rule ([#8798](https://github.com/aws/aws-cdk/issues/8798)) ([66f9634](https://github.com/aws/aws-cdk/commit/66f963494fc10db61cd61e36550de813821561e4)), closes [#7043](https://github.com/aws/aws-cdk/issues/7043)
+* **lambda-nodejs:** parcel build cannot find target ([#8838](https://github.com/aws/aws-cdk/issues/8838)) ([ce7a015](https://github.com/aws/aws-cdk/commit/ce7a015a973d4936e9456ff98d5f1bef58642730)), closes [#8837](https://github.com/aws/aws-cdk/issues/8837)
+
 ## [1.48.0](https://github.com/aws/aws-cdk/compare/v1.47.1...v1.48.0) (2020-07-01)
 
 
