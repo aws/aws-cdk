@@ -129,15 +129,31 @@ export class FargateProfile extends Construct implements ITaggable {
    */
   public readonly tags: TagManager;
 
+  /**
+   * The pod execution role to use for pods that match the selectors in the
+   * Fargate profile. The pod execution role allows Fargate infrastructure to
+   * register with your cluster as a node, and it provides read access to Amazon
+   * ECR image repositories.
+   */
+  public readonly podExecutionRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
+    // currently the custom resource requires a role to assume when interacting with the cluster
+    // and we only have this role when kubectl is enabled.
+    if (!props.cluster.kubectlEnabled) {
+      throw new Error('adding Faregate Profiles to clusters without kubectl enabled is currently unsupported');
+    }
+
     const provider = ClusterResourceProvider.getOrCreate(this);
 
-    const role = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
+    this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
       managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ],
     });
+
+    this.podExecutionRole.grantPassRole(props.cluster._kubectlCreationRole);
 
     let subnets: string[] | undefined;
     if (props.vpc) {
@@ -159,11 +175,11 @@ export class FargateProfile extends Construct implements ITaggable {
       serviceToken: provider.serviceToken,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
       properties: {
-        AssumeRoleArn: props.cluster._getKubectlCreationRoleArn(),
+        AssumeRoleArn: props.cluster._kubectlCreationRole.roleArn,
         Config: {
           clusterName: props.cluster.clusterName,
           fargateProfileName: props.fargateProfileName,
-          podExecutionRoleArn: role.roleArn,
+          podExecutionRoleArn: this.podExecutionRole.roleArn,
           selectors: props.selectors,
           subnets,
           tags: Lazy.anyValue({ produce: () => this.tags.renderTags() }),
@@ -173,5 +189,24 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.fargateProfileArn = resource.getAttString('fargateProfileArn');
     this.fargateProfileName = resource.ref;
+
+    // Fargate profiles must be created sequentially. If other profile(s) already
+    // exist on the same cluster, create a dependency to force sequential creation.
+    const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
+    if (clusterFargateProfiles.length > 1) {
+      const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
+      resource.node.addDependency(previousProfile);
+    }
+
+    // map the fargate pod execution role to the relevant groups in rbac
+    // see https://github.com/aws/aws-cdk/issues/7981
+    props.cluster.awsAuth.addRoleMapping(this.podExecutionRole, {
+      username: 'system:node:{{SessionName}}',
+      groups: [
+        'system:bootstrappers',
+        'system:nodes',
+        'system:node-proxier',
+      ],
+    });
   }
 }

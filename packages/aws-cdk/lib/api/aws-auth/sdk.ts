@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config';
-import { debug } from '../../logging';
+import { debug, trace } from '../../logging';
 import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
@@ -42,16 +42,17 @@ export class SDK implements ISDK {
   private readonly config: ConfigurationOptions;
 
   /**
-   * Default retry options for SDK clients
-   *
-   * Biggest bottleneck is CloudFormation, with a 1tps call rate. We want to be
-   * a little more tenacious than the defaults, and with a little more breathing
-   * room between calls (defaults are {retries=3, base=100}).
-   *
-   * I've left this running in a tight loop for an hour and the throttle errors
-   * haven't escaped the retry mechanism.
+   * Default retry options for SDK clients.
    */
-  private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
+  private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 } };
+
+  /**
+   * The more generous retry policy for CloudFormation, which has a 1 TPM limit on certain APIs,
+   * which are abundantly used for deployment tracking, ...
+   *
+   * So we're allowing way more retries, but waiting a bit more.
+   */
+  private readonly cloudFormationRetryOptions = { maxRetries: 10, retryDelayOptions: { base: 1_000 } };
 
   constructor(private readonly credentials: AWS.Credentials, region: string, httpOptions: ConfigurationOptions = {}) {
     this.config = {
@@ -59,12 +60,16 @@ export class SDK implements ISDK {
       ...this.retryOptions,
       credentials,
       region,
+      logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
     this.currentRegion = region;
   }
 
   public cloudFormation(): AWS.CloudFormation {
-    return wrapServiceErrorHandling(new AWS.CloudFormation(this.config));
+    return wrapServiceErrorHandling(new AWS.CloudFormation({
+      ...this.config,
+      ...this.cloudFormationRetryOptions,
+    }));
   }
 
   public ec2(): AWS.EC2 {

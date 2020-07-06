@@ -52,6 +52,36 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'non-existent-condition.json');
     }).toThrow(/Resource 'Bucket' uses Condition 'AlwaysFalseCond' that doesn't exist/);
   });
+
+  test("throws an exception when encountering a CFN function it doesn't support", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
+    }).toThrow(/Unsupported CloudFormation function 'Fn::DoesNotExist'/);
+  });
+
+  test('throws a validation exception when encountering an unrecognized resource attribute', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'non-existent-resource-attribute.json');
+    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
+  });
+
+  test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'ref-ing-a-non-existent-element.json');
+    }).toThrow(/Element used in Ref expression with logical ID: 'DoesNotExist' not found/);
+  });
+
+  test("throws a validation exception when encountering a GetAtt reference to a resource that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'getting-attribute-of-a-non-existent-resource.json');
+    }).toThrow(/Resource used in GetAtt expression with logical ID: 'DoesNotExist' not found/);
+  });
+
+  test("throws a validation exception when an output references a condition that doesn't exist", () => {
+    expect(() => {
+      includeTestTemplate(stack, 'output-referencing-nonexistant-condition.json');
+    }).toThrow(/Output with name 'SomeOutput' refers to a Condition with name 'NonexistantCondition' which was not found in this template/);
+  });
 });
 
 function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {

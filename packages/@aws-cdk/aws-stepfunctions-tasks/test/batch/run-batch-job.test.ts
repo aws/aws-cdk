@@ -86,7 +86,7 @@ test('Task with all the parameters', () => {
       },
       dependsOn: [{ jobId: '1234', type: 'some_type' }],
       payload: {
-        foo: sfn.Data.stringAt('$.bar'),
+        foo: sfn.JsonPath.stringAt('$.bar'),
       },
       attempts: 3,
       timeout: cdk.Duration.seconds(60),
@@ -136,11 +136,11 @@ test('supports tokens', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunBatchJob({
       jobDefinition: batchJobDefinition,
-      jobName: sfn.Data.stringAt('$.jobName'),
+      jobName: sfn.JsonPath.stringAt('$.jobName'),
       jobQueue: batchJobQueue,
-      arraySize: sfn.Data.numberAt('$.arraySize'),
-      timeout: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
-      attempts: sfn.Data.numberAt('$.attempts'),
+      arraySize: sfn.JsonPath.numberAt('$.arraySize'),
+      timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
+      attempts: sfn.JsonPath.numberAt('$.attempts'),
     }),
   });
 

@@ -191,4 +191,91 @@ export = {
 
     test.done();
   },
+
+  'works for imported RestApi'(test: Test) {
+    const stack = new cdk.Stack();
+    const api = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
+      restApiId: 'imported-rest-api-id',
+      rootResourceId: 'imported-root-resource-id',
+    });
+
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+
+    api.root.addMethod('ANY', new apigateway.LambdaIntegration(handler));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RestApiId: 'imported-rest-api-id',
+      ResourceId: 'imported-root-resource-id',
+      HttpMethod: 'ANY',
+    }));
+
+    test.done();
+  },
+
+  'fingerprint is computed when functionName is specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      functionName: 'ThisFunction',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.ok(bindResult?.deploymentToken);
+    test.deepEqual(bindResult!.deploymentToken, '{"functionName":"ThisFunction"}');
+
+    test.done();
+  },
+
+  'fingerprint is not computed when functionName is not specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.equals(bindResult?.deploymentToken, undefined);
+
+    test.done();
+  },
+
+  'bind works for integration with imported functions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = lambda.Function.fromFunctionArn(stack, 'MyFunc', 'arn:aws:lambda:region:account:function:myfunc');
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // the deployment token should be defined since the function name
+    // should be a literal string.
+    test.equal(bindResult?.deploymentToken, JSON.stringify({functionName: 'myfunc'}));
+
+    test.done();
+  },
+
 };

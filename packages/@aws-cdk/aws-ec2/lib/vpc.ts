@@ -969,6 +969,22 @@ export class Vpc extends VpcBase {
   ];
 
   /**
+   * The default subnet configuration if natGateways specified to be 0
+   *
+   * 1 Public and 1 Isolated Subnet per AZ evenly split
+   */
+  public static readonly DEFAULT_SUBNETS_NO_NAT: SubnetConfiguration[] = [
+    {
+      subnetType: SubnetType.PUBLIC,
+      name: defaultSubnetName(SubnetType.PUBLIC),
+    },
+    {
+      subnetType: SubnetType.ISOLATED,
+      name: defaultSubnetName(SubnetType.ISOLATED),
+    },
+  ];
+
+  /**
    * Import an exported VPC
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
@@ -1152,7 +1168,8 @@ export class Vpc extends VpcBase {
 
     this.vpcId = this.resource.ref;
 
-    this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
+    const defaultSubnet = props.natGateways === 0 ? Vpc.DEFAULT_SUBNETS_NO_NAT : Vpc.DEFAULT_SUBNETS;
+    this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
@@ -1901,7 +1918,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * They seem pointless but I see no reason to prevent it.
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
-  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE);
+  const hasPrivateSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC);
 
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);

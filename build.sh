@@ -31,7 +31,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 echo "============================================================================================="
 echo "installing..."
-yarn install --frozen-lockfile
+yarn install --frozen-lockfile --network-timeout 1000000
 
 fail() {
   echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
@@ -60,6 +60,6 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
 
-DOWNLOAD_LATEST=true /bin/bash scripts/check-api-compatibility.sh
+/bin/bash scripts/check-api-compatibility.sh
 
 touch $BUILD_INDICATOR

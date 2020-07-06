@@ -13,7 +13,7 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, setVerbose } from '../lib/logging';
+import { data, debug, error, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
@@ -45,7 +45,8 @@ async function parseCommandLineArguments() {
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
-    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
+    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false })
+    .count('verbose')
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified.', requiresArg: true })
@@ -67,6 +68,7 @@ async function parseCommandLineArguments() {
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined })
       .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
+      .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: true })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
@@ -121,7 +123,7 @@ if (!process.stdout.isTTY) {
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
-    setVerbose();
+    setLogLevel(argv.verbose);
   }
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
@@ -202,7 +204,7 @@ async function initCommandLine() {
     const cli = new CdkToolkit({
       cloudExecutable,
       cloudFormation,
-      verbose: argv.trace || argv.verbose,
+      verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
       configuration,
@@ -233,6 +235,7 @@ async function initCommandLine() {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             qualifier: args.qualifier,
+            publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             tags: configuration.settings.get(['tags']),
             execute: args.execute,
             trustedAccounts: args.trust,
