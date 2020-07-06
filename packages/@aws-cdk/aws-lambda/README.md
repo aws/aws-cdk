@@ -277,6 +277,46 @@ correct log retention period (never expire, by default).
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
 
+### FileSystem Access
+
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
+directory in your runtime environment with the `filesystem` property. To access Amaozn EFS
+from lambda function, the Amazon EFS access point will be required. 
+
+The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
+
+```ts
+// create a new Amaozn EFS filesystem
+const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
+
+// create a new access point from the filesystem
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  // set /export/lambda as the root of the access point
+  path: '/export/lambda',
+  // as /export/lambda does not exist in a new efs filesystem, the efs will create the directory with the following createAcl
+  createAcl: {
+    ownerUid: '1001',
+    ownerGid: '1001',
+    permissions: '750',
+  },
+  // enforce the POSIX identity so lambda function will access with this identity
+  posixUser: {
+    uid: '1001',
+    gid: '1001',
+  },
+});
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code,
+  handler,
+  runtime,
+  vpc,
+  // mount the access point to /mnt/msg in the lambda runtime enironment
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+});
+```
+
+
 ### Singleton Function
 
 The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
