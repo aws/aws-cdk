@@ -6,7 +6,7 @@ import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
-  CfnVPNGateway
+  CfnVPNGateway,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 

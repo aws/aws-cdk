@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 // this file contains a bunch of functions shared
 // between Project and ResourceGroup,

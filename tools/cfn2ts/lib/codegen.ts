@@ -57,6 +57,7 @@ export default class CodeGenerator {
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('// tslint:disable:ordered-imports');
     this.code.line();
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
     this.code.line(`import * as ${CONSTRUCTS} from 'constructs';`);

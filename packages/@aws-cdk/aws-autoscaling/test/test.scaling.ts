@@ -3,9 +3,9 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
-import { Construct } from 'constructs';
 
 export = {
   'target tracking policies': {

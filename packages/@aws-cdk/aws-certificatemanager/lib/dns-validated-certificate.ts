@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import { CertificateProps, ICertificate } from './certificate';
 

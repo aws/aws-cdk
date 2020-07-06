@@ -12,9 +12,9 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 // for files that are part of this package, we do import individual classes or functions
 import { exampleResourceArnComponents } from './private/example-resource-common';
-import { Construct } from 'constructs';
 
 /**
  * The interface that represents the ExampleResource resource.

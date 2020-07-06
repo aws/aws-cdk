@@ -89,8 +89,7 @@ test('permissions are added as a dependency to the notifications resource when u
   const notifications = stack.node.findAll().filter(c => c.node.id === 'Notifications')[0];
   const dependencies = notifications!.node.dependencies;
 
-  expect(dependencies[0].target.node.id).toEqual('AllowBucketNotificationsFromMyBucket');
-
+  expect(dependencies[0].node.id).toEqual('AllowBucketNotificationsFromMyBucket');
 });
 
 test('add multiple event notifications using a singleton function', () => {

@@ -1,5 +1,6 @@
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';

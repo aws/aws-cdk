@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
-import { Construct } from 'constructs';
 
 /**
  * Properties for a scaling policy

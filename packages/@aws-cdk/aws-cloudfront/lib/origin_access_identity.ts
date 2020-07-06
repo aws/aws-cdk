@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
 
 /**

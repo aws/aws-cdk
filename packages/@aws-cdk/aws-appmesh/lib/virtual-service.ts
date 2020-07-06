@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 
+import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
-import { Construct } from 'constructs';
 
 /**
  * Represents the interface which all VirtualService based classes MUST implement

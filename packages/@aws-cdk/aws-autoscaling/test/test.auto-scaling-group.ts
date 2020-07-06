@@ -511,8 +511,9 @@ export = {
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+
+    cdk.Tag.add(asg, 'superfood', 'acai');
+    cdk.Tag.add(asg, 'notsuper', 'caramel', { applyToLaunchedInstances: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {

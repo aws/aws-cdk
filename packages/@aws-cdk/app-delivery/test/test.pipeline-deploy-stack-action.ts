@@ -8,10 +8,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fc from 'fast-check';
 import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
-import { Construct } from 'constructs';
 
 interface SelfUpdatingPipeline {
   synthesizedApp: codepipeline.Artifact;

@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';

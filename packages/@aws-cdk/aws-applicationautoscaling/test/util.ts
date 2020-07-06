@@ -1,5 +1,6 @@
 import * as scalingcommon from '@aws-cdk/aws-autoscaling-common';
 import { Construct } from 'constructs';
+import * as fc from 'fast-check';
 import * as appscaling from '../lib';
 
 export function createScalableTarget(scope: Construct) {

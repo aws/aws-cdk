@@ -52,7 +52,7 @@
   "peerDependencies": {
     "jest": "^25.5.4",
     "monocdk-experiment": "^0.0.0",
-    "constructs": "^4.0.0"
+    "constructs": "^4.1.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

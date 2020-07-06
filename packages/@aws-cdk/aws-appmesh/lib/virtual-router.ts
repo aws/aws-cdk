@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 
+import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
 import { PortMapping, Protocol } from './shared-interfaces';
-import { Construct } from 'constructs';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement

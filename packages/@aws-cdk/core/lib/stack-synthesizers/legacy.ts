@@ -6,8 +6,7 @@ import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly, assertBound } from './_shared';
-import { IStackSynthesizer } from './types';
-import { ISynthesisSession } from '../private/synthesis-session';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker

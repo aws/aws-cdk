@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 
+import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
-import { Construct } from 'constructs';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,

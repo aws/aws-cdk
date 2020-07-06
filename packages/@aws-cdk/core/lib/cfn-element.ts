@@ -61,7 +61,10 @@ export abstract class CfnElement extends Construct {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`,
     });
 
-    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, this.constructor);
+    this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
+      stackTrace: true,
+      traceFromFunction: this.constructor,
+    });
   }
 
   /**

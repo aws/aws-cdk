@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 

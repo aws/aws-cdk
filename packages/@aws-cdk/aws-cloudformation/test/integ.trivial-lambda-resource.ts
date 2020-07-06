@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import { CustomResource, CustomResourceProvider } from '../lib';
 

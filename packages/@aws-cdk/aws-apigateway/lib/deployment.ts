@@ -124,7 +124,7 @@ interface LatestDeploymentResourceProps {
 
 class LatestDeploymentResource extends CfnDeployment {
   private hashComponents = new Array<any>();
-  private originalLogicalId: string;
+
   private api: IRestApi;
 
   constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
@@ -134,7 +134,31 @@ class LatestDeploymentResource extends CfnDeployment {
     });
 
     this.api = props.restApi;
-    this.originalLogicalId = Stack.of(this).getLogicalId(this);
+
+    const originalLogicalId = Stack.of(this).getLogicalId(this);
+
+    this.overrideLogicalId(Lazy.stringValue({ produce: ctx => {
+      const hash = [ ...this.hashComponents ];
+
+      if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
+
+        // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
+        const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
+        hash.push(ctx.resolve(cfnRestApiCF));
+      }
+
+      let lid = originalLogicalId;
+
+      // if hash components were added to the deployment, we use them to calculate
+      // a logical ID for the deployment resource.
+      if (hash.length > 0) {
+        const md5 = crypto.createHash('md5');
+        hash.map(x => ctx.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
+        lid += md5.digest('hex');
+      }
+
+      return lid;
+    }}));
   }
 
   /**
@@ -149,29 +173,5 @@ class LatestDeploymentResource extends CfnDeployment {
     }
 
     this.hashComponents.push(data);
-  }
-
-  /**
-   * Hooks into synthesis to calculate a logical ID that hashes all the components
-   * add via `addToLogicalId`.
-   */
-  protected prepare() {
-    if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
-
-      // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
-      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
-      this.addToLogicalId(Stack.of(this).resolve(cfnRestApiCF));
-    }
-
-    const stack = Stack.of(this);
-
-    // if hash components were added to the deployment, we use them to calculate
-    // a logical ID for the deployment resource.
-    if (this.hashComponents.length > 0) {
-      const md5 = crypto.createHash('md5');
-      this.hashComponents.map(x => stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      this.overrideLogicalId(this.originalLogicalId + md5.digest('hex'));
-    }
-    super.prepare();
   }
 }

@@ -1,5 +1,6 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Token } from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 

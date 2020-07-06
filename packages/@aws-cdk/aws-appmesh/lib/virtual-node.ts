@@ -1,11 +1,11 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
-import { Construct } from 'constructs';
 
 /**
  * Interface which all VirtualNode based classes must implement

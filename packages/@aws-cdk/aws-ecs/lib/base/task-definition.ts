@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, IValidation } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -190,7 +191,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 /**
  * The base class for all task definitions.
  */
-export class TaskDefinition extends TaskDefinitionBase {
+export class TaskDefinition extends TaskDefinitionBase implements IValidation {
 
   /**
    * Imports a task definition from the specified task definition ARN.
@@ -451,8 +452,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  public validate(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations

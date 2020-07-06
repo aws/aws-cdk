@@ -1,6 +1,5 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**

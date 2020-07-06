@@ -4,8 +4,8 @@ import * as path from 'path';
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct, IConstruct } from 'constructs';
 import { Stack } from '../stack';
+import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
-import { ISynthesisSession } from './synthesis-session';
 
 const FILE_PATH = 'tree.json';
 

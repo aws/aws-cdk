@@ -1,6 +1,6 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../private/synthesis-session';
 
 /**
  * Encodes information how a certain Stack should be deployed
@@ -33,4 +33,19 @@ export interface IStackSynthesizer {
    * @experimental
    */
   synthesizeStackArtifacts(session: ISynthesisSession): void;
+}
+
+/**
+ * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
+ */
+export interface ISynthesisSession {
+  /**
+   * The output directory for this synthesis session.
+   */
+  outdir: string;
+
+  /**
+   * Cloud assembly builder.
+   */
+  assembly: cxapi.CloudAssemblyBuilder;
 }

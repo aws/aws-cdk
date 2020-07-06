@@ -3,9 +3,6 @@ import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
-import { AssetImage, AssetImageProps } from './images/asset-image';
-import { EcrImage } from './images/ecr';
-import { RepositoryImage, RepositoryImageProps } from './images/repository';
 
 /**
  * Constructs for types of container images
@@ -73,3 +70,7 @@ export interface ContainerImageConfig {
    */
   readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
+
+import { AssetImage, AssetImageProps } from './images/asset-image';
+import { EcrImage } from './images/ecr';
+import { RepositoryImage, RepositoryImageProps } from './images/repository';

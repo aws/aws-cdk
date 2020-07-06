@@ -1,6 +1,6 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Use an AutoScaling StepScalingAction as an Alarm Action

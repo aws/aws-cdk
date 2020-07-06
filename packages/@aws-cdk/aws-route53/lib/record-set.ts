@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';

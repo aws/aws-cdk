@@ -1,5 +1,4 @@
-import { ConcreteDependable, DependableTrait } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -32,8 +31,8 @@ export class ImmutableRole extends Construct implements IRole {
     super(scope, id);
 
     // implement IDependable privately
-    DependableTrait.implement(this, {
-      dependencyRoots: [ role ],
+    Dependable.implement(this, {
+      dependencies: [ role ],
     });
   }
 
@@ -51,7 +50,7 @@ export class ImmutableRole extends Construct implements IRole {
 
   public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // Not really added, but for the purposes of consumer code pretend that it was.
-    return { statementAdded: true, policyDependable: new ConcreteDependable() };
+    return { statementAdded: true, policyDependable: new DependencyGroup() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {

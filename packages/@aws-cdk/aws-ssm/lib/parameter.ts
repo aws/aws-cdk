@@ -3,8 +3,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 

@@ -1,4 +1,5 @@
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 

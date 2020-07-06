@@ -141,4 +141,3 @@ import { CfnElement } from '../cfn-element';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
-

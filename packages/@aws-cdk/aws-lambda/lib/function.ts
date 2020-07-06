@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnResource, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
+import { CfnResource, Duration, Fn, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -289,7 +289,6 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
-
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's
@@ -307,6 +306,18 @@ export class Function extends FunctionBase {
       lambda: this,
       ...this.currentVersionOptions,
     });
+
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+
+    cfn.overrideLogicalId(Lazy.stringValue({ produce: ctx => {
+      const originalLogicalId: string = ctx.resolve(cfn.logicalId);
+      const hash = calculateFunctionHash(this);
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      return `${logicalId}${hash}`;
+    }}));
 
     return this._currentVersion;
   }
@@ -665,23 +676,6 @@ export class Function extends FunctionBase {
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
     }
     return this._logGroup;
-  }
-
-  protected prepare() {
-    super.prepare();
-
-    // if we have a current version resource, override it's logical id
-    // so that it includes the hash of the function code and it's configuration.
-    if (this._currentVersion) {
-      const stack = Stack.of(this);
-      const cfn = this._currentVersion.node.defaultChild as CfnResource;
-      const originalLogicalId: string = stack.resolve(cfn.logicalId);
-
-      const hash = calculateFunctionHash(this);
-
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      cfn.overrideLogicalId(`${logicalId}${hash}`);
-    }
   }
 
   private renderEnvironment() {

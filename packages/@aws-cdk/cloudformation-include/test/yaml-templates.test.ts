@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
-import { Construct } from 'constructs';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */

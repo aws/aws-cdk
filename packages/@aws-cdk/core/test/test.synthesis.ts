@@ -7,7 +7,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
-import { ISynthesisSession } from '../lib/private/synthesis-session';
 
 function createModernApp() {
   return new cdk.App({
@@ -75,7 +74,7 @@ export = {
     const stack = new cdk.Stack(app, 'one-stack');
 
     class MyConstruct extends Construct {
-      protected synthesize(s: ISynthesisSession) {
+      protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
           type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
@@ -127,7 +126,7 @@ export = {
         super(undefined as any, 'id');
       }
 
-      protected synthesize(session: ISynthesisSession) {
+      protected synthesize(session: cdk.ISynthesisSession) {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {

@@ -8,7 +8,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Aws, CfnParameter, SecretValue, Stack } from '@aws-cdk/core';
-import { Node } from 'constructs';
 import { Test } from 'nodeunit';
 import * as cpactions from '../lib';
 
@@ -278,7 +277,7 @@ export = {
       ],
     }));
 
-    test.deepEqual([], ConstructNode.validate(p.node));
+    test.deepEqual([], p.node.validate());
     test.done();
   },
 
@@ -369,7 +368,7 @@ export = {
       ],
     }));
 
-    test.deepEqual([], ConstructNode.validate(pipeline.node));
+    test.deepEqual([], pipeline.node.validate());
     test.done();
   },
 

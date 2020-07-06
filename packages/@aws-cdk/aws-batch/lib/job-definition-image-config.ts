@@ -1,6 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { JobDefinitionContainer } from './job-definition';
 
 /**

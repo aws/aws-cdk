@@ -4,7 +4,7 @@ import { getDocTag } from "./util";
 const CORE_MODULE = "@aws-cdk/core";
 enum CoreTypesFqn {
   CfnResource = "@aws-cdk/core.CfnResource",
-  Construct = "constructs/Construct",
+  Construct = "constructs.Construct",
   ConstructInterface = "constructs.IConstruct",
   Resource = "@aws-cdk/core.Resource",
   ResourceInterface = "@aws-cdk/core.IResource",

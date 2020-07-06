@@ -8,7 +8,7 @@ import {
   BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
   InstancesConfigPropertyToJson,
-  KerberosAttributesPropertyToJson
+  KerberosAttributesPropertyToJson,
 } from './private/cluster-utils';
 
 /**

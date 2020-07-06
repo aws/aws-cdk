@@ -1,9 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import * as inc from '../lib';
-import { Construct } from 'constructs';
 
 describe('CDK Include', () => {
   let stack: core.Stack;

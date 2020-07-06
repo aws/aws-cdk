@@ -7,8 +7,7 @@ import { Fn } from '../cfn-fn';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
-import { ISynthesisSession } from '../private/synthesis-session';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
