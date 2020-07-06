@@ -74,12 +74,12 @@
   "dependencies": {
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^4.0.0"
+    "constructs": "^4.1.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^4.0.0"
+    "constructs": "^4.1.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

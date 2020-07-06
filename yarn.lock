@@ -2855,6 +2855,11 @@ constructs@^4.0.0:
   resolved "https://registry.yarnpkg.com/constructs/-/constructs-4.0.0.tgz#f304ee66309a329564d8b2d2d7d2fdc6ebcfd75f"
   integrity sha512-UTD58Y1QFFvkoPmR+h0N9T5jBn4VXXIMcO5eoXli4erkP6VMbRx3TSTNgmATSwJuRdFt87K15zvB3u5rZ+ze3g==
 
+constructs@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/constructs/-/constructs-4.1.0.tgz#d856f2dc1906f9e45c24b951d2a0444fd9056743"
+  integrity sha512-kWwk2or80y8G4r1KfgL/vAuV/DpOTIC39Wzb6lPX9XWsrar9sx2obMh9jbpudhAUg9iCEszkofp/+VSyA6+lOg==
+
 contains-path@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
