@@ -1,0 +1,45 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Parameters": {
+    "MyParam": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "Output1": {
+      "Type": "AWS::S3::Bucket"
+    }
+  },
+  "Outputs": {
+    "Output1": {
+      "Value": {
+        "Fn::Join": [ "", [
+          { "Ref": "MyParam" },
+          { "Fn::GetAtt": [ "Bucket", "Arn" ] } ]
+        ]
+      },
+      "Description": {
+        "Ref": "Bucket"
+      },
+      "Condition": "AlwaysFalseCond",
+      "Export": {
+        "Name": "Bucket"
+      }
+    },
+    "OutputWithNoCondition": {
+      "Value": "some-value"
+    }
+  }
+}
