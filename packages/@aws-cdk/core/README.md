@@ -113,9 +113,7 @@ Enable weak reference for a resource:
 resource.node.enableWeakReferences();
 ```
 
-## CDK Types
-
-### Durations
+## Durations
 
 To make specifications of time intervals unambiguous, a single class called
 `Duration` is used throughout the AWS Construct Library by all constructs
@@ -133,7 +131,7 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
-### Size (Digital Information Quantity)
+## Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
 `Size` is available.
@@ -157,7 +155,7 @@ Size.mebibytes(2).toKibibytes()                      // yields 2048
 Size.kibibytes(2050).toMebibyte({ integral: false }) // yields 2
 ```
 
-### Secrets
+## Secrets
 
 To help avoid accidental storage of secrets as plain text, we use the `SecretValue` type to
 represent secrets. Any construct that takes a value that should be a secret (such as
