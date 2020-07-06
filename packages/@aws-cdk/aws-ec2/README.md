@@ -50,8 +50,8 @@ distinguishes three different subnet types:
 
 
 A default VPC configuration will create public and **private** subnets. However, if
-`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration 
-will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration) 
+`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration
+will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration)
 below for information on how to change the default subnet configuration.
 
 Constructs using the VPC will "launch instances" (or more accurately, create
@@ -438,7 +438,9 @@ examples of things you might want to use:
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
 
-## VPN connections to a VPC
+## Special VPC configurations
+
+### VPN connections to a VPC
 
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
@@ -491,14 +493,14 @@ const vpnConnection = vpc.addVpnConnection('Dynamic', {
 const state = vpnConnection.metricTunnelState();
 ```
 
-## VPC endpoints
+### VPC endpoints
 A VPC endpoint enables you to privately connect your VPC to supported AWS services and VPC endpoint services powered by PrivateLink without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection. Instances in your VPC do not require public IP addresses to communicate with resources in the service. Traffic between your VPC and the other service does not leave the Amazon network.
 
 Endpoints are virtual devices. They are horizontally scaled, redundant, and highly available VPC components that allow communication between instances in your VPC and services without imposing availability risks or bandwidth constraints on your network traffic.
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
-By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in, 
+By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in,
 use the `subnets` parameter as follows:
 
 ```ts
@@ -528,7 +530,7 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
 });
 ```
 
-### Security groups for interface VPC endpoints
+#### Security groups for interface VPC endpoints
 By default, interface VPC endpoints create a new security group and traffic is **not**
 automatically allowed from the VPC CIDR.
 
@@ -540,7 +542,7 @@ myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
 
-## VPC endpoint services
+### VPC endpoint services
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
@@ -551,7 +553,87 @@ new VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
-## Bastion Hosts
+## Instances
+
+You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
+you use an `AutoScalingGroup` from the `aws-autoscaling` module instead, as AutoScalingGroups will take
+care of restarting your instance if it ever fails.
+
+### Configuring Instances using CloudFormation Init (cfn-init)
+
+CloudFormation Init allows you to configure your instances by writing files to them, installing software
+packages, starting services and running arbitrary commands. By default, if any of the instance setup
+commands throw an error, the deployment will fail and roll back to the previously known good state.
+The following documentation also applies to `AutoScalingGroup`s.
+
+For the full set of capabilities of this system, see the documentation for
+[`AWS::CloudFormation::Init`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html).
+Here is an example of applying some configuration to an instance:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  // Showing the most complex setup, if you have simpler requirements
+  // you can use `CloudFormationInit.fromElements()`.
+  init: ec2.CloudFormationInit.fromConfigSets({
+    configSets: {
+      // Applies the configs below in this order
+      default: ['yumPreinstall', 'config'],
+    },
+    configs: {
+      yumPreinstall: new ec2.InitConfig([
+        // Install an Amazon Linux package using yum
+        ec2.InitPackage.yum('git'),
+      ]),
+      config: new ec2.InitConfig([
+        // Create a JSON file from tokens (can also create other files)
+        ec2.InitFile.fromObject('/etc/stack.json', {
+          stackId: stack.stackId,
+          stackName: stack.stackName,
+          region: stack.region,
+        }),
+
+        // Create a group and user
+        ec2.InitGroup.fromName('my-group'),
+        ec2.InitUser.fromName('my-user'),
+
+        // Install an RPM from the internet
+        ec2.InitPackage.rpm('http://mirrors.ukfast.co.uk/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/r/rubygem-git-1.5.0-2.el8.noarch.rpm'),
+      ]),
+    },
+  }),
+  initOptions: {
+    // Optional, which configsets to activate (['default'] by default)
+    configSets: ['default'],
+
+    // Optional, how long the installation is expected to take (5 minutes by default)
+    timeout: Duration.minutes(30),
+  },
+
+  // Optional but recommended: starts a new instance with the new config
+  // if the config changes.
+  userDataCausesReplacement: true,
+});
+```
+
+You can have services restarted after the init process has made changes to the system.
+To do that, instantiate an `InitServiceRestartHandle` and pass it to the config elements
+that need to trigger the restart and the service itself. For example, the following
+config writes a config file for nginx, extracts an archive to the root directory, and then
+restarts nginx so that it picks up the new config and files:
+
+```ts
+const handle = new ec2.InitServiceRestartHandle();
+
+ec2.CloudFormationInit.fromElements(
+  ec2.InitFile.fromString('/etc/nginx/nginx.conf', '...', { serviceRestartHandles: [handle] }),
+  ec2.InitSource.fromBucket('/var/www/html', myBucket, 'html.zip', { serviceRestartHandles: [handle] }),
+  ec2.InitService.enable('nginx', {
+    serviceRestartHandle: handle,
+  })
+);
+```
+
+### Bastion Hosts
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
 You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
 feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
@@ -586,7 +668,7 @@ EBS volume for the bastion host can be encrypted like:
     });
 ```
 
-## Block Devices
+### Block Devices
 
 To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
 root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
@@ -609,7 +691,7 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
-## Volumes
+### Volumes
 
 Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
 
@@ -633,7 +715,7 @@ const volume = new ec2.Volume(this, 'Volume', {
 volume.grantAttachVolume(role, [instance]);
 ```
 
-### Instances Attaching Volumes to Themselves
+#### Instances Attaching Volumes to Themselves
 
 If you need to grant an instance the ability to attach/detach an EBS volume to/from itself, then using `grantAttachVolume` and `grantDetachVolume` as outlined above
 will lead to an unresolvable circular reference between the instance role and the instance. In this case, use `grantAttachVolumeByResourceTag` and `grantDetachVolumeByResourceTag` as follows:
@@ -650,7 +732,7 @@ const attachGrant = volume.grantAttachVolumeByResourceTag(instance.grantPrincipa
 const detachGrant = volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 ```
 
-### Attaching Volumes
+#### Attaching Volumes
 
 The Amazon EC2 documentation for
 [Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) and

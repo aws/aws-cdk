@@ -4,11 +4,11 @@ test('whole config with restart handles', () => {
   // WHEN
   const handle = new ec2.InitServiceRestartHandle();
   const config = new ec2.InitConfig([
-    ec2.InitFile.fromString('/etc/my.cnf', '[mysql]\ngo_fast=true', { serviceHandles: [handle] }),
-    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip', { serviceHandles: [handle] }),
-    ec2.InitPackage.yum('httpd', { serviceHandles: [handle] }),
-    ec2.InitCommand.argvCommand(['/bin/true'], { serviceHandles: [handle] }),
-    ec2.InitService.enable('httpd', { restartHandle: handle }),
+    ec2.InitFile.fromString('/etc/my.cnf', '[mysql]\ngo_fast=true', { serviceRestartHandles: [handle] }),
+    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip', { serviceRestartHandles: [handle] }),
+    ec2.InitPackage.yum('httpd', { serviceRestartHandles: [handle] }),
+    ec2.InitCommand.argvCommand(['/bin/true'], { serviceRestartHandles: [handle] }),
+    ec2.InitService.enable('httpd', { serviceRestartHandle: handle }),
   ]);
 
   // THEN

@@ -575,7 +575,7 @@ describe('InitService', () => {
     const service = ec2.InitService.fromOptions('httpd', {
       enabled: true,
       ensureRunning: true,
-      restartHandle,
+      serviceRestartHandle: restartHandle,
     });
 
     // WHEN
