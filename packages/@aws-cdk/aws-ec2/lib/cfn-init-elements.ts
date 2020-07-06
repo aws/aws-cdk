@@ -123,6 +123,11 @@ export class InitServiceRestartHandle {
  */
 export interface InitRenderOptions {
   /**
+   * Scope in which to define any resources, if necessary.
+   */
+  readonly scope: Construct;
+
+  /**
    * Which OS platform (Linux, Windows) are we rendering for. Impacts
    * which config types are available and how they are rendered.
    */
@@ -165,10 +170,23 @@ export abstract class InitElement {
   public abstract renderElement(options: InitRenderOptions): Record<string, any>;
 
   /**
-   * Called when the Init config is being consumed.
+   * Render the CloudFormation representation of the CloudFormation::Authentication
+   * necessary for these elements, if any. This is primarily for elements that access
+   * resources on the instance as part of the init process (e.g., InitFile, InitSource).
    */
-  public bind(_scope: Construct, _options: InitBindOptions): void {
+  public renderAuth(): Record<string, any> {
+    // Default no-op
+    return {};
+  }
+
+  /**
+   * Called when the Init config is being consumed.
+   *
+   * @returns the CloudFormation representation of the Authentication element for this element, if necessary.
+   */
+  public bind(_options: InitBindOptions): Record<string, any> {
     // Default is no-op
+    return {};
   }
 }
 
@@ -434,14 +452,15 @@ export abstract class InitFile extends InitElement {
   public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
     return new class extends InitFile {
       private asset!: s3_assets.Asset;
-      public bind(scope: Construct, bindOptions: InitBindOptions): void {
-        this.asset = new s3_assets.Asset(scope, 'InitFileAsset', {
-          path,
-          ...bindOptions,
-        });
+      public bind(bindOptions: InitBindOptions): Record<string, any> {
         this.asset.grantRead(bindOptions.instanceRole);
+        throw new Error('FIXME');
       }
-      protected renderContentOrSource(): Record<string, any> {
+      protected renderContentOrSource(renderOptions: InitRenderOptions): Record<string, any> {
+        this.asset = new s3_assets.Asset(renderOptions.scope, 'InitFileAsset', {
+          path,
+          ...options,
+        });
         return { source: this.asset.httpUrl };
       }
     }(targetFileName, options);
@@ -452,10 +471,11 @@ export abstract class InitFile extends InitElement {
    */
   public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      public bind(_scope: Construct, bindOptions: InitBindOptions) {
+      public bind(bindOptions: InitBindOptions): Record<string, any> {
         asset.grantRead(bindOptions.instanceRole);
+        throw new Error('FIXME');
       }
-      protected renderContentOrSource(): Record<string, any> {
+      protected renderContentOrSource(_renderOptions: InitRenderOptions): Record<string, any> {
         return { source: asset.httpUrl };
       }
     }(targetFileName, options);
@@ -475,13 +495,13 @@ export abstract class InitFile extends InitElement {
 
     return {
       [this.fileName]: {
-        ...this.renderContentOrSource(),
+        ...this.renderContentOrSource(renderOptions),
         ...this.renderOptions(this.options, renderOptions),
       },
     };
   }
 
-  protected abstract renderContentOrSource(): Record<string, any>;
+  protected abstract renderContentOrSource(_renderOptions: InitRenderOptions): Record<string, any>;
 
   private renderOptions(fileOptions: InitFileOptions, renderOptions: InitRenderOptions): Record<string, any> {
     if (renderOptions.platform === InitRenderPlatform.WINDOWS) {
@@ -538,7 +558,7 @@ export interface InitUserOptions {
   /**
    * The user's home directory.
    *
-   * @default
+   * @default assigned by the OS
    */
   readonly homeDir?: string;
 
@@ -546,11 +566,15 @@ export interface InitUserOptions {
    * A user ID. The creation process fails if the user name exists with a different user ID.
    * If the user ID is already assigned to an existing user the operating system may
    * reject the creation request.
+   *
+   * @default assigned by the OS
    */
   readonly userId?: number;
 
   /**
    * A list of group names. The user will be added to each group in the list.
+   *
+   * @default the user is not associated with any groups.
    */
   readonly groups?: string[];
 }
@@ -824,10 +848,6 @@ export interface InitSourceOptions {
 
 /**
  * Additional options for an InitSource that builds an asset from local files.
- *
- * TODO - Check with Rico on if this is stupid/crazy or not.
- * Motivation -- Users need to be able to specify the assetHash to refresh the deploy
- * when the asset/directory contents change.
  */
 export interface InitSourceAssetOptions extends InitSourceOptions, s3_assets.AssetOptions {
 
@@ -842,7 +862,7 @@ export abstract class InitSource extends InitElement {
    */
   public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected get url(): string { return url; }
+      protected renderUrl(_renderOptions: InitRenderOptions): string { return url; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -866,29 +886,36 @@ export abstract class InitSource extends InitElement {
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new class extends InitSource {
       private asset!: s3_assets.Asset;
-      protected get url(): string { return this.asset.httpUrl; }
-      public bind(scope: Construct, bindOptions: InitBindOptions): void {
-        this.asset = new s3_assets.Asset(scope, 'InitSourceAsset', {
-          path,
-          ...bindOptions,
-        });
+      public bind(bindOptions: InitBindOptions): Record<string, any> {
         this.asset.grantRead(bindOptions.instanceRole);
+        return {
+          S3AccessCreds: {
+            type: 'S3',
+            buckets: [ this.asset.s3BucketName ],
+            roleName: bindOptions.instanceRole.roleArn,
+          },
+        };
+      }
+      protected renderUrl(renderOptions: InitRenderOptions): string {
+        this.asset = new s3_assets.Asset(renderOptions.scope, 'InitSourceAsset', {
+          path,
+          ...options,
+        });
+        return this.asset.httpUrl;
       }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Extract a directory from an existing directory asset.
-   *
-   * FIXME/TODO - Rico: All other usages of creation of assets across the CDK use "fromAsset(path: string, options)". I think
-   * it'll be weird if we expose the below and call it fromAsset, so renamed to fromExistingAsset. That name sucks though. :/
    */
   public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected get url(): string { return asset.httpUrl; }
-      public bind(_scope: Construct, bindOptions: InitBindOptions): void {
+      public bind(bindOptions: InitBindOptions): Record<string, any> {
         asset.grantRead(bindOptions.instanceRole);
+        throw new Error('FIXME');
       }
+      protected renderUrl(_renderOptions: InitRenderOptions): string { return asset.s3ObjectUrl; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -898,16 +925,16 @@ export abstract class InitSource extends InitElement {
     super();
   }
 
-  public renderElement(_options: InitRenderOptions): Record<string, any> {
+  public renderElement(options: InitRenderOptions): Record<string, any> {
     // Side effect and all that
     for (const handle of this.serviceHandles ?? []) {
       handle.addSource(this.targetDirectory);
     }
 
     return {
-      [this.targetDirectory]: this.url,
+      [this.targetDirectory]: this.renderUrl(options),
     };
   }
 
-  protected abstract get url(): string;
+  protected abstract renderUrl(renderOptions: InitRenderOptions): string;
 }

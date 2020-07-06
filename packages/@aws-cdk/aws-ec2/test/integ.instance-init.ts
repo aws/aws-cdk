@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();
@@ -9,6 +11,9 @@ const stack = new cdk.Stack(app, 'integ-init', {
 
 const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
+const tmpDir = fs.mkdtempSync('/tmp/cfn-init-test');
+fs.writeFileSync(path.resolve(tmpDir, 'testFile'), 'Hello World!\n');
+
 new ec2.Instance(stack, 'Instance2', {
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -16,7 +21,8 @@ new ec2.Instance(stack, 'Instance2', {
   machineImage: new ec2.AmazonLinuxImage(),
   userDataCausesReplacement: true,
   initOptions: {
-    timeout: Duration.minutes(30),
+    timeout: cdk.Duration.minutes(30),
+    ignoreFailures: true,
   },
   init: ec2.CloudFormationInit.fromConfigSets({
     configSets: {
@@ -39,7 +45,7 @@ new ec2.Instance(stack, 'Instance2', {
           homeDir: '/home/sysuser1-custom',
         }),
         ec2.InitUser.fromName('sysuser2'),
-        ec2.InitPackage.rpm('http://mirrors.ukfast.co.uk/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/r/rubygem-git-1.5.0-2.el8.noarch.rpm'),
+        ec2.InitSource.fromAsset('/tmp/sourceAsset', tmpDir),
       ]),
     },
   }),

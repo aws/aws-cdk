@@ -6,14 +6,15 @@ import * as os from 'os';
 import * as path from 'path';
 import * as ec2 from '../lib';
 
-const DEFAULT_LINUX_OPTIONS = {
-  platform: ec2.InitRenderPlatform.LINUX,
-  index: 0,
-};
-const DEFAULT_WINDOWS_OPTIONS = {
-  platform: ec2.InitRenderPlatform.WINDOWS,
-  index: 0,
-};
+let app: App;
+let stack: Stack;
+
+beforeEach(() => {
+  app = new App();
+  stack = new Stack(app, 'Stack', {
+    env: { account: '1234', region: 'testregion' },
+  });
+});
 
 describe('InitCommand', () => {
 
@@ -26,13 +27,10 @@ describe('InitCommand', () => {
     const command = ec2.InitCommand.shellCommand('/bin/sh');
 
     // WHEN
-    const rendered = command.renderElement({
-      platform: ec2.InitRenderPlatform.LINUX,
-      index: 1,
-    });
+    const rendered = command.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
-    expect(rendered['001']).toBeDefined();
+    expect(rendered['000']).toBeDefined();
   });
 
   test('renders a minimalist template when no options are defined', () => {
@@ -40,14 +38,11 @@ describe('InitCommand', () => {
     const command = ec2.InitCommand.shellCommand('/bin/sh');
 
     // WHEN
-    const rendered = command.renderElement({
-      platform: ec2.InitRenderPlatform.LINUX,
-      index: 1,
-    });
+    const rendered = command.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
-      '001': { command: '/bin/sh' },
+      '000': { command: '/bin/sh' },
     });
   });
 
@@ -63,7 +58,7 @@ describe('InitCommand', () => {
     });
 
     // WHEN
-    const rendered = command.renderElement(DEFAULT_WINDOWS_OPTIONS);
+    const rendered = command.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
 
     // THEN
     expect(rendered).toEqual({
@@ -90,7 +85,7 @@ describe('InitCommand', () => {
     });
 
     // WHEN
-    const rendered = command.renderElement(DEFAULT_WINDOWS_OPTIONS);
+    const rendered = command.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
 
     // THEN
     expect(rendered).toEqual({
@@ -118,7 +113,7 @@ describe('InitCommand', () => {
 
     // THEN
     expect(() => {
-      command.renderElement(DEFAULT_LINUX_OPTIONS);
+      command.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
     }).toThrow(/'waitAfterCompletion' is only valid for Windows/);
   });
 
@@ -131,7 +126,7 @@ describe('InitFile', () => {
     const file = ec2.InitFile.fromString('/tmp/foo', 'My content');
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -152,7 +147,7 @@ describe('InitFile', () => {
     });
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -176,7 +171,7 @@ describe('InitFile', () => {
 
     // WHEN
     expect(() => {
-      file.renderElement(DEFAULT_WINDOWS_OPTIONS);
+      file.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
     }).toThrow('Owner, group, and mode options not supported for Windows.');
   });
 
@@ -193,7 +188,7 @@ describe('InitFile', () => {
     const file = ec2.InitFile.symlink('/tmp/foo', '/tmp/bar');
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -213,7 +208,7 @@ describe('InitFile', () => {
     const file = ec2.InitFile.fromFileInline('/tmp/foo', tmpFilePath);
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -236,7 +231,7 @@ describe('InitFile', () => {
     const file = ec2.InitFile.fromObject('/tmp/foo', content);
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -260,7 +255,7 @@ describe('InitFile', () => {
     });
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -279,7 +274,7 @@ describe('InitFile', () => {
     const file = ec2.InitFile.fromUrl('/tmp/foo', 'https://aws.amazon.com/');
 
     // WHEN
-    const rendered = file.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = file.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -301,7 +296,7 @@ describe('InitGroup', () => {
     const group = ec2.InitGroup.fromName('amazon');
 
     // WHEN
-    const rendered = group.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = group.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({ amazon: {} });
@@ -312,7 +307,7 @@ describe('InitGroup', () => {
     const group = ec2.InitGroup.fromName('amazon', 42);
 
     // WHEN
-    const rendered = group.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = group.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({ amazon: { gid: 42 } });
@@ -324,7 +319,7 @@ describe('InitGroup', () => {
 
     // WHEN
     expect(() => {
-      group.renderElement(DEFAULT_WINDOWS_OPTIONS);
+      group.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
     }).toThrow('Init groups are not supported on Windows');
   });
 
@@ -337,7 +332,7 @@ describe('InitUser', () => {
     const group = ec2.InitUser.fromName('sysuser1');
 
     // WHEN
-    const rendered = group.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = group.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({ sysuser1: {} });
@@ -352,7 +347,7 @@ describe('InitUser', () => {
     });
 
     // WHEN
-    const rendered = group.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = group.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -370,7 +365,7 @@ describe('InitUser', () => {
 
     // WHEN
     expect(() => {
-      group.renderElement(DEFAULT_WINDOWS_OPTIONS);
+      group.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
     }).toThrow('Init users are not supported on Windows');
   });
 
@@ -384,6 +379,7 @@ describe('InitPackage', () => {
 
     // WHEN
     const rendered = pkg.renderElement({
+      scope: stack,
       platform: ec2.InitRenderPlatform.LINUX,
       index: 5,
     });
@@ -401,7 +397,7 @@ describe('InitPackage', () => {
     const pkg = ec2.InitPackage.rpm('https://example.com/rpm/mypkg.rpm', { key: 'myPkg' });
 
     // WHEN
-    const rendered = pkg.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -417,7 +413,7 @@ describe('InitPackage', () => {
 
     // THEN
     expect(() => {
-      pkg.renderElement(DEFAULT_WINDOWS_OPTIONS);
+      pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
     }).toThrow('Windows only supports the MSI package type');
   });
 
@@ -431,7 +427,7 @@ describe('InitPackage', () => {
     const pkg = fn('httpd');
 
     // WHEN
-    const rendered = pkg.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -450,7 +446,7 @@ describe('InitPackage', () => {
     const pkg = fn('httpd', { version: ['1.0', '2.0'] });
 
     // WHEN
-    const rendered = pkg.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -469,7 +465,7 @@ describe('InitPackage', () => {
     const pkg = fn('httpd');
 
     expect(() => {
-      pkg.renderElement(DEFAULT_WINDOWS_OPTIONS);
+      pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
     }).toThrow('Windows only supports the MSI package type');
   },
   );
@@ -480,6 +476,7 @@ describe('InitPackage', () => {
 
     // WHEN
     const rendered = pkg.renderElement({
+      scope: stack,
       platform: ec2.InitRenderPlatform.WINDOWS,
       index: 7,
     });
@@ -497,7 +494,7 @@ describe('InitPackage', () => {
     const pkg = ec2.InitPackage.msi('https://example.com/rpm/mypkg.msi', { key: 'myPkg' });
 
     // WHEN
-    const rendered = pkg.renderElement(DEFAULT_WINDOWS_OPTIONS);
+    const rendered = pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.WINDOWS));
 
     // THEN
     expect(rendered).toEqual({
@@ -513,7 +510,7 @@ describe('InitPackage', () => {
 
     // THEN
     expect(() => {
-      pkg.renderElement(DEFAULT_LINUX_OPTIONS);
+      pkg.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
     }).toThrow('MSI installers are only supported on Windows systems.');
   });
 
@@ -522,8 +519,8 @@ describe('InitPackage', () => {
 describe('InitService', () => {
 
   test.each([
-    ['Linux', 'sysvinit', DEFAULT_LINUX_OPTIONS],
-    ['Windows', 'windows', DEFAULT_WINDOWS_OPTIONS],
+    ['Linux', 'sysvinit', defaultOptions(ec2.InitRenderPlatform.LINUX)],
+    ['Windows', 'windows', defaultOptions(ec2.InitRenderPlatform.WINDOWS)],
   ])('enable always sets enabled and running to true for %s', (_platform, key, options) => {
     // GIVEN
     const service = ec2.InitService.enable('httpd');
@@ -542,8 +539,8 @@ describe('InitService', () => {
   });
 
   test.each([
-    ['Linux', 'sysvinit', DEFAULT_LINUX_OPTIONS],
-    ['Windows', 'windows', DEFAULT_WINDOWS_OPTIONS],
+    ['Linux', 'sysvinit', defaultOptions(ec2.InitRenderPlatform.LINUX)],
+    ['Windows', 'windows', defaultOptions(ec2.InitRenderPlatform.WINDOWS)],
   ])('disable returns a minimalist disabled service for %s', (_platform, key, options) => {
     // GIVEN
     const service = ec2.InitService.disable('httpd');
@@ -562,8 +559,8 @@ describe('InitService', () => {
   });
 
   test.each([
-    ['Linux', 'sysvinit', DEFAULT_LINUX_OPTIONS],
-    ['Windows', 'windows', DEFAULT_WINDOWS_OPTIONS],
+    ['Linux', 'sysvinit', defaultOptions(ec2.InitRenderPlatform.LINUX)],
+    ['Windows', 'windows', defaultOptions(ec2.InitRenderPlatform.WINDOWS)],
   ])('fromOptions renders all options for %s', (_platform, key, options) => {
     // GIVEN
     const restartHandle = new ec2.InitServiceRestartHandle();
@@ -604,7 +601,7 @@ describe('InitSource', () => {
     const source = ec2.InitSource.fromUrl('/tmp/foo', 'https://example.com/archive.zip');
 
     // WHEN
-    const rendered = source.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = source.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -617,7 +614,7 @@ describe('InitSource', () => {
     const source = ec2.InitSource.fromGitHub('/tmp/foo', 'aws', 'aws-cdk', 'master');
 
     // WHEN
-    const rendered = source.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = source.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -630,7 +627,7 @@ describe('InitSource', () => {
     const source = ec2.InitSource.fromGitHub('/tmp/foo', 'aws', 'aws-cdk');
 
     // WHEN
-    const rendered = source.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = source.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -640,15 +637,11 @@ describe('InitSource', () => {
 
   test('fromS3Object uses object URL', () => {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'Stack', {
-      env: { account: '1234', region: 'testregion' },
-    });
     const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'MyBucket');
     const source = ec2.InitSource.fromS3Object('/tmp/foo', bucket, 'myKey');
 
     // WHEN
-    const rendered = source.renderElement(DEFAULT_LINUX_OPTIONS);
+    const rendered = source.renderElement(defaultOptions(ec2.InitRenderPlatform.LINUX));
 
     // THEN
     expect(rendered).toEqual({
@@ -657,6 +650,14 @@ describe('InitSource', () => {
   });
 
 });
+
+function defaultOptions(platform: ec2.InitRenderPlatform) {
+  return {
+    scope: stack,
+    index: 0,
+    platform,
+  };
+}
 
 function createTmpFileWithContent(content: string): string {
   const suffix = crypto.randomBytes(4).toString('hex');

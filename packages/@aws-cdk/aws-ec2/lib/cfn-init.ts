@@ -84,9 +84,8 @@ export class CloudFormationInit {
    * simpler way.
    */
   public attach(definingResource: CfnResource, attachOptions: AttachInitOptions): AttachedCloudFormationInit {
-    // FIXME: This this eagerly renders, it will not reflect mutations made after attaching.
-    // Is that okay?
-    const configData = this.renderInit(attachOptions.platform);
+    // Note: This this eagerly renders and will not reflect mutations made after attaching.
+    const configData = this.renderInit(definingResource.stack, attachOptions.platform);
     definingResource.addMetadata('AWS::CloudFormation::Init', configData);
     const fingerprint = contentHash(JSON.stringify(configData)).substr(0, 16);
 
@@ -96,7 +95,8 @@ export class CloudFormationInit {
     // instantiate this. It is a type that represents an action you took.
     return new class extends AttachedCloudFormationInit {
       public apply(consumingResource: CfnResource, useOptions: ApplyInitOptions): void {
-        self.bind(consumingResource, { instanceRole: useOptions.instanceRole });
+        const authData = self.bind({ instanceRole: useOptions.instanceRole });
+        consumingResource.addMetadata('AWS::CloudFormation::Authentication', authData);
         useOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
           actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
           resources: [Aws.STACK_ID],
@@ -130,7 +130,7 @@ export class CloudFormationInit {
             '  set +e',
             `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
             `  /opt/aws/bin/cfn-signal -e ${errCode} ${signalLocator}`,
-            ...printLog ? ['  cat /var/log/cfn-init-cmd.log >&2'] : [],
+            ...printLog ? ['  cat /var/log/cfn-init.log >&2'] : [],
             ')',
           ]);
         }
@@ -138,20 +138,37 @@ export class CloudFormationInit {
     }();
   }
 
-  private bind(scope: Construct, options: InitBindOptions) {
-    for (const config of Object.values(this._configs)) {
-      config.bind(scope, options);
-    }
+  private bind(options: InitBindOptions): Record<string, any> {
+    // for (const config of Object.values(this._configs)) {
+    //   config.bind(options);
+    // }
+
+    const ret: Record<string, any> = {};
+    Object.values(this._configs).forEach(c => {
+      const configAuthData = c.bind(options);
+      Object.assign(ret, configAuthData);
+    });
+    return ret;
+
+    //return Object.values(this._configs).map(c => c.bind(options)).filter(auth => auth);
   }
 
-  private renderInit(platform: InitRenderPlatform): any {
+  private renderInit(scope: Construct, platform: InitRenderPlatform): any {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
 
     return {
       configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
-      ...mapValues(nonEmptyConfigs, c => c.renderConfig(platform)),
+      ...mapValues(nonEmptyConfigs, c => c.renderConfig(scope, platform)),
     };
   }
+
+  // private renderAuth(options: InitBindOptions): any {
+  //   const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
+
+  //   return {
+  //     ...mapValues(nonEmptyConfigs, c => c.renderAuth()),
+  //   };
+  // }
 }
 
 /**
@@ -260,17 +277,23 @@ export class InitConfig {
   /**
    * Called when the config is applied to an instance
    */
-  public bind(scope: Construct, options: InitBindOptions) {
-    for (const element of this.elements) {
-      element.bind(scope, options);
-    }
+  public bind(options: InitBindOptions): Record<string, any> {
+    const ret: Record<string, any> = {};
+    this.elements.forEach(elem => {
+      const authData = elem.bind(options);
+      Object.assign(ret, authData);
+    });
+    return ret;
+    // for (const element of this.elements) {
+    //   element.bind(options);
+    // }
   }
 
   /**
    * Render the config
    */
-  public renderConfig(platform: InitRenderPlatform): any {
-    const renderOptions = { platform };
+  public renderConfig(scope: Construct, platform: InitRenderPlatform): any {
+    const renderOptions = { scope, platform };
 
     return {
       packages: this.renderConfigForType(InitElementType.PACKAGE, renderOptions),
@@ -282,6 +305,13 @@ export class InitConfig {
       // Must be last!
       services: this.renderConfigForType(InitElementType.SERVICE, renderOptions),
     };
+  }
+
+  /**
+   * Render the auth config, if any.
+   */
+  public renderAuth(): any {
+    return this.elements.map(elem => elem.renderAuth());
   }
 
   private renderConfigForType(elementType: InitElementType, renderOptions: Omit<InitRenderOptions, 'index'>): Record<string, any> | undefined {

@@ -1,7 +1,14 @@
+import { App, Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as ec2 from '../lib';
 
 test('whole config with restart handles', () => {
   // WHEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '1234', region: 'testregion' },
+  });
   const handle = new ec2.InitServiceRestartHandle();
   const config = new ec2.InitConfig([
     ec2.InitFile.fromString('/etc/my.cnf', '[mysql]\ngo_fast=true', { serviceRestartHandles: [handle] }),
@@ -12,7 +19,7 @@ test('whole config with restart handles', () => {
   ]);
 
   // THEN
-  expect(config.renderConfig(ec2.InitRenderPlatform.LINUX)).toEqual(expect.objectContaining({
+  expect(config.renderConfig(stack, ec2.InitRenderPlatform.LINUX)).toEqual(expect.objectContaining({
     services: {
       sysvinit: {
         httpd: {

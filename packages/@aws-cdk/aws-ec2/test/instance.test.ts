@@ -347,7 +347,7 @@ test('add CloudFormation Init to instance', () => {
           { Ref: 'AWS::Region' },
           ' --stack ',
           { Ref: 'AWS::StackName' },
-          ' --resource InstanceC1063A87\n)',
+          ' --resource InstanceC1063A87\n  cat /var/log/cfn-init.log >&2\n)',
         ]],
       },
     },
