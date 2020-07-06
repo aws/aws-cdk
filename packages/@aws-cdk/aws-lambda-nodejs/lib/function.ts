@@ -84,7 +84,7 @@ export class NodejsFunction extends lambda.Function {
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(js|ts)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
