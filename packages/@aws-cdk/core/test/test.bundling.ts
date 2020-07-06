@@ -34,7 +34,7 @@ export = {
     test.ok(spawnSyncStub.calledWith('docker', [
       'run', '--rm',
       '-u', 'user:group',
-      '-v', '/host-path:/container-path',
+      '-v', '/host-path:/container-path:delegated',
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
       '-w', '/working-directory',

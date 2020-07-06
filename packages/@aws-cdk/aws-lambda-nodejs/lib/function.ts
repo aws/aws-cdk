@@ -54,8 +54,9 @@ export class NodejsFunction extends lambda.Function {
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime ?? defaultRunTime;
 
-    // We need to restore the package.json after bundling
-    const packageJsonManager = new PackageJsonManager();
+    // Look for the closest package.json starting in the directory of the entry
+    // file. We need to restore it after bundling.
+    const packageJsonManager = new PackageJsonManager(path.dirname(entry));
 
     try {
       super(scope, id, {
@@ -83,7 +84,7 @@ export class NodejsFunction extends lambda.Function {
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(js|ts)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
