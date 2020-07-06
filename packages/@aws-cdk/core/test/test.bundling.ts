@@ -49,7 +49,7 @@ export = {
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(`Successfully built ${imageId}`),
+      stdout: Buffer.from(`sha256:${imageId}`),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -63,7 +63,7 @@ export = {
     image._run();
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
-      'build',
+      'build', '-q',
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ]));
