@@ -55,7 +55,7 @@ interface InstanceEngineBaseProps {
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
-  readonly engineVersion?: string;
+  readonly version?: string;
 }
 
 abstract class InstanceEngineBase implements IInstanceEngine {
@@ -68,7 +68,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineType = props.engineType;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
-    this.engineVersion = props.engineVersion;
+    this.engineVersion = props.version;
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
@@ -105,7 +105,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
         { engineMajorVersion: '10.2', parameterGroupFamily: 'mariadb10.2' },
         { engineMajorVersion: '10.3', parameterGroupFamily: 'mariadb10.3' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -134,7 +134,7 @@ class MySqlInstanceEngine extends InstanceEngineBase {
         { engineMajorVersion: '5.7', parameterGroupFamily: 'mysql5.7' },
         { engineMajorVersion: '8.0', parameterGroupFamily: 'mysql8.0' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -169,14 +169,14 @@ class PostgreSqlInstanceEngine extends InstanceEngineBase {
         { engineMajorVersion: '10',  parameterGroupFamily: 'postgres10'  },
         { engineMajorVersion: '11',  parameterGroupFamily: 'postgres11'  },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
 
 interface OracleInstanceEngineProps {
   readonly engineType: string;
-  readonly engineVersion?: string;
+  readonly version?: string;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
 }
 
@@ -210,7 +210,7 @@ class OracleSeInstanceEngine extends OracleInstanceEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se-11.2' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -235,7 +235,7 @@ class OracleSe1InstanceEngine extends OracleInstanceEngine {
       parameterGroupFamilies: [
         { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se1-11.2' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -263,7 +263,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
         { engineMajorVersion: '18',   parameterGroupFamily: 'oracle-se2-18'   },
         { engineMajorVersion: '19',   parameterGroupFamily: 'oracle-se2-19'   },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -292,7 +292,7 @@ class OracleEeInstanceEngine extends OracleInstanceEngine {
         { engineMajorVersion: '18',   parameterGroupFamily: 'oracle-ee-18'   },
         { engineMajorVersion: '19',   parameterGroupFamily: 'oracle-ee-19'   },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
