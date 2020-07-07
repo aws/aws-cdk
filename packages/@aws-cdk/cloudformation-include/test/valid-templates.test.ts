@@ -6,6 +6,7 @@ import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
+import { CfnNestedInclude } from '../lib/cfn-nested-include';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
@@ -480,6 +481,25 @@ describe('CDK Include', () => {
     expect(() => {
       cfnTemplate.getOutput('FakeOutput');
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
+  });
+
+  //TODO test title
+  test("can still perform method calls on templates that have nested stacks", () => {
+    //const childTemplate = new CfnNestedInclude(stack, 'mynestedId', { templateFile: _testTemplateFilePath('grandchild-import-stack.json') });
+
+    //console.log(childTemplate.nestedStack.nestedStackParent);
+
+    //expect(childTemplate.getResource('BucketImport').cfnResourceType).toBe('AWS::S3::Bucket');
+    //expect(childTemplate.getParameter('MyBucketParameter').)
+  });
+
+  test("can ingest a template with nested stacks", () => {
+    const parentTemplate = includeTestTemplate(stack, 'parent-export-stack.json');
+
+    console.log(parentTemplate.nestedStacks[0]);
+    console.log(parentTemplate.nestedStacks.length);
+    console.log(parentTemplate.nestedStacks[0].nestedStacks[0]);
+
   });
 });
 
