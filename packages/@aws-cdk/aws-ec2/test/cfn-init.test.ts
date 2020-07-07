@@ -44,3 +44,39 @@ test('whole config with restart handles', () => {
     },
   }));
 });
+
+test('CloudFormationInit can be added to after instantiation', () => {
+});
+
+describe('userdata', () => {
+  test('can disable result code reporting', () => {
+  });
+
+  test('can disable log printing', () => {
+  });
+
+  test('can disable fingerprinting', () => {
+  });
+
+  test('can request multiple different configsets to be used', () => {
+  });
+});
+
+describe('assets', () => {
+  test('appropriate permissions when using initfile', () => {
+  });
+
+  test('appropriate permissions when using initsource', () => {
+  });
+
+  test('no duplication of bucket names when using multiple assets', () => {
+  });
+});
+
+describe('s3 objects', () => {
+  test('appropriate permissions when using initfile', () => {
+  });
+
+  test('appropriate permissions when using initsource', () => {
+  });
+});
