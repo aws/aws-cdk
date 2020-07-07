@@ -223,7 +223,7 @@ export = {
             { 'Ref': 'AWS::Region' },
             ' --stack ',
             { 'Ref': 'AWS::StackName' },
-            ' --resource AsgASGD1D7B4E2\n)',
+            ' --resource AsgASGD1D7B4E2\n  cat /var/log/cfn-init.log >&2\n)',
           ]],
         },
       },
