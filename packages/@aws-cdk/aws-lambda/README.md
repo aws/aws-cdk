@@ -280,7 +280,7 @@ the log retention to never expire even if it was configured with a different val
 ### FileSystem Access
 
 You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
-directory in your runtime environment with the `filesystem` property. To access Amaozn EFS
+directory in your runtime environment with the `filesystem` property. To access Amazon EFS
 from lambda function, the Amazon EFS access point will be required. 
 
 The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
