@@ -173,7 +173,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
-  if (cloudFormationStack.stackStatus.isCreationFailure) {
+  if (cloudFormationStack.stackStatus.isFailure) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
     await cfn.deleteStack({ StackName: deployName }).promise();
     const deletedStack = await waitForStack(cfn, deployName, false);
