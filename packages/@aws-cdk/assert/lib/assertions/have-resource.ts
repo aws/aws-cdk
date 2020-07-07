@@ -301,7 +301,8 @@ export function exactValue(expected: any): PropertyMatcher {
 export function arrayWith(...elements: any[]): PropertyMatcher {
   if (elements.length === 0) { return anything(); }
 
-  return annotateMatcher({ $arrayContaining: elements.length === 1 ? elements[0] : elements }, (value: any, inspection: InspectionFailure): boolean => {
+  const annotation = { $arrayContaining: elements.length === 1 ? elements[0] : elements };
+  return annotateMatcher(annotation, (value: any, inspection: InspectionFailure): boolean => {
     if (!Array.isArray(value)) {
       return failMatcher(inspection, `Expect an array but got '${typeof value}'`);
     }

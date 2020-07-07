@@ -1,10 +1,10 @@
+import { arrayWith, ResourcePart, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import * as path from 'path';
-import { ResourcePart, arrayWith, stringLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { App, Stack, CfnResource, Aws } from '@aws-cdk/core';
+import { App, Aws, CfnResource, Stack } from '@aws-cdk/core';
+import * as path from 'path';
 import * as ec2 from '../lib';
 
 let app: App;
@@ -87,7 +87,7 @@ test('empty configs are not rendered', () => {
 
   // WHEN
   const init = ec2.CloudFormationInit.fromConfigSets({
-    configSets: { 'default': ['config2', 'config1'] },
+    configSets: { default: ['config2', 'config1'] },
     configs: { config1, config2 },
   });
   init.attach(resource, linuxOptions());
@@ -96,7 +96,7 @@ test('empty configs are not rendered', () => {
   expectMetadataLike({
     'AWS::CloudFormation::Init': {
       configSets: {
-        'default': ['config2'],
+        default: ['config2'],
       },
       config2: {
         files: {
@@ -189,17 +189,17 @@ const ASSET_STATEMENT = {
     {
       'Fn::Join': ['', [
         'arn:',
-        { 'Ref': 'AWS::Partition' },
+        { Ref: 'AWS::Partition' },
         ':s3:::',
-        { 'Ref': stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike('AssetParameter*S3Bucket*') },
       ]],
     },
     {
       'Fn::Join': ['', [
         'arn:',
-        { 'Ref': 'AWS::Partition' },
+        { Ref: 'AWS::Partition' },
         ':s3:::',
-        { 'Ref': stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike('AssetParameter*S3Bucket*') },
         '/*',
       ]],
     },
@@ -238,12 +238,12 @@ describe('assets n buckets', () => {
               source: {
                 'Fn::Join': ['', [
                   'https://s3.testregion.',
-                  { 'Ref': 'AWS::URLSuffix' },
+                  { Ref: 'AWS::URLSuffix' },
                   '/',
-                  { 'Ref': stringLike('AssetParameters*') },
+                  { Ref: stringLike('AssetParameters*') },
                   '/',
-                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { 'Ref': stringLike('AssetParameters*') }] }] },
-                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { 'Ref': stringLike('AssetParameters*') }] }] },
+                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
                 ]],
               },
             },
@@ -253,7 +253,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
             { Ref: stringLike('AssetParameters*S3Bucket*') },
           ],
@@ -291,12 +291,12 @@ describe('assets n buckets', () => {
             '/etc/fun': {
               'Fn::Join': ['', [
                 'https://s3.testregion.',
-                { 'Ref': 'AWS::URLSuffix' },
+                { Ref: 'AWS::URLSuffix' },
                 '/',
-                { 'Ref': stringLike('AssetParameters*') },
+                { Ref: stringLike('AssetParameters*') },
                 '/',
-                { 'Fn::Select': [0, { 'Fn::Split': ['||', { 'Ref': stringLike('AssetParameters*') }] }] },
-                { 'Fn::Select': [1, { 'Fn::Split': ['||', { 'Ref': stringLike('AssetParameters*') }] }] },
+                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
               ]],
             },
           },
@@ -305,7 +305,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
             { Ref: stringLike('AssetParameters*S3Bucket*') },
           ],
@@ -330,8 +330,8 @@ describe('assets n buckets', () => {
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': [ '', [ 'arn:', { 'Ref': 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
-            { 'Fn::Join': [ '', [ 'arn:', { 'Ref': 'AWS::Partition' }, ':s3:::my-bucket/file.js' ] ] },
+            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
+            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js' ] ] },
           ],
         }),
         Version: '2012-10-17',
@@ -342,7 +342,7 @@ describe('assets n buckets', () => {
         config: {
           files: {
             '/etc/fun.js': {
-              source: { 'Fn::Join': [ '', [ 'https://s3.testregion.', { 'Ref': 'AWS::URLSuffix' }, '/my-bucket/file.js' ] ] },
+              source: { 'Fn::Join': [ '', [ 'https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.js' ] ] },
             },
           },
         },
@@ -350,7 +350,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [ 'my-bucket' ] ,
         },
       },
@@ -373,8 +373,8 @@ describe('assets n buckets', () => {
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': [ '', [ 'arn:', { 'Ref': 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
-            { 'Fn::Join': [ '', [ 'arn:', { 'Ref': 'AWS::Partition' }, ':s3:::my-bucket/file.zip' ] ] },
+            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket' ] ] },
+            { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip' ] ] },
           ],
         }),
         Version: '2012-10-17',
@@ -384,14 +384,14 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Init': {
         config: {
           sources: {
-            '/etc/fun': { 'Fn::Join': [ '', [ 'https://s3.testregion.', { 'Ref': 'AWS::URLSuffix' }, '/my-bucket/file.zip' ] ] },
+            '/etc/fun': { 'Fn::Join': [ '', [ 'https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip' ] ] },
           },
         },
       },
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [ 'my-bucket' ] ,
         },
       },
@@ -413,7 +413,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
             { Ref: stringLike('AssetParameters*S3Bucket*') },
           ],
@@ -438,7 +438,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Authentication': {
         S3AccessCreds: {
           type: 'S3',
-          roleName: { 'Ref': 'InstanceRole3CCE2F1D' },
+          roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: arrayWith(
             { Ref: stringLike('AssetParameters*S3Bucket*') },
             'my-bucket',
@@ -474,7 +474,7 @@ function expectLine(lines: string[], re: RegExp) {
 function dontExpectLine(lines: string[], re: RegExp) {
   try {
     expectLine(lines, re);
-  } catch(e) {
+  } catch (e) {
     return;
   }
   throw new Error(`Found unexpected line matching '${re}': ${lines.join('\n')}`);

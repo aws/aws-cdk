@@ -262,7 +262,7 @@ export class InitConfig {
 
     const authentication = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
       .map(c => c?.authentication)
-      .reduce(deepMerge, undefined)
+      .reduce(deepMerge, undefined);
 
     return {
       config: {

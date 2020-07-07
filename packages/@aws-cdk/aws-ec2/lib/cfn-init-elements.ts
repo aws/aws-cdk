@@ -929,12 +929,12 @@ export abstract class InitSource extends InitElement {
    */
   public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected doBind(options: InitBindOptions) {
-        bucket.grantRead(options.instanceRole, key);
+      protected doBind(bindOptions: InitBindOptions) {
+        bucket.grantRead(bindOptions.instanceRole, key);
 
         return {
           config: { [this.targetDirectory]: bucket.urlForObject(key) },
-          authentication: standardS3Auth(options.instanceRole, bucket.bucketName),
+          authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
     }(targetDirectory, options.serviceRestartHandles);
@@ -945,16 +945,16 @@ export abstract class InitSource extends InitElement {
    */
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new class extends InitSource {
-      protected doBind(options: InitBindOptions) {
-        const asset = new s3_assets.Asset(options.scope, `${targetDirectory}Asset`, {
+      protected doBind(bindOptions: InitBindOptions) {
+        const asset = new s3_assets.Asset(bindOptions.scope, `${targetDirectory}Asset`, {
           path,
-          ...options,
+          ...bindOptions,
         });
-        asset.grantRead(options.instanceRole);
+        asset.grantRead(bindOptions.instanceRole);
 
         return {
           config: { [this.targetDirectory]: asset.httpUrl },
-          authentication: standardS3Auth(options.instanceRole, asset.s3BucketName),
+          authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
         };
       }
     }(targetDirectory, options.serviceRestartHandles);
@@ -965,12 +965,12 @@ export abstract class InitSource extends InitElement {
    */
   public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected doBind(options: InitBindOptions) {
-        asset.grantRead(options.instanceRole);
+      protected doBind(bindOptions: InitBindOptions) {
+        asset.grantRead(bindOptions.instanceRole);
 
         return {
           config: { [this.targetDirectory]: asset.httpUrl },
-          authentication: standardS3Auth(options.instanceRole, asset.s3BucketName),
+          authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
         };
       }
     }(targetDirectory, options.serviceRestartHandles);

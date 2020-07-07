@@ -1,6 +1,6 @@
-import { expect, haveResourceLike, ResourcePart, arrayWith } from '@aws-cdk/assert';
-import { Duration, Stack } from '@aws-cdk/core';
+import { arrayWith, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
 
@@ -17,7 +17,7 @@ let vpc: ec2.Vpc;
 let baseProps: BaseProps;
 
 export = {
-  setUp(cb: () => void) {
+  'setUp'(cb: () => void) {
     stack = new Stack();
     vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -67,7 +67,6 @@ export = {
         },
       },
     }, ResourcePart.CompleteDefinition));
-
 
     test.done();
   },
@@ -216,13 +215,13 @@ export = {
         'Fn::Base64': {
           'Fn::Join': [ '', [
             '#!/bin/bash\n# fingerprint: 6661ddee2afda062\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
-            { 'Ref': 'AWS::Region' },
+            { Ref: 'AWS::Region' },
             ' --stack ',
-            { 'Ref': 'AWS::StackName' },
+            { Ref: 'AWS::StackName' },
             ' --resource AsgASGD1D7B4E2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
-            { 'Ref': 'AWS::Region' },
+            { Ref: 'AWS::Region' },
             ' --stack ',
-            { 'Ref': 'AWS::StackName' },
+            { Ref: 'AWS::StackName' },
             ' --resource AsgASGD1D7B4E2\n  cat /var/log/cfn-init.log >&2\n)',
           ]],
         },
@@ -233,7 +232,7 @@ export = {
         Statement: arrayWith({
           Action: [ 'cloudformation:DescribeStackResource', 'cloudformation:SignalResource' ],
           Effect: 'Allow',
-          Resource: { 'Ref': 'AWS::StackId' },
+          Resource: { Ref: 'AWS::StackId' },
         }),
       },
     }));
