@@ -4,11 +4,13 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+
 export = {
   'applies a patch to k8s'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'MyPatch', {
@@ -45,7 +47,7 @@ export = {
   'defaults to "strategic" patch type if no patchType is specified'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'MyPatch', {
@@ -62,7 +64,7 @@ export = {
   'uses specified to patch type if specified'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster');
+    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
     new KubernetesPatch(stack, 'jsonPatch', {

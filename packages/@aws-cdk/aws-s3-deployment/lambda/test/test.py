@@ -16,7 +16,7 @@ from unittest.mock import patch
 class TestHandler(unittest.TestCase):
     def setUp(self):
         logger = logging.getLogger()
-        
+
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
         except OSError: pass
@@ -35,6 +35,34 @@ class TestHandler(unittest.TestCase):
         self.assertAwsCommands(
             ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
+    def test_create_no_delete(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Prune": "false"
+        })
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+
+    def test_update_no_delete(self):
+        invoke_handler("Update", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "DestinationBucketName": "<dest-bucket-name>",
+            "Prune": "false"
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, physical_id="<physical-id>")
+
+        self.assertAwsCommands(
+            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
     def test_create_update_multiple_sources(self):

@@ -7,6 +7,7 @@ import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
+import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
@@ -274,6 +275,13 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
+
+  /**
+   * The filesystem configuration for the lambda function
+   *
+   * @default - will not mount any filesystem
+   */
+  readonly filesystem?: FileSystem;
 }
 
 /**
@@ -495,6 +503,16 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
+    // add additonal managed policies when necessary
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.policies) {
+        config.policies.forEach(p => {
+          this.role?.addToPolicy(p);
+        });
+      }
+    }
+
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
     }
@@ -570,6 +588,22 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
+
+    if (props.filesystem) {
+      const config = props.filesystem.config;
+      if (config.dependency) {
+        this.node.addDependency(...config.dependency);
+      }
+
+      resource.addPropertyOverride('FileSystemConfigs',
+        [
+          {
+            LocalMountPath: config.localMountPath,
+            Arn: config.arn,
+          },
+        ],
+      );
+    }
   }
 
   /**
@@ -701,7 +735,7 @@ export class Function extends FunctionBase {
     // sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does
     // it).
-    const variables: { [key: string]: string } = { };
+    const variables: { [key: string]: string } = {};
     for (const key of Object.keys(this.environment).sort()) {
       variables[key] = this.environment[key];
     }
@@ -744,6 +778,12 @@ export class Function extends FunctionBase {
     }
 
     this._connections = new ec2.Connections({ securityGroups });
+
+    if (props.filesystem) {
+      if (props.filesystem.config.connections) {
+        props.filesystem.config.connections.allowDefaultPortFrom(this);
+      }
+    }
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.

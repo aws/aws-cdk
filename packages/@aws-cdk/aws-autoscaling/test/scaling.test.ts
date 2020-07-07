@@ -3,10 +3,10 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-export = {
+nodeunitShim({
   'target tracking policies': {
     'cpu utilization'(test: Test) {
       // GIVEN
@@ -221,7 +221,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 class ASGFixture extends cdk.Construct {
   public readonly vpc: ec2.Vpc;

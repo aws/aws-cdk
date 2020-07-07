@@ -95,8 +95,8 @@
       "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }
