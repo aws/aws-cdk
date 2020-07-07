@@ -256,6 +256,33 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
+### Lambda with Application AutoScaling
+
+Application AutoScaling can be added on to Lambda Aliases using the `alias.autoScaleProvisionedConcurrency()` API:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+});
+
+const alias = new lambda.Alias(stack, 'Alias', {
+  aliasName: 'prod',
+  version,
+});
+
+alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 });
+```
+
+[Example of Lambda AutoScaling usage](test/integ.autoscaling.ts)
+
+Autoscaling on a Lambda Version is still possible, but it is a sharp edge that is not exposed in the L2 construct. 
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html) on autoscaling lambda functions.
+
 ### Log Group
 
 Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
