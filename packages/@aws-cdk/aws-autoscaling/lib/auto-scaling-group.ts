@@ -991,8 +991,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
     }
 
-    const platform = this.isWindows ? ec2.InitRenderPlatform.WINDOWS : ec2.InitRenderPlatform.LINUX;
-    init.attach(this.autoScalingGroup, { platform }).apply(this.autoScalingGroup, {
+    const platform = this.isWindows ? ec2.InitPlatform.WINDOWS : ec2.InitPlatform.LINUX;
+    init.attach(this.autoScalingGroup, {
+      platform,
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,
@@ -1003,6 +1004,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // Attach a hash of the CloudFormationInit config to the UserData, so that the
     // UserData will change if the config changes, which will cause
+    // FIXME - Rico ---^ Dead comment, or missing work?
   }
 
   /**

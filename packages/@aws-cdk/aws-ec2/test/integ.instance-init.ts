@@ -22,7 +22,6 @@ new ec2.Instance(stack, 'Instance2', {
   userDataCausesReplacement: true,
   initOptions: {
     timeout: cdk.Duration.minutes(30),
-    ignoreFailures: true,
   },
   init: ec2.CloudFormationInit.fromConfigSets({
     configSets: {
@@ -45,7 +44,7 @@ new ec2.Instance(stack, 'Instance2', {
           homeDir: '/home/sysuser1-custom',
         }),
         ec2.InitUser.fromName('sysuser2'),
-        ec2.InitSource.fromAsset('/tmp/sourceAsset', tmpDir),
+        ec2.InitSource.fromAsset('/tmp/sourceDir', tmpDir),
       ]),
     },
   }),

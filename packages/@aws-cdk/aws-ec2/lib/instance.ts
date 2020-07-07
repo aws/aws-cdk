@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 
 import { Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CloudFormationInit } from './cfn-init';
-import { InitRenderPlatform } from './cfn-init-elements';
+import { InitPlatform } from './cfn-init-elements';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -424,8 +424,9 @@ export class Instance extends Resource implements IInstance {
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
   public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
-    const platform = this.isWindows ? InitRenderPlatform.WINDOWS : InitRenderPlatform.LINUX;
-    init.attach(this.instance, { platform }).apply(this.instance, {
+    const platform = this.isWindows ? InitPlatform.WINDOWS : InitPlatform.LINUX;
+    init.attach(this.instance, {
+      platform,
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
 import * as crypto from 'crypto';
-import { InitBindOptions, InitElement, InitElementType, InitRenderOptions, InitRenderPlatform } from './cfn-init-elements';
+import { InitBindOptions, InitElement, InitElementConfig, InitElementType, InitPlatform } from './cfn-init-elements';
 import { UserData } from './user-data';
 
 /**
@@ -83,106 +83,78 @@ export class CloudFormationInit {
    * `autoScalingGroup.applyCloudFormationInit()` achieve the same result in a
    * simpler way.
    */
-  public attach(definingResource: CfnResource, attachOptions: AttachInitOptions): AttachedCloudFormationInit {
-    // Note: This this eagerly renders and will not reflect mutations made after attaching.
-    const configData = this.renderInit(definingResource.stack, attachOptions.platform);
-    definingResource.addMetadata('AWS::CloudFormation::Init', configData);
-    const fingerprint = contentHash(JSON.stringify(configData)).substr(0, 16);
+  public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+    // Note: This will not reflect mutations made after attaching.
+    const bindResult = this.bind(attachedResource.stack, attachOptions);
+    attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
+    const fingerprint = contentHash(JSON.stringify(bindResult.configData)).substr(0, 16);
 
-    const self = this;
+    attachOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
+      resources: [Aws.STACK_ID],
+    }));
 
-    // Anonymous subclass of an abstract class because I don't want users to be able to
-    // instantiate this. It is a type that represents an action you took.
-    return new class extends AttachedCloudFormationInit {
-      public apply(consumingResource: CfnResource, useOptions: ApplyInitOptions): void {
-        const authData = self.bind({ instanceRole: useOptions.instanceRole });
-        consumingResource.addMetadata('AWS::CloudFormation::Authentication', authData);
-        useOptions.instanceRole.addToPolicy(new iam.PolicyStatement({
-          actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
-          resources: [Aws.STACK_ID],
-        }));
+    if (bindResult.authBucketNames && bindResult.authBucketNames.length > 0) {
+      const s3AuthConfig = {
+        S3AccessCreds: {
+          type: 'S3',
+          roleName: attachOptions.instanceRole.roleName,
+          buckets: bindResult.authBucketNames,
+        },
+      };
+      attachedResource.addMetadata('AWS::CloudFormation::Authentication', s3AuthConfig);
+    }
 
-        // To identify the resources that (a) have the metadata and (b) where the signal needs to be sent
-        // (may be different), we need { region, stackName, logicalId }
-        const initLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${definingResource.logicalId}`;
-        const signalLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${consumingResource.logicalId}`;
-        const configSets = (useOptions.configSets ?? ['default']).join(',');
+    // To identify the resources that have the metadata and where the signal
+    // needs to be sent, we need { region, stackName, logicalId }
+    const resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
+    const configSets = (attachOptions.configSets ?? ['default']).join(',');
 
-        if (useOptions.embedFingerprint ?? true) {
-          // It just so happens that the comment char is '#' for both bash and PowerShell
-          useOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
-        }
+    if (attachOptions.embedFingerprint ?? true) {
+      // It just so happens that the comment char is '#' for both bash and PowerShell
+      attachOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
+    }
 
-        const printLog = useOptions.printLog ?? true;
+    const printLog = attachOptions.printLog ?? true;
 
-        if (attachOptions.platform === InitRenderPlatform.WINDOWS) {
-          const errCode = useOptions.ignoreFailures ? '0' : '%ERRORLEVEL%';
-          useOptions.userData.addCommands(...[
-            `cfn-init.exe -v ${initLocator} -c ${configSets}`,
-            `cfn-signal.exe -e ${errCode} ${signalLocator}`,
-            ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
-          ]);
-        } else {
-          const errCode = useOptions.ignoreFailures ? '0' : '$?';
-          useOptions.userData.addCommands(...[
-            // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
-            '(',
-            '  set +e',
-            `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
-            `  /opt/aws/bin/cfn-signal -e ${errCode} ${signalLocator}`,
-            ...printLog ? [
-              '  cat /var/log/cfn-init.log',
-            ] : [],
-            ')',
-          ]);
-        }
-      }
-    }();
+    if (attachOptions.platform === InitPlatform.WINDOWS) {
+      const errCode = attachOptions.ignoreFailures ? '0' : '%ERRORLEVEL%';
+      attachOptions.userData.addCommands(...[
+        `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
+        `cfn-signal.exe -e ${errCode} ${resourceLocator}`,
+        ...printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : [],
+      ]);
+    } else {
+      const errCode = attachOptions.ignoreFailures ? '0' : '$?';
+      attachOptions.userData.addCommands(...[
+        // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
+        '(',
+        '  set +e',
+        `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+        `  /opt/aws/bin/cfn-signal -e ${errCode} ${resourceLocator}`,
+        ...printLog ? ['  cat /var/log/cfn-init.log >&2'] : [],
+        ')',
+      ]);
+    }
   }
 
-  private bind(options: InitBindOptions): Record<string, any> {
-    // for (const config of Object.values(this._configs)) {
-    //   config.bind(options);
-    // }
-
-    const ret: Record<string, any> = {};
-    Object.values(this._configs).forEach(c => {
-      const configAuthData = c.bind(options);
-      Object.assign(ret, configAuthData);
-    });
-    return ret;
-
-    //return Object.values(this._configs).map(c => c.bind(options)).filter(auth => auth);
-  }
-
-  private renderInit(scope: Construct, platform: InitRenderPlatform): any {
+  private bind(scope: Construct, options: AttachInitOptions): any {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
 
+    const configNameToBindResult = mapValues(nonEmptyConfigs, c => c.bind(scope, options));
+    const authBucketNames = Object.values(configNameToBindResult)
+      .map(c => c.authBucketNames)
+      .reduce((allBuckets, buckets) => (buckets && buckets.length > 0) ? allBuckets?.concat(buckets) : allBuckets, []);
+
     return {
-      configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
-      ...mapValues(nonEmptyConfigs, c => c.renderConfig(scope, platform)),
+      configData: {
+        configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
+        ...mapValues(configNameToBindResult, c => c.config),
+      },
+      authBucketNames,
     };
   }
 
-  // private renderAuth(options: InitBindOptions): any {
-  //   const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
-
-  //   return {
-  //     ...mapValues(nonEmptyConfigs, c => c.renderAuth()),
-  //   };
-  // }
-}
-
-/**
- * A CloudFormationInit object that has been attached to a Resource
- *
- * Can be applied to an instance, role and UserData.
- */
-export abstract class AttachedCloudFormationInit {
-  /**
-   * Apply the config to a resource
-   */
-  public abstract apply(resource: CfnResource, options: ApplyInitOptions): void;
 }
 
 /**
@@ -190,19 +162,14 @@ export abstract class AttachedCloudFormationInit {
  */
 export interface AttachInitOptions {
   /**
-   * Platform to render for
-   */
-  readonly platform: InitRenderPlatform;
-}
-
-/**
- * Options for applying a CloudFormationInit to an arbitrary resource
- */
-export interface ApplyInitOptions {
-  /**
    * Instance role of the consuming instance or fleet
    */
   readonly instanceRole: iam.IRole;
+
+  /**
+   * Platform to render for
+   */
+  readonly platform: InitPlatform;
 
   /**
    * UserData to add commands to
@@ -277,54 +244,61 @@ export class InitConfig {
   }
 
   /**
-   * Called when the config is applied to an instance
+   * Called when the config is applied to an instance.
+   * Creates the CloudFormation representation of the Init config and handles any permissions and assets.
    */
-  public bind(options: InitBindOptions): Record<string, any> {
-    const ret: Record<string, any> = {};
-    this.elements.forEach(elem => {
-      const authData = elem.bind(options);
-      Object.assign(ret, authData);
-    });
-    return ret;
-    // for (const element of this.elements) {
-    //   element.bind(options);
-    // }
-  }
+  public bind(scope: Construct, options: AttachInitOptions): InitElementConfig {
+    const bindOptions = {
+      instanceRole: options.instanceRole,
+      platform: options.platform,
+      scope,
+    };
 
-  /**
-   * Render the config
-   */
-  public renderConfig(scope: Construct, platform: InitRenderPlatform): any {
-    const renderOptions = { scope, platform };
+    const packageConfig = this.bindForType(InitElementType.PACKAGE, bindOptions);
+    const groupsConfig = this.bindForType(InitElementType.GROUP, bindOptions);
+    const usersConfig = this.bindForType(InitElementType.USER, bindOptions);
+    const sourcesConfig = this.bindForType(InitElementType.SOURCE, bindOptions);
+    const filesConfig = this.bindForType(InitElementType.FILE, bindOptions);
+    const commandsConfig = this.bindForType(InitElementType.COMMAND, bindOptions);
+    // Must be last!
+    const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
+
+    const authBucketNames = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
+      .map(c => c?.authBucketNames)
+      .reduce((allBuckets, buckets) => (buckets && buckets.length > 0) ? allBuckets?.concat(buckets) : allBuckets, []);
 
     return {
-      packages: this.renderConfigForType(InitElementType.PACKAGE, renderOptions),
-      groups: this.renderConfigForType(InitElementType.GROUP, renderOptions),
-      users: this.renderConfigForType(InitElementType.USER, renderOptions),
-      sources: this.renderConfigForType(InitElementType.SOURCE, renderOptions),
-      files: this.renderConfigForType(InitElementType.FILE, renderOptions),
-      commands: this.renderConfigForType(InitElementType.COMMAND, renderOptions),
-      // Must be last!
-      services: this.renderConfigForType(InitElementType.SERVICE, renderOptions),
+      config: {
+        packages: packageConfig?.config,
+        groups: groupsConfig?.config,
+        users: usersConfig?.config,
+        sources: sourcesConfig?.config,
+        files: filesConfig?.config,
+        commands: commandsConfig?.config,
+        services: servicesConfig?.config,
+      },
+      authBucketNames,
     };
   }
 
-  /**
-   * Render the auth config, if any.
-   */
-  public renderAuth(): any {
-    return this.elements.map(elem => elem.renderAuth());
-  }
-
-  private renderConfigForType(elementType: InitElementType, renderOptions: Omit<InitRenderOptions, 'index'>): Record<string, any> | undefined {
+  private bindForType(elementType: InitElementType, renderOptions: Omit<InitBindOptions, 'index'>): InitElementConfig | undefined {
     const elements = this.elements.filter(elem => elem.elementType === elementType);
     if (elements.length === 0) { return undefined; }
 
-    const ret: Record<string, any> = {};
+    const aggregatedConfig: Record<string, any> = {};
+    let authBucketNames: string[] = [];
     elements.forEach((elem, index) => {
-      deepMerge(ret, elem.renderElement({ index, ...renderOptions }));
+      const elementConfig = elem.bind({ index, ...renderOptions });
+      deepMerge(aggregatedConfig, elementConfig.config);
+      if (elementConfig.authBucketNames) {
+        authBucketNames = authBucketNames.concat(elementConfig.authBucketNames);
+      }
     });
-    return ret;
+
+    return {
+      config: aggregatedConfig,
+      authBucketNames,
+    };
   }
 }
 
