@@ -114,7 +114,7 @@ export class CloudFormationInit {
     }
 
     if (attachOptions.platform === InitPlatform.WINDOWS) {
-      const errCode = attachOptions.ignoreFailures ? '0' : '%ERRORLEVEL%';
+      const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
       attachOptions.userData.addCommands(...[
         `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
         `cfn-signal.exe -e ${errCode} ${resourceLocator}`,
@@ -160,7 +160,7 @@ export interface AttachInitOptions {
   readonly instanceRole: iam.IRole;
 
   /**
-   * Platform to render for
+   * OS Platfrom the init config will be used for
    */
   readonly platform: InitPlatform;
 
