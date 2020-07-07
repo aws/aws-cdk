@@ -73,15 +73,19 @@ export class CloudFormationInit {
   /**
    * Attach the CloudFormation Init config to the given resource
    *
-   * This returns an `AttachedCloudFormationInit` object, which can be used to apply
-   * the init to one or more instances and/or autoscaling groups. Applying the
-   * `AttachedCloudFormationInit` does NOT increase the ResourceSignalCount for
-   * the attached resource, you have to do that separately.
+   * This method does the following:
    *
-   * You only need to use this API if want to reuse the same init config for
-   * multiple resources. If not, `instance.applyCloudFormationInit()` or
-   * `autoScalingGroup.applyCloudFormationInit()` achieve the same result in a
-   * simpler way.
+   * - Renders the `AWS::CloudFormation::Init` object to the given resource's
+   *   metadata, potentially adding a `AWS::CloudFormation::Authentication` object
+   *   next to it if required.
+   * - Updates the instance role policy to be able to call the APIs required for
+   *   `cfn-init` and `cfn-signal` to work, and potentially add permissions to download
+   *   referenced asset and bucket resources.
+   * - Updates the given UserData with commands to execute the `cfn-init` script.
+   *
+   * As an app builder, you shouldn't need to use this API directly. Instead,
+   * use `instance.applyCloudFormationInit()` or
+   * `autoScalingGroup.applyCloudFormationInit()`.
    */
   public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     // Note: This will not reflect mutations made after attaching.
@@ -109,13 +113,12 @@ export class CloudFormationInit {
     // needs to be sent, we need { region, stackName, logicalId }
     const resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
     const configSets = (attachOptions.configSets ?? ['default']).join(',');
+    const printLog = attachOptions.printLog ?? true;
 
     if (attachOptions.embedFingerprint ?? true) {
       // It just so happens that the comment char is '#' for both bash and PowerShell
       attachOptions.userData.addCommands(`# fingerprint: ${fingerprint}`);
     }
-
-    const printLog = attachOptions.printLog ?? true;
 
     if (attachOptions.platform === InitPlatform.WINDOWS) {
       const errCode = attachOptions.ignoreFailures ? '0' : '%ERRORLEVEL%';

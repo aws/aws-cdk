@@ -441,6 +441,22 @@ export abstract class InitFile extends InitElement {
   }
 
   /**
+   * Download a file from an S3 bucket
+   */
+  public static fromS3Object(fileName: string, bucket: s3.IBucket, key: string, options: InitFileOptions = {}): InitFile {
+    return new class extends InitFile {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
+        bucket.grantRead(bindOptions.instanceRole, key);
+        return super.bind(bindOptions);
+      }
+      protected renderContentOrSource(): Record<string, any> {
+        return { source: bucket.urlForObject(key) };
+      }
+      protected renderAuthBucketNames(): string[] { return [ bucket.bucketName ]; }
+    }(fileName, options);
+  }
+
+  /**
    * Create an asset from the given file and use that
    *
    * This is appropriate for files that are too large to embed into the template.
@@ -894,8 +910,15 @@ export abstract class InitSource extends InitElement {
   /**
    * Extract an archive stored in an S3 bucket into the given directory
    */
-  public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}) {
-    return InitSource.fromUrl(targetDirectory, bucket.urlForObject(key), options);
+  public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
+    return new class extends InitSource {
+      public bind(bindOptions: InitBindOptions): InitElementConfig {
+        bucket.grantRead(bindOptions.instanceRole, key);
+        return super.bind(bindOptions);
+      }
+      protected renderUrl(): string { return bucket.urlForObject(key); }
+      protected renderAuthBucketNames(): string[] { return [ bucket.bucketName ]; }
+    }(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
