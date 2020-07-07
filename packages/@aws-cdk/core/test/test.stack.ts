@@ -910,13 +910,13 @@ export = {
           Type: 'Foo::Baz',
           Properties: {
             Value: {
-              Ref: 'SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118',
+              Ref: 'SsmParameterValuestacksStack1RefResource1',
             },
           },
         },
       },
       Parameters: {
-        SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118: {
+        SsmParameterValuestacksStack1RefResource1: {
           Type: 'AWS::SSM::Parameter::Value<String>',
           Default: '/stacks/Stack1/RefResource1',
         },
@@ -956,18 +956,63 @@ export = {
           Type: 'Foo::Bar',
           Properties: {
             Key1: {
-              Ref: 'SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118',
+              Ref: 'SsmParameterValuestacksStack1RefResource1',
             },
           },
         },
       },
       Parameters: {
-        SsmParameterValuestacksStack1RefResource1C96584B6F00A464EAD1953AFF4B05118: {
+        SsmParameterValuestacksStack1RefResource1: {
           Type: 'AWS::SSM::Parameter::Value<String>',
           Default: '/stacks/Stack1/RefResource1',
         },
       },
     });
+
+    test.done();
+  },
+
+  'duplicate weak references produce a single SsmStringParameter'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const resource = new CfnResource(stack1, 'Resource1', {
+      type: 'Foo::Bar',
+      properties: {
+        Key1: 'Value1',
+      },
+    });
+    resource.enableWeakReference();
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'Resource2', {
+      type: 'Foo::Bar',
+      properties: {
+        Key1: resource.ref,
+      },
+    });
+    new CfnResource(stack2, 'Resource3', {
+      type: 'Foo::Bar',
+      properties: {
+        Key1: resource.ref,
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    const resources = template1.Resources as { [key: string]: any };
+    const ssmResources = Object.values(resources).filter((r) => r.Type === 'AWS::SSM::Parameter');
+    test.deepEqual(ssmResources.length, 1);
+
+    const parameters = template2.Parameters as { [key: string]: any };
+    const ssmParameters = Object.values(parameters).filter((p) => p.Type === 'AWS::SSM::Parameter::Value<String>');
+    test.deepEqual(ssmParameters.length, 1);
+
+    test.deepEqual(ssmResources[0].Properties.Name, ssmParameters[0].Default);
 
     test.done();
   },

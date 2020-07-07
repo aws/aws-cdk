@@ -169,12 +169,16 @@ function createSsmParameter(consumer: Stack, reference: CfnReference): Intrinsic
   // include the stack name, SSM parameters are not stack-local.
   // use SSM hierarchy format - https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-su-organize.html
   const parameterName = `/stacks/${exportingStack.stackName}/${id}`;
+  const constructId = `SSMExport${id}`;
 
-  new SsmStringParameter(exportingStack, `SSMExport${id}`, {
-    name: parameterName,
-    value: Token.asString(reference),
-    description: `[cdk] exported from stack "${exportingStack.stackName}" for use as parameter in a different stack`,
-  });
+  const existing = exportingStack.node.tryFindChild(constructId);
+  if (!existing) {
+    new SsmStringParameter(exportingStack, constructId, {
+      name: parameterName,
+      value: Token.asString(reference),
+      description: `[cdk] exported from stack "${exportingStack.stackName}" for use as parameter in a different stack`,
+    });
+  }
 
   const parameterId = `SsmParameterValue:${parameterName}`;
   let cfnparameter = consumer.node.tryFindChild(parameterId) as CfnParameter | undefined;
