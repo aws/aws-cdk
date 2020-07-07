@@ -185,10 +185,9 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
 }
 
 /**
- * Creation properties of the plain Aurora database cluster engine.
- * Used in {@link DatabaseClusterEngine.aurora}.
+ * Common properties of all cluster engines.
  */
-export interface AuroraClusterEngineProps {
+interface ClusterEngineProps {
   /**
    * The exact version of the engine.
    *
@@ -196,6 +195,13 @@ export interface AuroraClusterEngineProps {
    * @default - no version specified
    */
   readonly version?: string;
+}
+
+/**
+ * Creation properties of the plain Aurora database cluster engine.
+ * Used in {@link DatabaseClusterEngine.aurora}.
+ */
+export interface AuroraClusterEngineProps extends ClusterEngineProps {
 }
 
 class AuroraClusterEngine extends MySqlClusterEngineBase {
@@ -222,14 +228,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
  * Creation properties of the Aurora MySQL database cluster engine.
  * Used in {@link DatabaseClusterEngine.auroraMySql}.
  */
-export interface AuroraMySqlClusterEngineProps {
-  /**
-   * The exact version of the engine.
-   *
-   * @example "5.7.mysql_aurora.2.07.1"
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface AuroraMySqlClusterEngineProps extends ClusterEngineProps {
 }
 
 class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
@@ -255,14 +254,7 @@ class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
  * Creation properties of the Aurora PostgreSQL database cluster engine.
  * Used in {@link DatabaseClusterEngine.auroraPostgreSql}.
  */
-export interface AuroraPostgreSqlClusterEngineProps {
-  /**
-   * The exact version of the engine.
-   *
-   * @example "9.5.21"
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface AuroraPostgreSqlClusterEngineProps extends ClusterEngineProps {
 }
 
 class AuroraPostgreSqlClusterEngine extends ClusterEngineBase {

@@ -80,17 +80,21 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   }
 }
 
-/**
- * Properties for MariaDB instance engines.
- * Used in {@link DatabaseInstanceEngine.mariaDb}.
- */
-export interface MariaDbInstanceEngineProps {
+/** Common properties of all instance engines. */
+interface InstanceEngineProps {
   /**
    * The exact version of the engine to use.
    *
    * @default - no version specified
    */
   readonly version?: string;
+}
+
+/**
+ * Properties for MariaDB instance engines.
+ * Used in {@link DatabaseInstanceEngine.mariaDb}.
+ */
+export interface MariaDbInstanceEngineProps extends InstanceEngineProps {
 }
 
 class MariaDbInstanceEngine extends InstanceEngineBase {
@@ -114,13 +118,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
  * Properties for MySQL instance engines.
  * Used in {@link DatabaseInstanceEngine.mySql}.
  */
-export interface MySqlInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface MySqlInstanceEngineProps extends InstanceEngineProps {
 }
 
 class MySqlInstanceEngine extends InstanceEngineBase {
@@ -143,13 +141,7 @@ class MySqlInstanceEngine extends InstanceEngineBase {
  * Properties for PostgreSQL instance engines.
  * Used in {@link DatabaseInstanceEngine.postgreSql}.
  */
-export interface PostgreSqlInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface PostgreSqlInstanceEngineProps extends InstanceEngineProps {
 }
 
 /**
@@ -174,9 +166,8 @@ class PostgreSqlInstanceEngine extends InstanceEngineBase {
   }
 }
 
-interface OracleInstanceEngineProps {
+interface OracleInstanceEngineProps extends InstanceEngineProps {
   readonly engineType: string;
-  readonly version?: string;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
 }
 
@@ -194,13 +185,7 @@ abstract class OracleInstanceEngine extends InstanceEngineBase {
  * Properties for Oracle Standard Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe}.
  */
-export interface OracleSeInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface OracleSeInstanceEngineProps extends InstanceEngineProps {
 }
 
 class OracleSeInstanceEngine extends OracleInstanceEngine {
@@ -219,13 +204,7 @@ class OracleSeInstanceEngine extends OracleInstanceEngine {
  * Properties for Oracle Standard Edition 1 instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe1}.
  */
-export interface OracleSe1InstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface OracleSe1InstanceEngineProps extends InstanceEngineProps {
 }
 
 class OracleSe1InstanceEngine extends OracleInstanceEngine {
@@ -244,13 +223,7 @@ class OracleSe1InstanceEngine extends OracleInstanceEngine {
  * Properties for Oracle Standard Edition 2 instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe2}.
  */
-export interface OracleSe2InstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface OracleSe2InstanceEngineProps extends InstanceEngineProps {
 }
 
 class OracleSe2InstanceEngine extends OracleInstanceEngine {
@@ -272,13 +245,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
  * Properties for Oracle Enterprise Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleEe}.
  */
-export interface OracleEeInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface OracleEeInstanceEngineProps extends InstanceEngineProps {
 }
 
 class OracleEeInstanceEngine extends OracleInstanceEngine {
@@ -297,9 +264,8 @@ class OracleEeInstanceEngine extends OracleInstanceEngine {
   }
 }
 
-interface SqlServerInstanceEngineProps {
+interface SqlServerInstanceEngineProps extends InstanceEngineProps {
   readonly engineType: string;
-  readonly engineVersion?: string;
   readonly parameterGroupFamilies?: ParameterGroupFamilyMapping[];
   readonly defaultInstanceType?: ec2.InstanceType;
 }
@@ -323,13 +289,7 @@ abstract class SqlServerInstanceEngine extends InstanceEngineBase {
  * Properties for SQL Server Standard Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.sqlServerSe}.
  */
-export interface SqlServerSeInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface SqlServerSeInstanceEngineProps extends InstanceEngineProps {
 }
 
 class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
@@ -342,7 +302,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-se-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-se-14.0' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -351,13 +311,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngine {
  * Properties for SQL Server Express Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.sqlServerEx}.
  */
-export interface SqlServerExInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface SqlServerExInstanceEngineProps extends InstanceEngineProps {
 }
 
 class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
@@ -370,7 +324,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-ex-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ex-14.0' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -379,13 +333,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngine {
  * Properties for SQL Server Web Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.sqlServerWeb}.
  */
-export interface SqlServerWebInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface SqlServerWebInstanceEngineProps extends InstanceEngineProps {
 }
 
 class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
@@ -398,7 +346,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
       ],
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
@@ -407,13 +355,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngine {
  * Properties for SQL Server Enterprise Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.sqlServerEe}.
  */
-export interface SqlServerEeInstanceEngineProps {
-  /**
-   * The exact version of the engine to use.
-   *
-   * @default - no version specified
-   */
-  readonly version?: string;
+export interface SqlServerEeInstanceEngineProps extends InstanceEngineProps {
 }
 
 class SqlServerEeInstanceEngine extends SqlServerInstanceEngine {
@@ -427,7 +369,7 @@ class SqlServerEeInstanceEngine extends SqlServerInstanceEngine {
         { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-ee-14.0' },
       ],
       defaultInstanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
-      engineVersion: props.version,
+      version: props.version,
     });
   }
 }
