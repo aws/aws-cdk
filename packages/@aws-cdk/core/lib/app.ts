@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ConstructGlobalSettings, ConstructScopeSettings } from 'constructs';
+import { ConstructScopeSettings } from 'constructs';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
 

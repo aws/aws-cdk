@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ConstructOrder, IConstruct, IValidation } from 'constructs';
 import { Test } from 'nodeunit';
-import { App as Root, Aws, Lazy } from '../lib';
+import { App as Root } from '../lib';
 import { validateTree } from '../lib/private/synthesis';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
@@ -360,15 +360,6 @@ export = {
     }
 
     const stack = new TestStack();
-
-    const expected = [
-      'Validation failed with the following errors:',
-      '[] stack-error',
-      '[MyConstruct] my-error1',
-      '[MyConstruct] my-error2',
-      '[TheirConstruct] their-error',
-      '[TheirConstruct/YourConstruct] your-error1',
-    ];
 
     let actual;
     try {
