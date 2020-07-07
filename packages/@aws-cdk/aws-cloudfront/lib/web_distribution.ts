@@ -787,6 +787,16 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         }
       }
 
+      const connectionAttempts = originConfig.connectionAttempts ?? 3;
+      if (connectionAttempts < 1 || 3 < connectionAttempts || !Number.isInteger(connectionAttempts)) {
+        throw new Error('connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+      }
+
+      const connectionTimeout = (originConfig.connectionTimeout || cdk.Duration.seconds(10)).toSeconds();
+      if (connectionTimeout < 1 || 10 < connectionTimeout || !Number.isInteger(connectionTimeout)) {
+        throw new Error('connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+      }
+
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource
@@ -807,8 +817,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
           }
           : undefined,
-        connectionAttempts: originConfig.connectionAttempts || 3,
-        connectionTimeout: originConfig.connectionTimeout && originConfig.connectionTimeout.toSeconds() || 10,
+        connectionAttempts,
+        connectionTimeout,
       };
 
       for (const behavior of originConfig.behaviors) {
