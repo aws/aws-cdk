@@ -1,14 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Aws, Construct } from '@aws-cdk/core';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for EmrCancelStep
  *
  * @experimental
  */
-export interface EmrCancelStepProps {
+export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to update.
    */
@@ -25,24 +25,31 @@ export interface EmrCancelStepProps {
  *
  * @experimental
  */
-export class EmrCancelStep implements sfn.IStepFunctionsTask {
+export class EmrCancelStep extends sfn.TaskStateBase {
 
-  constructor(private readonly props: EmrCancelStepProps) {}
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  constructor(scope: Construct, id: string, private readonly props: EmrCancelStepProps) {
+    super(scope, id, props);
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        actions: ['elasticmapreduce:CancelSteps'],
+        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+      }),
+    ];
+  }
+
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'cancelStep',
-        sfn.ServiceIntegrationPattern.FIRE_AND_FORGET),
-      policyStatements: [
-        new iam.PolicyStatement({
-          actions: ['elasticmapreduce:CancelSteps'],
-          resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
-        }),
-      ],
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'cancelStep', sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         StepId: this.props.stepId,
-      },
+      }),
     };
   }
 }

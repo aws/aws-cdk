@@ -63,7 +63,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
-   * @default - no paramters
+   * @default - no parameters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;

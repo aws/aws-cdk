@@ -62,6 +62,7 @@ export async function bootstrapEnvironment2(
       TrustedAccounts: params.trustedAccounts?.join(','),
       CloudFormationExecutionPolicies: params.cloudFormationExecutionPolicies?.join(','),
       Qualifier: params.qualifier,
+      PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
     },
     environment,
     sdkProvider,

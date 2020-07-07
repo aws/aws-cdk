@@ -650,7 +650,7 @@
               {
                 "Ref": "booksapiDeploymentStageprod55D8E03E"
               },
-              "/GET/books/{book_id}"
+              "/GET/books/*"
             ]
           ]
         }
@@ -687,7 +687,7 @@
               {
                 "Ref": "booksapiE1885304"
               },
-              "/test-invoke-stage/GET/books/{book_id}"
+              "/test-invoke-stage/GET/books/*"
             ]
           ]
         }
@@ -768,7 +768,7 @@
               {
                 "Ref": "booksapiDeploymentStageprod55D8E03E"
               },
-              "/DELETE/books/{book_id}"
+              "/DELETE/books/*"
             ]
           ]
         }
@@ -805,7 +805,7 @@
               {
                 "Ref": "booksapiE1885304"
               },
-              "/test-invoke-stage/DELETE/books/{book_id}"
+              "/test-invoke-stage/DELETE/books/*"
             ]
           ]
         }

@@ -48,6 +48,37 @@ export class DescriptionIsRequired extends ValidationRule {
 }
 
 /**
+ * Verify cdk.out directory is included in npmignore since we should not be
+ * publihsing it.
+ */
+export class CdkOutMustBeNpmIgnored extends ValidationRule {
+
+  public readonly name = 'package-info/npm-ignore-cdk-out';
+
+  public validate(pkg: PackageJson): void {
+
+    const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
+
+    if (fs.existsSync(npmIgnorePath)) {
+
+      const npmIgnore = fs.readFileSync(npmIgnorePath);
+
+      if (!npmIgnore.includes('**/cdk.out')) {
+        pkg.report({
+          ruleName: this.name,
+          message: `${npmIgnorePath}: Must exclude **/cdk.out`,
+          fix: () => fs.writeFileSync(
+            npmIgnorePath,
+            `${npmIgnore}\n# exclude cdk artifacts\n**/cdk.out`
+          )
+        });
+      }
+    }
+  }
+
+}
+
+/**
  * Repository must be our GitHub repo
  */
 export class RepositoryCorrect extends ValidationRule {
@@ -183,6 +214,11 @@ export class MaturitySetting extends ValidationRule {
       return;
     }
 
+    if (pkg.json.features) {
+      // Skip this in favour of the FeatureStabilityRule.
+      return;
+    }
+
     let maturity = pkg.json.maturity as string | undefined;
     const stability = pkg.json.stability as string | undefined;
     if (!maturity) {
@@ -227,7 +263,7 @@ export class MaturitySetting extends ValidationRule {
     }
 
     const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    const badgeRegex = toRegExp(badge);
     if (!badgeRegex.test(readmeContent)) {
       // Removing a possible old, now invalid stability indication from the README.md before adding a new one
       const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
@@ -300,6 +336,11 @@ export class StabilitySetting extends ValidationRule {
       return;
     }
 
+    if (pkg.json.features) {
+      // Skip this in favour of the FeatureStabilityRule.
+      return;
+    }
+
     const maturity = pkg.json.maturity as string | undefined;
     const stability = pkg.json.stability as string | undefined;
 
@@ -311,6 +352,84 @@ export class StabilitySetting extends ValidationRule {
         fix: expectedStability ? (() => pkg.json.stability = expectedStability) : undefined,
       });
     }
+  }
+}
+
+export class FeatureStabilityRule extends ValidationRule {
+  public readonly name = 'package-info/feature-stability';
+  private readonly badges: { [key: string]: string } = {
+    'Not Implemented': 'https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge',
+    'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
+    'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
+    'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
+  };
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private || !pkg.json.features) {
+      return;
+    }
+
+    const stabilityBanner: string = [
+      '<!--BEGIN STABILITY BANNER-->',
+      '---',
+      '',
+      '| Features | Stability |',
+      '| --- | --- |',
+      ...this.featureEntries(pkg),
+      '',
+      ...this.bannerNotices(pkg),
+      '---',
+      '<!--END STABILITY BANNER-->',
+    ].join('\n');
+
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const stabilityRegex = toRegExp(stabilityBanner);
+    if (!stabilityRegex.test(readmeContent)) {
+      const [title, ...body] = readmeContent.replace(/<!--BEGIN STABILITY BANNER-->(?:.|\n)+<!--END STABILITY BANNER-->\n+/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: 'Stability banner does not match as expected',
+        fix: () => fs.writeFileSync(readmeFile, [title, stabilityBanner, ...body].join('\n')),
+      });
+    }
+  }
+
+  private featureEntries(pkg: PackageJson): string[] {
+    const entries: string[] = [];
+    if (pkg.json['cdk-build']?.cloudformation) {
+      entries.push(`| CFN Resources | ![Stable](${this.badges.Stable}) |`);
+    }
+    pkg.json.features.forEach((feature: { [key: string]: string }) => {
+      const badge = this.badges[feature.stability];
+      if (!badge) {
+        throw new Error(`Unknown stability - ${feature.stability}`);
+      }
+      entries.push(`| ${feature.name} | ![${feature.stability}](${badge}) |`);
+    });
+    return entries;
+  }
+
+  private bannerNotices(pkg: PackageJson): string[] {
+    const notices: string[] = [];
+    if (pkg.json['cdk-build']?.cloudformation) {
+      notices.push(readBannerFile('features-cfn-stable.md'));
+      notices.push('');
+    }
+
+    const noticeOrder = [ 'Experimental', 'Developer Preview', 'Stable' ];
+    const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
+    const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
+    filteredNotices.map((notice) => {
+      const lowerTrainCase = notice.toLowerCase().replace(/\s/g, '-');
+      notices.push(readBannerFile(`features-${lowerTrainCase}.md`));
+      notices.push('');
+    });
+    return notices;
   }
 }
 
@@ -720,7 +839,6 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     const ignore = [
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cfnspec',
-      '@aws-cdk/cdk-assets-schema',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info'
@@ -1005,12 +1123,8 @@ export class Cfn2Ts extends ValidationRule {
   public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) {
-      return;
-    }
-
-    if (!isAWS(pkg)) {
-      return;
+    if (!isJSII(pkg) || !isAWS(pkg)) {
+      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
@@ -1253,7 +1367,7 @@ function isJSII(pkg: PackageJson): boolean {
  * @param pkg
  */
 function isAWS(pkg: PackageJson): boolean {
-  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+  return pkg.json['cdk-build']?.cloudformation != null;
 }
 
 /**
@@ -1292,4 +1406,12 @@ function repoRoot(dir: string) {
     root = path.dirname(root);
   }
   return root;
+}
+
+function toRegExp(str: string): RegExp {
+  return new RegExp(str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+}
+
+function readBannerFile(file: string): string {
+  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' });
 }

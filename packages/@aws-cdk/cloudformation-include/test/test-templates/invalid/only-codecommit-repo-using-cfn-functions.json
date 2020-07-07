@@ -1,0 +1,13 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "my-repository",
+        "RepositoryDescription": {
+          "Fn::DoesNotExist": "my description, in base-64!"
+        }
+      }
+    }
+  }
+}

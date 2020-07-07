@@ -184,6 +184,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
+    includeTestTemplate(stack, 'functions-and-conditions.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('functions-and-conditions.json'),
+    );
+  });
+
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
@@ -243,6 +251,40 @@ describe('CDK Include', () => {
     );
   });
 
+  test('correctly parses templates with parameters', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+    const param = cfnTemplate.getParameter('BucketName');
+    new s3.CfnBucket(stack, 'NewBucket', {
+      bucketName: param.valueAsString,
+    });
+
+    const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        ...originalTemplate.Resources,
+        "NewBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Ref": "BucketName",
+            },
+          },
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+    });
+  });
+
+  test('getParameter() throws an exception if asked for a Parameter with a name that is not present in the template', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
+
+    expect(() => {
+      cfnTemplate.getParameter('FakeBucketNameThatDoesNotExist');
+    }).toThrow(/Parameter with name 'FakeBucketNameThatDoesNotExist' was not found in the template/);
+  });
+
   test('reflects changes to a retrieved CfnCondition object in the resulting template', () => {
     const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-condition.json');
     const alwaysFalseCondition = cfnTemplate.getCondition('AlwaysFalseCond');
@@ -264,28 +306,180 @@ describe('CDK Include', () => {
     });
   });
 
+  test('correctly handles the CreationPolicy resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('resource-attribute-creation-policy.json'),
+    );
+  });
+
+  test('correctly handles the UpdatePolicy resource attribute', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-update-policy.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('resource-attribute-update-policy.json'),
+    );
+  });
+
+  test("correctly handles referencing the ingested template's resources across Stacks", () => {
+    // for cross-stack sharing to work, we need an App
+    const app = new core.App();
+    stack = new core.Stack(app, 'MyStack');
+    const cfnTemplate = includeTestTemplate(stack, 'only-empty-bucket.json');
+    const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
+
+    const otherStack = new core.Stack(app, 'OtherStack');
+    const role = new iam.Role(otherStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+    });
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:*'],
+      resources: [cfnBucket.attrArn],
+    }));
+
+    expect(stack).toMatchTemplate({
+      ...loadTestFileToJsObject('only-empty-bucket.json'),
+      "Outputs": {
+        "ExportsOutputFnGetAttBucketArn436138FE": {
+          "Value": {
+            "Fn::GetAtt": ["Bucket", "Arn"],
+          },
+          "Export": {
+            "Name": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
+          },
+        },
+      },
+    });
+
+    expect(otherStack).toHaveResourceLike('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "s3:*",
+            "Resource": {
+              "Fn::ImportValue": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('correctly re-names references to resources in the template if their logical IDs have been changed', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json');
+    const cfnKey = cfnTemplate.getResource('Key');
+    cfnKey.overrideLogicalId('TotallyDifferentKey');
+
+    const originalTemplate = loadTestFileToJsObject('bucket-with-encryption-key.json');
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketEncryption": {
+              "ServerSideEncryptionConfiguration": [
+                {
+                  "ServerSideEncryptionByDefault": {
+                    "KMSMasterKeyID": {
+                      "Fn::GetAtt": ["TotallyDifferentKey", "Arn"],
+                    },
+                    "SSEAlgorithm": "aws:kms",
+                  },
+                },
+              ],
+            },
+          },
+          "Metadata": {
+            "Object1": "Location1",
+            "KeyRef": { "Ref": "TotallyDifferentKey" },
+            "KeyArn": { "Fn::GetAtt": ["TotallyDifferentKey", "Arn"] },
+          },
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
+        },
+        "TotallyDifferentKey": originalTemplate.Resources.Key,
+      },
+    });
+  });
+
   test("throws an exception when encountering a Resource type it doesn't recognize", () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-type.json');
     }).toThrow(/Unrecognized CloudFormation resource type: 'AWS::FakeService::DoesNotExist'/);
   });
 
-  test("throws an exception when encountering a CFN function it doesn't support", () => {
-    expect(() => {
-      includeTestTemplate(stack, 'only-codecommit-repo-using-cfn-functions.json');
-    }).toThrow(/Unsupported CloudFormation function 'Fn::Base64'/);
+  test('can ingest a template that contains outputs and modify them', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
+    const output = cfnTemplate.getOutput('Output1');
+    output.value = 'a mutated value';
+    output.description = undefined;
+    output.exportName = 'an export';
+    output.condition = new core.CfnCondition(stack, 'MyCondition', {
+      expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
+    });
+
+    const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        ...originalTemplate.Conditions,
+        "MyCondition": {
+          "Fn::If": [
+            "AlwaysFalseCond",
+            { "Ref": "AWS::NoValue" },
+            true,
+          ],
+        },
+      },
+      "Parameters": {
+        ...originalTemplate.Parameters,
+      },
+      "Resources": {
+        ...originalTemplate.Resources,
+      },
+      "Outputs": {
+        "Output1": {
+          "Value": "a mutated value",
+          "Export": {
+            "Name": "an export",
+          },
+          "Condition": "MyCondition",
+        },
+        "OutputWithNoCondition": {
+          "Value": "some-value",
+        },
+      },
+    });
   });
 
-  test('throws an exception when encountering the CreationPolicy attribute in a resource', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
-    }).toThrow(/The CreationPolicy resource attribute is not supported by cloudformation-include yet/);
+  test('can ingest a template that contains outputs and get those outputs', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+    const output = cfnTemplate.getOutput('Output1');
+
+    expect(output.condition).toBe(cfnTemplate.getCondition('AlwaysFalseCond'));
+    expect(output.description).toBeDefined();
+    expect(output.value).toBeDefined();
+    expect(output.exportName).toBeDefined();
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('outputs-with-references.json'),
+    );
   });
 
-  test('throws an exception when encountering the UpdatePolicy attribute in a resource', () => {
+  test("throws an exception when attempting to retrieve an Output that doesn't exist", () => {
+    const cfnTemplate = includeTestTemplate(stack, 'outputs-with-references.json');
+
     expect(() => {
-      includeTestTemplate(stack, 'resource-attribute-update-policy.json');
-    }).toThrow(/The UpdatePolicy resource attribute is not supported by cloudformation-include yet/);
+      cfnTemplate.getOutput('FakeOutput');
+    }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 });
 

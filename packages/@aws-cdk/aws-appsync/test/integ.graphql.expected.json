@@ -40,6 +40,12 @@
     "PoolD3F588B8": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            { "Name": "verified_phone_number", "Priority": 1 },
+            { "Name": "verified_email", "Priority": 2 }
+          ]
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": true
         },
@@ -85,28 +91,22 @@
         }
       }
     },
-    "ApiMyAPIKeyApiKeyACDEE2CC": {
+    "ApiDefaultAPIKeyApiKey74F5313B": {
       "Type": "AWS::AppSync::ApiKey",
       "Properties": {
         "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
+          "Fn::GetAtt": ["ApiF70053CD", "ApiId"]
         },
-        "Description": "My API Key"
+        "Description": "Default API Key created by CDK"
       }
     },
     "ApiSchema510EECD7": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
         "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
+          "Fn::GetAtt": ["ApiF70053CD", "ApiId"]
         },
-        "Definition": "type ServiceVersion {\n    version: String!\n}\n\ntype Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getServiceVersion: ServiceVersion\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ninput FirstOrderInput {\n    product: String!\n    quantity: Int!\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n}"
+        "Definition": "type ServiceVersion {\n    version: String!\n}\n\ntype Customer {\n    id: String!\n    name: String!\n}\n\ninput SaveCustomerInput {\n    name: String!\n}\n\ntype Order {\n    customer: String!\n    order: String!\n}\n\ntype Query {\n    getServiceVersion: ServiceVersion\n    getCustomers: [Customer]\n    getCustomer(id: String): Customer\n    getCustomerOrdersEq(customer: String): Order\n    getCustomerOrdersLt(customer: String): Order\n    getCustomerOrdersLe(customer: String): Order\n    getCustomerOrdersGt(customer: String): Order\n    getCustomerOrdersGe(customer: String): Order\n    getCustomerOrdersFilter(customer: String, order: String): Order\n    getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n}\n\ninput FirstOrderInput {\n    product: String!\n    quantity: Int!\n}\n\ntype Mutation {\n    addCustomer(customer: SaveCustomerInput!): Customer\n    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n    removeCustomer(id: String!): Customer\n    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n    doPostOnAws: String!\n}\n"
       }
     },
     "ApiNoneDSB4E6495F": {
@@ -286,7 +286,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -307,7 +307,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        },\n            \n            #set($input = $ctx.args.customer)\n            \n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -328,7 +328,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "Customer",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "{\n            \"version\" : \"2017-02-28\",\n            \"operation\" : \"PutItem\",\n            \"key\" : {\n            \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n        },\n            \n            #set($input = $ctx.args.order)\n            $util.qr($input.put(\"referral\", \"referral\"))\n            \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n        }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -588,6 +588,67 @@
       },
       "DependsOn": [
         "ApiOrderDS4B3EEEBA",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApihttpDSServiceRole8B5C9457": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "ApihttpDS91F12990": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "Name": "http",
+        "Type": "HTTP",
+        "Description": "The http data source",
+        "HttpConfig": {
+          "Endpoint": "https://aws.amazon.com/"
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "ApihttpDSServiceRole8B5C9457",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ApihttpDSMutationdoPostOnAwsResolverA9027953": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "doPostOnAws",
+        "TypeName": "Mutation",
+        "DataSourceName": "http",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\n    \"version\": \"2018-05-29\",\n    \"method\": \"POST\",\n    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts\n    \"resourcePath\": \"/path/123\",\n    \"params\":{\n        \"body\": $util.toJson($ctx.args),\n        \"headers\":{\n            \"Content-Type\": \"application/json\",\n            \"Authorization\": \"$ctx.request.headers.Authorization\"\n        }\n    }\n  }",
+        "ResponseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  "
+      },
+      "DependsOn": [
+        "ApihttpDS91F12990",
         "ApiSchema510EECD7"
       ]
     },

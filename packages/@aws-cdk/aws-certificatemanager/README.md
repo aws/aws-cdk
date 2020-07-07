@@ -1,4 +1,4 @@
-## Amazon Certificate Manager Construct Library
+## AWS Certificate Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -35,7 +35,7 @@ email on one of a number of predefined domains and following the instructions
 in the email.
 
 See [Validate with Email](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html)
-in the Amazon Certificate Manager User Guide.
+in the AWS Certificate Manager User Guide.
 
 ### DNS validation
 
@@ -43,7 +43,7 @@ DNS-validated certificates are validated by configuring appropriate DNS
 records for your domain.
 
 See [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
-in the Amazon Certificate Manager User Guide.
+in the AWS Certificate Manager User Guide.
 
 ### Automatic DNS-validated certificates using Route53
 

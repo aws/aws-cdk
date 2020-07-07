@@ -1,6 +1,6 @@
 import { Construct, Resource, ResourceProps } from '@aws-cdk/core';
 import { AuthorizationType } from './method';
-import { RestApi } from './restapi';
+import { IRestApi } from './restapi';
 
 const AUTHORIZER_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.Authorizer');
 
@@ -28,7 +28,7 @@ export abstract class Authorizer extends Resource implements IAuthorizer {
    * Called when the authorizer is used from a specific REST API.
    * @internal
    */
-  public abstract _attachToApi(restApi: RestApi): void;
+  public abstract _attachToApi(restApi: IRestApi): void;
 }
 
 /**

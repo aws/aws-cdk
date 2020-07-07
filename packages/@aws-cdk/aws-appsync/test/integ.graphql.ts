@@ -2,7 +2,15 @@ import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values } from '../lib';
+import {
+  AuthorizationType,
+  GraphQLApi,
+  KeyCondition,
+  MappingTemplate,
+  PrimaryKey,
+  UserPoolDefaultAction,
+  Values,
+} from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
@@ -16,14 +24,15 @@ const api = new GraphQLApi(stack, 'Api', {
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
-      userPool,
-      defaultAction: UserPoolDefaultAction.ALLOW,
+      authorizationType: AuthorizationType.USER_POOL,
+      userPoolConfig: {
+        userPool,
+        defaultAction: UserPoolDefaultAction.ALLOW,
+      },
     },
     additionalAuthorizationModes: [
       {
-        apiKeyDesc: 'My API Key',
-        // Can't specify a date because it will inevitably be in the past.
-        // expires: '2019-02-05T12:00:00Z',
+        authorizationType: AuthorizationType.API_KEY,
       },
     ],
   },
@@ -137,6 +146,40 @@ orderDS.createResolver({
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+
+const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+
+httpDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'doPostOnAws',
+  requestMappingTemplate: MappingTemplate.fromString(`{
+    "version": "2018-05-29",
+    "method": "POST",
+    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+    "resourcePath": "/path/123",
+    "params":{
+        "body": $util.toJson($ctx.args),
+        "headers":{
+            "Content-Type": "application/json",
+            "Authorization": "$ctx.request.headers.Authorization"
+        }
+    }
+  }`),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    ## Raise a GraphQL field error in case of a datasource invocation error
+    #if($ctx.error)
+      $util.error($ctx.error.message, $ctx.error.type)
+    #end
+    ## if the response status code is not 200, then return an error. Else return the body **
+    #if($ctx.result.statusCode == 200)
+        ## If response is 200, return the body.
+        $ctx.result.body
+    #else
+        ## If response is not 200, append the response to error block.
+        $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+    #end
+  `),
 });
 
 app.synth();

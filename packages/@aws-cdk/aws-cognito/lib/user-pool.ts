@@ -1,8 +1,9 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
+import { StandardAttributeNames } from './private/attr-names';
+import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
@@ -385,6 +386,47 @@ export interface EmailSettings {
 }
 
 /**
+ * How will a user be able to recover their account?
+ *
+ * When a user forgets their password, they can have a code sent to their verified email or verified phone to recover their account.
+ * You can choose the preferred way to send codes below.
+ * We recommend not allowing phone to be used for both password resets and multi-factor authentication (MFA).
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html
+ */
+export enum AccountRecovery {
+  /**
+   * Email if available, otherwise phone, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  EMAIL_AND_PHONE_WITHOUT_MFA,
+
+  /**
+   * Phone if available, otherwise email, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_WITHOUT_MFA_AND_EMAIL,
+
+  /**
+   * Email only
+   */
+  EMAIL_ONLY,
+
+  /**
+   * Phone only, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_ONLY_WITHOUT_MFA,
+
+  /**
+   * (Not Recommended) Phone if available, otherwise email, and do allow a user to reset their password via phone if they are also using it for MFA.
+   */
+  PHONE_AND_EMAIL,
+
+  /**
+   * None – users will have to contact an administrator to reset their passwords
+   */
+  NONE,
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -457,9 +499,9 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @default - No attributes are required.
+   * @default - All standard attributes are optional and mutable.
    */
-  readonly requiredAttributes?: RequiredAttributes;
+  readonly standardAttributes?: StandardAttributes;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
@@ -508,6 +550,13 @@ export interface UserPoolProps {
    * @default true
    */
   readonly signInCaseSensitive?: boolean;
+
+  /**
+   * How will a user be able to recover their account?
+   *
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
+   */
+  readonly accountRecovery?: AccountRecovery;
 }
 
 /**
@@ -621,7 +670,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -682,6 +731,7 @@ export class UserPool extends UserPoolBase {
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
+      accountRecoverySetting: this.accountRecovery(props),
     });
 
     this.userPoolId = userPool.ref;
@@ -722,10 +772,10 @@ export class UserPool extends UserPoolBase {
 
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
-      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
-      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
       }
       return {
@@ -737,7 +787,7 @@ export class UserPool extends UserPoolBase {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
@@ -762,24 +812,24 @@ export class UserPool extends UserPoolBase {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.phoneNumber); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.preferredUsername); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
@@ -863,30 +913,16 @@ export class UserPool extends UserPoolBase {
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
-    if (props.requiredAttributes) {
-      const stdAttributes: StandardAttribute[] = [];
+    if (props.standardAttributes) {
+      const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
+        .filter(([, attr]) => !!attr)
+        .map(([attrName, attr]) => ({
+          name: StandardAttributeNames[attrName],
+          mutable: attr.mutable ?? true,
+          required: attr.required ?? false,
+        }));
 
-      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
-      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
-      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
-      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
-      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
-      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
-      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
-      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
-      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
-      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
-      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
-      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
-      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
-      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
-      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
-      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
-      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
-
-      schema.push(...stdAttributes.map((attr) => {
-        return { name: attr, required: true };
-      }));
+      schema.push(...stdAttributes);
     }
 
     if (props.customAttributes) {
@@ -904,8 +940,12 @@ export class UserPool extends UserPoolBase {
         return {
           name: attrName,
           attributeDataType: attrConfig.dataType,
-          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
-          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
+          numberAttributeConstraints: attrConfig.numberConstraints
+            ? numberConstraints
+            : undefined,
+          stringAttributeConstraints: attrConfig.stringConstraints
+            ? stringConstraints
+            : undefined,
           mutable: attrConfig.mutable,
         };
       });
@@ -917,26 +957,42 @@ export class UserPool extends UserPoolBase {
     }
     return schema;
   }
-}
 
-const enum StandardAttribute {
-  ADDRESS = 'address',
-  BIRTHDATE = 'birthdate',
-  EMAIL = 'email',
-  FAMILY_NAME = 'family_name',
-  GENDER = 'gender',
-  GIVEN_NAME = 'given_name',
-  LOCALE = 'locale',
-  MIDDLE_NAME = 'middle_name',
-  NAME = 'name',
-  NICKNAME = 'nickname',
-  PHONE_NUMBER = 'phone_number',
-  PICTURE_URL = 'picture',
-  PREFERRED_USERNAME = 'preferred_username',
-  PROFILE_URL = 'profile',
-  TIMEZONE = 'zoneinfo',
-  LAST_UPDATE_TIME = 'updated_at',
-  WEBSITE = 'website',
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
+    switch (accountRecovery) {
+      case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_email', priority: 1 },
+            { name: 'verified_phone_number', priority: 2 },
+          ],
+        };
+      case AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_phone_number', priority: 1 },
+            { name: 'verified_email', priority: 2 },
+          ],
+        };
+      case AccountRecovery.EMAIL_ONLY:
+        return {
+          recoveryMechanisms: [{ name: 'verified_email', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_ONLY_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [{ name: 'verified_phone_number', priority: 1 }],
+        };
+      case AccountRecovery.NONE:
+        return {
+          recoveryMechanisms: [{ name: 'admin_only', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_AND_EMAIL:
+        return undefined;
+      default:
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
+    }
+  }
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {

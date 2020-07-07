@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput } from '@aws-cdk/core';
+import { App, CfnOutput, Duration } from '@aws-cdk/core';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { TestStack } from './util';
@@ -14,14 +14,18 @@ class EksClusterStack extends TestStack {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    // just need one nat gateway to simplify the test
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+
     // create the cluster with a default nodegroup capacity
     const cluster = new eks.Cluster(this, 'Cluster', {
+      vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: '1.16',
+      version: eks.KubernetesVersion.V1_16,
     });
 
-    // // fargate profile for resources in the "default" namespace
+    // fargate profile for resources in the "default" namespace
     cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
@@ -51,6 +55,12 @@ class EksClusterStack extends TestStack {
       },
     });
 
+    // inference instances
+    cluster.addCapacity('InferenceInstances', {
+      instanceType: new ec2.InstanceType('inf1.2xlarge'),
+      minCapacity: 1,
+    });
+
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng', {
       instanceType: new ec2.InstanceType('t3.small'),
@@ -59,12 +69,36 @@ class EksClusterStack extends TestStack {
       nodeRole: cluster.defaultCapacity ? cluster.defaultCapacity.role : undefined,
     });
 
-    // // apply a kubernetes manifest
+    // apply a kubernetes manifest
     cluster.addResource('HelloApp', ...hello.resources);
 
-    // // add two Helm charts to the cluster. This will be the Kubernetes dashboard and the Nginx Ingress Controller
-    cluster.addChart('dashboard', { chart: 'kubernetes-dashboard', repository: 'https://kubernetes-charts.storage.googleapis.com' });
-    cluster.addChart('nginx-ingress', { chart: 'nginx-ingress', repository: 'https://helm.nginx.com/stable', namespace: 'kube-system' });
+    // deploy the Kubernetes dashboard through a helm chart
+    cluster.addChart('dashboard', {
+      chart: 'kubernetes-dashboard',
+      repository: 'https://kubernetes.github.io/dashboard/',
+    });
+
+    // deploy an nginx ingress in a namespace
+
+    const nginxNamespace = cluster.addResource('nginx-namespace', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: {
+        name: 'nginx',
+      },
+    });
+
+    const nginxIngress = cluster.addChart('nginx-ingress', {
+      chart: 'nginx-ingress',
+      repository: 'https://helm.nginx.com/stable',
+      namespace: 'nginx',
+      wait: true,
+      createNamespace: false,
+      timeout: Duration.minutes(15),
+    });
+
+    // make sure namespace is deployed before the chart
+    nginxIngress.node.addDependency(nginxNamespace);
 
     // add a service account connected to a IAM role
     cluster.addServiceAccount('MyServiceAccount');
@@ -72,6 +106,8 @@ class EksClusterStack extends TestStack {
     new CfnOutput(this, 'ClusterEndpoint', { value: cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: cluster.clusterCertificateAuthorityData });
+    new CfnOutput(this, 'ClusterSecurityGroupId', { value: cluster.clusterSecurityGroupId });
+    new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
   }
 }

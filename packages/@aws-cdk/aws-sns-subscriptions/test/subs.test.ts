@@ -998,3 +998,58 @@ test('region property on an imported topic as a parameter - lambda', () => {
     },
   });
 });
+
+test('sms subscription', () => {
+  topic.addSubscription(new subs.SmsSubscription('+15551231234'));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopic155512312349C8DEEEE': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': '+15551231234',
+        },
+      },
+    },
+  });
+});
+
+test('sms subscription with unresolved', () => {
+  const smsToken = Token.asString({ Ref : 'my-sms-1' });
+  topic.addSubscription(new subs.SmsSubscription(smsToken));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyTopicTokenSubscription141DD1BE2': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Endpoint': {
+            'Ref' : 'my-sms-1',
+          },
+          'Protocol': 'sms',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      },
+    },
+  });
+});

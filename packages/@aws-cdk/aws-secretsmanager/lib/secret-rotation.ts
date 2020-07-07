@@ -210,7 +210,9 @@ export class SecretRotation extends Construct {
       throw new Error('The `masterSecret` must be specified for application using the multi user scheme.');
     }
 
-    const rotationFunctionName = this.node.uniqueId;
+    // Max length of 64 chars, get the last 64 chars
+    const uniqueId = this.node.uniqueId;
+    const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,

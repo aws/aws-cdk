@@ -64,6 +64,11 @@ export class IntegrationTests {
   }
 }
 
+export interface SynthOptions {
+  readonly context?: Record<string, any>;
+  readonly env?: Record<string, string>;
+}
+
 export class IntegrationTest {
   public readonly expectedFileName: string;
   private readonly expectedFilePath: string;
@@ -78,7 +83,77 @@ export class IntegrationTest {
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
   }
 
-  public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean, env?: any } = { }): Promise<any> {
+  /**
+   * Do a CDK synth, mimicking the CLI (without actually using it)
+   *
+   * The CLI has a pretty slow startup time because of all the modules it needs to load,
+   * and we are running this in a tight loop. Bypass it to be quicker!
+   *
+   * Return the "main" template or a concatenation of all listed templates in the pragma
+   */
+  public async cdkSynthFast(options: SynthOptions = {}): Promise<any> {
+    const context = {
+      ...options.context,
+    };
+    await exec(['node', `${this.name}`], {
+      cwd: this.directory,
+      env: {
+        ...options.env,
+        CDK_CONTEXT_JSON: JSON.stringify(context),
+        CDK_DEFAULT_ACCOUNT: '12345678',
+        CDK_DEFAULT_REGION: 'test-region',
+        CDK_OUTDIR: 'cdk.out',
+        CDK_CLI_ASM_VERSION: '5.0.0',
+      },
+    });
+
+    // Interpret the cloud assembly directly here. Not great, but I'm wary
+    // adding dependencies on the libraries that model it.
+    //
+    // FIXME: Refactor later if it doesn't introduce dependency cycles
+    const cloudManifest = await fs.readJSON(path.resolve(this.directory, 'cdk.out', 'manifest.json'));
+    const stacks: Record<string, any> = {};
+    for (const [artifactId, artifact] of Object.entries(cloudManifest.artifacts ?? {}) as Array<[string, any]>) {
+      if (artifact.type !== 'aws:cloudformation:stack') { continue; }
+
+      const template = await fs.readJSON(path.resolve(this.directory, 'cdk.out', artifact.properties.templateFile));
+      stacks[artifactId] = template;
+    }
+
+    const stacksToDiff = await this.readStackPragma();
+
+    if (stacksToDiff.length > 0) {
+      // This is a monster. I'm sorry. :(
+      const templates = stacksToDiff.length === 1 && stacksToDiff[0] === '*'
+        ? Object.values(stacks)
+        : stacksToDiff.map(templateForStackName);
+
+      // We're supposed to just return *a* template (which is an object), but there's a crazy
+      // case in which we diff multiple templates at once and then they're an array. And it works somehow.
+      return templates.length === 1 ? templates[0] : templates;
+    } else {
+      const names = Object.keys(stacks);
+      if (names.length !== 1) {
+        throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
+          '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+          `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+          `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+      }
+      return stacks[names[0]];
+    }
+
+    function templateForStackName(name: string) {
+      if (!stacks[name]) {
+        throw new Error(`No such stack in output: ${name}`);
+      }
+      return stacks[name];
+    }
+  }
+
+  /**
+   * Invoke the CDK CLI with some options
+   */
+  public async invokeCli(args: string[], options: { json?: boolean, context?: any, verbose?: boolean, env?: any } = { }): Promise<any> {
     // Write context to cdk.json, afterwards delete. We need to do this because there is no way
     // to pass structured context data from the command-line, currently.
     if (options.context) {
@@ -131,7 +206,7 @@ export class IntegrationTest {
       return pragma;
     }
 
-    const stacks = (await this.invoke([ 'ls' ], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
+    const stacks = (await this.invokeCli([ 'ls' ], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
     if (stacks.length !== 1) {
       throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
         '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
@@ -170,7 +245,7 @@ export class IntegrationTest {
    * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
    */
   private async readStackPragma(): Promise<string[]> {
-    const source = await fs.readFile(this.sourceFilePath, 'utf-8');
+    const source = await fs.readFile(this.sourceFilePath, { encoding: 'utf-8' });
     const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
       return [];

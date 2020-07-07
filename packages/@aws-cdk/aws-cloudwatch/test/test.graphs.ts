@@ -303,6 +303,37 @@ export = {
     test.done();
   },
 
+  'specify liveData property on graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My live graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
+      liveData: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My live graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        liveData: true,
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'can use imported alarm with graph'(test: Test) {
     // GIVEN
     const stack = new Stack();

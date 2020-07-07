@@ -114,7 +114,7 @@ export class EcsTask implements events.IRuleTarget {
   }
 
   /**
-   * Allows using tasks as target of CloudWatch events
+   * Allows using tasks as target of EventBridge events
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const policyStatements = [new iam.PolicyStatement({
@@ -126,7 +126,7 @@ export class EcsTask implements events.IRuleTarget {
     })];
 
     // If it so happens that a Task Execution Role was created for the TaskDefinition,
-    // then the CloudWatch Events Role must have permissions to pass it (otherwise it doesn't).
+    // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
     if (this.taskDefinition.executionRole !== undefined) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['iam:PassRole'],

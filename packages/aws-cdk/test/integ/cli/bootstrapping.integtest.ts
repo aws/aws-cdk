@@ -1,5 +1,6 @@
 import { cloudFormation } from './aws-helpers';
 import { cdk, cdkDeploy, cleanup, fullStackName, prepareAppFixture, rememberToDeleteBucket } from './cdk-helpers';
+import { integTest } from './test-helpers';
 
 jest.setTimeout(600_000);
 
@@ -17,7 +18,7 @@ afterEach(async () => {
   await cleanup();
 });
 
-test('can bootstrap without execution', async () => {
+integTest('can bootstrap without execution', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
   await cdk(['bootstrap',
@@ -31,7 +32,7 @@ test('can bootstrap without execution', async () => {
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 });
 
-test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async () => {
+integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
   const legacyBootstrapBucketName = `aws-cdk-bootstrap-integ-test-legacy-bckt-${randomString()}`;
@@ -69,7 +70,7 @@ test('upgrade legacy bootstrap stack to new bootstrap stack while in use', async
   });
 });
 
-test('deploy new style synthesis to new style bootstrap', async () => {
+integTest('deploy new style synthesis to new style bootstrap', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
   await cdk(['bootstrap',
@@ -92,7 +93,30 @@ test('deploy new style synthesis to new style bootstrap', async () => {
   });
 });
 
-test('deploy old style synthesis to new style bootstrap', async () => {
+integTest('deploy new style synthesis to new style bootstrap (with docker image)', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack');
+
+  await cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--qualifier', QUALIFIER,
+    '--cloudformation-execution-policies', 'arn:aws:iam::aws:policy/AdministratorAccess',
+  ], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // Deploy stack that uses file assets
+  await cdkDeploy('docker', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${QUALIFIER}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+});
+
+integTest('deploy old style synthesis to new style bootstrap', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
   await cdk(['bootstrap',
@@ -113,7 +137,7 @@ test('deploy old style synthesis to new style bootstrap', async () => {
   });
 });
 
-test('deploying new style synthesis to old style bootstrap fails', async () => {
+integTest('deploying new style synthesis to old style bootstrap fails', async () => {
   const bootstrapStackName = fullStackName('bootstrap-stack');
 
   await cdk(['bootstrap', '--toolkit-stack-name', bootstrapStackName]);
@@ -128,7 +152,18 @@ test('deploying new style synthesis to old style bootstrap fails', async () => {
   })).rejects.toThrow('exited with error');
 });
 
-test('can create multiple legacy bootstrap stacks', async () => {
+integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', async () => {
+  const bootstrapStackName = fullStackName('bootstrap-stack-1');
+
+  await cdk(['bootstrap', '-v', '--toolkit-stack-name', bootstrapStackName, '--public-access-block-configuration', 'false', '--tags', 'Foo=Bar']);
+
+  const response = await cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'Bar' },
+  ]);
+});
+
+integTest('can create multiple legacy bootstrap stacks', async () => {
   const bootstrapStackName1 = fullStackName('bootstrap-stack-1');
   const bootstrapStackName2 = fullStackName('bootstrap-stack-2');
 

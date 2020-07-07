@@ -39,4 +39,5 @@ type Mutation {
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
     saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+    doPostOnAws: String!
 }

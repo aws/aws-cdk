@@ -104,11 +104,11 @@ describe('Batch Compute Evironment', () => {
             'Fn::Join': [
               '',
               [
-                'arn',
+                'arn:',
                 {
                   Ref: 'AWS::Partition',
                 },
-                'iam::',
+                ':iam::',
                 {
                   Ref: 'AWS::AccountId',
                 },

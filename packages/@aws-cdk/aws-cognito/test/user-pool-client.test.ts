@@ -409,4 +409,48 @@ describe('User Pool Client', () => {
       SupportedIdentityProviders: [ 'COGNITO', 'Facebook', 'LoginWithAmazon' ],
     });
   });
+
+  test('disableOAuth', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('OAuthDisabled', {
+      userPoolClientName: 'OAuthDisabled',
+      disableOAuth: true,
+    });
+    pool.addClient('OAuthEnabled', {
+      userPoolClientName: 'OAuthEnabled',
+      disableOAuth: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'OAuthDisabled',
+      AllowedOAuthFlows: ABSENT,
+      AllowedOAuthScopes: ABSENT,
+      AllowedOAuthFlowsUserPoolClient: false,
+    });
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      ClientName: 'OAuthEnabled',
+      AllowedOAuthFlows: [ 'implicit', 'code' ],
+      AllowedOAuthScopes: [ 'profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin' ],
+      AllowedOAuthFlowsUserPoolClient: true,
+    });
+  });
+
+  test('fails when oAuth is specified but is disableOAuth is set', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addClient('Client', {
+      disableOAuth: true,
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
+    })).toThrow(/disableOAuth is set/);
+  });
 });

@@ -49,6 +49,7 @@ export async function deployBootstrapStack(
     resolvedEnvironment,
     sdk: await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting),
     sdkProvider,
+    force: options.force,
     roleArn: options.roleArn,
     tags: options.parameters?.tags,
     execute: options?.parameters?.execute,

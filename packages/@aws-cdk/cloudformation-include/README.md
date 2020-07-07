@@ -17,7 +17,7 @@ It can be thought of as an extension of the capabilities of the
 
 ## Basic usage
 
-Assume we have a file `my-template.json`, that contains the following CloudFormation template:
+Assume we have a file with an existing template. It could be in JSON format, in a file `my-template.json`:
 
 ```json
 {
@@ -32,6 +32,16 @@ Assume we have a file `my-template.json`, that contains the following CloudForma
 }
 ```
 
+Or it could by in YAML format, in a file `my-template.yaml`:
+
+```yaml
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: some-bucket-name
+```
+
 It can be included in a CDK application with the following code:
 
 ```typescript
@@ -39,6 +49,14 @@ import * as cfn_inc from '@aws-cdk/cloudformation-include';
 
 const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
   templateFile: 'my-template.json',
+});
+```
+
+Or, if our template is YAML, we can use
+
+```typescript
+const cfnTemplate = new cfn_inc.CfnInclude(this, 'Template', {
+  templateFile: 'my-template.yaml',
 });
 ```
 
@@ -106,6 +124,24 @@ and any changes you make to it will be reflected in the resulting template:
 condition.expression = core.Fn.conditionEquals(1, 2);
 ```
 
+## Outputs
+
+If your template uses [CloudFormation Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html),
+you can retrieve them from your template:
+
+```typescript
+import * as core from '@aws-cdk/core';
+
+const output: core.CfnOutput = cfnTemplate.getOutput('MyOutput');
+```
+
+The `CfnOutput` object is mutable,
+and any changes you make to it will be reflected in the resulting template:
+
+```typescript
+output.value = cfnBucket.attrArn;
+```
+
 ## Known limitations
 
 This module is still in its early, experimental stage,
@@ -115,17 +151,17 @@ All items unchecked below are currently not supported.
 ### Ability to retrieve CloudFormation objects from the template:
 
 - [x] Resources
-- [ ] Parameters
+- [x] Parameters
 - [x] Conditions
-- [ ] Outputs
+- [x] Outputs
 
 ### [Resource attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html):
 
 - [x] Properties
 - [x] Condition
 - [x] DependsOn
-- [ ] CreationPolicy
-- [ ] UpdatePolicy
+- [x] CreationPolicy
+- [x] UpdatePolicy
 - [x] UpdateReplacePolicy
 - [x] DeletionPolicy
 - [x] Metadata
@@ -136,16 +172,16 @@ All items unchecked below are currently not supported.
 - [x] Fn::GetAtt
 - [x] Fn::Join
 - [x] Fn::If
-- [ ] Fn::And
+- [x] Fn::And
 - [x] Fn::Equals
-- [ ] Fn::Not
-- [ ] Fn::Or
-- [ ] Fn::Base64
-- [ ] Fn::Cidr
-- [ ] Fn::FindInMap
-- [ ] Fn::GetAZs
-- [ ] Fn::ImportValue
-- [ ] Fn::Select
-- [ ] Fn::Split
+- [x] Fn::Not
+- [x] Fn::Or
+- [x] Fn::Base64
+- [x] Fn::Cidr
+- [x] Fn::FindInMap
+- [x] Fn::GetAZs
+- [x] Fn::ImportValue
+- [x] Fn::Select
+- [x] Fn::Split
 - [ ] Fn::Sub
-- [ ] Fn::Transform
+- [x] Fn::Transform

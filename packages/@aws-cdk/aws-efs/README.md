@@ -28,6 +28,34 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
+A file system can set `RemovalPolicy`. Default policy is `RETAIN`.
+
+```ts
+const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
+  vpc,
+  removalPolicy: RemovalPolicy.DESTROY
+});
+```
+
+### Access Point
+
+An access point is an application-specific view into an EFS file system that applies an operating system user and
+group, and a file system path, to any file system request made through the access point. The operating system user
+and group override any identity information provided by the NFS client. The file system path is exposed as the
+access point's root directory. Applications using the access point can only access data in its own directory and
+below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
+
+Use `addAccessPoint` to create an access point from a fileSystem:
+
+```ts
+fileSystem.addAccessPoint('AccessPoint');
+```
+
+By default, when you create an access point, the root(`/`) directory is exposed to the client connecting to
+the access point. You may specify custom path with the `path` property. If `path` does not exist, it will be
+created with the settings defined in the `creationInfo`. See
+[Creating Access Points](https://docs.aws.amazon.com/efs/latest/ug/create-access-point.html) for more details.
+
 ### Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has

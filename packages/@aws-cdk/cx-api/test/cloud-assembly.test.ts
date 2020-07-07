@@ -85,7 +85,7 @@ test('assets', () => {
 test('can-read-0.36.0', () => {
   // WHEN
   new CloudAssembly(path.join(FIXTURES, 'single-stack-0.36'));
-  // THEN: no eexception
+  // THEN: no exception
   expect(true).toBeTruthy();
 });
 

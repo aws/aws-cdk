@@ -18,6 +18,7 @@ Subscriptions can be added to the following endpoints:
 * Amazon SQS
 * AWS Lambda
 * Email
+* SMS
 
 Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions.
 
@@ -104,3 +105,23 @@ myTopic.addSubscription(new subscriptions.EmailSubscription(emailAddress.valueAs
 
 Note that email subscriptions require confirmation by visiting the link sent to the
 email address.
+
+### SMS
+
+Subscribe an sms number to your topic:
+
+```ts
+import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
+
+myTopic.addSubscription(new subscriptions.SmsSubscription('+15551231234'));
+```
+
+The number being subscribed can also be [tokens](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html), that resolve
+to a number during deployment. A typical use case is when the number is passed in as a [CloudFormation
+parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html). The
+following code defines a CloudFormation parameter and uses it in an sms subscription.
+
+```ts
+const smsNumber = new CfnParameter(this, 'sms-param');
+myTopic.addSubscription(new subscriptions.SmsSubscription(smsNumber.valueAsString()));
+```
