@@ -2,7 +2,7 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-//import { CfnNestedInclude } from './cfn-nested-include';
+// import { CfnNestedInclude } from './cfn-nested-include';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -26,7 +26,6 @@ export class CfnInclude extends core.CfnElement {
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
-  public readonly nestedStacks: CfnInclude[] = [];
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -247,8 +246,9 @@ export class CfnInclude extends core.CfnElement {
     if (resourceAttributes.Type === 'AWS::CloudFormation::Stack') {
       // adding 'Nested' to the logicalId prevents this resource from conflicting with the CloudFormation stack
       // resource of the same name
-      this.nestedStacks.push(new CfnInclude(this, 'Nested' + logicalId, { templateFile: resourceAttributes.Properties.TemplateURL }));
-      //this.nestedStacks.push(new CfnNestedInclude(this, logicalId, { templateFile: resourceAttributes.Properties.TemplateURL }))
+      const nestedStackScope = new core.NestedStack(this, '$Nested' + logicalId);
+      //TODO remove Nested from new CfnInclude and update that test
+      new CfnInclude(nestedStackScope, 'Nested' + logicalId, { templateFile: resourceAttributes.Properties.TemplateURL });
     }
 
     const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
