@@ -98,15 +98,8 @@ export class CloudFormationInit {
       resources: [Aws.STACK_ID],
     }));
 
-    if (bindResult.authBucketNames && bindResult.authBucketNames.length > 0) {
-      const s3AuthConfig = {
-        S3AccessCreds: {
-          type: 'S3',
-          roleName: attachOptions.instanceRole.roleName,
-          buckets: bindResult.authBucketNames,
-        },
-      };
-      attachedResource.addMetadata('AWS::CloudFormation::Authentication', s3AuthConfig);
+    if (bindResult.authData) {
+      attachedResource.addMetadata('AWS::CloudFormation::Authentication', bindResult.authData);
     }
 
     // To identify the resources that have the metadata and where the signal
@@ -141,20 +134,17 @@ export class CloudFormationInit {
     }
   }
 
-  private bind(scope: Construct, options: AttachInitOptions): any {
+  private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any } {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty ? undefined : c);
 
     const configNameToBindResult = mapValues(nonEmptyConfigs, c => c.bind(scope, options));
-    const authBucketNames = Object.values(configNameToBindResult)
-      .map(c => c.authBucketNames)
-      .reduce((allBuckets, buckets) => (buckets && buckets.length > 0) ? allBuckets?.concat(buckets) : allBuckets, []);
 
     return {
       configData: {
         configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
         ...mapValues(configNameToBindResult, c => c.config),
       },
-      authBucketNames,
+      authData: Object.values(configNameToBindResult).map(c => c.authentication).reduce(deepMerge, undefined),
     };
   }
 
@@ -266,9 +256,9 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const authBucketNames = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
-      .map(c => c?.authBucketNames)
-      .reduce((allBuckets, buckets) => (buckets && buckets.length > 0) ? allBuckets?.concat(buckets) : allBuckets, []);
+    const authentication = [ packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig ]
+      .map(c => c?.authentication)
+      .reduce(deepMerge, undefined)
 
     return {
       config: {
@@ -280,7 +270,7 @@ export class InitConfig {
         commands: commandsConfig?.config,
         services: servicesConfig?.config,
       },
-      authBucketNames,
+      authentication,
     };
   }
 
@@ -288,19 +278,11 @@ export class InitConfig {
     const elements = this.elements.filter(elem => elem.elementType === elementType);
     if (elements.length === 0) { return undefined; }
 
-    const aggregatedConfig: Record<string, any> = {};
-    let authBucketNames: string[] = [];
-    elements.forEach((elem, index) => {
-      const elementConfig = elem.bind({ index, ...renderOptions });
-      deepMerge(aggregatedConfig, elementConfig.config);
-      if (elementConfig.authBucketNames) {
-        authBucketNames = authBucketNames.concat(elementConfig.authBucketNames);
-      }
-    });
+    const bindResults = elements.map((e, index) => e.bind({ index, ...renderOptions }));
 
     return {
-      config: aggregatedConfig,
-      authBucketNames,
+      config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
+      authentication: bindResults.map(r => r.authentication).reduce(deepMerge, undefined),
     };
   }
 }
@@ -320,15 +302,37 @@ export interface ConfigSetProps {
   readonly configs: Record<string, InitConfig>;
 }
 
-function deepMerge(target: Record<string, any>, src: Record<string, any>) {
+/**
+ * Deep-merge objects and arrays
+ *
+ * Treat arrays as sets, removing duplicates. This is acceptable for rendering
+ * cfn-inits, not applicable elsewhere.
+ */
+function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
+  if (target == null) { return src; }
+  if (src == null) { return target; }
+
   for (const [key, value] of Object.entries(src)) {
-    if (typeof value === 'object' && value && !Array.isArray(value)) {
+    if (Array.isArray(value)) {
+      if (target[key] && !Array.isArray(target[key])) {
+        throw new Error(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
+      }
+      target[key] = Array.from(new Set([
+        ...target[key] ?? [],
+        ...value,
+      ]));
+      continue;
+    }
+    if (typeof value === 'object' && value) {
       target[key] = {};
       deepMerge(target[key], value);
-    } else {
-      target[key] = value;
+      continue;
     }
+
+    target[key] = value;
   }
+
+  return target;
 }
 
 /**

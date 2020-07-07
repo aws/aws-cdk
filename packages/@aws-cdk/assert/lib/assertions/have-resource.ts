@@ -232,7 +232,7 @@ export function deepObjectLike<A extends object>(pattern: A): PropertyMatcher {
 }
 
 export function _objectContaining<A extends object>(pattern: A, deep: boolean): PropertyMatcher {
-  const ret = (value: any, inspection: InspectionFailure): boolean => {
+  return annotateMatcher({ [deep ? '$deepObjectLike' : '$objectLike']: pattern }, (value: any, inspection: InspectionFailure): boolean => {
     if (typeof value !== 'object' || !value) {
       return failMatcher(inspection, `Expect an object but got '${typeof value}'`);
     }
@@ -280,12 +280,7 @@ export function _objectContaining<A extends object>(pattern: A, deep: boolean): 
       return failMatcher(inspection, errors.join(', '));
     }
     return true;
-  };
-
-  // Override toJSON so that our error messages print an readable version of this matcher
-  // (which we produce by doing JSON.stringify() at some point in the future).
-  ret.toJSON = () => ({ [deep ? '$deepObjectLike' : '$objectLike']: pattern });
-  return ret;
+  });
 }
 
 /**
@@ -295,14 +290,9 @@ export function _objectContaining<A extends object>(pattern: A, deep: boolean): 
  * of `deepObjectLike`.
  */
 export function exactValue(expected: any): PropertyMatcher {
-  const ret = (value: any, inspection: InspectionFailure): boolean => {
+  return annotateMatcher({ $exactValue: expected }, (value: any, inspection: InspectionFailure): boolean => {
     return matchLiteral(value, expected, inspection);
-  };
-
-  // Override toJSON so that our error messages print an readable version of this matcher
-  // (which we produce by doing JSON.stringify() at some point in the future).
-  ret.toJSON = () => ({ $exactValue: expected });
-  return ret;
+  });
 }
 
 /**
@@ -311,7 +301,7 @@ export function exactValue(expected: any): PropertyMatcher {
 export function arrayWith(...elements: any[]): PropertyMatcher {
   if (elements.length === 0) { return anything(); }
 
-  const ret = (value: any, inspection: InspectionFailure): boolean => {
+  return annotateMatcher({ $arrayContaining: elements.length === 1 ? elements[0] : elements }, (value: any, inspection: InspectionFailure): boolean => {
     if (!Array.isArray(value)) {
       return failMatcher(inspection, `Expect an array but got '${typeof value}'`);
     }
@@ -342,23 +332,36 @@ export function arrayWith(...elements: any[]): PropertyMatcher {
       }
       return fail;
     }
-  };
+  });
+}
 
-  // Override toJSON so that our error messages print an readable version of this matcher
-  // (which we produce by doing JSON.stringify() at some point in the future).
-  ret.toJSON = () => ({ $arrayContaining: elements.length === 1 ? elements[0] : elements });
-  return ret;
+/**
+ * Do a glob-like pattern match (which only supports *s)
+ */
+export function stringLike(pattern: string): PropertyMatcher {
+  // Replace * with .* in the string, escape the rest and brace with ^...$
+  const regex = new RegExp(`^${pattern.split('*').map(escapeRegex).join('.*')}$`);
+
+  return annotateMatcher({ $stringContaining: pattern }, (value: any, failure: InspectionFailure) => {
+    if (typeof value !== 'string') {
+      failure.failureReason = `Expected a string, but got '${typeof value}'`;
+      return false;
+    }
+
+    if (!regex.test(value)) {
+      failure.failureReason = 'String did not match pattern';
+      return false;
+    }
+
+    return true;
+  });
 }
 
 /**
  * Matches anything
  */
 function anything() {
-  const ret = () => {
-    return true;
-  };
-  ret.toJSON = () => ({ $anything: true });
-  return ret;
+  return annotateMatcher({ $anything: true }, () => true);
 }
 
 /**
@@ -412,4 +415,21 @@ function isCallable(x: any): x is ((...args: any[]) => any) {
 function isObject(x: any): x is object {
   // Because `typeof null === 'object'`.
   return x && typeof x === 'object';
+}
+
+/**
+ * Annotate a matcher with a specific toJSON so it renders nicely
+ *
+ * Since we JSON.stringify() patterns we are looking for in error messages, and
+ * we want to describe matchers better than just by `[function Function]` (or actually,
+ * not show them at all which is what JavaScript would do by default), put something
+ * on there that describes the matcher better.
+ */
+function annotateMatcher<A extends object>(how: A, matcher: PropertyMatcher): PropertyMatcher {
+  (matcher as any).toJSON = () => how;
+  return matcher;
+}
+
+function escapeRegex(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

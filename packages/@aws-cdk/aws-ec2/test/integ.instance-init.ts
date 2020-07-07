@@ -6,7 +6,10 @@ import * as ec2 from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-init', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  env: {
+    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+  },
 });
 
 const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });

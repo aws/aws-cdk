@@ -156,11 +156,11 @@ export interface InitElementConfig {
   readonly config: Record<string, any>;
 
   /**
-   * Optional set of S3 bucket names that must get a AWS::CloudFormation::Authentication reference to access.
+   * Optional authentication blocks to be associated with the Init Config
    *
-   * @default No buckets are associated with the config
+   * @default - No authentication associated with the config
    */
-  readonly authBucketNames?: string[];
+  readonly authentication?: Record<string, any>;
 }
 
 /**
@@ -292,7 +292,6 @@ export class InitCommand extends InitElement {
       throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
     }
 
-    // FIXME: Side effects in a render function... :(
     for (const handle of this.options.serviceRestartHandles ?? []) {
       handle.addCommand(commandKey);
     }
@@ -382,10 +381,12 @@ export abstract class InitFile extends InitElement {
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      protected renderContentOrSource(): Record<string, any> {
+      protected doBind(bindOptions: InitBindOptions) {
         return {
-          content,
-          encoding: this.options.base64Encoded ? 'base64' : 'plain',
+          config: this.standardConfig(options, bindOptions.platform, {
+            content,
+            encoding: this.options.base64Encoded ? 'base64' : 'plain',
+          }),
         };
       }
     }(fileName, options);
@@ -409,8 +410,12 @@ export abstract class InitFile extends InitElement {
    */
   public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      protected renderContentOrSource(): Record<string, any> {
-        return { content: obj };
+      protected doBind(bindOptions: InitBindOptions) {
+        return {
+          config: this.standardConfig(options, bindOptions.platform, {
+            content: obj,
+          }),
+        };
       }
     }(fileName, options);
   }
@@ -434,8 +439,12 @@ export abstract class InitFile extends InitElement {
    */
   public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      protected renderContentOrSource(): Record<string, any> {
-        return { source: url };
+      protected doBind(bindOptions: InitBindOptions) {
+        return {
+          config: this.standardConfig(options, bindOptions.platform, {
+            source: url,
+          }),
+        };
       }
     }(fileName, options);
   }
@@ -445,14 +454,15 @@ export abstract class InitFile extends InitElement {
    */
   public static fromS3Object(fileName: string, bucket: s3.IBucket, key: string, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
+      protected doBind(bindOptions: InitBindOptions) {
         bucket.grantRead(bindOptions.instanceRole, key);
-        return super.bind(bindOptions);
+        return {
+          config: this.standardConfig(options, bindOptions.platform, {
+            source: bucket.urlForObject(key),
+            authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
+          }),
+        };
       }
-      protected renderContentOrSource(): Record<string, any> {
-        return { source: bucket.urlForObject(key) };
-      }
-      protected renderAuthBucketNames(): string[] { return [ bucket.bucketName ]; }
     }(fileName, options);
   }
 
@@ -463,20 +473,19 @@ export abstract class InitFile extends InitElement {
    */
   public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
     return new class extends InitFile {
-      private asset!: s3_assets.Asset;
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
-        this.asset = new s3_assets.Asset(bindOptions.scope, 'InitFileAsset', {
+      protected doBind(bindOptions: InitBindOptions) {
+        const asset = new s3_assets.Asset(bindOptions.scope, `${targetFileName}Asset`, {
           path,
           ...options,
         });
-        this.asset.grantRead(bindOptions.instanceRole);
-        return super.bind(bindOptions);
-      }
-      protected renderContentOrSource(): Record<string, any> {
-        return { source: this.asset.httpUrl };
-      }
-      protected renderAuthBucketNames(): string[] {
-        return [ this.asset.s3BucketName ];
+        asset.grantRead(bindOptions.instanceRole);
+
+        return {
+          config: this.standardConfig(options, bindOptions.platform, {
+            source: asset.httpUrl,
+            authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          }),
+        };
       }
     }(targetFileName, options);
   }
@@ -486,15 +495,14 @@ export abstract class InitFile extends InitElement {
    */
   public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
+      protected doBind(bindOptions: InitBindOptions) {
         asset.grantRead(bindOptions.instanceRole);
-        return super.bind(bindOptions);
-      }
-      protected renderContentOrSource(): Record<string, any> {
-        return { source: asset.httpUrl };
-      }
-      protected renderAuthBucketNames(): string[] {
-        return [ asset.s3BucketName ];
+        return {
+          config: this.standardConfig(options, bindOptions.platform, {
+            source: asset.httpUrl,
+            authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
+          }),
+        };
       }
     }(targetFileName, options);
   }
@@ -506,30 +514,25 @@ export abstract class InitFile extends InitElement {
   }
 
   public bind(bindOptions: InitBindOptions): InitElementConfig {
-    // Side effects in a render function... :(
     for (const handle of this.options.serviceRestartHandles ?? []) {
       handle.addFile(this.fileName);
     }
 
-    return {
-      config: {
-        [this.fileName]: {
-          ...this.renderContentOrSource(),
-          ...this.renderFileOptions(this.options, bindOptions.platform),
-        },
-      },
-      authBucketNames: this.renderAuthBucketNames(),
-    };
+    return this.doBind(bindOptions);
   }
 
-  protected abstract renderContentOrSource(): Record<string, any>;
+  /**
+   * Perform the actual bind and render
+   *
+   * This is in a second method so the superclass can guarantee that
+   * the common work of registering into serviceHandles cannot be forgotten.
+   */
+  protected abstract doBind(options: InitBindOptions): InitElementConfig;
 
-  protected renderAuthBucketNames(): string[] | undefined {
-    // Default no-op
-    return undefined;
-  }
-
-  private renderFileOptions(fileOptions: InitFileOptions, platform: InitPlatform): Record<string, any> {
+  /**
+   * Render the standard config block, given content vars
+   */
+  protected standardConfig(fileOptions: InitFileOptions, platform: InitPlatform, contentVars: Record<string, any>): Record<string, any> {
     if (platform === InitPlatform.WINDOWS) {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
         throw new Error('Owner, group, and mode options not supported for Windows.');
@@ -538,9 +541,12 @@ export abstract class InitFile extends InitElement {
     }
 
     return {
-      mode: fileOptions.mode || '000644',
-      owner: fileOptions.owner || 'root',
-      group: fileOptions.group || 'root',
+      [this.fileName]: {
+        ...contentVars,
+        mode: fileOptions.mode || '000644',
+        owner: fileOptions.owner || 'root',
+        group: fileOptions.group || 'root',
+      },
     };
   }
 }
@@ -896,7 +902,11 @@ export abstract class InitSource extends InitElement {
    */
   public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      protected renderUrl(): string { return url; }
+      protected doBind() {
+        return {
+          config: { [this.targetDirectory]: url },
+        };
+      }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -912,12 +922,14 @@ export abstract class InitSource extends InitElement {
    */
   public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
-        bucket.grantRead(bindOptions.instanceRole, key);
-        return super.bind(bindOptions);
+      protected doBind(options: InitBindOptions) {
+        bucket.grantRead(options.instanceRole, key);
+
+        return {
+          config: { [this.targetDirectory]: bucket.urlForObject(key) },
+          authentication: standardS3Auth(options.instanceRole, bucket.bucketName),
+        };
       }
-      protected renderUrl(): string { return bucket.urlForObject(key); }
-      protected renderAuthBucketNames(): string[] { return [ bucket.bucketName ]; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -926,17 +938,18 @@ export abstract class InitSource extends InitElement {
    */
   public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new class extends InitSource {
-      private asset!: s3_assets.Asset;
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
-        this.asset = new s3_assets.Asset(bindOptions.scope, 'InitSourceAsset', {
+      protected doBind(options: InitBindOptions) {
+        const asset = new s3_assets.Asset(options.scope, `${targetDirectory}Asset`, {
           path,
           ...options,
         });
-        this.asset.grantRead(bindOptions.instanceRole);
-        return super.bind(bindOptions);
+        asset.grantRead(options.instanceRole);
+
+        return {
+          config: { [this.targetDirectory]: asset.httpUrl },
+          authentication: standardS3Auth(options.instanceRole, asset.s3BucketName),
+        };
       }
-      protected renderUrl(): string { return this.asset.httpUrl; }
-      protected renderAuthBucketNames(): string[] { return [ this.asset.s3BucketName ]; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -945,12 +958,14 @@ export abstract class InitSource extends InitElement {
    */
   public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
-      public bind(bindOptions: InitBindOptions): InitElementConfig {
-        asset.grantRead(bindOptions.instanceRole);
-        return super.bind(bindOptions);
+      protected doBind(options: InitBindOptions) {
+        asset.grantRead(options.instanceRole);
+
+        return {
+          config: { [this.targetDirectory]: asset.httpUrl },
+          authentication: standardS3Auth(options.instanceRole, asset.s3BucketName),
+        };
       }
-      protected renderUrl(): string { return asset.s3ObjectUrl; }
-      protected renderAuthBucketNames(): string[] { return [ asset.s3BucketName ]; }
     }(targetDirectory, options.serviceRestartHandles);
   }
 
@@ -960,22 +975,36 @@ export abstract class InitSource extends InitElement {
     super();
   }
 
-  public bind(_options: InitBindOptions): InitElementConfig {
-    // Side effect and all that
+  public bind(options: InitBindOptions): InitElementConfig {
     for (const handle of this.serviceHandles ?? []) {
       handle.addSource(this.targetDirectory);
     }
 
-    return {
-      config: { [this.targetDirectory]: this.renderUrl() },
-      authBucketNames: this.renderAuthBucketNames(),
-    };
+    // Delegate actual bind to subclasses
+    return this.doBind(options);
   }
 
-  protected abstract renderUrl(): string;
+  /**
+   * Perform the actual bind and render
+   *
+   * This is in a second method so the superclass can guarantee that
+   * the common work of registering into serviceHandles cannot be forgotten.
+   */
+  protected abstract doBind(options: InitBindOptions): InitElementConfig;
+}
 
-  protected renderAuthBucketNames(): string[] | undefined {
-    // Default no-op
-    return undefined;
-  }
+/**
+ * Render a standard S3 auth block for use in AWS::CloudFormation::Authentication
+ *
+ * This block is the same every time (modulo bucket name), so it has the same
+ * key every time so the blocks are merged into one in the final render.
+ */
+function standardS3Auth(role: iam.IRole, bucketName: string) {
+  return {
+    S3AccessCreds: {
+      type: 'S3',
+      roleName: role.roleName,
+      buckets: [bucketName],
+    },
+  };
 }

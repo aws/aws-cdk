@@ -9,6 +9,7 @@ async function main() {
   const argv = yargs
     .usage('Usage: cdk-integ [TEST...]')
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
+    .option('deploy', { type: 'boolean', default: true, desc: 'Deploy the test before writing the new output' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
     .argv;
@@ -21,7 +22,7 @@ async function main() {
   }
 
   for (const test of tests) {
-    console.error(`Trying to deploy ${test.name}`);
+    console.error(`-------[ ${test.name} ]----------`);
 
     const stackToDeploy = await test.determineTestStack();
     console.error(`Selected stack: ${stackToDeploy}`);
@@ -33,14 +34,22 @@ async function main() {
       args.push('--verbose');
     }
 
+    let didDeploy = false;
     try {
-      // tslint:disable-next-line:max-line-length
-      await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
-        verbose: argv.verbose,
-        // Note: no "context" and "env", so use default user settings!
-      });
+      if (argv.deploy) {
+        console.error('Deploying. This may take a while.');
 
-      console.error('Success! Writing out reference synth.');
+        // tslint:disable-next-line:max-line-length
+        await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+          verbose: argv.verbose,
+          // Note: no "context" and "env", so use default user settings!
+        });
+        didDeploy = true;
+
+        console.error('Success! Writing out reference synth.');
+      } else {
+        console.error('Ran with --no-deploy, skipping deployment and trusting test.');
+      }
 
       // If this all worked, write the new expectation file
       const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
@@ -48,8 +57,10 @@ async function main() {
       await test.writeExpected(actual);
     } finally {
       if (argv.clean) {
-        console.error('Cleaning up.');
-        await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+        if (didDeploy) {
+          console.error('Cleaning up.');
+          await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+        }
       } else {
         console.error('Skipping clean up (--no-clean).');
       }

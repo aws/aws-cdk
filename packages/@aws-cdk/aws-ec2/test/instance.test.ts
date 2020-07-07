@@ -1,4 +1,4 @@
-import { arrayWith, expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -339,7 +339,7 @@ test('add CloudFormation Init to instance', () => {
     UserData: {
       'Fn::Base64': {
         'Fn::Join': [ '', [
-          '#!/bin/bash\n# fingerprint: 3e2adf845e3c856f\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+          stringLike('#!/bin/bash\n# fingerprint: *\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region '),
           { Ref: 'AWS::Region' },
           ' --stack ',
           { Ref: 'AWS::StackName' },
