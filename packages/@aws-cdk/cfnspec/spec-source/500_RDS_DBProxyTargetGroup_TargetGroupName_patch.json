@@ -1,0 +1,21 @@
+{
+  "ResourceTypes": {
+    "AWS::RDS::DBProxyTargetGroup": {
+      "patch": {
+        "description": "Add TargetGroupName to AWS::RDS::DBProxyTargetGroup",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/TargetGroupName",
+            "value": {
+              "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbproxytargetgroup.html#TargetGroupName-fn::getatt",
+              "PrimitiveType": "String",
+              "Required": true,
+              "UpdateType": "Immutable"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
