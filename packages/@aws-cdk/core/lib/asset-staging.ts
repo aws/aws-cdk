@@ -94,7 +94,7 @@ export class AssetStaging extends Construct {
         : undefined;
 
       this.bundleDir = this.bundle(props.bundling, assetHashIfKnownInAdvance);
-      this.assetHash = assetHashIfKnownInAdvance || this.calculateHash(props);
+      this.assetHash = assetHashIfKnownInAdvance ?? this.calculateHash(props);
     } else {
       this.assetHash = this.calculateHash(props);
     }
@@ -147,8 +147,8 @@ export class AssetStaging extends Construct {
     const stagingTmp = path.join('.', STAGING_TMP);
     fs.ensureDirSync(stagingTmp);
 
-    let bundleDir = '';
-    if (assetHash !== undefined) {
+    let bundleDir: string;
+    if (assetHash) {
       // When an asset hash is known in advance of bundling, bundling is done into a dedicated staging directory.
       bundleDir = path.resolve(path.join(stagingTmp, 'asset-bundle-hash-' + assetHash));
 
