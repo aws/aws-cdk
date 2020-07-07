@@ -352,6 +352,10 @@ export = {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
 
+    // When bundling fails, the asset-bundle-hash directory needs to be removed or subsequent bundler runs may
+    // falsely believe that it can re-use the asset from the failed bundling.
+    test.ok(!fs.existsSync(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'))));
+
     test.done();
   },
 };

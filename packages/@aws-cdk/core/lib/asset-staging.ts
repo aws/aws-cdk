@@ -200,6 +200,7 @@ export class AssetStaging extends Construct {
         workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
+      fs.removeSync(bundleDir);
       throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
     }
 
