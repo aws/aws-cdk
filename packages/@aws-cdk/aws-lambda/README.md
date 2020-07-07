@@ -256,9 +256,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
-### Lambda with Application AutoScaling
+### Lambda with Provisioned Concurrency AutoScaling
 
-Application AutoScaling can be added on to Lambda Aliases using the `alias.autoScaleProvisionedConcurrency()` API:
+Provisioned Concurrency AutoScaling can be added on to Lambda Aliases using the `alias.autoScaleProvisionedConcurrency()` API:
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -278,8 +278,6 @@ alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 50 });
 ```
 
 [Example of Lambda AutoScaling usage](test/integ.autoscaling.ts)
-
-Autoscaling on a Lambda Version is still [possible](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-applicationautoscaling#lambda-provisioned-concurrency-auto-scaling), but there are some limitations to this approach. Versions do not support updates so adding autoscaling to an existing version or updating autoscaling configuration is not possible. In addition, replacing a version by changing the logical ID could strand previous autoscaling configurations if the version is set to retain.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html) on autoscaling lambda functions.
 

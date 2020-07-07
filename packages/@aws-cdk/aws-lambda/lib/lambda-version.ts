@@ -25,12 +25,6 @@ export interface IVersion extends IFunction {
    * @param options Alias options
    */
   addAlias(aliasName: string, options?: AliasOptions): Alias;
-
-  // /**
-  //  * Enables autoscaling on a version with provisioned concurrency
-  //  * @param props The properties for autoscaling
-  //  */
-  // autoScaleProvisionedConcurrency(props: EnableScalingProps): IScalableVersionAttribute;
 }
 
 /**

@@ -473,6 +473,54 @@ export = {
     test.done();
   },
 
+  'can enable AutoScaling on aliases with Provisioned Concurrency set'(test: Test): void {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version = fn.addVersion('1', undefined, 'testing');
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: 10,
+    });
+
+    // WHEN
+    alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MinCapacity: 1,
+      MaxCapacity: 5,
+      ResourceId: objectLike({
+        'Fn::Join': arrayWith(arrayWith(
+          'function:',
+          objectLike({
+            'Fn::Select': arrayWith(
+              {'Fn::Split': arrayWith(
+                {Ref: 'Alias325C5727' }),
+              },
+            ),
+          }),
+          ':prod',
+        )),
+      }),
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: 10,
+      },
+    }));
+
+    test.done();
+  },
+
   'cannot enable AutoScaling twice on same property'(test: Test): void {
     // GIVEN
     const stack = new Stack();
