@@ -78,7 +78,7 @@ you need to have the following SDKs and tools locally:
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
-- [Java OpenJDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [Java >= OpenJDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
 - [Apache Maven](http://maven.apache.org/install.html)
 - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
 - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
@@ -89,7 +89,6 @@ The basic commands to get the repository cloned and built locally follow:
 ```console
 $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
-$ yarn install
 $ yarn build
 ```
 
