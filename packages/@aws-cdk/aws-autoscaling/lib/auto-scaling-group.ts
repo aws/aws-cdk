@@ -7,7 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Token, Tokenization, withResolved,
+  Tag, Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
@@ -607,7 +607,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = imageConfig.osType;
-    this.autoScalingGroupName = Token.isUnresolved(this.physicalName) ? this.autoScalingGroup.ref : this.physicalName;
+    this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
