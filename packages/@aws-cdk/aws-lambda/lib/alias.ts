@@ -217,14 +217,17 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     if (this.scalableAlias) {
       throw new Error('Autoscaling already enabled for this alias');
     }
-
-    return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
+    const name = this.stack.parseArn(this.functionArn, ':').resourceName!;
+    this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: props.minCapacity,
       maxCapacity: props.maxCapacity,
-      resourceId: `function:${this.lambda.functionName}:${this.aliasName}`,
+      resourceId: `function:${name}:${this.aliasName}`,
       dimension: 'lambda:function:ProvisionedConcurrency',
       role: this.scalingRole,
     });
+
+    // this.scalableAlias.node.tryFindChild('Target')?.node.addDependency(this);
+    return this.scalableAlias;
   }
 
   /**

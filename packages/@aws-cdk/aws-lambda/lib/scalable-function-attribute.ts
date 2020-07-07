@@ -13,7 +13,7 @@ export interface IScalableFunctionAttribute {
   /**
    * Add scheduled scaling for this scaling attribute
    */
-  scaleOnSchedule(actions: appscaling.ScalingSchedule): void;
+  scaleOnSchedule(id: string, actions: appscaling.ScalingSchedule): void;
 }
 
 /**
@@ -42,11 +42,11 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    * LambdaProvisionedConcurrencyUtilization, which is a percentage.
    */
   public scaleOnUtilization(props: UtilizationScalingProps) {
-    if (props.targetUtilizationPercent < 0 || props.targetUtilizationPercent > 1) {
-      throw new Error('The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and must be between 0 and 1.');
+    if (props.targetUtilizationPercent < 10 || props.targetUtilizationPercent > 90) {
+      throw new Error('The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and the target value must be between 10% and 90%.');
     }
     super.doScaleToTrackMetric('Tracking', {
-      targetValue: props.targetUtilizationPercent,
+      targetValue: props.targetUtilizationPercent/100,
       predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
       ...props,
     });
@@ -55,8 +55,8 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
   /**
    * Scale out or in based on time
    */
-  public scaleOnSchedule(action: appscaling.ScalingSchedule) {
-    super.doScaleOnSchedule('Scheduling', action);
+  public scaleOnSchedule(id: string, action: appscaling.ScalingSchedule) {
+    super.doScaleOnSchedule(id, action);
   }
 }
 

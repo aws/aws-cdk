@@ -512,7 +512,7 @@ export = {
     const target = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 50}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and must be between 0 and 1./);
+    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 150}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and must be between 0 and 100./);
 
     test.done();
   },
@@ -535,7 +535,7 @@ export = {
 
     // WHEN
     const target = alias.autoScaleProvisionedConcurrency({minCapacity: 1, maxCapacity: 5});
-    target.scaleOnSchedule({
+    target.scaleOnSchedule('Scheduling', {
       schedule: appscaling.Schedule.cron({}),
       maxCapacity: 10,
     });
