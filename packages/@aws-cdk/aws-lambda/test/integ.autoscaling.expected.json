@@ -140,7 +140,7 @@
     "AliasAliasScalingTargetTrackingA7718D48": {
       "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
       "Properties": {
-        "PolicyName": "awslambdaautoscaling2AliasAliasScalingTargetTrackingC12C84AC",
+        "PolicyName": "awslambdaautoscalingAliasAliasScalingTargetTrackingD339330D",
         "PolicyType": "TargetTrackingScaling",
         "ScalingTargetId": {
           "Ref": "AliasAliasScalingTarget7449FF0E"
