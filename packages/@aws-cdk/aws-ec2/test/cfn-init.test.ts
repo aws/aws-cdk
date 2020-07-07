@@ -129,6 +129,31 @@ describe('userdata', () => {
     expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
     expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
     expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  });
+
+  test('Windows userdata contains right commands', () => {
+    // WHEN
+    const windowsUserData = ec2.UserData.forWindows();
+
+    simpleInit.attach(resource, {
+      platform: ec2.InitPlatform.WINDOWS,
+      instanceRole,
+      userData: windowsUserData,
+    });
+
+    // THEN
+    const lines = windowsUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
+    expectLine(lines, cmdArg('type', 'cfn-init.log'));
     expectLine(lines, /fingerprint/);
   });
 
