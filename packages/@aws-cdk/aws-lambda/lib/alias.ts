@@ -217,6 +217,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     if (this.scalableAlias) {
       throw new Error('Autoscaling already enabled for this alias');
     }
+    // This is a hack to get the ScalableTarget resource to depend on Alias.
+    // this.functionArn depends on the Alias resource. Otherwise, name could easily be this.lambda.functionName
     const name = this.stack.parseArn(this.functionArn, ':').resourceName!;
     this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: props.minCapacity,

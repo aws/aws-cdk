@@ -1,7 +1,7 @@
-import { beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike, arrayWith } from '@aws-cdk/assert';
+import { arrayWith, beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Stack, } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -457,8 +457,14 @@ export = {
       MaxCapacity: 5,
       ResourceId: objectLike({
         'Fn::Join': arrayWith(arrayWith(
-          'function:', 
-          { Ref: 'MyLambdaCCE802FB' },
+          'function:',
+          objectLike({
+            'Fn::Select': arrayWith(
+              {'Fn::Split': arrayWith(
+                {'Ref': 'Alias325C5727' }),
+              },
+            ),
+          }),
           ':prod',
         )),
       }),
@@ -512,7 +518,7 @@ export = {
     const target = alias.autoScaleProvisionedConcurrency({ minCapacity: 1, maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 150}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and must be between 0 and 100./);
+    test.throws(() => target.scaleOnUtilization({targetUtilizationPercent: 150}), /The tracked metric, LambdaProvisionedConcurrencyUtilization, must be between 10% and 90%./);
 
     test.done();
   },
@@ -550,7 +556,7 @@ export = {
         },
       ],
     }));
-    
+
     test.done();
   },
 };

@@ -43,10 +43,10 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    */
   public scaleOnUtilization(props: UtilizationScalingProps) {
     if (props.targetUtilizationPercent < 10 || props.targetUtilizationPercent > 90) {
-      throw new Error('The tracked metric, LambdaProvisionedConcurrencyUtilization, is a percentage and the target value must be between 10% and 90%.');
+      throw new Error('The tracked metric, LambdaProvisionedConcurrencyUtilization, must be between 10% and 90%.');
     }
     super.doScaleToTrackMetric('Tracking', {
-      targetValue: props.targetUtilizationPercent/100,
+      targetValue: props.targetUtilizationPercent / 100,
       predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
       ...props,
     });
