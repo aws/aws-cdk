@@ -1,5 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { basename, dirname } from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk

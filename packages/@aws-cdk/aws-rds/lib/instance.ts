@@ -169,7 +169,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  * secret rotation.
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
+  /* eslint-disable max-len */
   public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER, [
     { engineMajorVersion: '10.0', parameterGroupFamily: 'mariadb10.0' },
     { engineMajorVersion: '10.1', parameterGroupFamily: 'mariadb10.1' },
@@ -242,7 +242,7 @@ export class DatabaseInstanceEngine extends DatabaseClusterEngine {
     { engineMajorVersion: '13', parameterGroupFamily: 'sqlserver-web-13.0' },
     { engineMajorVersion: '14', parameterGroupFamily: 'sqlserver-web-14.0' },
   ]);
-  /* tslint:enable max-line-length */
+  /* eslint-enable max-len */
 
   /** To make it a compile-time error to pass a DatabaseClusterEngine where a DatabaseInstanceEngine is expected. */
   public readonly isDatabaseInstanceEngine = true;
@@ -527,7 +527,6 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *

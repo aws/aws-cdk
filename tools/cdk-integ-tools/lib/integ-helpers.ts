@@ -268,7 +268,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region': '{"image_id": "ami-1234"}',
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     'ami:account=12345678:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=test-region': 'ami-1234',
     'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': {
       vpcId: 'vpc-60900905',
@@ -335,7 +335,7 @@ function exec(commandLine: string[], options: { cwd?: string, json?: boolean, ve
     }
     return output;
   } catch (e) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error('Not JSON: ' + output);
     throw new Error('Command output is not JSON');
   }

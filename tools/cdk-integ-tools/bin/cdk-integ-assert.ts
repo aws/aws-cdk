@@ -3,7 +3,7 @@
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
@@ -32,7 +32,7 @@ async function main() {
   }
 
   if (failures.length > 0) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Some stacks have changed. To verify that they still deploy successfully, run: 'npm run integ ${failures.join(' ')}'`);
   }
 }

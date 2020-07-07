@@ -19,7 +19,9 @@ import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
-// tslint:disable:no-shadowed-variable max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-shadow */ // yargs
+
 async function parseCommandLineArguments() {
   // Use the following configuration for array arguments:
   //

@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { OriginAccessIdentity } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Origin Access Identity with automatic comment'(test: Test) {

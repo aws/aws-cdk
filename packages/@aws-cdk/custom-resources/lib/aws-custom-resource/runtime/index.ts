@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
 

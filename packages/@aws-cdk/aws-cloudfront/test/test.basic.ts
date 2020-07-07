@@ -15,7 +15,7 @@ import {
   ViewerProtocolPolicy,
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
 
@@ -809,7 +809,7 @@ export = {
       originConfigs: [
         {
           s3OriginSource: { s3BucketSource: sourceBucket },
-          behaviors : [
+          behaviors: [
             {
               isDefaultBehavior: true, lambdaFunctionAssociations: [
                 {
@@ -859,7 +859,7 @@ export = {
       originConfigs: [
         {
           s3OriginSource: { s3BucketSource: sourceBucket },
-          behaviors : [
+          behaviors: [
             {
               isDefaultBehavior: true, lambdaFunctionAssociations: [
                 {
@@ -878,7 +878,7 @@ export = {
   },
 
   'geo restriction': {
-    'success' : {
+    'success': {
       'whitelist'(test: Test) {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');

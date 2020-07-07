@@ -58,7 +58,7 @@ export class DatabaseClusterEngine {
 
   private readonly parameterGroupFamilies?: ParameterGroupFamily[];
 
-  // tslint:disable-next-line max-line-length
+  // eslint-disable-next-line max-len
   constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies?: ParameterGroupFamily[]) {
     this.name = name;
     this.singleUserRotationApplication = singleUserRotationApplication;
