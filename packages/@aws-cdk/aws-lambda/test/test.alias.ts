@@ -461,7 +461,7 @@ export = {
           objectLike({
             'Fn::Select': arrayWith(
               {'Fn::Split': arrayWith(
-                {'Ref': 'Alias325C5727' }),
+                {Ref: 'Alias325C5727' }),
               },
             ),
           }),
