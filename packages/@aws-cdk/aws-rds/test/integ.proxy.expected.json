@@ -554,7 +554,8 @@
           {
             "Ref": "dbInstance4076B1EC"
           }
-        ]
+        ],
+        "TargetGroupName": "default"
       }
     }
   }
