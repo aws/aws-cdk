@@ -1,4 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Lazy } from './lazy';
 import { Token } from './token';
@@ -61,8 +62,10 @@ export abstract class CfnElement extends Construct {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`,
     });
 
+    const stackTrace = this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? false : true;
+
     this.node.addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
-      stackTrace: true,
+      stackTrace,
       traceFromFunction: this.constructor,
     });
   }

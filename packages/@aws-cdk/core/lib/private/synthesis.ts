@@ -113,7 +113,7 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
 
 /**
  * Validate all constructs in the given construct tree
- * Exported for unit tests
+ * (Exported for unit tests)
  */
 export function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();

@@ -23,7 +23,7 @@ export class Aspects {
    * @param scope The scope for which these aspects will apply.
    */
   public static of(scope: IConstruct): Aspects {
-    let aspects = (scope as any)[ASPECTS_SYMBOL];
+    const aspects = (scope as any)[ASPECTS_SYMBOL];
     if (aspects) {
       return aspects;
     }

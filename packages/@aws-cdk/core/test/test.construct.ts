@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import { Construct, ConstructOrder, IConstruct, IValidation } from 'constructs';
 import { Test } from 'nodeunit';
 import { App as Root, Aws, Lazy } from '../lib';
 import { validateTree } from '../lib/private/synthesis';
@@ -62,16 +62,6 @@ export = {
   'if "undefined" is forcefully used as an "id", it will be treated as an empty string'(test: Test) {
     const c = new Construct(undefined as any, undefined as any);
     test.deepEqual(c.node.id, '');
-    test.done();
-  },
-
-  'dont allow unresolved tokens to be used in construct IDs'(test: Test) {
-    // GIVEN
-    const root = new Root();
-    const token = Lazy.stringValue({ produce: () => 'lazy' });
-
-    // WHEN + THEN
-    test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);
     test.done();
   },
 
@@ -203,13 +193,6 @@ export = {
     test.done();
   },
 
-  'fails if context key contains unresolved tokens'(test: Test) {
-    const root = new Root();
-    test.throws(() => root.node.setContext(`my-${Aws.REGION}`, 'foo'), /Invalid context key/);
-    test.throws(() => root.node.tryGetContext(Aws.REGION), /Invalid context key/);
-    test.done();
-  },
-
   'construct.pathParts returns an array of strings of all names from root to node'(test: Test) {
     const tree = createTree();
     test.deepEqual(tree.root.node.path, '');
@@ -254,7 +237,7 @@ export = {
     const con = new Construct(root, 'MyConstruct');
     test.deepEqual(con.node.metadata, [], 'starts empty');
 
-    con.node.addMetadata('key', 'value');
+    con.node.addMetadata('key', 'value', { stackTrace: true });
     con.node.addMetadata('number', 103);
     con.node.addMetadata('array', [ 123, 456 ]);
     restoreStackTraceColection(previousValue);
@@ -263,7 +246,8 @@ export = {
     test.deepEqual(con.node.metadata[0].data, 'value');
     test.deepEqual(con.node.metadata[1].data, 103);
     test.deepEqual(con.node.metadata[2].data, [ 123, 456 ]);
-    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[1].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
+
+    test.ok(con.node.metadata[0]?.trace?.[0].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
     test.done();
   },
 
@@ -338,31 +322,31 @@ export = {
   // tslint:disable-next-line:max-line-length
   'construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)'(test: Test) {
 
-    class MyConstruct extends Construct {
-      protected validate() {
+    class MyConstruct extends Construct implements IValidation {
+      public validate() {
         return [ 'my-error1', 'my-error2' ];
       }
     }
 
-    class YourConstruct extends Construct {
-      protected validate() {
+    class YourConstruct extends Construct implements IValidation {
+      public validate() {
         return [ 'your-error1' ];
       }
     }
 
-    class TheirConstruct extends Construct {
+    class TheirConstruct extends Construct implements IValidation {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
         new YourConstruct(this, 'YourConstruct');
       }
 
-      protected validate() {
+      public validate() {
         return [ 'their-error' ];
       }
     }
 
-    class TestStack extends Root {
+    class TestStack extends Root implements IValidation {
       constructor() {
         super();
 
@@ -370,22 +354,37 @@ export = {
         new TheirConstruct(this, 'TheirConstruct');
       }
 
-      protected validate() {
+      public validate() {
         return  [ 'stack-error' ];
       }
     }
 
     const stack = new TestStack();
 
-    const errors = validateTree(stack);
+    const expected = [
+      'Validation failed with the following errors:',
+      '[] stack-error',
+      '[MyConstruct] my-error1',
+      '[MyConstruct] my-error2',
+      '[TheirConstruct] their-error',
+      '[TheirConstruct/YourConstruct] your-error1',
+    ];
 
-    // validate DFS
-    test.deepEqual(errors, [
-      { path: 'MyConstruct', message: 'my-error1' },
-      { path: 'MyConstruct', message: 'my-error2' },
-      { path: 'TheirConstruct/YourConstruct', message: 'your-error1' },
-      { path: 'TheirConstruct', message: 'their-error' },
-      { path: '', message: 'stack-error' },
+    let actual;
+    try {
+      validateTree(stack);
+    } catch (e) {
+      // tslint:disable-next-line: no-console
+      actual = e.message.split('\n').map((s: string) => s.trim());
+    }
+
+    test.deepEqual(actual, [
+      'Validation failed with the following errors:',
+      '[] stack-error',
+      '[MyConstruct] my-error1',
+      '[MyConstruct] my-error2',
+      '[TheirConstruct] their-error',
+      '[TheirConstruct/YourConstruct] your-error1'
     ]);
 
     test.done();
@@ -399,7 +398,7 @@ export = {
       }
 
       public unlockMe() {
-        this.node.lock();
+        this.node.unlock();
       }
     }
 

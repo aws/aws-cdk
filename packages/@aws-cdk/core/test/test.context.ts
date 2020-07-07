@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { Stack } from '../lib';
+import { Stack, App } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -146,7 +146,8 @@ export = {
     const contextKey = 'availability-zones:account=12345:region=us-east-1';  // Depends on the mangling algo
 
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
 
     // NOTE: error key is inlined here because it's part of the CX-API
     // compatibility surface.

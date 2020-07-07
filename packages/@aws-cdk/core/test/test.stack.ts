@@ -5,6 +5,7 @@ import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
@@ -411,7 +412,7 @@ export = {
     new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
 
     // THEN
-    app.synth();
+    resolveReferences(app);
 
     test.done();
   },
