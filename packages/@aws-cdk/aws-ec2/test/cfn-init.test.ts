@@ -48,6 +48,9 @@ test('whole config with restart handles', () => {
 test('CloudFormationInit can be added to after instantiation', () => {
 });
 
+test('empty configs are not rendered', () => {
+});
+
 describe('userdata', () => {
   test('can disable result code reporting', () => {
   });
@@ -70,6 +73,9 @@ describe('assets', () => {
   });
 
   test('no duplication of bucket names when using multiple assets', () => {
+  });
+
+  test('multiple buckets appear in the same auth block', () => {
   });
 });
 
