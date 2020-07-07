@@ -4,11 +4,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +17,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### TypeScript example
+### Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -158,7 +154,7 @@ and also injects a field called `otherData`.
 ```ts
 const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.DataAt('$.input.greeting')
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
     otherData: 'some-extra-stuff'
   },
 });
@@ -656,12 +652,3 @@ sfn.StateMachine.fromStateMachineArn(
   'ImportedStateMachine',
   'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
 ```
-
-## Future work
-
-Contributions welcome:
-
-- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one
-  might make for a nice API.
-- [ ] Expression parser for Conditions.
-- [ ] Simulate state machines in unit tests.

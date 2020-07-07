@@ -133,8 +133,8 @@ export class BackupVault extends Resource implements IBackupVault {
   constructor(scope: Construct, id: string, props: BackupVaultProps = {}) {
     super(scope, id);
 
-    if (props.backupVaultName && !/^[a-zA-Z0-9\-_\.]{1,50}$/.test(props.backupVaultName)) {
-      throw new Error('Expected vault name to match pattern `^[a-zA-Z0-9\-\_\.]{1,50}$`');
+    if (props.backupVaultName && !/^[a-zA-Z0-9\-_]{2,50}$/.test(props.backupVaultName)) {
+      throw new Error('Expected vault name to match pattern `^[a-zA-Z0-9\-_]{2,50}$`');
     }
 
     let notifications: CfnBackupVault.NotificationObjectTypeProperty | undefined;

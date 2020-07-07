@@ -144,6 +144,8 @@ export class AssetStaging extends Construct {
 
     // Create temp directory for bundling inside the temp staging directory
     const bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-')));
+    // Chmod the bundleDir to full access.
+    fs.chmodSync(bundleDir, 0o777);
 
     let user: string;
     if (options.user) {

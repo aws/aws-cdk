@@ -46,7 +46,7 @@ async function main() {
 
   if (useJest) {
     if (testFiles.length > 0) {
-      throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
+      throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!: ${testFiles.map(f => f.filename)}`);
     }
     await shell([args.jest], defaultShellOptions);
   } else if (testFiles.length > 0) {

@@ -51,6 +51,18 @@ export enum ComparisonOperator {
    * Used only for alarms based on anomaly detection models
    */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is lower than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {

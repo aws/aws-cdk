@@ -28,3 +28,6 @@ jest.config.js
 !test/integ/cli-regression-patches/**/*
 
 .DS_Store
+
+# exclude cdk artifacts
+**/cdk.out
