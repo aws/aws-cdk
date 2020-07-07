@@ -197,6 +197,10 @@ export interface AttachInitOptions {
    * on the instance. Set this to `true` to print it to the System Log
    * (visible from the EC2 Console), `false` to not print it.
    *
+   * (Be aware that the system log is refreshed at certain points in
+   * time of the instance life cycle, and successful execution may
+   * not always show up).
+   *
    * @default true
    */
   readonly printLog?: boolean;
