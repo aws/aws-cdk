@@ -228,7 +228,7 @@ async function transformPackage(
 
     await fs.writeFile(
       path.resolve(LIB_ROOT, '..', `${library.shortName}.ts`),
-      `import { ${library.namespace} } from './lib';\nexport = ${library.namespace};\n`,
+      `export * from './lib/${library.shortName}/${library.entryPoint}';\n`,
       { encoding: 'utf8' },
     );
   }
