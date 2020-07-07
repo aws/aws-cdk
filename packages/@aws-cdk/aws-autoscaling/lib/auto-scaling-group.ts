@@ -784,7 +784,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
-  private readonly isWindows: boolean;
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
@@ -816,7 +815,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.isWindows = imageConfig.osType === ec2.OperatingSystemType.WINDOWS;
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
@@ -1001,7 +999,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
     }
 
-    const platform = this.isWindows ? ec2.InitPlatform.WINDOWS : ec2.InitPlatform.LINUX;
+    const platform = this.osType === ec2.OperatingSystemType.WINDOWS ? ec2.InitPlatform.WINDOWS : ec2.InitPlatform.LINUX;
     init.attach(this.autoScalingGroup, {
       platform,
       instanceRole: this.role,
@@ -1011,10 +1009,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
     });
-
-    // Attach a hash of the CloudFormationInit config to the UserData, so that the
-    // UserData will change if the config changes, which will cause
-    // FIXME - Rico ---^ Dead comment, or missing work?
   }
 
   /**

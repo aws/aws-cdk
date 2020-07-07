@@ -216,7 +216,7 @@ export interface InitCommandOptions {
   /**
    * Command to determine whether this command should be run
    *
-   * If the test passes (exits with error code or %ERRORLEVEL% of 0), the command is run.
+   * If the test passes (exits with error code of 0), the command is run.
    *
    * @default - Always run this command
    */

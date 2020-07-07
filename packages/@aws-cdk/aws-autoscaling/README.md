@@ -1,4 +1,5 @@
 ## Amazon EC2 Auto Scaling Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -255,9 +256,6 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-```
-
-
 ### Allowing Connections
 
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
@@ -274,7 +272,6 @@ To clear a previously set value, just leave this property undefinied.
 To disable detailed instance monitoring, specify `instanceMonitoring` property
 for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
 will be enabled.
-
 
 ### Future work
 

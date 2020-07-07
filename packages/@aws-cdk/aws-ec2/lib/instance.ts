@@ -292,7 +292,6 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
-  private readonly isWindows: boolean;
   private readonly originalLogicalId: string;
   private readonly userDataReplacement: boolean;
 
@@ -326,7 +325,6 @@ export class Instance extends Resource implements IInstance {
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
-    this.isWindows = imageConfig.osType === OperatingSystemType.WINDOWS;
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
@@ -424,7 +422,7 @@ export class Instance extends Resource implements IInstance {
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
   public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
-    const platform = this.isWindows ? InitPlatform.WINDOWS : InitPlatform.LINUX;
+    const platform = this.osType === OperatingSystemType.WINDOWS ? InitPlatform.WINDOWS : InitPlatform.LINUX;
     init.attach(this.instance, {
       platform,
       instanceRole: this.role,
