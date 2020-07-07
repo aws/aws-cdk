@@ -54,12 +54,16 @@ export function nodeMajorVersion(): number {
  * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
-  const { root } = path.parse(directory);
-  if (directory === root && !fs.existsSync(path.join(directory, name))) {
-    return undefined;
-  }
+  const absoluteDirectory = path.resolve(directory);
+
   if (fs.existsSync(path.join(directory, name))) {
     return directory;
   }
-  return findUp(name, path.dirname(directory));
+
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory === root) {
+    return undefined;
+  }
+
+  return findUp(name, path.dirname(absoluteDirectory));
 }
