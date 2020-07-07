@@ -2,7 +2,6 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-// import { CfnNestedInclude } from './cfn-nested-include';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -14,6 +13,14 @@ export interface CfnIncludeProps {
    * Both JSON and YAML template formats are supported.
    */
   readonly templateFile: string;
+
+  /**
+   * Whether to generate a template file for a nested stack.
+   * 
+   * If true, then the templateURL of the parent stack will point to the generated template on disk.
+   * Otherwise, the templateURL of the parent stack will not be touched.
+   */
+  readonly generateNestedTemplate?: boolean;
 }
 
 /**
@@ -50,7 +57,7 @@ export class CfnInclude extends core.CfnElement {
 
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
-      this.getOrCreateResource(logicalId);
+      this.getOrCreateResource(logicalId, props);
     }
 
     const outputScope = new core.Construct(this, '$Ouputs');
@@ -232,7 +239,7 @@ export class CfnInclude extends core.CfnElement {
     this.conditions[conditionName] = cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string): core.CfnResource {
+  private getOrCreateResource(logicalId: string, props?:CfnIncludeProps): core.CfnResource {
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -243,7 +250,7 @@ export class CfnInclude extends core.CfnElement {
     // maybe add a nestedStackScope instead of this CfnNestedInclude thing; const nestedStackScope = new core.Construct(this, '$Ouputs');
 
     // we the parse the nested stack here; the TemplateURL has to point the correct location on disk
-    if (resourceAttributes.Type === 'AWS::CloudFormation::Stack') {
+    if (resourceAttributes.Type === 'AWS::CloudFormation::Stack' && props?.generateNestedTemplate) {
       // adding 'Nested' to the logicalId prevents this resource from conflicting with the CloudFormation stack
       // resource of the same name
       const nestedStackScope = new core.NestedStack(this, '$Nested' + logicalId);

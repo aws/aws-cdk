@@ -493,7 +493,7 @@ describe('CDK Include', () => {
   });
 
   test("can ingest a template with nested stacks", () => {
-    includeTestTemplate(stack, 'parent-export-stack.json');
+    includeTemplateWithNestedStack(stack, 'parent-export-stack.json');
 
     expect(stack).toMatchTemplate({
       "Resources": {
@@ -514,7 +514,7 @@ describe('CDK Include', () => {
                   },
                   "/",
                   {
-                    "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3BucketB1443649"
+                    "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3BucketD7EE1731"
                   },
                   "/",
                   {
@@ -524,7 +524,7 @@ describe('CDK Include', () => {
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150"
+                            "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3VersionKey87B2AEFE"
                           }
                         ]
                       }
@@ -537,7 +537,7 @@ describe('CDK Include', () => {
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150"
+                            "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3VersionKey87B2AEFE"
                           }
                         ]
                       }
@@ -545,14 +545,6 @@ describe('CDK Include', () => {
                   }
                 ]
               ]
-            },
-            "Parameters": {
-              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef": {
-                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C"
-              },
-              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref": {
-                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2"
-              }
             }
           }
         },
@@ -582,7 +574,7 @@ describe('CDK Include', () => {
                   },
                   "/",
                   {
-                    "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3BucketCC33FD43"
+                    "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3BucketD7EE1731"
                   },
                   "/",
                   {
@@ -592,7 +584,7 @@ describe('CDK Include', () => {
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9"
+                            "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3VersionKey87B2AEFE"
                           }
                         ]
                       }
@@ -605,7 +597,7 @@ describe('CDK Include', () => {
                         "Fn::Split": [
                           "||",
                           {
-                            "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9"
+                            "Ref": "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3VersionKey87B2AEFE"
                           }
                         ]
                       }
@@ -613,14 +605,6 @@ describe('CDK Include', () => {
                   }
                 ]
               ]
-            },
-            "Parameters": {
-              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef": {
-                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C"
-              },
-              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref": {
-                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2"
-              }
             }
           }
         },
@@ -635,41 +619,17 @@ describe('CDK Include', () => {
         }
       },
       "Parameters": {
-        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C": {
+        "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3BucketD7EE1731": {
           "Type": "String",
-          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+          "Description": "S3 bucket for asset \"99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4\""
         },
-        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2": {
+        "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4S3VersionKey87B2AEFE": {
           "Type": "String",
-          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+          "Description": "S3 key for asset version \"99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4\""
         },
-        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+        "AssetParameters99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4ArtifactHashBDA1B597": {
           "Type": "String",
-          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
-        },
-        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3BucketB1443649": {
-          "Type": "String",
-          "Description": "S3 bucket for asset \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
-        },
-        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150": {
-          "Type": "String",
-          "Description": "S3 key for asset version \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
-        },
-        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224ArtifactHash32104306": {
-          "Type": "String",
-          "Description": "Artifact hash for asset \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
-        },
-        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3BucketCC33FD43": {
-          "Type": "String",
-          "Description": "S3 bucket for asset \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
-        },
-        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9": {
-          "Type": "String",
-          "Description": "S3 key for asset version \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
-        },
-        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcArtifactHashDD3E6840": {
-          "Type": "String",
-          "Description": "Artifact hash for asset \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
+          "Description": "Artifact hash for asset \"99ab28d1edaf004a90d327e1c92a6f04a0abcce111ed6b3c7da8b5a111ac62f4\""
         }
       }
     });
@@ -684,6 +644,14 @@ interface IncludeTestTemplateProps {
 function includeTestTemplate(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    // preserveLogicalIds: props.preserveLogicalIds,
+  });
+}
+
+function includeTemplateWithNestedStack(scope: core.Construct, testTemplate: string, _props: IncludeTestTemplateProps = {}): inc.CfnInclude {
+  return new inc.CfnInclude(scope, 'MyScope', {
+    templateFile: _testTemplateFilePath(testTemplate),
+    generateNestedTemplate: true,
     // preserveLogicalIds: props.preserveLogicalIds,
   });
 }
