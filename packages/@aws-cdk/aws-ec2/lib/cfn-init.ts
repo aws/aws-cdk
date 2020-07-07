@@ -130,7 +130,9 @@ export class CloudFormationInit {
             '  set +e',
             `  /opt/aws/bin/cfn-init -v ${initLocator} -c ${configSets}`,
             `  /opt/aws/bin/cfn-signal -e ${errCode} ${signalLocator}`,
-            ...printLog ? ['  cat /var/log/cfn-init.log >&2'] : [],
+            ...printLog ? [
+              '  cat /var/log/cfn-init.log',
+            ] : [],
             ')',
           ]);
         }
