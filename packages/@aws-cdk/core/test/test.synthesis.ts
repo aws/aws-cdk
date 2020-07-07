@@ -1,12 +1,8 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as os from 'os';
 import * as path from 'path';
 import * as cdk from '../lib';
-import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
   return new cdk.App({
@@ -68,104 +64,6 @@ export = {
     test.done();
   },
 
-  'some random construct implements "synthesize"'(test: Test) {
-    // GIVEN
-    const app = createModernApp();
-    const stack = new cdk.Stack(app, 'one-stack');
-
-    class MyConstruct extends Construct {
-      protected synthesize(s: cdk.ISynthesisSession) {
-        writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
-        s.assembly.addArtifact('my-random-construct', {
-          type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-          environment: 'aws://12345/bar',
-          properties: {
-            templateFile: 'foo.json',
-          },
-        });
-      }
-    }
-
-    new MyConstruct(stack, 'MyConstruct');
-
-    // WHEN
-    const session = app.synth();
-
-    // THEN
-    test.ok(list(session.directory).includes('one-stack.template.json'));
-    test.ok(list(session.directory).includes('foo.json'));
-
-    test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
-    test.deepEqual(session.manifest, {
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'my-random-construct': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://12345/bar',
-          properties: { templateFile: 'foo.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: { templateFile: 'one-stack.template.json' },
-        },
-      },
-    });
-    test.done();
-  },
-
-  'it should be possible to synthesize without an app'(test: Test) {
-    const calls = new Array<string>();
-
-    class SynthesizeMe extends Construct {
-      constructor() {
-        super(undefined as any, 'id');
-      }
-
-      protected synthesize(session: cdk.ISynthesisSession) {
-        calls.push('synthesize');
-
-        session.assembly.addArtifact('art', {
-          type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-          properties: {
-            templateFile: 'hey.json',
-            parameters: {
-              paramId: 'paramValue',
-              paramId2: 'paramValue2',
-            },
-          },
-          environment: 'aws://unknown-account/us-east-1',
-        });
-
-        writeJson(session.assembly.outdir, 'hey.json', { hello: 123 });
-      }
-
-      protected validate(): string[] {
-        calls.push('validate');
-        return [];
-      }
-
-      protected prepare(): void {
-        calls.push('prepare');
-      }
-    }
-
-    const root = new SynthesizeMe();
-
-    const assembly = synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
-
-    test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
-    const stack = assembly.getStackByName('art');
-    test.deepEqual(stack.template, { hello: 123 });
-    test.deepEqual(stack.templateFile, 'hey.json');
-    test.deepEqual(stack.parameters, { paramId: 'paramValue', paramId2: 'paramValue2' });
-    test.deepEqual(stack.environment, { region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
-    test.done();
-  },
 };
 
 function list(outdir: string) {
@@ -174,8 +72,4 @@ function list(outdir: string) {
 
 function readJson(outdir: string, file: string) {
   return JSON.parse(fs.readFileSync(path.join(outdir, file), 'utf-8'));
-}
-
-function writeJson(outdir: string, file: string, data: any) {
-  fs.writeFileSync(path.join(outdir, file), JSON.stringify(data, undefined, 2));
 }

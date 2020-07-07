@@ -58,7 +58,8 @@ export = {
 
   'JSON.stringify() will return the CFN-stringified value to avoid circular references'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
     const res = new CfnResource(stack, 'MyResource', { type: 'Foo' });
     const cfnjson = new CfnJson(stack, 'MyCfnJson', {
       value: {

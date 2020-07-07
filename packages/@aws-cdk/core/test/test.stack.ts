@@ -5,7 +5,6 @@ import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
-import { synthesize } from '../lib/private/synthesis';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
@@ -412,7 +411,7 @@ export = {
     new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
 
     // THEN
-    synthesize(stack);
+    app.synth();
 
     test.done();
   },
@@ -527,7 +526,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      synthesize(app);
+      app.synth();
       // tslint:disable-next-line:max-line-length
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -544,7 +543,7 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    synthesize(app);
+    app.synth();
 
     // THEN
     test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
@@ -563,7 +562,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      synthesize(app);
+      app.synth();
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();

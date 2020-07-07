@@ -24,14 +24,17 @@ export class Aspects {
    */
   public static of(scope: IConstruct): Aspects {
     let aspects = (scope as any)[ASPECTS_SYMBOL];
-    if (!aspects) {
-      aspects = Object.defineProperty(scope, ASPECTS_SYMBOL, {
-        value: new Aspects(scope),
-        configurable: false,
-        enumerable: false,
-      });
+    if (aspects) {
+      return aspects;
     }
-    return aspects;
+
+    Object.defineProperty(scope, ASPECTS_SYMBOL, {
+      value: new Aspects(scope),
+      configurable: false,
+      enumerable: false,
+    });
+
+    return this.of(scope);
   }
 
   private readonly _aspects = new Array<IAspect>();

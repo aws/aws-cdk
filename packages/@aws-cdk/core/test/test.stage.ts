@@ -119,28 +119,6 @@ export = {
     test.done();
   },
 
-  'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
-    // GIVEN
-    const app = new App();
-    let prepared = false;
-    const stage = new Stage(app, 'MyStage');
-    const stack = new BogusStack(stage, 'Stack');
-    class HazPrepare extends Construct {
-      protected prepare() {
-        prepared = true;
-      }
-    }
-    new HazPrepare(stack, 'Preparable');
-
-    // WHEN
-    stage.synth();
-
-    // THEN
-    test.equals(prepared, true);
-
-    test.done();
-  },
-
   'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
     // GIVEN
     const app = new App();
