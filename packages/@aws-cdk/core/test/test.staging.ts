@@ -342,7 +342,6 @@ export = {
     // THEN
     test.throws(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
       bundling: {
         image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
         command: [ DockerStubCommand.FAIL ],
