@@ -8,6 +8,15 @@
           "MyBucketParameter": "some-magic-bucket-name"
         }
       }
+    },
+    "AnotherChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "/Users/comcalvi/Documents/aws-cdk/packages/@aws-cdk/cloudformation-include/test/test-templates/child-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "some-magic-bucket-name"
+        }
+      }
     }
   }
 }

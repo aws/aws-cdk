@@ -6,7 +6,6 @@ import * as core from '@aws-cdk/core';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
-import { CfnNestedInclude } from '../lib/cfn-nested-include';
 
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
@@ -485,21 +484,195 @@ describe('CDK Include', () => {
 
   //TODO test title
   test("can still perform method calls on templates that have nested stacks", () => {
-    //const childTemplate = new CfnNestedInclude(stack, 'mynestedId', { templateFile: _testTemplateFilePath('grandchild-import-stack.json') });
+    // const childTemplate = new CfnNestedInclude(stack, 'mynestedId', { templateFile: _testTemplateFilePath('grandchild-import-stack.json') });
 
-    //console.log(childTemplate.nestedStack.nestedStackParent);
+    // console.log(childTemplate.nestedStack.nestedStackParent);
 
-    //expect(childTemplate.getResource('BucketImport').cfnResourceType).toBe('AWS::S3::Bucket');
-    //expect(childTemplate.getParameter('MyBucketParameter').)
+    // expect(childTemplate.getResource('BucketImport').cfnResourceType).toBe('AWS::S3::Bucket');
+    // expect(childTemplate.getParameter('MyBucketParameter').)
   });
 
   test("can ingest a template with nested stacks", () => {
-    const parentTemplate = includeTestTemplate(stack, 'parent-export-stack.json');
+    includeTestTemplate(stack, 'parent-export-stack.json');
 
-    console.log(parentTemplate.nestedStacks[0]);
-    console.log(parentTemplate.nestedStacks.length);
-    console.log(parentTemplate.nestedStacks[0].nestedStacks[0]);
-
+    expect(stack).toMatchTemplate({
+      "Resources": {
+        "MyScopeNestedChildStackNestedStackNestedChildStackNestedStackResourceD5B222AC": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://s3.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3BucketB1443649"
+                  },
+                  "/",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            "Parameters": {
+              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef": {
+                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C"
+              },
+              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref": {
+                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2"
+              }
+            }
+          }
+        },
+        "ChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": "/Users/comcalvi/Documents/aws-cdk/packages/@aws-cdk/cloudformation-include/test/test-templates/child-import-stack.json",
+            "Parameters": {
+              "MyBucketParameter": "some-magic-bucket-name"
+            }
+          }
+        },
+        "MyScopeNestedAnotherChildStackNestedStackNestedAnotherChildStackNestedStackResourceC609A1D2": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://s3.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3BucketCC33FD43"
+                  },
+                  "/",
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            "Parameters": {
+              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef": {
+                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C"
+              },
+              "referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref": {
+                "Ref": "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2"
+              }
+            }
+          }
+        },
+        "AnotherChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": "/Users/comcalvi/Documents/aws-cdk/packages/@aws-cdk/cloudformation-include/test/test-templates/child-import-stack.json",
+            "Parameters": {
+              "MyBucketParameter": "some-magic-bucket-name"
+            }
+          }
+        }
+      },
+      "Parameters": {
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C": {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2": {
+          "Type": "String",
+          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3BucketB1443649": {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
+        },
+        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224S3VersionKey2454C150": {
+          "Type": "String",
+          "Description": "S3 key for asset version \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
+        },
+        "AssetParameters37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224ArtifactHash32104306": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"37b7d1a8f29298a1a585da77518d1892e17f6183c3ea36acd19bf49bc8340224\""
+        },
+        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3BucketCC33FD43": {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
+        },
+        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcS3VersionKeyF7DA38C9": {
+          "Type": "String",
+          "Description": "S3 key for asset version \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
+        },
+        "AssetParametersde6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bcArtifactHashDD3E6840": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"de6342dcbf06e1d4323446807a59816de1940cbcc476c82537574023265695bc\""
+        }
+      }
+    });
   });
 });
 
