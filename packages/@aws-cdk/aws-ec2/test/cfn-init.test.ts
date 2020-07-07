@@ -1,13 +1,28 @@
+import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, CfnResource } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { ResourcePart } from '@aws-cdk/assert';
+
+let app: App;
+let stack: Stack;
+let instanceRole: iam.Role;
+let resource: CfnResource;
+beforeEach(() => {
+  app = new App();
+  stack = new Stack(app, 'Stack', {
+    env: { account: '1234', region: 'testregion' },
+  });
+  instanceRole = new iam.Role(stack, 'InstanceRole', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+  resource = new CfnResource(stack, 'Resource', {
+    type: 'CDK::Test::Resource',
+  });
+});
 
 test('whole config with restart handles', () => {
   // WHEN
-  const app = new App();
-  const stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
-  });
   const handle = new ec2.InitServiceRestartHandle();
   const config = new ec2.InitConfig([
     ec2.InitFile.fromString('/etc/my.cnf', '[mysql]\ngo_fast=true', { serviceRestartHandles: [handle] }),
@@ -17,17 +32,8 @@ test('whole config with restart handles', () => {
     ec2.InitService.enable('httpd', { serviceRestartHandle: handle }),
   ]);
 
-  const instanceRole = new iam.Role(stack, 'InstanceRole', {
-    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-  });
-  const attachOptions = {
-    platform: ec2.InitPlatform.LINUX,
-    instanceRole,
-    userData: ec2.UserData.forLinux(),
-  };
-
   // THEN
-  expect(config.bind(stack, attachOptions).config).toEqual(expect.objectContaining({
+  expect(config.bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
     services: {
       sysvinit: {
         httpd: {
@@ -46,12 +52,35 @@ test('whole config with restart handles', () => {
 });
 
 test('CloudFormationInit can be added to after instantiation', () => {
+  // GIVEN
+  const config = new ec2.InitConfig([]);
+  const init = ec2.CloudFormationInit.fromConfig(config);
+
+  // WHEN
+  config.add(ec2.InitFile.fromString('/the/file', 'hasContents'));
+  init.attach(resource, linuxOptions());
+
+  // THEN
+  expectMetadataLike({
+    'AWS::CloudFormation::Init': {
+      config: {
+        files: {
+          '/the/file': { content: 'hasContents' },
+        },
+      },
+    },
+  });
+
+
 });
 
 test('empty configs are not rendered', () => {
 });
 
 describe('userdata', () => {
+  test('linux userdata contains right commands', () => {
+  });
+
   test('can disable result code reporting', () => {
   });
 
@@ -86,3 +115,17 @@ describe('s3 objects', () => {
   test('appropriate permissions when using initsource', () => {
   });
 });
+
+function linuxOptions() {
+  return {
+    platform: ec2.InitPlatform.LINUX,
+    instanceRole,
+    userData: ec2.UserData.forLinux(),
+  };
+}
+
+function expectMetadataLike(pattern: any) {
+  expect(stack).toHaveResourceLike('CDK::Test::Resource', {
+    Metadata: pattern,
+  }, ResourcePart.CompleteDefinition);
+}
