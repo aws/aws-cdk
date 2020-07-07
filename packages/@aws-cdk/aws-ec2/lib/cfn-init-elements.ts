@@ -735,7 +735,10 @@ export class InitPackage extends InitElement {
    * Install an MSI package from an HTTP URL or a location on disk
    */
   public static msi(location: string, options: LocationPackageOptions = {}): InitPackage {
-    return new InitPackage('msi', [location], options.key, options.serviceRestartHandles);
+    // The MSI package version must be a string, not an array.
+    return new class extends InitPackage {
+      protected renderPackageVersions() { return location; }
+    }('msi', [location], options.key, options.serviceRestartHandles);
   }
 
   public readonly elementType = InitElementType.PACKAGE;
@@ -771,10 +774,14 @@ export class InitPackage extends InitElement {
     return {
       config: {
         [this.type]: {
-          [packageName]: this.versions,
+          [packageName]: this.renderPackageVersions(),
         },
       },
     };
+  }
+
+  protected renderPackageVersions(): any {
+    return this.versions;
   }
 }
 

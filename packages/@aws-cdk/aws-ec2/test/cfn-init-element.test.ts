@@ -477,7 +477,7 @@ describe('InitPackage', () => {
     // THEN
     expect(rendered).toEqual({
       msi: {
-        '000': ['https://example.com/rpm/mypkg.msi'],
+        '000': 'https://example.com/rpm/mypkg.msi',
       },
     });
   });
@@ -492,7 +492,7 @@ describe('InitPackage', () => {
     // THEN
     expect(rendered).toEqual({
       msi: {
-        myPkg: ['https://example.com/rpm/mypkg.msi'],
+        myPkg: 'https://example.com/rpm/mypkg.msi',
       },
     });
   });
