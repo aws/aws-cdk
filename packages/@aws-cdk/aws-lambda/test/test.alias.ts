@@ -517,7 +517,6 @@ export = {
         ProvisionedConcurrentExecutions: 10,
       },
     }));
-
     test.done();
   },
 
