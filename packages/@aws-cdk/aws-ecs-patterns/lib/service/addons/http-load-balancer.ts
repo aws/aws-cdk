@@ -4,14 +4,12 @@ import cdk = require('@aws-cdk/core');
 import alb = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { Ec2Service } from '@aws-cdk/aws-ecs';
 
-export class HttpLoadBalancerAddon implements ServiceAddon {
-  readonly name: string;
-  private parentService!: Service;
+export class HttpLoadBalancerAddon extends ServiceAddon {
   private loadBalancer!: alb.IApplicationLoadBalancer;
   private listener!: alb.IApplicationListener;
 
   constructor() {
-    this.name = 'load-balancer';
+    super('load-balancer');
   }
 
   // Before the service is created go ahead and create the load balancer itself.

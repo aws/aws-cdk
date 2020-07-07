@@ -4,10 +4,8 @@ import { Service } from '../service';
 import cdk = require('@aws-cdk/core');
 import awslogs = require('@aws-cdk/aws-logs');
 
-export class FireLensAddon implements ServiceAddon {
-  readonly name: string;
+export class FireLensAddon extends ServiceAddon {
   public container!: ecs.ContainerDefinition;
-  private parentService!: Service;
   private logGroup!: awslogs.LogGroup;
 
   // List of registered hooks from other addons that want to
@@ -16,7 +14,7 @@ export class FireLensAddon implements ServiceAddon {
   public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor() {
-    this.name = 'firelens';
+    super('firelens');
   }
 
   prehook(service: Service, scope: cdk.Stack) {
@@ -48,14 +46,18 @@ export class FireLensAddon implements ServiceAddon {
     }
 
     appAddon.mutateContainerProps.push(function (containerProps: ContainerDefinitionBuild) {
-      containerProps.logging = ecs.LogDrivers.firelens({
-        options: {
-          Name: 'cloudwatch',
-          region: cdk.Stack.of(self.parentService).region,
-          log_group_name: self.logGroup.logGroupName,
-          log_stream_prefix: `${self.parentService.id}/`,
-        },
-      })
+      return {
+        ...containerProps,
+
+        logging: ecs.LogDrivers.firelens({
+          options: {
+            Name: 'cloudwatch',
+            region: cdk.Stack.of(self.parentService).region,
+            log_group_name: self.logGroup.logGroupName,
+            log_stream_prefix: `${self.parentService.id}/`,
+          },
+        })
+      }
     });
   }
 

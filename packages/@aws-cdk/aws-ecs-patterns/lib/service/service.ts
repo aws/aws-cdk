@@ -11,7 +11,7 @@ interface ServiceInterface {
   add: AddFunc;
 }
 
-interface ServiceProps {
+export interface ServiceProps {
   vpc: ec2.Vpc,
   cluster: ecs.Cluster
 }
@@ -74,16 +74,6 @@ export class Service extends cdk.Construct implements ServiceInterface {
     return addon;
   }
 
-  /*get url() {
-    for (const addon of this.addons) {
-      if (addon[1].getUrl) {
-        return addon.getUrl();
-      }
-    }
-
-    throw Error('Failed to find a URL providing addon');
-  }*/
-
   // Run all the addon hooks to prepare the final service
   prepare() {
     if (this.prepared) {
@@ -104,7 +94,7 @@ export class Service extends cdk.Construct implements ServiceInterface {
     // Give each addon a chance to mutate the task def creation properties
     this.addons.forEach((addon) => {
       if (addon.mutateTaskDefinitionProps) {
-        addon.mutateTaskDefinitionProps(taskDefProps)
+        taskDefProps = addon.mutateTaskDefinitionProps(taskDefProps);
       }
     });
 
@@ -135,7 +125,7 @@ export class Service extends cdk.Construct implements ServiceInterface {
     // service creation
     this.addons.forEach((addon) => {
       if (addon.mutateServiceProps) {
-        addon.mutateServiceProps(serviceProps)
+        serviceProps = addon.mutateServiceProps(serviceProps);
       }
     });
 

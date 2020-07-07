@@ -7,15 +7,12 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import appmesh = require('@aws-cdk/aws-appmesh');
 import { Application } from './app';
 
-interface MeshProps {
+export interface MeshProps {
   mesh: appmesh.Mesh;
 }
 
-export class AppMeshAddon implements ServiceAddon {
-  readonly name: string;
+export class AppMeshAddon extends ServiceAddon {
   public container!: ecs.ContainerDefinition;
-  private parentService!: Service;
-  private scope!: cdk.Stack;
   private mesh: appmesh.Mesh;
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;
@@ -26,7 +23,7 @@ export class AppMeshAddon implements ServiceAddon {
   public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor(props: MeshProps) {
-    this.name = 'appmesh';
+    super('appmesh');
     this.mesh = props.mesh;
   }
 
@@ -36,9 +33,6 @@ export class AppMeshAddon implements ServiceAddon {
   }
 
   mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
-    // App Mesh requires AWS VPC mode
-    props.networkMode = ecs.NetworkMode.AWS_VPC;
-
     // Find the app addon, to get its port
     let appAddon = this.parentService.addons.get('app') as Application;
 
@@ -46,25 +40,37 @@ export class AppMeshAddon implements ServiceAddon {
       throw new Error('Firelens addon requires an application addon');
     }
 
-    props.proxyConfiguration = new ecs.AppMeshProxyConfiguration({
-      containerName: 'envoy',
-      properties: {
-        appPorts: [appAddon.trafficPort],
-        proxyEgressPort: 15001,
-        proxyIngressPort: 15000,
-        ignoredUID: 1337,
-        ignoredGID: 1338,
-        egressIgnoredIPs: [
-          '169.254.170.2', // Allow services to talk directly to ECS metadata endpoints
-          '169.254.169.254', // and EC2 instance endpoint
-        ],
-        // Note that at some point we will need other addons like
-        // MySQL to be able to add their ports to this egress ignored
-        // ports automatically.
-        egressIgnoredPorts: [
-        ],
-      },
-    })
+    return {
+      ...props,
+
+      // App Mesh requires AWS VPC networking mode so that each
+      // task can have its own IP address
+      networkMode: ecs.NetworkMode.AWS_VPC,
+
+      // This configures the envoy container as a proxy for all
+      // traffic going into and out of the task, with a few exceptions
+      // for metadata endpoints or other ports that need direct
+      // communication
+      proxyConfiguration: new ecs.AppMeshProxyConfiguration({
+        containerName: 'envoy',
+        properties: {
+          appPorts: [appAddon.trafficPort],
+          proxyEgressPort: 15001,
+          proxyIngressPort: 15000,
+          ignoredUID: 1337,
+          ignoredGID: 1338,
+          egressIgnoredIPs: [
+            '169.254.170.2', // Allow services to talk directly to ECS metadata endpoints
+            '169.254.169.254', // and EC2 instance endpoint
+          ],
+          // Note that at some point we will need other addons like
+          // MySQL to be able to add their ports to this egress ignored
+          // ports automatically.
+          egressIgnoredPorts: [
+          ],
+        },
+      })
+    }
   }
 
   useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
@@ -103,19 +109,24 @@ export class AppMeshAddon implements ServiceAddon {
 
   // Enable cloudmap for the service
   mutateServiceProps(props: ServiceBuild) {
-    // These specific deployment settings are currently required in order to
-    // maintain availability during a rolling deploy of the service with App Mesh
-    // Warning, these settings do not work with a low task count however.
-    // props.minHealthyPercent = 100;
-    // props.maxHealthyPercent = 125;
+    return {
+      ...props,
 
-    // The service's tasks must be registered into Cloudmap for App Mesh to find them
-    props.cloudMapOptions = {
-      dnsRecordType: 'A',
-      dnsTtl: cdk.Duration.seconds(10),
-      failureThreshold: 2,
-      name: this.parentService.id,
-    }
+      // We must make sure that service tasks are registered into
+      // CloudMap so that the App Mesh proxy can find them.
+      cloudMapOptions: {
+        dnsRecordType: 'A',
+        dnsTtl: cdk.Duration.seconds(10),
+        failureThreshold: 2,
+        name: this.parentService.id,
+      },
+
+      // These specific deployment settings are currently required in order to
+      // maintain availability during a rolling deploy of the service with App Mesh
+      // Warning, these settings do not work with a low task count however.
+      // minHealthyPercent: 100,
+      // maxHealthyPercent: 125,
+    };
   }
 
   // Now that the service is defined we can create the AppMesh virtual service

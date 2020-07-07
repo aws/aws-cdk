@@ -4,11 +4,8 @@ import cdk = require('@aws-cdk/core');
 import { Service } from '../service';
 const iam = require('@aws-cdk/aws-iam');
 
-export class CloudwatchAgentAddon implements ServiceAddon {
-  readonly name: string;
+export class CloudwatchAgentAddon extends ServiceAddon {
   public container!: ecs.ContainerDefinition;
-  private parentService!: Service;
-  private scope!: cdk.Stack;
 
   private CW_CONFIG_CONTENT = {
     'logs': {
@@ -29,7 +26,7 @@ export class CloudwatchAgentAddon implements ServiceAddon {
   public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor() {
-    this.name = 'cloudwatchAgent';
+    super('cloudwatchAgent');
   }
 
   prehook(service: Service, scope: cdk.Stack) {

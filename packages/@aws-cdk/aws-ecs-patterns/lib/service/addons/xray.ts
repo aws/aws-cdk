@@ -4,10 +4,8 @@ import { Service } from '../service';
 import cdk = require('@aws-cdk/core');
 import iam = require('@aws-cdk/aws-iam');
 
-export class XRayAddon implements ServiceAddon {
-  readonly name: string;
+export class XRayAddon extends ServiceAddon {
   public container!: ecs.ContainerDefinition;
-  private parentService!: Service;
 
   // List of registered hooks from other addons that want to
   // mutate the application's container definition prior to
@@ -15,7 +13,7 @@ export class XRayAddon implements ServiceAddon {
   public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor() {
-    this.name = 'xray';
+    super('xray');
   }
 
   prehook(service: Service) {

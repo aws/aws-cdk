@@ -24,3 +24,4 @@ export * from './fargate/network-multiple-target-groups-fargate-service';
 
 export * from './service/service'
 export * as Addons from './service/addons'
+export * from './service/addons/addon-interfaces'

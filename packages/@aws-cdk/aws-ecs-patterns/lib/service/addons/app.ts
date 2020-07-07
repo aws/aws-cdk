@@ -2,7 +2,7 @@ import { TaskDefinitionBuild, ServiceAddon, MutateContainerDefinition } from './
 import ecs = require('@aws-cdk/aws-ecs');
 import { Service } from '../service';
 
-interface ApplicationAddonProps {
+export interface ApplicationAddonProps {
   cpu: number,
   memoryMiB: number,
   image: ecs.ContainerImage,
@@ -12,11 +12,9 @@ interface ApplicationAddonProps {
   }
 }
 
-export class Application implements ServiceAddon {
-  readonly name: string;
+export class Application extends ServiceAddon {
   public container!: ecs.ContainerDefinition;
   private props: ApplicationAddonProps;
-  private parentService!: Service;
   readonly trafficPort: number;
 
   // List of registered hooks from other addons that want to
@@ -25,7 +23,7 @@ export class Application implements ServiceAddon {
   public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor(props: ApplicationAddonProps) {
-    this.name = 'app';
+    super('app');
     this.props = props;
     this.trafficPort = props.trafficPort;
   }
@@ -37,8 +35,11 @@ export class Application implements ServiceAddon {
   // This hook sets the overall task resource requirements to the
   // resource requirements of the application itself.
   mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
-    props.cpu = this.props.cpu.toString();
-    props.memoryMiB = this.props.memoryMiB.toString();
+    return {
+      ...props,
+      cpu: this.props.cpu.toString(),
+      memoryMiB: this.props.memoryMiB.toString()
+    };
   }
 
   // This hook adds the application container to the task definition.
@@ -53,7 +54,9 @@ export class Application implements ServiceAddon {
     // Let other addons mutate the container definition. This is
     // used by addons which want to add environment variables, modify
     // logging parameters, etc.
-    this.mutateContainerProps.forEach((hook) => hook(containerProps));
+    this.mutateContainerProps.forEach((hook) => {
+      containerProps = hook(containerProps);
+    });
 
     this.container = taskDefinition.addContainer('app', containerProps);
 
