@@ -12,6 +12,7 @@ async function main() {
     .option('deploy', { type: 'boolean', default: true, desc: 'Deploy the test before writing the new output' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
+    .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._);
@@ -22,7 +23,7 @@ async function main() {
   }
 
   for (const test of tests) {
-    console.error(`-------[ ${test.name} ]----------`);
+    console.error(`Synthesizing ${test.name}.`);
 
     const stackToDeploy = await test.determineTestStack();
     console.error(`Selected stack: ${stackToDeploy}`);
@@ -34,21 +35,19 @@ async function main() {
       args.push('--verbose');
     }
 
-    let didDeploy = false;
-    try {
-      if (argv.deploy) {
-        console.error('Deploying. This may take a while.');
+    const dryRun = argv['dry-run'] ?? false;
 
-        // tslint:disable-next-line:max-line-length
+    try {
+
+      if (dryRun) {
+        console.error('Skipping deployment (--dry-run), updating snapshot.');
+      } else {
+        console.error(`Deploying ${test.name}...`);
         await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
           verbose: argv.verbose,
           // Note: no "context" and "env", so use default user settings!
         });
-        didDeploy = true;
-
-        console.error('Success! Writing out reference synth.');
-      } else {
-        console.error('Ran with --no-deploy, skipping deployment and trusting test.');
+        console.error('Deployment succeeded, updating snapshot.');
       }
 
       // If this all worked, write the new expectation file
@@ -56,14 +55,16 @@ async function main() {
 
       await test.writeExpected(actual);
     } finally {
-      if (argv.clean) {
-        if (didDeploy) {
+
+      if (!dryRun) {
+        if (argv.clean) {
           console.error('Cleaning up.');
           await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+        } else {
+          console.error('Skipping clean up (--no-clean).');
         }
-      } else {
-        console.error('Skipping clean up (--no-clean).');
       }
+
     }
   }
 }
