@@ -5,22 +5,21 @@ import * as stepfunction from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
-import { StateMachineInputType } from '../../lib';
 
 export = {
   'StepFunctions Invoke Action': {
     'Verify stepfunction configuration properties are set to specific values'(test: Test) {
       const stack = new Stack();
 
-      //when
+      // when
       minimalPipeline(stack, undefined);
 
-      //then
+      // then
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        'Stages': [
-          //Must have a source stage
+        Stages: [
+          //  Must have a source stage
           {
-            'Actions': [
+            Actions: [
               {
                 ActionTypeId: {
                   Category: 'Source',
@@ -28,19 +27,18 @@ export = {
                   Provider: 'S3',
                   Version: '1',
                 },
-                'Configuration': {
+                Configuration: {
                   S3Bucket: {
                     Ref: 'MyBucketF68F3FF0',
                   },
                   S3ObjectKey: 'some/path/to',
                 },
               },
-              
             ],
           },
           // Must have stepfunction invoke action configuration
           {
-            'Actions': [
+            Actions: [
               {
                 ActionTypeId: {
                   Category: 'Invoke',
@@ -48,7 +46,7 @@ export = {
                   Provider: 'StepFunctions',
                   Version: '1',
                 },
-                'Configuration': {
+                Configuration: {
                   StateMachineArn: {
                     Ref: 'SimpleStateMachineE8E2CF40',
                   },
@@ -63,22 +61,22 @@ export = {
       expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
 
       test.done();
-    }, 
+    },
 
     'Allows the pipeline to invoke this stepfunction'(test: Test) {
       const stack = new Stack();
 
       minimalPipeline(stack, undefined);
-      
+
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': ['states:StartExecution','states:DescribeStateMachine'],
-              'Resource': {
-                'Ref': 'SimpleStateMachineE8E2CF40',
+              Action: ['states:StartExecution', 'states:DescribeStateMachine'],
+              Resource: {
+                Ref: 'SimpleStateMachineE8E2CF40',
               },
-              'Effect': 'Allow',
+              Effect: 'Allow',
             },
           ],
         },
@@ -87,7 +85,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::IAM::Role'));
 
       test.done();
-    }, 
+    },
 
     'does not allow passing empty StateMachineInput when the StateMachineInputType is FilePath'(test: Test) {
       const stack = new Stack();
@@ -102,7 +100,7 @@ export = {
         new cpactions.StepFunctionsInvokeAction({
           actionName: 'Invoke',
           stateMachine: simpleStateMachine,
-          stateMachineInputType: StateMachineInputType.FILEPATH,
+          stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
           stateMachineInput: '',
         });
       });
@@ -123,7 +121,7 @@ export = {
         new cpactions.StepFunctionsInvokeAction({
           actionName: 'Invoke',
           stateMachine: simpleStateMachine,
-          stateMachineInputType: StateMachineInputType.FILEPATH,
+          stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
           stateMachineInput: 'assets/input.json',
         });
       });
@@ -146,7 +144,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
   const startState = new stepfunction.Pass(stack, 'StartState');
   const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
     definition: startState,
-  }); 
+  });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
   const sourceStage = pipeline.addStage({
     stageName: 'Source',
@@ -166,7 +164,7 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
       new cpactions.StepFunctionsInvokeAction({
         actionName: 'Invoke',
         stateMachine: simpleStateMachine,
-        stateMachineInputType: StateMachineInputType.LITERAL,
+        stateMachineInputType: cpactions.StateMachineInputType.LITERAL,
         stateMachineInput: '{}',
       }),
     ],
