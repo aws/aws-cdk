@@ -328,12 +328,12 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
       continue;
     }
     if (typeof value === 'object' && value) {
-      target[key] = {};
-      deepMerge(target[key], value);
+      target[key] = deepMerge(target[key] ?? {}, value);
       continue;
     }
-
-    target[key] = value;
+    if (value !== undefined) {
+      target[key] = value;
+    }
   }
 
   return target;

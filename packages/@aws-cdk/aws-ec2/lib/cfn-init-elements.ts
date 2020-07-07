@@ -459,8 +459,8 @@ export abstract class InitFile extends InitElement {
         return {
           config: this.standardConfig(options, bindOptions.platform, {
             source: bucket.urlForObject(key),
-            authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
           }),
+          authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
     }(fileName, options);
@@ -483,8 +483,8 @@ export abstract class InitFile extends InitElement {
         return {
           config: this.standardConfig(options, bindOptions.platform, {
             source: asset.httpUrl,
-            authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
           }),
+          authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
         };
       }
     }(targetFileName, options);
@@ -500,8 +500,8 @@ export abstract class InitFile extends InitElement {
         return {
           config: this.standardConfig(options, bindOptions.platform, {
             source: asset.httpUrl,
-            authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
           }),
+          authentication: standardS3Auth(bindOptions.instanceRole, asset.s3BucketName),
         };
       }
     }(targetFileName, options);
