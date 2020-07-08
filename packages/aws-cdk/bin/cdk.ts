@@ -235,6 +235,7 @@ async function initCommandLine() {
           useNewBootstrapping = true;
         } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
           print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
+          useNewBootstrapping = true;
         }
 
         return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName,
