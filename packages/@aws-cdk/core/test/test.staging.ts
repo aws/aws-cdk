@@ -257,6 +257,28 @@ export = {
     test.done();
   },
 
+  'bundling failure preserves the bundleDir for diagnosability'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    test.throws(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [ DockerStubCommand.FAIL ],
+      },
+    }), /Failed to run bundling.*asset-bundle-hash.*-error/);
+
+    // THEN
+    test.ok(fs.existsSync(path.join(STAGING_TMP_DIRECTORY,
+      'asset-bundle-hash-e40b2b1537234d458e9e524494dc0a7a364079d457a2886a44b1f3c28a956469-error')));
+
+    test.done();
+  },
+
   'bundling throws when /asset-ouput is empty'(test: Test) {
     // GIVEN
     const app = new App();

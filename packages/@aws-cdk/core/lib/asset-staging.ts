@@ -215,8 +215,18 @@ export class AssetStaging extends Construct {
         workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
-      fs.removeSync(bundleDir);
-      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+      // When bundling fails, keep the bundle output for diagnosability, but
+      // rename it out of the way so that the next run doesn't assume it has a
+      // valid bundleDir.
+
+      const bundleErrorDir = bundleDir + '-error';
+      if (fs.existsSync(bundleErrorDir)) {
+        // Remove the last bundleErrorDir.
+        fs.removeSync(bundleErrorDir);
+      }
+
+      fs.renameSync(bundleDir, bundleErrorDir);
+      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}, bundle output is located at ${bundleErrorDir}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
