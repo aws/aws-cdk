@@ -42,7 +42,7 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
@@ -78,7 +78,7 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
@@ -90,7 +90,7 @@ export = {
 
     'without a name, when used as an output multiple times - should fail validation'(test: Test) {
       const stack = new cdk.Stack();
-      const sourceOutput = new codepipeline.Artifact();
+      const sourceOutput = new codepipeline.Artifact('Artifact_Source_Source');
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
@@ -115,7 +115,7 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
@@ -217,7 +217,7 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
