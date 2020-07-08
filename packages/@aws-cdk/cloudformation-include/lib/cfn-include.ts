@@ -247,26 +247,16 @@ export class CfnInclude extends core.CfnElement {
 
     const resourceAttributes: any = this.template.Resources[logicalId];
 
-    // maybe add a nestedStackScope instead of this CfnNestedInclude thing; const nestedStackScope = new core.Construct(this, '$Ouputs');
-
-    // we the parse the nested stack here
     if (resourceAttributes.Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks) {
-      // adding 'Nested' to the logicalId prevents this resource from conflicting with the CloudFormation stack
-      // resource of the same name
-
-      //const nestedStackScope = new core.NestedStack(this, 'Nested' + logicalId);
-      //TODO remove Nested from new CfnInclude and update that test
-
       for (const nestedStackName in props.nestedStacks) {
-        console.log(nestedStackName + "----" + logicalId);
+        // use both logicalId and nestedStackName, since a user can use one template to make mutliple siblings
         const nestedStackScope = new core.NestedStack(this, logicalId + nestedStackName);
+
         new CfnInclude(nestedStackScope, nestedStackName, {
           templateFile: props.nestedStacks[nestedStackName].templateFile,
           nestedStacks: props?.nestedStacks[nestedStackName].nestedStacks,
         });
       }
-
-      // fs.writeFileSync('./' + logicalId + '.json', JSON.stringify(nestedInclude.template));
     }
 
     const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);

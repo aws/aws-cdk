@@ -482,16 +482,6 @@ describe('CDK Include', () => {
     }).toThrow(/Output with logical ID 'FakeOutput' was not found in the template/);
   });
 
-  //TODO test title
-  test("can still perform method calls on templates that have nested stacks", () => {
-    // const childTemplate = new CfnNestedInclude(stack, 'mynestedId', { templateFile: _testTemplateFilePath('grandchild-import-stack.json') });
-
-    // console.log(childTemplate.nestedStack.nestedStackParent);
-
-    // expect(childTemplate.getResource('BucketImport').cfnResourceType).toBe('AWS::S3::Bucket');
-    // expect(childTemplate.getParameter('MyBucketParameter').)
-  });
-
   test("can ingest a template with nested stacks", () => {
     new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: _testTemplateFilePath('parent-export-stack.json'),
@@ -505,6 +495,14 @@ describe('CDK Include', () => {
           },
         },
         "AnotherChildStack": {
+          templateFile: _testTemplateFilePath('child-import-stack.json'),
+          nestedStacks: {
+            "GrandChildStack": {
+              templateFile: _testTemplateFilePath('grandchild-import-stack.json'),
+            },
+          },
+        },
+        "OneMore": {
           templateFile: _testTemplateFilePath('child-import-stack.json'),
           nestedStacks: {
             "GrandChildStack": {
