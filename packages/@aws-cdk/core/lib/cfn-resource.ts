@@ -264,6 +264,14 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
+    return this.toCloudFormation();
+  }
+
+  /**
+   * Renders the cloudformation chunk for this resource. Derived classes may
+   * override to implement custom behavior.
+   */
+  protected toCloudFormation(): object {
     try {
       const ret = {
         Resources: {
