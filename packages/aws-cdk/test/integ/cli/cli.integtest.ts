@@ -212,6 +212,57 @@ integTest('deploy with parameters', async () => {
   ]);
 });
 
+integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
+  // GIVEN
+  const stackArn = await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}nice`,
+    ],
+    captureStderr: false,
+  });
+
+  let response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+
+  // bad parameter name with @ will put stack into UPDATE_ROLLBACK_COMPLETE
+  await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
+    ],
+    captureStderr: false,
+  });
+
+  response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_ROLLBACK_COMPLETE');
+
+  // WHEN
+  await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}allgood`,
+    ],
+    captureStderr: false,
+  });
+
+  response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  // THEN
+  expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
+  expect(response.Stacks?.[0].Parameters).toEqual([
+    {
+      ParameterKey: 'TopicNameParam',
+      ParameterValue: `${STACK_NAME_PREFIX}allgood`,
+    },
+  ]);
+});
+
 integTest('deploy with wildcard and parameters', async () => {
   await cdkDeploy('param-test-*', {
     options: [

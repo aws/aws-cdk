@@ -25,20 +25,12 @@ export class StackStatus {
     return this.name.endsWith('FAILED');
   }
 
-  get isRollback(): boolean {
-    return this.name.indexOf('ROLLBACK') !== -1;
-  }
-
   get isStable(): boolean {
     return !this.name.endsWith('_IN_PROGRESS');
   }
 
   get isNotFound(): boolean {
     return this.name === 'NOT_FOUND';
-  }
-
-  get isSuccess(): boolean {
-    return !this.isNotFound && !this.isRollback && !this.isFailure;
   }
 
   public toString(): string {
