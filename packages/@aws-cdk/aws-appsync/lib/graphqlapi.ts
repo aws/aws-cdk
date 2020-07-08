@@ -1,5 +1,5 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
-import { Table } from '@aws-cdk/aws-dynamodb';
+import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
   ManagedPolicy,
   Role,
@@ -389,7 +389,7 @@ export class GraphQLApi extends Construct {
   public addDynamoDbDataSource(
     name: string,
     description: string,
-    table: Table,
+    table: ITable,
   ): DynamoDbDataSource {
     return new DynamoDbDataSource(this, `${name}DS`, {
       api: this,
