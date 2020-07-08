@@ -83,6 +83,7 @@ you need to have the following SDKs and tools locally:
 - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
 - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
 - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+- [Docker 19.03](https://docs.docker.com/get-docker/)
 
 The basic commands to get the repository cloned and built locally follow:
 
