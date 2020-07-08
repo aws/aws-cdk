@@ -375,7 +375,7 @@ export = {
       '[MyConstruct] my-error1',
       '[MyConstruct] my-error2',
       '[TheirConstruct] their-error',
-      '[TheirConstruct/YourConstruct] your-error1'
+      '[TheirConstruct/YourConstruct] your-error1',
     ]);
 
     test.done();

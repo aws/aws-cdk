@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { Stack, App } from '../lib';
+import { App, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
