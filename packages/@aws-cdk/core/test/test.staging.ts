@@ -214,7 +214,7 @@ export = {
     // THEN
     app.synth();
 
-    // We're testing that docker was twice - once for each set of bundler options
+    // We're testing that docker was run twice - once for each set of bundler options
     // operating on the same source asset.
     test.deepEqual(
       readDockerStubInputConcat(),
@@ -273,6 +273,8 @@ export = {
     }), /Failed to run bundling.*asset-bundle-hash.*-error/);
 
     // THEN
+    test.ok(!fs.existsSync(path.resolve(path.join(STAGING_TMP_DIRECTORY,
+      'asset-bundle-hash-e40b2b1537234d458e9e524494dc0a7a364079d457a2886a44b1f3c28a956469'))));
     test.ok(fs.existsSync(path.join(STAGING_TMP_DIRECTORY,
       'asset-bundle-hash-e40b2b1537234d458e9e524494dc0a7a364079d457a2886a44b1f3c28a956469-error')));
 
@@ -416,10 +418,6 @@ export = {
       readDockerStubInput(),
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
-
-    // When bundling fails, the asset-bundle-hash directory needs to be removed or subsequent bundler runs may
-    // falsely believe that it can re-use the asset from the failed bundling.
-    test.ok(!fs.existsSync(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'))));
 
     test.done();
   },
