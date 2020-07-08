@@ -88,7 +88,10 @@ export class SnsPublish extends sfn.TaskStateBase {
   /**
    * Provides the SNS Publish service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

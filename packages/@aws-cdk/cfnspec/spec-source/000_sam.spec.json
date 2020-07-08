@@ -304,6 +304,35 @@
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
             "Properties": {}
         },
+        "AWS::Serverless::Function.EventBridgeRuleEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+            "Properties": {
+                "EventBusName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Input": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "InputPath": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Pattern": {
+                    "Documentation": "https://docs.aws.amazon.com/eventbridge/latest/userguide/filtering-examples-structure.html",
+                    "PrimitiveType": "Json",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.EventSource": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object",
             "Properties": {
@@ -321,7 +350,8 @@
                         "CloudWatchEventEvent",
                         "CloudWatchLogsEvent",
                         "IoTRuleEvent",
-                        "AlexaSkillEvent"
+                        "AlexaSkillEvent",
+                        "EventBridgeRuleEvent"
                     ],
                     "UpdateType": "Immutable"
                 },
@@ -958,6 +988,12 @@
                     "UpdateType": "Immutable"
                 },
                 "Name": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "OpenApiVersion": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveType": "String",
                     "Required": false,

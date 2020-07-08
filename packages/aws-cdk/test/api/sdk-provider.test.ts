@@ -9,7 +9,6 @@ import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 
 SDKMock.setSDKInstance(AWS);
-logging.setVerbose(true);
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -25,6 +24,8 @@ let defaultEnv: cxapi.Environment;
 
 beforeEach(() => {
   uid = `(${uuid.v4()})`;
+
+  logging.setLogLevel(logging.LogLevel.TRACE);
 
   bockfs({
     '/home/me/.bxt/credentials': dedent(`
@@ -98,6 +99,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  logging.setLogLevel(logging.LogLevel.DEFAULT);
+
   SDKMock.restore();
   bockfs.restore();
 });

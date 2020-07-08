@@ -213,7 +213,10 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     this.taskPolicies = this.configurePolicyStatements();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
