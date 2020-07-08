@@ -19,14 +19,3 @@
 //   public static isConstruct(x: any): x is Construct {
 //     return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
 //   }
-
-import * as constructs from 'constructs';
-
-export type Construct = constructs.Construct;
-export type IConstruct = constructs.IConstruct;
-export type ConstructOrder = constructs.ConstructOrder;
-
-export type DependableTrait = constructs.Dependable;
-export type IDependable = constructs.IDependable;
-export type ConstructNode = constructs.Node;
-export type ConcreteDependable = constructs.DependencyGroup;

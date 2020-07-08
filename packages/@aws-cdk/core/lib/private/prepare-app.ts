@@ -95,7 +95,7 @@ function findTransitiveDeps(root: IConstruct): Dependency[] {
 
   for (const source of root.node.findAll()) {
     for (const dependable of source.node.dependencies) {
-      for (const target of Dependable.of(dependable).dependencies) {
+      for (const target of Dependable.of(dependable).dependencyRoots) {
         let foundTargets = found.get(source);
         if (!foundTargets) { found.set(source, foundTargets = new Set()); }
 
