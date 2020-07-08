@@ -16,6 +16,11 @@ type Order {
     order: String!
 }
 
+type Payment {
+    id: String!
+    amount: String!
+}
+
 type Query {
     getServiceVersion: ServiceVersion
     getCustomers: [Customer]
@@ -27,6 +32,7 @@ type Query {
     getCustomerOrdersGe(customer: String): Order
     getCustomerOrdersFilter(customer: String, order: String): Order
     getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
+    getPayment(id: String): Payment
 }
 
 input FirstOrderInput {
@@ -39,5 +45,6 @@ type Mutation {
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
     saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+    savePayment(payment: Payment): Payment
     doPostOnAws: String!
 }
