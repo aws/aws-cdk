@@ -1,4 +1,5 @@
 import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1523,6 +1524,184 @@ export = {
       MaximumRetryAttempts: 0,
     }));
 
+    test.done();
+  },
+
+  'default function with CDK created Profiling Group'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profiling: true,
+    });
+
+    expect(stack).toMatch({
+      Resources:
+      {
+        MyLambdaProfilingGroupEC6DE32F: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+          },
+        },
+        MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    'codeguru-profiler:ConfigureAgent',
+                    'codeguru-profiler:PostAgentProfile',
+                  ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'],
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+            Roles: [
+              {
+                Ref: 'MyLambdaServiceRole4539ECB6',
+              },
+            ],
+          },
+        },
+        MyLambdaServiceRole4539ECB6:
+        {
+          Type: 'AWS::IAM::Role',
+          Properties:
+          {
+            AssumeRolePolicyDocument:
+            {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'lambda.amazonaws.com' },
+                }],
+              Version: '2012-10-17',
+            },
+            ManagedPolicyArns:
+              // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+              // tslint:disable-next-line:max-line-length
+              [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
+          },
+        },
+        MyLambdaCCE802FB:
+        {
+          Type: 'AWS::Lambda::Function',
+          Properties:
+          {
+            Code: { ZipFile: 'foo' },
+            Handler: 'index.handler',
+            Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+            Runtime: 'nodejs10.x',
+            Environment: {
+              Variables: {
+                AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'] },
+                AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+              },
+            },
+          },
+          DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
+        },
+      },
+    });
+    test.done();
+  },
+
+  'default function with client provided Profiling Group'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+    });
+
+    expect(stack).toMatch({
+      Resources:
+      {
+        ProfilingGroup26979FD7: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'ProfilingGroup',
+          },
+        },
+        MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    'codeguru-profiler:ConfigureAgent',
+                    'codeguru-profiler:PostAgentProfile',
+                  ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': ['ProfilingGroup26979FD7', 'Arn'],
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+            Roles: [
+              {
+                Ref: 'MyLambdaServiceRole4539ECB6',
+              },
+            ],
+          },
+        },
+        MyLambdaServiceRole4539ECB6:
+        {
+          Type: 'AWS::IAM::Role',
+          Properties:
+          {
+            AssumeRolePolicyDocument:
+            {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'lambda.amazonaws.com' },
+                }],
+              Version: '2012-10-17',
+            },
+            ManagedPolicyArns:
+              // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+              // tslint:disable-next-line:max-line-length
+              [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
+          },
+        },
+        MyLambdaCCE802FB:
+        {
+          Type: 'AWS::Lambda::Function',
+          Properties:
+          {
+            Code: { ZipFile: 'foo' },
+            Handler: 'index.handler',
+            Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+            Runtime: 'nodejs10.x',
+            Environment: {
+              Variables: {
+                AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' }]] },
+                AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+              },
+            },
+          },
+          DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
+        },
+      },
+    });
     test.done();
   },
 };

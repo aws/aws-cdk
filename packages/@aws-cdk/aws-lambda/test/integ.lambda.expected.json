@@ -1,11 +1,5 @@
 {
   "Resources": {
-    "MyLambdaProfilingGroupEC6DE32F": {
-      "Type": "AWS::CodeGuruProfiler::ProfilingGroup",
-      "Properties": {
-        "ProfilingGroupName": "awscdklambda1MyLambdaProfilingGroupA13728AB"
-      }
-    },
     "MyLambdaServiceRole4539ECB6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -43,19 +37,6 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "codeguru-profiler:ConfigureAgent",
-                "codeguru-profiler:PostAgentProfile"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyLambdaProfilingGroupEC6DE32F",
-                  "Arn"
-                ]
-              }
-            },
-            {
               "Action": "*",
               "Effect": "Allow",
               "Resource": "*"
@@ -84,18 +65,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
-        "Environment": {
-          "Variables": {
-            "AWS_CODEGURU_PROFILER_GROUP_ARN": {
-              "Fn::GetAtt": [
-                "MyLambdaProfilingGroupEC6DE32F",
-                "Arn"
-              ]
-            },
-            "AWS_CODEGURU_PROFILER_ENABLED": "TRUE"
-          }
-        }
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
