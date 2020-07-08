@@ -1,6 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ConstructScopeSettings } from 'constructs';
+import { applyLegacyConstructSettings } from './private/construct-settings';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
 
@@ -107,17 +106,7 @@ export class App extends Stage {
       this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
     }
 
-    const settings = ConstructScopeSettings.of(this);
-
-    // configure settings for "constructs"
-
-    if (this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) || process.env.CDK_DISABLE_STACK_TRACE) {
-      settings.disableStackTraces();
-    }
-
-    settings.errorMetadataKey = cxschema.ArtifactMetadataEntryType.ERROR;
-    settings.warningMetadataKey = cxschema.ArtifactMetadataEntryType.WARN;
-    settings.infoMetadataKey = cxschema.ArtifactMetadataEntryType.INFO;
+    applyLegacyConstructSettings(this);
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {

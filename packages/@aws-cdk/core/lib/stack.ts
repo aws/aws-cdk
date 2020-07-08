@@ -14,6 +14,7 @@ import { ContextProvider } from './context-provider';
 import { addDependency } from './deps';
 import { Environment } from './environment';
 import * as cfnlang from './private/cloudformation-lang';
+import { applyLegacyConstructSettings } from './private/construct-settings';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
@@ -317,6 +318,12 @@ export class Stack extends Construct implements ITaggable {
     super(scope!, id!);
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
+
+    // if this is a root, apply legacy settings for "constructs" so metadata
+    // keys and stack traces will work properly.
+    if (!scope) {
+      applyLegacyConstructSettings(this);
+    }
 
     this._logicalIds = new LogicalIDs();
 
