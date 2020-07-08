@@ -83,7 +83,7 @@ test('Task with all the parameters', () => {
     },
     dependsOn: [{ jobId: '1234', type: 'some_type' }],
     payload: sfn.TaskInput.fromObject({
-      foo: sfn.Data.stringAt('$.bar'),
+      foo: sfn.JsonPath.stringAt('$.bar'),
     }),
     attempts: 3,
     timeout: cdk.Duration.seconds(60),
@@ -131,11 +131,11 @@ test('supports tokens', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobDefinition: batchJobDefinition,
-    jobName: sfn.Data.stringAt('$.jobName'),
+    jobName: sfn.JsonPath.stringAt('$.jobName'),
     jobQueue: batchJobQueue,
-    arraySize: sfn.Data.numberAt('$.arraySize'),
-    timeout: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
-    attempts: sfn.Data.numberAt('$.attempts'),
+    arraySize: sfn.JsonPath.numberAt('$.arraySize'),
+    timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
+    attempts: sfn.JsonPath.numberAt('$.attempts'),
   });
 
   // THEN
@@ -175,7 +175,7 @@ test('supports passing task input into payload', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobDefinition: batchJobDefinition,
-    jobName: sfn.Data.stringAt('$.jobName'),
+    jobName: sfn.JsonPath.stringAt('$.jobName'),
     jobQueue: batchJobQueue,
     payload: sfn.TaskInput.fromDataAt('$.foo'),
   });

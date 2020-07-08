@@ -619,7 +619,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
       parameters: {
-        input: stepfunctions.Data.stringAt('$.myField'),
+        input: stepfunctions.JsonPath.stringAt('$.myField'),
       },
     });
 

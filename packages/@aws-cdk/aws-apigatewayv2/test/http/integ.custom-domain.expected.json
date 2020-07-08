@@ -1,0 +1,348 @@
+{
+  "Resources": {
+    "echohandlerServiceRole833A8F7A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            }
+          }],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [{
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            ]
+          ]
+        }]
+      }
+    },
+    "echohandler8F648AB2": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, headers: { \"content-type\": \"application/json\"  }, body: JSON.stringify(event) }; };"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "echohandlerServiceRole833A8F7A",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "echohandlerServiceRole833A8F7A"
+      ]
+    },
+    "echohandlerinteghttpproxyHttpProxyProdApiDefaultRoute20082F68PermissionBE86C6B3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpProxyProdApi368B6161"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "echohandlerinteghttpproxyHttpProxyBetaApiDefaultRouteC328B302Permission40FB964B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpProxyBetaApiBFB4DA5E"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "DNFDC76583": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": "apigv2.demo.com",
+        "DomainNameConfigurations": [{
+          "CertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate",
+          "EndpointType": "REGIONAL"
+        }]
+      }
+    },
+    "HttpProxyProdApi368B6161": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "HttpProxyProdApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpProxyProdApiDefaultRouteDefaultRouteIntegration702F0DF7": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "HttpProxyProdApiDefaultRoute40EFC108": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyProdApiDefaultRouteDefaultRouteIntegration702F0DF7"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyProdApiDefaultStage0038B180": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyProdApiDefaultStageinteghttpproxyDN4CD83A2F": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "ApiMappingKey": "/",
+        "DomainName": "apigv2.demo.com",
+        "Stage": "$default"
+      }
+    },
+    "HttpProxyProdApitesting225373A0": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "StageName": "testing",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyProdApitestinginteghttpproxyDNtestingBEBAEF7B": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyProdApi368B6161"
+        },
+        "DomainName": "apigv2.demo.com",
+        "Stage": "testing",
+        "ApiMappingKey": "testing"
+      }
+    },
+    "HttpProxyBetaApiBFB4DA5E": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "HttpProxyBetaApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "echohandler8F648AB2",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "HttpProxyBetaApiDefaultRoute12DC547F": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyBetaApiDefaultRouteDefaultRouteIntegration24A25241"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyBetaApiDefaultStage4890F8A1": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "HttpProxyBetaApiDefaultStageinteghttpproxyDNbeta0904192E": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyBetaApiBFB4DA5E"
+        },
+        "ApiMappingKey": "beta",
+        "DomainName": "apigv2.demo.com",
+        "Stage": "$default"
+      }
+    }
+  },
+  "Outputs": {
+    "RegionalDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DNFDC76583",
+          "RegionalDomainName"
+        ]
+      }
+    },
+    "DomainName": {
+      "Value": "apigv2.demo.com"
+    },
+    "CustomUDomainURL": {
+      "Value": "https://apigv2.demo.com"
+    },
+    "ProdApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpProxyProdApi368B6161"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "BetaApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "HttpProxyBetaApiBFB4DA5E"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    }
+  }
+}

@@ -68,12 +68,12 @@ test('supports tokens', () => {
   // WHEN
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {
     key: {
-      SOME_KEY: tasks.DynamoAttributeValue.fromString(sfn.Data.stringAt('$.partitionKey')),
-      OTHER_KEY: tasks.DynamoAttributeValue.numberFromString(sfn.Data.stringAt('$.sortKey')),
+      SOME_KEY: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.partitionKey')),
+      OTHER_KEY: tasks.DynamoAttributeValue.numberFromString(sfn.JsonPath.stringAt('$.sortKey')),
     },
     table,
     consistentRead: true,
-    expressionAttributeNames: { OTHER_KEY: sfn.Data.stringAt('$.otherKey') },
+    expressionAttributeNames: { OTHER_KEY: sfn.JsonPath.stringAt('$.otherKey') },
     projectionExpression: [
       new tasks.DynamoProjectionExpression().withAttribute('Messages').atIndex(1).withAttribute('Tags'),
       new tasks.DynamoProjectionExpression().withAttribute('ID'),

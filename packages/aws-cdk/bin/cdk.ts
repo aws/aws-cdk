@@ -13,7 +13,7 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, setVerbose } from '../lib/logging';
+import { data, debug, error, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
@@ -45,7 +45,8 @@ async function parseCommandLineArguments() {
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
-    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
+    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false })
+    .count('verbose')
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified.', requiresArg: true })
@@ -122,7 +123,7 @@ if (!process.stdout.isTTY) {
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
-    setVerbose();
+    setLogLevel(argv.verbose);
   }
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
@@ -203,7 +204,7 @@ async function initCommandLine() {
     const cli = new CdkToolkit({
       cloudExecutable,
       cloudFormation,
-      verbose: argv.trace || argv.verbose,
+      verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
       configuration,

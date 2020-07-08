@@ -78,7 +78,7 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
 test('Modify an InstanceGroup with ClusterId from payload and static InstanceGroupName and InstanceGroupConfiguration', () => {
   // WHEN
   const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
-    clusterId: sfn.Data.stringAt('$.ClusterId'),
+    clusterId: sfn.JsonPath.stringAt('$.ClusterId'),
     instanceGroupName: 'InstanceGroupName',
     instanceGroup: {
       instanceCount: 1,
@@ -115,7 +115,7 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
   // WHEN
   const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
     clusterId: 'ClusterId',
-    instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
+    instanceGroupName: sfn.JsonPath.stringAt('$.InstanceGroupName'),
     instanceGroup: {
       instanceCount: 1,
     },
@@ -153,7 +153,7 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and In
     clusterId: 'ClusterId',
     instanceGroupName: 'InstanceGroupName',
     instanceGroup: {
-      instanceCount: sfn.Data.numberAt('$.InstanceCount'),
+      instanceCount: sfn.JsonPath.numberAt('$.InstanceCount'),
     },
   });
 

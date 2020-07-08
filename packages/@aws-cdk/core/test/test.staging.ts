@@ -107,6 +107,7 @@ export = {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
     const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
+    const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -121,7 +122,7 @@ export = {
     const assembly = app.synth();
     test.deepEqual(
       readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.deepEqual(fs.readdirSync(assembly.directory), [
       'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
@@ -135,6 +136,7 @@ export = {
     const stagingTmp = path.join('.', '.cdk.staging');
     test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
     test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
+    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
 
     test.done();
   },
@@ -156,7 +158,7 @@ export = {
 
     test.equal(
       readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
     );
     test.done();
   },
@@ -180,7 +182,7 @@ export = {
     // THEN
     test.equal(
       readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
 
@@ -224,7 +226,7 @@ export = {
     }), /Cannot specify `bundle` for `assetHashType`/);
     test.equal(
       readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
 
     test.done();
@@ -278,7 +280,7 @@ export = {
     }), /Failed to run bundling Docker image for asset stack\/Asset/);
     test.equal(
       readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input -v /output:/asset-output -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
     );
 
     test.done();

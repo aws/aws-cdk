@@ -103,7 +103,10 @@ export class DynamoPutItem extends sfn.TaskStateBase {
     ];
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: getDynamoResourceArn(DynamoMethod.PUT),
       Parameters: sfn.FieldUtils.renderObject({

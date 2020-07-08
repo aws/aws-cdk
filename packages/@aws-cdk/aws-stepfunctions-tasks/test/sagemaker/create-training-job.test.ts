@@ -294,7 +294,7 @@ test('pass param to training job', () => {
   });
 
   const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
-    trainingJobName: sfn.Data.stringAt('$.JobName'),
+    trainingJobName: sfn.JsonPath.stringAt('$.JobName'),
     role,
     algorithmSpecification: {
       algorithmName: 'BlazingText',

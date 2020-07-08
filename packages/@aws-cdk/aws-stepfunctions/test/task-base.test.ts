@@ -298,7 +298,10 @@ class FakeTask extends sfn.TaskStateBase {
     this.taskMetrics = props.metrics;
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: 'my-resource',
       Parameters: sfn.FieldUtils.renderObject({
