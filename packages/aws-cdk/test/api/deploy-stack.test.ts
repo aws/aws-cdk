@@ -249,10 +249,10 @@ test('deploy is not skipped if parameters are different', async () => {
   }));
 });
 
-test('if existing stack failed, it is deleted and recreated', async () => {
+test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_FAILED' },    // This is for the initial check
+    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
     { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
     { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
   );
@@ -275,10 +275,10 @@ test('if existing stack failed, it is deleted and recreated', async () => {
   }));
 });
 
-test('if existing stack is in a failed state, it is deleted and recreated even if the template did not change', async () => {
+test('if existing stack failed to create, it is deleted and recreated even if the template did not change', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_FAILED' },    // This is for the initial check
+    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
     { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
     { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
   );
@@ -295,29 +295,6 @@ test('if existing stack is in a failed state, it is deleted and recreated even i
   expect(cfnMocks.deleteStack).toHaveBeenCalled();
   expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
     ChangeSetType: 'CREATE',
-  }));
-});
-
-test('stack in ROLLBACK_COMPLETE state can be updated', async () => {
-  // GIVEN
-  givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' },  // This is for the initial check
-    { StackStatus: 'UPDATE_COMPLETE' },    // Poll the successful update
-  );
-  givenTemplateIs({ changed: 123 });
-
-  // WHEN
-  await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
-  });
-
-  // THEN
-  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    ChangeSetType: 'UPDATE',
   }));
 });
 

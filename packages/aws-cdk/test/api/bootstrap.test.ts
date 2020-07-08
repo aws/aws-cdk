@@ -216,7 +216,7 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
     // (first is for version checking, second is in deploy-stack.ts)
     .mockImplementationOnce(() => ({ Stacks: [
       {
-        StackStatus: 'ROLLBACK_FAILED',
+        StackStatus: 'ROLLBACK_COMPLETE',
         StackStatusReason: 'It is magic',
         Outputs: [
           { OutputKey: 'BucketName', OutputValue: 'bucket' },
@@ -225,7 +225,7 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
     ] }))
     .mockImplementationOnce(() => ({ Stacks: [
       {
-        StackStatus: 'ROLLBACK_FAILED',
+        StackStatus: 'ROLLBACK_COMPLETE',
         StackStatusReason: 'It is magic',
         Outputs: [
           { OutputKey: 'BucketName', OutputValue: 'bucket' },
