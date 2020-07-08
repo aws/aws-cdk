@@ -81,3 +81,25 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
     geoRestriction: GeoRestriction.whitelist('US', 'UK')
 });
 ```
+
+### Connection behaviors between CloudFront and your origin.
+
+CloudFront provides you even more control over the connection behaviors between CloudFront and your origin. You can now configure the number of connection attempts CloudFront will make to your origin and the origin connection timeout for each attempt.
+
+See [Origin Connection Attempts](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#origin-connection-attempts)
+
+See [Origin Connection Timeout](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#origin-connection-timeout)
+
+Example usage:
+
+```ts
+const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
+    originConfigs: [
+        {
+            ...,
+            connectionAttempts: 3,
+            connectionTimeout: cdk.Duration.seconds(10),
+        }
+    ]
+});
+```
