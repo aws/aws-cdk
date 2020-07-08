@@ -130,9 +130,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.path), p);
-    test.equal(stack.node.findChild(o.node.path), o);
-    test.equal(stack.node.findChild(c.node.path), c);
+    test.equal(stack.node.findChild(p.node.id), p);
+    test.equal(stack.node.findChild(o.node.id), o);
+    test.equal(stack.node.findChild(c.node.id), c);
 
     test.done();
   },
