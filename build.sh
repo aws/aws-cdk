@@ -42,7 +42,7 @@ fail() {
 /bin/bash ./git-secrets-scan.sh
 
 # Verify dependencies before starting the build
-/bin/bash ./check-dependencies.sh
+/bin/bash ./scripts/check-prerequisites.sh
 
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
