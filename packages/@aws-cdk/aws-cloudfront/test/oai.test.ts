@@ -1,11 +1,11 @@
 import { expect } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { OriginAccessIdentity } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
+nodeunitShim({
   'Origin Access Identity with automatic comment'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -66,4 +66,4 @@ export = {
 
     test.done();
   },
-};
+});
