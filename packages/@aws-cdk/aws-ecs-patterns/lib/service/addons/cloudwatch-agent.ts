@@ -1,40 +1,33 @@
-import { ServiceAddon, MutateContainerDefinition } from './addon-interfaces';
-import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/core');
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-const iam = require('@aws-cdk/aws-iam');
+import { ServiceAddon } from './addon-interfaces';
 
 export class CloudwatchAgentAddon extends ServiceAddon {
-  public container!: ecs.ContainerDefinition;
-
   private CW_CONFIG_CONTENT = {
-    'logs': {
-      'metrics_collected': {
-        'emf': {},
+    logs: {
+      metrics_collected: {
+        emf: {},
       },
     },
-    'metrics': {
-      'metrics_collected': {
-        'statsd': {},
+    metrics: {
+      metrics_collected: {
+        statsd: {},
       },
     },
-  }
-
-  // List of registered hooks from other addons that want to
-  // mutate the application's container definition prior to
-  // container creation
-  public mutateContainerProps: MutateContainerDefinition[] = [];
+  };
 
   constructor() {
     super('cloudwatchAgent');
   }
 
-  prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
     this.scope = scope;
   }
 
-  useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
     // Add the CloudWatch Agent to this task
     this.container = taskDefinition.addContainer('cloudwatch-agent', {
       image: ecs.ContainerImage.fromRegistry('amazon/cloudwatch-agent:latest'),
@@ -51,21 +44,23 @@ export class CloudwatchAgentAddon extends ServiceAddon {
 
     const statement = new iam.PolicyStatement();
     statement.addResources('*');
-    statement.addActions([
-      'cloudwatch:PutMetricData',
-    ]);
+    statement.addActions('cloudwatch:PutMetricData');
 
     policy.addStatements(statement);
     policy.attachToRole(taskDefinition.taskRole);
   }
 
-  bakeContainerDependencies() {
-    const appmeshAddon = this.parentService.addons.get('appmesh')
+  public bakeContainerDependencies() {
+    if (!this.container) {
+      throw new Error('The container dependency hook was called before the container was created');
+    }
+
+    const appmeshAddon = this.parentService.getAddon('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
-      })
+      });
     }
   }
-};
+}

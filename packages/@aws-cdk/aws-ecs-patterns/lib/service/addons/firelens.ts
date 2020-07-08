@@ -1,23 +1,17 @@
-import { ServiceAddon, ContainerDefinitionBuild, MutateContainerDefinition } from './addon-interfaces';
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as awslogs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import cdk = require('@aws-cdk/core');
-import awslogs = require('@aws-cdk/aws-logs');
+import { ContainerDefinitionBuild, ServiceAddon } from './addon-interfaces';
 
 export class FireLensAddon extends ServiceAddon {
-  public container!: ecs.ContainerDefinition;
   private logGroup!: awslogs.LogGroup;
-
-  // List of registered hooks from other addons that want to
-  // mutate the application's container definition prior to
-  // container creation
-  public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor() {
     super('firelens');
   }
 
-  prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
 
     // Create a log group for the service, into which FireLens
@@ -32,20 +26,20 @@ export class FireLensAddon extends ServiceAddon {
   // Add hooks to the main application addon so that it is modified to
   // have logging properties that enable sending logs via the
   // Firelens log router container
-  addHooks() {
-    let appAddon = this.parentService.addons.get('app');
+  public addHooks() {
+    const appAddon = this.parentService.getAddon('app');
 
     if (!appAddon) {
       throw new Error('Firelens addon requires an application addon');
     }
 
-    let self = this;
+    const self = this;
 
     if (!appAddon.mutateContainerProps) {
       throw new Error('Expected application addon to support an array of container mutations');
     }
 
-    appAddon.mutateContainerProps.push(function (containerProps: ContainerDefinitionBuild) {
+    appAddon.mutateContainerProps.push((containerProps: ContainerDefinitionBuild) => {
       return {
         ...containerProps,
 
@@ -56,12 +50,12 @@ export class FireLensAddon extends ServiceAddon {
             log_group_name: self.logGroup.logGroupName,
             log_stream_prefix: `${self.parentService.id}/`,
           },
-        })
-      }
+        }),
+      } as ContainerDefinitionBuild;
     });
   }
 
-  useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
     // Manually add a firelens log router, so that we can manually manage the dependencies
     // to ensure that the Firelens log router depends on the Envoy proxy
     this.container = taskDefinition.addFirelensLogRouter('firelens', {
@@ -80,13 +74,17 @@ export class FireLensAddon extends ServiceAddon {
     });
   }
 
-  bakeContainerDependencies() {
-    const appmeshAddon = this.parentService.addons.get('appmesh')
+  public bakeContainerDependencies() {
+    if (!this.container) {
+      throw new Error('The container dependency hook was called before the container was created');
+    }
+
+    const appmeshAddon = this.parentService.getAddon('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
-      })
+      });
     }
   }
-};
+}

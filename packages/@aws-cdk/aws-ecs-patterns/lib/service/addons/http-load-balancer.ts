@@ -1,8 +1,8 @@
-import { ServiceAddon } from './addon-interfaces';
-import { Service } from '../service';
-import cdk = require('@aws-cdk/core');
-import alb = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { Ec2Service } from '@aws-cdk/aws-ecs';
+import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cdk from '@aws-cdk/core';
+import { Service } from '../service';
+import { ServiceAddon } from './addon-interfaces';
 
 export class HttpLoadBalancerAddon extends ServiceAddon {
   private loadBalancer!: alb.IApplicationLoadBalancer;
@@ -13,7 +13,7 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
   }
 
   // Before the service is created go ahead and create the load balancer itself.
-  prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
 
     this.loadBalancer = new alb.ApplicationLoadBalancer(scope, `${this.parentService.id}-load-balancer`, {
@@ -28,7 +28,7 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
   }
 
   // After the service is created add the service to the load balancer's listener
-  useService(service: Ec2Service) {
+  public useService(service: Ec2Service) {
     this.listener.addTargets(this.parentService.id, {
       deregistrationDelay: cdk.Duration.seconds(10),
       port: 80,

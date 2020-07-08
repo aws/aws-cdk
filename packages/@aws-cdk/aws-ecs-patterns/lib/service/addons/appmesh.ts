@@ -1,40 +1,35 @@
-import { ServiceAddon, MutateContainerDefinition, ServiceBuild, TaskDefinitionBuild } from './addon-interfaces';
+import * as appmesh from '@aws-cdk/aws-appmesh';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import cdk = require('@aws-cdk/core');
-import ecs = require('@aws-cdk/aws-ecs');
-import ecr = require('@aws-cdk/aws-ecr');
-import ec2 = require('@aws-cdk/aws-ec2');
-import appmesh = require('@aws-cdk/aws-appmesh');
+import { ServiceAddon, ServiceBuild, TaskDefinitionBuild } from './addon-interfaces';
 import { Application } from './app';
 
 export interface MeshProps {
-  mesh: appmesh.Mesh;
+  readonly mesh: appmesh.Mesh;
 }
 
 export class AppMeshAddon extends ServiceAddon {
-  public container!: ecs.ContainerDefinition;
-  private mesh: appmesh.Mesh;
   protected virtualNode!: appmesh.VirtualNode;
   protected virtualService!: appmesh.VirtualService;
 
-  // List of registered hooks from other addons that want to
-  // mutate the application's container definition prior to
-  // container creation
-  public mutateContainerProps: MutateContainerDefinition[] = [];
+  private mesh: appmesh.Mesh;
 
   constructor(props: MeshProps) {
     super('appmesh');
     this.mesh = props.mesh;
   }
 
-  prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
     this.scope = scope;
   }
 
-  mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
+  public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
     // Find the app addon, to get its port
-    let appAddon = this.parentService.addons.get('app') as Application;
+    const appAddon = this.parentService.getAddon('app') as Application;
 
     if (!appAddon) {
       throw new Error('Firelens addon requires an application addon');
@@ -69,11 +64,11 @@ export class AppMeshAddon extends ServiceAddon {
           egressIgnoredPorts: [
           ],
         },
-      })
-    }
+      }),
+    } as TaskDefinitionBuild;
   }
 
-  useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
     const appMeshRepository = ecr.Repository.fromRepositoryArn(this.scope, 'app-mesh-envoy', 'arn:aws:ecr:us-east-1:840364872350:repository/aws-appmesh-envoy');
 
     this.container = taskDefinition.addContainer('envoy', {
@@ -108,7 +103,7 @@ export class AppMeshAddon extends ServiceAddon {
   }
 
   // Enable cloudmap for the service
-  mutateServiceProps(props: ServiceBuild) {
+  public mutateServiceProps(props: ServiceBuild) {
     return {
       ...props,
 
@@ -126,19 +121,19 @@ export class AppMeshAddon extends ServiceAddon {
       // Warning, these settings do not work with a low task count however.
       // minHealthyPercent: 100,
       // maxHealthyPercent: 125,
-    };
+    } as ServiceBuild;
   }
 
   // Now that the service is defined we can create the AppMesh virtual service
   // and virtual node for the real service
-  useService(service: ecs.Ec2Service) {
-    let appAddon = this.parentService.addons.get('app') as Application;
+  public useService(service: ecs.Ec2Service) {
+    const appAddon = this.parentService.getAddon('app') as Application;
 
     if (!appAddon) {
       throw new Error('Firelens addon requires an application addon');
     }
 
-    let cloudmapNamespace = this.parentService.cluster.defaultCloudMapNamespace;
+    const cloudmapNamespace = this.parentService.cluster.defaultCloudMapNamespace;
 
     if (!cloudmapNamespace) {
       throw new Error('You must add a CloudMap namespace to the ECS cluster in order to use the AppMesh addon');
@@ -178,7 +173,7 @@ export class AppMeshAddon extends ServiceAddon {
 
   // Connect the app mesh addon for this service to an app mesh
   // addon on another service.
-  connectToService(otherService: Service) {
+  public connectToService(otherService: Service) {
     const otherAppMesh = otherService.getAddon('appmesh') as AppMeshAddon;
     const otherApplication = otherService.getAddon('app') as Application;
 

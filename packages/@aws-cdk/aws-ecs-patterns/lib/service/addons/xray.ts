@@ -1,26 +1,20 @@
-import { ServiceAddon, MutateContainerDefinition } from './addon-interfaces';
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import cdk = require('@aws-cdk/core');
-import iam = require('@aws-cdk/aws-iam');
+import { ServiceAddon } from './addon-interfaces';
 
 export class XRayAddon extends ServiceAddon {
-  public container!: ecs.ContainerDefinition;
-
-  // List of registered hooks from other addons that want to
-  // mutate the application's container definition prior to
-  // container creation
-  public mutateContainerProps: MutateContainerDefinition[] = [];
-
   constructor() {
     super('xray');
   }
 
-  prehook(service: Service) {
+  // @ts-ignore - Ignore unused params that are required for abstract class extend
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
   }
 
-  useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
     // Add the XRay Daemon to the task
     this.container = taskDefinition.addContainer('xray', {
       image: ecs.ContainerImage.fromRegistry('amazon/aws-xray-daemon'),
@@ -49,13 +43,17 @@ export class XRayAddon extends ServiceAddon {
     );
   }
 
-  bakeContainerDependencies() {
-    const appmeshAddon = this.parentService.addons.get('appmesh')
+  public bakeContainerDependencies() {
+    if (!this.container) {
+      throw new Error('The container dependency hook was called before the container was created');
+    }
+
+    const appmeshAddon = this.parentService.getAddon('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
-      })
+      });
     }
   }
-};
+}

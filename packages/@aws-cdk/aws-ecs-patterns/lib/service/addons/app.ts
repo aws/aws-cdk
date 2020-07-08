@@ -1,26 +1,21 @@
-import { TaskDefinitionBuild, ServiceAddon, MutateContainerDefinition } from './addon-interfaces';
-import ecs = require('@aws-cdk/aws-ecs');
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
+import { ServiceAddon, TaskDefinitionBuild } from './addon-interfaces';
 
 export interface ApplicationAddonProps {
-  cpu: number,
-  memoryMiB: number,
-  image: ecs.ContainerImage,
-  trafficPort: number,
-  environment?: {
+  readonly cpu: number,
+  readonly memoryMiB: number,
+  readonly image: ecs.ContainerImage,
+  readonly trafficPort: number,
+  readonly environment?: {
     [key: string]: string,
   }
 }
 
 export class Application extends ServiceAddon {
-  public container!: ecs.ContainerDefinition;
+  public readonly trafficPort: number;
   private props: ApplicationAddonProps;
-  readonly trafficPort: number;
-
-  // List of registered hooks from other addons that want to
-  // mutate the application's container definition prior to
-  // container creation
-  public mutateContainerProps: MutateContainerDefinition[] = [];
 
   constructor(props: ApplicationAddonProps) {
     super('app');
@@ -28,23 +23,24 @@ export class Application extends ServiceAddon {
     this.trafficPort = props.trafficPort;
   }
 
-  prehook(service: Service) {
+  // @ts-ignore - Ignore unused params that are required for abstract class extend
+  public prehook(service: Service, scope: cdk.Stack) {
     this.parentService = service;
   }
 
   // This hook sets the overall task resource requirements to the
   // resource requirements of the application itself.
-  mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
+  public mutateTaskDefinitionProps(props: TaskDefinitionBuild) {
     return {
       ...props,
       cpu: this.props.cpu.toString(),
-      memoryMiB: this.props.memoryMiB.toString()
-    };
+      memoryMiB: this.props.memoryMiB.toString(),
+    } as TaskDefinitionBuild;
   }
 
   // This hook adds the application container to the task definition.
-  useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
-    var containerProps = {
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+    let containerProps = {
       image: this.props.image,
       cpu: Number(this.props.cpu),
       memoryLimitMiB: Number(this.props.memoryMiB),
@@ -64,7 +60,7 @@ export class Application extends ServiceAddon {
     this.container.addPortMappings({
       containerPort: this.trafficPort,
       hostPort: this.trafficPort,
-    })
+    });
 
     // Raise the ulimits for this main application container
     // so that it can handle more concurrent requests
@@ -75,37 +71,41 @@ export class Application extends ServiceAddon {
     });
   }
 
-  bakeContainerDependencies() {
-    const firelens = this.parentService.addons.get('firelens')
+  public bakeContainerDependencies() {
+    if (!this.container) {
+      throw new Error('The container dependency hook was called before the container was created');
+    }
+
+    const firelens = this.parentService.getAddon('firelens');
     if (firelens && firelens.container) {
       this.container.addContainerDependencies({
         container: firelens.container,
         condition: ecs.ContainerDependencyCondition.START,
-      })
+      });
     }
 
-    const appmeshAddon = this.parentService.addons.get('appmesh')
+    const appmeshAddon = this.parentService.getAddon('appmesh');
     if (appmeshAddon && appmeshAddon.container) {
       this.container.addContainerDependencies({
         container: appmeshAddon.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
-      })
+      });
     }
 
-    const cloudwatchAddon = this.parentService.addons.get('cloudwatchAgent')
+    const cloudwatchAddon = this.parentService.getAddon('cloudwatchAgent');
     if (cloudwatchAddon && cloudwatchAddon.container) {
       this.container.addContainerDependencies({
         container: cloudwatchAddon.container,
         condition: ecs.ContainerDependencyCondition.START,
-      })
+      });
     }
 
-    const xrayAddon = this.parentService.addons.get('xrayAddon')
+    const xrayAddon = this.parentService.getAddon('xrayAddon');
     if (xrayAddon && xrayAddon.container) {
       this.container.addContainerDependencies({
         container: xrayAddon.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
-      })
+      });
     }
   }
-};
+}

@@ -22,6 +22,6 @@ export * from './base/network-multiple-target-groups-service-base';
 export * from './ecs/network-multiple-target-groups-ecs-service';
 export * from './fargate/network-multiple-target-groups-fargate-service';
 
-export * from './service/service'
-export * as Addons from './service/addons'
-export * from './service/addons/addon-interfaces'
+export * from './service/service';
+export * as addons from './service/addons';
+export * from './service/addons/addon-interfaces';
