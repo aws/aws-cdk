@@ -2,7 +2,6 @@ import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
-import * as fs from 'fs';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -16,12 +15,12 @@ export interface CfnIncludeProps {
   readonly templateFile: string;
 
   /**
-   * Whether to generate a template file for a nested stack.
+   * Whether the templateFile points to a nested template or not.
    * 
    * If true, then the templateURL of the parent stack will point to the generated template on disk.
    * Otherwise, the templateURL of the parent stack will not be touched.
    */
-  readonly generateNestedTemplate?: boolean;
+  readonly nestedStacks?: { [StackName: string]:  CfnIncludeProps };
 }
 
 /**
@@ -240,7 +239,7 @@ export class CfnInclude extends core.CfnElement {
     this.conditions[conditionName] = cfnCondition;
   }
 
-  private getOrCreateResource(logicalId: string, props?:CfnIncludeProps): core.CfnResource {
+  private getOrCreateResource(logicalId: string, props?: CfnIncludeProps): core.CfnResource {
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
@@ -251,18 +250,23 @@ export class CfnInclude extends core.CfnElement {
     // maybe add a nestedStackScope instead of this CfnNestedInclude thing; const nestedStackScope = new core.Construct(this, '$Ouputs');
 
     // we the parse the nested stack here
-    if (resourceAttributes.Type === 'AWS::CloudFormation::Stack' && props?.generateNestedTemplate) {
+    if (resourceAttributes.Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks) {
       // adding 'Nested' to the logicalId prevents this resource from conflicting with the CloudFormation stack
       // resource of the same name
-      const nestedStackScope = new core.NestedStack(this, '$Nested' + logicalId);
-      //TODO remove Nested from new CfnInclude and update that test
-      
-      const nestedInclude = new CfnInclude(nestedStackScope, 'Nested' + logicalId, { templateFile: resourceAttributes.Properties.TemplateURL });
-      //TODO: add the logic to generate the template here
-      
-      console.log(nestedInclude.template);
 
-      fs.writeFileSync('./' + logicalId + '.json', JSON.stringify(nestedInclude.template));
+      //const nestedStackScope = new core.NestedStack(this, 'Nested' + logicalId);
+      //TODO remove Nested from new CfnInclude and update that test
+
+      for (const nestedStackName in props.nestedStacks) {
+        console.log(nestedStackName + "----" + logicalId);
+        const nestedStackScope = new core.NestedStack(this, logicalId + nestedStackName);
+        new CfnInclude(nestedStackScope, nestedStackName, {
+          templateFile: props.nestedStacks[nestedStackName].templateFile,
+          nestedStacks: props?.nestedStacks[nestedStackName].nestedStacks,
+        });
+      }
+
+      // fs.writeFileSync('./' + logicalId + '.json', JSON.stringify(nestedInclude.template));
     }
 
     const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);

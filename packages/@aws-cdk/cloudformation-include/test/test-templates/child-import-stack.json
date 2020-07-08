@@ -17,7 +17,7 @@
     "GrandChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "/Users/comcalvi/Documents/aws-cdk/packages/@aws-cdk/cloudformation-include/test/test-templates/grandchild-import-stack.json",
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
         "Parameters": {
           "MyBucketParameter": "some-other-bucket-name"
         }
