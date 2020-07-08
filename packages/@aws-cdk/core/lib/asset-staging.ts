@@ -89,7 +89,7 @@ export class AssetStaging extends Construct {
     this.fingerprintOptions = props;
 
     if (props.bundling) {
-      const assetHashIfKnownInAdvance = props.assetHashType !== AssetHashType.BUNDLE
+      const sourceHash = props.assetHashType === AssetHashType.SOURCE
         ? this.calculateHash(props)
         : undefined;
 
