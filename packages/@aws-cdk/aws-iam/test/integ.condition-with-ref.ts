@@ -1,4 +1,5 @@
-import { App, CfnJson, CfnParameter, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnJson, CfnParameter, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccountRootPrincipal, Role } from '../lib';
 
 class MyStack extends Stack {

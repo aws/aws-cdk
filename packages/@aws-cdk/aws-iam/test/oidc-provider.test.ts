@@ -10,7 +10,8 @@ describe('OpenIdConnectProvider resource', () => {
 
   test('minimal configuration (no clients and no thumbprint)', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
     // WHEN
     new iam.OpenIdConnectProvider(stack, 'MyProvider', {
@@ -25,7 +26,8 @@ describe('OpenIdConnectProvider resource', () => {
 
   test('"openIdConnectProviderArn" resolves to the ref', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
     // WHEN
     const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
@@ -38,7 +40,8 @@ describe('OpenIdConnectProvider resource', () => {
 
   test('static fromOpenIdConnectProviderArn can be used to import a provider', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
     // WHEN
     const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', 'arn:of:provider');
@@ -49,7 +52,8 @@ describe('OpenIdConnectProvider resource', () => {
 
   test('thumbprint list and client ids can be specified', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
     // WHEN
     new iam.OpenIdConnectProvider(stack, 'MyProvider', {
@@ -95,7 +99,8 @@ describe('custom resource provider infrastructure', () => {
 
   test('iam policy', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
 
     // WHEN
     new iam.OpenIdConnectProvider(stack, 'Provider1', { url: 'provider1' });

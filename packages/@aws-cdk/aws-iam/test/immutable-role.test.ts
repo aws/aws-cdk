@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as iam from '../lib';
 
 // tslint:disable:object-literal-key-quotes

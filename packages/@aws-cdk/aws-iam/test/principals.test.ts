@@ -105,7 +105,8 @@ test('can have multiple principals the same conditions in the same statement', (
 
 test('use Web Identity principal', () => {
   // GIVEN
-  const stack = new Stack();
+  const app = new App();
+  const stack = new Stack(app, 'test');
 
   // WHEN
   const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com');
@@ -117,7 +118,8 @@ test('use Web Identity principal', () => {
 
 test('use OpenID Connect principal from provider', () => {
   // GIVEN
-  const stack = new Stack();
+  const app = new App();
+  const stack = new Stack(app, 'test');
   const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
     url: 'https://openid-endpoint',
   });

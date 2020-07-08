@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 
@@ -61,7 +61,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    *
    * @default - the construct in which this construct is defined
    */
-  readonly scope?: cdk.IConstruct;
+  readonly scope?: IConstruct;
 }
 
 /**
@@ -100,7 +100,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
  * This class is not instantiable by consumers on purpose, so that they will be
  * required to call the Grant factory functions.
  */
-export class Grant implements cdk.IDependable {
+export class Grant implements IDependable {
   /**
    * Grant the given permissions to the principal
    *
@@ -236,9 +236,9 @@ export class Grant implements cdk.IDependable {
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
 
-    cdk.DependableTrait.implement(this, {
+    Dependable.implement(this, {
       get dependencyRoots() {
-        return props.policyDependable ? cdk.DependableTrait.get(props.policyDependable).dependencyRoots : [];
+        return props.policyDependable ? Dependable.of(props.policyDependable).dependencyRoots : [];
       },
     });
   }
@@ -265,7 +265,7 @@ export class Grant implements cdk.IDependable {
    *
    * The same as construct.node.addDependency(grant), but slightly nicer to read.
    */
-  public applyBefore(...constructs: cdk.IConstruct[]) {
+  public applyBefore(...constructs: IConstruct[]) {
     for (const construct of constructs) {
       construct.node.addDependency(this);
     }
@@ -286,13 +286,13 @@ interface GrantProps {
    *
    * Used to add dependencies on grants
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IConstruct {
+export interface IResourceWithPolicy extends IConstruct {
   /**
    * Add a statement to the resource's resource policy
    */
@@ -314,7 +314,7 @@ export interface AddToResourcePolicyResult {
    * @default - If `statementAdded` is true, the resource object itself.
    * Otherwise, no dependable.
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -324,11 +324,11 @@ export interface AddToResourcePolicyResult {
  * inner dependables, as they may be mutable so we need to defer
  * the query.
  */
-export class CompositeDependable implements cdk.IDependable {
-  constructor(...dependables: cdk.IDependable[]) {
-    cdk.DependableTrait.implement(this, {
-      get dependencyRoots(): cdk.IConstruct[] {
-        return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
+export class CompositeDependable implements IDependable {
+  constructor(...dependables: IDependable[]) {
+    Dependable.implement(this, {
+      get dependencyRoots(): IConstruct[] {
+        return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencyRoots));
       },
     });
   }
