@@ -1,4 +1,4 @@
-import { Table } from '@aws-cdk/aws-dynamodb';
+import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, IResolvable } from '@aws-cdk/core';
@@ -165,7 +165,7 @@ export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
    * The DynamoDB table backing this data source
    * [disable-awslint:ref-via-interface]
    */
-  readonly table: Table;
+  readonly table: ITable;
   /**
    * Specify whether this DS is read only or has read and write permissions to the DynamoDB table
    *
