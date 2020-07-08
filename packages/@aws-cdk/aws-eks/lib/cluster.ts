@@ -2,7 +2,8 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as YAML from 'yaml';
@@ -957,7 +958,7 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tag.add(subnet, tag, '1');
       }
     };
 

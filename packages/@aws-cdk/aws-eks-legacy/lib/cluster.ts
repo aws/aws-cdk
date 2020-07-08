@@ -3,7 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { CfnOutput, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
@@ -640,7 +641,7 @@ export class Cluster extends Resource implements ICluster {
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tag.add(subnet, tag, '1');
       }
     };
 

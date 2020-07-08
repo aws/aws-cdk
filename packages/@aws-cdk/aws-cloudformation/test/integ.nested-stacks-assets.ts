@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import * as cfn from '../lib';
 

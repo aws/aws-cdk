@@ -2,6 +2,7 @@ import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -337,7 +338,7 @@ export = {
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+  constructor(scope: Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }

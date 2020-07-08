@@ -3,9 +3,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, Construct, DefaultStackSynthesizer,
+  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './cross-region-support-stack';

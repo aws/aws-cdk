@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';

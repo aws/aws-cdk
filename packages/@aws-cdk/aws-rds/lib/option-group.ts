@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
 

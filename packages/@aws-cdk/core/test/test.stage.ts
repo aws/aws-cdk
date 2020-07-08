@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
 import { Test } from 'nodeunit';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage } from '../lib';
+import { App, Aspects, CfnResource, IAspect, Stack, Stage } from '../lib';
 
 export = {
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
@@ -118,28 +119,6 @@ export = {
     test.done();
   },
 
-  'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
-    // GIVEN
-    const app = new App();
-    let prepared = false;
-    const stage = new Stage(app, 'MyStage');
-    const stack = new BogusStack(stage, 'Stack');
-    class HazPrepare extends Construct {
-      protected prepare() {
-        prepared = true;
-      }
-    }
-    new HazPrepare(stack, 'Preparable');
-
-    // WHEN
-    stage.synth();
-
-    // THEN
-    test.equals(prepared, true);
-
-    test.done();
-  },
-
   'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
     // GIVEN
     const app = new App();
@@ -148,7 +127,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    stack.node.applyAspect(aspect);
+    Aspects.of(stack).apply(aspect);
 
     // THEN
     app.synth();
@@ -168,7 +147,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    app.node.applyAspect(aspect);
+    Aspects.of(app).apply(aspect);
 
     // THEN
     app.synth();

@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';

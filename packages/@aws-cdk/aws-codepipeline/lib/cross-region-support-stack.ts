@@ -1,6 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -28,10 +29,10 @@ function lastNCharacters(str: string, n: number) {
   return str.substring(startIndex);
 }
 
-export class CrossRegionSupportConstruct extends cdk.Construct {
+export class CrossRegionSupportConstruct extends Construct {
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
@@ -85,7 +86,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
    */
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportStackProps) {
+  constructor(scope: Construct, id: string, props: CrossRegionSupportStackProps) {
     super(scope, id, {
       stackName: generateStackName(props),
       env: {

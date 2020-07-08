@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
@@ -325,7 +326,7 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });

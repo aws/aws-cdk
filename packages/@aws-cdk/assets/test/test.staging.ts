@@ -8,7 +8,8 @@ import { Staging } from '../lib';
 export = {
   'base case'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
@@ -22,7 +23,8 @@ export = {
 
   'staging can be disabled through context'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'test');
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
 

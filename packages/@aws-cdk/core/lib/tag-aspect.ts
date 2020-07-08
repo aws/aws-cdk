@@ -1,6 +1,6 @@
 // import * as cxapi from '@aws-cdk/cx-api';
-import { IAspect } from './aspect';
-import { Construct, IConstruct } from './construct-compat';
+import { Construct, IConstruct } from 'constructs';
+import { Aspects, IAspect } from './aspect';
 import { ITaggable, TagManager } from './tag-manager';
 
 /**
@@ -89,14 +89,14 @@ export class Tag extends TagBase {
    * add tags to the node of a construct and all its the taggable children
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
-    scope.node.applyAspect(new Tag(key, value, props));
+    Aspects.of(scope).apply(new Tag(key, value, props));
   }
 
   /**
    * remove tags to the node of a construct and all its the taggable children
    */
   public static remove(scope: Construct, key: string, props: TagProps = {}) {
-    scope.node.applyAspect(new RemoveTag(key, props));
+    Aspects.of(scope).apply(new RemoveTag(key, props));
   }
 
   /**

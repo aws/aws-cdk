@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IConstruct } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,

@@ -1,6 +1,7 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
@@ -210,14 +211,14 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given an ARN
    */
-  public static fromVirtualNodeArn(scope: cdk.Construct, id: string, virtualNodeArn: string): IVirtualNode {
+  public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, { virtualNodeArn });
   }
 
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
+  public static fromVirtualNodeName(scope: Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, {
       meshName,
       virtualNodeName,
@@ -239,7 +240,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
+  constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -321,7 +322,7 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     if (props.virtualNodeArn) {

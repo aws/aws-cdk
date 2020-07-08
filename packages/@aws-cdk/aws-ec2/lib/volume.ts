@@ -2,7 +2,8 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 

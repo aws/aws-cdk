@@ -1,9 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
+  CfnResource, Lazy, ScopedAws, Stack, Tag, validateString } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
@@ -410,7 +412,8 @@ export = {
     new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
 
     // THEN
-    ConstructNode.prepare(stack.node);
+    resolveReferences(app);
+
     test.done();
   },
 
@@ -524,7 +527,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
+      app.synth();
       // tslint:disable-next-line:max-line-length
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -541,7 +544,7 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     // THEN
     test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
@@ -560,7 +563,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
+      app.synth();
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();

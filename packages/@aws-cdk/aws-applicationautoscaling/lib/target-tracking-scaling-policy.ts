@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -114,13 +115,13 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly scalingTarget: IScalableTarget;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct {
+export class TargetTrackingScalingPolicy extends Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }

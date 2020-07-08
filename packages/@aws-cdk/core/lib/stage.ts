@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from './construct-compat';
+import { Construct, IConstruct } from 'constructs';
 import { Environment } from './environment';
 import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
@@ -141,6 +141,13 @@ export class Stage extends Construct {
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
+  }
+
+  /**
+   * The cloud assembly output directory.
+   */
+  public get outdir() {
+    return this._assemblyBuilder.outdir;
   }
 
   /**

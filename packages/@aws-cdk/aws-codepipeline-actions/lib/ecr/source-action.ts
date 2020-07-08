@@ -2,7 +2,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

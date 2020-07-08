@@ -3,7 +3,8 @@
 // nested stack references a resource from a non-nested non-parent stack
 
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn from '../lib';
 
 class ConsumerNestedStack extends cfn.NestedStack {

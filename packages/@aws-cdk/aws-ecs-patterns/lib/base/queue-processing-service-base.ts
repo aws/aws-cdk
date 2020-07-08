@@ -2,7 +2,8 @@ import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.

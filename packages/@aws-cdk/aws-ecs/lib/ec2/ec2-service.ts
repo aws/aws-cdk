@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IValidation } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -128,7 +129,7 @@ export interface Ec2ServiceAttributes {
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service {
+export class Ec2Service extends BaseService implements IEc2Service, IValidation {
 
   /**
    * Imports from the specified service ARN.
@@ -262,8 +263,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Validates this Ec2Service.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  public validate(): string[] {
+    const ret = new Array<string>();
     if (!this.cluster.hasEc2Capacity) {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }

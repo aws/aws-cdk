@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Aws, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';

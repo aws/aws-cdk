@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import { Code } from './code';
 import { Runtime } from './runtime';
@@ -58,14 +59,14 @@ export interface LogRetentionRetryOptions {
  * log group. The log group is created if it doesn't already exist. The policy
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
  */
-export class LogRetention extends cdk.Construct {
+export class LogRetention extends Construct {
 
   /**
    * The ARN of the LogGroup.
    */
   public readonly logGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Custom resource provider

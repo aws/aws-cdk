@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
@@ -674,7 +675,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
+export class CloudFrontWebDistribution extends Construct implements IDistribution {
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -713,7 +714,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
-  constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {

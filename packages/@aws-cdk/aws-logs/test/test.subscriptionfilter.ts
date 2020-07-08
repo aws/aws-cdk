@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import { FilterPattern, ILogGroup, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
 

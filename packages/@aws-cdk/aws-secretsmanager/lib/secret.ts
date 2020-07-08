@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';

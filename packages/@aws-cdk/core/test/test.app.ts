@@ -1,7 +1,8 @@
 import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { CfnResource, Construct, Stack, StackProps } from '../lib';
+import { CfnResource, Stack, StackProps } from '../lib';
 import { App, AppProps } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {

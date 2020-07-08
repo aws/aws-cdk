@@ -1,5 +1,6 @@
 import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
 import { Connections } from './connections';
 import { IInstance, Instance } from './instance';

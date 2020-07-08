@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as net from 'net';
 import {
   CfnCustomerGateway,
@@ -7,7 +8,7 @@ import {
   CfnVPNConnectionRoute,
   CfnVPNGateway,
 } from './ec2.generated';
-import {IVpc, SubnetSelection} from './vpc';
+import { IVpc, SubnetSelection } from './vpc';
 
 export interface IVpnConnection extends cdk.IResource {
   /**
@@ -154,7 +155,7 @@ export class VpnGateway extends cdk.Resource implements IVpnGateway {
    */
   public readonly gatewayId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnGatewayProps) {
+  constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
 
     // This is 'Default' instead of 'Resource', because using 'Default' will generate
@@ -213,7 +214,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
   public readonly customerGatewayIp: string;
   public readonly customerGatewayAsn: number;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnConnectionProps) {
+  constructor(scope: Construct, id: string, props: VpnConnectionProps) {
     super(scope, id);
 
     if (!props.vpc.vpnGatewayId) {

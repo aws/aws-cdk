@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -201,7 +202,7 @@ abstract class KeyBase extends Resource implements IKey {
    *   undefined otherwise
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return undefined;
     }
     const keyStack = Stack.of(this);
@@ -215,7 +216,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -224,7 +225,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);

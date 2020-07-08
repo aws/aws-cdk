@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as autoscaling from '../lib';
 
@@ -71,7 +72,7 @@ export = {
 };
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
-  public bind(_scope: cdk.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
     lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
       resources: ['*'],

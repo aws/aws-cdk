@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -153,8 +154,8 @@ export interface BucketDeploymentProps {
   readonly serverSideEncryptionCustomerAlgorithm?: string;
 }
 
-export class BucketDeployment extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+export class BucketDeployment extends Construct {
+  constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
     if (props.distributionPaths && !props.distribution) {

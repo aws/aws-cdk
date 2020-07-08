@@ -64,7 +64,8 @@ For example, assume that you have a load balancer configuration that you use for
 The following example will define a single top-level stack that contains two nested stacks: each one with a single Amazon S3 bucket:
 
 ```ts
-import { Stack, Construct, StackProps } from '@aws-cdk/core';
+import { Stack,, StackProps } from '@aws-cdk/core'
+import { Construct } from 'constructs';
 import cfn = require('@aws-cdk/aws-cloudformation');
 import s3 = require('@aws-cdk/aws-s3');
 

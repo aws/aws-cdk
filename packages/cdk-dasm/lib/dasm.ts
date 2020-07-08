@@ -53,7 +53,8 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
   // imports
   //
 
-  code.line(`import { Stack, StackProps, Construct, Fn } from '@aws-cdk/core';`);
+  code.line(`import { Stack, StackProps, Fn } from '@aws-cdk/core';`);
+  code.line(`import { Construct } from 'constructs';`);
 
   for (const ns of getUniqueNamespaces(definitions)) {
     const importName = `@aws-cdk/aws-${ns}`;
@@ -143,7 +144,7 @@ function toCfnClassName(resourceType: string) {
   return { namespace: namespace.toLocaleLowerCase(), className };
 }
 
-function getUniqueNamespaces(definitions: Array<ConstructDefinition>): String[] {
+function getUniqueNamespaces(definitions: ConstructDefinition[]): String[] {
   return [... new Set(definitions.map(definition => definition.namespace))];
 }
 

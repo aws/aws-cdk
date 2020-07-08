@@ -1,6 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';

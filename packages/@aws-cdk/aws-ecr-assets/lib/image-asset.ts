@@ -1,6 +1,7 @@
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Construct, Stack, Token } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as minimatch from 'minimatch';
 import * as path from 'path';

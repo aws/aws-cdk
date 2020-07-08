@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISubnet, Subnet, SubnetType } from './vpc';
 
 /**
@@ -70,7 +70,7 @@ export class ImportSubnetGroup {
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
-  public import(scope: cdk.Construct): ISubnet[] {
+  public import(scope: Construct): ISubnet[] {
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {

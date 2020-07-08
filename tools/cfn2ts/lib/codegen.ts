@@ -4,10 +4,11 @@ import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import { upcaseFirst } from './util';
 
+const CONSTRUCTS = genspec.CONSTRUCTS_NAMESPACE;
 const CORE = genspec.CORE_NAMESPACE;
 const CFN_PARSE = genspec.CFN_PARSE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
-const CONSTRUCT_CLASS = `${CORE}.Construct`;
+const CONSTRUCT_CLASS = `${CONSTRUCTS}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
 const TAG_MANAGER = `${CORE}.TagManager`;
 
@@ -56,8 +57,11 @@ export default class CodeGenerator {
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('// tslint:disable:ordered-imports');
     this.code.line();
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
+    this.code.line(`import * as ${CONSTRUCTS} from 'constructs';`);
+
     // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
     this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}cfn-parse';`);
   }

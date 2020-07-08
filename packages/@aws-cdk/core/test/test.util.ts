@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { Test, testCase } from 'nodeunit';
-import { CfnResource, Construct, Stack } from '../lib';
+import { CfnResource, Stack } from '../lib';
 import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 export = testCase({

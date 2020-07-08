@@ -12,6 +12,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 // for files that are part of this package, we do import individual classes or functions
 import { exampleResourceArnComponents } from './private/example-resource-common';
 
@@ -347,7 +348,7 @@ export class ExampleResource extends ExampleResourceBase {
    * or fromExampleResourceAttributes
    * (the last one if you want the importing behavior to be more customizable).
    */
-  public static fromExampleResourceName(scope: core.Construct, id: string, exampleResourceName: string): IExampleResource {
+  public static fromExampleResourceName(scope: Construct, id: string, exampleResourceName: string): IExampleResource {
     // Imports are almost always implemented as a module-private
     // inline class in the method itself.
     // We extend ExampleResourceBase to reuse all of the logic inside it.
@@ -388,7 +389,7 @@ export class ExampleResource extends ExampleResourceBase {
    * If the props only have optional properties, like in our case,
    * make sure to add a default value of an empty object to the props argument.
    */
-  constructor(scope: core.Construct, id: string, props: ExampleResourceProps = {}) {
+  constructor(scope: Construct, id: string, props: ExampleResourceProps = {}) {
     // Call the constructor from Resource superclass,
     // which attaches this construct to the construct tree.
     super(scope, id, {

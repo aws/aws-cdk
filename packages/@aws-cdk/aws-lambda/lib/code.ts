@@ -1,6 +1,7 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export abstract class Code {
   /**
@@ -83,7 +84,7 @@ export abstract class Code {
    * @param scope The binding scope. Don't be smart about trying to down-cast or
    * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract bind(scope: cdk.Construct): CodeConfig;
+  public abstract bind(scope: Construct): CodeConfig;
 
   /**
    * Called after the CFN function resource has been created to allow the code
@@ -124,7 +125,7 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(_scope: cdk.Construct): CodeConfig {
+  public bind(_scope: Construct): CodeConfig {
     return {
       s3Location: {
         bucketName: this.bucketName,
@@ -153,7 +154,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: cdk.Construct): CodeConfig {
+  public bind(_scope: Construct): CodeConfig {
     return {
       inlineCode: this.code,
     };
@@ -174,7 +175,7 @@ export class AssetCode extends Code {
     super();
   }
 
-  public bind(scope: cdk.Construct): CodeConfig {
+  public bind(scope: Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
@@ -257,7 +258,7 @@ export class CfnParametersCode extends Code {
     this._objectKeyParam = props.objectKeyParam;
   }
 
-  public bind(scope: cdk.Construct): CodeConfig {
+  public bind(scope: Construct): CodeConfig {
     if (!this._bucketNameParam) {
       this._bucketNameParam = new cdk.CfnParameter(scope, 'LambdaSourceBucketNameParameter', {
         type: 'String',

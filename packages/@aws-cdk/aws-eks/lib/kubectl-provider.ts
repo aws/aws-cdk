@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, NestedStack } from '@aws-cdk/core';
+import { Duration, NestedStack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import { KubectlLayer } from './kubectl-layer';
 

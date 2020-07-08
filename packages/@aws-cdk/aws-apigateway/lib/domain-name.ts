@@ -1,5 +1,6 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';

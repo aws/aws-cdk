@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -20,7 +20,7 @@ export interface IEcsDeploymentConfig {
  *
  * Note: This class currently stands as namespaced container of the default configurations
  * until CloudFormation supports custom ECS Deployment Configs. Until then it is closed
- * (private constructor) and does not extend {@link cdk.Construct}
+ * (private constructor) and does not extend {@link Construct}
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
@@ -35,7 +35,7 @@ export class EcsDeploymentConfig {
    * @param ecsDeploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static fromEcsDeploymentConfigName(_scope: cdk.Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
+  public static fromEcsDeploymentConfigName(_scope: Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
     return deploymentConfig(ecsDeploymentConfigName);
   }
 

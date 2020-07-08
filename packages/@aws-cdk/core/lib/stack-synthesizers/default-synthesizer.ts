@@ -4,11 +4,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
