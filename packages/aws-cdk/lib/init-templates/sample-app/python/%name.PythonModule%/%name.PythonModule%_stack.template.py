@@ -6,6 +6,7 @@ from aws_cdk import (
     core
 )
 
+
 class %name.PascalCased%Stack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
