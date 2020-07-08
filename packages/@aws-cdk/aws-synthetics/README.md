@@ -33,11 +33,11 @@ You can create a canary to monitor this endpoint:
 const canary = new Canary(this, 'my_test', {
   canaryName: 'date-endpoint-canary',
   handler: 'index.handler',
-  code: Code.fromInline('add code here'),
+  code: Code.fromInline('// The code that hits your endpoint goes here'),
 });
 ```
 
-**CANARY UI SCREENSHOT**
+![UI Screenshot](images/ui-screenshot-1.png)
 
 Canaries can be used to monitor architecture at any level of complexity, from a simple endpoint in this example to a complete website. This level of complexity is determined by the script it runs, and you can customize it to fit your application's needs.
 
