@@ -1046,22 +1046,22 @@ nodeunitShim({
       'throws if locations is empty array'(test: Test) {
         test.throws(() => {
           GeoRestriction.whitelist();
-        }, 'Should provide at least 1 location');
+        }, /Should provide at least 1 location/);
 
         test.throws(() => {
           GeoRestriction.blacklist();
-        }, 'Should provide at least 1 location');
+        }, /Should provide at least 1 location/);
 
         test.done();
       },
       'throws if locations format is wrong'(test: Test) {
         test.throws(() => {
           GeoRestriction.whitelist('us');
-        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+        }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.throws(() => {
           GeoRestriction.blacklist('us');
-        }, 'Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code');
+        }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.done();
       },
@@ -1080,7 +1080,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       '3 = connectionAttempts'(test: Test) {
@@ -1093,7 +1093,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       'connectionTimeout = 1'(test: Test) {
@@ -1106,7 +1106,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+        }, /connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive)./);
         test.done();
       },
       '10 = connectionTimeout'(test: Test) {
@@ -1119,7 +1119,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+        }, /connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive)./);
         test.done();
       },
     },
@@ -1134,7 +1134,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       'connectionAttempts = -1'(test: Test) {
@@ -1147,7 +1147,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       'connectionAttempts < 1'(test: Test) {
@@ -1160,7 +1160,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       '3 < connectionAttempts'(test: Test) {
@@ -1173,7 +1173,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+        }, /connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
         test.done();
       },
       'connectionTimeout = 1.1'(test: Test) {
@@ -1186,20 +1186,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
-        test.done();
-      },
-      'connectionTimeout = -1'(test: Test) {
-        const stack = new cdk.Stack();
-        test.throws(() => {
-          new CloudFrontWebDistribution(stack, 'Distribution', {
-            originConfigs: [{
-              behaviors: [{ isDefaultBehavior: true }],
-              connectionTimeout: cdk.Duration.seconds(-1),
-              customOriginSource: { domainName: 'myorigin.com' },
-            }],
-          });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+        }, /connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
         test.done();
       },
       'connectionTimeout < 1'(test: Test) {
@@ -1212,7 +1199,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+        }, /connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
         test.done();
       },
       '10 < connectionTimeout'(test: Test) {
@@ -1225,7 +1212,7 @@ nodeunitShim({
               customOriginSource: { domainName: 'myorigin.com' },
             }],
           });
-        }, 'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+        }, /connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
         test.done();
       },
     },
