@@ -3,7 +3,7 @@ import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   CfnDistribution,
   CloudFrontWebDistribution,
@@ -17,7 +17,7 @@ import {
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
+nodeunitShim({
 
   'distribution with custom origin adds custom origin'(test: Test) {
     const stack = new cdk.Stack();
@@ -1053,4 +1053,4 @@ export = {
       },
     },
   },
-};
+});
