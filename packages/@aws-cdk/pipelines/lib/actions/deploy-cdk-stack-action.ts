@@ -356,5 +356,7 @@ export interface FromStackArtifactOptions {
 }
 
 function isStackArtifact(a: cxapi.CloudArtifact): a is cxapi.CloudFormationStackArtifact {
-  return a instanceof cxapi.CloudFormationStackArtifact;
+  // instanceof is too risky, and we're at a too late stage to properly fix.
+  // return a instanceof cxapi.CloudFormationStackArtifact;
+  return a.constructor.name === 'CloudFormationStackArtifact';
 }
