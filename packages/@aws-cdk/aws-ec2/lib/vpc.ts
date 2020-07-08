@@ -1837,10 +1837,10 @@ class CompositeDependable implements IDependable {
   constructor() {
     const self = this;
     Dependable.implement(this, {
-      get dependencies() {
+      get dependencyRoots() {
         const ret = new Array<IConstruct>();
         for (const dep of self.dependables) {
-          ret.push(...Dependable.of(dep).dependencies);
+          ret.push(...Dependable.of(dep).dependencyRoots);
         }
         return ret;
       },
