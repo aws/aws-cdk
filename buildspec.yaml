@@ -25,3 +25,9 @@ artifacts:
   files:
     - "**/*"
   base-directory: dist
+
+reports:
+  rainbows:
+    files:
+      - "**/junit.xml"
+    file-format: JunitXml
