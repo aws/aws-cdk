@@ -1,5 +1,6 @@
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IConstruct, Lazy } from '@aws-cdk/core';
+import { Construct, IConstruct, Lazy, Stack, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { IOrigin, Origin } from './origin';
 import { ViewerProtocolPolicy } from './web_distribution';
@@ -36,6 +37,13 @@ export interface DistributionProps {
    * The primary origin for the distribution.
    */
   readonly origin: IOrigin;
+
+  /**
+   * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
+   *
+   * @default the CloudFront wildcard certificate (*.cloudfront.net) will be used.
+   */
+  readonly certificate?: acm.ICertificate;
 }
 
 /**
@@ -85,7 +93,7 @@ export class Distribution extends Construct implements IDistribution {
    */
   public static forBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
     return new Distribution(scope, id, {
-      origin: Origin.fromBucket(bucket),
+      origin: Origin.fromBucket(scope, 'SingleOriginBucket', bucket),
     });
   }
 
@@ -96,21 +104,34 @@ export class Distribution extends Construct implements IDistribution {
    */
   public static forWebsiteBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
     return new Distribution(scope, id, {
-      origin: Origin.fromWebsiteBucket(bucket),
+      origin: Origin.fromWebsiteBucket(scope, 'SingleOriginWebsiteBucket', bucket),
     });
   }
+
+  public readonly domainName: string;
+  public readonly distributionId: string;
 
   /**
    * Default origin of the distribution.
    */
   public readonly origin: IOrigin;
-  public readonly domainName: string;
-  public readonly distributionId: string;
+  /**
+   * Certificate associated with the distribution, if any.
+   */
+  public readonly certificate?: acm.ICertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
 
+    if (props.certificate) {
+      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
+      if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
+        throw new Error('Distribution certificates must be in the us-east-1 region.');
+      }
+    }
+
     this.origin = props.origin;
+    this.certificate = props.certificate;
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
@@ -120,6 +141,7 @@ export class Distribution extends Construct implements IDistribution {
         viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
         targetOriginId: this.origin.id,
       },
+      viewerCertificate: this.renderViewerCertificate(),
     } });
 
     this.domainName = distribution.attrDomainName;
@@ -128,6 +150,10 @@ export class Distribution extends Construct implements IDistribution {
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     return [this.origin.renderOrigin()];
+  }
+
+  private renderViewerCertificate(): CfnDistribution.ViewerCertificateProperty | undefined {
+    return this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined;
   }
 
 }
