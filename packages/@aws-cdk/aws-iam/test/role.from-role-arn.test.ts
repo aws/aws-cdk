@@ -480,20 +480,45 @@ describe('IAM Role.fromRoleArn', () => {
   describe('imported with the ARN of a service role', () => {
     beforeEach(() => {
       roleStack = new Stack();
-      importedRole = Role.fromRoleArn(roleStack, 'Role',
-        `arn:aws:iam::${roleAccount}:role/service-role/codebuild-role`);
     });
 
-    it("correctly strips the 'service-role' prefix from the role name", () => {
-      new Policy(roleStack, 'Policy', {
-        statements: [somePolicyStatement()],
-        roles: [importedRole],
+    describe('without a service principal in the role name', () => {
+      beforeEach(() => {
+        importedRole = Role.fromRoleArn(roleStack, 'Role',
+          `arn:aws:iam::${roleAccount}:role/service-role/codebuild-role`);
       });
 
-      expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
-        'Roles': [
-          'codebuild-role',
-        ],
+      it("correctly strips the 'service-role' prefix from the role name", () => {
+        new Policy(roleStack, 'Policy', {
+          statements: [somePolicyStatement()],
+          roles: [importedRole],
+        });
+
+        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+          'Roles': [
+            'codebuild-role',
+          ],
+        });
+      });
+    });
+
+    describe('with a service principal in the role name', () => {
+      beforeEach(() => {
+        importedRole = Role.fromRoleArn(roleStack, 'Role',
+          `arn:aws:iam::${roleAccount}:role/aws-service-role/anyservice.amazonaws.com/codebuild-role`);
+      });
+
+      it("correctly strips both the 'aws-service-role' prefix and the service principal from the role name", () => {
+        new Policy(roleStack, 'Policy', {
+          statements: [somePolicyStatement()],
+          roles: [importedRole],
+        });
+
+        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+          'Roles': [
+            'codebuild-role',
+          ],
+        });
       });
     });
   });
