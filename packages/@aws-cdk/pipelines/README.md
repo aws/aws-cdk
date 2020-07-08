@@ -530,7 +530,7 @@ Here are some common errors you may encounter while using this library.
 
 ### Pipeline: Internal Failure
 
-If you see the following error:
+If you see the following error during deployment of your pipeline:
 
 ```
 CREATE_FAILED  | AWS::CodePipeline::Pipeline | Pipeline/Pipeline
@@ -542,7 +542,7 @@ right permissions to access the repository you're trying to access.
 
 ### Key: Policy contains a statement with one or more invalid principals
 
-If you see the following error:
+If you see the following error during deployment of your pipeline:
 
 ```
 CREATE_FAILED | AWS::KMS::Key | Pipeline/Pipeline/ArtifactsBucketEncryptionKey
@@ -552,6 +552,19 @@ Policy contains a statement with one or more invalid principals.
 One of the target (account, region) environments has not been bootstrapped
 with the new bootstrap stack. Check your target environments and make sure
 they are all bootstrapped.
+
+### <Stack> is in ROLLBACK_COMPLETE state and can not be updated.
+
+If  you see the following error during execution of your pipeline:
+
+```
+Stack ... is in ROLLBACK_COMPLETE state and can not be updated. (Service:
+AmazonCloudFormation; Status Code: 400; Error Code: ValidationError; Request
+ID: ...)
+```
+
+The stack failed its previous deployment, and is in a non-retryable state.
+Go into the CloudFormation console, delete the stack, and retry the deployment.
 
 ## Current Limitations
 
