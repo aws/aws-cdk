@@ -834,7 +834,7 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
       KeySchema: [
-        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'nope', KeyType: 'HASH' },
       ],
       BillingMode: 'PAY_PER_REQUEST',
       AttributeDefinitions: [
