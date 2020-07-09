@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
+import { canonicalizeTemplate } from '@aws-cdk/assert';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
@@ -20,7 +21,7 @@ async function main() {
 
     const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
-    const diff = diffTemplate(expected, actual);
+    const diff = diffTemplate(canonicalizeTemplate(expected), canonicalizeTemplate(actual));
 
     if (!diff.isEmpty) {
       failures.push(test.name);
