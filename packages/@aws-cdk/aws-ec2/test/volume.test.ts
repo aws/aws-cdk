@@ -739,7 +739,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantAttach-986A0A5E': '8240681c85c17071be6d87ec6e2930c7',
             },
           },
         }],
@@ -748,8 +748,8 @@ nodeunitShim({
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
-          Key: 'VolumeGrantAttach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantAttach-986A0A5E',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -757,8 +757,8 @@ nodeunitShim({
       Tags: [
         {},
         {
-          Key: 'VolumeGrantAttach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantAttach-986A0A5E',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -816,7 +816,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': '8240681c85c17071be6d87ec6e2930c7',
             },
           },
         }],
@@ -826,7 +826,7 @@ nodeunitShim({
       Tags: [
         {
           Key: 'VolumeGrantAttach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -835,7 +835,7 @@ nodeunitShim({
         {},
         {
           Key: 'VolumeGrantAttach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -1051,7 +1051,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-BD7A9717': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantDetach-986A0A5E': '8240681c85c17071be6d87ec6e2930c7',
             },
           },
         }],
@@ -1060,8 +1060,8 @@ nodeunitShim({
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
-          Key: 'VolumeGrantDetach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantDetach-986A0A5E',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -1069,8 +1069,8 @@ nodeunitShim({
       Tags: [
         {},
         {
-          Key: 'VolumeGrantDetach-BD7A9717',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Key: 'VolumeGrantDetach-986A0A5E',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -1128,7 +1128,7 @@ nodeunitShim({
           ],
           Condition: {
             'ForAnyValue:StringEquals': {
-              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+              'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': '8240681c85c17071be6d87ec6e2930c7',
             },
           },
         }],
@@ -1138,7 +1138,7 @@ nodeunitShim({
       Tags: [
         {
           Key: 'VolumeGrantDetach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
@@ -1147,7 +1147,7 @@ nodeunitShim({
         {},
         {
           Key: 'VolumeGrantDetach-TestSuffix',
-          Value: 'd9a17c1c9e8ef6866e4dbeef41c741b2',
+          Value: '8240681c85c17071be6d87ec6e2930c7',
         },
       ],
     }, ResourcePart.Properties));
