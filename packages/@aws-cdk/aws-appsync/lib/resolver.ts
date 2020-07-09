@@ -1,8 +1,8 @@
 import { Construct, IResolvable } from '@aws-cdk/core';
 import { CfnResolver } from './appsync.generated';
-import { BaseDataSource } from './dataSource';
+import { BaseDataSource } from './data-source';
 import { GraphQLApi } from './graphqlapi';
-import { MappingTemplate } from './mappingTemplate';
+import { MappingTemplate } from './mapping-template';
 /**
  * Basic properties for an AppSync resolver
  */
