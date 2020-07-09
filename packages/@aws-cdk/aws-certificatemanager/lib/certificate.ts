@@ -1,6 +1,6 @@
 import * as route53 from '@aws-cdk/aws-route53';
 import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
-import { CfnCertificate  } from './certificatemanager.generated';
+import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
 /**
@@ -101,17 +101,28 @@ export class CertificateValidation {
   /**
    * Validate the certifcate with DNS
    *
-   * IMPORTANT: If neither `hostedZone` nor `hostedZones` is specified, DNS records
-   * must be added manually and the stack will not complete creating until the
-   * records are added.
+   * IMPORTANT: If `hostedZone` is not specified, DNS records must be added
+   * manually and the stack will not complete creating until the records are
+   * added.
    *
-   * @param hostedZone the default hosted zone to use for all domains in the certificate
-   * @param hostedZones a map of hosted zones to use for domains in the certificate
+   * @param hostedZone the hosted zone where DNS records must be created
    */
-  public static fromDns(hostedZone?: route53.IHostedZone, hostedZones?: { [domainName: string]: route53.IHostedZone }) {
+  public static fromDns(hostedZone?: route53.IHostedZone) {
     return new CertificateValidation({
       method: ValidationMethod.DNS,
       hostedZone,
+    });
+  }
+
+  /**
+   * Validate the certifcate with DNS
+   *
+   * @param hostedZones a map of hosted zones where DNS records must be created
+   * for the domains in the certificate
+   */
+  public static fromDnsMultiZone(hostedZones: { [domainName: string]: route53.IHostedZone }) {
+    return new CertificateValidation({
+      method: ValidationMethod.DNS,
       hostedZones,
     });
   }
@@ -183,10 +194,8 @@ export class Certificate extends Resource implements ICertificate {
     } else { // Deprecated props
       if (props.validationMethod === ValidationMethod.DNS) {
         validation = CertificateValidation.fromDns();
-      } else if (props.validationDomains) {
-        validation = CertificateValidation.fromEmail(props.validationDomains);
       } else {
-        validation = CertificateValidation.fromEmail();
+        validation = CertificateValidation.fromEmail(props.validationDomains);
       }
     }
 

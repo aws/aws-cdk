@@ -154,7 +154,35 @@ export = {
     test.done();
   },
 
-  'CertificateValidation.fromDns with hosted zones'(test: Test) {
+  'CertificateValidation.fromDns with hosted zone'(test: Test) {
+    const stack = new Stack();
+
+    const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
+      zoneName: 'example.com',
+    });
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      validation: CertificateValidation.fromDns(exampleCom),
+    });
+
+    expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'test.example.com',
+          HostedZoneId: {
+            Ref: 'ExampleCom20E1324B',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    }));
+
+    test.done();
+  },
+
+  'CertificateValidation.fromDnsMultiZone'(test: Test) {
     const stack = new Stack();
 
     const exampleCom = new route53.HostedZone(stack, 'ExampleCom', {
@@ -168,7 +196,9 @@ export = {
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
       subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
-      validation: CertificateValidation.fromDns(exampleCom, {
+      validation: CertificateValidation.fromDnsMultiZone({
+        'test.example.com': exampleCom,
+        'cool.example.com': exampleCom,
         'test.example.net': exampleNet,
       }),
     });

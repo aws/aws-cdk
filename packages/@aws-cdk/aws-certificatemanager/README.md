@@ -20,9 +20,9 @@ After requesting a certificate, you will need to prove that you own the
 domain in question before the certificate will be granted. The CloudFormation
 deployment will wait until this verification process has been completed.
 
-Because of this wait time, it's better to provision your certificates
-either in a separate stack from your main service, or provision them
-manually and import them into your CDK application.
+Because of this wait time, when using manual validation methods, it's better
+to provision your certificates either in a separate stack from your main
+service, or provision them manually and import them into your CDK application.
 
 ### Email validation
 
@@ -58,7 +58,7 @@ new Certificate(this, 'Certificate', {
 See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
 in the AWS Certificate Manager User Guide.
 
-When working with multiple domains, you can specify a default validation hosted zone:
+When working with multiple domains, use the `CertificateValidation.fromDnsMultiZone()`:
 
 [multiple domains DNS validation](test/example.dns.lit.ts)
 
