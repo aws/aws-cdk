@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnResource, Duration, Fn, Lazy } from '@aws-cdk/core';
+import { CfnResource, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -311,9 +311,9 @@ export class Function extends FunctionBase {
     // hash of the function itself, so a new version resource is created when
     // the function configuration changes.
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId: string = Stack.of(this).resolve(cfn.logicalId);
 
-    cfn.overrideLogicalId(Lazy.stringValue({ produce: ctx => {
-      const originalLogicalId: string = ctx.resolve(cfn.logicalId);
+    cfn.overrideLogicalId(Lazy.stringValue({ produce: _ => {
       const hash = calculateFunctionHash(this);
       const logicalId = trimFromStart(originalLogicalId, 255 - 32);
       return `${logicalId}${hash}`;

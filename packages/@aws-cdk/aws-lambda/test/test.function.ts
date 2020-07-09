@@ -1,4 +1,4 @@
-import { expect, haveOutput } from '@aws-cdk/assert';
+import { SynthUtils } from '@aws-cdk/assert';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -215,18 +215,13 @@ export = testCase({
       });
 
       // THEN
-      expect(stack1).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b',
-        },
-      }));
-      expect(stack2).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6',
-        },
-      }));
+      const template1 = SynthUtils.synthesize(stack1).template;
+      const template2 = SynthUtils.synthesize(stack2).template;
+
+      // these functions are different in their configuration but the original
+      // logical ID of the version would be the same unless the logical ID
+      // includes the hash of function's configuration.
+      test.notDeepEqual(template1.Outputs.CurrentVersionArn.Value, template2.Outputs.CurrentVersionArn.Value);
       test.done();
     },
   },
