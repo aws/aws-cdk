@@ -1,10 +1,10 @@
-const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');
+const baseConfig = require('cdk-build-tools/config/jest.config');
 module.exports = {
   ...baseConfig,
   coverageThreshold: {
     global: {
       branches: 75,
-      statements: 80,      
+      statements: 80,
     }
   }
 };
