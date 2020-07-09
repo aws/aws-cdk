@@ -4,6 +4,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
+const CDK_OUTDIR = 'cdk-integ.out';
+
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 
 export class IntegrationTests {
@@ -104,7 +106,7 @@ export class IntegrationTest {
           CDK_CONTEXT_JSON: JSON.stringify(context),
           CDK_DEFAULT_ACCOUNT: '12345678',
           CDK_DEFAULT_REGION: 'test-region',
-          CDK_OUTDIR: 'cdk.out',
+          CDK_OUTDIR,
           CDK_CLI_ASM_VERSION: '5.0.0',
         },
       });
@@ -113,12 +115,12 @@ export class IntegrationTest {
       // adding dependencies on the libraries that model it.
       //
       // FIXME: Refactor later if it doesn't introduce dependency cycles
-      const cloudManifest = await fs.readJSON(path.resolve(this.directory, 'cdk.out', 'manifest.json'));
+      const cloudManifest = await fs.readJSON(path.resolve(this.directory, CDK_OUTDIR, 'manifest.json'));
       const stacks: Record<string, any> = {};
       for (const [artifactId, artifact] of Object.entries(cloudManifest.artifacts ?? {}) as Array<[string, any]>) {
         if (artifact.type !== 'aws:cloudformation:stack') { continue; }
 
-        const template = await fs.readJSON(path.resolve(this.directory, 'cdk.out', artifact.properties.templateFile));
+        const template = await fs.readJSON(path.resolve(this.directory, CDK_OUTDIR, artifact.properties.templateFile));
         stacks[artifactId] = template;
       }
 
@@ -175,6 +177,8 @@ export class IntegrationTest {
       '--no-asset-metadata',
       // save a copy step by not staging assets
       '--no-staging',
+      // Different output directory
+      '-o', CDK_OUTDIR,
     ];
 
     try {
@@ -239,7 +243,7 @@ export class IntegrationTest {
       fs.unlinkSync(this.cdkContextPath);
     }
 
-    const cdkOutPath = path.join(this.directory, 'cdk.out');
+    const cdkOutPath = path.join(this.directory, CDK_OUTDIR);
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
     }
