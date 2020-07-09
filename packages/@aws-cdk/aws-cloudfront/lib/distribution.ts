@@ -1,17 +1,14 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IConstruct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { IOrigin, Origin } from './origin';
 import { ViewerProtocolPolicy } from './web_distribution';
 
 /**
  * Interface for CloudFront distributions
- *
- * Note: IDistribution should extend IResource, not IConstruct, but this breaks backwards compatibility
- * with the CloudFrontWebDistribution.
  */
-export interface IDistribution extends IConstruct {
+export interface IDistribution extends IResource {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -68,13 +65,13 @@ export interface DistributionAttributes {
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
-export class Distribution extends Construct implements IDistribution {
+export class Distribution extends Resource implements IDistribution {
 
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
   public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IDistribution {
-    return new class extends Construct implements IDistribution {
+    return new class extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionId: string;
 

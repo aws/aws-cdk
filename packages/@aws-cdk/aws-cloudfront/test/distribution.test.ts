@@ -53,4 +53,20 @@ describe('certificates', () => {
     }).toThrow(/Distribution certificates must be in the us-east-1 region/);
   });
 
+  test('adding a certificate renders the correct ViewerCertificate property', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    new Distribution(stack, 'Dist', {
+      origin: Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket')),
+      certificate,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        },
+      },
+    });
+  });
 });
