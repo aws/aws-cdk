@@ -18,9 +18,6 @@ phases:
     commands:
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
-  post_build:
-    commands:
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
 artifacts:
   files:
     - "**/*"
