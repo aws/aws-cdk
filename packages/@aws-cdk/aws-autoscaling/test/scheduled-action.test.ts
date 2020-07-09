@@ -2,10 +2,10 @@ import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit';
 import * as autoscaling from '../lib';
 
-export = {
+nodeunitShim({
   'can schedule an action'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -106,7 +106,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function makeAutoScalingGroup(scope: Construct) {
   const vpc = new ec2.Vpc(scope, 'VPC');

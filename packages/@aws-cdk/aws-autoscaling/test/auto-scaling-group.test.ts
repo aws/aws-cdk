@@ -5,12 +5,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
+nodeunitShim({
   'default fleet'(test: Test) {
     const stack = getTestStack();
     const vpc = mockVpc(stack);
@@ -696,7 +696,7 @@ export = {
     });
 
     // THEN
-    test.same(asg.role, importedRole);
+    test.equal(asg.role, importedRole);
     expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
       'Roles': ['HelloDude'],
     }));
@@ -1106,7 +1106,7 @@ export = {
           topic,
         }],
       });
-    }, 'Can not set notificationsTopic and notifications, notificationsTopic is deprected use notifications instead');
+    }, 'Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead');
     test.done();
   },
 
@@ -1227,7 +1227,7 @@ export = {
     test.deepEqual(Object.values(autoscaling.ScalingEvent).length - 1, autoscaling.ScalingEvents.ALL._types.length);
     test.done();
   },
-};
+});
 
 function mockVpc(stack: cdk.Stack) {
   return ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
@@ -1238,6 +1238,25 @@ function mockVpc(stack: cdk.Stack) {
     isolatedSubnetIds: [],
   });
 }
+
+test('Can set autoScalingGroupName', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    machineImage: new ec2.AmazonLinuxImage(),
+    vpc,
+    autoScalingGroupName: 'MyAsg',
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup',  {
+    AutoScalingGroupName: 'MyAsg',
+  }));
+});
 
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');

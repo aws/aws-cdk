@@ -4,10 +4,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit';
 import * as autoscaling from '../lib';
 
-export = {
+nodeunitShim({
   'target tracking policies': {
     'cpu utilization'(test: Test) {
       // GIVEN
@@ -222,7 +222,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
