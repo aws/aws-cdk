@@ -92,8 +92,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "nyc": {
     "statements": 75
   },
