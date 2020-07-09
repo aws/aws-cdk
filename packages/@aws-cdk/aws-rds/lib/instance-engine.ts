@@ -116,7 +116,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
 /**
  * Properties for MySQL instance engines.
- * Used in {@link DatabaseInstanceEngine.mySql}.
+ * Used in {@link DatabaseInstanceEngine.mysql}.
  */
 export interface MySqlInstanceEngineProps extends InstanceEngineProps {
 }
@@ -139,16 +139,16 @@ class MySqlInstanceEngine extends InstanceEngineBase {
 
 /**
  * Properties for PostgreSQL instance engines.
- * Used in {@link DatabaseInstanceEngine.postgreSql}.
+ * Used in {@link DatabaseInstanceEngine.postgres}.
  */
-export interface PostgreSqlInstanceEngineProps extends InstanceEngineProps {
+export interface PostgresInstanceEngineProps extends InstanceEngineProps {
 }
 
 /**
  * The instance engine for PostgreSQL.
  */
-class PostgreSqlInstanceEngine extends InstanceEngineBase {
-  constructor(props: PostgreSqlInstanceEngineProps = {}) {
+class PostgresInstanceEngine extends InstanceEngineBase {
+  constructor(props: PostgresInstanceEngineProps = {}) {
     super({
       engineType: 'postgres',
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
@@ -391,7 +391,7 @@ export class DatabaseInstanceEngine {
 
   public static readonly ORACLE_SE: IInstanceEngine = new OracleSeInstanceEngine();
 
-  public static readonly POSTGRES: IInstanceEngine = new PostgreSqlInstanceEngine();
+  public static readonly POSTGRES: IInstanceEngine = new PostgresInstanceEngine();
 
   public static readonly SQL_SERVER_EE: IInstanceEngine = new SqlServerEeInstanceEngine();
 
@@ -407,13 +407,13 @@ export class DatabaseInstanceEngine {
   }
 
   /** Creates a new MySQL instance engine. */
-  public static mySql(props: MySqlInstanceEngineProps): IInstanceEngine {
+  public static mysql(props: MySqlInstanceEngineProps): IInstanceEngine {
     return new MySqlInstanceEngine(props);
   }
 
   /** Creates a new PostgreSQL instance engine. */
-  public static postgreSql(props: PostgreSqlInstanceEngineProps): IInstanceEngine {
-    return new PostgreSqlInstanceEngine(props);
+  public static postgres(props: PostgresInstanceEngineProps): IInstanceEngine {
+    return new PostgresInstanceEngine(props);
   }
 
   /** Creates a new Oracle Standard Edition instance engine. */

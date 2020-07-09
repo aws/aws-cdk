@@ -226,13 +226,13 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
 
 /**
  * Creation properties of the Aurora MySQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraMySql}.
+ * Used in {@link DatabaseClusterEngine.auroraMysql}.
  */
-export interface AuroraMySqlClusterEngineProps extends ClusterEngineProps {
+export interface AuroraMysqlClusterEngineProps extends ClusterEngineProps {
 }
 
-class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
-  constructor(props: AuroraMySqlClusterEngineProps = {}) {
+class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
+  constructor(props: AuroraMysqlClusterEngineProps = {}) {
     super({
       engineType: 'aurora-mysql',
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
@@ -252,13 +252,13 @@ class AuroraMySqlClusterEngine extends MySqlClusterEngineBase {
 
 /**
  * Creation properties of the Aurora PostgreSQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraPostgreSql}.
+ * Used in {@link DatabaseClusterEngine.auroraPostgres}.
  */
-export interface AuroraPostgreSqlClusterEngineProps extends ClusterEngineProps {
+export interface AuroraPostgresClusterEngineProps extends ClusterEngineProps {
 }
 
-class AuroraPostgreSqlClusterEngine extends ClusterEngineBase {
-  constructor(props: AuroraPostgreSqlClusterEngineProps = {}) {
+class AuroraPostgresClusterEngine extends ClusterEngineBase {
+  constructor(props: AuroraPostgresClusterEngineProps = {}) {
     super({
       engineType: 'aurora-postgresql',
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
@@ -286,9 +286,9 @@ class AuroraPostgreSqlClusterEngine extends ClusterEngineBase {
 export class DatabaseClusterEngine {
   public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
 
-  public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMySqlClusterEngine();
+  public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMysqlClusterEngine();
 
-  public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgreSqlClusterEngine();
+  public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
 
   /** Creates a new plain Aurora database cluster engine. */
   public static aurora(props: AuroraClusterEngineProps): IClusterEngine {
@@ -296,12 +296,12 @@ export class DatabaseClusterEngine {
   }
 
   /** Creates a new Aurora MySQL database cluster engine. */
-  public static auroraMySql(props: AuroraMySqlClusterEngineProps): IClusterEngine {
-    return new AuroraMySqlClusterEngine(props);
+  public static auroraMysql(props: AuroraMysqlClusterEngineProps): IClusterEngine {
+    return new AuroraMysqlClusterEngine(props);
   }
 
   /** Creates a new Aurora PostgreSQL database cluster engine. */
-  public static auroraPostgreSql(props: AuroraPostgreSqlClusterEngineProps): IClusterEngine {
-    return new AuroraPostgreSqlClusterEngine(props);
+  public static auroraPostgres(props: AuroraPostgresClusterEngineProps): IClusterEngine {
+    return new AuroraPostgresClusterEngine(props);
   }
 }
