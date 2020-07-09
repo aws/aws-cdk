@@ -137,7 +137,7 @@ will be passed as the state's output.
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
 const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-  result: { hello: 'world' },
+  result: stepfunctions.Result.fromObject({ hello: 'world' }),
   resultPath: '$.subObject',
 });
 

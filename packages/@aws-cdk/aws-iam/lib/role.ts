@@ -177,10 +177,9 @@ export class Role extends Resource implements IRole {
     const parsedArn = scopeStack.parseArn(roleArn);
     const resourceName = parsedArn.resourceName!;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
-    // we want to support these as well, so strip out the 'service-role/' prefix if we see it
-    const roleName = resourceName.startsWith('service-role/')
-      ? resourceName.slice('service-role/'.length)
-      : resourceName;
+    // or 'arn:aws:iam::<account>:role/service-role/servicename.amazonaws.com/service-role/<roleName>'
+    // we want to support these as well, so we just use the element after the last slash as role name
+    const roleName = resourceName.split('/').pop()!;
 
     class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
