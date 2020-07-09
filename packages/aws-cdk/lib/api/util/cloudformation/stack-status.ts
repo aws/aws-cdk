@@ -25,7 +25,7 @@ export class StackStatus {
     return this.name.endsWith('FAILED');
   }
 
-  get isStable(): boolean {
+  get isInProgress(): boolean {
     return !this.name.endsWith('_IN_PROGRESS');
   }
 
