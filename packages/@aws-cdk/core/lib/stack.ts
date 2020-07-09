@@ -317,7 +317,7 @@ export class Stack extends Construct implements ITaggable {
     // For unit test scope and id are optional for stacks, but we still want an App
     // as the parent because apps implement much of the synthesis logic.
     scope = scope ?? new App();
-    id = id ?? 'stack';
+    id = id ?? 'Stack'; // this will also be the default stack name
 
     super(scope, id);
 
@@ -938,7 +938,7 @@ export class Stack extends Construct implements ITaggable {
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
     if (ids.length === 1 && !ids[0]) {
-      ids[0] = 'Stack';
+      throw new Error('unexpected: stack id must always be defined (it will be "Stack" by default)');
     }
 
     return makeStackName(ids);
