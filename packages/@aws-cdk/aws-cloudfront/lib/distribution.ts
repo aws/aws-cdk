@@ -1,9 +1,9 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { CacheBehavior } from './behavior';
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
-import { ViewerProtocolPolicy } from './web_distribution';
 
 /**
  * Interface for CloudFront distributions
@@ -117,6 +117,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public readonly certificate?: acm.ICertificate;
 
+  private defaultBehavior?: CacheBehavior;
+  private readonly behaviors: CacheBehavior[] = [];
+
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
 
@@ -135,24 +138,48 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-      defaultCacheBehavior: {
-        forwardedValues: { queryString: false },
-        viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-        targetOriginId: this.origin.id,
-      },
-      viewerCertificate: this.renderViewerCertificate(),
+      defaultCacheBehavior: Lazy.anyValue({ produce: () => this.renderDefaultBehavior() }),
+      cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
+      viewerCertificate: this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined,
     } });
 
     this.domainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
   }
 
+  /**
+   * Internal API used by `Origin` to keep an inventory of behaviors associated with
+   * this distribution, for the sake of ordering behaviors.
+   *
+   * @internal
+   */
+  public _attachBehavior(behavior: CacheBehavior) {
+    if (behavior.pathPattern === '*') {
+      if (this.defaultBehavior) {
+        throw new Error('Distributions may only have one Behavior with the default path pattern (*)');
+      }
+      this.defaultBehavior = behavior;
+    } else {
+      this.behaviors.push(behavior);
+    }
+  }
+
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     return [this.origin._renderOrigin()];
   }
 
-  private renderViewerCertificate(): CfnDistribution.ViewerCertificateProperty | undefined {
-    return this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined;
+  private renderDefaultBehavior(): CfnDistribution.DefaultCacheBehaviorProperty | undefined {
+    if (!this.defaultBehavior) {
+      this.defaultBehavior = new CacheBehavior({
+        origin: this.origin,
+        pathPattern: '*',
+      });
+    }
+    return this.defaultBehavior._renderBehavior();
+  }
+
+  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
+    return this.behaviors.length === 0 ? undefined : this.behaviors.map(b => b._renderBehavior());
   }
 
 }

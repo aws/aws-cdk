@@ -1,3 +1,4 @@
+export * from './behavior';
 export * from './distribution';
 export * from './web_distribution';
 export * from './origin';

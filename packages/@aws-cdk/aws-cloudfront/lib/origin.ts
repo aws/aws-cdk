@@ -1,5 +1,6 @@
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
+import { CacheBehavior, CacheBehaviorOptions, CacheBehaviorProps } from './behavior';
 import { CfnDistribution } from './cloudfront.generated';
 import { Distribution } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
@@ -45,12 +46,16 @@ export abstract class Origin extends Construct {
    *
    * @param bucket the bucket to act as an origin.
    */
-  public static fromBucket(scope: Construct, id: string, bucket: IBucket): Origin {
-    return new S3Origin(scope, id, {
+  public static fromBucket(scope: Construct, id: string, bucket: IBucket, behaviorProps?: CacheBehaviorProps): Origin {
+    const origin = new S3Origin(scope, id, {
       domainName: bucket.bucketRegionalDomainName,
       id,
       bucket,
     });
+    if (behaviorProps) {
+      origin.addBehavior(behaviorProps.pathPattern, behaviorProps);
+    }
+    return origin;
   }
 
   /**
@@ -58,12 +63,16 @@ export abstract class Origin extends Construct {
    *
    * @param bucket the bucket to act as an origin.
    */
-  public static fromWebsiteBucket(scope: Construct, id: string, bucket: IBucket): Origin {
-    return new HttpOrigin(scope, id, {
+  public static fromWebsiteBucket(scope: Construct, id: string, bucket: IBucket, behaviorProps?: CacheBehaviorProps): Origin {
+    const origin = new HttpOrigin(scope, id, {
       domainName: bucket.bucketWebsiteDomainName,
       id,
       protocolPolicy: OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
     });
+    if (behaviorProps) {
+      origin.addBehavior(behaviorProps.pathPattern, behaviorProps);
+    }
+    return origin;
   }
 
   /**
@@ -79,11 +88,27 @@ export abstract class Origin extends Construct {
    */
   public readonly id: string;
 
+  private readonly _behaviors: CacheBehavior[] = [];
+
   constructor(scope: Construct, id: string, props: OriginProps) {
     super(scope, id);
     this.distribution = props.distribution;
     this.domainName = props.domainName;
     this.id = props.id || id;
+  }
+
+  /**
+   * Creates a new Behavior from the given pathPattern and options, and associates it with this origin.
+   *
+   * @param pathPattern the pattern that specifies which requests to apply the behavior to; may be '*' if this is the default behavior.
+   * @param options the behavior options
+   */
+  public addBehavior(pathPattern: string, options: CacheBehaviorOptions): CacheBehavior {
+    return new CacheBehavior({
+      origin: this,
+      pathPattern,
+      ...options,
+    });
   }
 
   /**
@@ -115,6 +140,21 @@ export abstract class Origin extends Construct {
    */
   public _attachDistribution(distribution: Distribution) {
     this.distribution = distribution;
+    // Register all existing behaviors with the distribution. New behaviors will be attached as they are created.
+    this._behaviors.forEach(b => distribution._attachBehavior(b));
+  }
+
+  /**
+   * Internal API used by `Behavior` to keep an inventory of behaviors associated with
+   * this origin, for the sake of ordering behaviors based on creation order.
+   *
+   * @internal
+   */
+  public _attachBehavior(behavior: CacheBehavior) {
+    this._behaviors.push(behavior);
+    if (this.distribution) {
+      this.distribution._attachBehavior(behavior);
+    }
   }
 
   // Overridden by sub-classes to provide S3 origin config.
