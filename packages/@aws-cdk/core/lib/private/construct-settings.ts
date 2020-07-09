@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, ConstructScopeSettings } from "constructs";
+import { Construct, ConstructScopeSettings } from 'constructs';
 
 /**
  * Configures the construct scope to use legacy values for error/warning/info metadata keys
