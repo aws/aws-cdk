@@ -391,7 +391,7 @@ export = {
           ],
           Version: '2012-10-17',
         },
-        Description: 'Created by Table/Bucket',
+        Description: 'Created by Stack/Table/Bucket',
       }));
 
       expect(stack).to(haveResource('AWS::S3::Bucket', {

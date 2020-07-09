@@ -14,7 +14,7 @@ describe('Activity', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::StepFunctions::Activity', {
-      Name: 'stackActivityD885F0FA',
+      Name: 'StackActivityAACA61A2',
     });
   });
 
