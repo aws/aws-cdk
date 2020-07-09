@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as iam from '@aws-cdk/aws-iam';
 import { App, BundlingDockerImage, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
