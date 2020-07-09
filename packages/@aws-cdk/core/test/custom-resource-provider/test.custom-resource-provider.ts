@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Test } from 'nodeunit';
-import { CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack, AssetStaging } from '../../lib';
+import { AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
