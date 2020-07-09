@@ -116,7 +116,7 @@ export class CertificateValidation {
 
   /**
    * Validate the certifcate with automatically created DNS records in multiple
-   * AWS Route 53 hosted zones.
+   * Amazon Route 53 hosted zones.
    *
    * @param hostedZones a map of hosted zones where DNS records must be created
    * for the domains in the certificate
