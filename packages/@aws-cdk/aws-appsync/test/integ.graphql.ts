@@ -71,7 +71,17 @@ const orderTable = new Table(stack, 'OrderTable', {
   },
   removalPolicy: RemovalPolicy.DESTROY,
 });
-const paymentTable =  Table.fromTableName(stack, 'PaymentTable', 'PaymentTable');
+
+new Table(stack, 'PaymentTable', {
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
 
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
@@ -159,7 +169,7 @@ paymentDS.createResolver({
 paymentDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'savePayment',
-  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('payment')),
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('payment')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
