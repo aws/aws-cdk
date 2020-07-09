@@ -6,6 +6,8 @@ import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
 
+const IGNORE_ASSETS_PRAGMA = 'pragma:ignore-assets';
+
 async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
   const failures: string[] = [];
@@ -17,11 +19,15 @@ async function main() {
       throw new Error(`No such file: ${test.expectedFileName}. Run 'npm run integ'.`);
     }
 
-    const expected = await test.readExpected();
+    let expected = await test.readExpected();
+    let actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
-    const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
+    if ((await test.pragmas()).includes(IGNORE_ASSETS_PRAGMA)) {
+      expected = canonicalizeTemplate(expected);
+      actual = canonicalizeTemplate(actual);
+    }
 
-    const diff = diffTemplate(canonicalizeTemplate(expected), canonicalizeTemplate(actual));
+    const diff = diffTemplate(expected, actual);
 
     if (!diff.isEmpty) {
       failures.push(test.name);
