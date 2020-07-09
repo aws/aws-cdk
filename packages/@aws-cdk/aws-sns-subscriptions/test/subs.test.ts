@@ -284,7 +284,7 @@ test('queue subscription', () => {
           ],
         },
       },
-      'MyQueueMyTopic9B00631B': {
+      'MyQueueStackMyTopic9EF397EEFDFDC132': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'sqs',
@@ -361,7 +361,7 @@ test('queue subscription with user provided dlq', () => {
           ],
         },
       },
-      'MyQueueMyTopic9B00631B': {
+      'MyQueueStackMyTopic9EF397EEFDFDC132': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'sqs',
@@ -518,7 +518,7 @@ test('lambda subscription', () => {
           'MyFuncServiceRole54065130',
         ],
       },
-      'MyFuncAllowInvokeMyTopicDD0A15B8': {
+      'MyFuncAllowInvokeStackMyTopic9EF397EEFE1A035D': {
         'Type': 'AWS::Lambda::Permission',
         'Properties': {
           'Action': 'lambda:InvokeFunction',
@@ -781,7 +781,7 @@ test('multiple subscriptions', () => {
           ],
         },
       },
-      'MyQueueMyTopic9B00631B': {
+      'MyQueueStackMyTopic9EF397EEFDFDC132': {
         'Type': 'AWS::SNS::Subscription',
         'Properties': {
           'Protocol': 'sqs',
@@ -846,7 +846,7 @@ test('multiple subscriptions', () => {
           'MyFuncServiceRole54065130',
         ],
       },
-      'MyFuncAllowInvokeMyTopicDD0A15B8': {
+      'MyFuncAllowInvokeStackMyTopic9EF397EEFE1A035D': {
         'Type': 'AWS::Lambda::Permission',
         'Properties': {
           'Action': 'lambda:InvokeFunction',
@@ -887,7 +887,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
-    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope MyQueue/);
+    .toThrowError(/A subscription with id \"StackMyTopic9EF397EE\" already exists under the scope Stack\/MyQueue/);
 });
 
 test('with filter policy', () => {

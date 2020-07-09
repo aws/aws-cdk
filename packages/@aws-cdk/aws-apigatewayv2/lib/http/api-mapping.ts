@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
 import { IApiMapping, IDomainName } from '../common';
 import { IHttpApi } from '../http/api';

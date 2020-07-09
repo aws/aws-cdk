@@ -1,4 +1,5 @@
 // import { SynthUtils } from '@aws-cdk/assert';
+import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -84,12 +85,11 @@ test('permissions are added as a dependency to the notifications resource when u
 
   const lambdaDestination = new s3n.LambdaDestination(fn);
 
-  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination, { prefix: 'v1/'});
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination, { prefix: 'v1/' });
 
-  const notifications = stack.node.findAll().filter(c => c.node.id === 'Notifications')[0];
-  const dependencies = notifications!.node.dependencies;
-
-  expect(dependencies[0].node.id).toEqual('AllowBucketNotificationsFromMyBucket');
+  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+    DependsOn: [ 'SingletonLambdauuidAllowBucketNotificationsFromStackMyBucketE0D5A788C8D3DB22' ],
+  }, ResourcePart.CompleteDefinition);
 });
 
 test('add multiple event notifications using a singleton function', () => {

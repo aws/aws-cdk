@@ -886,7 +886,7 @@ export = {
         },
       },
       Outputs: {
-        nestedresourceinnested59B1F01CConsumedAttribute: {
+        StacknestedresourceinnestedE8C78B2EConsumedAttribute: {
           Value: {
             'Fn::GetAtt': [
               'resourceinnested',
