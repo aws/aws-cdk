@@ -131,7 +131,7 @@ export = {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      'asset.dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -212,7 +212,7 @@ export = {
     });
 
     // THEN
-    app.synth();
+    const assembly = app.synth();
 
     // We're testing that docker was run twice - once for each set of bundler options
     // operating on the same source asset.
@@ -224,10 +224,15 @@ export = {
 
     // asset is bundled in a directory inside .cdk.staging
     test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-    // 'Asset'
-    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7'))));
-    // 'AssetWithDifferentBundlingOptions'
-    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-a33245f0209379d58d125d89906c2b47d38382ae745375f25697760a8c475c6b'))));
+
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.a33245f0209379d58d125d89906c2b47d38382ae745375f25697760a8c475c6b', // 'Asset'
+      'asset.dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7', // 'AssetWithDifferentBundlingOptions'
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
 
     test.done();
   },

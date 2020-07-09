@@ -96,11 +96,11 @@ export class AssetStaging extends Construct {
       // Determine the source hash in advance of bundling if the asset hash type
       // is source so that the bundler can opt to re-use its bundle dir.
       const sourceHash = hashType === AssetHashType.SOURCE
-        ? this.calculateHash(hashType, props.assetHash)
+        ? this.calculateHash(hashType, props.assetHash, props.bundling)
         : undefined;
 
       this.bundleDir = this.bundle(props.bundling, sourceHash);
-      this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash);
+      this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
     } else {
       this.assetHash = this.calculateHash(hashType, props.assetHash);
     }
@@ -161,11 +161,8 @@ export class AssetStaging extends Construct {
 
     let bundleDir: string;
     if (sourceHash) {
-      // Calculate a hash that considers the source hash as well as the bundling options.
-      const bundleHash = this.calculateBundleHash(options, sourceHash);
-
       // When an asset hash is known in advance of bundling, bundling is done into a dedicated staging directory.
-      bundleDir = path.resolve(path.join(stagingTmp, 'asset-bundle-hash-' + bundleHash));
+      bundleDir = path.resolve(path.join(stagingTmp, 'asset-bundle-hash-' + sourceHash));
 
       if (fs.existsSync(bundleDir)) {
         // Pre-existing bundle directory. The bundle has already been generated once before, so lets provide it
@@ -255,24 +252,18 @@ export class AssetStaging extends Construct {
     }
   }
 
-  /**
-   * Calculates a hash for bundle directories which combines the bundler options
-   * and source hash.
-   *
-   * @param options Bundling options considered for hashing purposes
-   * @param sourceHash The source asset hash
-   */
-  private calculateBundleHash(options: BundlingOptions, sourceHash: string) {
-    return crypto.createHash('sha256')
-      .update(JSON.stringify(options))
-      .update(sourceHash)
-      .digest('hex');
-  }
-
-  private calculateHash(hashType: AssetHashType, assetHash?: string): string {
+  private calculateHash(hashType: AssetHashType, assetHash?: string, bundling?: BundlingOptions): string {
     switch (hashType) {
       case AssetHashType.SOURCE:
-        return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+        const sourceHash = FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+        if (bundling) {
+          return crypto.createHash('sha256')
+            .update(JSON.stringify(bundling))
+            .update(sourceHash)
+            .digest('hex');
+        } else {
+          return sourceHash;
+        }
       case AssetHashType.BUNDLE:
         if (!this.bundleDir) {
           throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
