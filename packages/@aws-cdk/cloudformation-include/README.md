@@ -148,7 +148,7 @@ If you have two templates in a [nested](https://docs.aws.amazon.com/AWSCloudForm
 You can access the nested stack and perform all operations you would on any other CDK Stack if you include the parent stack as follows:
 
 ```typescript
-new inc.CfnInclude(stack, 'ParentStack', {
+const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
   templateFile: 'path/to/my-parent-template.json',
   nestedStacks: {
     "ChildStack": {
@@ -157,6 +157,19 @@ new inc.CfnInclude(stack, 'ParentStack', {
   },
 });
 ```
+
+now you can access the ChildStack with
+
+```typescript
+parentTemplate.getNestedStack('ChildStack');
+```
+
+and if you want to perform operations like getResource that you would on any other included template, you can do so with
+
+```typescript
+parentTemplate.getNestedStackTemplate('ChildStack');
+```
+
 
 ## Conditions
 
