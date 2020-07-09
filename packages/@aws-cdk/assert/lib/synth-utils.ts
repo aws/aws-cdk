@@ -70,7 +70,13 @@ function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  return root.synth(options);
+  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
+  const forceResynth = true;
+
+  return root.synth({
+    forceResynth,
+    ...options,
+  });
 }
 
 export interface SubsetOptions {

@@ -170,7 +170,7 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly) {
+    if (!this.assembly || options.forceResynth) {
       const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
@@ -205,4 +205,12 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Force a re-synth, even if the stage has already been synthesized.
+   * This is used by tests to allow for incremental verification of the output.
+   * Do not use in production.
+   * @default false
+   */
+  readonly forceResynth?: boolean;
 }
