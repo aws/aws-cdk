@@ -158,7 +158,7 @@
     "@types/sinon": "^9.0.4",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^1.25.1",
+    "fast-check": "^1.26.0",
     "lodash": "^4.17.19",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
