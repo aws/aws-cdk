@@ -1,11 +1,11 @@
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 
 /**
  * Construction properties for LogGroupResourcePolicy
  */
-export interface ILogGroupResourcePolicyProps {
+export interface LogGroupResourcePolicyProps {
   /**
    * The log group resource policy name
    */
@@ -20,7 +20,7 @@ export interface ILogGroupResourcePolicyProps {
  * Creates LogGroup resource policies.
  */
 export class LogGroupResourcePolicy extends cr.AwsCustomResource {
-  constructor(scope: cdk.Construct, id: string, props: ILogGroupResourcePolicyProps) {
+  constructor(scope: cdk.Construct, id: string, props: LogGroupResourcePolicyProps) {
     const policy = new iam.Policy(scope, props.policyName, {
       statements: props.policyStatements,
     });

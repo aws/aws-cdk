@@ -1,18 +1,45 @@
-import * as cdk from '@aws-cdk/core';
+import { Metric, MetricOptions, Statistic } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
-import { Metric, MetricOptions, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { CfnDomain } from './elasticsearch.generated';
+import * as cdk from '@aws-cdk/core';
 
+import { CfnDomain } from './elasticsearch.generated';
+import { LogGroupResourcePolicy } from './log-group-resource-policy';
+
+/**
+ * Configures the makeup of the cluster such as number of nodes and instance
+ * type.
+ */
 export interface ClusterConfig {
+  /**
+   * The number of instances to use for the master node
+   */
   readonly masterNodes: number;
+
+  /**
+   * The hardware configuration of the computer that hosts the dedicated master
+   * node, such as `m3.medium.elasticsearch`. For valid values, see [Supported
+   * Instance Types]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html)
+   * in the Amazon Elasticsearch Service Developer Guide.
+   */
   readonly masterNodeInstanceType: string;
+
+  /**
+   * The number of data nodes to use in the Amazon ES domain.
+   */
   readonly dataNodes: number;
+
+  /**
+   * The instance type for your data nodes, such as
+   * `m3.medium.elasticsearch`. For valid values, see [Supported Instance
+   * Types](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html)
+   * in the Amazon Elasticsearch Service Developer Guide.
+   */
   readonly dataNodeInstanceType: string;
+
   /**
    * The number of AZs that you want the domain to use. When you enable zone
    * awareness, Amazon ES allocates the nodes and replica index shards that
@@ -26,12 +53,45 @@ export interface ClusterConfig {
   readonly availabilityZoneCount?: number;
 }
 
+/**
+ * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
+ * are attached to data nodes in the Amazon ES domain. For more information, see
+ * [Configuring EBS-based Storage]
+ * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
+ * in the Amazon Elasticsearch Service Developer Guide.
+ */
 export interface EbsOptions {
+  /**
+   * The number of I/O operations per second (IOPS) that the volume
+   * supports. This property applies only to the Provisioned IOPS (SSD) EBS
+   * volume type.
+   *
+   * @default - iops are not set.
+   */
   readonly iops?: number;
+
+  /**
+   * The size (in GiB) of the EBS volume for each data node. The minimum and
+   * maximum size of an EBS volume depends on the EBS volume type and the
+   * instance type to which it is attached.  For more information, see
+   * [Configuring EBS-based Storage]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
+   * in the Amazon Elasticsearch Service Developer Guide
+   */
   readonly volumeSize: number;
-  readonly volumeType: EbsDeviceVolumeType;
+
+  /**
+   * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1, st1, or sc1.
+   * For more information, see[Configuring EBS-based Storage]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
+   * in the Amazon Elasticsearch Service Developer Guide
+   */
+  readonly volumeType: ec2.EbsDeviceVolumeType;
 }
 
+/**
+ * Configures log settings for the domain.
+ */
 export interface LoggingOptions {
   /**
    * Specify if slow search logging should be set up.
@@ -45,7 +105,7 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if slow search logging is enabled
    */
-  readonly slowSearchLogGroup?: logs.LogGroup;
+  readonly slowSearchLogGroup?: logs.ILogGroup;
 
   /**
    * Specify if slow index logging should be set up.
@@ -59,21 +119,21 @@ export interface LoggingOptions {
    *
    * @default - a new log group is created if slow index logging is enabled
    */
-  readonly slowIndexLogGroup?: logs.LogGroup;
+  readonly slowIndexLogGroup?: logs.ILogGroup;
 
   /**
    * Specify if Elasticsearch application logging should be set up.
    *
    * @default - false
    */
-  readonly appLogEnabed?: boolean;
+  readonly appLogEnabled?: boolean;
 
   /**
    * Log Elasticsearch application logs to this log group.
    *
    * @default - a new log group is created if app logging is enabled
    */
-  readonly appLogGroup?: logs.LogGroup;
+  readonly appLogGroup?: logs.ILogGroup;
 }
 
 /**
@@ -84,17 +144,67 @@ export interface LoggingOptions {
 export interface EncryptionAtRestOptions {
   /**
    * Specify true to enable encryption at rest.
+   *
+   * @default - encryption at rest is disabled.
    */
   readonly enabled?: boolean;
 
   /**
    * Supply if using KMS key for encryption at rest.
+   *
+   * @default - uses default aws/es KMS key.
    */
-  readonly kmsKey?: kms.Key;
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
- * Properties for a AWS Elasticsearch Domain.
+ * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
+ */
+export interface CognitoOptions {
+  /**
+   * The Amazon Cognito identity pool ID that you want Amazon ES to use for Kibana authentication.
+   */
+  readonly identityPoolId: string;
+
+  /**
+   * The AmazonESCognitoAccess role that allows Amazon ES to configure your user pool and identity pool.
+   */
+  readonly role: iam.IRole;
+
+  /**
+   * The Amazon Cognito user pool ID that you want Amazon ES to use for Kibana authentication.
+   */
+  readonly userPoolId: string;
+}
+
+/**
+ * The virtual private cloud (VPC) configuration for the Amazon ES domain. For
+ * more information, see [VPC Support for Amazon Elasticsearch Service
+ * Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html)
+ * in the Amazon Elasticsearch Service Developer Guide.
+ */
+export interface VpcOptions {
+  /**
+   * The list of security groups that are associated with the VPC endpoints
+   * for the domain. If you don't provide a security group ID, Amazon ES uses
+   * the default security group for the VPC. To learn more, see [Security Groups for your VPC]
+   * (https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) in the Amazon VPC
+   * User Guide.
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
+
+  /**
+   * Provide one subnet for each Availability Zone that your domain uses. For
+   * example, you must specify three subnet IDs for a three Availability Zone
+   * domain. To learn more, see [VPCs and Subnets]
+   * (https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the
+   * Amazon VPC User Guide.
+   */
+  readonly subnets: ec2.ISubnet[];
+}
+
+/**
+ * Properties for an AWS Elasticsearch Domain.
  */
 export interface DomainProps {
   /**
@@ -102,7 +212,7 @@ export interface DomainProps {
    *
    * @default - No access policies.
    */
-  readonly accessPolicies?: PolicyStatement[];
+  readonly accessPolicies?: iam.PolicyStatement[];
 
   /**
    * Additional options to specify for the Amazon ES domain.
@@ -112,14 +222,16 @@ export interface DomainProps {
   readonly advancedOptions?: { [key: string]: (string) };
 
   /**
-   * `AWS::Elasticsearch::Domain.CognitoOptions`
+   * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
+   *
+   * @default - Cognito not used for authentication to Kibana.
    */
-  readonly cognitoOptions?: CfnDomain.CognitoOptionsProperty | cdk.IResolvable;
+  readonly cognitoOptions?: CognitoOptions;
 
   /**
    * Enforces a particular physical domain name.
    *
-   * @default <generated>
+   * @default - A name will be auto-generated.
    */
   readonly domainName?: string;
 
@@ -170,14 +282,22 @@ export interface DomainProps {
    * The hour in UTC during which the service takes an automated daily snapshot
    * of the indices in the Amazon ES domain. Only applies for Elasticsearch
    * versions below 5.3.
+   *
+   * @default - Not used for Elasticsearch versions above 5.3.
    */
   readonly automatedSnapshotStartHour?: number;
 
   /**
-   * `AWS::Elasticsearch::Domain.VPCOptions`
+   * The virtual private cloud (VPC) configuration for the Amazon ES domain. For
+   * more information, see [VPC Support for Amazon Elasticsearch Service
+   * Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html)
+   * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default - VPC not used
    */
-  readonly vpcOptions?: CfnDomain.VPCOptionsProperty | cdk.IResolvable;
+  readonly vpcOptions?: VpcOptions;
 }
+
 
 /**
  * An interface that represents an Elasticsearch domain - either created with the CDK, or an existing one.
@@ -314,7 +434,19 @@ export interface IDomain extends cdk.IResource {
    */
   metricIndexingLatency(clientId: string, props?: MetricOptions): Metric;
 }
+
+
+/**
+ * Provides an Elasticsearch domain.
+ */
 export class Domain extends cdk.Resource implements IDomain {
+  private static createLogGroup(parent: cdk.Construct, domainName: string, id: string, name: string): logs.ILogGroup {
+    return new logs.LogGroup(parent, id, {
+      logGroupName: `elasticsearch/domains/${domainName}/${name}`,
+      retention: logs.RetentionDays.ONE_MONTH,
+    });
+  }
+
   /**
    * @attribute
    */
@@ -333,52 +465,42 @@ export class Domain extends cdk.Resource implements IDomain {
 
   private readonly domain: CfnDomain;
 
-  private readonly slowSearchLogGroup?: logs.LogGroup;
+  private readonly slowSearchLogGroup?: logs.ILogGroup;
 
-  private readonly slowIndexLogGroup?: logs.LogGroup;
+  private readonly slowIndexLogGroup?: logs.ILogGroup;
 
-  private readonly appLogGroup?: logs.LogGroup;
+  private readonly appLogGroup?: logs.ILogGroup;
 
   constructor(scope: cdk.Construct, id: string, props: DomainProps) {
     super(scope, id, {
       physicalName: props.domainName,
     });
 
+    this.domainName = this.physicalName;
+
     // Setup logging
-    const logGroups: logs.LogGroup[] = [];
+    const logGroups: logs.ILogGroup[] = [];
 
-    if (props.logPublishingOptions?.slowSearchLogGroup) {
-      this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup;
+    if (props.logPublishingOptions?.slowSearchLogEnabed) {
+      this.slowSearchLogGroup = props.logPublishingOptions.slowSearchLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'SlowSearchLogs', 'slow-search-logs');
+
       logGroups.push(this.slowSearchLogGroup);
-    } else if (props.logPublishingOptions?.slowSearchLogEnabed) {
-      this.slowSearchLogGroup = new logs.LogGroup(this, 'SlowSearchLogs', {
-        logGroupName: `elasticsearch/domains/${props.domainName ?? id}/slow-search-logs`,
-        retention: logs.RetentionDays.ONE_MONTH,
-      });
-      logGroups.push(this.slowSearchLogGroup);
-    }
+    };
 
-    if (props.logPublishingOptions?.slowIndexLogGroup) {
-      this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup;
-      logGroups.push(this.slowIndexLogGroup);
-    } else if (props.logPublishingOptions?.slowIndexLogEnabed) {
-      this.slowIndexLogGroup = new logs.LogGroup(this, 'SlowIndexLogs', {
-        logGroupName: `elasticsearch/domains/${props.domainName ?? id}/slow-index-logs`,
-        retention: logs.RetentionDays.ONE_MONTH,
-      });
-      logGroups.push(this.slowIndexLogGroup);
-    }
+    if (props.logPublishingOptions?.slowIndexLogEnabed) {
+      this.slowIndexLogGroup = props.logPublishingOptions.slowIndexLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'SlowIndexLogs', 'slow-index-logs');
 
-    if (props.logPublishingOptions?.appLogGroup) {
-      this.appLogGroup = props.logPublishingOptions.appLogGroup;
+      logGroups.push(this.slowIndexLogGroup);
+    };
+
+    if (props.logPublishingOptions?.appLogEnabled) {
+      this.appLogGroup = props.logPublishingOptions.appLogGroup ??
+        Domain.createLogGroup(this, this.domainName, 'AppLogs', 'application-logs');
+
       logGroups.push(this.appLogGroup);
-    } else if (props.logPublishingOptions?.appLogEnabed) {
-      this.appLogGroup = new logs.LogGroup(this, 'AppLogs', {
-        logGroupName: `elasticsearch/domains/${props.domainName ?? id}/application-logs`,
-        retention: logs.RetentionDays.ONE_MONTH,
-      });
-      logGroups.push(this.appLogGroup);
-    }
+    };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0) {
@@ -395,6 +517,19 @@ export class Domain extends cdk.Resource implements IDomain {
         policyName: 'ESLogPolicy',
         policyStatements: [logPolicyStatement],
       });
+    }
+
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ
+    if (props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone).length != props?.clusterConfig.availabilityZoneCount) {
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    };
+
+    let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
+    if (props.vpcOptions) {
+      cfnVpcOptions = {
+        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
+        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
+      };
     }
 
     // Create the domain
@@ -435,6 +570,13 @@ export class Domain extends cdk.Resource implements IDomain {
           cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
         },
       },
+      cognitoOptions: {
+        enabled: props.cognitoOptions != null,
+        identityPoolId: props.cognitoOptions?.identityPoolId,
+        roleArn: props.cognitoOptions?.role.roleArn,
+        userPoolId: props.cognitoOptions?.userPoolId,
+      },
+      vpcOptions: cfnVpcOptions,
     });
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
@@ -446,9 +588,8 @@ export class Domain extends cdk.Resource implements IDomain {
       resource: 'domain',
       resourceName: this.physicalName,
     });
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
 
-    this.domainEndpoint = `https://${this.domain.attrDomainEndpoint}`;
+    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
   }
 
   /**

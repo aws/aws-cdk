@@ -14,7 +14,7 @@ To create an Elasticsearch domain:
 ```ts
 import * as es from '@aws-cdk/aws-elasticsearch';
 
-const cluster = new es.Cluster(this, 'Domain', {
+const domain = new es.Domain(this, 'Domain', {
     elasticsearchVersion: '7.4',
     clusterConfig: {
         masterNodes: 3,
@@ -30,27 +30,27 @@ const cluster = new es.Cluster(this, 'Domain', {
 ```
 
 This creates an Elasticsearch cluster and automatically sets up log groups for
-logging the cluster logs and slow search logs.
+logging the domain logs and slow search logs.
 
 
 ### Permissions
 
 #### IAM
 
-Helper methods also exist for managing access to the cluster.
+Helper methods also exist for managing access to the domain.
 
 ```ts
 const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
 // Grant the lambda functiomn read and write access to app-search index
-cluster.grantReadWriteForIndex(lambda, 'app-search');
+domain.grantReadWriteForIndex(lambda, 'app-search');
 ```
 
 ### Encryption
 
-The cluster can also be created with encryption enabled:
+The domain can also be created with encryption enabled:
 
 ```ts
-const cluster = new es.Cluster(this, 'Domain', {
+const domain = new es.Domain(this, 'Domain', {
     elasticsearchVersion: '7.4',
     clusterConfig: {
         masterNodes: 3,
@@ -66,18 +66,18 @@ const cluster = new es.Cluster(this, 'Domain', {
 
 ```
 
-This sets up the cluster with node to node encryption and encryption at
+This sets up the domain with node to node encryption and encryption at
 rest. You can also choose to supply your own KMS key to use for encryption at
 rest.
 
 ### Metrics
 
-Helper methods exist to access common cluster metrics for example:
+Helper methods exist to access common domain metrics for example:
 
 ```ts
 
-const freeStorageSpace = cluster.metricFreeStorageSpace('account-id');
-const masterSysMemoryUtilization = cluster.metric('MasterSysMemoryUtilization', 'account-id');
+const freeStorageSpace = domain.metricFreeStorageSpace('account-id');
+const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization', 'account-id');
 ```
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
