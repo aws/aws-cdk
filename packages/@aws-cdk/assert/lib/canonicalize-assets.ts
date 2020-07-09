@@ -39,7 +39,6 @@ export function canonicalizeTemplate(template: any): any {
     ]);
   }
 
-
   // Substitute them out
   return substitute(template);
 
