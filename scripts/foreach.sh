@@ -75,9 +75,10 @@ fi
 
 if [[ "$RESET" -eq 1 || "$FORCE" -eq 1 ]]; then 
   reset
-  if [[ "$RESET" -eq 1 ]]; then
-    exit 0
-  fi
+fi
+
+if [[ "$RESET" -eq 1 ]]; then
+  exit 0
 fi
 
 if [[ "$SKIP" -eq 1 ]]; then
@@ -93,7 +94,7 @@ if [[ "$SKIP" -eq 1 ]]; then
   fi
   tail -n +2 "${statefile}" > "${statefile}.tmp"
   cp "${statefile}.tmp" "${statefile}"
-  success "directory '$next' skipped. re-run the original foreach command to resume."
+  success "directory '$next' skipped. re-run the original foreach command (without --force) to resume."
   exit 0
 fi
 
