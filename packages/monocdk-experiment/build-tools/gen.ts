@@ -54,14 +54,20 @@ interface PackageJson {
   readonly [key: string]: unknown;
 }
 
+/**
+ * This finds and recompiles all package sources, not artifacts
+ */
 async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
-  const result = new Array<LibraryReference>();
+  const packageRoot = process.env.NZL_PACKAGE_SOURCE || path.join(__dirname, '..');
 
-  const librariesRoot = path.resolve(__dirname, '..', '..', '@aws-cdk');
+  const result = new Array<LibraryReference>();
+  const librariesRoot = path.resolve(packageRoot, '..', '@aws-cdk');
   for (const dir of await fs.readdir(librariesRoot)) {
-    const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
+    const pjPath = path.resolve(librariesRoot, dir, 'package.json');
+    if (!await fs.pathExists(pjPath)) { continue; }
+    const packageJson = await fs.readJson(pjPath);
 
     if (packageJson.private) {
       console.log(`\t⚠️ Skipping (private):          ${packageJson.name}`);
@@ -74,9 +80,23 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
       continue;
     }
 
+    let sourcePath = path.resolve(pjPath, '..');
+
+    // If this is a "Nazel" build, we actually need to grab the sources from a different
+    // directory than the source tree, because we also need the .ts files that got
+    // generated as part of the build step.
+    if (process.env.NZL_PACKAGE_SOURCE) {
+      try {
+        const outPath = path.resolve(require.resolve(`${dir}/package.json`), '..');
+        sourcePath = path.resolve(outPath, '..', 'src');
+      } catch (e) {
+        // Should have been a dependency, but apparently wasn't. A different part of gen will fix this.
+      }
+    }
+
     result.push({
       packageJson,
-      root: path.join(librariesRoot, dir),
+      root: sourcePath,
       shortName: packageJson.name.substr('@aws-cdk/'.length),
     });
   }
@@ -88,7 +108,8 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
 
 async function verifyDependencies(libraries: readonly LibraryReference[]): Promise<PackageJson> {
   console.log('🧐 Verifying dependencies are complete...');
-  const packageJsonPath = path.resolve(__dirname, '..', 'package.json');
+  const packageRoot = process.env.NZL_PACKAGE_SOURCE || path.join(__dirname, '..');
+  const packageJsonPath = path.resolve(packageRoot, 'package.json');
   const packageJson = await fs.readJson(packageJsonPath);
 
   let changed = false;
@@ -122,9 +143,9 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
     });
   }
 
-  const workspacePath = path.resolve(__dirname, '..', '..', '..', 'package.json');
+  const workspacePath = path.resolve(packageRoot, '..', '..', 'package.json');
   const workspace = await fs.readJson(workspacePath);
-  let workspaceChanged = false
+  let workspaceChanged = false;
 
   const spuriousBundledDeps = new Set<string>(packageJson.bundledDependencies ?? []);
   for (const [name, version] of Object.entries(toBundle)) {

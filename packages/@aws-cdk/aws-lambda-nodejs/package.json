@@ -58,6 +58,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -76,13 +77,17 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 12"
   },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
   },
+  "ostools": [
+    "docker"
+  ],
+  "nzl$copyAllSourcesForTest": true,
   "cdk-build": {
     "jest": true
   }

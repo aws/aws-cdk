@@ -24,7 +24,9 @@
     "compat": "cdk-compat"
   },
   "awslint": {
-    "exclude": ["*:*"]
+    "exclude": [
+      "*:*"
+    ]
   },
   "cdk-build": {
     "eslint": {
@@ -34,7 +36,7 @@
       "disable": true
     },
     "pre": [
-      "npm run gen"
+      "yarn gen"
     ]
   },
   "pkglint": {
@@ -89,7 +91,7 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "^3.0.2",
+    "constructs": "3.0.2",
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.2.5",
     "minimatch": "^3.0.4",
@@ -97,6 +99,7 @@
     "yaml": "1.10.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.691.0",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
@@ -247,6 +250,10 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/fs-extra": "^8.1.1",
+    "@types/minimatch": "^3.0.3",
+    "@types/aws-lambda": "^8.10.39",
+    "@types/semver": "^7.2.0",
+    "typescript-json-schema": "^0.42.0",
     "@types/node": "^10.17.26",
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.0.1",
@@ -255,7 +262,7 @@
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.0.2"
+    "constructs": "3.0.2"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
@@ -264,6 +271,11 @@
   "keywords": [
     "aws",
     "cdk"
+  ],
+  "ostools": [
+    "yarn",
+    "dirname",
+    "rsync"
   ],
   "awscdkio": {
     "announce": false

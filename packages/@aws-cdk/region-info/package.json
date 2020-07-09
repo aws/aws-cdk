@@ -29,7 +29,7 @@
   },
   "cdk-build": {
     "pre": [
-      "npm run gen"
+      "yarn gen"
     ],
     "jest": true
   },
@@ -80,6 +80,7 @@
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
     ]
   },
+  "ostools": ["yarn", "bash"],
   "awscdkio": {
     "announce": false
   }

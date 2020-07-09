@@ -37,13 +37,17 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/semver": "^7.2.0",
+    "@types/glob": "^7.1.2",
     "@types/yargs": "^15.0.5",
+    "tslint": "^5.20.1",
     "jest": "^25.5.4",
     "typescript": "~3.9.5"
   },
+  "ostools": ["chmod"],
   "dependencies": {
     "case": "^1.6.3",
     "colors": "^1.4.0",
+    "glob": "^7.1.6",
     "fs-extra": "^9.0.1",
     "semver": "^7.2.2",
     "yargs": "^15.3.1"

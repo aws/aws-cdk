@@ -1,10 +1,12 @@
+import * as AWSLambda from 'aws-lambda';
+
 // this is a type definition file that exports ambiant types that can be used
 // to implement async custom resource handler and enjoy the comfort of type safety.
 
 /**
  * these types can be accessed without needing to `import` the module.
  * e.g. `AWSCDKAsyncCustomResource.OnEventRequest`
- */ 
+ */
 export as namespace AWSCDKAsyncCustomResource;
 
 /**

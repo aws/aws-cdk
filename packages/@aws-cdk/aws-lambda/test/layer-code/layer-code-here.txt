@@ -1,0 +1,2 @@
+Have this directory not contain .js/.ts files
+because the hash matters and I don't want it changing.

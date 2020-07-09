@@ -37,6 +37,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.0",
+    "@aws-cdk/assert": "0.0.0",
     "@types/node": "^10.17.26",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
@@ -47,9 +48,14 @@
     "constructs": "^3.0.2"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "0.0.0"
+    "@aws-cdk/cloudformation-diff": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "constructs": "^3.0.2"
   },
   "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
     "jest": "^25.5.4",
     "monocdk-experiment": "^0.0.0",
     "constructs": "^3.0.2"
@@ -67,6 +73,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "ostools": ["dirname", "rsync", "cp", "npx"],
+  "nzl$skipTsApiOptimization": true,
   "stability": "experimental",
   "maturity": "developer-preview"
 }

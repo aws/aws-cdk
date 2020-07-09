@@ -32,12 +32,14 @@
   "devDependencies": {
     "@types/jest": "^26.0.0",
     "@types/yaml": "1.9.7",
+    "typescript": "~3.8.3",
     "jest": "^25.5.4"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
+  "ostools": ["chmod"],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"

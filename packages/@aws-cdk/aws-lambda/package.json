@@ -169,6 +169,7 @@
     ]
   },
   "stability": "stable",
+  "ostools": ["docker"],
   "awscdkio": {
     "announce": false
   },

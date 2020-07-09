@@ -65,7 +65,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
 function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
   const mod = require.cache[fileName];
 
-  if (!mod.paths) {
+  if (!mod?.paths) {
     // sometimes this can be undefined. for example when querying for .json modules
     // inside a jest runtime environment.
     // see https://github.com/aws/aws-cdk/issues/7657

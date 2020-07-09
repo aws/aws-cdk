@@ -1,6 +1,6 @@
 import { Bucket } from '@aws-cdk/aws-s3';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Stack } from '../../core/lib';
 import * as ec2 from '../lib';
 
 export = {

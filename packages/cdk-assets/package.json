@@ -67,6 +67,7 @@
   "cdk-package": {
     "shrinkWrap": true
   },
+  "ostools": ["unzip", "diff"],
   "stability": "experimental",
   "maturity": "experimental"
 }

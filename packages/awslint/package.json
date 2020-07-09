@@ -43,6 +43,7 @@
     "aws",
     "cdk"
   ],
+  "ostools": ["chmod"],
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   }

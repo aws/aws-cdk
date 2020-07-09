@@ -98,6 +98,7 @@
       "docs-public-apis:@aws-cdk/aws-s3-assets.AssetProps"
     ]
   },
+  "ostools": ["docker"],
   "awscdkio": {
     "announce": false
   }

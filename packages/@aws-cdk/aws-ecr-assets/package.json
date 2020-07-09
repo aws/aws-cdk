@@ -59,6 +59,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/minimatch": "^3.0.3",
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "@types/proxyquire": "^1.3.28",

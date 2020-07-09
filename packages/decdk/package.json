@@ -27,6 +27,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "colors": "^1.4.0",
     "@aws-cdk/alexa-ask": "0.0.0",
     "@aws-cdk/app-delivery": "0.0.0",
     "@aws-cdk/assets": "0.0.0",
@@ -195,6 +196,9 @@
     "aws",
     "cdk"
   ],
+  "ostools": ["chmod"],
+  "nzl$skipTsApiOptimization": true,
+  "nzl$copyAllSourcesForTest": true,
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"

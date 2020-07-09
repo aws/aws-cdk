@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
+import { AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
@@ -17,9 +17,19 @@ export = {
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
+    // const assetHash = '925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226';
+    const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging | undefined;
+    const assetHash = staging?.sourceHash;
+
     // THEN
     test.ok(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js')), 'expecting entrypoint to be copied to the handler directory');
     const cfn = toCloudFormation(stack);
+
+    const params = Object.keys(cfn.Parameters);
+    const bucketKeyParam = params[0];
+    const objectParam = params[1];
+    const hashParam = params[2];
+
     test.deepEqual(cfn, {
       Resources: {
         CustomMyResourceTypeCustomResourceProviderRoleBD5E655F: {
@@ -49,7 +59,7 @@ export = {
           Properties: {
             Code: {
               S3Bucket: {
-                Ref: 'AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226S3Bucket8B4D0E9E',
+                Ref: bucketKeyParam,
               },
               S3Key: {
                 'Fn::Join': [
@@ -62,7 +72,7 @@ export = {
                           'Fn::Split': [
                             '||',
                             {
-                              Ref: 'AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226S3VersionKeyDECB34FE',
+                              Ref: objectParam,
                             },
                           ],
                         },
@@ -75,7 +85,7 @@ export = {
                           'Fn::Split': [
                             '||',
                             {
-                              Ref: 'AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226S3VersionKeyDECB34FE',
+                              Ref: objectParam,
                             },
                           ],
                         },
@@ -102,17 +112,17 @@ export = {
         },
       },
       Parameters: {
-        AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226S3Bucket8B4D0E9E: {
+        [bucketKeyParam]: {
           Type: 'String',
-          Description: 'S3 bucket for asset "925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226"',
+          Description: `S3 bucket for asset "${assetHash}"`,
         },
-        AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226S3VersionKeyDECB34FE: {
+        [objectParam]: {
           Type: 'String',
-          Description: 'S3 key for asset version "925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226"',
+          Description: `S3 key for asset version "${assetHash}"`,
         },
-        AssetParameters925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226ArtifactHashEEC400F2: {
+        [hashParam]: {
           Type: 'String',
-          Description: 'Artifact hash for asset "925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226"',
+          Description: `Artifact hash for asset "${assetHash}"`,
         },
       },
     });

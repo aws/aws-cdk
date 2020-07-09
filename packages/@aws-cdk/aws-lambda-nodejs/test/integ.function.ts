@@ -7,14 +7,23 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const projectRoot = process.env.NZL_PACKAGE_SOURCE
+      ? path.join(process.env.NZL_PACKAGE_SOURCE, '..', '..', '..')
+      : undefined;
+    const testRoot = process.env.NZL_PACKAGE_SOURCE
+      ? path.join(process.env.NZL_PACKAGE_SOURCE, 'test')
+      : __dirname;
+
     new lambda.NodejsFunction(this, 'ts-handler', {
-      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      projectRoot,
+      entry: path.join(testRoot, 'integ-handlers/ts-handler.ts'),
       runtime: Runtime.NODEJS_12_X,
       minify: true,
     });
 
     new lambda.NodejsFunction(this, 'js-handler', {
-      entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
+      projectRoot,
+      entry: path.join(testRoot, 'integ-handlers/js-handler.js'),
       runtime: Runtime.NODEJS_12_X,
     });
   }

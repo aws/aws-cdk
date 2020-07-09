@@ -1,3 +1,0 @@
-# codepipeline looses symlinks so we bundled fixtures into a tarball
-# and unpack in pre-build script (yak)
-fixtures/**

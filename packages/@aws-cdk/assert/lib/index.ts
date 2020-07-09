@@ -1,5 +1,6 @@
 export * from './assertion';
 export * from './expect';
+export * from './canonicalize-assets';
 export * from './inspector';
 export * from './synth-utils';
 

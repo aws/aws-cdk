@@ -10,25 +10,34 @@
 const fs = require('fs');
 const path = require('path');
 
-const jsii_reflect = require('jsii-reflect');
+// Use the jsii-reflect from cdk-build-tools
+const cdkBuildToolsPath = require.resolve('cdk-build-tools/package.json');
+const jsiiReflectPath = require.resolve('jsii-reflect', { paths: [cdkBuildToolsPath] });
+const jsii_reflect = require(jsiiReflectPath);
 
 const packageJson = require('./package.json');
 const dependencies = packageJson.dependencies || {};
 const peerDependencies = packageJson.peerDependencies || {};
 
 async function main() {
-  const constructLibrariesRoot = path.resolve('..');
+  await validatePackageJsonCompleteness();
+  await buildL1Catalog();
+}
+
+/**
+ * Validate that we have all requires packages in package.json
+ */
+async function validatePackageJsonCompleteness() {
+  const sourcePath = path.resolve(process.env.NZL_PACKAGE_SOURCE || __dirname);
+
+  const constructLibrariesRoot = path.resolve(sourcePath, '..');
   const constructLibrariesDirs = fs.readdirSync(constructLibrariesRoot);
   let errors = false;
 
-  const typeSystem = new jsii_reflect.TypeSystem();
-  const cfnType2L1Class = {};
-  // load the @aws-cdk/core assembly first, to find the CfnResource class
-  await typeSystem.load(path.resolve(constructLibrariesRoot, 'core'), { validate: false });
-  const cfnResourceClass = typeSystem.findClass('@aws-cdk/core.CfnResource');
-
   for (const constructLibraryDir of constructLibrariesDirs) {
     const absConstructLibraryDir = path.resolve(constructLibrariesRoot, constructLibraryDir);
+    if (!fs.statSync(absConstructLibraryDir).isDirectory()) { continue; }
+
     const libraryPackageJson = require(path.join(absConstructLibraryDir, 'package.json'));
 
     const libraryDependencyVersion = dependencies[libraryPackageJson.name];
@@ -63,10 +72,37 @@ async function main() {
     dependencies[libraryPackageJson.name] = libraryVersion;
     // dependencies need to be in both sections to satisfy pkglint
     peerDependencies[libraryPackageJson.name] = libraryVersion;
+  }
+
+  fs.writeFileSync(path.join(sourcePath, 'package.json'),
+      JSON.stringify(packageJson, undefined, 2) + '\n');
+
+  if (errors) {
+    console.error('errors found. updated package.json');
+    process.exit(1);
+  }
+}
+
+/**
+ * Build a catalog of resources types based on dependencies in package.json
+ */
+async function buildL1Catalog() {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), { encoding: 'utf-8' }));
+
+  const typeSystem = new jsii_reflect.TypeSystem();
+  const cfnType2L1Class = {};
+  // load the @aws-cdk/core assembly first, to find the CfnResource class
+  await typeSystem.load(dependencyDir('@aws-cdk/core'), { validate: false });
+  const cfnResourceClass = typeSystem.findClass('@aws-cdk/core.CfnResource');
+
+  for (const packageName of Object.keys(packageJson.dependencies || {})) {
+    const depDir = dependencyDir(packageName);
+    const depPJ = require(`${depDir}/package.json`);
+    if (!depPJ.jsii) { continue; }  // Skip non-jsii dependencies
 
     // load the assembly of this package,
     // and find all subclasses of CfnResource to put them in cfnType2L1Class
-    const assembly = await typeSystem.load(absConstructLibraryDir, { validate: false });
+    const assembly = await typeSystem.load(depDir, { validate: false });
     for (let i = 0; i < assembly.classes.length; i++) {
       const classs = assembly.classes[i];
       if (classs.extends(cfnResourceClass)) {
@@ -82,15 +118,12 @@ async function main() {
     }
   }
 
-  fs.writeFileSync(path.join(__dirname, 'package.json'),
-      JSON.stringify(packageJson, undefined, 2) + '\n');
   fs.writeFileSync(path.join(__dirname, 'cfn-types-2-classes.json'),
       JSON.stringify(cfnType2L1Class, undefined, 2) + '\n');
+}
 
-  if (errors) {
-    console.error('errors found. updated package.json');
-    process.exit(1);
-  }
+function dependencyDir(packageName) {
+  return path.dirname(require.resolve(`${packageName}/package.json`));
 }
 
 (async () => {

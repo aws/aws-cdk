@@ -8,12 +8,13 @@ const path = require('path');
 const pkg = require('./package.json');
 const deps = pkg.dependencies || (pkg.dependencies = {});
 
-const root = path.resolve('..', '..', 'packages', '@aws-cdk');
+const root = path.resolve(process.env.NZL_PACKAGE_SOURCE || '.', '..', '..', 'packages', '@aws-cdk');
 const modules = fs.readdirSync(root);
 let errors = false;
 
 for (const dir of modules) {
   const module = path.resolve(root, dir);
+  if (!fs.statSync(module).isDirectory()) { continue; }
   const meta = require(path.join(module, 'package.json'));
 
   // skip non-jsii modules

@@ -19,7 +19,7 @@
     "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
+    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
@@ -50,6 +50,7 @@
     "fs-extra": "^9.0.1",
     "jest": "^25.5.4",
     "jsii": "^1.7.0",
+    "jsii-reflect": "^1.7.0",
     "jsii-pacmak": "^1.7.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
@@ -63,6 +64,7 @@
     "aws",
     "cdk"
   ],
+  "ostools": ["chmod"],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

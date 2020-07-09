@@ -107,6 +107,7 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
+  "ostools": ["dirname", "rm", "mktemp", "rsync", "pip3", "bash", "cut", "sed", "mkdir", "cat", "chmod", "mv", "zip", "cp", "sort", "uniq", "python3"],
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-s3-deployment.Expires.fromString",

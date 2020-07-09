@@ -1,8 +1,13 @@
 import '@aws-cdk/assert/jest';
+import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
+
+const PROJECT_ROOT = process.env.NZL_SOURCE_PACKAGE
+  ? process.env.NZL_SOURCE_PACKAGE
+  : path.join(__dirname, '..');
 
 jest.mock('../lib/bundling', () => {
   return {
@@ -25,10 +30,12 @@ beforeEach(() => {
 
 test('NodejsFunction with .ts handler', () => {
   // WHEN
-  new NodejsFunction(stack, 'handler1');
+  new NodejsFunction(stack, 'handler1', {
+    projectRoot: PROJECT_ROOT,
+  });
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+    entry: expect.stringContaining('function.test.handler1.'), // Automatically finds .ts handler file
     global: 'handler',
   }));
 
@@ -39,7 +46,9 @@ test('NodejsFunction with .ts handler', () => {
 
 test('NodejsFunction with .js handler', () => {
   // WHEN
-  new NodejsFunction(stack, 'handler2');
+  new NodejsFunction(stack, 'handler2', {
+    projectRoot: PROJECT_ROOT,
+  });
 
   // THEN
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
@@ -50,6 +59,7 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
+    projectRoot: PROJECT_ROOT,
     containerEnvironment: {
       KEY: 'VALUE',
     },
@@ -65,21 +75,26 @@ test('NodejsFunction with container env vars', () => {
 test('throws when entry is not js/ts', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'handler.py',
+    projectRoot: PROJECT_ROOT,
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
 });
 
 test('throws when entry does not exist', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'notfound.ts',
+    projectRoot: PROJECT_ROOT,
   })).toThrow(/Cannot find entry file at/);
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find entry file./);
+  expect(() => new NodejsFunction(stack, 'Fn', {
+    projectRoot: PROJECT_ROOT,
+  })).toThrow(/Cannot find entry file./);
 });
 
 test('throws with the wrong runtime family', () => {
   expect(() => new NodejsFunction(stack, 'handler1', {
+    projectRoot: PROJECT_ROOT,
     runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
