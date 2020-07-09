@@ -1,9 +1,8 @@
-import { arrayWith, deepObjectLike } from '@aws-cdk/assert';
+import { arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { encodedJson } from './testmatchers';
 import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
