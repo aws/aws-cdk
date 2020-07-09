@@ -327,6 +327,11 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.nestedStacks"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
