@@ -20,7 +20,7 @@ describe('fromBucket', () => {
 
     const origin = Origin.fromBucket(stack, 'MyOrigin', bucket);
 
-    expect(origin.renderOrigin()).toEqual({
+    expect(origin._renderOrigin()).toEqual({
       id: 'MyOrigin',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
@@ -60,7 +60,7 @@ test('fromWebsiteBucket renders all properties, including custom origin config',
 
   const origin = Origin.fromWebsiteBucket(stack, 'MyOrigin', bucket);
 
-  expect(origin.renderOrigin()).toEqual({
+  expect(origin._renderOrigin()).toEqual({
     id: 'MyOrigin',
     domainName: bucket.bucketWebsiteDomainName,
     customOriginConfig: {

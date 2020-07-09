@@ -2,7 +2,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IOrigin, Origin } from './origin';
+import { Origin } from './origin';
 import { ViewerProtocolPolicy } from './web_distribution';
 
 /**
@@ -33,7 +33,7 @@ export interface DistributionProps {
   /**
    * The primary origin for the distribution.
    */
-  readonly origin: IOrigin;
+  readonly origin: Origin;
 
   /**
    * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
@@ -111,7 +111,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Default origin of the distribution.
    */
-  public readonly origin: IOrigin;
+  public readonly origin: Origin;
   /**
    * Certificate associated with the distribution, if any.
    */
@@ -130,6 +130,8 @@ export class Distribution extends Resource implements IDistribution {
     this.origin = props.origin;
     this.certificate = props.certificate;
 
+    this.origin._attachDistribution(this);
+
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
@@ -146,7 +148,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
-    return [this.origin.renderOrigin()];
+    return [this.origin._renderOrigin()];
   }
 
   private renderViewerCertificate(): CfnDistribution.ViewerCertificateProperty | undefined {

@@ -1,28 +1,9 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Construct, IConstruct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
+import { Distribution } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 import { OriginProtocolPolicy } from './web_distribution';
-
-/**
- * Represents a CloudFront Origin and its behaviors.
- */
-export interface IOrigin extends IConstruct {
-  /**
-   * A unique identifier for the origin. This value must be unique within the distribution.
-   */
-  readonly id: string;
-
-  /**
-   * The domain name for the origin.
-   */
-  readonly domainName: string;
-
-  /**
-   * Creates and returns the CloudFormation representation of this origin.
-   */
-  renderOrigin(): CfnDistribution.OriginProperty;
-}
 
 /**
  * Properties to be used to create an Origin. Prefer to use one of the Origin.from* factory methods rather than
@@ -40,13 +21,21 @@ export interface OriginProps {
    * The domain name of the Amazon S3 bucket or HTTP server origin.
    */
   readonly domainName: string;
+
+  /**
+   * The Distribution this Origin will be associated with.
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - This will be set when the Origin is added to the Distribution.
+   */
+  readonly distribution?: Distribution;
 }
 
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
  */
-export abstract class Origin extends Construct implements IOrigin {
+export abstract class Origin extends Construct {
 
   /**
    * Creates a pre-configured origin for a S3 bucket.
@@ -77,16 +66,32 @@ export abstract class Origin extends Construct implements IOrigin {
     });
   }
 
+  /**
+   * The Distribution this Origin is associated with.
+   */
+  public distribution?: Distribution;
+  /**
+   * The domain name of the origin.
+   */
   public readonly domainName: string;
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   */
   public readonly id: string;
 
   constructor(scope: Construct, id: string, props: OriginProps) {
     super(scope, id);
+    this.distribution = props.distribution;
     this.domainName = props.domainName;
     this.id = props.id || id;
   }
 
-  public renderOrigin(): CfnDistribution.OriginProperty {
+  /**
+   * Creates and returns the CloudFormation representation of this origin.
+   *
+   * @internal
+   */
+  public _renderOrigin(): CfnDistribution.OriginProperty {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
@@ -100,6 +105,16 @@ export abstract class Origin extends Construct implements IOrigin {
       s3OriginConfig,
       customOriginConfig,
     };
+  }
+
+  /**
+   * Internal API used by `Distribution` to keep an inventory of origins for the
+   * purposes of keeping track of behaviors as they're created and added.
+   *
+   * @internal
+   */
+  public _attachDistribution(distribution: Distribution) {
+    this.distribution = distribution;
   }
 
   // Overridden by sub-classes to provide S3 origin config.
@@ -157,9 +172,7 @@ export interface HttpOriginProps extends OriginProps {
 }
 
 /**
- * An Origin specific to a S3 bucket (not configured for website hosting).
- *
- * Contains additional logic around bucket permissions and origin access identities.
+ * An Origin for an HTTP server or S3 bucket configured for website hosting.
  */
 export class HttpOrigin extends Origin {
 
