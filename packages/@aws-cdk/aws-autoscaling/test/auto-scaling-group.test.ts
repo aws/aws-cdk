@@ -154,7 +154,7 @@ nodeunitShim({
 
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '0',
-      MaxSize: '5',
+      MaxSize: '0',
       DesiredCapacity: '0',
     },
     ));
