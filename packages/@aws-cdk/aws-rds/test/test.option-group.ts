@@ -11,8 +11,9 @@ export = {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe1({
+        version: '11.2',
+      }),
       configurations: [
         {
           name: 'XMLDB',
@@ -42,8 +43,9 @@ export = {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe({
+        version: '11.2',
+      }),
       configurations: [
         {
           name: 'OEM',
@@ -56,9 +58,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
-      EngineName: 'oracle-se1',
+      EngineName: 'oracle-se',
       MajorEngineVersion: '11.2',
-      OptionGroupDescription: 'Option group for oracle-se1 11.2',
+      OptionGroupDescription: 'Option group for oracle-se 11.2',
       OptionConfigurations: [
         {
           OptionName: 'OEM',
@@ -100,8 +102,9 @@ export = {
 
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: '11.2',
+      }),
       configurations: [
         {
           name: 'OEM',
