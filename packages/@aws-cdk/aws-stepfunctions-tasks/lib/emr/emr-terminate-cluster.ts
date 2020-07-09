@@ -39,7 +39,10 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
     this.taskPolicies = this.createPolicyStatements();
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

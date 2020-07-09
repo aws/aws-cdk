@@ -56,6 +56,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   public readonly connections: ec2.Connections;
+  public readonly ipAddressType?: IpAddressType;
   private readonly securityGroup: ec2.ISecurityGroup;
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
@@ -65,6 +66,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       ipAddressType: props.ipAddressType,
     });
 
+    this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
@@ -457,6 +459,13 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
    * the vpc attribute will be undefined unless specified in the optional properties of that method.
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * The IP Address Type for this load balancer
+   *
+   * @default IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 
   /**
    * Add a new listener to this load balancer

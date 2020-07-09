@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/glob": "^7.1.2",
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^26.0.3",
     "@types/node": "^10.17.26",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"

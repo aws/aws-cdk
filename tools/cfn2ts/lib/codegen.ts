@@ -235,9 +235,12 @@ export default class CodeGenerator {
     this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
+    this.code.indent('const cfnParser = new cfn_parse.CfnParser({');
+    this.code.line('finder: options.finder,');
+    this.code.unindent('});');
     if (propsType) {
       // translate the template properties to CDK objects
-      this.code.line(`const resourceProperties = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Properties);`);
+      this.code.line('const resourceProperties = cfnParser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
       this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
@@ -249,11 +252,11 @@ export default class CodeGenerator {
     // handle all non-property attributes
     // (retention policies, conditions, metadata, etc.)
     this.code.line('const cfnOptions = ret.cfnOptions;');
-    this.code.line(`cfnOptions.creationPolicy = ${CFN_PARSE}.FromCloudFormation.parseCreationPolicy(resourceAttributes.CreationPolicy);`);
-    this.code.line(`cfnOptions.updatePolicy = ${CFN_PARSE}.FromCloudFormation.parseUpdatePolicy(resourceAttributes.UpdatePolicy);`);
-    this.code.line(`cfnOptions.deletionPolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.DeletionPolicy);`);
-    this.code.line(`cfnOptions.updateReplacePolicy = ${CFN_PARSE}.FromCloudFormation.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);`);
-    this.code.line(`cfnOptions.metadata = ${CFN_PARSE}.FromCloudFormation.parseValue(resourceAttributes.Metadata);`);
+    this.code.line('cfnOptions.creationPolicy = cfnParser.parseCreationPolicy(resourceAttributes.CreationPolicy);');
+    this.code.line('cfnOptions.updatePolicy = cfnParser.parseUpdatePolicy(resourceAttributes.UpdatePolicy);');
+    this.code.line('cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(resourceAttributes.DeletionPolicy);');
+    this.code.line('cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);');
+    this.code.line('cfnOptions.metadata = cfnParser.parseValue(resourceAttributes.Metadata);');
 
     // handle DependsOn
     this.code.line('// handle DependsOn');
@@ -277,10 +280,6 @@ export default class CodeGenerator {
     this.code.closeBlock();
     this.code.line('cfnOptions.condition = condition;');
     this.code.closeBlock();
-
-    // ToDo handle:
-    // 1. CreationPolicy
-    // 2. UpdatePolicy
 
     this.code.line('return ret;');
     this.code.closeBlock();
