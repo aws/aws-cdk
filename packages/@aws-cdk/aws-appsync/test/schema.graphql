@@ -1,8 +1,8 @@
-type ServiceVersion {
+type ServiceVersion @aws_api_key {
   version: String!
 }
 
-type Customer {
+type Customer @aws_api_key {
   id: String!
   name: String!
 }
@@ -11,12 +11,12 @@ input SaveCustomerInput {
   name: String!
 }
 
-type Order {
+type Order @aws_api_key {
   customer: String!
   order: String!
 }
 
-type Payment {
+type Payment @aws_api_key {
   id: String!
   amount: String!
 }
@@ -25,7 +25,7 @@ input PaymentInput {
   amount: String!
 }
 
-type Query {
+type Query @aws_api_key {
   getServiceVersion: ServiceVersion
   getCustomers: [Customer]
   getCustomer(id: String): Customer
@@ -44,7 +44,7 @@ input FirstOrderInput {
   quantity: Int!
 }
 
-type Mutation {
+type Mutation @aws_api_key {
   addCustomer(customer: SaveCustomerInput!): Customer
   saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
   removeCustomer(id: String!): Customer

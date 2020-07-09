@@ -12,6 +12,20 @@ import {
   Values,
 } from '../lib';
 
+/*
+ * Creates an Appsync GraphQL API and with multiple tables.
+ * Testing for importing, querying, and mutability.
+ *
+ * Stack verification steps:
+ * Add to a table through appsync GraphQL API.
+ * Read from a table through appsync API.
+ * 
+ * -- aws appsync list-graphql-apis                 -- obtain apiId               --
+ * -- aws appsync get-graphql-api --api-id [apiId]  -- obtain GraphQL endpoint    --
+ * -- aws appsync list-api-keys --api-id [apiId]    -- obtain api key             --
+ * -- bash verify.integ.graphql.sh [apiKey] [url]   -- shows query and mutation   --
+ */
+
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
 
