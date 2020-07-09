@@ -19,7 +19,7 @@ import {
  * Stack verification steps:
  * Add to a table through appsync GraphQL API.
  * Read from a table through appsync API.
- * 
+ *
  * -- aws appsync list-graphql-apis                 -- obtain apiId               --
  * -- aws appsync get-graphql-api --api-id [apiId]  -- obtain GraphQL endpoint    --
  * -- aws appsync list-api-keys --api-id [apiId]    -- obtain api key             --
