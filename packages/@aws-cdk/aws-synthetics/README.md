@@ -68,17 +68,9 @@ canary.createAlarm('CanaryAlarm', {
 
 ### Canary Code
 
-To create a canary that executes complicated scripts, you can use `Code.fromAsset(path)` or `Code.fromBucket(bucket,key)`:
+In addition to `Code.fromInline()`, you can use `Code.fromAsset(path)` or `Code.fromBucket(bucket,key)` for more complicated use cases:
 
 ```ts
-
-// Code.fromInline()
-const canary = new synth.Canary(this,'mycanary',{
-  handler: 'index.handler',
-  canaryName: 'mycanary',
-  code: synth.Code.fromInline('foo'),
-});
-
 // Code.fromAsset()
 const canary = new synth.Canary(this,'mycanary',{
   handler: 'index.handler',
@@ -94,9 +86,8 @@ const canary = new synth.Canary(this,'mycanary',{
 });
 ```
 
-- `Code.fromInline(code)` - inline the handle code as a string.
-- `Code.fromAsset(path)` - specify a directory or a .zip file in the local filesystem which will be zipped and uploaded to S3 before deployment. See also [bundling asset code](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda#Bundling-Asset-Code). Every time you change your canary script in the asset, an asset hash will be updated to ensure that the stack will be updated accordingly.
-- `Code.fromBucket(bucket, key, objectVersion?)` - specify an S3 object that contains the archive of your runtime code.
+- `Code.fromAsset(path)` - specify a directory or a .zip file in the local filesystem which will be zipped and uploaded to S3 before deployment. See also [bundling asset code](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda#Bundling-Asset-Code). When your application builds, the folder structure `nodejs/node_modules` will be automatically appended to your local directory.
+- `Code.fromBucket(bucket, key, objectVersion?)` - specify an S3 object that contains the archive of your runtime code. 
 
 ### Discussion + Future Work
 
