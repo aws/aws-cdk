@@ -34,6 +34,7 @@ const canary = new Canary(this, 'my_test', {
   canaryName: 'date-endpoint-canary',
   handler: 'index.handler',
   code: Code.fromInline('// The code that hits 'example.com/date' goes here'),
+  rate: Rate.EVERY_MINUTE,
 });
 ```
 
@@ -98,3 +99,15 @@ const canary = new synth.Canary(this,'mycanary',{
 - `Code.fromBucket(bucket, key, objectVersion?)` - specify an S3 object that contains the archive of your runtime code.
 
 ### Discussion + Future Work
+
+- Modeling the `Schedule` property
+
+  - Currently the Canary L1 takes a mandatory `Schedule` property that is an object with `DurationInSeconds` and `Expression` as sub-properties. `DurationInSeconds` specifies how long the canary should be active for and `Expression` defines how often the canary runs. I propose the L2 specifies two optional properties, `lifetime` and `rate`. `lifetime` replaces `DurationInSeconds` and offers a logical name to what the property controls, while `rate` is an enum that specifies the `Expression` in a discoverable way. 
+
+  - I expect the `rate` property to look something like this in the constructor: `rate: Rate.EVERY_MINUTE` or `rate: Rate.RUN_ONCE`.
+  
+  - I currently have the default of `lifetime = 0` (runs forever) and `rate: Rate.EVERY_FIVE_MINUTES`.
+  
+- Modeling the `RunConfig` property
+
+  - The Canary L1 takes a mandatory `RunConfig` property which is an object with a `TimeoutInSeconds` sub-property. This provides the upper-bound in how long the canary can run. I propose the L2 specifies the optional property `timeout` which defaults to the duration in `rate`.
