@@ -24,10 +24,6 @@ Because of this wait time, it's better to provision your certificates
 either in a separate stack from your main service, or provision them
 manually and import them into your CDK application.
 
-The CDK also provides a custom resource which can be used for automatic
-validation if the DNS records for the domain are managed through Route53 (see
-below).
-
 ### Email validation
 
 Email-validated certificates (the default) are validated by receiving an
@@ -39,28 +35,28 @@ in the AWS Certificate Manager User Guide.
 
 ### DNS validation
 
-DNS-validated certificates are validated by configuring appropriate DNS
-records for your domain.
-
-See [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
-in the AWS Certificate Manager User Guide.
-
-```ts
-new Certificate(this, 'Certificate', {
-  domainName: 'hello.example.com',
-  validation: CertificateValidation.fromDns(),
-});
-```
-
 If Amazon Route 53 is your DNS provider for the requested domain, the DNS record can be
 created automatically:
 
 ```ts
 new Certificate(this, 'Certificate', {
   domainName: 'hello.example.com',
-  validation: CertificateValidation.fromDns(myHostedZone),
+  validation: CertificateValidation.fromDns(myHostedZone), // Route 53 hosted zone
 });
 ```
+
+Otherwise DNS records must be added manually and the stack will not complete
+creating until the records are added.
+
+```ts
+new Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: CertificateValidation.fromDns(), // Records must be added manually
+});
+```
+
+See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
+in the AWS Certificate Manager User Guide.
 
 When working with multiple domains, you can specify a default validation hosted zone:
 
