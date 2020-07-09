@@ -13,7 +13,7 @@ import {
   CfnGraphQLApi,
   CfnGraphQLSchema,
 } from './appsync.generated';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './dataSource';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 
 /**
  * enum with all possible values for AppSync authorization type
