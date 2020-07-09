@@ -1,10 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, ParameterGroup } from '../lib';
+import { ParameterGroup } from '../lib';
 
 export = {
-  'create a parameter group'(test: Test) {
+  "does not create a parameter group if it wasn't bound to a cluster or instance"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -18,6 +18,27 @@ export = {
     });
 
     // THEN
+    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 0));
+    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 0));
+
+    test.done();
+  },
+
+  'create a parameter group when bound to an instance'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc',
+      parameters: {
+        key: 'value',
+      },
+    });
+    parameterGroup.bindToInstance({});
+
+    // THEN
     expect(stack).to(haveResource('AWS::RDS::DBParameterGroup', {
       Description: 'desc',
       Family: 'hello',
@@ -29,18 +50,19 @@ export = {
     test.done();
   },
 
-  'create a cluster parameter group'(test: Test) {
+  'create a parameter group when bound to a cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    new ClusterParameterGroup(stack, 'Params', {
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
       family: 'hello',
       description: 'desc',
       parameters: {
         key: 'value',
       },
     });
+    parameterGroup.bindToCluster({});
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
@@ -54,18 +76,41 @@ export = {
     test.done();
   },
 
+  'creates 2 parameter groups when bound to a cluster and an instance'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc',
+      parameters: {
+        key: 'value',
+      },
+    });
+    parameterGroup.bindToCluster({});
+    parameterGroup.bindToInstance({});
+
+    // THEN
+    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 1));
+    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 1));
+
+    test.done();
+  },
+
   'Add an additional parameter to an existing parameter group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
+    const clusterParameterGroup = new ParameterGroup(stack, 'Params', {
       family: 'hello',
       description: 'desc',
       parameters: {
         key1: 'value1',
       },
     });
+    clusterParameterGroup.bindToCluster({});
 
     clusterParameterGroup.addParameter('key2', 'value2');
 

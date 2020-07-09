@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
-import { ClusterParameterGroup, IParameterGroup, ParameterGroup } from './parameter-group';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 import { compare } from './private/version';
 
@@ -69,7 +69,7 @@ export interface IClusterEngine {
    * The family to use for ParameterGroups using this engine.
    * This is usually equal to "<engineType><engineMajorVersion>",
    * but can sometimes be a variation of that.
-   * You can pass this property when creating new ClusterParameterGroup.
+   * You can pass this property when creating new ParameterGroup.
    */
   readonly parameterGroupFamily: string;
 
@@ -166,7 +166,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
-      ? new ClusterParameterGroup(scope, 'ClusterParameterGroup', {
+      ? new ParameterGroup(scope, 'ClusterParameterGroup', {
         family: this.parameterGroupFamily,
       })
       : config.parameterGroup);

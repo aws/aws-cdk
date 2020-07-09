@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
+import { DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
@@ -120,7 +120,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const group = new ClusterParameterGroup(stack, 'Params', {
+    const group = new ParameterGroup(stack, 'Params', {
       family: 'hello',
       description: 'bye',
       parameters: {
@@ -888,7 +888,7 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const parameterGroup = new ClusterParameterGroup(stack, 'ParameterGroup', {
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
       family: 'family',
       parameters: {
         key: 'value',

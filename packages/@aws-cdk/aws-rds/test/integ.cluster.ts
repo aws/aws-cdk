@@ -1,15 +1,14 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
-import { ClusterParameterGroup } from '../lib/parameter-group';
+import { DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
-const params = new ClusterParameterGroup(stack, 'Params', {
+const params = new ParameterGroup(stack, 'Params', {
   family: 'aurora5.6',
   description: 'A nice parameter group',
   parameters: {
