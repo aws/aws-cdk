@@ -106,6 +106,58 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
+## Nested Stacks
+If you have two templates in a [nested](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) relationship, like this:
+```json
+{
+  "Resources": {
+    "ChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "my-bucket-name"
+        }
+      }
+    }
+  }
+}
+```
+
+```json
+{
+  "Parameters": {
+    "MyBucketParameter": {
+      "Type": "String",
+      "Default": "default-bucket-param-name"
+    }
+  },
+  "Resources": {
+    "BucketImport": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "MyBucketParameter"
+        }
+      }
+    }
+  }
+}
+```
+
+You can access the nested stack and perform all operations you would on any other CDK Stack if you include the parent stack as follows:
+
+```typescript
+new inc.CfnInclude(stack, 'ParentStack', {
+  templateFile: 'path/to/my-parent-template.json',
+  nestedStacks: {
+    "ChildStack": {
+      templateFile: 'path/to/my-nested-template.json',
+    },
+  },
+});
+```
+
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
