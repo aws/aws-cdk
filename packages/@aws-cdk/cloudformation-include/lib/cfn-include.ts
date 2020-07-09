@@ -139,7 +139,7 @@ export class CfnInclude extends core.CfnElement {
    * If an Output with the given name is not present in the template,
    * throws an exception.
    *
-   * @param logicalId the name of the output to retrieve.
+   * @param logicalId the name of the output to retrieve
    */
   public getOutput(logicalId: string): core.CfnOutput {
     const ret = this.outputs[logicalId];
