@@ -53,7 +53,7 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::CloudWatch::CompositeAlarm', {
-      AlarmName: 'CompositeAlarm',
+      AlarmName: 'stackCompositeAlarm5626DF56',
       AlarmRule: {
         'Fn::Join': [
           '',

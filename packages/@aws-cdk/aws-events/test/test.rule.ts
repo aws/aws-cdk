@@ -579,42 +579,6 @@ export = {
       test.done();
     },
 
-    'requires that the source stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(undefined, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Event stack which uses cross-account targets must be part of a CDK app/);
-
-      test.done();
-    },
-
-    'requires that the target stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(app, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(undefined, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Target stack which uses cross-account event targets must be part of a CDK app/);
-
-      test.done();
-    },
-
     'requires that the source and target stacks be part of the same App'(test: Test) {
       const sourceApp = new cdk.App();
       const sourceAccount = '123456789012';
