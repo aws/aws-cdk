@@ -66,6 +66,23 @@ When working with multiple domains, you can specify a default validation hosted 
 
 [multiple domains DNS validation](test/example.dns.lit.ts)
 
+Use the `DnsValidatedCertificate` construct for cross-region certificate creation:
+
+```ts
+new DnsValidatedCertificate(this, 'CrossRegionCertificate', {
+  domainName: 'hello.example.com',
+  hostedZone: myHostedZone,
+  region: 'us-east-1',
+});
+```
+
+This is useful when deploying a stack in a region other than `us-east-1` with a
+certificate for a CloudFront distribution.
+
+If cross-region is not needed, the recommended solution is to use the
+`Certificate` construct which uses a native CloudFormation implementation.
+
+
 ### Importing
 
 If you want to import an existing certificate, you can do so from its ARN:
