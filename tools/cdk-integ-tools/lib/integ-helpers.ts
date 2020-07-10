@@ -117,7 +117,7 @@ export class IntegrationTest {
       // adding dependencies on the libraries that model it.
       //
       // FIXME: Refactor later if it doesn't introduce dependency cycles
-      const cloudManifest = new cxapi.CloudAssembly(path.resolve(this.directory, 'cdk.out'));
+      const cloudManifest = new cxapi.CloudAssembly(path.resolve(this.directory, CDK_OUTDIR));
 
       const stacksToDiff = await this.readStackPragma();
 
