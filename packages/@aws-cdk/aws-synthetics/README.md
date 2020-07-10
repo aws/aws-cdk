@@ -97,6 +97,6 @@ const canary = new synth.Canary(this,'mycanary',{
   
 - `Code.fromAsset()` path
 
-  - The problem is that the Canary resource requires imported code to be a zip file with the directory structure `nodejs/node_modules`. This causes pain for customers because this requirement is unclear and dissimilar to lambda (the other common `fromAsset()` implementation). Currently the API will throw an error if the directory structure is not there. Ideally this evolves to one of the following options:
+  - The issue is that the Canary resource requires imported code to have the directory structure `nodejs/node_modules`. This causes pain for customers because this requirement is unclear and dissimilar to lambda (the other common `fromAsset()` implementation). Currently the API will throw an error if the directory structure is not there. Ideally this implementation evolves to one of the following options:
     - The API will copy the files and append the `nodejs/node_modules` structure if it is missing at `synth` time. 
     - The API will add the `nodejs/node_modules` prefix at `build` time by modifying how `Asset` publishes directories. However, this implementation could alter how `assetHash` currently works.
