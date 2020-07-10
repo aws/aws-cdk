@@ -32,8 +32,6 @@ async function main() {
       const diff = diffTemplate(expected[i].template, actual[i].template);
 
       if (!diff.isEmpty) {
-        failures.push(test.name);
-        process.stdout.write('CHANGED.\n');
         formatDifferences(process.stdout, diff);
         failed = true;
       }
@@ -44,7 +42,10 @@ async function main() {
       art.assembly.delete();
     }
 
-    if (!failed) {
+    if (failed) {
+      failures.push(test.name);
+      process.stdout.write('CHANGED.\n');
+    } else {
       process.stdout.write('OK.\n');
     }
   }
