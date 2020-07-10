@@ -281,7 +281,7 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
       return null;
     }
     const status = stack.stackStatus;
-    if (!status.isInProgress) {
+    if (status.isInProgress) {
       debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
     }

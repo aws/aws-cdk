@@ -26,7 +26,7 @@ export class StackStatus {
   }
 
   get isInProgress(): boolean {
-    return !this.name.endsWith('_IN_PROGRESS');
+    return this.name.endsWith('_IN_PROGRESS');
   }
 
   get isNotFound(): boolean {
