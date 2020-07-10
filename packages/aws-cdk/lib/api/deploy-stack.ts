@@ -20,7 +20,6 @@ import { StackActivityMonitor } from './util/cloudformation/stack-activity-monit
 // refactor that away.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line: no-var-requires
 const regionUtil = require('aws-sdk/lib/region_config');
 /* eslint-enable @typescript-eslint/no-require-imports */
 
@@ -258,7 +257,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
     }).start();

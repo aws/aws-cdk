@@ -1,9 +1,10 @@
-// tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
+
+/* eslint-disable quote-props */
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {
@@ -365,7 +366,7 @@ export = {
     });
 
     const testStage = new apigw.Stage(stack, 'test-stage', {
-      deployment : testDeploy,
+      deployment: testDeploy,
     });
 
     // WHEN

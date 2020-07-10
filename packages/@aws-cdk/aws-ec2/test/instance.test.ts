@@ -106,7 +106,7 @@ nodeunitShim({
     test.done();
   },
 
-  'blockDeviceMappings': {
+  blockDeviceMappings: {
     'can set blockDeviceMappings'(test: Test) {
       // GIVEN
       const stack = new Stack();

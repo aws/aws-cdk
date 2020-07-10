@@ -147,7 +147,6 @@ export interface ICustomAttribute {
  * Configuration that will be fed into CloudFormation for any custom attribute type.
  */
 export interface CustomAttributeConfig {
-  // tslint:disable:max-line-length
   /**
    * The data type of the custom attribute.
    *

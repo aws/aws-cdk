@@ -13,13 +13,15 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, setLogLevel } from '../lib/logging';
+import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
-// tslint:disable:no-shadowed-variable max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-shadow */ // yargs
+
 async function parseCommandLineArguments() {
   // Use the following configuration for array arguments:
   //
@@ -227,9 +229,20 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
+        // Use new bootstrapping if it's requested via environment variable, or if
+        // new style stack synthesis has been configured in `cdk.json`.
+        let useNewBootstrapping = false;
+        if (process.env.CDK_NEW_BOOTSTRAP) {
+          print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
+          useNewBootstrapping = true;
+        } else if (configuration.context.get(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+          print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
+          useNewBootstrapping = true;
+        }
+
         return await cli.bootstrap(args.ENVIRONMENTS, toolkitStackName,
           args.roleArn,
-          !!process.env.CDK_NEW_BOOTSTRAP,
+          useNewBootstrapping,
           argv.force,
           {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
