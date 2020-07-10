@@ -20,3 +20,5 @@ nyc.config.js
 !build.js
 cfn-types-2-classes.json
 !jest.config.js
+
+junit.xml
