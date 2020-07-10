@@ -5810,6 +5810,16 @@ jest-jasmine2@^25.5.4:
     pretty-format "^25.5.0"
     throat "^5.0.0"
 
+jest-junit@^11.0.1:
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/jest-junit/-/jest-junit-11.0.1.tgz#944b997b7318efd1f021b4f0fce4937f8d66f392"
+  integrity sha512-stgc0mBoiSg/F9qWd4KkmR3K7Nk2u+M/dc1oup7gxz9mrzGcEaU2YL9/0QscVqqg3IOaA1P5ZXtozG/XR6j6nw==
+  dependencies:
+    mkdirp "^1.0.4"
+    strip-ansi "^5.2.0"
+    uuid "^3.3.3"
+    xml "^1.0.1"
+
 jest-leak-detector@^25.5.0:
   version "25.5.0"
   resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-25.5.0.tgz#2291c6294b0ce404241bb56fe60e2d0c3e34f0bb"
@@ -6924,7 +6934,7 @@ mkdirp-promise@^5.0.1:
   dependencies:
     mkdirp "*"
 
-mkdirp@*, mkdirp@1.x:
+mkdirp@*, mkdirp@1.x, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
@@ -10234,6 +10244,11 @@ xml2js@0.4.19:
   dependencies:
     sax ">=0.6.0"
     xmlbuilder "~9.0.1"
+
+xml@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
+  integrity sha1-eLpyAgApxbyHuKgaPPzXS0ovweU=
 
 xmlbuilder@^15.1.1:
   version "15.1.1"

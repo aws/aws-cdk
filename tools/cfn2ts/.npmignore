@@ -11,3 +11,4 @@ coverage
 
 # exclude cdk artifacts
 **/cdk.out
+junit.xml
