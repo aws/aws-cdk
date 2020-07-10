@@ -10,3 +10,4 @@ dist
 .nyc_output
 coverage
 nyc.config.js
+junit.xml

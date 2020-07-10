@@ -36,6 +36,7 @@
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^26.0.3",
     "@types/yargs": "^15.0.5",
+    "jest-junit": "^11.0.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -49,13 +50,13 @@
     "eslint-plugin-import": "^2.22.0",
     "fs-extra": "^9.0.1",
     "jest": "^25.5.4",
-    "jsii": "^1.7.0",
-    "jsii-pacmak": "^1.7.0",
+    "jsii": "^1.8.0",
+    "jsii-pacmak": "^1.8.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
     "ts-jest": "^26.1.1",
     "tslint": "^5.20.1",
-    "typescript": "~3.9.5",
+    "typescript": "~3.9.6",
     "yargs": "^15.3.1",
     "yarn-cling": "0.0.0"
   },
