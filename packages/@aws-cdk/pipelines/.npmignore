@@ -22,5 +22,6 @@ tsconfig.json
 
 # exclude cdk artifacts
 **/cdk.out
+jest.config.js
 junit.xml
 package/node_modules
