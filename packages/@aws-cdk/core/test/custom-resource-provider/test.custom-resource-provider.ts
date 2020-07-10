@@ -17,10 +17,6 @@ export = {
       runtime: CustomResourceProviderRuntime.NODEJS_12,
     });
 
-    // const assetHash = '925e7fbbec7bdbf0136ef5a07b8a0fbe0b1f1bb4ea50ae2154163df78aa9f226';
-    const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging | undefined;
-    const assetHash = staging?.sourceHash;
-
     // THEN
     test.ok(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js')), 'expecting entrypoint to be copied to the handler directory');
     const cfn = toCloudFormation(stack);
