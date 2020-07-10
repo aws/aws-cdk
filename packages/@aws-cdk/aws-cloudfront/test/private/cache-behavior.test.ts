@@ -1,7 +1,8 @@
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, CacheBehavior, Origin } from '../lib';
+import { AllowedMethods, Origin } from '../../lib';
+import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
 let stack: Stack;

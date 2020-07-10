@@ -1,9 +1,9 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { CacheBehavior, CacheBehaviorOptions } from './behavior';
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
+import { CacheBehavior } from './private/cache-behavior';
 
 /**
  * Interface for CloudFront distributions
@@ -50,14 +50,14 @@ export interface DistributionProps {
   /**
    * The default behavior for the distribution.
    */
-  readonly defaultBehavior: CacheBehaviorOptions;
+  readonly defaultBehavior: BehaviorOptions;
 
   /**
    * Additional behaviors for the distribution, mapped by the pathPattern that specifies which requests to apply the behavior to.
    *
    * @default no additional behaviors are added.
    */
-  readonly additionalBehaviors?: Record<string, CacheBehaviorOptions>;
+  readonly additionalBehaviors?: Record<string, BehaviorOptions>;
 
   /**
    * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
@@ -177,7 +177,7 @@ export class Distribution extends Resource implements IDistribution {
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, behaviorOptions: CacheBehaviorOptions) {
+  public addBehavior(pathPattern: string, behaviorOptions: BehaviorOptions) {
     if (pathPattern === '*') {
       throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
@@ -240,4 +240,55 @@ export enum OriginProtocolPolicy {
   HTTP_ONLY = 'http-only',
   MATCH_VIEWER = 'match-viewer',
   HTTPS_ONLY = 'https-only',
+}
+
+/**
+ * The HTTP methods that the Behavior will accept requests on.
+ */
+export class AllowedMethods {
+  /** HEAD and GET */
+  public static readonly ALLOW_GET_HEAD = new AllowedMethods(['GET', 'HEAD']);
+  /** HEAD, GET, and OPTIONS */
+  public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
+  /** All supported HTTP methods */
+  public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
+
+  /** HTTP methods supported */
+  public readonly methods: string[];
+
+  private constructor(methods: string[]) { this.methods = methods; }
+}
+
+/**
+ * Options for creating a new behavior.
+ */
+export interface BehaviorOptions {
+  /**
+   * The origin that you want CloudFront to route requests to when they match this cache behavior.
+   */
+  readonly origin: Origin;
+
+  /**
+   * HTTP methods to allow for this behavior.
+   *
+   * @default GET and HEAD
+   */
+  readonly allowedMethods?: AllowedMethods;
+
+  /**
+   * Whether CloudFront will forward query strings to the origin.
+   * If this is set to true, CloudFront will forward all query parameters to the origin, and cache
+   * based on all parameters. See `forwardQueryStringCacheKeys` for a way to limit the query parameters
+   * CloudFront caches on.
+   *
+   * @default false
+   */
+  readonly forwardQueryString?: boolean;
+
+  /**
+   * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
+   *
+   * @default empty list
+   */
+  readonly forwardQueryStringCacheKeys?: string[];
 }
