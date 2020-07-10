@@ -1,9 +1,9 @@
+import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
-import * as util from 'util';
-import { error, isVerbose, setVerbose } from '../../../logging';
+import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
 interface StackActivity {
@@ -28,13 +28,13 @@ export interface StackActivityMonitorProps {
   readonly resourcesTotal?: number;
 
   /**
-   * Whether 'verbose' was requested in the CLI
+   * The log level that was requested in the CLI
    *
-   * If verbose is requested, we'll always use the full history printer.
+   * If verbose or trace is requested, we'll always use the full history printer.
    *
-   * @default - Use value from logging.isVerbose
+   * @default - Use value from logging.logLevel
    */
-  readonly verbose?: boolean;
+  readonly logLevel?: LogLevel;
 }
 
 export class StackActivityMonitor {
@@ -78,7 +78,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.verbose ?? isVerbose;
+    const verbose = options.logLevel ?? logLevel;
     const fancyOutputAvailable = !isWindows && stream.isTTY;
 
     this.printer = fancyOutputAvailable && !verbose
@@ -479,7 +479,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldVerbose: boolean = false;
+  private oldLogLevel: LogLevel = LogLevel.DEFAULT;
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
@@ -520,12 +520,12 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    this.oldVerbose = isVerbose;
-    setVerbose(false);
+    this.oldLogLevel = logLevel;
+    setLogLevel(LogLevel.DEFAULT);
   }
 
   public stop() {
-    setVerbose(this.oldVerbose);
+    setLogLevel(this.oldLogLevel);
 
     // Print failures at the end
     const lines = new Array<string>();

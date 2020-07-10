@@ -14,7 +14,6 @@ import {
   monoRepoRoot,
 } from './util';
 
-// tslint:disable-next-line: no-var-requires
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
 
 /**
@@ -45,6 +44,37 @@ export class DescriptionIsRequired extends ValidationRule {
       pkg.report({ ruleName: this.name, message: 'Description is required' });
     }
   }
+}
+
+/**
+ * Verify cdk.out directory is included in npmignore since we should not be
+ * publihsing it.
+ */
+export class CdkOutMustBeNpmIgnored extends ValidationRule {
+
+  public readonly name = 'package-info/npm-ignore-cdk-out';
+
+  public validate(pkg: PackageJson): void {
+
+    const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
+
+    if (fs.existsSync(npmIgnorePath)) {
+
+      const npmIgnore = fs.readFileSync(npmIgnorePath);
+
+      if (!npmIgnore.includes('**/cdk.out')) {
+        pkg.report({
+          ruleName: this.name,
+          message: `${npmIgnorePath}: Must exclude **/cdk.out`,
+          fix: () => fs.writeFileSync(
+            npmIgnorePath,
+            `${npmIgnore}\n# exclude cdk artifacts\n**/cdk.out`
+          )
+        });
+      }
+    }
+  }
+
 }
 
 /**
@@ -489,6 +519,7 @@ export class CDKPackage extends ValidationRule {
 
     const merkleMarker = '.LAST_PACKAGE';
 
+    if (!shouldUseCDKBuildTools(pkg)) { return; }
     expectJSON(this.name, pkg, 'scripts.package', 'cdk-package');
 
     const outdir = 'dist';
@@ -852,6 +883,15 @@ export class MustIgnoreSNK extends ValidationRule {
   public validate(pkg: PackageJson): void {
     fileShouldContain(this.name, pkg, '.npmignore', '*.snk');
     fileShouldContain(this.name, pkg, '.gitignore', '*.snk');
+  }
+}
+
+export class MustIgnoreJunitXml extends ValidationRule {
+  public readonly name = 'ignore/junit';
+
+  public validate(pkg: PackageJson): void {
+    fileShouldContain(this.name, pkg, '.npmignore', 'junit.xml');
+    fileShouldContain(this.name, pkg, '.gitignore', 'junit.xml');
   }
 }
 
@@ -1366,7 +1406,7 @@ function hasIntegTests(pkg: PackageJson) {
 function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
 }
 
 function repoRoot(dir: string) {

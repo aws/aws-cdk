@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
@@ -36,7 +37,6 @@ test('NodejsFunction with .ts handler', () => {
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.'), // Automatically finds .ts handler file
-    global: 'handler',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -60,13 +60,13 @@ test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
     projectRoot: PROJECT_ROOT,
-    containerEnvironment: {
+    parcelEnvironment: {
       KEY: 'VALUE',
     },
   });
 
   expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    environment: {
+    parcelEnvironment: {
       KEY: 'VALUE',
     },
   }));
@@ -77,6 +77,18 @@ test('throws when entry is not js/ts', () => {
     entry: 'handler.py',
     projectRoot: PROJECT_ROOT,
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
+});
+
+test('accepts tsx', () => {
+  const entry = path.join(__dirname, 'handler.tsx');
+
+  fs.symlinkSync(path.join(__dirname, 'function.test.handler1.ts'), entry);
+
+  expect(() => new NodejsFunction(stack, 'Fn', {
+    entry,
+  })).not.toThrow();
+
+  fs.unlinkSync(entry);
 });
 
 test('throws when entry does not exist', () => {
@@ -97,4 +109,15 @@ test('throws with the wrong runtime family', () => {
     projectRoot: PROJECT_ROOT,
     runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only `NODEJS` runtimes are supported/);
+});
+
+test('resolves entry to an absolute path', () => {
+  // WHEN
+  new NodejsFunction(stack, 'fn', {
+    entry: 'lib/index.ts',
+  });
+
+  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
+  }));
 });

@@ -103,7 +103,7 @@ describe('User Pool Client', () => {
     })).not.toThrow();
   });
 
-  test('custom resource is added when cloudFrontDistribution method is called', () => {
+  test('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
@@ -135,6 +135,21 @@ describe('User Pool Client', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('cloudFrontDomainName property can be called multiple times', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+    });
+
+    const cfDomainNameFirst = domain.cloudFrontDomainName;
+    const cfDomainNameSecond = domain.cloudFrontDomainName;
+
+    expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
   });
 
   describe('signInUrl', () => {

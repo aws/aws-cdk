@@ -20,3 +20,7 @@ lambda-packages/aws-global-table-coordinator/node_modules
 
 tsconfig.json
 .eslintrc.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

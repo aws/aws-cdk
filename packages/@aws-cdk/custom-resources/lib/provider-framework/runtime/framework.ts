@@ -1,5 +1,5 @@
-// tslint:disable: no-console
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
@@ -109,11 +109,31 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
     log('user function threw an error:', resp.FunctionError);
-    const errorMessage = jsonPayload.errorMessage || 'error';
-    const trace = jsonPayload.trace ? '\nRemote function error: ' + jsonPayload.trace.join('\n') : '';
 
-    const e = new Error(errorMessage);
-    e.stack += trace;
+    const errorMessage = jsonPayload.errorMessage || 'error';
+
+    // parse function name from arn
+    // arn:${Partition}:lambda:${Region}:${Account}:function:${FunctionName}
+    const arn = functionArn.split(':');
+    const functionName = arn[arn.length - 1];
+
+    // append a reference to the log group.
+    const message = [
+      errorMessage,
+      '',
+      `Logs: /aws/lambda/${functionName}`,  // cloudwatch log group
+      '',
+    ].join('\n');
+
+    const e = new Error(message);
+
+    // the output that goes to CFN is what's in `stack`, not the error message.
+    // if we have a remote trace, construct a nice message with log group information
+    if (jsonPayload.trace) {
+      // skip first trace line because it's the message
+      e.stack = [ message, ...jsonPayload.trace.slice(1) ].join('\n');
+    }
+
     throw e;
   }
 

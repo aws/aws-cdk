@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import { AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
@@ -25,10 +25,14 @@ export = {
     test.ok(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js')), 'expecting entrypoint to be copied to the handler directory');
     const cfn = toCloudFormation(stack);
 
-    const params = Object.keys(cfn.Parameters);
-    const bucketKeyParam = params[0];
-    const objectParam = params[1];
-    const hashParam = params[2];
+    // The asset hash constantly changes, so in order to not have to chase it, just look
+    // it up from the output.
+    const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
+    const assetHash = staging.sourceHash;
+    const paramNames = Object.keys(cfn.Parameters);
+    const bucketParam = paramNames[0];
+    const keyParam = paramNames[1];
+    const hashParam = paramNames[2];
 
     test.deepEqual(cfn, {
       Resources: {
@@ -58,9 +62,7 @@ export = {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              S3Bucket: {
-                Ref: bucketKeyParam,
-              },
+              S3Bucket: { Ref: bucketParam },
               S3Key: {
                 'Fn::Join': [
                   '',
@@ -71,9 +73,7 @@ export = {
                         {
                           'Fn::Split': [
                             '||',
-                            {
-                              Ref: objectParam,
-                            },
+                            { Ref: keyParam },
                           ],
                         },
                       ],
@@ -84,9 +84,7 @@ export = {
                         {
                           'Fn::Split': [
                             '||',
-                            {
-                              Ref: objectParam,
-                            },
+                            { Ref: keyParam },
                           ],
                         },
                       ],
@@ -112,11 +110,11 @@ export = {
         },
       },
       Parameters: {
-        [bucketKeyParam]: {
+        [bucketParam]: {
           Type: 'String',
           Description: `S3 bucket for asset "${assetHash}"`,
         },
-        [objectParam]: {
+        [keyParam]: {
           Type: 'String',
           Description: `S3 key for asset version "${assetHash}"`,
         },

@@ -9,6 +9,7 @@ export type Template = {
 };
 
 interface TemplateParameter {
+  Type: string;
   Default?: any;
   [key: string]: any;
 }
@@ -122,7 +123,21 @@ export class CloudFormationStack {
    * Empty list if the stack does not exist.
    */
   public get parameterNames(): string[] {
-    return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
+    return Object.keys(this.parameters);
+  }
+
+  /**
+   * Return the names and values of all current parameters to the stack
+   *
+   * Empty object if the stack does not exist.
+   */
+  public get parameters(): Record<string, string> {
+    if (!this.exists) { return {}; }
+    const ret: Record<string, string> = {};
+    for (const param of this.stack!.Parameters ?? []) {
+      ret[param.ParameterKey!] = param.ParameterValue!;
+    }
+    return ret;
   }
 
   /**
@@ -185,7 +200,7 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
@@ -201,7 +216,7 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
       return description;
     }
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`);
   });
 
@@ -286,23 +301,58 @@ export class TemplateParameters {
   }
 
   /**
-   * Return the set of CloudFormation parameters to pass to the CreateStack or UpdateStack API
+   * Calculate stack parameters to pass from the given desired parameter values
+   *
+   * Will throw if parameters without a Default value or a Previous value are not
+   * supplied.
+   */
+  public toStackParameters(updates: Record<string, string | undefined>): StackParameters {
+    return new StackParameters(this.params, updates);
+  }
+
+  /**
+   * From the template, the given desired values and the current values, calculate the changes to the stack parameters
    *
    * Will take into account parameters already set on the template (will emit
    * 'UsePreviousValue: true' for those unless the value is changed), and will
    * throw if parameters without a Default value or a Previous value are not
    * supplied.
    */
-  public makeApiParameters(updates: Record<string, string | undefined>, prevParams: string[]): CloudFormation.Parameter[] {
+  public diff(updates: Record<string, string | undefined>, previousValues: Record<string, string>): StackParameters {
+    return new StackParameters(this.params, updates, previousValues);
+  }
+}
+
+export class StackParameters {
+  /**
+   * The CloudFormation parameters to pass to the CreateStack or UpdateStack API
+   */
+  public readonly apiParameters: CloudFormation.Parameter[] = [];
+
+  private _changes = false;
+
+  constructor(
+    private readonly params: Record<string, TemplateParameter>,
+    updates: Record<string, string | undefined>,
+    previousValues: Record<string, string> = {}) {
+
     const missingRequired = new Array<string>();
 
-    const ret: CloudFormation.Parameter[] = [];
     for (const [key, param] of Object.entries(this.params)) {
+      // If any of the parameters are SSM parameters, they will always lead to a change
+      if (param.Type.startsWith('AWS::SSM::Parameter::')) {
+        this._changes = true;
+      }
 
       if (key in updates && updates[key]) {
-        ret.push({ ParameterKey: key, ParameterValue: updates[key] });
-      } else if (prevParams.includes(key)) {
-        ret.push({ ParameterKey: key, UsePreviousValue: true });
+        this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
+
+        // If the updated value is different than the current value, this will lead to a change
+        if (!(key in previousValues) || updates[key] !== previousValues[key]) {
+          this._changes = true;
+        }
+      } else if (key in previousValues) {
+        this.apiParameters.push({ ParameterKey: key, UsePreviousValue: true });
       } else if (param.Default === undefined) {
         missingRequired.push(key);
       }
@@ -318,10 +368,14 @@ export class TemplateParameters {
     const unknownParam = ([key, _]: [string, any]) => this.params[key] === undefined;
     const hasValue = ([_, value]: [string, any]) => !!value;
     for (const [key, value] of Object.entries(updates).filter(unknownParam).filter(hasValue)) {
-      ret.push({ ParameterKey: key, ParameterValue: value });
+      this.apiParameters.push({ ParameterKey: key, ParameterValue: value });
     }
+  }
 
-    return ret;
-
+  /**
+   * Whether this set of parameter updates will change the actual stack values
+   */
+  public get changed() {
+    return this._changes;
   }
 }

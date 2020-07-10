@@ -1,15 +1,17 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource } from '../lib';
+import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
 import { testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
+
+const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export = {
   'basic usage'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster');
+    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
 
     const manifest = [
       {

@@ -1,5 +1,5 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { basename, dirname } from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
@@ -74,7 +74,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
   }
 
   // For any path in ``mod.paths`` that is a node_modules folder, use its parent directory instead.
-  const paths = mod.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
+  const paths = mod?.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
 
   try {
     const packagePath = require.resolve(

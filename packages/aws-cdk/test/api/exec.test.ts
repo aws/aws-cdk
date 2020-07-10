@@ -5,18 +5,18 @@ import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
-import { setVerbose } from '../../lib/logging';
+import { LogLevel, setLogLevel } from '../../lib/logging';
 import { Configuration } from '../../lib/settings';
 import * as bockfs from '../bockfs';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
 
-setVerbose(true);
-
 let sdkProvider: MockSdkProvider;
 let config: Configuration;
 beforeEach(() => {
+  setLogLevel(LogLevel.DEBUG);
+
   sdkProvider = new MockSdkProvider();
   config = new Configuration();
 
@@ -34,6 +34,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setLogLevel(LogLevel.DEFAULT);
+
   sinon.restore();
   bockfs.restore();
 });

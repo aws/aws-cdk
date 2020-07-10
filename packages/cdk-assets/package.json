@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/archiver": "^3.1.0",
     "@types/glob": "^7.1.2",
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^26.0.3",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^10.17.26",
     "@types/yargs": "^15.0.5",
@@ -47,7 +47,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^4.0.1",
-    "aws-sdk": "^2.702.0",
+    "aws-sdk": "^2.713.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },

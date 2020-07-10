@@ -10,7 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStack  } from './util/cloudformation';
+import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStack } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
@@ -20,7 +20,6 @@ import { StackActivityMonitor } from './util/cloudformation/stack-activity-monit
 // refactor that away.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line: no-var-requires
 const regionUtil = require('aws-sdk/lib/region_config');
 /* eslint-enable @typescript-eslint/no-require-imports */
 
@@ -186,7 +185,20 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     cloudFormationStack = CloudFormationStack.doesNotExist(cfn, deployName);
   }
 
-  if (await canSkipDeploy(options, cloudFormationStack)) {
+  // Detect "legacy" assets (which remain in the metadata) and publish them via
+  // an ad-hoc asset manifest, while passing their locations via template
+  // parameters.
+  const legacyAssets = new AssetManifestBuilder();
+  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
+
+  const finalParameterValues = { ...options.parameters, ...assetParams };
+
+  const templateParams = TemplateParameters.fromTemplate(stackArtifact.template);
+  const stackParams = options.usePreviousParameters
+    ? templateParams.diff(finalParameterValues, cloudFormationStack.parameters)
+    : templateParams.toStackParameters(finalParameterValues);
+
+  if (await canSkipDeploy(options, cloudFormationStack, stackParams)) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     return {
       noOp: true,
@@ -197,17 +209,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   } else {
     debug(`${deployName}: deploying...`);
   }
-
-  // Detect "legacy" assets (which remain in the metadata) and publish them via
-  // an ad-hoc asset manifest, while passing their locations via template
-  // parameters.
-  const legacyAssets = new AssetManifestBuilder();
-  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
-
-  const apiParameters = TemplateParameters.fromTemplate(stackArtifact.template).makeApiParameters({
-    ...options.parameters,
-    ...assetParams,
-  }, options.usePreviousParameters ? cloudFormationStack.parameterNames : []);
 
   const executionId = uuid.v4();
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
@@ -226,7 +227,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     Description: `CDK Changeset for execution ${executionId}`,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,
-    Parameters: apiParameters,
+    Parameters: stackParams.apiParameters,
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
@@ -256,7 +257,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
     await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
     }).start();
@@ -371,8 +372,18 @@ export async function destroyStack(options: DestroyStackOptions) {
 
 /**
  * Checks whether we can skip deployment
+ *
+ * We do this in a complicated way by preprocessing (instead of just
+ * looking at the changeset), because if there are nested stacks involved
+ * the changeset will always show the nested stacks as needing to be
+ * updated, and the deployment will take a long time to in effect not
+ * do anything.
  */
-async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormationStack: CloudFormationStack): Promise<boolean> {
+async function canSkipDeploy(
+  deployStackOptions: DeployStackOptions,
+  cloudFormationStack: CloudFormationStack,
+  params: StackParameters): Promise<boolean> {
+
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
 
@@ -403,6 +414,12 @@ async function canSkipDeploy(deployStackOptions: DeployStackOptions, cloudFormat
   // Termination protection has been updated
   if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);
+    return false;
+  }
+
+  // Parameters have changed
+  if (params.changed) {
+    debug(`${deployName}: parameters have changed`);
     return false;
   }
 

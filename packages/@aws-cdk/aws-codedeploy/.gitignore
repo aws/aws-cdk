@@ -15,3 +15,4 @@ nyc.config.js
 *.snk
 !.eslintrc.js
 !test/lambda/*/*.js
+junit.xml

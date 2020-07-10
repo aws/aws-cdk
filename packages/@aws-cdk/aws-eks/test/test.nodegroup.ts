@@ -5,7 +5,9 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixture } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
+
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 
 export = {
   'create nodegroup correctly'(test: Test) {
@@ -13,7 +15,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
@@ -45,12 +52,60 @@ export = {
     ));
     test.done();
   },
+  'aws-auth will be updated'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster });
+
+    // THEN
+    // THEN
+    expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'NodegroupNodeGroupRole038A128B',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
+      },
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ClusterCreationRole360249B6',
+          'Arn',
+        ],
+      },
+    }));
+    test.done();
+  },
   'create nodegroup correctly with security groups provided'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
@@ -80,7 +135,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
@@ -95,7 +155,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 2 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 2,
+      version: CLUSTER_VERSION,
+    });
     // add a extra nodegroup
     cluster.addNodegroup('extra-ng');
     // THEN
@@ -107,7 +172,12 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       instanceType: new ec2.InstanceType('m5.large'),
@@ -127,7 +197,11 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       remoteAccess: {
@@ -149,7 +223,12 @@ export = {
     // GIVEN
     const { stack: stack1, vpc, app } = testFixture();
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
-    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack1, 'Cluster', {
+      vpc,
+      kubectlEnabled: false,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     // const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
@@ -172,7 +251,12 @@ export = {
   'addNodegroup correctly'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
 
     // WHEN
     cluster.addNodegroup('ng');
@@ -209,7 +293,12 @@ export = {
   'throws when desiredSize > maxSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     // THEN
     test.throws(() => cluster.addNodegroup('ng', { desiredSize: 3, maxSize: 2 }), /Desired capacity 3 can't be greater than max size 2/);
     test.done();
@@ -217,7 +306,12 @@ export = {
   'throws when desiredSize < minSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: true, defaultCapacity: 0 });
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
     // THEN
     test.throws(() => cluster.addNodegroup('ng', { desiredSize: 2, minSize: 3 }), /Minimum capacity 3 can't be greater than desired size 2/);
     test.done();
