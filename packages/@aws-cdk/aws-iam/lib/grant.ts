@@ -1,4 +1,4 @@
-import { Dependable, IConstruct, IDependable } from 'constructs';
+import { Dependable, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 
@@ -190,7 +190,7 @@ export class Grant implements IDependable {
       principalStatement: statement,
       resourceStatement: result.resourceStatement,
       options,
-      policyDependable: resourceDependable ? new CompositeDependable(result, resourceDependable) : result,
+      policyDependable: resourceDependable ? new DependencyGroup(result, resourceDependable) : result,
     });
   }
 
@@ -315,21 +315,4 @@ export interface AddToResourcePolicyResult {
    * Otherwise, no dependable.
    */
   readonly policyDependable?: IDependable;
-}
-
-/**
- * Composite dependable
- *
- * Not as simple as eagerly getting the dependency roots from the
- * inner dependables, as they may be mutable so we need to defer
- * the query.
- */
-export class CompositeDependable implements IDependable {
-  constructor(...dependables: IDependable[]) {
-    Dependable.implement(this, {
-      get dependencyRoots(): IConstruct[] {
-        return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencyRoots));
-      },
-    });
-  }
 }

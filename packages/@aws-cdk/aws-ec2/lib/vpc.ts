@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, Dependable, DependencyGroup, IConstruct, IDependable } from 'constructs';
+import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation } from './ec2.generated';
@@ -345,7 +345,7 @@ abstract class VpcBase extends Resource implements IVpc {
     return {
       subnetIds: subnets.map(s => s.subnetId),
       availabilityZones: subnets.map(s => s.availabilityZone),
-      internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
+      internetConnectivityEstablished: tap(new DependencyGroup(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
     };
@@ -1829,30 +1829,6 @@ function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
     ret.push(...fn(x));
   }
   return ret;
-}
-
-class CompositeDependable implements IDependable {
-  private readonly dependables = new Array<IDependable>();
-
-  constructor() {
-    const self = this;
-    Dependable.implement(this, {
-      get dependencyRoots() {
-        const ret = new Array<IConstruct>();
-        for (const dep of self.dependables) {
-          ret.push(...Dependable.of(dep).dependencyRoots);
-        }
-        return ret;
-      },
-    });
-  }
-
-  /**
-   * Add a construct to the dependency roots
-   */
-  public add(dep: IDependable) {
-    this.dependables.push(dep);
-  }
 }
 
 /**
