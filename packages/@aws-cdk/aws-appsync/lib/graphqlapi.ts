@@ -56,7 +56,7 @@ export interface AuthorizationMode {
   readonly userPoolConfig?: UserPoolConfig;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - check default values of `ApiKeyConfig` memebers
+   * @default - @see ApiKeyConfig
    */
   readonly apiKeyConfig?: ApiKeyConfig;
   /**
@@ -64,6 +64,12 @@ export interface AuthorizationMode {
    * @default - none
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
+  /**
+   * If authorizationType is `AuthorizationType.IAM`, this option can be configured.
+   * @default - @see IamConfig
+   */
+  readonly iamConfig?: IamConfig;
+
 }
 
 /**
@@ -100,6 +106,43 @@ export interface UserPoolConfig {
    * @default ALLOW
    */
   readonly defaultAction?: UserPoolDefaultAction;
+}
+
+export interface IamResources {
+  /**
+   * Queries to add to IAM Role
+   * @default - none
+   */
+  readonly queries?: [string];
+
+  /**
+   * Mutations to add to IAM Role
+   * @default - none
+   */
+  readonly mutations?: [string];
+
+  /**
+   * Subscriptions to add to IAM Role
+   * @default - none
+   */
+  readonly subscriptions?: [string];
+}
+
+/**
+ * Configuration for IAM authorization in AppSync
+ */
+export interface IamConfig {
+  /**
+   * Unique name of the API Key
+   * @default - 'DefaultIAMRole'
+   */
+  readonly roleName?: string;
+
+  /**
+   * Description of IAM Role
+   * @default - 'Default IAM Role created by CDK'
+   */
+  readonly description?: string;
 }
 
 /**
@@ -281,6 +324,8 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
+  public readonly role?: Role;
+
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -350,7 +395,21 @@ export class GraphQLApi extends Construct {
           name: 'DefaultAPIKey',
           description: 'Default API Key created by CDK',
         };
-      this.createAPIKey(apiKeyConfig);
+      this._apiKey = this.createAPIKey(apiKeyConfig);
+    }
+
+    if (
+      defaultAuthorizationType === AuthorizationType.IAM ||
+      props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
+        (authMode) => authMode.authorizationType === AuthorizationType.IAM
+      ) !== -1
+    ) {
+      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
+        ?.defaultAuthorization?.iamConfig || {
+          name: 'DefaultIAMRole',
+          description: 'Default IAM Role created by CDK',
+        };
+      this.role = this.createIAMRole(apiKeyConfig);
     }
 
     let definition;
@@ -534,7 +593,15 @@ export class GraphQLApi extends Construct {
       description: config.description || 'Default API Key created by CDK',
       apiId: this.apiId,
     });
-    this._apiKey = key.attrApiKey;
+    return key.attrApiKey;
+  }
+
+  private createIAMRole(config: IamConfig) {
+    let role;
+    role = new Role(this, `${config.roleName}`, {
+      assumedBy: new ServicePrincipal()
+    });
+    return role;
   }
 
   private formatAdditionalAuthorizationModes(
