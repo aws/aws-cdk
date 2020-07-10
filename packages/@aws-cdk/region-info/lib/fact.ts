@@ -51,7 +51,9 @@ export class Fact {
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
-    regionFacts[fact.name] = fact.value;
+    if (fact.value !== undefined) {
+      regionFacts[fact.name] = fact.value;
+    }
   }
 
   /**
@@ -93,7 +95,7 @@ export interface IFact {
   /**
    * The value of this fact.
    */
-  readonly value: string;
+  readonly value: string | undefined;
 }
 
 /**
@@ -132,6 +134,11 @@ export class FactName {
    * com.amazonaws.vpce otherwise.
    */
   public static readonly VPC_ENDPOINT_SERVICE_NAME_PREFIX = 'vpcEndpointServiceNamePrefix';
+
+  /**
+   * The account for ELBv2 in this region
+   */
+  public static readonly ELBV2_ACCOUNT = 'elbv2Account';
 
   /**
    * The name of the regional service principal for a given service.
