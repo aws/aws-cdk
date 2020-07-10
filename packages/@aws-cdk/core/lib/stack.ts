@@ -1,8 +1,13 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
+import { CfnElement } from './cfn-element';
+import { Fn } from './cfn-fn';
+import { Aws, ScopedAws } from './cfn-pseudo';
+import { CfnResource, TagType } from './cfn-resource';
 import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
@@ -338,7 +343,7 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // tslint:disable-next-line: max-line-length
+    // eslint-disable-next-line max-len
     this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
       ? this.generateStackArtifactId()
       : this.stackName;
@@ -662,7 +667,7 @@ export class Stack extends Construct implements ITaggable {
     reason = reason || 'dependency added using stack.addDependency()';
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
@@ -677,7 +682,7 @@ export class Stack extends Construct implements ITaggable {
     dep.reasons.push(reason);
 
     if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
     }
   }
@@ -775,7 +780,7 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // tslint:disable-next-line: max-line-length
+      // eslint-disable-next-line max-len
       this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
@@ -1058,11 +1063,6 @@ function makeStackName(components: string[]) {
 }
 
 // These imports have to be at the end to prevent circular imports
-import { Arn, ArnComponents } from './arn';
-import { CfnElement } from './cfn-element';
-import { Fn } from './cfn-fn';
-import { Aws, ScopedAws } from './cfn-pseudo';
-import { CfnResource, TagType } from './cfn-resource';
 import { addDependency } from './deps';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
