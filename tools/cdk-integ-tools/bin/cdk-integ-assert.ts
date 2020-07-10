@@ -3,7 +3,6 @@
 import { canonicalizeTemplate } from '@aws-cdk/assert';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
-import { canonicalizeTemplate } from '@aws-cdk/assert';
 
 /* eslint-disable no-console */
 
