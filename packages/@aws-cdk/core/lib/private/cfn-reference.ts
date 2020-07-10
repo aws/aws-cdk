@@ -52,11 +52,6 @@ export class CfnReference extends Reference {
   }
 
   /**
-   * Static table where we keep singleton CfnReference instances
-   */
-  private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
-
-  /**
    * Get or create the table
    */
   private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference) {
@@ -72,6 +67,11 @@ export class CfnReference extends Reference {
     }
     return ref;
   }
+
+  /**
+   * Static table where we keep singleton CfnReference instances
+   */
+  private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
 
   /**
    * The Tokens that should be returned for each consuming stack (as decided by the producing Stack)

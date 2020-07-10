@@ -8,3 +8,4 @@ dist
 *.tsbuildinfo
 tsconfig.json
 .eslintrc.js
+junit.xml

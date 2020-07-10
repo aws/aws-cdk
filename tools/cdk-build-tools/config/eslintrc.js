@@ -141,5 +141,25 @@ module.exports = {
       // https://github.com/typescript-eslint/typescript-eslint/issues/1483
     ],
     */
+
+    // Member ordering
+    '@typescript-eslint/member-ordering': ['error', {
+      default: [
+        "public-static-field",
+        "public-static-method",
+        "protected-static-field",
+        "protected-static-method",
+        "private-static-field",
+        "private-static-method",
+
+        "field",
+
+        // Constructors
+        "constructor", // = ["public-constructor", "protected-constructor", "private-constructor"]
+
+        // Methods
+        "method",
+      ]
+    }],
   },
 }

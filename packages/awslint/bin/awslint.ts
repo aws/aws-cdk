@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
-import * as path from 'path';
 import * as colors from 'colors';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
+import * as path from 'path';
 import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel } from '../lib';
 
