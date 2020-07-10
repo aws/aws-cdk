@@ -1,12 +1,16 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
+  AnyPrincipal,
+  Grant,
+  IGrantable,
+  IPrincipal,
   ManagedPolicy,
   Role,
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, Lazy } from '@aws-cdk/core';
 import { readFileSync } from 'fs';
 import {
   CfnApiKey,
@@ -108,24 +112,38 @@ export interface UserPoolConfig {
   readonly defaultAction?: UserPoolDefaultAction;
 }
 
+/**
+ * Resources to provision to IAM Role
+ */
 export interface IamResources {
   /**
-   * Queries to add to IAM Role
-   * @default - none
+   * Region to give permissions with attached IAM Role
+   *
+   * To allow any region, set to '*'
    */
-  readonly queries?: [string];
+  readonly region: string;
 
   /**
-   * Mutations to add to IAM Role
-   * @default - none
+   * Account to give permissions with attached IAM Role
+   *
+   * To allow for any account, set to '*'
    */
-  readonly mutations?: [string];
+  readonly account: string;
 
   /**
-   * Subscriptions to add to IAM Role
-   * @default - none
+   * Type to give permissions with attached IAM Role
+   *
+   * To allow for any Type, set to '*'
    */
-  readonly subscriptions?: [string];
+  readonly type: string;
+
+  /**
+   * Field to give permissions with attached IAM Role
+   *
+   * To allow for any Field, set to '*'
+   */
+  readonly field: string;
+
 }
 
 /**
@@ -324,7 +342,17 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
+  /**
+   * IAM Role that is attached to this GraphQLApi
+   *
+   * @default - undefined, if not using IAM Authorization
+   */
   public readonly role?: Role;
+
+  /**
+   * Grant Principal for attached IAM Role
+   */
+  public readonly grantPrincipal?: IPrincipal;
 
   private api: CfnGraphQLApi;
   private _apiKey?: string;
@@ -397,19 +425,19 @@ export class GraphQLApi extends Construct {
         };
       this._apiKey = this.createAPIKey(apiKeyConfig);
     }
-
     if (
       defaultAuthorizationType === AuthorizationType.IAM ||
       props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
         (authMode) => authMode.authorizationType === AuthorizationType.IAM
       ) !== -1
     ) {
-      const apiKeyConfig: ApiKeyConfig = props.authorizationConfig
+      const iamConfig: IamConfig = props.authorizationConfig
         ?.defaultAuthorization?.iamConfig || {
-          name: 'DefaultIAMRole',
+          roleName: 'DefaultIAMRole',
           description: 'Default IAM Role created by CDK',
         };
-      this.role = this.createIAMRole(apiKeyConfig);
+      this.role = this.createIAMRole(iamConfig);
+      this.grantPrincipal = this.role;
     }
 
     let definition;
@@ -492,6 +520,95 @@ export class GraphQLApi extends Construct {
     });
   }
 
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   */
+  public grant(grantee: IGrantable, ...resources: IamResources[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['appsync:graphql'],
+      resourceArns: [...resources.map(resource => Lazy.stringValue({
+        produce: () => `arn:aws:appsync:${resource.region}:${resource.account}:apis/${this.apiId}/types/${resource.type}/fields/${resource.field}`}),
+      )],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for full access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param region The region to grant access to, set to '*' for all
+   * @param account The account to grant access to, set to '*' for all
+   */
+  public grantFullAccess(grantee: IGrantable, region: string, account: string): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['appsync:graphql'],
+      resourceArns: [`arn:aws:appsync:${region}:${account}:apis/${this.apiId}/*`],
+      scope: this,
+    });
+  }
+
+  private formatOpenIdConnectConfig(
+    config: OpenIdConnectConfig,
+  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
+    return {
+      authTtl: config.tokenExpiryFromAuth,
+      clientId: config.clientId,
+      iatTtl: config.tokenExpiryFromIssue,
+      issuer: config.oidcProvider,
+    };
+  }
+
+  private formatUserPoolConfig(
+    config: UserPoolConfig,
+  ): CfnGraphQLApi.UserPoolConfigProperty {
+    return {
+      userPoolId: config.userPool.userPoolId,
+      awsRegion: config.userPool.stack.region,
+      appIdClientRegex: config.appIdClientRegex,
+      defaultAction: config.defaultAction || 'ALLOW',
+    };
+  }
+
+  private createAPIKey(config: ApiKeyConfig) {
+    let expires: number | undefined;
+    if (config.expires) {
+      expires = new Date(config.expires).valueOf();
+      const days = (d: number) =>
+        Date.now() + Duration.days(d).toMilliseconds();
+      if (expires < days(1) || expires > days(365)) {
+        throw Error('API key expiration must be between 1 and 365 days.');
+      }
+      expires = Math.round(expires / 1000);
+    }
+    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
+      expires,
+      description: config.description || 'Default API Key created by CDK',
+      apiId: this.apiId,
+    });
+    return key.attrApiKey;
+  }
+
+  /**
+   * Create IAM Role to attach to AppSync Api
+   *
+   * @param config - name and description
+   */
+  private createIAMRole(config: IamConfig) {
+    return new Role(this, `${config.roleName}`, {
+      assumedBy: new AnyPrincipal(),
+      description: config.description,
+      roleName: config.roleName,
+    });
+  }
+
   private validateAuthorizationProps(props: GraphQLApiProps) {
     const defaultAuthorizationType =
       props.authorizationConfig?.defaultAuthorization?.authorizationType ||
@@ -553,55 +670,6 @@ export class GraphQLApi extends Construct {
         },
       );
     }
-  }
-
-  private formatOpenIdConnectConfig(
-    config: OpenIdConnectConfig,
-  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
-    return {
-      authTtl: config.tokenExpiryFromAuth,
-      clientId: config.clientId,
-      iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
-    };
-  }
-
-  private formatUserPoolConfig(
-    config: UserPoolConfig,
-  ): CfnGraphQLApi.UserPoolConfigProperty {
-    return {
-      userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.stack.region,
-      appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || 'ALLOW',
-    };
-  }
-
-  private createAPIKey(config: ApiKeyConfig) {
-    let expires: number | undefined;
-    if (config.expires) {
-      expires = new Date(config.expires).valueOf();
-      const days = (d: number) =>
-        Date.now() + Duration.days(d).toMilliseconds();
-      if (expires < days(1) || expires > days(365)) {
-        throw Error('API key expiration must be between 1 and 365 days.');
-      }
-      expires = Math.round(expires / 1000);
-    }
-    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
-      expires,
-      description: config.description || 'Default API Key created by CDK',
-      apiId: this.apiId,
-    });
-    return key.attrApiKey;
-  }
-
-  private createIAMRole(config: IamConfig) {
-    let role;
-    role = new Role(this, `${config.roleName}`, {
-      assumedBy: new ServicePrincipal()
-    });
-    return role;
   }
 
   private formatAdditionalAuthorizationModes(
