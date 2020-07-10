@@ -212,6 +212,49 @@ integTest('deploy with parameters', async () => {
   ]);
 });
 
+integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', async () => {
+  // GIVEN
+  const stackArn = await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}@aww`,
+    ],
+    captureStderr: false,
+  });
+
+  let response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  expect(response.Stacks?.[0].StackStatus).toEqual('ROLLBACK_COMPLETE');
+
+  // WHEN
+  const newStackArn = await cdkDeploy('param-test-1', {
+    options: [
+      '--parameters', `TopicNameParam=${STACK_NAME_PREFIX}allgood`,
+    ],
+    captureStderr: false,
+  });
+
+  response = await cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+
+  const newStackResponse = await cloudFormation('describeStacks', {
+    StackName: newStackArn,
+  });
+
+  // THEN
+  expect(response.Stacks?.[0].StackStatus).toEqual('DELETE_COMPLETE'); // stack in ROLLBACK_COMPLETE should be deleted
+  expect(newStackArn).not.toEqual(stackArn);
+  expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
+    {
+      ParameterKey: 'TopicNameParam',
+      ParameterValue: `${STACK_NAME_PREFIX}allgood`,
+    },
+  ]);
+});
+
 integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
   // GIVEN
   const stackArn = await cdkDeploy('param-test-1', {
