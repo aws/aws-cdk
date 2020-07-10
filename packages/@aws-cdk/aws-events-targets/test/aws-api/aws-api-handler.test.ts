@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { AwsApiProps } from '../../lib';
