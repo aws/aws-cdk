@@ -4,30 +4,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution } from './distribution';
+import { IDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from './distribution';
 import { IOriginAccessIdentity } from './origin_access_identity';
 
 export enum HttpVersion {
   HTTP1_1 = 'http1.1',
   HTTP2 = 'http2'
-}
-
-/**
- * The price class determines how many edge locations CloudFront will use for your distribution.
- */
-export enum PriceClass {
-  PRICE_CLASS_100 = 'PriceClass_100',
-  PRICE_CLASS_200 = 'PriceClass_200',
-  PRICE_CLASS_ALL = 'PriceClass_All'
-}
-
-/**
- * How HTTPs should be handled with your distribution.
- */
-export enum ViewerProtocolPolicy {
-  HTTPS_ONLY = 'https-only',
-  REDIRECT_TO_HTTPS = 'redirect-to-https',
-  ALLOW_ALL = 'allow-all'
 }
 
 /**
@@ -245,12 +227,6 @@ export enum OriginSslPolicy {
   TLS_V1 = 'TLSv1',
   TLS_V1_1 = 'TLSv1.1',
   TLS_V1_2 = 'TLSv1.2',
-}
-
-export enum OriginProtocolPolicy {
-  HTTP_ONLY = 'http-only',
-  MATCH_VIEWER = 'match-viewer',
-  HTTPS_ONLY = 'https-only',
 }
 
 /**

@@ -1,7 +1,7 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { CacheBehavior } from './behavior';
+import { CacheBehavior, CacheBehaviorOptions } from './behavior';
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
 
@@ -24,25 +24,6 @@ export interface IDistribution extends IResource {
   readonly distributionId: string;
 }
 
-// TODO - Do we need a BaseDistribution?
-
-/**
- * Properties for a Distribution
- */
-export interface DistributionProps {
-  /**
-   * The primary origin for the distribution.
-   */
-  readonly origin: Origin;
-
-  /**
-   * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
-   *
-   * @default the CloudFront wildcard certificate (*.cloudfront.net) will be used.
-   */
-  readonly certificate?: acm.ICertificate;
-}
-
 /**
  * Attributes used to import a Distribution.
  */
@@ -60,6 +41,48 @@ export interface DistributionAttributes {
    * @attribute
    */
   readonly distributionId: string;
+}
+
+/**
+ * Properties for a Distribution
+ */
+export interface DistributionProps {
+  /**
+   * The default behavior for the distribution.
+   */
+  readonly defaultBehavior: CacheBehaviorOptions;
+
+  /**
+   * Additional behaviors for the distribution, mapped by the pathPattern that specifies which requests to apply the behavior to.
+   *
+   * @default no additional behaviors are added.
+   */
+  readonly additionalBehaviors?: Record<string, CacheBehaviorOptions>;
+
+  /**
+   * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
+   *
+   * @default the CloudFront wildcard certificate (*.cloudfront.net) will be used.
+   */
+  readonly certificate?: acm.ICertificate;
+
+  /**
+   * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
+   * If you specify PriceClass_All, CloudFront responds to requests for your objects from all CloudFront edge locations.
+   * If you specify a price class other than PriceClass_All, CloudFront serves your objects from the CloudFront edge location
+   * that has the lowest latency among the edge locations in your price class.
+   *
+   * @default PRICE_CLASS_ALL
+   */
+  readonly priceClass?: PriceClass;
+
+  /**
+   * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
+   *
+   *
+   * @default - No custom error configuration.
+   */
+  readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
 }
 
 /**
@@ -90,7 +113,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public static forBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
     return new Distribution(scope, id, {
-      origin: Origin.fromBucket(scope, 'SingleOriginBucket', bucket),
+      defaultBehavior: { origin: Origin.fromBucket(scope, 'SingleOriginBucket', bucket) },
     });
   }
 
@@ -101,24 +124,18 @@ export class Distribution extends Resource implements IDistribution {
    */
   public static forWebsiteBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
     return new Distribution(scope, id, {
-      origin: Origin.fromWebsiteBucket(scope, 'SingleOriginWebsiteBucket', bucket),
+      defaultBehavior: { origin: Origin.fromWebsiteBucket(scope, 'SingleOriginWebsiteBucket', bucket) },
     });
   }
 
   public readonly domainName: string;
   public readonly distributionId: string;
 
-  /**
-   * Default origin of the distribution.
-   */
-  public readonly origin: Origin;
-  /**
-   * Certificate associated with the distribution, if any.
-   */
-  public readonly certificate?: acm.ICertificate;
+  private readonly defaultBehavior: CacheBehavior;
+  private readonly additionalBehaviors: CacheBehavior[] = [];
 
-  private defaultBehavior?: CacheBehavior;
-  private readonly behaviors: CacheBehavior[] = [];
+  private readonly errorConfigurations: CfnDistribution.CustomErrorResponseProperty[];
+  private readonly certificate?: acm.ICertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -130,17 +147,24 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
-    this.origin = props.origin;
-    this.certificate = props.certificate;
+    this.defaultBehavior = new CacheBehavior({ pathPattern: '*', ...props.defaultBehavior });
+    if (props.additionalBehaviors) {
+      Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
+        this.addBehavior(pathPattern, behaviorOptions);
+      });
+    }
 
-    this.origin._attachDistribution(this);
+    this.certificate = props.certificate;
+    this.errorConfigurations = props.errorConfigurations ?? [];
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
       enabled: true,
       origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-      defaultCacheBehavior: Lazy.anyValue({ produce: () => this.renderDefaultBehavior() }),
+      defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
       cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
       viewerCertificate: this.certificate ? { acmCertificateArn: this.certificate.certificateArn } : undefined,
+      customErrorResponses: this.renderCustomErrorResponses(),
+      priceClass: props.priceClass ?? undefined,
     } });
 
     this.domainName = distribution.attrDomainName;
@@ -148,38 +172,72 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
-   * Internal API used by `Origin` to keep an inventory of behaviors associated with
-   * this distribution, for the sake of ordering behaviors.
+   * Adds a new behavior to this distribution for the given pathPattern.
    *
-   * @internal
+   * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
+   * @param behaviorOptions the options for the behavior at this path.
    */
-  public _attachBehavior(behavior: CacheBehavior) {
-    if (behavior.pathPattern === '*') {
-      if (this.defaultBehavior) {
-        throw new Error('Distributions may only have one Behavior with the default path pattern (*)');
-      }
-      this.defaultBehavior = behavior;
-    } else {
-      this.behaviors.push(behavior);
+  public addBehavior(pathPattern: string, behaviorOptions: CacheBehaviorOptions) {
+    if (pathPattern === '*') {
+      throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
+    this.additionalBehaviors.push(new CacheBehavior({ pathPattern, ...behaviorOptions }));
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
-    return [this.origin._renderOrigin()];
-  }
+    const origins = new Set<Origin>();
+    origins.add(this.defaultBehavior.origin);
+    this.additionalBehaviors.forEach(behavior => origins.add(behavior.origin));
 
-  private renderDefaultBehavior(): CfnDistribution.DefaultCacheBehaviorProperty | undefined {
-    if (!this.defaultBehavior) {
-      this.defaultBehavior = new CacheBehavior({
-        origin: this.origin,
-        pathPattern: '*',
-      });
-    }
-    return this.defaultBehavior._renderBehavior();
+    const renderedOrigins: CfnDistribution.OriginProperty[] = [];
+    origins.forEach(origin => renderedOrigins.push(origin._renderOrigin()));
+    return renderedOrigins;
   }
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    return this.behaviors.length === 0 ? undefined : this.behaviors.map(b => b._renderBehavior());
+    if (this.additionalBehaviors.length === 0) { return undefined; }
+    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
   }
 
+  private renderCustomErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
+    if (this.errorConfigurations.length === 0) { return undefined; }
+    function validateCustomErrorResponse(errorResponse: CfnDistribution.CustomErrorResponseProperty) {
+      if (errorResponse.responsePagePath && !errorResponse.responseCode) {
+        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
+      }
+      if (!errorResponse.responseCode && !errorResponse.errorCachingMinTtl) {
+        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
+      }
+    }
+    this.errorConfigurations.forEach(e => validateCustomErrorResponse(e));
+    return this.errorConfigurations;
+  }
+
+}
+
+/**
+ * The price class determines how many edge locations CloudFront will use for your distribution.
+ */
+export enum PriceClass {
+  PRICE_CLASS_100 = 'PriceClass_100',
+  PRICE_CLASS_200 = 'PriceClass_200',
+  PRICE_CLASS_ALL = 'PriceClass_All'
+}
+
+/**
+ * How HTTPs should be handled with your distribution.
+ */
+export enum ViewerProtocolPolicy {
+  HTTPS_ONLY = 'https-only',
+  REDIRECT_TO_HTTPS = 'redirect-to-https',
+  ALLOW_ALL = 'allow-all'
+}
+
+/**
+ * Defines what protocols CloudFront will use to connect to an origin.
+ */
+export enum OriginProtocolPolicy {
+  HTTP_ONLY = 'http-only',
+  MATCH_VIEWER = 'match-viewer',
+  HTTPS_ONLY = 'https-only',
 }

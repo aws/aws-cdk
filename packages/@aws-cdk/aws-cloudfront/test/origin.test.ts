@@ -33,7 +33,7 @@ describe('fromBucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = Origin.fromBucket(stack, 'Origin', bucket);
-    new Distribution(stack, 'Dist', { origin });
+    new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
@@ -44,7 +44,7 @@ describe('fromBucket', () => {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'S3OriginIdentityBB010E4C', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': [ 'OriginS3OriginIdentity1E4900C6', 'S3CanonicalUserId' ] },
           },
         }],
       },
