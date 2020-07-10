@@ -114,7 +114,8 @@ export = {
 
   'HTTPS listener requires certificate'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
@@ -125,9 +126,7 @@ export = {
     });
 
     // THEN
-    const errors = lb.node.validate();
-    test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificates)']);
-
+    test.throws(() => app.synth(), /HTTPS Listener needs at least one certificate/);
     test.done();
   },
 
