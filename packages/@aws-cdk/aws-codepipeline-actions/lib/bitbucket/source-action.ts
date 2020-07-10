@@ -47,7 +47,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
   readonly branch?: string;
 
   // long URL in @see
-  // tslint:disable:max-line-length
   /**
    * Whether the output should be the contents of the repository
    * (which is the default),
