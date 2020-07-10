@@ -5,6 +5,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { hydrateTemplateToStackArtifact } from './hydrate-template';
 
+const CDK_OUTDIR = 'cdk-integ.out';
+
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 const PRAGMA_PREFIX = 'pragma:';
 
@@ -97,40 +99,46 @@ export class IntegrationTest {
     const context = {
       ...options.context,
     };
-    await exec(['node', `${this.name}`], {
-      cwd: this.directory,
-      env: {
-        ...options.env,
-        CDK_CONTEXT_JSON: JSON.stringify(context),
-        CDK_DEFAULT_ACCOUNT: '12345678',
-        CDK_DEFAULT_REGION: 'test-region',
-        CDK_OUTDIR: 'cdk.out',
-        CDK_CLI_ASM_VERSION: '5.0.0',
-      },
-    });
 
-    // Interpret the cloud assembly directly here. Not great, but I'm wary
-    // adding dependencies on the libraries that model it.
-    //
-    // FIXME: Refactor later if it doesn't introduce dependency cycles
-    const cloudManifest = new cxapi.CloudAssembly(path.resolve(this.directory, 'cdk.out'));
+    try {
+      await exec(['node', `${this.name}`], {
+        cwd: this.directory,
+        env: {
+          ...options.env,
+          CDK_CONTEXT_JSON: JSON.stringify(context),
+          CDK_DEFAULT_ACCOUNT: '12345678',
+          CDK_DEFAULT_REGION: 'test-region',
+          CDK_OUTDIR,
+          CDK_CLI_ASM_VERSION: '5.0.0',
+        },
+      });
 
-    const stacksToDiff = await this.readStackPragma();
+      // Interpret the cloud assembly directly here. Not great, but I'm wary
+      // adding dependencies on the libraries that model it.
+      //
+      // FIXME: Refactor later if it doesn't introduce dependency cycles
+      const cloudManifest = new cxapi.CloudAssembly(path.resolve(this.directory, 'cdk.out'));
 
-    if (stacksToDiff.length > 0) {
-      // '*' means "all stacks"
-      return stacksToDiff.length === 1 && stacksToDiff[0] === '*'
-        ? cloudManifest.stacks
-        : stacksToDiff.map(name => cloudManifest.getStackByName(name));
-    } else {
-      const names = cloudManifest.stacks.map(s => s.stackName);
-      if (names.length !== 1) {
-        throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
-          '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
-          `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
-          `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+      const stacksToDiff = await this.readStackPragma();
+
+      if (stacksToDiff.length > 0) {
+        // '*' means "all stacks"
+        return stacksToDiff.length === 1 && stacksToDiff[0] === '*'
+          ? cloudManifest.stacks
+          : stacksToDiff.map(name => cloudManifest.getStackByName(name));
+      } else {
+        const names = cloudManifest.stacks.map(s => s.stackName);
+        if (names.length !== 1) {
+          throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
+            '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+            `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+            `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+        }
       }
+
       return cloudManifest.stacks;
+    } finally {
+      this.cleanupTemporaryFiles();
     }
   }
 
@@ -143,7 +151,7 @@ export class IntegrationTest {
     if (options.context) {
       await this.writeCdkContext(options.context);
     } else {
-      this.deleteCdkContext();
+      this.cleanupTemporaryFiles();
     }
 
     const cliSwitches = [
@@ -154,6 +162,8 @@ export class IntegrationTest {
       '--no-asset-metadata',
       // save a copy step by not staging assets
       '--no-staging',
+      // Different output directory
+      '-o', CDK_OUTDIR,
     ];
 
     try {
@@ -165,7 +175,7 @@ export class IntegrationTest {
         env: options.env,
       });
     } finally {
-      this.deleteCdkContext();
+      this.cleanupTemporaryFiles();
     }
   }
 
@@ -232,12 +242,12 @@ export class IntegrationTest {
     await fs.writeFile(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
   }
 
-  private deleteCdkContext() {
+  private cleanupTemporaryFiles() {
     if (fs.existsSync(this.cdkContextPath)) {
       fs.unlinkSync(this.cdkContextPath);
     }
 
-    const cdkOutPath = path.join(this.directory, 'cdk.out');
+    const cdkOutPath = path.join(this.directory, CDK_OUTDIR);
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
     }
