@@ -7,6 +7,7 @@ import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-c
 const CDK_OUTDIR = 'cdk-integ.out';
 
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
+const PRAGMA_PREFIX = 'pragma:';
 
 export class IntegrationTests {
   constructor(private readonly directory: string) {
@@ -234,6 +235,18 @@ export class IntegrationTest {
     await fs.writeFile(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
   }
 
+  /**
+   * Return the non-stack pragmas
+   *
+   * These are all pragmas that start with "pragma:".
+   *
+   * For backwards compatibility reasons, all pragmas that DON'T start with this
+   * string are considered to be stack names.
+   */
+  public async pragmas(): Promise<string[]> {
+    return (await this.readIntegPragma()).filter(p => p.startsWith(PRAGMA_PREFIX));
+  }
+
   private async writeCdkContext(config: any) {
     await fs.writeFile(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
   }
@@ -250,10 +263,29 @@ export class IntegrationTest {
   }
 
   /**
-   * Reads the test source file and looks for the "!cdk-integ" pragma. If it exists, returns it's
-   * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
+   * Reads stack names from the "!cdk-integ" pragma.
+   *
+   * Every word that's NOT prefixed by "pragma:" is considered a stack name.
+   *
+   * @example
+   *
+   *    /// !cdk-integ <stack-name>
    */
   private async readStackPragma(): Promise<string[]> {
+    return (await this.readIntegPragma()).filter(p => !p.startsWith(PRAGMA_PREFIX));
+  }
+
+  /**
+   * Read arbitrary cdk-integ pragma directives
+   *
+   * Reads the test source file and looks for the "!cdk-integ" pragma. If it exists, returns it's
+   * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
+   *
+   * @example
+   *
+   *    /// !cdk-integ [...]
+   */
+  private async readIntegPragma(): Promise<string[]> {
     const source = await fs.readFile(this.sourceFilePath, { encoding: 'utf-8' });
     const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
@@ -262,7 +294,7 @@ export class IntegrationTest {
 
     const args = pragmaLine.substring(CDK_INTEG_STACK_PRAGMA.length).trim().split(' ');
     if (args.length === 0) {
-      throw new Error(`Invalid syntax for cdk-integ pragma. Usage: "${CDK_INTEG_STACK_PRAGMA} STACK ..."`);
+      throw new Error(`Invalid syntax for cdk-integ pragma. Usage: "${CDK_INTEG_STACK_PRAGMA} [STACK] [pragma:PRAGMA] [...]"`);
     }
     return args;
   }
