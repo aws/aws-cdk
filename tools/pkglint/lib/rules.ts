@@ -886,6 +886,15 @@ export class MustIgnoreSNK extends ValidationRule {
   }
 }
 
+export class MustIgnoreJunitXml extends ValidationRule {
+  public readonly name = 'ignore/junit';
+
+  public validate(pkg: PackageJson): void {
+    fileShouldContain(this.name, pkg, '.npmignore', 'junit.xml');
+    fileShouldContain(this.name, pkg, '.gitignore', 'junit.xml');
+  }
+}
+
 export class NpmIgnoreForJsiiModules extends ValidationRule {
   public readonly name = 'ignore/jsii';
 
