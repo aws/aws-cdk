@@ -34,7 +34,7 @@ const canary = new Canary(this, 'my_test', {
   canaryName: 'date-endpoint-canary',
   handler: 'index.handler',
   code: Code.fromInline('// The code that hits 'example.com/date' goes here'),
-  rate: Rate.EVERY_MINUTE,
+  schedule: Schedule.Rate(Duration.seconds(1)),
 });
 ```
 
@@ -86,19 +86,17 @@ const canary = new synth.Canary(this,'mycanary',{
 });
 ```
 
-- `Code.fromAsset(path)` - specify a directory or a .zip file in the local filesystem which will be zipped and uploaded to S3 before deployment. See also [bundling asset code](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda#Bundling-Asset-Code). When your application builds, the folder structure `nodejs/node_modules` will be automatically appended to your local directory.
+- `Code.fromAsset(path)` - specify a directory or a .zip file in the local filesystem which will be zipped and uploaded to S3 before deployment. See also [bundling asset code](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda#Bundling-Asset-Code). If the path does not contain the directories `nodejs/node_modules`, an error will be thrown explaining this requirement.
 - `Code.fromBucket(bucket, key, objectVersion?)` - specify an S3 object that contains the archive of your runtime code. 
 
 ### Discussion + Future Work
 
 - Modeling the `Schedule` property
 
-  - Currently the Canary L1 takes a mandatory `Schedule` property that is an object with `DurationInSeconds` and `Expression` as sub-properties. `DurationInSeconds` specifies how long the canary should be active for and `Expression` defines how often the canary runs. I propose the L2 specifies two optional properties, `lifetime` and `rate`. `lifetime` replaces `DurationInSeconds` and offers a logical name to what the property controls, while `rate` is an enum that specifies the `Expression` in a discoverable way. 
-
-  - I expect the `rate` property to look something like this in the constructor: `rate: Rate.EVERY_MINUTE` or `rate: Rate.RUN_ONCE`.
+  - Currently the Canary L1 takes a mandatory `Schedule` property that is an object with `DurationInSeconds` and `Expression` as sub-properties. `DurationInSeconds` specifies how long the canary should be active for and `Expression` defines how often the canary runs. I propose the L2 extracts `DurationInSeconds` from `Schedule` as `lifetime`. `Schedule` can be implemented in a similar fashion to autoscaling by exposing a static `rate(Duration)` method.
   
-  - I currently have the default of `lifetime = 0` (runs forever) and `rate: Rate.EVERY_FIVE_MINUTES`.
-  
-- Modeling the `RunConfig` property
+- `Code.fromAsset()` path
 
-  - The Canary L1 takes a mandatory `RunConfig` property which is an object with a `TimeoutInSeconds` sub-property. This provides the upper-bound in how long the canary can run. I propose the L2 specifies the optional property `timeout` which defaults to the duration in `rate`.
+  - The problem is that the Canary resource requires imported code to be a zip file with the directory structure `nodejs/node_modules`. This causes pain for customers because this requirement is unclear and dissimilar to lambda (the other common `fromAsset()` implementation). Currently the API will throw an error if the directory structure is not there. Ideally this evolves to one of the following options:
+    - The API will copy the files and append the `nodejs/node_modules` structure if it is missing at `synth` time. 
+    - The API will add the `nodejs/node_modules` prefix at `build` time by modifying how `Asset` publishes directories. However, this implementation could alter how `assetHash` currently works.
