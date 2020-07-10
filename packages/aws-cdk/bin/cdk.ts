@@ -73,7 +73,8 @@ async function parseCommandLineArguments() {
       .option('execute', {type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true})
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
-      .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false }),
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
+      .option('termination-protection', { type: 'boolean', default: true, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
@@ -251,6 +252,7 @@ async function initCommandLine() {
             execute: args.execute,
             trustedAccounts: args.trust,
             cloudFormationExecutionPolicies: args.cloudformationExecutionPolicies,
+            terminationProtection: args.terminationProtection,
           });
 
       case 'deploy':
