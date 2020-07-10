@@ -1,14 +1,19 @@
 type test {
-  id: Int!
+  id: String!
   version: String!
 }
 
 type Query {
-  getTest(id: Int!): test
+  getTest(id: String!): test
   getTests: [ test! ]
     @aws_iam 
 }
 
+input TestInput {
+  version: String!
+}
+
 type Mutation {
-  addTest(version: String!): test
+  addTest(input: TestInput!): test
+    @aws_iam
 }

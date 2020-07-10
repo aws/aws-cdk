@@ -58,7 +58,7 @@ const testTable = new Table(stack, 'TestTable', {
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: {
     name: 'id',
-    type: AttributeType.NUMBER,
+    type: AttributeType.STRING,
   },
   removalPolicy: RemovalPolicy.DESTROY,
 });
@@ -82,11 +82,11 @@ testDS.createResolver({
 testDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addTest',
-  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('version')),
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('test')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const backendRole = undefined;
+const backendRole = api.role;
 
 new Function(stack, 'testFunction', {
   code: Code.fromAsset('lambda'),
