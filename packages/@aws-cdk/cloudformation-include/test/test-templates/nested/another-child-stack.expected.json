@@ -12,24 +12,7 @@
     }
   },
   "Resources": {
-    "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "MyBucketParameter"
-        }
-      }
-    },
     "GrandChildStack": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "some-other-bucket-name"
-        }
-      }
-    },
-    "AnotherChildStackNestedGrandChildStackNestedStackNestedGrandChildStackNestedStackResource5B3C993F": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": {
@@ -77,6 +60,17 @@
               }
             ]
           ]
+        },
+        "Parameters": {
+          "MyBucketParameter": "some-other-bucket-name"
+        }
+      }
+    },
+    "BucketImport": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "MyBucketParameter"
         }
       }
     }

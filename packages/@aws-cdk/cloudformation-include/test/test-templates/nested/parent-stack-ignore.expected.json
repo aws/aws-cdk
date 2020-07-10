@@ -3,24 +3,6 @@
     "ChildStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "some-magic-bucket-name"
-        }
-      }
-    },
-    "AnotherChildStack": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "some-magic-bucket-name"
-        }
-      }
-    },
-    "ParentStackNestedChildStackNestedStackNestedChildStackNestedStackResource191FA7EB": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
         "TemplateURL": {
           "Fn::Join": [
             "",
@@ -66,6 +48,18 @@
               }
             ]
           ]
+        },
+        "Parameters": {
+          "MyBucketParameter": "some-magic-bucket-name"
+        }
+      }
+    },
+    "AnotherChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "some-magic-bucket-name"
         }
       }
     }

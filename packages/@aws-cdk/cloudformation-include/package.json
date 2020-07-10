@@ -37,6 +37,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -307,7 +308,8 @@
     "cdk-build-tools": "0.0.0",
     "jest": "^25.4.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.1.2"
+    "ts-jest": "^26.1.1",
+    "cdk-integ-tools": "0.0.0"
   },
   "bundledDependencies": [
     "yaml"

@@ -16,8 +16,33 @@ export interface CfnIncludeProps {
 
   /**
    * Specifies the template files that define nested stacks that should be included.
+   *
+   * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
+   * resource, and it won't be accessible from getNestedStack().
+   *
+   * If you include a stack here with an ID that isn't in the template,
+   * template creation will fail and an error will be thrown.
+   *
+   * If you include an ID here that exists in the template but isn't in the template,
+   * template creation will fail and an error will be thrown.
    */
-  readonly nestedStacks?: { [StackName: string]: CfnIncludeProps };
+  readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
+}
+
+//TODO
+/**
+ * Returned by getNestedStack(). Contains both the NestedStack and
+ * CfnInclude representations of the template.
+ */
+export interface IncludedNestedStack {
+  /**
+   * The NestedStack object that represents your template.
+   */
+  readonly stack: core.NestedStack;
+  /**
+   * The CfnInclude that respresents your template.
+   */
+  readonly includedTemplate: CfnInclude;
 }
 
 /**
@@ -54,14 +79,15 @@ export class CfnInclude extends core.CfnElement {
       this.createCondition(conditionName);
     }
 
+    // instantiate all nested stacks specified before the resources,
+    // so duplicate resources aren't made.
+    for (const nestedStackId of Object.keys(props.nestedStacks || {})) {
+      this.createNestedStack(nestedStackId, props);
+    }
+
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
-    }
-
-    // instantiate all nested stacks specified
-    for (const nestedStackId of Object.keys(props.nestedStacks || {})) {
-      this.createNestedStack(nestedStackId, props);
     }
 
     const outputScope = new core.Construct(this, '$Ouputs');
@@ -150,28 +176,25 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
-   * Returns the CfnInclude instance for a nested stack.
-   * For a nested stack to be returned by this method, it must be specified in the CfnIncludeProps.
-   * @param logicalId the ID of the stack to retrieve, as it appears in its template.
-   */
-  public getNestedStackTemplate(logicalId: string): CfnInclude {
-    const ret = this.nestedStackTemplates[logicalId];
-    if (!ret) {
-      throw new Error(`NestedStack with logical ID '${logicalId}' was not found in the template`);
-    }
-    return ret;
-  }
-
-  /**
    * Returns the NestedStack with name logicalId.
    * For a nested stack to be returned by this method, it must be specified in the CfnIncludeProps.
    * @param logicalId the ID of the stack to retrieve, as it appears in its template.
    */
-  public getNestedStack(logicalId: string): core.NestedStack {
-    const ret = this.nestedStacks[logicalId];
-    if (!ret) {
-      throw new Error(`Nested Stack with logical ID '${logicalId}' was not found`);
+  public getNestedStack(logicalId: string): IncludedNestedStack {
+    if (!this.nestedStacks[logicalId] || !this.nestedStackTemplates[logicalId]) {
+      if (!this.template.Resources[logicalId]) {
+        throw new Error(`Nested Stack with logical ID '${logicalId}' was not found in the template`);
+      } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
+        throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
+      }
+
+      throw new Error(`Nested Stack with logical ID '${logicalId}' was not specified in the CfnInclude props`);
     }
+    const ret: IncludedNestedStack = {
+      stack: this.nestedStacks[logicalId],
+      includedTemplate: this.nestedStackTemplates[logicalId],
+    };
+
     return ret;
   }
 
@@ -272,8 +295,22 @@ export class CfnInclude extends core.CfnElement {
   private createNestedStack(nestedStackId: string, props?: CfnIncludeProps): void {
     if (nestedStackId in this.template.Resources) {
       if (this.template.Resources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks) {
-        // add 'Nested' to logicalId so that we don't conflict with the 'AWS::CloudFormation::Stack' resource.
-        const nestedStackScope = new core.NestedStack(this, 'Nested' + nestedStackId);
+        const nestedStackScope = new core.NestedStack(this, 'Nested' + nestedStackId, {
+          parameters: this.template.Resources[nestedStackId].Properties.Parameters,
+          notificationArns: this.template.Resources[nestedStackId].Properties.NotificationArns,
+          timeout: this.template.Resources[nestedStackId].Properties.Timeout,
+        });
+
+        if (nestedStackScope.nestedStackResource) {
+          if (this.preserveLogicalIds) {
+            // override the logical ID to match the original template
+            nestedStackScope.nestedStackResource.overrideLogicalId(nestedStackId);
+          }
+
+          // add this stack to our template's resources, so it doesn't get added again when creating resources
+          this.resources[nestedStackId] = nestedStackScope.nestedStackResource;
+        }
+
         this.nestedStacks[nestedStackId] = nestedStackScope;
 
         this.nestedStackTemplates[nestedStackId] = new CfnInclude(nestedStackScope, nestedStackId, {
