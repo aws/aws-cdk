@@ -2,10 +2,12 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { rimraf } from './_fs-helpers';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
+import { Environment, EnvironmentUtils, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from './environment';
 import { topologicalSort } from './toposort';
 
 /**
@@ -180,6 +182,13 @@ export class CloudAssembly {
     return result;
   }
 
+  /**
+   * Delete the Assembly directory
+   */
+  public delete() {
+    rimraf(this.directory);
+  }
+
   private validateDeps() {
     for (const artifact of this.artifacts) {
       ignore(artifact.dependencies);
@@ -298,6 +307,62 @@ export class CloudAssemblyBuilder {
 
     return new CloudAssemblyBuilder(innerAsmDir);
   }
+
+  /**
+   * Delete the Assembly Builder directory
+   */
+  public delete() {
+    rimraf(this.outdir);
+  }
+
+  /**
+   * Write a stack to the Cloud Assembly
+   */
+  public writeStack(artifactId: string, options: WriteStackOptions) {
+    const templateFile = `${artifactId}.template.json`;
+    fs.writeFileSync(path.join(this.outdir, templateFile), JSON.stringify(options.template, undefined, 2), { encoding: 'utf-8' });
+
+    this.addArtifact(artifactId, {
+      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      environment: EnvironmentUtils.format(options.environment?.account ?? UNKNOWN_ACCOUNT, options.environment?.region ?? UNKNOWN_REGION),
+      metadata: options.metadata,
+      properties: {
+        templateFile,
+        stackName: options.stackName,
+      },
+    });
+  }
+}
+
+/**
+ * Options for CloudAssemblyBuilder.writeStack()
+ */
+export interface WriteStackOptions {
+  /**
+   * The template to write
+   */
+  readonly template: any;
+
+  /**
+   * Stack name
+   *
+   * @default - Artifact Id
+   */
+  readonly stackName?: string;
+
+  /**
+   * Environment for the stack
+   *
+   * @default - No environment
+   */
+  readonly environment?: Environment;
+
+  /**
+   * Metadata for the stack
+   *
+   * @default - No metadata
+   */
+  readonly metadata?: Record<string, cxschema.MetadataEntry[]>;
 }
 
 /**

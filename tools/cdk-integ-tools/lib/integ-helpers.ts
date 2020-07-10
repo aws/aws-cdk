@@ -1,8 +1,9 @@
 // Helper functions for integration tests
+import * as cxapi from '@aws-cdk/cx-api';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
+import { hydrateTemplateToStackArtifact } from './hydrate-template';
 
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 const PRAGMA_PREFIX = 'pragma:';
@@ -92,7 +93,7 @@ export class IntegrationTest {
    *
    * Return the "main" template or a concatenation of all listed templates in the pragma
    */
-  public async cdkSynthFast(options: SynthOptions = {}): Promise<any> {
+  public async cdkSynthFast(options: SynthOptions = {}): Promise<cxapi.CloudFormationStackArtifact[]> {
     const context = {
       ...options.context,
     };
@@ -112,42 +113,24 @@ export class IntegrationTest {
     // adding dependencies on the libraries that model it.
     //
     // FIXME: Refactor later if it doesn't introduce dependency cycles
-    const cloudManifest = await fs.readJSON(path.resolve(this.directory, 'cdk.out', 'manifest.json'));
-    const stacks: Record<string, any> = {};
-    for (const [artifactId, artifact] of Object.entries(cloudManifest.artifacts ?? {}) as Array<[string, any]>) {
-      if (artifact.type !== 'aws:cloudformation:stack') { continue; }
-
-      const template = await fs.readJSON(path.resolve(this.directory, 'cdk.out', artifact.properties.templateFile));
-      stacks[artifactId] = template;
-    }
+    const cloudManifest = new cxapi.CloudAssembly(path.resolve(this.directory, 'cdk.out'));
 
     const stacksToDiff = await this.readStackPragma();
 
     if (stacksToDiff.length > 0) {
-      // This is a monster. I'm sorry. :(
-      const templates = stacksToDiff.length === 1 && stacksToDiff[0] === '*'
-        ? Object.values(stacks)
-        : stacksToDiff.map(templateForStackName);
-
-      // We're supposed to just return *a* template (which is an object), but there's a crazy
-      // case in which we diff multiple templates at once and then they're an array. And it works somehow.
-      return templates.length === 1 ? templates[0] : templates;
+      // '*' means "all stacks"
+      return stacksToDiff.length === 1 && stacksToDiff[0] === '*'
+        ? cloudManifest.stacks
+        : stacksToDiff.map(name => cloudManifest.getStackByName(name));
     } else {
-      const names = Object.keys(stacks);
+      const names = cloudManifest.stacks.map(s => s.stackName);
       if (names.length !== 1) {
         throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
           '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
           `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
           `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
       }
-      return stacks[names[0]];
-    }
-
-    function templateForStackName(name: string) {
-      if (!stacks[name]) {
-        throw new Error(`No such stack in output: ${name}`);
-      }
-      return stacks[name];
+      return cloudManifest.stacks;
     }
   }
 
@@ -218,8 +201,15 @@ export class IntegrationTest {
     return stacks;
   }
 
-  public async readExpected(): Promise<any> {
-    return JSON.parse(await fs.readFile(this.expectedFilePath, { encoding: 'utf-8' }));
+  public async readExpected(): Promise<cxapi.CloudFormationStackArtifact[]> {
+    const expectationFile = JSON.parse(await fs.readFile(this.expectedFilePath, { encoding: 'utf-8' }));
+
+    // The expectation file contains an array for multi-stack expectations,
+    // a single object for single-stack expectations.
+    if (Array.isArray(expectationFile)) {
+      return expectationFile.map(hydrateTemplateToStackArtifact);
+    }
+    return [hydrateTemplateToStackArtifact(expectationFile)];
   }
 
   public async writeExpected(actual: any) {
@@ -295,7 +285,7 @@ export class IntegrationTest {
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
   context: {
-    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ 'test-region-1a', 'test-region-1b', 'test-region-1c' ],
+    [cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ 'test-region-1a', 'test-region-1b', 'test-region-1c' ],
     'availability-zones:account=12345678:region=test-region': [ 'test-region-1a', 'test-region-1b', 'test-region-1c' ],
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',

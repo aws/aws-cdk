@@ -1,4 +1,4 @@
-import { canonicalizeTemplate, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { canonicalizeStackArtifact, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -85,7 +85,7 @@ export = testCase({
     });
 
     // THEN
-    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).to(haveResource('AWS::Lambda::LayerVersion', {
+    expect(canonicalizeStackArtifact(SynthUtils.synthesize(stack))).to(haveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.Asset1Hash',
         'aws:asset:property': 'Content',

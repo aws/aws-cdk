@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
-import { canonicalizeTemplate } from '@aws-cdk/assert';
+import { canonicalizeStackArtifact } from '@aws-cdk/assert';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
@@ -23,17 +23,28 @@ async function main() {
     let actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
     if ((await test.pragmas()).includes(IGNORE_ASSETS_PRAGMA)) {
-      expected = canonicalizeTemplate(expected);
-      actual = canonicalizeTemplate(actual);
+      expected = expected.map(canonicalizeStackArtifact);
+      actual = actual.map(canonicalizeStackArtifact);
     }
 
-    const diff = diffTemplate(expected, actual);
+    let failed = false;
+    for (let i = 0; i < Math.max(expected.length, actual.length); i++) {
+      const diff = diffTemplate(expected[i].template, actual[i].template);
 
-    if (!diff.isEmpty) {
-      failures.push(test.name);
-      process.stdout.write('CHANGED.\n');
-      formatDifferences(process.stdout, diff);
-    } else {
+      if (!diff.isEmpty) {
+        failures.push(test.name);
+        process.stdout.write('CHANGED.\n');
+        formatDifferences(process.stdout, diff);
+        failed = true;
+      }
+    }
+
+    // Hydrating the 'expected' templates will have written a temporary Cloud Assembly. Clean it up.
+    for (const art of expected) {
+      art.assembly.delete();
+    }
+
+    if (!failed) {
       process.stdout.write('OK.\n');
     }
   }

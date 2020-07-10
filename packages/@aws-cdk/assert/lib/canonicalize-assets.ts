@@ -1,3 +1,6 @@
+import * as cxapi from '@aws-cdk/cx-api';
+import * as path from 'path';
+
 /**
  * Reduce template to a normal form where asset references have been normalized
  *
@@ -8,39 +11,36 @@
  * be adapted to handle convention-mode assets as well when we start using
  * more of those.
  */
-export function canonicalizeTemplate(template: any): any {
-  // For the weird case where we have an array of templates...
-  if (Array.isArray(template)) {
-    return template.map(canonicalizeTemplate);
-  }
-
+export function canonicalizeStackArtifact(artifact: cxapi.CloudFormationStackArtifact): any {
   // Find assets via parameters
   const stringSubstitutions = new Array<[RegExp, string]>();
-  const paramRe = /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
 
-  const assetsSeen = new Set<string>();
-  for (const paramName of Object.keys(template?.Parameters || {})) {
-    const m = paramRe.exec(paramName);
-    if (!m) { continue; }
-    if (assetsSeen.has(m[1])) { continue; }
+  const assets = findAssets(artifact);
 
-    assetsSeen.add(m[1]);
-    const ix = assetsSeen.size;
+  assets.forEach((asset, i) => {
+    const ix = i + 1;
+    switch (asset.type) {
+      case 'legacy-file':
+        // Full parameter reference
+        stringSubstitutions.push([new RegExp(asset.s3BucketParameter), `Asset${ix}S3Bucket`]);
+        stringSubstitutions.push([new RegExp(asset.s3KeyParameter), `Asset${ix}S3VersionKey`]);
+        stringSubstitutions.push([new RegExp(asset.artifactHashParameter), `Asset${ix}ArtifactHash`]);
 
-    // Full parameter reference
-    stringSubstitutions.push([
-      new RegExp(`AssetParameters${m[1]}(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})`),
-      `Asset${ix}$1`,
-    ]);
-    // Substring asset hash reference
-    stringSubstitutions.push([
-      new RegExp(`${m[1]}`),
-      `Asset${ix}Hash`,
-    ]);
-  }
+        // Substring asset hash reference
+        stringSubstitutions.push([ new RegExp(asset.sourceHash), `Asset${ix}Hash`]);
+    }
+  });
 
-  // Substitute them out
-  return substitute(template);
+  const substitutedTemplate = substitute(artifact.template);
+
+  // We have the template, now turn it into a CloudFormationStackArtifact to return
+  // Write it into a new Cloud Assembly in a subdirectory of the existing assembly so everything gets
+  // cleaned up together.
+  const builder = new cxapi.CloudAssemblyBuilder(path.join(artifact.assembly.directory, `${artifact.templateFile}.canonicalized`));
+  builder.writeStack(artifact.id, {
+    template: substitutedTemplate,
+  });
+  return builder.buildAssembly().getStackByName(artifact.id);
 
   function substitute(what: any): any {
     if (Array.isArray(what)) {
@@ -68,4 +68,29 @@ export function canonicalizeTemplate(template: any): any {
     }
     return x;
   }
+}
+
+type AssetInfo = (
+  { type: 'legacy-file'; sourceHash: string; s3BucketParameter: string; s3KeyParameter: string; artifactHashParameter: string; }
+);
+
+function findAssets(artifact: cxapi.CloudFormationStackArtifact) {
+  const ret: AssetInfo[] = [];
+  for (const asset of artifact.assets) {
+    switch (asset.packaging) {
+      case 'zip':
+      case 'file':
+        ret.push({
+          type: 'legacy-file',
+          sourceHash: asset.sourceHash,
+          s3KeyParameter: asset.s3KeyParameter,
+          s3BucketParameter: asset.s3BucketParameter,
+          artifactHashParameter: asset.artifactHashParameter,
+        });
+        continue;
+    }
+
+    throw new Error(`Cannot canonicalize legacy asset of type ${asset.packaging} yet`);
+  }
+  return ret;
 }
