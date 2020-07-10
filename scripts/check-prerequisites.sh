@@ -59,7 +59,7 @@ else
     wrong_version
 fi
 
-# [Yarn >= 1.19.1]
+# [Yarn >= 1.19.1, < 1.30]
 app="yarn"
 app_min="1.19.1"
 check_which $app $app_min
@@ -72,7 +72,7 @@ else
     wrong_version
 fi
 
-# [Java OpenJDK 8]
+# [Java OpenJDK 8, 11, 14]
 
 # Follow "More Info" on a new Mac when trying javac, install latest Oracle:
 # javac 14.0.1
@@ -105,7 +105,7 @@ else
     fi
 fi
 
-# [Apache Maven]
+# [Apache Maven >= 3.6.0, < 4.0]
 app="mvn"
 app_min="3.6.0"
 check_which $app $app_min
@@ -118,7 +118,7 @@ else
     wrong_version
 fi
 
-# [.NET Core SDK 3.1]
+# [.NET Core SDK 3.1.*]
 app="dotnet"
 app_min="3.1.0"
 check_which $app $app_min
@@ -131,7 +131,7 @@ else
     wrong_version
 fi
 
-# [Python 3.6.5]
+# [Python >= 3.6.5, < 4.0]
 app="python3"
 app_min="3.6.5"
 check_which $app $app_min
@@ -144,7 +144,7 @@ else
     wrong_version
 fi
 
-# [Ruby 2.5.1]
+# [Ruby >= 2.5.1, < 3.0]
 app="ruby"
 app_min="2.5.1"
 check_which $app $app_min
@@ -157,18 +157,18 @@ else
     wrong_version
 fi
 
-# [Docker 19.03.x]
+# [Docker >= 19.03]
 app="docker"
 app_min="19.03.0"
 check_which $app $app_min
-app_v=$(${app} --version)
-echo -e "Checking $app version... \c"
-if [ $(echo $app_v | grep -c -E "19\.0[3456789]\.[0-9].*") -eq 1 ]
-then   
+
+# Make sure docker is running
+echo -e "Checking if docker is running... \c"
+docker_running=$(docker ps)
+if [ $? -eq 0 ]
+then    
     echo "Ok"
 else
-    wrong_version
+    die "Docker is not running"
 fi
 
-# TODO - Check for global tsc/tslint (why is this an issue, we use npx..?)
-# TODO - Switch to JS? 
