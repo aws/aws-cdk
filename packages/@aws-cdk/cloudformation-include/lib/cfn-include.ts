@@ -29,7 +29,6 @@ export interface CfnIncludeProps {
   readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
 }
 
-//TODO
 /**
  * Returned by getNestedStack(). Contains both the NestedStack and
  * CfnInclude representations of the template.
