@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { RegionInfo } from '@aws-cdk/region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -170,8 +170,6 @@ export abstract class BaseLoadBalancer extends Resource {
     if (Token.isUnresolved(region)) {
       throw new Error('Region is required to enable ELBv2 access logging');
     }
-
-    https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html
 
     const account = RegionInfo.get(region).elbv2Account;
     if (!account) {
