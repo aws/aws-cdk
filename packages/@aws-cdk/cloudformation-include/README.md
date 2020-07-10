@@ -106,69 +106,6 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
-## Nested Stacks
-If you have two templates in a [nested](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) relationship, like this:
-```json
-{
-  "Resources": {
-    "ChildStack": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
-        "Parameters": {
-          "MyBucketParameter": "my-bucket-name"
-        }
-      }
-    }
-  }
-}
-```
-
-```json
-{
-  "Parameters": {
-    "MyBucketParameter": {
-      "Type": "String",
-      "Default": "default-bucket-param-name"
-    }
-  },
-  "Resources": {
-    "BucketImport": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Ref": "MyBucketParameter"
-        }
-      }
-    }
-  }
-}
-```
-
-You can access the nested stack and perform all operations you would on any other CDK Stack if you include the parent stack as follows:
-
-```typescript
-const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-  templateFile: 'path/to/my-parent-template.json',
-  nestedStacks: {
-    "ChildStack": {
-      templateFile: 'path/to/my-nested-template.json',
-    },
-  },
-});
-```
-
-now you can access the ChildStack with
-
-```typescript
-parentTemplate.getNestedStack('ChildStack');
-```
-
-and if you want to perform operations like getResource that you would on any other included template, you can do so with
-
-```typescript
-parentTemplate.getNestedStackTemplate('ChildStack');
-```
 
 
 ## Conditions
@@ -205,6 +142,98 @@ and any changes you make to it will be reflected in the resulting template:
 
 ```typescript
 output.value = cfnBucket.attrArn;
+```
+
+## Nested Stacks
+
+This module also support templates that use [nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html).
+
+For example, if you have the following parent template:
+
+```json
+{
+  "Resources": {
+    "ChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "my-bucket-name"
+        }
+      }
+    }
+  }
+}
+```
+
+where the child template pointed to by `https://my-s3-template-source.s3.amazonaws.com/child-import-stack.json` is:
+
+```json
+{
+  "Parameters": {
+    "MyBucketParameter": {
+      "Type": "String",
+      "Default": "default-bucket-param-name"
+    }
+  },
+  "Resources": {
+    "BucketImport": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Ref": "MyBucketParameter"
+        }
+      }
+    }
+  }
+}
+```
+
+You can access the nested stack and perform all operations you would on any other CDK Stack if you include the parent stack as follows:
+
+```typescript
+const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+  templateFile: 'path/to/my-parent-template.json',
+  nestedStacks: {
+    'ChildStack': {
+      templateFile: 'path/to/my-nested-template.json',
+    },
+  },
+});
+```
+
+now you can access the ChildStack nested stack and included template with:
+
+```typescript
+const childStack = parentTemplate.getNestedStack('ChildStack').stack;
+const childStackTemplate = parentTemplate.getNestedStack('ChildStack').includedTemplate;
+```
+
+we can modify childStack:
+
+```typescript
+const bucket = childStackTemplate.getResource('ImportBucket') as s3.CfnBucket;
+bucket.bucketName = 'my-new-bucket-name';
+
+const bucketReadRole = new iam.Role(childStack, "myRole", {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+
+bucketReadRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    's3:GetObject*',
+    's3:GetBucket*',
+    's3:List*',
+  ],
+  resources: [bucket.attrArn],
+}));
+
+```
+
+and if you want to perform operations like getResource that you would on any other included template, you can do so with:
+
+```typescript
+parentTemplate.getNestedStack('ChildStack').includedTemplate;
 ```
 
 ## Known limitations
