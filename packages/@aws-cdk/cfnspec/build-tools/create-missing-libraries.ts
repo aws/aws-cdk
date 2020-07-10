@@ -5,13 +5,13 @@
  * have an AWS construct library.
  */
 
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
 // don't be a prude:
-// tslint:disable:no-console
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable no-console */
+/* eslint-disable quote-props */
 
 async function main() {
   const root = path.join(__dirname, '..', '..');
