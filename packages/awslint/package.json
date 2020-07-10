@@ -16,19 +16,19 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.7.0",
+    "@jsii/spec": "^1.8.0",
     "camelcase": "^6.0.0",
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.7.0",
+    "jsii-reflect": "^1.8.0",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/yargs": "^15.0.5",
     "tslint": "^5.20.1",
-    "typescript": "~3.9.5",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "typescript": "~3.9.6"
   },
   "repository": {
     "type": "git",

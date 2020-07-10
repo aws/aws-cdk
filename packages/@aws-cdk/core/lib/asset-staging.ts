@@ -171,6 +171,7 @@ export class AssetStaging extends Construct {
     ];
 
     try {
+      console.error(`Bundling asset ${this.node.path}...`); // tslint:disable-line no-console
       options.image._run({
         command: options.command,
         user,

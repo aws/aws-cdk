@@ -108,6 +108,7 @@ export = {
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
     const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
     const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
+    const consoleErrorSpy = sinon.spy(console, 'error');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -137,6 +138,9 @@ export = {
     test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
     test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
     test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
+
+    // shows a message before bundling
+    test.ok(consoleErrorSpy.calledWith('Bundling asset stack/Asset...'));
 
     test.done();
   },

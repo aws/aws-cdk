@@ -12,3 +12,4 @@ jest.config.js
 .eslintrc.js
 # exclude cdk artifacts
 **/cdk.out
+junit.xml
