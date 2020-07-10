@@ -10,3 +10,5 @@ tsconfig.json
 *.snk
 coverage
 !.eslintrc.js
+
+junit.xml
