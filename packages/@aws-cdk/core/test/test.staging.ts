@@ -1,8 +1,8 @@
+import * as os from 'os';
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Test } from 'nodeunit';
-import * as os from 'os';
-import * as path from 'path';
 import * as sinon from 'sinon';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
@@ -114,6 +114,7 @@ export = {
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
+    const consoleErrorSpy = sinon.spy(console, 'error');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -141,6 +142,10 @@ export = {
     // asset is bundled in a directory inside .cdk.staging
     test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
     test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7'))));
+
+    // shows a message before bundling
+    test.ok(consoleErrorSpy.calledWith('Bundling asset stack/Asset...'));
+
     test.done();
   },
 

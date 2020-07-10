@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'sufficiently complex example'(test: Test) {
@@ -66,7 +66,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 100,
@@ -96,7 +96,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 50,
@@ -156,7 +156,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'MaximumBatchingWindowInSeconds': 120,
