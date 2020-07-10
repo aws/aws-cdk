@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixture } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
 

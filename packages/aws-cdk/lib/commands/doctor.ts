@@ -1,6 +1,6 @@
+import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
-import * as process from 'process';
 import * as yargs from 'yargs';
 import { print } from '../../lib/logging';
 import * as version from '../../lib/version';

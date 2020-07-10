@@ -19,9 +19,6 @@ export interface CustomActionProperty {
    */
   description?: string;
 
-  // because of @see URLs
-  // tslint:disable:max-line-length
-
   /**
    * Whether this property is a key.
    *

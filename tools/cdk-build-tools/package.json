@@ -19,7 +19,7 @@
     "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
+    "build": "tsc -b && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",

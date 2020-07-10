@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as minimatch from 'minimatch';
 import * as path from 'path';
+import * as minimatch from 'minimatch';
 import { SymlinkFollowMode } from './options';
 
 /**

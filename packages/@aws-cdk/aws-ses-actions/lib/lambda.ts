@@ -70,7 +70,7 @@ export class Lambda implements ses.IReceiptRuleAction {
     if (permission) { // The Lambda could be imported
       rule.node.addDependency(permission);
     } else {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       rule.node.addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
     }
 

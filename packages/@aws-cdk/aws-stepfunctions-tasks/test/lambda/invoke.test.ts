@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
-// tslint:disable: object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('LambdaInvoke', () => {
 

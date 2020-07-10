@@ -3,7 +3,7 @@
 import * as yargs from 'yargs';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const argv = yargs

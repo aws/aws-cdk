@@ -102,7 +102,7 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
   }
 
   public get description(): string {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     return `resource '${this.resourceType}' with ${JSON.stringify(this.matcher, undefined, 2)}`;
   }
 }

@@ -232,7 +232,7 @@ export enum ValidationMethod {
   DNS = 'DNS',
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 function renderDomainValidation(validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
   const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
 

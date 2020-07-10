@@ -6,6 +6,7 @@
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "package": "cdk-package",

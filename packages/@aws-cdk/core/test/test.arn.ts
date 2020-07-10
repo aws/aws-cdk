@@ -99,7 +99,7 @@ export = {
 
   'Arn.parse(s)': {
 
-    'fails': {
+    fails: {
       'if doesn\'t start with "arn:"'(test: Test) {
         const stack = new Stack();
         test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:": barn:foo/);
@@ -203,9 +203,9 @@ export = {
 
       test.equal(parsed.sep, '/');
 
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
 
       test.done();

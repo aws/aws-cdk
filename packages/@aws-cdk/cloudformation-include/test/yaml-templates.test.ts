@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {

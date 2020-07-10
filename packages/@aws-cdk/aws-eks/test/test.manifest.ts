@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
 import { testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 

@@ -1,5 +1,5 @@
-import * as cfnspec from '@aws-cdk/cfnspec';
 import { AssertionError } from 'assert';
+import * as cfnspec from '@aws-cdk/cfnspec';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
 import { deepEqual } from './util';

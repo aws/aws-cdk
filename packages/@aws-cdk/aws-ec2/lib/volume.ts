@@ -473,7 +473,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     const result = Grant.addToPrincipal({
       grantee,
       actions: [ 'ec2:AttachVolume' ],
-      resourceArns : this.collectGrantResourceArns(instances),
+      resourceArns: this.collectGrantResourceArns(instances),
     });
 
     if (this.encryptionKey) {
@@ -519,7 +519,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     const result = Grant.addToPrincipal({
       grantee,
       actions: [ 'ec2:DetachVolume' ],
-      resourceArns : this.collectGrantResourceArns(instances),
+      resourceArns: this.collectGrantResourceArns(instances),
     });
     // Note: No encryption key permissions are required to detach an encrypted volume.
     return result;

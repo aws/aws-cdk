@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'can import a Lambda version by ARN'(test: Test) {

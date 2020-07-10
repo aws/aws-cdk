@@ -6,7 +6,7 @@ import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 /**
  * CloudFormation intrinsic functions.

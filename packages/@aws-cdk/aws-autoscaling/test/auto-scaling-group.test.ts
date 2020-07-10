@@ -8,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 nodeunitShim({
   'default fleet'(test: Test) {
@@ -1134,17 +1134,17 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      NotificationConfigurations : [
+      NotificationConfigurations: [
         {
-          TopicARN : { Ref : 'MyTopic86869434' },
-          NotificationTypes : [
+          TopicARN: { Ref: 'MyTopic86869434' },
+          NotificationTypes: [
             'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
         {
-          TopicARN : { Ref : 'MyTopic86869434' },
-          NotificationTypes : [
+          TopicARN: { Ref: 'MyTopic86869434' },
+          NotificationTypes: [
             'autoscaling:EC2_INSTANCE_TERMINATE',
           ],
         },
@@ -1174,10 +1174,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      NotificationConfigurations : [
+      NotificationConfigurations: [
         {
-          TopicARN : { Ref : 'MyTopic86869434' },
-          NotificationTypes : [
+          TopicARN: { Ref: 'MyTopic86869434' },
+          NotificationTypes: [
             'autoscaling:EC2_INSTANCE_LAUNCH',
             'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
             'autoscaling:EC2_INSTANCE_TERMINATE',
@@ -1206,10 +1206,10 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
-      NotificationConfigurations : [
+      NotificationConfigurations: [
         {
-          TopicARN : { Ref : 'MyTopic86869434' },
-          NotificationTypes : [
+          TopicARN: { Ref: 'MyTopic86869434' },
+          NotificationTypes: [
             'autoscaling:EC2_INSTANCE_LAUNCH',
             'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
             'autoscaling:EC2_INSTANCE_TERMINATE',

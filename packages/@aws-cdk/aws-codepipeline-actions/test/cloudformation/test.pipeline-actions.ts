@@ -8,7 +8,7 @@ import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
 
 export = nodeunit.testCase({
-  'CreateReplaceChangeSet': {
+  CreateReplaceChangeSet: {
     'works'(test: nodeunit.Test) {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
@@ -95,9 +95,9 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
             ],
           },
@@ -108,7 +108,7 @@ export = nodeunit.testCase({
     },
   },
 
-  'ExecuteChangeSet': {
+  ExecuteChangeSet: {
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -167,9 +167,9 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
             ],
           },

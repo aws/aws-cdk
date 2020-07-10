@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { OriginAccessIdentity } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 nodeunitShim({
   'Origin Access Identity with automatic comment'(test: Test) {

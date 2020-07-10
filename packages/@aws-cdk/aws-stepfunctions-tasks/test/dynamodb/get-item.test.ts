@@ -98,7 +98,7 @@ test('supports tokens', () => {
     },
     End: true,
     Parameters: {
-      // tslint:disable:object-literal-key-quotes
+      /* eslint-disable quote-props */
       Key: {
         SOME_KEY: { 'S.$': '$.partitionKey' },
         OTHER_KEY: { 'N.$': '$.sortKey' },

@@ -148,6 +148,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   for (const key of Object.keys(obj)) {
     const resolvedKey = makeContext()[0].resolve(key);
     if (typeof(resolvedKey) !== 'string') {
+      // eslint-disable-next-line max-len
       throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
     }
 

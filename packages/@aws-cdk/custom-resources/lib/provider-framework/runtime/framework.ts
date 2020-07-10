@@ -1,5 +1,5 @@
-// tslint:disable: no-console
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';

@@ -439,7 +439,6 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
-  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
