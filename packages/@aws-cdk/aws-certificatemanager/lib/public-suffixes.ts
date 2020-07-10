@@ -1,5 +1,5 @@
 // This file has been generated using ../suffixes/build-map.py
-// tslint:disable:no-trailing-whitespace object-literal-key-quotes
+/* eslint-disable quote-props */
 export const publicSuffixes = {
   'ac': {
     'com': {},

@@ -1,10 +1,10 @@
+import * as https from 'https';
+import * as os from 'os';
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config';
 import * as fs from 'fs-extra';
-import * as https from 'https';
-import * as os from 'os';
-import * as path from 'path';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
