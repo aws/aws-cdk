@@ -12,7 +12,7 @@ test('should not throw an Error', () => {
     new appsync.GraphQLApi(stack, 'api', {
       authorizationConfig: {},
       name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'schema.graphql'),
+      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
     });
   };
 

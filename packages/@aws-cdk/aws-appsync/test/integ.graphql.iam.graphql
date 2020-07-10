@@ -1,0 +1,14 @@
+type test {
+  id: Int!
+  version: String!
+}
+
+type Query {
+  getTest(id: Int!): test
+  getTests: [ test! ]
+    @aws_iam 
+}
+
+type Mutation {
+  addTest(version: String!): test
+}
