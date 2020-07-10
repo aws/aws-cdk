@@ -1,7 +1,6 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
-  AnyPrincipal,
   Grant,
   IGrantable,
   IPrincipal,
@@ -68,12 +67,6 @@ export interface AuthorizationMode {
    * @default - none
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
-  /**
-   * If authorizationType is `AuthorizationType.IAM`, this option can be configured.
-   * @default - @see IamConfig
-   */
-  readonly iamConfig?: IamConfig;
-
 }
 
 /**
@@ -144,23 +137,6 @@ export interface IamResources {
    */
   readonly field: string;
 
-}
-
-/**
- * Configuration for IAM authorization in AppSync
- */
-export interface IamConfig {
-  /**
-   * Unique name of the API Key
-   * @default - 'DefaultIAMRole'
-   */
-  readonly roleName?: string;
-
-  /**
-   * Description of IAM Role
-   * @default - 'Default IAM Role created by CDK'
-   */
-  readonly description?: string;
 }
 
 /**
@@ -425,20 +401,6 @@ export class GraphQLApi extends Construct {
         };
       this._apiKey = this.createAPIKey(apiKeyConfig);
     }
-    if (
-      defaultAuthorizationType === AuthorizationType.IAM ||
-      props.authorizationConfig?.additionalAuthorizationModes?.findIndex(
-        (authMode) => authMode.authorizationType === AuthorizationType.IAM
-      ) !== -1
-    ) {
-      const iamConfig: IamConfig = props.authorizationConfig
-        ?.defaultAuthorization?.iamConfig || {
-          roleName: 'DefaultIAMRole',
-          description: 'Default IAM Role created by CDK',
-        };
-      this.role = this.createIAMRole(iamConfig);
-      this.grantPrincipal = this.role;
-    }
 
     let definition;
     if (props.schemaDefinition) {
@@ -527,7 +489,7 @@ export class GraphQLApi extends Construct {
    * @param grantee The principal (no-op if undefined)
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    */
-  public grant(grantee: IGrantable, ...resources: IamResources[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResources[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:graphql'],
@@ -594,19 +556,6 @@ export class GraphQLApi extends Construct {
       apiId: this.apiId,
     });
     return key.attrApiKey;
-  }
-
-  /**
-   * Create IAM Role to attach to AppSync Api
-   *
-   * @param config - name and description
-   */
-  private createIAMRole(config: IamConfig) {
-    return new Role(this, `${config.roleName}`, {
-      assumedBy: new AnyPrincipal(),
-      description: config.description,
-      roleName: config.roleName,
-    });
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {
