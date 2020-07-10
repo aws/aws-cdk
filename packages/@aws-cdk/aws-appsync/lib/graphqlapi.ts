@@ -269,7 +269,7 @@ export class GraphQLApi extends Construct {
   /**
    * the name of the API
    */
-  public name: string;
+  public readonly name: string;
   /**
    * underlying CFN schema resource
    */
