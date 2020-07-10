@@ -4,6 +4,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
+const CDK_OUTDIR = 'cdk-integ.out';
+
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 const PRAGMA_PREFIX = 'pragma:';
 
@@ -96,58 +98,63 @@ export class IntegrationTest {
     const context = {
       ...options.context,
     };
-    await exec(['node', `${this.name}`], {
-      cwd: this.directory,
-      env: {
-        ...options.env,
-        CDK_CONTEXT_JSON: JSON.stringify(context),
-        CDK_DEFAULT_ACCOUNT: '12345678',
-        CDK_DEFAULT_REGION: 'test-region',
-        CDK_OUTDIR: 'cdk.out',
-        CDK_CLI_ASM_VERSION: '5.0.0',
-      },
-    });
 
-    // Interpret the cloud assembly directly here. Not great, but I'm wary
-    // adding dependencies on the libraries that model it.
-    //
-    // FIXME: Refactor later if it doesn't introduce dependency cycles
-    const cloudManifest = await fs.readJSON(path.resolve(this.directory, 'cdk.out', 'manifest.json'));
-    const stacks: Record<string, any> = {};
-    for (const [artifactId, artifact] of Object.entries(cloudManifest.artifacts ?? {}) as Array<[string, any]>) {
-      if (artifact.type !== 'aws:cloudformation:stack') { continue; }
+    try {
+      await exec(['node', `${this.name}`], {
+        cwd: this.directory,
+        env: {
+          ...options.env,
+          CDK_CONTEXT_JSON: JSON.stringify(context),
+          CDK_DEFAULT_ACCOUNT: '12345678',
+          CDK_DEFAULT_REGION: 'test-region',
+          CDK_OUTDIR,
+          CDK_CLI_ASM_VERSION: '5.0.0',
+        },
+      });
 
-      const template = await fs.readJSON(path.resolve(this.directory, 'cdk.out', artifact.properties.templateFile));
-      stacks[artifactId] = template;
-    }
+      // Interpret the cloud assembly directly here. Not great, but I'm wary
+      // adding dependencies on the libraries that model it.
+      //
+      // FIXME: Refactor later if it doesn't introduce dependency cycles
+      const cloudManifest = await fs.readJSON(path.resolve(this.directory, CDK_OUTDIR, 'manifest.json'));
+      const stacks: Record<string, any> = {};
+      for (const [artifactId, artifact] of Object.entries(cloudManifest.artifacts ?? {}) as Array<[string, any]>) {
+        if (artifact.type !== 'aws:cloudformation:stack') { continue; }
 
-    const stacksToDiff = await this.readStackPragma();
-
-    if (stacksToDiff.length > 0) {
-      // This is a monster. I'm sorry. :(
-      const templates = stacksToDiff.length === 1 && stacksToDiff[0] === '*'
-        ? Object.values(stacks)
-        : stacksToDiff.map(templateForStackName);
-
-      // We're supposed to just return *a* template (which is an object), but there's a crazy
-      // case in which we diff multiple templates at once and then they're an array. And it works somehow.
-      return templates.length === 1 ? templates[0] : templates;
-    } else {
-      const names = Object.keys(stacks);
-      if (names.length !== 1) {
-        throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
-          '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
-          `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
-          `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+        const template = await fs.readJSON(path.resolve(this.directory, CDK_OUTDIR, artifact.properties.templateFile));
+        stacks[artifactId] = template;
       }
-      return stacks[names[0]];
-    }
 
-    function templateForStackName(name: string) {
-      if (!stacks[name]) {
-        throw new Error(`No such stack in output: ${name}`);
+      const stacksToDiff = await this.readStackPragma();
+
+      if (stacksToDiff.length > 0) {
+        // This is a monster. I'm sorry. :(
+        const templates = stacksToDiff.length === 1 && stacksToDiff[0] === '*'
+          ? Object.values(stacks)
+          : stacksToDiff.map(templateForStackName);
+
+        // We're supposed to just return *a* template (which is an object), but there's a crazy
+        // case in which we diff multiple templates at once and then they're an array. And it works somehow.
+        return templates.length === 1 ? templates[0] : templates;
+      } else {
+        const names = Object.keys(stacks);
+        if (names.length !== 1) {
+          throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
+            '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+            `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+            `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+        }
+        return stacks[names[0]];
       }
-      return stacks[name];
+
+      function templateForStackName(name: string) {
+        if (!stacks[name]) {
+          throw new Error(`No such stack in output: ${name}`);
+        }
+        return stacks[name];
+      }
+    } finally {
+      this.cleanupTemporaryFiles();
     }
   }
 
@@ -160,7 +167,7 @@ export class IntegrationTest {
     if (options.context) {
       await this.writeCdkContext(options.context);
     } else {
-      this.deleteCdkContext();
+      this.cleanupTemporaryFiles();
     }
 
     const cliSwitches = [
@@ -171,6 +178,8 @@ export class IntegrationTest {
       '--no-asset-metadata',
       // save a copy step by not staging assets
       '--no-staging',
+      // Different output directory
+      '-o', CDK_OUTDIR,
     ];
 
     try {
@@ -182,7 +191,7 @@ export class IntegrationTest {
         env: options.env,
       });
     } finally {
-      this.deleteCdkContext();
+      this.cleanupTemporaryFiles();
     }
   }
 
@@ -242,12 +251,12 @@ export class IntegrationTest {
     await fs.writeFile(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
   }
 
-  private deleteCdkContext() {
+  private cleanupTemporaryFiles() {
     if (fs.existsSync(this.cdkContextPath)) {
       fs.unlinkSync(this.cdkContextPath);
     }
 
-    const cdkOutPath = path.join(this.directory, 'cdk.out');
+    const cdkOutPath = path.join(this.directory, CDK_OUTDIR);
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
     }
