@@ -275,7 +275,7 @@ async function main() {
     ]);
 
     await write('jest.config.js', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');",
+      "const baseConfig = require('cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 
