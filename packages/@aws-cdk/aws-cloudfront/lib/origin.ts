@@ -7,6 +7,8 @@ import { OriginAccessIdentity } from './origin_access_identity';
 /**
  * Properties to be used to create an Origin. Prefer to use one of the Origin.from* factory methods rather than
  * instantiating an Origin directly from these properties.
+ *
+ * @experimental
  */
 export interface OriginProps {
   /**
@@ -26,6 +28,8 @@ export interface OriginProps {
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
+ *
+ * @experimental
  */
 export abstract class Origin extends Construct {
 
@@ -106,6 +110,8 @@ export abstract class Origin extends Construct {
 
 /**
  * Properties for an Origin backed by an S3 bucket
+ *
+ * @experimental
  */
 export interface S3OriginProps extends OriginProps {
   /**
@@ -118,6 +124,8 @@ export interface S3OriginProps extends OriginProps {
  * An Origin specific to a S3 bucket (not configured for website hosting).
  *
  * Contains additional logic around bucket permissions and origin access identities.
+ *
+ * @experimental
  */
 export class S3Origin extends Origin {
   private readonly originAccessIdentity: OriginAccessIdentity;
@@ -136,6 +144,8 @@ export class S3Origin extends Origin {
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
+ *
+ * @experimental
  */
 export interface HttpOriginProps extends OriginProps {
   /**
@@ -148,6 +158,8 @@ export interface HttpOriginProps extends OriginProps {
 
 /**
  * An Origin for an HTTP server or S3 bucket configured for website hosting.
+ *
+ * @experimental
  */
 export class HttpOrigin extends Origin {
 

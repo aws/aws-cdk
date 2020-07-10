@@ -26,6 +26,8 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
+ *
+ * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -45,6 +47,8 @@ export interface DistributionAttributes {
 
 /**
  * Properties for a Distribution
+ *
+ * @experimental
  */
 export interface DistributionProps {
   /**
@@ -87,6 +91,8 @@ export interface DistributionProps {
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
+ *
+ * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -261,6 +267,8 @@ export class AllowedMethods {
 
 /**
  * Options for creating a new behavior.
+ *
+ * @experimental
  */
 export interface BehaviorOptions {
   /**
