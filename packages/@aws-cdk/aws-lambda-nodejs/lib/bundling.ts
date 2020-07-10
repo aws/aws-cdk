@@ -145,7 +145,7 @@ export class Bundling {
 
     // Entry file path relative to container path
     const containerEntryPath = path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, path.relative(projectRoot, path.resolve(options.entry)));
-    const parcelCommand = `parcel build ${containerEntryPath.replace(/\\/g, '/')} --target cdk-lambda${options.cacheDir ? ' --cache-dir /parcel-cache' : ''}`;
+    const parcelCommand = `parcel build ${containerEntryPath.replace(/\\/g, '/')} --target cdk-lambda --no-scope-hoist${options.cacheDir ? ' --cache-dir /parcel-cache' : ''}`;
 
     let installer = Installer.NPM;
     let lockfile: string | undefined;
