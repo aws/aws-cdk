@@ -55,6 +55,8 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
+The default for `s3Prefix` is the root of the bucket.
+
 #### Partitions
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
