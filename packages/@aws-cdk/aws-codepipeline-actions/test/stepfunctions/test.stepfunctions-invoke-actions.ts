@@ -1,4 +1,4 @@
-import { expect, haveResourceLike, not } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
@@ -12,7 +12,7 @@ export = {
       const stack = new Stack();
 
       // when
-      minimalPipeline(stack, undefined);
+      minimalPipeline(stack);
 
       // then
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -51,6 +51,8 @@ export = {
                     Ref: 'SimpleStateMachineE8E2CF40',
                   },
                   InputType: 'Literal',
+                  // JSON Stringified input when the input type is Literal
+                  Input: '{\"IsHelloWorldExample\":true}',
                 },
               },
             ],
@@ -58,15 +60,13 @@ export = {
         ],
       }));
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
-
       test.done();
     },
 
     'Allows the pipeline to invoke this stepfunction'(test: Test) {
       const stack = new Stack();
 
-      minimalPipeline(stack, undefined);
+      minimalPipeline(stack);
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
         PolicyDocument: {
@@ -103,7 +103,7 @@ export = {
           stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
           stateMachineInput: '',
         });
-      });
+      }, /File path must be specified in the StateMachineInput field when the InputType is FilePath/);
 
       test.done();
     },
@@ -124,22 +124,14 @@ export = {
           stateMachineInputType: cpactions.StateMachineInputType.FILEPATH,
           stateMachineInput: 'assets/input.json',
         });
-      });
+      }, /Input Artifact must be provided when the InputType is FilePath/);
 
       test.done();
     },
   },
 };
 
-interface MinimalPipelineOptions {
-  readonly trigger?: cpactions.S3Trigger;
-
-  readonly bucket?: s3.IBucket;
-
-  readonly bucketKey?: string;
-}
-
-function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): codepipeline.IStage {
+function minimalPipeline(stack: Stack): codepipeline.IStage {
   const sourceOutput = new codepipeline.Artifact();
   const startState = new stepfunction.Pass(stack, 'StartState');
   const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
@@ -151,10 +143,10 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     actions: [
       new cpactions.S3SourceAction({
         actionName: 'Source',
-        bucket: options.bucket || new s3.Bucket(stack, 'MyBucket'),
-        bucketKey: options.bucketKey || 'some/path/to',
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        bucketKey: 'some/path/to',
         output: sourceOutput,
-        trigger: options.trigger,
+        trigger: cpactions.S3Trigger.POLL,
       }),
     ],
   });
@@ -163,9 +155,10 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
     actions: [
       new cpactions.StepFunctionsInvokeAction({
         actionName: 'Invoke',
+        input: sourceOutput,
         stateMachine: simpleStateMachine,
         stateMachineInputType: cpactions.StateMachineInputType.LITERAL,
-        stateMachineInput: '{}',
+        stateMachineInput: {IsHelloWorldExample: true},
       }),
     ],
   });

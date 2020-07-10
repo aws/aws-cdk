@@ -399,7 +399,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
         build: {
           commands: 'export MY_VAR="some value"',
         },
-      }, 
+      },
     }),
   }),
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -794,3 +794,56 @@ new codepipeline_actions.CodeBuildAction({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+#### AWS Step Functions
+
+This module contains an Action that allows you to invoke a Step Function in a Pipeline:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+    definition: startState,
+    });
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInputType: codepipeline_actions.StateMachineInputType.LITERAL,
+  stateMachineInput: {IsHelloWorldExample: true},
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+The StateMachineInputType can be a Literal or FilePath.
+Input artifact and StateMachineInputField are required when
+the StateMachineInputType is set as FilePath.
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const inputArtifact = new codepipeline.Artifact();
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+    definition: startState,
+    });
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  input: inputArtifact,
+  stateMachine: simpleStateMachine,
+  stateMachineInputType: codepipeline_actions.StateMachineInputType.FILEPATH,
+  stateMachineInput: 'assets/input.json',
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
+for information on Action structure reference.

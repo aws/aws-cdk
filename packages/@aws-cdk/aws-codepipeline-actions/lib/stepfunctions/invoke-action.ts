@@ -56,7 +56,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
    */
   readonly stateMachineInputType?: StateMachineInputType;
 
-  /**y
+  /**
    * When InputType is set to Literal (default), this field is optional.
    * If provided, the Input field is used directly as the input for the state machine execution.
    * Otherwise, the state machine is invoked with an empty JSON object {}.
@@ -69,7 +69,7 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
   readonly stateMachineInput?: string | object;
 
   /**
-   * Prefix (optinoal)
+   * Prefix (optional)
    *
    * By default, the action execution ID is used as the state machine execution name.
    * If a prefix is provided, it is prepended to the action execution ID with a hyphen and
@@ -81,12 +81,22 @@ export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsAc
 }
 
 /**
- * CodePipeline invoke Action that is provided by an AWS Step Function.
+ * StepFunction invoke Action that is provided by an AWS CodePipeline.
  */
 export class StepFunctionsInvokeAction extends Action {
   private readonly props: StepFunctionsInvokeActionProps;
 
   constructor(props: StepFunctionsInvokeActionProps) {
+    if (props.stateMachineInputType === StateMachineInputType.FILEPATH) {
+      // StateMachineInput is required when the StateMachineInputType is set as FilePath
+      if (!props.stateMachineInput) {
+        throw new Error('File path must be specified in the StateMachineInput field when the InputType is FilePath');
+      }
+      // Input Artifact is required when the StateMachineInputType is set as FilePath
+      if (props.input ?? []) {
+        throw new Error('Input Artifact must be provided when the InputType is FilePath');
+      }
+    }
     super({
       ...props,
       resource: props.stateMachine,
@@ -98,18 +108,9 @@ export class StepFunctionsInvokeAction extends Action {
         minOutputs: 0,
         maxOutputs: 1,
       },
+      inputs: (props.stateMachineInputType === StateMachineInputType.FILEPATH && props.input) ? [props.input] : [],
+      outputs: (props.output) ? [props.output] : [],
     });
-
-    // StateMachineInput is required when the StateMachineInputType is set as FilePath
-    if ( props.stateMachineInputType === StateMachineInputType.FILEPATH && (!props.stateMachineInput)) {
-      throw new Error('Input type FilePath was specified, but no filepath was provided');
-    }
-
-    // Input Artifact is required when the StateMachineInputType is set as FilePath
-    if ( props.stateMachineInputType === StateMachineInputType.FILEPATH && (!this.actionProperties.inputs)) {
-      throw new Error('Input type FilePath was specified, but no input artifact was provided');
-    }
-
     this.props = props;
   }
 
@@ -121,27 +122,25 @@ export class StepFunctionsInvokeAction extends Action {
       resources: [this.props.stateMachine.stateMachineArn],
     }));
 
-    // allow action executions to be inspected and invoked
+    // allow state machine executions to be inspected
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
-      // TODO: find statemachinename from arn. ARN is part of interface IStateMachine which doesn't have the name property. Confirm with Matt
-      resources: [`arn:aws:states:*:*:execution:${this.props.stateMachine.stateMachineArn}:${this.props.executionPrefixName || ''}*`],
+      resources: [`arn:aws:states:*:*:execution:${this.props.stateMachine.stateMachineArn}:${this.props.executionPrefixName ?? ''}*`],
     }));
-
-    this.props.stateMachine.grantStartExecution(options.role);
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
     if ((this.actionProperties.inputs ?? []).length > 0) {
       options.bucket.grantRead(options.role);
     }
-    if ((this.actionProperties.outputs || []).length > 0) {
+    if ((this.actionProperties.outputs ?? []).length > 0) {
       options.bucket.grantWrite(options.role);
     }
 
     return {
       configuration: {
         StateMachineArn: this.props.stateMachine.stateMachineArn,
-        Input: this.props.stateMachineInput,
+        Input: (this.props.stateMachineInputType === StateMachineInputType.LITERAL) ?
+          JSON.stringify(this.props.stateMachineInput) : this.props.stateMachineInput,
         InputType: this.props.stateMachineInputType,
         ExecutionNamePrefix: this.props.executionPrefixName,
       },
