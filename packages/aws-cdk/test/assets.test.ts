@@ -37,7 +37,7 @@ describe('file assets', () => {
     expect(params).toEqual({
       BucketParameter: 'bucket',
       KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
-      ArtifactHashParameter: 'breaking!',
+      ArtifactHashParameter: 'source-hash',
     });
 
     expect(assets.toManifest('.').entries).toEqual([
