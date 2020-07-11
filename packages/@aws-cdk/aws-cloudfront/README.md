@@ -103,3 +103,39 @@ const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
     ]
 });
 ```
+```
+
+#### Origin Fallback
+
+In case the origin source is not available and answers with one of the
+specified status code the fallback origin source will be used.
+
+
+```ts
+new CloudFrontWebDistribution(stack, 'ADistribution', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucket', 'myoriginbucket'),
+        originPath: '/',
+        originHeaders: {
+          'myHeader': '42',
+        },
+      },
+      fallbackS3OriginSource: {
+        s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucketFallback', 'myoriginbucketfallback'),
+        originPath: '/somwhere',
+        originHeaders: {
+          'myHeader2': '21',
+        },
+      },
+      failoverCriteriaStatusCodes: [FallbackStatusCode.INTERNAL_SERVER_ERROR],
+      behaviors: [
+        {
+          isDefaultBehavior: true,
+        },
+      ],
+    },
+  ],
+});
+```
