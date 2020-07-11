@@ -49,7 +49,7 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
 
   /**
    * Whether the Step Functions resource is Lambda:invoke or the function ARN.
-   * 
+   *
    * ARN is not compatible with the WAIT_FOR_TASK_TOKEN IntegrationPattern.
    *
    * @default ResourceType.INVOKE
@@ -169,14 +169,14 @@ export enum LambdaResourceType {
   /**
    * The Resource parameter will be "arn:aws:states:::lambda:invoke", and the Lambda function ARN will be specified in
    * the FunctionName parameter.
-   * 
-   * The API response includes the function response and additional data. 
+   *
+   * The API response includes the function response and additional data.
    */
   INVOKE = 'Invoke',
 
   /**
    * The Resource parameter will be the Lambda function ARN.
-   * 
+   *
    * The API response includes only the function response.
    */
   ARN = 'Arn'
