@@ -56,9 +56,6 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
-/**
- * An abstract internet gateway
- */
 export interface IVpc extends IResource {
   /**
    * Identifier for this VPC
