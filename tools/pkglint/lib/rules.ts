@@ -14,7 +14,6 @@ import {
   monoRepoRoot,
 } from './util';
 
-// tslint:disable-next-line: no-var-requires
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
 
 /**
@@ -520,6 +519,7 @@ export class CDKPackage extends ValidationRule {
 
     const merkleMarker = '.LAST_PACKAGE';
 
+    if (!shouldUseCDKBuildTools(pkg)) { return; }
     expectJSON(this.name, pkg, 'scripts.package', 'cdk-package');
 
     const outdir = 'dist';
@@ -1406,7 +1406,7 @@ function hasIntegTests(pkg: PackageJson) {
 function shouldUseCDKBuildTools(pkg: PackageJson) {
   // The packages that DON'T use CDKBuildTools are the package itself
   // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
+  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
 }
 
 function repoRoot(dir: string) {

@@ -4,13 +4,11 @@ import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, R
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
-// tslint:disable:max-line-length
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
-// tslint:enable
 export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.

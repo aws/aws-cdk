@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import { loadStructuredFile } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
@@ -7,7 +7,7 @@ import { BootstrapEnvironmentOptions } from './bootstrap-props';
 import { deployBootstrapStack } from './deploy-bootstrap';
 import { legacyBootstrapTemplate } from './legacy-template';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 /**
  * Deploy legacy bootstrap stack
