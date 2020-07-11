@@ -11,11 +11,13 @@ const env = {
 
 let sdk: MockSdkProvider;
 let executed: boolean;
+let protectedTermination: boolean;
 let cfnMocks: jest.Mocked<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 let changeSetTemplate: any | undefined;
 beforeEach(() => {
   sdk = new MockSdkProvider();
   executed = false;
+  protectedTermination = false;
 
   cfnMocks = {
     describeStacks: jest.fn()
@@ -47,6 +49,10 @@ beforeEach(() => {
       return {};
     }),
     deleteStack: jest.fn(),
+    updateTerminationProtection: jest.fn(() => {
+      protectedTermination = true;
+      return {};
+    }),
   };
   sdk.stubCloudFormation(cfnMocks);
 });
@@ -254,4 +260,26 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
   expect(ret.noOp).toBeFalsy();
   expect(executed).toBeTruthy();
   expect(cfnMocks.deleteStack).toHaveBeenCalled();
+});
+
+test('stacks are termination protected by default', async () => {
+  // WHEN
+  await bootstrapEnvironment(env, sdk);
+
+  // THEN
+  expect(executed).toBeTruthy();
+  expect(protectedTermination).toBeTruthy();
+});
+
+test('termination protected is turned off when unset', async () => {
+  // WHEN
+  await bootstrapEnvironment(env, sdk, {
+    parameters: {
+      terminationProtection: false,
+    },
+  });
+
+  // THEN
+  expect(executed).toBeTruthy();
+  expect(protectedTermination).toBeFalsy();
 });

@@ -14,7 +14,7 @@ import { legacyBootstrapTemplate } from './legacy-template';
  *
  * @experimental
  */
-export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
   const params = options.parameters ?? {};
 
   if (params.trustedAccounts?.length) {
@@ -43,7 +43,7 @@ export async function bootstrapEnvironment(environment: cxapi.Environment, sdkPr
 export async function bootstrapEnvironment2(
   environment: cxapi.Environment,
   sdkProvider: SdkProvider,
-  options: BootstrapEnvironmentOptions): Promise<DeployStackResult> {
+  options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
 
   const params = options.parameters ?? {};
 
