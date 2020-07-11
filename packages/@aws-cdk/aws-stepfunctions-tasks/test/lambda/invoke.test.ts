@@ -176,12 +176,12 @@ describe('LambdaInvoke', () => {
       },
     });
   });
-  
+
   test('Invoke lambda with function ARN', () => {
-        // WHEN
+    // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
-      resourceType: LambdaResourceType.ARN
+      resourceType: LambdaResourceType.ARN,
     });
 
     // THEN
