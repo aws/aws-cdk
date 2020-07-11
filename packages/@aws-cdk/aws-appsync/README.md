@@ -13,186 +13,65 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+The `@aws-cdk/aws-appsync` package contains constructs for building flexible
+APIs that use GraphQL. 
 
-## Usage Example
+### Example
 
-Given the following GraphQL schema file `schema.graphql`:
+GraphQL schema file `schema.graphql`:
 
-```graphql
-type ServiceVersion {
-    version: String!
+```gql
+type demo {
+  id: String!
+  version: String!
 }
-
-type Customer {
-    id: String!
-    name: String!
-}
-
-input SaveCustomerInput {
-    name: String!
-}
-
-type Order {
-    customer: String!
-    order: String!
-}
-
 type Query {
-    getServiceVersion: ServiceVersion
-    getCustomers: [Customer]
-    getCustomer(id: String): Customer
+  getDemos: [ test! ]
 }
-
-input FirstOrderInput {
-    product: String!
-    quantity: Int!
+input DemoInput {
+  version: String!
 }
-
 type Mutation {
-    addCustomer(customer: SaveCustomerInput!): Customer
-    saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
-    removeCustomer(id: String!): Customer
-    saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
-    doPostOnAws: String!
+  addDemo(input: DemoInput!): demo
 }
 ```
 
-the following CDK app snippet will create a complete CRUD AppSync API:
+Stack file `app-stack.ts` with auth `IAM`:
 
 ```ts
-export class ApiStack extends Stack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+import * as appsync from '@aws-cdk/aws-appsync';
+import * as db from '@aws-cdk/aws-dynamodb';
 
-    const userPool = new UserPool(this, 'UserPool', {
-      userPoolName: 'myPool',
-    });
+const api = new appsync.GraphQLApi(stack, 'Api', {
+  name: 'demo',
+  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.IAM
+    },
+  },
+});
 
-    const api = new GraphQLApi(this, 'Api', {
-      name: `demoapi`,
-      logConfig: {
-        fieldLogLevel: FieldLogLevel.ALL,
-      },
-      authorizationConfig: {
-        defaultAuthorization: {
-          authorizationType: AuthorizationType.USER_POOL,
-          userPoolConfig: {
-            userPool,
-            defaultAction: UserPoolDefaultAction.ALLOW
-          },
-        },
-        additionalAuthorizationModes: [
-          {
-            authorizationType: AuthorizationType.API_KEY,
-          }
-        ],
-      },
-      schemaDefinitionFile: './schema.graphql',
-    });
+const demoTable = new db.Table(stack, 'DemoTable', {
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+});
 
-    const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+const demoDS = api.addDynamoDbDataSource('demoDataSource', 'Table for Demos"', demoTable);
 
-    noneDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getServiceVersion',
-      requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
-        version: '2017-02-28',
-      })),
-      responseMappingTemplate: MappingTemplate.fromString(JSON.stringify({
-        version: 'v1',
-      })),
-    });
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemos',
+  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
 
-    const customerTable = new Table(this, 'CustomerTable', {
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
-    });
-    // If your table is already created you can also use use import table and use it as data source.
-    const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-    customerDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getCustomers',
-      requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
-    });
-    customerDS.createResolver({
-      typeName: 'Query',
-      fieldName: 'getCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'addCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey.partition('id').auto(),
-          Values.projecting('customer')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'saveCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey.partition('id').is('id'),
-          Values.projecting('customer')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'saveCustomerWithFirstOrder',
-      requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
-          PrimaryKey
-              .partition('order').auto()
-              .sort('customer').is('customer.id'),
-          Values
-              .projecting('order')
-              .attribute('referral').is('referral')),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-    customerDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'removeCustomer',
-      requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
-      responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
-    });
-
-    const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
-
-    httpDS.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'doPostOnAws',
-      requestMappingTemplate: MappingTemplate.fromString(`{
-        "version": "2018-05-29",
-        "method": "POST",
-        # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
-        "resourcePath": "/path/123",
-        "params":{
-            "body": $util.toJson($ctx.args),
-            "headers":{
-                "Content-Type": "application/json",
-                "Authorization": "$ctx.request.headers.Authorization"
-            }
-        }
-      }`),
-      responseMappingTemplate: MappingTemplate.fromString(`
-        ## Raise a GraphQL field error in case of a datasource invocation error
-        #if($ctx.error)
-          $util.error($ctx.error.message, $ctx.error.type)
-        #end
-        ## if the response status code is not 200, then return an error. Else return the body **
-        #if($ctx.result.statusCode == 200)
-            ## If response is 200, return the body.
-            $ctx.result.body
-        #else
-            ## If response is not 200, append the response to error block.
-            $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
-        #end
-      `),
-    });
-  }
-}
+demoDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'addDemo',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
 ```
