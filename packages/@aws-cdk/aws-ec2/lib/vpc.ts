@@ -1105,7 +1105,7 @@ export class Vpc extends VpcBase {
   /**
    * Internet Gateway for the VPC
    */
-  public readonly internetGatewayId: string;
+  public readonly internetGatewayId: string = '';
 
   /*
    * Identifier for the VPN gateway
