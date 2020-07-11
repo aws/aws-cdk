@@ -97,13 +97,6 @@ new Function(stack, 'testQuery', {
   environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
   role: lambdaIAM,
 });
-new Function(stack, 'testMutate', {
-  code: Code.fromAsset('lambda'),
-  handler: 'iamMutate.handler',
-  runtime: Runtime.NODEJS_12_X,
-  environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
-  role: lambdaIAM,
-});
 new Function(stack, 'testFail', {
   code: Code.fromAsset('lambda'),
   handler: 'iamQuery.handler',
