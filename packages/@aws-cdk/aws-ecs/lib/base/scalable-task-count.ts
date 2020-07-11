@@ -6,7 +6,6 @@ import { Construct } from '@aws-cdk/core';
 /**
  * The properties of a scalable attribute representing task count.
  */
-// tslint:disable-next-line:no-empty-interface
 export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
 
 }

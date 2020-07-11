@@ -6,7 +6,7 @@ const q = '"';
 test('quote the word "ON"', () => {
   // NON NEGOTIABLE! If not quoted, will be interpreted as the boolean TRUE
 
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   const output = toYAML({
     notABoolean: 'ON',
   });

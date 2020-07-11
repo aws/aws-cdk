@@ -1,10 +1,10 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as https from 'https';
-import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
+import { Test } from 'nodeunit';
 import * as entrypoint from '../../lib/custom-resource-provider/nodejs-entrypoint';
 
 export = {

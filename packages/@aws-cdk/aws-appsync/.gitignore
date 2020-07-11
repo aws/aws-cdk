@@ -17,3 +17,4 @@ nyc.config.js
 !jest.config.js
 
 !verify*
+junit.xml

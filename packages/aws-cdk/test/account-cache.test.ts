@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 
 async function makeCache() {

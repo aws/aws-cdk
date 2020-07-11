@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import { ImportMock } from 'ts-mock-imports';
 import { SymlinkFollowMode } from '../../lib/fs';
 import * as util from '../../lib/fs/utils';
