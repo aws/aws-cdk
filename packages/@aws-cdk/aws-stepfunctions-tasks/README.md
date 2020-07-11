@@ -623,6 +623,19 @@ new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', 
 });
 ```
 
+If you want to combine the input and the Lambda function response you can use
+the ARN `LambdaResourceType` and specify the `resultPath`. This will put the
+Lambda function ARN directly in the "Resource" string.
+
+```ts
+new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
+  lambdaFunction: myLambda,
+  resourceType: tasks.LambdaResourceType.ARN,
+  payload: sfn.TaskInput.fromDataAt('$'),
+  resultPath: '$.myLambda',
+});
+```
+
 You can have Step Functions pause a task, and wait for an external process to
 return a task token. Read more about the [callback pattern](https://docs.aws.amazon.com/step-functions/latest/dg/callback-task-sample-sqs.html#call-back-lambda-example)
 

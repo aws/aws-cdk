@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { LambdaInvocationType, LambdaInvoke } from '../../lib';
+import { LambdaInvocationType, LambdaInvoke, LambdaResourceType } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -173,6 +173,29 @@ describe('LambdaInvoke', () => {
           ],
         },
         'Payload.$': '$.foo',
+      },
+    });
+  });
+  
+  test('Invoke lambda with function ARN', () => {
+        // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      resourceType: LambdaResourceType.ARN
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn',
+        ],
+      },
+      Parameters: {
+        'Payload.$': '$',
       },
     });
   });

@@ -46,6 +46,15 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
    * @default - Version or alias inherent to the `lambdaFunction` object.
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether the Step Functions resource is Lambda:invoke or the function ARN.
+   * 
+   * ARN is not compatible with the WAIT_FOR_TASK_TOKEN IntegrationPattern.
+   *
+   * @default ResourceType.INVOKE
+   */
+  readonly resourceType?: LambdaResourceType;
 }
 
 /**
@@ -100,16 +109,30 @@ export class LambdaInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    return {
-      Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
-        FunctionName: this.props.lambdaFunction.functionArn,
-        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
-        InvocationType: this.props.invocationType,
-        ClientContext: this.props.clientContext,
-        Qualifier: this.props.qualifier,
-      }),
-    };
+    switch (this.props.resourceType) {
+      case 'Arn':
+        return {
+          Resource: this.props.lambdaFunction.functionArn,
+          Parameters: sfn.FieldUtils.renderObject({
+            Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
+            InvocationType: this.props.invocationType,
+            ClientContext: this.props.clientContext,
+            Qualifier: this.props.qualifier,
+          }),
+        };
+      case 'Invoke':
+      default:
+        return {
+          Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
+          Parameters: sfn.FieldUtils.renderObject({
+            FunctionName: this.props.lambdaFunction.functionArn,
+            Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
+            InvocationType: this.props.invocationType,
+            ClientContext: this.props.clientContext,
+            Qualifier: this.props.qualifier,
+          }),
+        };
+    }
   }
 }
 
@@ -137,4 +160,24 @@ export enum LambdaInvocationType {
    * Validate parameter values and verify that the user or role has permission to invoke the function.
    */
   DRY_RUN = 'DryRun'
+}
+
+/**
+ * Resource type of a Lambda
+ */
+export enum LambdaResourceType {
+  /**
+   * The Resource parameter will be "arn:aws:states:::lambda:invoke", and the Lambda function ARN will be specified in
+   * the FunctionName parameter.
+   * 
+   * The API response includes the function response and additional data. 
+   */
+  INVOKE = 'Invoke',
+
+  /**
+   * The Resource parameter will be the Lambda function ARN.
+   * 
+   * The API response includes only the function response.
+   */
+  ARN = 'Arn'
 }
