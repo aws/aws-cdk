@@ -4,7 +4,7 @@ import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'minimal setup'(test: Test) {
@@ -956,7 +956,7 @@ export = {
     test.done();
   },
 
-  'Import': {
+  Import: {
     'fromRestApiId()'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -995,7 +995,7 @@ export = {
     },
   },
 
-  'SpecRestApi': {
+  SpecRestApi: {
     'add Methods and Resources'(test: Test) {
       // GIVEN
       const stack = new Stack();
