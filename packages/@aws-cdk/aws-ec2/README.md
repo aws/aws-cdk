@@ -252,6 +252,21 @@ DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
 DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
 DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
+### Accessing the Internet Gateway
+
+If you need access to the internet gateway, you can get it's ID like so:
+
+```ts
+const igw_id = vpc.internetGatewayId;
+```
+
+This is only supported for VPC's created in the stack - currently you're 
+unable to get the ID for imported VPC's. To do that you'd have to use the
+[Escape Hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html).
+
+This can be useful for configuring routing using a combination of gateways:
+for more information see [Routing](#routing).
+
 ### Reserving subnet IP space
 
 There are situations where the IP space for a subnet or number of subnets
@@ -436,7 +451,7 @@ const vpc = ec2.Vpc(this, "VPC", {
     }]
 })
 (vpc.isolatedSubnets[0] as Subnet).addRoute("StaticRoute", {
-    routerId: vpc.internetGateway.internetGatewayId,
+    routerId: vpc.internetGatewayId,
     routerType: RouterType.GATEWAY,
     destinationCidrBlock: "8.8.8.8/32",
 })

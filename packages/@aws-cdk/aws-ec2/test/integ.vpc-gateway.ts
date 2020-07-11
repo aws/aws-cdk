@@ -19,7 +19,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
 });
 
 (vpc.isolatedSubnets[0] as ec2.Subnet).addRoute('MyRoute', {
-  routerId: vpc.internetGateway.internetGatewayId,
+  routerId: vpc.internetGatewayId,
   routerType: ec2.RouterType.GATEWAY,
   destinationCidrBlock: '8.8.8.8/32',
 });

@@ -74,7 +74,7 @@ nodeunitShim({
     'can refer to the internet gateway'(test: Test) {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
-      test.deepEqual(stack.resolve(vpc.internetGateway.internetGatewayId), { Ref: 'TheVPCIGWFA25CC08' });
+      test.deepEqual(stack.resolve(vpc.internetGatewayId), { Ref: 'TheVPCIGWFA25CC08' });
       test.done();
     },
 
@@ -181,7 +181,7 @@ nodeunitShim({
         ],
       });
       (vpc.isolatedSubnets[0] as Subnet).addRoute('TheRoute', {
-        routerId: vpc.internetGateway.internetGatewayId,
+        routerId: vpc.internetGatewayId,
         routerType: RouterType.GATEWAY,
         destinationCidrBlock: '8.8.8.8/32',
       });
