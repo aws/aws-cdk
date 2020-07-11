@@ -16,12 +16,12 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc -b && cdk-lint && chmod +x bin/pkglint",
+    "build": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
     "test": "jest",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build && npm test",
     "watch": "tsc -b -w",
-    "lint": "tsc -b && cdk-lint"
+    "lint": "tsc -b && eslint . --ext=.ts"
   },
   "keywords": [
     "aws",
@@ -38,7 +38,6 @@
     "@types/fs-extra": "^8.1.0",
     "@types/semver": "^7.3.1",
     "@types/yargs": "^15.0.5",
-    "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "typescript": "~3.9.6"
   },
