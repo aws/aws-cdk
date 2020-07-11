@@ -3,13 +3,12 @@ import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
   Grant,
   IGrantable,
-  IPrincipal,
   ManagedPolicy,
   Role,
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable, Lazy } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, Lazy, Stack } from '@aws-cdk/core';
 import { readFileSync } from 'fs';
 import {
   CfnApiKey,
@@ -107,36 +106,34 @@ export interface UserPoolConfig {
 
 /**
  * Resources to provision to IAM Role
+ *
+ * @see grant
  */
 export interface IamResources {
   /**
-   * Region to give permissions with attached IAM Role
+   * Type to make custom resource ARN following the API ID
+   * (i.e.) custom: 'enum/test/*'
    *
-   * To allow any region, set to '*'
-   */
-  readonly region: string;
-
-  /**
-   * Account to give permissions with attached IAM Role
+   * Will OVERWRITE other types.
    *
-   * To allow for any account, set to '*'
+   * @see README.md for usage
+   * @default - no custom provisioning
    */
-  readonly account: string;
+  readonly custom?: string;
 
   /**
    * Type to give permissions with attached IAM Role
    *
-   * To allow for any Type, set to '*'
+   * @default - allow access to all types  (i.e. '*')
    */
-  readonly type: string;
+  readonly type?: string;
 
   /**
    * Field to give permissions with attached IAM Role
    *
-   * To allow for any Field, set to '*'
+   * @default - allow access to all fields (i.e. '*')
    */
-  readonly field: string;
-
+  readonly field?: string;
 }
 
 /**
@@ -318,18 +315,6 @@ export class GraphQLApi extends Construct {
     return this._apiKey;
   }
 
-  /**
-   * IAM Role that is attached to this GraphQLApi
-   *
-   * @default - undefined, if not using IAM Authorization
-   */
-  public readonly role?: Role;
-
-  /**
-   * Grant Principal for attached IAM Role
-   */
-  public readonly grantPrincipal?: IPrincipal;
-
   private api: CfnGraphQLApi;
   private _apiKey?: string;
 
@@ -488,16 +473,35 @@ export class GraphQLApi extends Construct {
    *
    * @param grantee The principal (no-op if undefined)
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: IamResources[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResources[], ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
-      actions: ['appsync:graphql'],
+      actions,
       resourceArns: [...resources.map(resource => Lazy.stringValue({
-        produce: () => `arn:aws:appsync:${resource.region}:${resource.account}:apis/${this.apiId}/types/${resource.type}/fields/${resource.field}`}),
-      )],
+        produce: () => {
+          let resourceTypes;
+          if (resource.custom) {
+            resourceTypes = `${resource.custom}`;
+          } else if (resource.type && resource.field) {
+            resourceTypes = `types/${resource.type}/fields/${resource.field}`;
+          } else if (resource.type) {
+            resourceTypes = `types/${resource.type}/*`;
+          } else {
+            resourceTypes = '*';
+          }
+          return Stack.of(this).formatArn({
+            service: 'appsync',
+            resource: `apis/${this.apiId}`,
+            sep: '/',
+            resourceName: `${resourceTypes}`,
+          });
+        },
+      }))],
       scope: this,
     });
+
   }
 
   /**
@@ -505,14 +509,87 @@ export class GraphQLApi extends Construct {
    * principal's policy.
    *
    * @param grantee The principal (no-op if undefined)
-   * @param region The region to grant access to, set to '*' for all
-   * @param account The account to grant access to, set to '*' for all
    */
-  public grantFullAccess(grantee: IGrantable, region: string, account: string): Grant {
+  public grantFullAccess(grantee: IGrantable): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:graphql'],
-      resourceArns: [`arn:aws:appsync:${region}:${account}:apis/${this.apiId}/*`],
+      resourceArns: [
+        Stack.of(this).formatArn({
+          service: 'appsync',
+          resource: `apis/${this.apiId}`,
+          sep: '/',
+          resourceName: '*',
+        }),
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  public grantMutation(grantee: IGrantable, fields?: [string]): Grant {
+    return this.grantType(grantee, 'Mutation', fields);
+  }
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  public grantQuery(grantee: IGrantable, fields?: [string]): Grant {
+    return this.grantType(grantee, 'Query', fields);
+  }
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  public grantSubscription(grantee: IGrantable, fields?: [string]): Grant {
+    return this.grantType(grantee, 'Subscription', fields);
+  }
+
+  /**
+   * Adds an IAM policy statement for Type access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param type The type to grant access
+   * @param fields The fields to grant access to that are of @param type (leave blank for all)
+   */
+  public grantType(grantee: IGrantable, type: string, fields?: [string]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['appsync:graphql'],
+      resourceArns: fields ?
+        [...fields.map(field => Lazy.stringValue({
+          produce: () => {
+            return Stack.of(this).formatArn({
+              service: 'appsync',
+              resource: `apis/${this.apiId}`,
+              sep: '/',
+              resourceName: `types/${type}/fields/${field}`,
+            });
+          },
+        }))] :
+        [
+          Stack.of(this).formatArn({
+            service: 'appsync',
+            resource: `apis/${this.apiId}`,
+            sep: '/',
+            resourceName: `types/${type}/*`,
+          }),
+        ],
       scope: this,
     });
   }

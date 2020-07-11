@@ -1,4 +1,4 @@
-type test {
+type test @aws_iam {
   id: String!
   version: String!
 }

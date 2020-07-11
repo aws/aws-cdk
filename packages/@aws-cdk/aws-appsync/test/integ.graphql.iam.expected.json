@@ -106,7 +106,7 @@
             "ApiId"
           ]
         },
-        "Definition": "type test {\n  id: Int!\n  version: String!\n}\n\ntype Query {\n  getTest(id: Int!): test\n  getTests: [ test! ]\n    @aws_iam \n}\n\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+        "Definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n  getTests: [ test! ]\n    @aws_iam \n}\n\ninput TestInput {\n  version: String!\n}\n\ntype Mutation {\n  addTest(input: TestInput!): test\n    @aws_iam\n}\n"
       }
     },
     "ApitestDataSourceDSServiceRoleE543E310": {
@@ -251,7 +251,7 @@
         "TypeName": "Mutation",
         "DataSourceName": "testDataSource",
         "Kind": "UNIT",
-        "RequestMappingTemplate": "\n      #set($input = $ctx.args.version)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
@@ -271,7 +271,7 @@
         "AttributeDefinitions": [
           {
             "AttributeName": "id",
-            "AttributeType": "N"
+            "AttributeType": "S"
           }
         ],
         "BillingMode": "PAY_PER_REQUEST"
@@ -279,7 +279,201 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "testFunctionServiceRoleFEC29B6F": {
+    "LambdaIAM687B49AF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "LambdaIAMDefaultPolicy96DEA124": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appsync:graphql",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":appsync:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":apis/",
+                    {
+                      "Fn::GetAtt": [
+                        "ApiF70053CD",
+                        "ApiId"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LambdaIAMDefaultPolicy96DEA124",
+        "Roles": [
+          {
+            "Ref": "LambdaIAM687B49AF"
+          }
+        ]
+      }
+    },
+    "testQuery6695AADE": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3BucketDE6DA0E4"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "iamQuery.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaIAM687B49AF",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Environment": {
+          "Variables": {
+            "APPSYNC_ENDPOINT": {
+              "Fn::GetAtt": [
+                "ApiF70053CD",
+                "GraphQLUrl"
+              ]
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "LambdaIAMDefaultPolicy96DEA124",
+        "LambdaIAM687B49AF"
+      ]
+    },
+    "testMutateA1914646": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3BucketDE6DA0E4"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "iamMutate.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaIAM687B49AF",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Environment": {
+          "Variables": {
+            "APPSYNC_ENDPOINT": {
+              "Fn::GetAtt": [
+                "ApiF70053CD",
+                "GraphQLUrl"
+              ]
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "LambdaIAMDefaultPolicy96DEA124",
+        "LambdaIAM687B49AF"
+      ]
+    },
+    "testFailServiceRole9FF22F85": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -310,12 +504,12 @@
         ]
       }
     },
-    "testFunction483F4CBE": {
+    "testFail33CE01D1": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2S3Bucket0B75452F"
+            "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3BucketDE6DA0E4"
           },
           "S3Key": {
             "Fn::Join": [
@@ -328,7 +522,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2S3VersionKeyEAD1D149"
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
                         }
                       ]
                     }
@@ -341,7 +535,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2S3VersionKeyEAD1D149"
+                          "Ref": "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4"
                         }
                       ]
                     }
@@ -351,32 +545,42 @@
             ]
           }
         },
-        "Handler": "iam.handler",
+        "Handler": "iamQuery.handler",
         "Role": {
           "Fn::GetAtt": [
-            "testFunctionServiceRoleFEC29B6F",
+            "testFailServiceRole9FF22F85",
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs12.x",
+        "Environment": {
+          "Variables": {
+            "APPSYNC_ENDPOINT": {
+              "Fn::GetAtt": [
+                "ApiF70053CD",
+                "GraphQLUrl"
+              ]
+            }
+          }
+        }
       },
       "DependsOn": [
-        "testFunctionServiceRoleFEC29B6F"
+        "testFailServiceRole9FF22F85"
       ]
     }
   },
   "Parameters": {
-    "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2S3Bucket0B75452F": {
+    "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3BucketDE6DA0E4": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2\""
+      "Description": "S3 bucket for asset \"36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4\""
     },
-    "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2S3VersionKeyEAD1D149": {
+    "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4S3VersionKeyAB1065E4": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2\""
+      "Description": "S3 key for asset version \"36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4\""
     },
-    "AssetParameters3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2ArtifactHash159B54AC": {
+    "AssetParameters36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4ArtifactHashF48DEFF8": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3887aabba4cfc401e02f6422f362685dd5f450637d14bef0c74c817c09be6cf2\""
+      "Description": "Artifact hash for asset \"36cbb9f341df78c612da892ce0b55df19060a099fc4e390afeba23ac18f4a6c4\""
     }
   }
 }
