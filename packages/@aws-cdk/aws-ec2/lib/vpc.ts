@@ -1104,11 +1104,6 @@ export class Vpc extends VpcBase {
    */
   public readonly internetGatewayId: string = '';
 
-  /*
-   * Identifier for the VPN gateway
-   */
-  public readonly vpnGatewayId: string | undefined;
-
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
@@ -1745,7 +1740,6 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly vpnGatewayId: string | undefined;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   private readonly cidr?: string | undefined;
 
