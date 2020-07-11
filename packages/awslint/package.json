@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "scripts": {
-    "build": "tsc -b && chmod +x bin/awslint",
-    "lint": "tslint -p . && pkglint",
+    "build": "tsc -b && npm run lint && chmod +x bin/awslint",
+    "lint": "cdk-lint && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
     "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
     "@types/yargs": "^15.0.5",
-    "tslint": "^5.20.1",
+    "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0",
     "typescript": "~3.9.6"
   },
