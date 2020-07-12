@@ -975,40 +975,37 @@ export = {
                 'eks:UntagResource',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':eks:us-east-1:',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':cluster/my-cluster-name',
-                    ],
+              Resource: [{
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':eks:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':cluster/my-cluster-name',
                   ],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':eks:us-east-1:',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':cluster/my-cluster-name/*',
-                    ],
+                ],
+              }, {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':eks:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':cluster/my-cluster-name/*',
                   ],
-                },
-              ],
+                ],
+              }],
             },
             {
               Action: [
@@ -1034,10 +1031,7 @@ export = {
               },
             },
             {
-              Action: [
-                'iam:GetRole',
-                'iam:listAttachedRolePolicies',
-              ],
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -1118,9 +1112,7 @@ export = {
                 'eks:UntagResource',
               ],
               Effect: 'Allow',
-              Resource: [
-                '*',
-              ],
+              Resource: ['*'],
             },
             {
               Action: [
@@ -1131,10 +1123,7 @@ export = {
               Resource: '*',
             },
             {
-              Action: [
-                'iam:GetRole',
-                'iam:listAttachedRolePolicies',
-              ],
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
               Effect: 'Allow',
               Resource: '*',
             },
