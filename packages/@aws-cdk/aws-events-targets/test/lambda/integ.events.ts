@@ -25,7 +25,7 @@ timer2.addTarget(new targets.LambdaFunction(fn));
 
 app.synth();
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();
