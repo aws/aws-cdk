@@ -6,8 +6,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 
 import {
-  CfnAutoScalingRollingUpdate, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved,
+  CfnAutoScalingRollingUpdate, Duration, Fn, IResource, Lazy, Logging, PhysicalName, Resource,
+  Stack, Tag, Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
@@ -559,7 +559,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.node.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
+      Logging.of(this).addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
@@ -1138,7 +1138,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        Logging.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 

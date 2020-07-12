@@ -20,12 +20,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': [ 'StackMyFunc9605894BApiEventSourceA7A86A4FA0EF20EE', 'RootResourceId' ] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
+      ResourceId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4Ffoo036E62EF' },
     }));
 
     test.done();
@@ -47,22 +47,22 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': [ 'StackMyFunc9605894BApiEventSourceA7A86A4FA0EF20EE', 'RootResourceId' ] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': [ 'StackMyFunc9605894BApiEventSourceA7A86A4FA0EF20EE', 'RootResourceId' ] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
+      ResourceId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4Ffoo036E62EF' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FbarDFB0F21B' },
+      ResourceId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4FbarDB723DC5' },
     }));
 
     test.done();
@@ -85,22 +85,22 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': [ 'StackMyFunc9605894BApiEventSourceA7A86A4FA0EF20EE', 'RootResourceId' ] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
-      ParentId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
+      ParentId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4Ffoo036E62EF' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4FfooCA6F87E4' },
+      ResourceId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4Ffoo036E62EF' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: 'MyFuncApiEventSourceA7A86A4Ffoobar028FFFDE' },
+      ResourceId: { Ref: 'StackMyFunc9605894BApiEventSourceA7A86A4Ffoobar74614CB9' },
     }));
 
     test.done();

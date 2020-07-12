@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Logging } from '@aws-cdk/core';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -99,7 +100,7 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        this.taskDefinition.node.addWarning('security groups are ignored when network mode is not awsvpc');
+        Logging.of(this.taskDefinition).addWarning('security groups are ignored when network mode is not awsvpc');
       }
       return;
     }

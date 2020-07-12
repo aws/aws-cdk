@@ -1,6 +1,4 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, ConstructScopeSettings } from 'constructs';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
 
@@ -107,8 +105,6 @@ export class App extends Stage {
       this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
     }
 
-    applyLegacyConstructSettings(this);
-
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
       // synth() guarantuees it will only execute once, so a default of 'true'
@@ -137,19 +133,4 @@ export class App extends Stage {
       this.node.setContext(k, v);
     }
   }
-}
-
-/**
- * Configures the construct scope to use legacy values for error/warning/info metadata keys
- * as well as disable stack traces if needed.
- */
-export function applyLegacyConstructSettings(scope: Construct) {
-  const settings = ConstructScopeSettings.of(scope);
-  if (scope.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) || process.env.CDK_DISABLE_STACK_TRACE) {
-    settings.disableStackTraces();
-  }
-
-  settings.errorMetadataKey = cxschema.ArtifactMetadataEntryType.ERROR;
-  settings.warningMetadataKey = cxschema.ArtifactMetadataEntryType.WARN;
-  settings.infoMetadataKey = cxschema.ArtifactMetadataEntryType.INFO;
 }

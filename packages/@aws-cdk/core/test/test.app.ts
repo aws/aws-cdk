@@ -2,7 +2,7 @@ import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { CfnResource, Stack, StackProps } from '../lib';
+import { CfnResource, Logging, Stack, StackProps } from '../lib';
 import { App, AppProps } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
@@ -29,8 +29,9 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
 
     // add some metadata
     stack1.node.addMetadata('meta', 111);
-    r2.node.addWarning('warning1');
-    r2.node.addWarning('warning2');
+    Logging.of(r2).addWarning('warning1');
+    Logging.of(r2).addWarning('warning2');
+
     c1.node.addMetadata('meta', { key: 'value' });
     app.node.addMetadata('applevel', 123); // apps can also have metadata
   });

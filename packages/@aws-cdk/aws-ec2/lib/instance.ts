@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Duration, Fn, IResource, Lazy, Logging, Resource, Tag } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
@@ -292,13 +292,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Logging.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Logging.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {

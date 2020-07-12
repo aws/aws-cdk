@@ -41,7 +41,7 @@ export class GlobalTable extends Construct {
   constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id);
 
-    this.node.addWarning('The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions');
+    cdk.Logging.of(this).addWarning('The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions');
 
     this._regionalTables = [];
 

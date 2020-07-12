@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/core';
+import { ContextProvider, IResource, Lazy, Logging, Resource, Stack, Tag, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import {
@@ -376,7 +376,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      this.node.addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Logging.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -1853,7 +1853,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
         ? `at '${scope.node.path}/${id}'`
         : `'${attrs.subnetId}'`;
       // tslint:disable-next-line: max-line-length
-      scope.node.addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
+      Logging.of(this).addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
     this._availabilityZone = attrs.availabilityZone;

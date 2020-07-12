@@ -25,7 +25,7 @@ export = {
       ServiceToken: {
         'Fn::GetAtt': [
           'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-          'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
         ],
       },
       ResourceName: 'myResourceName',

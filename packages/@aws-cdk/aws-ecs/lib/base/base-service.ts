@@ -5,7 +5,7 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResolvable, IResource, Lazy, Logging, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -357,7 +357,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      this.node.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      Logging.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {

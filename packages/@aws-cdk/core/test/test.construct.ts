@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ConstructOrder, IConstruct, IValidation } from 'constructs';
 import { Test } from 'nodeunit';
-import { App as Root } from '../lib';
+import { App as Root, Logging } from '../lib';
 import { validateTree } from '../lib/private/synthesis';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
@@ -274,7 +274,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addWarning('This construct is deprecated, use the other one instead');
+    Logging.of(con).addWarning('This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
@@ -287,7 +287,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addError('Stop!');
+    Logging.of(con).addError('Stop!');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.ERROR);
@@ -300,7 +300,7 @@ export = {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    con.node.addInfo('Hey there, how do you do?');
+    Logging.of(con).addInfo('Hey there, how do you do?');
     restoreStackTraceColection(previousValue);
 
     test.deepEqual(con.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.INFO);

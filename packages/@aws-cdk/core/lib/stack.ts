@@ -14,6 +14,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import { addDependency } from './deps';
 import { Environment } from './environment';
+import { Logging } from './logging';
 import * as cfnlang from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -210,7 +211,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Logging.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly region: string;
@@ -232,7 +233,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Logging.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly account: string;
@@ -801,8 +802,7 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // tslint:disable-next-line: max-line-length
-      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Logging.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 

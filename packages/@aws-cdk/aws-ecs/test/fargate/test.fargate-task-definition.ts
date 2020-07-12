@@ -13,7 +13,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        Family: 'FargateTaskDef',
+        Family: 'StackFargateTaskDefF2C9186E',
         NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ['FARGATE'],
         Cpu: '256',

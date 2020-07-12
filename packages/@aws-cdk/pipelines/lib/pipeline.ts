@@ -1,5 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { App, CfnOutput, Construct, Stack, Stage } from '@aws-cdk/core';
+import { App, CfnOutput, Logging, Stack, Stage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -200,7 +201,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          this.node.addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          Logging.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
               `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +

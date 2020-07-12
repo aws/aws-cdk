@@ -54,6 +54,8 @@ export * from './custom-resource';
 export * from './nested-stack';
 export * from './custom-resource-provider';
 
+export * from './logging';
+
 export * from './cfn-capabilities';
 export * from './cloudformation.generated';
 
