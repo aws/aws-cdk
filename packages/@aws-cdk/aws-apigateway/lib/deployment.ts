@@ -1,4 +1,4 @@
-import { CfnResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { CfnDeployment } from './apigateway.generated';
@@ -78,6 +78,15 @@ export class Deployment extends Resource {
 
     this.api = props.api;
     this.deploymentId = Lazy.stringValue({ produce: () => this.resource.ref });
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-deployment.html
+    // Quoting from CloudFormation's docs: "If you create an
+    // AWS::ApiGateway::RestApi resource and its methods (using
+    // AWS::ApiGateway::Method) in the same template as your deployment, the
+    // deployment must depend on the RestApi's methods.
+    if (this.api instanceof RestApi) {
+      this.node.addDependency(this.api._methodsDependencyGroup);
+    }
   }
 
   /**
@@ -90,30 +99,6 @@ export class Deployment extends Resource {
    */
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
-  }
-
-  /**
-   * Hook into synthesis before it occurs and make any final adjustments.
-   */
-  protected prepare() {
-    if (this.api instanceof RestApi) {
-      // Ignore IRestApi that are imported
-
-      /*
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-deployment.html
-       * Quoting from CloudFormation's docs - "If you create an AWS::ApiGateway::RestApi resource and its methods (using AWS::ApiGateway::Method) in
-       * the same template as your deployment, the deployment must depend on the RestApi's methods. To create a dependency, add a DependsOn attribute
-       * to the deployment. If you don't, AWS CloudFormation creates the deployment right after it creates the RestApi resource that doesn't contain
-       * any methods, and AWS CloudFormation encounters the following error: The REST API doesn't contain any methods."
-       */
-
-      /*
-       * Adding a dependency between LatestDeployment and Method construct, using ConstructNode.addDependencies(), creates additional dependencies
-       * between AWS::ApiGateway::Deployment and the AWS::Lambda::Permission nodes (children under Method), causing cyclic dependency errors. Hence,
-       * falling back to declaring dependencies between the underlying CfnResources.
-       */
-      this.api.methods.map(m => m.node.defaultChild as CfnResource).forEach(m => this.resource.addDependsOn(m));
-    }
   }
 }
 
