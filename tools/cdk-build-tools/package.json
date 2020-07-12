@@ -19,7 +19,7 @@
     "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
-    "build": "tsc -b && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
+    "build": "tsc -b && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
@@ -34,9 +34,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/jest": "^26.0.3",
+    "@types/jest": "^26.0.4",
     "@types/yargs": "^15.0.5",
-    "jest-junit": "^11.0.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {

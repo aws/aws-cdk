@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { S3 } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import * as delay from 'delay';
 

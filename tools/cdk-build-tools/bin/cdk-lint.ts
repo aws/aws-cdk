@@ -15,11 +15,16 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
+    .option('fix', {
+      type: 'boolean',
+      desc: 'Fix the found issues',
+      default: false,
+    })
     .argv;
 
   const options = cdkBuildOptions();
 
-  await lintCurrentPackage(options, { eslint: args.eslint, tslint: args.tslint });
+  await lintCurrentPackage(options, { eslint: args.eslint, tslint: args.tslint, fix: args.fix });
 }
 
 main().catch(e => {
