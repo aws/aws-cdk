@@ -237,10 +237,10 @@ describe('Batch Compute Evironment', () => {
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`,
+              Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`,
+              Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
             },
           ],
           Tags: {
