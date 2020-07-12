@@ -493,7 +493,7 @@ export class Cluster extends Resource implements ICluster {
       this._clusterResource = resource;
 
       // see https://github.com/aws/aws-cdk/issues/9027
-      resource.creationRole.addToPolicy(new iam.PolicyStatement({
+      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
         actions: ['ec2:DescribeVpcs'],
         resources: [ stack.formatArn({
           service: 'ec2',
