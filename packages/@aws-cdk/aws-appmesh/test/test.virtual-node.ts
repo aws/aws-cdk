@@ -148,7 +148,7 @@ export = {
             },
           },
         },
-        VirtualNodeName: 'meshtestnode428A9479',
+        VirtualNodeName: 'StackmeshtestnodeF42773EB',
       }),
     );
 

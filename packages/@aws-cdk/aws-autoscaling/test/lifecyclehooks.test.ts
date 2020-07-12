@@ -3,7 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
 nodeunitShim({
