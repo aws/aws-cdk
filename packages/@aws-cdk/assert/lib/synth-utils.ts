@@ -71,10 +71,10 @@ function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
   }
 
   // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
-  const forceResynth = true;
+  const force = true;
 
   return root.synth({
-    forceResynth,
+    force,
     ...options,
   });
 }
