@@ -185,18 +185,18 @@ describe('log retention', () => {
 
     // THEN
     expect(stack).toHaveResource('Custom::LogRetention', {
-      'LogGroupName': {
+      LogGroupName: {
         'Fn::Join': [
           '',
           [
             '/aws/lambda/',
             {
-              'Ref': 'MyProviderframeworkonEvent9AF5C387',
+              Ref: 'MyProviderframeworkonEvent9AF5C387',
             },
           ],
         ],
       },
-      'RetentionInDays': 7,
+      RetentionInDays: 7,
     });
   });
 
