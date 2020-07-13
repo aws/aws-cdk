@@ -309,7 +309,11 @@ export class Stack extends Construct implements ITaggable {
   public constructor(scope?: Construct, id?: string, props: StackProps = {}) {
     // For unit test scope and id are optional for stacks, but we still want an App
     // as the parent because apps implement much of the synthesis logic.
-    scope = scope ?? new App();
+    scope = scope ?? new App({
+      autoSynth: false,
+      outdir: FileSystem.mkdtemp('cdk-test-app-'),
+    });
+
     id = id ?? 'Stack'; // this will also be the default stack name
 
     super(scope, id);
@@ -1084,6 +1088,7 @@ import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer, ISy
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
+import { FileSystem } from './fs';
 
 interface StackDependency {
   stack: Stack;
