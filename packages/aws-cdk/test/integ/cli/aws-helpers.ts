@@ -93,6 +93,10 @@ export async function deleteStacks(...stackNames: string[]) {
   if (stackNames.length === 0) { return; }
 
   for (const stackName of stackNames) {
+    await cloudFormation('updateTerminationProtection', {
+      EnableTerminationProtection: false,
+      StackName: stackName,
+    });
     await cloudFormation('deleteStack', {
       StackName: stackName,
     });
