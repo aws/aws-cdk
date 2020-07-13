@@ -406,6 +406,33 @@ export = {
             Resource: '*',
           },
           {
+            Action: 'ec2:DescribeVpcs',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':ec2:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':vpc/',
+                  {
+                    Ref: 'FargateClusterDefaultVpcE69D3A13',
+                  },
+                ],
+              ],
+            },
+          },
+          {
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: {
