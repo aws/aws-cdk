@@ -98,15 +98,15 @@ api.grantMutation(lambdaIAM, [
 ]);
 
 new Function(stack, 'testQuery', {
-  code: Code.fromAsset('lambda'),
-  handler: 'verify-iam-query.handler',
+  code: Code.fromAsset('verify'),
+  handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
   environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
-  code: Code.fromAsset('lambda'),
-  handler: 'verify-iam-query.handler',
+  code: Code.fromAsset('verify'),
+  handler: 'iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
   environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
 });

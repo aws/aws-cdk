@@ -126,7 +126,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
 });
 
 const grantResources = [
-  { custom: '/types/Mutation/fields/updateExample' },
+  { custom: 'types/Mutation/fields/updateExample' },
 ];
 
 api.grant(role, grantResources, 'appsync:graphql')
