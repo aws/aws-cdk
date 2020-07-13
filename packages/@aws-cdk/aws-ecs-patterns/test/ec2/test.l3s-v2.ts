@@ -222,7 +222,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'ServiceTaskDef79D79521',
+        Family: 'StackServiceTaskDef733E80F6',
         NetworkMode: 'bridge',
         RequiresCompatibilities: [
           'EC2',
@@ -299,7 +299,7 @@ export = {
             ],
           },
         ],
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         NetworkMode: 'bridge',
         RequiresCompatibilities: [
           'EC2',
@@ -916,7 +916,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'ServiceTaskDef79D79521',
+        Family: 'StackServiceTaskDef733E80F6',
         NetworkMode: 'bridge',
         RequiresCompatibilities: [
           'EC2',
@@ -1087,7 +1087,7 @@ export = {
             'Arn',
           ],
         },
-        Family: 'ServiceTaskDef79D79521',
+        Family: 'StackServiceTaskDef733E80F6',
         NetworkMode: 'bridge',
         RequiresCompatibilities: [
           'EC2',
@@ -1164,7 +1164,7 @@ export = {
             ],
           },
         ],
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         NetworkMode: 'bridge',
         RequiresCompatibilities: [
           'EC2',
