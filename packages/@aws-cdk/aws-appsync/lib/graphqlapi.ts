@@ -9,7 +9,7 @@ import {
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResolvable, Lazy, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
 import {
   CfnApiKey,
   CfnGraphQLApi,
@@ -471,7 +471,7 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement associated with this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
@@ -479,11 +479,9 @@ export class GraphQLApi extends Construct {
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [...resources.map(resource => Lazy.stringValue({
-        produce: () => {
-          return this.generateResourceArn(resource);
-        },
-      }))],
+      resourceArns: resources.map((resource) => {
+        return this.generateResourceArn(resource);
+      }),
       scope: this,
     });
 
@@ -493,12 +491,12 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement for full access to this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    */
   public grantFullAccess(grantee: IGrantable): Grant {
     return Grant.addToPrincipal({
       grantee,
-      actions: ['appsync:graphql'],
+      actions: ['appsync:GraphQL'],
       resourceArns: [
         this.generateResourceArn({custom: '*'}),
       ],
@@ -510,10 +508,10 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    * @param fields The fields to grant access to that are Mutations (leave blank for all)
    */
-  public grantMutation(grantee: IGrantable, fields?: [string]): Grant {
+  public grantMutation(grantee: IGrantable, fields?: string[]): Grant {
     return this.grantType(grantee, 'Mutation', fields);
   }
 
@@ -521,10 +519,10 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    * @param fields The fields to grant access to that are Queries (leave blank for all)
    */
-  public grantQuery(grantee: IGrantable, fields?: [string]): Grant {
+  public grantQuery(grantee: IGrantable, fields?: string[]): Grant {
     return this.grantType(grantee, 'Query', fields);
   }
 
@@ -532,10 +530,10 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
    */
-  public grantSubscription(grantee: IGrantable, fields?: [string]): Grant {
+  public grantSubscription(grantee: IGrantable, fields?: string[]): Grant {
     return this.grantType(grantee, 'Subscription', fields);
   }
 
@@ -543,20 +541,18 @@ export class GraphQLApi extends Construct {
    * Adds an IAM policy statement for Type access to this GraphQLApi to an IAM
    * principal's policy.
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee The principal
    * @param type The type to grant access
    * @param fields The fields to grant access to that are of @param type (leave blank for all)
    */
-  public grantType(grantee: IGrantable, type: string, fields?: [string]): Grant {
+  public grantType(grantee: IGrantable, type: string, fields?: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
-      actions: ['appsync:graphql'],
+      actions: ['appsync:GraphQL'],
       resourceArns: fields ?
-        [...fields.map(field => Lazy.stringValue({
-          produce: () => {
-            return this.generateResourceArn({ type: type, field: field });
-          },
-        }))] :
+        fields.map((field) => {
+          return this.generateResourceArn({ type: type, field: field });
+        }) :
         [
           this.generateResourceArn({ type: type }),
         ],
@@ -574,9 +570,15 @@ export class GraphQLApi extends Construct {
    * @param resource - an singular IAM resource to provision
    */
   private generateResourceArn(resource: IamResources): string {
-    const name = resource.custom ? resource.custom : (
-      resource.type ? resource.field ? `types/${resource.type}/fields/${resource.field}` : `types/${resource.type}/*` : '*'
-    );
+    const name = resource.custom ? resource.custom :
+      ( resource.type ?
+        ( resource.field ?
+          `types/${resource.type}/fields/${resource.field}`
+          : `types/${resource.type}/*`
+        )
+        : '*'
+      );
+
     return Stack.of(this).formatArn({
       service: 'appsync',
       resource: `apis/${this.apiId}`,

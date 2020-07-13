@@ -333,7 +333,7 @@
               }
             },
             {
-              "Action": "appsync:graphql",
+              "Action": "appsync:GraphQL",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
@@ -364,7 +364,7 @@
               }
             },
             {
-              "Action": "appsync:graphql",
+              "Action": "appsync:GraphQL",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
