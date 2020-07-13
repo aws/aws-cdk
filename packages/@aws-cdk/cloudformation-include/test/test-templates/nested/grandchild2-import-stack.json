@@ -13,7 +13,7 @@
           "Fn::Join": [
             "-",
             [
-              "another-bucket-name-prefix",
+              "another-unused-bucket-name-prefix",
               {
                 "Ref": "MyBucketParameter"
               }

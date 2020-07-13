@@ -23,21 +23,23 @@ export interface CfnIncludeProps {
    * If you include a stack here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
    *
-   * If you include an ID here that exists in the template but isn't in the template,
+   * If you include an ID here that exists in the template but isn't a nested stack,
    * template creation will fail and an error will be thrown.
    */
   readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
 }
 
 /**
- * Returned by getNestedStack(). Contains both the NestedStack and
- * CfnInclude representations of the template.
+ * The type returned from {@link CfnInclude.getNestedStack}.
+ * Contains both the NestedStack object and
+ * CfnInclude representations of the child stack.
  */
 export interface IncludedNestedStack {
   /**
    * The NestedStack object that represents the template, which
    * respresents the scope of the template.
    */
+
   readonly stack: core.NestedStack;
   /**
    * The CfnInclude that respresents the template, which can
@@ -56,8 +58,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
-  private readonly nestedStackTemplates: { [logicalId: string]: CfnInclude } = {};
-  private readonly nestedStacks: { [logicalId: string]: core.NestedStack } = {};
+  private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
@@ -182,21 +183,16 @@ export class CfnInclude extends core.CfnElement {
    * @param logicalId the ID of the stack to retrieve, as it appears in its template.
    */
   public getNestedStack(logicalId: string): IncludedNestedStack {
-    if (!this.nestedStacks[logicalId] || !this.nestedStackTemplates[logicalId]) {
+    if (!this.nestedStacks[logicalId]) {
       if (!this.template.Resources[logicalId]) {
         throw new Error(`Nested Stack with logical ID '${logicalId}' was not found in the template`);
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       }
 
-      throw new Error(`Nested Stack with logical ID '${logicalId}' was not specified in the CfnInclude props`);
+      throw new Error(`Nested Stack '${logicalId}' was not included in the nestedStacks property when including the parent template`);
     }
-    const ret: IncludedNestedStack = {
-      stack: this.nestedStacks[logicalId],
-      includedTemplate: this.nestedStackTemplates[logicalId],
-    };
-
-    return ret;
+    return this.nestedStacks[logicalId];
   }
 
   /** @internal */
@@ -294,36 +290,71 @@ export class CfnInclude extends core.CfnElement {
   }
 
   private createNestedStack(nestedStackId: string, props?: CfnIncludeProps): void {
-    if (nestedStackId in this.template.Resources) {
-      if (this.template.Resources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks) {
-        const nestedStackScope = new core.NestedStack(this, 'Nested' + nestedStackId, {
-          parameters: this.template.Resources[nestedStackId].Properties.Parameters,
-          notificationArns: this.template.Resources[nestedStackId].Properties.NotificationArns,
-          timeout: this.template.Resources[nestedStackId].Properties.Timeout,
-        });
+    const resources = this.template.Resources;
 
-        if (nestedStackScope.nestedStackResource) {
-          if (this.preserveLogicalIds) {
-            // override the logical ID to match the original template
-            nestedStackScope.nestedStackResource.overrideLogicalId(nestedStackId);
-          }
-
-          // add this stack to our template's resources, so it doesn't get added again when creating resources
-          this.resources[nestedStackId] = nestedStackScope.nestedStackResource;
-        }
-
-        this.nestedStacks[nestedStackId] = nestedStackScope;
-
-        this.nestedStackTemplates[nestedStackId] = new CfnInclude(nestedStackScope, nestedStackId, {
-          templateFile: props.nestedStacks[nestedStackId].templateFile,
-          nestedStacks: props?.nestedStacks[nestedStackId].nestedStacks,
-        });
-      } else {
-        throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
-      }
-    } else {
+    if (!(nestedStackId in resources)) {
       throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
     }
+
+    if (!(resources[nestedStackId].Type === 'AWS::CloudFormation::Stack' && props?.nestedStacks)) {
+      throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
+    }
+
+    const self = this;
+    const cfnParser = new cfn_parse.CfnParser({
+      finder: {
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
+
+        findResource(lId: string): core.CfnResource | undefined {
+          if (!(lId in (self.template.Resources || {}))) {
+            return undefined;
+          }
+          return self.getOrCreateResource(lId);
+        },
+
+        findRefTarget(elementName: string): core.CfnElement | undefined {
+          if (elementName in self.parameters) {
+            return self.parameters[elementName];
+          }
+
+          return this.findResource(elementName);
+        },
+      },
+    });
+
+    const nestedStackAttributes = resources[nestedStackId];
+    const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
+
+    const nestedStackScope = new core.NestedStack(this, nestedStackId, {
+      parameters: nestedStackProps.Parameters,
+      notificationArns: nestedStackProps.NotificationArns,
+      timeout: nestedStackProps.Timeout,
+    });
+
+    const cfnOptions = nestedStackScope.nestedStackResource!.cfnOptions;
+    cfnOptions.metadata = cfnParser.parseValue(nestedStackAttributes.Metadata);
+    cfnOptions.deletionPolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.DeletionPolicy);
+    cfnOptions.updateReplacePolicy = cfnParser.parseDeletionPolicy(nestedStackAttributes.UpdateReplacePolicy);
+    nestedStackAttributes.dependsOn = resources.DependsOn ?? [];
+
+    if (this.preserveLogicalIds) {
+      // override the logical ID to match the original template
+      nestedStackScope.nestedStackResource!.overrideLogicalId(nestedStackId);
+    }
+
+    // add this stack to our template's resources, so it doesn't get added again when creating resources
+    this.resources[nestedStackId] = nestedStackScope.nestedStackResource!;
+
+    const propStack = props.nestedStacks[nestedStackId];
+    const template = new CfnInclude(nestedStackScope, nestedStackId, {
+      templateFile: propStack.templateFile,
+      nestedStacks: propStack?.nestedStacks,
+    });
+
+    const includeStack: IncludedNestedStack = { stack: nestedStackScope, includedTemplate: template };
+    this.nestedStacks[nestedStackId] = includeStack;
   }
 
   private getOrCreateResource(logicalId: string): core.CfnResource {

@@ -1,3 +1,4 @@
+import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
@@ -15,22 +16,54 @@ describe('CDK Include', () => {
     stack = new core.Stack();
   });
 
-  test('can ingest a template with nested stacks and generate each nested template correctly', () => {
+  test('can ingest a template with one child', () => {
+    const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-onechild.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
+        },
+      },
+    });
+
+    const childStack = parentTemplate.getNestedStack('ChildStack');
+    expect(childStack.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-stack.expected.json'),
+    );
+  });
+
+  test('can ingest a template with two children', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-export-stack.json'),
       nestedStacks: {
-        "ChildStack": {
-          templateFile: testTemplateFilePath('child-import-stack.json'),
-          nestedStacks: {
-            "GrandChildStack": {
-              templateFile: testTemplateFilePath('grandchild-import-stack.json'),
-            },
-          },
+        'ChildStack': {
+          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
         },
-        "AnotherChildStack": {
+        'AnotherChildStack': {
+          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
+        },
+      },
+    });
+
+    const childStack = parentTemplate.getNestedStack('ChildStack');
+    const anotherChildStack = parentTemplate.getNestedStack('AnotherChildStack');
+    expect(childStack.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-stack.expected.json'),
+    );
+
+    expect(anotherChildStack.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-stack.expected.json'),
+    );
+  });
+
+  test('can ingest a template with one child and one grandchild', () => {
+    const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      nestedStacks: {
+        'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
           nestedStacks: {
-            "GrandChildStack": {
+            'GrandChildStack': {
               templateFile: testTemplateFilePath('grandchild-import-stack.json'),
             },
           },
@@ -38,20 +71,14 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(parentTemplate.getNestedStack('ChildStack').stack).toMatchTemplate(
-      loadTestFileToJsObject(('child-stack.expected.json')),
+    const childStack = parentTemplate.getNestedStack('ChildStack');
+    const grandChildStack = childStack.includedTemplate.getNestedStack('GrandChildStack');
+    expect(childStack.stack).toMatchTemplate(
+      loadTestFileToJsObject('child-stack.expected.json'),
     );
 
-    expect(parentTemplate.getNestedStack('ChildStack').includedTemplate.getNestedStack('GrandChildStack').stack).toMatchTemplate(
-      loadTestFileToJsObject(('grandchild-stack.expected.json')),
-    );
-
-    expect(parentTemplate.getNestedStack('AnotherChildStack').stack).toMatchTemplate(
-      loadTestFileToJsObject(('another-child-stack.expected.json')),
-    );
-
-    expect(parentTemplate.getNestedStack('AnotherChildStack').includedTemplate.getNestedStack('GrandChildStack').stack).toMatchTemplate(
-      loadTestFileToJsObject(('grandchild-stack.expected.json')),
+    expect(grandChildStack.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-stack.expected.json'),
     );
   });
 
@@ -60,7 +87,7 @@ describe('CDK Include', () => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-export-stack.json'),
         nestedStacks: {
-          "FakeStack": {
+          'FakeStack': {
             templateFile: testTemplateFilePath('child-import-stack.json'),
           },
         },
@@ -73,10 +100,10 @@ describe('CDK Include', () => {
       new inc.CfnInclude(stack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-export-stack.json'),
         nestedStacks: {
-          "ChildStack": {
+          'ChildStack': {
             templateFile: testTemplateFilePath('child-import-stack.json'),
             nestedStacks: {
-              "BucketImport": {
+              'BucketImport': {
                 templateFile: testTemplateFilePath('grandchild-import-stack.json'),
               },
             },
@@ -90,10 +117,10 @@ describe('CDK Include', () => {
     const parent = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-export-stack.json'),
       nestedStacks: {
-        "ChildStack": {
+        'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
           nestedStacks: {
-            "GrandChildStack": {
+            'GrandChildStack': {
               templateFile: testTemplateFilePath('grandchild-import-stack.json'),
             },
           },
@@ -101,13 +128,13 @@ describe('CDK Include', () => {
       },
     });
 
-    const grandChildTemplate = parent.getNestedStack('ChildStack').includedTemplate.getNestedStack('GrandChildStack').includedTemplate;
-    const bucket = grandChildTemplate.getResource('BucketImport') as s3.CfnBucket;
+    const childTemplate = parent.getNestedStack('ChildStack').includedTemplate;
+    const grandChild = childTemplate.getNestedStack('GrandChildStack');
+    const bucket = grandChild.includedTemplate.getResource('BucketImport') as s3.CfnBucket;
 
     bucket.bucketName = 'modified-bucket-name';
 
-    const grandChildStack = parent.getNestedStack('ChildStack').includedTemplate.getNestedStack('GrandChildStack').stack;
-    expect(grandChildStack).toHaveResource('AWS::S3::Bucket', { BucketName: 'modified-bucket-name' });
+    expect(grandChild.stack).toHaveResource('AWS::S3::Bucket', { BucketName: 'modified-bucket-name' });
   });
 
   test('templates with nested stacks that do not exist in the nested stacks property have those stacks ignored', () => {
@@ -122,7 +149,7 @@ describe('CDK Include', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-export-stack.json'),
       nestedStacks: {
-        "ChildStack": {
+        'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
         },
       },
@@ -137,14 +164,15 @@ describe('CDK Include', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-export-stack.json'),
       nestedStacks: {
-        "ChildStack": {
+        'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
         },
       },
     });
 
     expect(() => {
-      parentTemplate.getNestedStack('ChildStack').includedTemplate.getNestedStack('BucketImport');
+      const childTemplate = parentTemplate.getNestedStack('ChildStack').includedTemplate;
+      childTemplate.getNestedStack('BucketImport');
     }).toThrow(/Resource with logical ID 'BucketImport' is not a CloudFormation Stack/);
   });
 
@@ -152,7 +180,7 @@ describe('CDK Include', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-export-stack.json'),
       nestedStacks: {
-        "ChildStack": {
+        'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
         },
       },
@@ -160,7 +188,94 @@ describe('CDK Include', () => {
 
     expect(() => {
       parentTemplate.getNestedStack('AnotherChildStack').includedTemplate.getNestedStack('BucketImport');
-    }).toThrow(/Nested Stack with logical ID 'AnotherChildStack' was not specified in the CfnInclude props/);
+    }).toThrow(/Nested Stack 'AnotherChildStack' was not included in the nestedStacks property when including the parent template/);
+  });
+
+  test('correctly handles renaming of references across nested stacks', () => {
+    const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('cross-stack-refs.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+      },
+    });
+    const cfnBucket = parentTemplate.getResource('Bucket');
+    cfnBucket.overrideLogicalId('DifferentBucket');
+    const parameter = parentTemplate.getParameter('Param');
+    parameter.overrideLogicalId('DifferentParameter');
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Parameters": {
+        "Param1": {
+          "Ref": "DifferentParameter",
+        },
+        "Param2": {
+          "Fn::GetAtt": ["DifferentBucket", "Arn"],
+        },
+      },
+    });
+  });
+
+  test('ensure that getResource() returns a CfnStack', () => {
+    const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-export-stack.json'),
+    });
+
+    const childStack1 = cfnTemplate.getResource('ChildStack');
+
+    expect(childStack1).toBeInstanceOf(core.CfnStack);
+  });
+
+  test('attributes are correctly parsed', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-with-attributes.json'),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
+      },
+      "Metadata": {
+        "Property1": "Value1",
+      },
+      "DeletionPolicy" : "Retain",
+      "DependsOn": [
+        "ChildStack",
+      ],
+      "UpdateReplacePolicy" : "Retain",
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('correctly parses NotificationsARNs, Timeout', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-with-attributes.json'),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
+        "NotificationARNs": [ "arn1" ],
+        "TimeoutInMinutes": 5,
+      },
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('correctly modifies the templateUrl property of a nested stack whose template has been passed', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('only-nested-stack.json'),
+      nestedStacks: {
+        'NestedStack': {
+          // doesn't matter in this test
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+      },
+    });
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('only-nested-stack.expected.json'),
+    );
   });
 });
 
