@@ -142,7 +142,8 @@ export async function deleteableStacks(prefix: string): Promise<AWS.CloudFormati
 
   return (response.Stacks ?? [])
     .filter(s => s.StackName.startsWith(prefix))
-    .filter(s => statusFilter.includes(s.StackStatus));
+    .filter(s => statusFilter.includes(s.StackStatus))
+    .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
 }
 
 /**
