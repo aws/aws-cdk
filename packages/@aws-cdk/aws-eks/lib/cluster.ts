@@ -1,10 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { clusterArnComponents, ClusterResource } from './cluster-resource';
@@ -491,6 +491,16 @@ export class Cluster extends Resource implements ICluster {
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._clusterResource = resource;
+
+      // see https://github.com/aws/aws-cdk/issues/9027
+      this._clusterResource.creationRole.addToPolicy(new iam.PolicyStatement({
+        actions: ['ec2:DescribeVpcs'],
+        resources: [ stack.formatArn({
+          service: 'ec2',
+          resource: 'vpc',
+          resourceName: this.vpc.vpcId,
+        })],
+      }));
 
       // we use an SSM parameter as a barrier because it's free and fast.
       this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
