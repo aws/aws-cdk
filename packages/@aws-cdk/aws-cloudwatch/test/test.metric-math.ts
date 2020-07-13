@@ -93,6 +93,31 @@ export = {
       test.done();
     },
 
+    'MathExpressions can be region specific'(test: Test) {
+      // GIVEN
+      const region = 'cn-north-1';
+      const regionalizedMetricA = new Metric({ namespace: 'Test', metricName: 'ACount', region});
+      const regionalizedMetricB = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average', region });
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a: regionalizedMetricA, b: regionalizedMetricB },
+            region,
+          }),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        [ { expression: 'a + b', label: 'a + b', region: 'cn-north-1' } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a', region: 'cn-north-1' } ],
+        [ 'Test', 'BCount', { visible: false, id: 'b', region: 'cn-north-1' } ],
+      ]);
+
+      test.done();
+    },
+
     'can nest MathExpressions in a graph'(test: Test) {
       // GIVEN
       const graph = new GraphWidget({
