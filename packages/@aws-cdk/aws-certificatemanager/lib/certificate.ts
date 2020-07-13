@@ -1,3 +1,4 @@
+import * as route53 from '@aws-cdk/aws-route53';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCertificate } from './certificatemanager.generated';
