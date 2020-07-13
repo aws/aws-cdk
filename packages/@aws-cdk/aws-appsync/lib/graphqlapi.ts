@@ -481,22 +481,7 @@ export class GraphQLApi extends Construct {
       actions,
       resourceArns: [...resources.map(resource => Lazy.stringValue({
         produce: () => {
-          let resourceTypes;
-          if (resource.custom) {
-            resourceTypes = `${resource.custom}`;
-          } else if (resource.type && resource.field) {
-            resourceTypes = `types/${resource.type}/fields/${resource.field}`;
-          } else if (resource.type) {
-            resourceTypes = `types/${resource.type}/*`;
-          } else {
-            resourceTypes = '*';
-          }
-          return Stack.of(this).formatArn({
-            service: 'appsync',
-            resource: `apis/${this.apiId}`,
-            sep: '/',
-            resourceName: `${resourceTypes}`,
-          });
+          return this.generateResourceArn(resource);
         },
       }))],
       scope: this,
@@ -515,12 +500,7 @@ export class GraphQLApi extends Construct {
       grantee,
       actions: ['appsync:graphql'],
       resourceArns: [
-        Stack.of(this).formatArn({
-          service: 'appsync',
-          resource: `apis/${this.apiId}`,
-          sep: '/',
-          resourceName: '*',
-        }),
+        this.generateResourceArn({custom: '*'}),
       ],
       scope: this,
     });
@@ -574,23 +554,34 @@ export class GraphQLApi extends Construct {
       resourceArns: fields ?
         [...fields.map(field => Lazy.stringValue({
           produce: () => {
-            return Stack.of(this).formatArn({
-              service: 'appsync',
-              resource: `apis/${this.apiId}`,
-              sep: '/',
-              resourceName: `types/${type}/fields/${field}`,
-            });
+            return this.generateResourceArn({ type: type, field: field });
           },
         }))] :
         [
-          Stack.of(this).formatArn({
-            service: 'appsync',
-            resource: `apis/${this.apiId}`,
-            sep: '/',
-            resourceName: `types/${type}/*`,
-          }),
+          this.generateResourceArn({ type: type }),
         ],
       scope: this,
+    });
+  }
+
+  /**
+   * Generate a Resource ARN to use for grant functions.
+   *
+   * If custom is specified, then resourceName is custom.
+   * If type is empty, generate full access ('*').
+   * If field is empty, generate full access to specified type.
+   *
+   * @param resource - an singular IAM resource to provision
+   */
+  private generateResourceArn(resource: IamResources): string {
+    const name = resource.custom ? resource.custom : (
+      resource.type ? resource.field ? `types/${resource.type}/fields/${resource.field}` : `types/${resource.type}/*` : '*'
+    );
+    return Stack.of(this).formatArn({
+      service: 'appsync',
+      resource: `apis/${this.apiId}`,
+      sep: '/',
+      resourceName: `${name}`,
     });
   }
 
