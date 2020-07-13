@@ -534,6 +534,7 @@ export class GeoRestriction {
     }
     locations.forEach(location => {
       if (!GeoRestriction.LOCATION_REGEX.test(location)) {
+        // eslint-disable-next-line max-len
         throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
       }
     });
@@ -740,7 +741,7 @@ export class CloudFrontWebDistribution extends Construct implements IDistributio
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
     };
@@ -884,7 +885,7 @@ export class CloudFrontWebDistribution extends Construct implements IDistributio
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
         }
       }

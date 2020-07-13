@@ -90,7 +90,7 @@ export class NotificationsResourceHandler extends Construct {
   }
 }
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Lambda event handler for the custom resource. Bear in mind that we are going
@@ -133,7 +133,7 @@ const handler = (event: any, context: any) => {
     console.error(event.RequestId, event.StackId, event.LogicalResourceId, obj);
   }
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   // adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule
   // to allow sending an error messge as a reason.
   function submitResponse(responseStatus: string, reason?: string) {

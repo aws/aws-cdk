@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { Stream, StreamEncryption } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('Kinesis data streams', () => {
 

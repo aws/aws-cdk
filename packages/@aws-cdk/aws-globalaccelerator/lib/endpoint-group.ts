@@ -131,7 +131,7 @@ export class EndpointConfiguration extends Construct {
     return {
       clientIpPreservationEnabled: this.props.clientIpReservation,
       endpointId: this.props.endpointId,
-      weight:  this.props.weight,
+      weight: this.props.weight,
     };
   }
 }

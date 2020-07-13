@@ -1,9 +1,9 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import * as path from 'path';
+import * as cr from '@aws-cdk/custom-resources';
 
 export class ReplicaProvider extends NestedStack {
   /**

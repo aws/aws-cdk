@@ -20,13 +20,9 @@ After requesting a certificate, you will need to prove that you own the
 domain in question before the certificate will be granted. The CloudFormation
 deployment will wait until this verification process has been completed.
 
-Because of this wait time, it's better to provision your certificates
-either in a separate stack from your main service, or provision them
-manually and import them into your CDK application.
-
-The CDK also provides a custom resource which can be used for automatic
-validation if the DNS records for the domain are managed through Route53 (see
-below).
+Because of this wait time, when using manual validation methods, it's better
+to provision your certificates either in a separate stack from your main
+service, or provision them manually and import them into your CDK application.
 
 ### Email validation
 
@@ -39,25 +35,49 @@ in the AWS Certificate Manager User Guide.
 
 ### DNS validation
 
-DNS-validated certificates are validated by configuring appropriate DNS
-records for your domain.
+If Amazon Route 53 is your DNS provider for the requested domain, the DNS record can be
+created automatically:
 
-See [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
+```ts
+new Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: CertificateValidation.fromDns(myHostedZone), // Route 53 hosted zone
+});
+```
+
+Otherwise DNS records must be added manually and the stack will not complete
+creating until the records are added.
+
+```ts
+new Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: CertificateValidation.fromDns(), // Records must be added manually
+});
+```
+
+See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
 in the AWS Certificate Manager User Guide.
 
-### Automatic DNS-validated certificates using Route53
+When working with multiple domains, use the `CertificateValidation.fromDnsMultiZone()`:
 
-The `DnsValidatedCertificateRequest` class provides a Custom Resource by which
-you can request a TLS certificate from AWS Certificate Manager that is
-automatically validated using a cryptographically secure DNS record. For this to
-work, there must be a Route 53 public zone that is responsible for serving
-records under the Domain Name of the requested certificate. For example, if you
-request a certificate for `www.example.com`, there must be a Route 53 public
-zone `example.com` that provides authoritative records for the domain.
+[multiple domains DNS validation](test/example.dns.lit.ts)
 
-Example:
+Use the `DnsValidatedCertificate` construct for cross-region certificate creation:
 
-[request a validated certificate example](test/example.dns-validated-request.lit.ts)
+```ts
+new DnsValidatedCertificate(this, 'CrossRegionCertificate', {
+  domainName: 'hello.example.com',
+  hostedZone: myHostedZone,
+  region: 'us-east-1',
+});
+```
+
+This is useful when deploying a stack in a region other than `us-east-1` with a
+certificate for a CloudFront distribution.
+
+If cross-region is not needed, the recommended solution is to use the
+`Certificate` construct which uses a native CloudFormation implementation.
+
 
 ### Importing
 

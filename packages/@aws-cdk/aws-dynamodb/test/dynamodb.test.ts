@@ -17,7 +17,7 @@ import {
   TableEncryption,
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
@@ -60,7 +60,7 @@ function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
       indexName: `${LSI_NAME}${n}`,
-      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
+      sortKey: { name: `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
     };
     yield localSecondaryIndexProps;
     n++;
@@ -2780,7 +2780,7 @@ describe('global', () => {
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.STRING } });
+  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
   const user = new iam.User(stack, 'user');
 
   // WHEN

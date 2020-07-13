@@ -1,4 +1,4 @@
-import { arrayWith, deepObjectLike, objectLike } from '@aws-cdk/assert';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
@@ -6,7 +6,6 @@ import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import * as cdkp from '../lib';
-import { encodedJson, notMatching, stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';

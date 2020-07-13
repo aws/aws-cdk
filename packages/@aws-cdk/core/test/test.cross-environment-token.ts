@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CrossEnvironmentToken': {
@@ -255,7 +255,7 @@ class MyResource extends Resource {
     this.arn = this.getResourceArnAttribute('simple-arn', {
       region: '',
       account: '',
-      resource:  'my-resource',
+      resource: 'my-resource',
       resourceName: this.physicalName,
       service: 'myservice',
     });

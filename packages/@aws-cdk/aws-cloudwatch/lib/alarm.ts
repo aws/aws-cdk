@@ -198,7 +198,7 @@ export class Alarm extends AlarmBase {
     this.metric = props.metric;
     const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };

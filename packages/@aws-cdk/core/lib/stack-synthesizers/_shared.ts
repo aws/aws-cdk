@@ -1,6 +1,6 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { IConstruct, Node } from 'constructs';
 import * as crypto from 'crypto';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Node, IConstruct } from 'constructs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from './types';
 

@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { Stack } from '../stack';
@@ -10,6 +10,8 @@ import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared'
 import { IStackSynthesizer, ISynthesisSession } from './types';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
+
+/* eslint-disable max-len */
 
 /**
  * The minimum bootstrap stack version required by this app.
@@ -221,7 +223,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       });
     };
 
-    // tslint:disable:max-line-length
+    /* eslint-disable max-len */
     this.bucketName = specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
     this._deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
@@ -229,7 +231,7 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
-    // tslint:enable:max-line-length
+    /* eslint-enable max-len */
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {

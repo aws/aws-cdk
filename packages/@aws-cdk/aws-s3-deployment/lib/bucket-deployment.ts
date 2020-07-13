@@ -1,12 +1,12 @@
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ISource, SourceConfig } from './source';
 
 const now = Date.now();

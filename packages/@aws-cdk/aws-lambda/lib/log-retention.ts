@@ -1,8 +1,8 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as path from 'path';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { SingletonFunction } from './singleton-lambda';

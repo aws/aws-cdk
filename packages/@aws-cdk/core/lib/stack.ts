@@ -1,10 +1,8 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
-import * as fs from 'fs';
-import * as path from 'path';
-import { App } from './app';
-// These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -12,19 +10,12 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { addDependency } from './deps';
 import { Environment } from './environment';
 import { Logging } from './logging';
 import * as cfnlang from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-import { Reference } from './reference';
-import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
-import { Stage } from './stage';
-import { ITaggable, TagManager } from './tag-manager';
-import { Token } from './token';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -361,7 +352,7 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // tslint:disable-next-line: max-line-length
+    // eslint-disable-next-line max-len
     this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
       ? this.generateStackArtifactId()
       : this.stackName;
@@ -685,7 +676,7 @@ export class Stack extends Construct implements ITaggable {
     reason = reason || 'dependency added using stack.addDependency()';
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
@@ -700,7 +691,7 @@ export class Stack extends Construct implements ITaggable {
     dep.reasons.push(reason);
 
     if (process.env.CDK_DEBUG_DEPS) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(`[CDK_DEBUG_DEPS] stack "${this.node.path}" depends on "${target.node.path}" because: ${reason}`);
     }
   }
@@ -802,6 +793,7 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
+      // eslint-disable-next-line max-len
       Logging.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
@@ -1082,6 +1074,16 @@ function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
   return makeUniqueId(components);
 }
+
+// These imports have to be at the end to prevent circular imports
+import { addDependency } from './deps';
+import { Reference } from './reference';
+import { IResolvable } from './resolvable';
+import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer, ISynthesisSession } from './stack-synthesizers';
+import { Stage } from './stage';
+import { ITaggable, TagManager } from './tag-manager';
+import { Token } from './token';
+import { App } from './app';
 
 interface StackDependency {
   stack: Stack;

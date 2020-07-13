@@ -1,9 +1,9 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import * as crypto from 'crypto';
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -89,11 +89,22 @@ export class AssetStaging extends Construct {
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
-    if (props.bundling) {
-      this.bundleDir = this.bundle(props.bundling);
-    }
+    // Determine the hash type based on the props as props.assetHashType is
+    // optional from a caller perspective.
+    const hashType = this.determineHashType(props.assetHashType, props.assetHash);
 
-    this.assetHash = this.calculateHash(props);
+    if (props.bundling) {
+      // Determine the source hash in advance of bundling if the asset hash type
+      // is source so that the bundler can opt to re-use its bundle dir.
+      const sourceHash = hashType === AssetHashType.SOURCE
+        ? this.calculateHash(hashType, props.assetHash, props.bundling)
+        : undefined;
+
+      this.bundleDir = this.bundle(props.bundling, sourceHash);
+      this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
+    } else {
+      this.assetHash = this.calculateHash(hashType, props.assetHash);
+    }
 
     const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
@@ -145,15 +156,37 @@ export class AssetStaging extends Construct {
     }
   }
 
-  private bundle(options: BundlingOptions): string {
+  /**
+   * @Property sourceHash The source hash of the asset. If specified, the bundler
+   * will attempt to re-use the bundling directory, which is based on a hash of
+   * both the sourceHash and options. If bundling finds a pre-existing directory,
+   * the bundler will return it as-is and won't regenerate the bundle.
+   */
+  private bundle(options: BundlingOptions, sourceHash?: string): string {
     // Temp staging directory in the working directory
     const stagingTmp = path.join('.', STAGING_TMP);
     fs.ensureDirSync(stagingTmp);
 
-    // Create temp directory for bundling inside the temp staging directory
-    const bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-')));
-    // Chmod the bundleDir to full access.
-    fs.chmodSync(bundleDir, 0o777);
+    let bundleDir: string;
+    if (sourceHash) {
+      // When an asset hash is known in advance of bundling, bundling is done into a dedicated staging directory.
+      bundleDir = path.resolve(path.join(stagingTmp, 'asset-bundle-hash-' + sourceHash));
+
+      if (fs.existsSync(bundleDir)) {
+        // Pre-existing bundle directory. The bundle has already been generated once before, so lets provide it
+        // as-is to the caller.
+        return bundleDir;
+      }
+
+      fs.ensureDirSync(bundleDir);
+    } else {
+      // When the asset hash isn't known in advance, bundling is done into a temporary staging directory.
+
+      // Create temp directory for bundling inside the temp staging directory
+      bundleDir = path.resolve(fs.mkdtempSync(path.join(stagingTmp, 'asset-bundle-temp-')));
+      // Chmod the bundleDir to full access.
+      fs.chmodSync(bundleDir, 0o777);
+    }
 
     let user: string;
     if (options.user) {
@@ -179,6 +212,8 @@ export class AssetStaging extends Construct {
     ];
 
     try {
+      // eslint-disable-next-line no-console
+      console.error(`Bundling asset ${this.node.path}...`);
       options.image._run({
         command: options.command,
         user,
@@ -187,7 +222,18 @@ export class AssetStaging extends Construct {
         workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       });
     } catch (err) {
-      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}: ${err}`);
+      // When bundling fails, keep the bundle output for diagnosability, but
+      // rename it out of the way so that the next run doesn't assume it has a
+      // valid bundleDir.
+
+      const bundleErrorDir = bundleDir + '-error';
+      if (fs.existsSync(bundleErrorDir)) {
+        // Remove the last bundleErrorDir.
+        fs.removeSync(bundleErrorDir);
+      }
+
+      fs.renameSync(bundleDir, bundleErrorDir);
+      throw new Error(`Failed to run bundling Docker image for asset ${this.node.path}, bundle output is located at ${bundleErrorDir}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
@@ -197,35 +243,49 @@ export class AssetStaging extends Construct {
     return bundleDir;
   }
 
-  private calculateHash(props: AssetStagingProps): string {
-    let hashType: AssetHashType;
-
-    if (props.assetHash) {
-      if (props.assetHashType && props.assetHashType !== AssetHashType.CUSTOM) {
-        throw new Error(`Cannot specify \`${props.assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
+  /**
+   * Determines the hash type from user-given prop values.
+   *
+   * @param assetHashType Asset hash type construct prop
+   * @param assetHash Asset hash given in the construct props
+   */
+  private determineHashType(assetHashType?: AssetHashType, assetHash?: string) {
+    if (assetHash) {
+      if (assetHashType && assetHashType !== AssetHashType.CUSTOM) {
+        throw new Error(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
       }
-      hashType = AssetHashType.CUSTOM;
-    } else if (props.assetHashType) {
-      hashType = props.assetHashType;
+      return AssetHashType.CUSTOM;
+    } else if (assetHashType) {
+      return assetHashType;
     } else {
-      hashType = AssetHashType.SOURCE;
+      return AssetHashType.SOURCE;
     }
+  }
 
+  private calculateHash(hashType: AssetHashType, assetHash?: string, bundling?: BundlingOptions): string {
     switch (hashType) {
       case AssetHashType.SOURCE:
-        return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+        const sourceHash = FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+        if (bundling) {
+          return crypto.createHash('sha256')
+            .update(JSON.stringify(bundling))
+            .update(sourceHash)
+            .digest('hex');
+        } else {
+          return sourceHash;
+        }
       case AssetHashType.BUNDLE:
         if (!this.bundleDir) {
           throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
       case AssetHashType.CUSTOM:
-        if (!props.assetHash) {
+        if (!assetHash) {
           throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
         }
         // Hash the hash to make sure we can use it in a file/directory name.
         // The resulting hash will also have the same length as for the other hash types.
-        return crypto.createHash('sha256').update(props.assetHash).digest('hex');
+        return crypto.createHash('sha256').update(assetHash).digest('hex');
       default:
         throw new Error('Unknown asset hash type.');
     }

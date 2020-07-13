@@ -10,7 +10,6 @@ import { IRole, Role, RoleProps } from './role';
 /**
  * Properties for defining a LazyRole
  */
-// tslint:disable-next-line:no-empty-interface
 export interface LazyRoleProps extends RoleProps {
 
 }

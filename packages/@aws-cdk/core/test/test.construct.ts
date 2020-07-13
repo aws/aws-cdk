@@ -5,7 +5,7 @@ import { App as Root, Logging } from '../lib';
 import { validateTree } from '../lib/private/synthesis';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
-// tslint:disable:variable-name
+/* eslint-disable @typescript-eslint/naming-convention */
 
 export = {
   'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {
@@ -150,7 +150,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'construct.setContext(k,v) sets context at some level and construct.getContext(key) will return the lowermost value defined in the stack'(test: Test) {
     const root = new Root();
     const highChild = new Construct(root, 'highChild');
@@ -319,7 +319,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)'(test: Test) {
 
     class MyConstruct extends Construct {
@@ -447,7 +447,7 @@ export = {
     test.done();
   },
 
-  'defaultChild': {
+  defaultChild: {
     'returns the child with id "Resource"'(test: Test) {
       const root = new Root();
       new Construct(root, 'child1');

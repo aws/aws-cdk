@@ -44,7 +44,7 @@ export class CodeName {
     return new CodeName('', '', primitiveName);
   }
 
-  // tslint:disable:no-shadowed-variable
+  /* eslint-disable no-shadow */
   constructor(
     readonly packageName: string,
     readonly namespace: string,
@@ -207,7 +207,7 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
   } else {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
     attrType = TOKEN_NAME.fqn;
   }
@@ -229,6 +229,7 @@ export function cloudFormationToScriptName(name: string): string {
   if (name === 'VPCs') { return 'vpcs'; }
   const ret = codemaker.toCamelCase(name);
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {

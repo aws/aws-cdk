@@ -192,7 +192,6 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     });
 
     // validate timeout
-    // tslint:disable-next-line:no-unused-expression
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
         throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);

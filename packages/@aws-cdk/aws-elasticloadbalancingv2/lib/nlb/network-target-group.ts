@@ -154,7 +154,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 /**
  * A network target group
  */
-// tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Register a listener that is load balancing to this target group.

@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default bucket'(test: Test) {
@@ -127,7 +127,6 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
-      // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
     });

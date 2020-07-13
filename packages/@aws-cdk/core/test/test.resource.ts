@@ -208,7 +208,7 @@ export = {
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
       autoScalingReplacingUpdate: { willReplace: true },
@@ -386,7 +386,7 @@ export = {
     test.done();
   },
 
-  'overrides': {
+  overrides: {
     'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -711,7 +711,6 @@ export = {
 };
 
 interface CounterProps {
-  // tslint:disable-next-line:variable-name
   Count: number;
 }
 

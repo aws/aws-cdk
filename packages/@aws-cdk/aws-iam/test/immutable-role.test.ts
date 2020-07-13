@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('ImmutableRole', () => {
   let stack: Stack;
