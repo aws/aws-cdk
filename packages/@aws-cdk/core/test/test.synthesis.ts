@@ -1,9 +1,6 @@
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as cdk from '../lib';
 

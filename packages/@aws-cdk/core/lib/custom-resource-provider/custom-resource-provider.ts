@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';

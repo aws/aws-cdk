@@ -2,7 +2,6 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Lazy } from './lazy';
-import { Token } from './token';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
 
@@ -167,3 +166,4 @@ function notTooLong(x: string) {
 
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
+import { Token } from './token';

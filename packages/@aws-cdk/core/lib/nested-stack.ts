@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
 import * as crypto from 'crypto';
+import { Construct } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';

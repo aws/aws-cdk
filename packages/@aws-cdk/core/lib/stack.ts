@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
+import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -1083,7 +1084,6 @@ import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer, ISy
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
-import { App } from './app';
 
 interface StackDependency {
   stack: Stack;
