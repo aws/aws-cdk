@@ -83,7 +83,6 @@ export interface DistributionProps {
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
-   *
    * @default - No custom error configuration.
    */
   readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];

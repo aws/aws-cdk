@@ -1,7 +1,7 @@
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
-import { Distribution, OriginProtocolPolicy } from './distribution';
+import { OriginProtocolPolicy } from './distribution';
 import { OriginAccessIdentity } from './origin_access_identity';
 
 /**
@@ -15,14 +15,6 @@ export interface OriginProps {
    * The domain name of the Amazon S3 bucket or HTTP server origin.
    */
   readonly domainName: string;
-
-  /**
-   * The Distribution this Origin will be associated with.
-   * [disable-awslint:ref-via-interface]
-   *
-   * @default - This will be set when the Origin is added to the Distribution.
-   */
-  readonly distribution?: Distribution;
 }
 
 /**
