@@ -141,5 +141,5 @@ apiLinter.add({
 
       throw new Error(`invalid type reference: ${type.toString()}`);
     }
-  }
+  },
 });

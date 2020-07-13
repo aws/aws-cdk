@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration } from '@aws-cdk/core';
-import * as path from 'path';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
@@ -134,6 +134,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
   private createFunction(entrypoint: string) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
+      description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,

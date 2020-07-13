@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { IResource } from '@aws-cdk/core';
 import { Endpoint } from './endpoint';
+import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
 
 /**
  * Create a clustered database with a given number of instances.
@@ -33,6 +34,11 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * Endpoints which address each individual replica.
    */
   readonly instanceEndpoints: Endpoint[];
+
+  /**
+   * Add a new db proxy to this cluster.
+   */
+  addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
 }
 
 /**

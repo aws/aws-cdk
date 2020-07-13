@@ -55,7 +55,7 @@ export class ResourceReflection {
     if (!cfn) {
       throw new Error(`Cannot find L1 class for L2 ${construct.fqn}. ` +
         `Is "${guessResourceName(construct.fqn)}" an actual CloudFormation resource. ` +
-        `If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")`);
+        'If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")');
     }
 
     this.core = new CoreTypes(this.sys);
@@ -131,7 +131,7 @@ export class ResourceReflection {
       result.push({
         site,
         cfnAttributeNames,
-        property
+        property,
       });
     }
 
@@ -156,11 +156,11 @@ function findDeclarationSite(prop: reflect.Property): reflect.Property {
 
 resourceLinter.add({
   code: 'resource-class-extends-resource',
-  message: `resource classes must extend "cdk.Resource" directly or indirectly`,
+  message: 'resource classes must extend "cdk.Resource" directly or indirectly',
   eval: e => {
     const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClass.fqn);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
-  }
+  },
 });
 
 resourceLinter.add({
@@ -169,7 +169,7 @@ resourceLinter.add({
   message: 'every resource must have a resource interface',
   eval: e => {
     e.assert(e.ctx.construct.interfaceType, e.ctx.construct.fqn);
-  }
+  },
 });
 
 resourceLinter.add({
@@ -182,7 +182,7 @@ resourceLinter.add({
     const resourceInterfaceFqn = e.ctx.core.resourceInterface.fqn;
     const interfaceBase = e.ctx.sys.findInterface(resourceInterfaceFqn);
     e.assert(resourceInterface.extends(interfaceBase), resourceInterface.fqn);
-  }
+  },
 });
 
 resourceLinter.add({
@@ -200,7 +200,7 @@ resourceLinter.add({
       const found = e.ctx.attributes.find(a => a.cfnAttributeNames.includes(name));
       e.assert(found, `${e.ctx.fqn}.${expected}`, expected);
     }
-  }
+  },
 });
 
 resourceLinter.add({
@@ -218,20 +218,20 @@ resourceLinter.add({
 
     for (const grantMethod of grantMethods) {
       e.assertSignature(grantMethod, {
-        returns: grantResultType
+        returns: grantResultType,
       });
     }
-  }
+  },
 });
 
 resourceLinter.add({
   code: 'props-physical-name',
-  message: "Every Resource must have a single physical name construction property, " +
-    "with a name that is an ending substring of <cfnResource>Name",
+  message: 'Every Resource must have a single physical name construction property, ' +
+    'with a name that is an ending substring of <cfnResource>Name',
   eval: e => {
     if (!e.ctx.construct.propsType) { return; }
     e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
-  }
+  },
 });
 
 resourceLinter.add({
@@ -241,7 +241,7 @@ resourceLinter.add({
     if (!e.ctx.physicalNameProp) { return; }
     const prop = e.ctx.physicalNameProp;
     e.assertTypesEqual(e.ctx.sys, prop.type, 'string', `${e.ctx.construct.propsFqn}.${prop.name}`);
-  }
+  },
 });
 
 function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceReflection | undefined {
