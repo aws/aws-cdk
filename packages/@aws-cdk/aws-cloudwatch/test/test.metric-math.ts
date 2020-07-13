@@ -93,16 +93,19 @@ export = {
       test.done();
     },
 
-    'MathExpressions can be region specific'(test: Test) {
+    'MathExpressions can be account and region specific'(test: Test) {
       // GIVEN
       const region = 'cn-north-1';
-      const regionalizedMetricA = new Metric({ namespace: 'Test', metricName: 'ACount', region});
-      const regionalizedMetricB = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average', region });
+      const accountA = '1234';
+      const accountB = '5678';
+      const regionalizedMetricA = new Metric({ namespace: 'Test', metricName: 'ACount', region, account: accountA });
+      const regionalizedMetricB = new Metric({ namespace: 'Test', metricName: 'BCount', statistic: 'Average', region, account: accountB });
       const graph = new GraphWidget({
         left: [
           new MathExpression({
             expression: 'a + b',
             usingMetrics: { a: regionalizedMetricA, b: regionalizedMetricB },
+            account: accountA,
             region,
           }),
         ],
@@ -110,9 +113,9 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { expression: 'a + b', label: 'a + b', region: 'cn-north-1' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a', region: 'cn-north-1' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b', region: 'cn-north-1' } ],
+        [ { expression: 'a + b', label: 'a + b', region: 'cn-north-1', accountId: accountA } ],
+        [ 'Test', 'ACount', { visible: false, id: 'a', region: 'cn-north-1', accountId: accountA } ],
+        [ 'Test', 'BCount', { visible: false, id: 'b', region: 'cn-north-1', accountId: accountB } ],
       ]);
 
       test.done();
