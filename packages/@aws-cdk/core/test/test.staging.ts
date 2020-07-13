@@ -7,8 +7,6 @@ import * as sinon from 'sinon';
 import { App, AssetHashType, AssetStaging, BundlingDockerImage, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
-const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
-const STAGING_TMP_DIRECTORY = path.join('.', '.cdk.staging');
 
 enum DockerStubCommand {
   SUCCESS           = 'DOCKER_STUB_SUCCESS',
@@ -27,12 +25,6 @@ export = {
   'tearDown'(cb: any) {
     if (fs.existsSync(STUB_INPUT_FILE)) {
       fs.unlinkSync(STUB_INPUT_FILE);
-    }
-    if (fs.existsSync(STUB_INPUT_CONCAT_FILE)) {
-      fs.unlinkSync(STUB_INPUT_CONCAT_FILE);
-    }
-    if (fs.existsSync(STAGING_TMP_DIRECTORY)) {
-      fs.removeSync(STAGING_TMP_DIRECTORY);
     }
     cb();
     sinon.restore();
@@ -116,6 +108,8 @@ export = {
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
+    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
+    const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
     const consoleErrorSpy = sinon.spy(console, 'error');
 
     // WHEN
@@ -134,7 +128,7 @@ export = {
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7',
+      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -142,153 +136,13 @@ export = {
     ]);
 
     // asset is bundled in a directory inside .cdk.staging
-    test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7'))));
+    const stagingTmp = path.join('.', '.cdk.staging');
+    test.ok(ensureDirSyncSpy.calledWith(stagingTmp));
+    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-'))));
+    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(stagingTmp, 'asset-bundle-')), 0o777));
 
     // shows a message before bundling
     test.ok(consoleErrorSpy.calledWith('Bundling asset stack/Asset...'));
-
-    test.done();
-  },
-
-  'bundler reuses its output when it can'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
-
-    // WHEN
-    new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
-      },
-    });
-
-    new AssetStaging(stack, 'AssetDuplicate', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
-      },
-    });
-
-    // THEN
-    app.synth();
-
-    // We're testing that docker was run exactly once even though there are two bundling assets.
-    test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
-    );
-
-    // asset is bundled in a directory inside .cdk.staging
-    test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-    test.ok(ensureDirSyncSpy.calledWith(path.resolve(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-hash-dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7'))));
-
-    test.done();
-  },
-
-  'bundler considers its options when reusing bundle output'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const ensureDirSyncSpy = sinon.spy(fs, 'ensureDirSync');
-
-    // WHEN
-    new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
-      },
-    });
-
-    new AssetStaging(stack, 'AssetWithDifferentBundlingOptions', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
-        environment: {
-          UNIQUE_ENV_VAR: 'SOMEVALUE',
-        },
-      },
-    });
-
-    // THEN
-    const assembly = app.synth();
-
-    // We're testing that docker was run twice - once for each set of bundler options
-    // operating on the same source asset.
-    test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
-    );
-
-    // asset is bundled in a directory inside .cdk.staging
-    test.ok(ensureDirSyncSpy.calledWith(STAGING_TMP_DIRECTORY));
-
-    test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.a33245f0209379d58d125d89906c2b47d38382ae745375f25697760a8c475c6b', // 'Asset'
-      'asset.dec215520dfd57a87aa1362e9e15131938583cd6e5a2bd9a45d38fe5dc5ab3d7', // 'AssetWithDifferentBundlingOptions'
-      'cdk.out',
-      'manifest.json',
-      'stack.template.json',
-      'tree.json',
-    ]);
-
-    test.done();
-  },
-
-  'bundler outputs to a temp dir when using bundle asset type'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
-    const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
-
-    // WHEN
-    new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.SUCCESS ],
-      },
-    });
-
-    // THEN
-    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-temp-'))));
-    test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(STAGING_TMP_DIRECTORY, 'asset-bundle-temp-')), 0o777));
-
-    test.done();
-  },
-
-  'bundling failure preserves the bundleDir for diagnosability'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-
-    // WHEN
-    test.throws(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [ DockerStubCommand.FAIL ],
-      },
-    }), /Failed to run bundling.*asset-bundle-hash.*-error/);
-
-    // THEN
-    test.ok(!fs.existsSync(path.resolve(path.join(STAGING_TMP_DIRECTORY,
-      'asset-bundle-hash-e40b2b1537234d458e9e524494dc0a7a364079d457a2886a44b1f3c28a956469'))));
-    test.ok(fs.existsSync(path.join(STAGING_TMP_DIRECTORY,
-      'asset-bundle-hash-e40b2b1537234d458e9e524494dc0a7a364079d457a2886a44b1f3c28a956469-error')));
 
     test.done();
   },
@@ -376,6 +230,10 @@ export = {
       assetHash: 'my-custom-hash',
       assetHashType: AssetHashType.BUNDLE,
     }), /Cannot specify `bundle` for `assetHashType`/);
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
 
     test.done();
   },
@@ -435,20 +293,9 @@ export = {
   },
 };
 
-// Reads a docker stub and cleans the volume paths out of the stub.
-function readAndCleanDockerStubInput(file: string) {
-  return fs
-    .readFileSync(file, 'utf-8')
-    .trim()
-    .replace(/-v ([^:]+):\/asset-input/g, '-v /input:/asset-input')
-    .replace(/-v ([^:]+):\/asset-output/g, '-v /output:/asset-output');
-}
-
-// Last docker input since last teardown
 function readDockerStubInput() {
-  return readAndCleanDockerStubInput(STUB_INPUT_FILE);
-}
-// Concatenated docker inputs since last teardown
-function readDockerStubInputConcat() {
-  return readAndCleanDockerStubInput(STUB_INPUT_CONCAT_FILE);
+  const out = fs.readFileSync(STUB_INPUT_FILE, 'utf-8').trim();
+  return out
+    .replace(/-v ([^:]+):\/asset-input/, '-v /input:/asset-input')
+    .replace(/-v ([^:]+):\/asset-output/, '-v /output:/asset-output');
 }
