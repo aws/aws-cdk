@@ -16,7 +16,7 @@
 #     foreach.sh [-r | --reset]
 #
 # to force a reset and run a session with the current, run:
-#     foreach.sh [-f | --force] [-u | --up || -d | --down] COMMAND
+#     foreach.sh [-r | --reset] [-u | --up || -d | --down] COMMAND
 #
 # to run the command only against the current module and its dependencies:
 #     foreach.sh [-u | --up] COMMAND
@@ -51,7 +51,6 @@ function reset {
 
 DIRECTION=""
 RESET=0
-FORCE=0
 SKIP=0
 command_arg=""
 
@@ -60,7 +59,6 @@ do
   case "$arg" in 
     -r | --reset) RESET=1               ;;
     -s | --skip)  SKIP=1                ;;
-    -f | --force) FORCE=1               ;;
     -u | --up)    DIRECTION="UP"        ;;
     -d | --down)  DIRECTION="DOWN"      ;;
     *)  command_arg="$command_arg$arg " ;;
@@ -68,16 +66,11 @@ do
   shift
 done
 
-if [[ "$FORCE" -eq 1 && "$DIRECTION" == "" ]]; then
-  error "running force requires a direction to run."
-  exit 1
-fi
-
-if [[ "$RESET" -eq 1 || "$FORCE" -eq 1 ]]; then 
+if [[ "$RESET" -eq 1 ]]; then 
   reset
 fi
 
-if [[ "$RESET" -eq 1 ]]; then
+if [[ "$RESET" -eq 1 && "$DIRECTION" == "" ]]; then
   exit 0
 fi
 
@@ -94,7 +87,7 @@ if [[ "$SKIP" -eq 1 ]]; then
   fi
   tail -n +2 "${statefile}" > "${statefile}.tmp"
   cp "${statefile}.tmp" "${statefile}"
-  success "directory '$next' skipped. re-run the original foreach command (without --force) to resume."
+  success "directory '$next' skipped. re-run the original foreach command (without --reset) to resume."
   exit 0
 fi
 
