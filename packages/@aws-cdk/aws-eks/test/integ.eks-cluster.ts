@@ -113,7 +113,7 @@ class EksClusterStack extends TestStack {
   }
 }
 
-// this test users the bottlerocket image, which is only supported in these
+// this test uses the bottlerocket image, which is only supported in these
 // regions. see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks#bottlerocket
 const supportedRegions = [
   'ap-northeast-1',
