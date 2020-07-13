@@ -87,7 +87,7 @@ export interface TableProps {
   /**
    * S3 prefix under which table objects are stored.
    *
-   * @default data/
+   * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
 
@@ -236,7 +236,7 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.s3Prefix = (props.s3Prefix !== undefined && props.s3Prefix !== null) ? props.s3Prefix : 'data/';
+    this.s3Prefix = props.s3Prefix ?? '';
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
@@ -340,7 +340,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error('column names and partition keys must be unique, but \'p1\' is duplicated');
+      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });
