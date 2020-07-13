@@ -1,11 +1,11 @@
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ISource, SourceConfig } from './source';
 
 const now = Date.now();
@@ -29,6 +29,16 @@ export interface BucketDeploymentProps {
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set to false, files in the destination bucket that
+   * do not exist in the asset, will NOT be deleted during deployment (create/update).
+   *
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+   *
+   * @default true
+   */
+  readonly prune?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -161,11 +171,11 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    const assetHash = calcSourceHash(handlerSourceDirectory);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
@@ -174,8 +184,10 @@ export class BucketDeployment extends cdk.Construct {
       memorySize: props.memoryLimit,
     });
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
-    sources.forEach(source => source.bucket.grantRead(handler));
+    const handlerRole = handler.role;
+    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
@@ -195,12 +207,14 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
         DistributionPaths: props.distributionPaths,
       },
     });
+
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
@@ -283,7 +297,7 @@ export class CacheControl {
   public static setPrivate() { return new CacheControl('private'); }
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
-  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-max-age=${t.toSeconds()}`); }
+  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
   public static fromString(s: string) {  return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}

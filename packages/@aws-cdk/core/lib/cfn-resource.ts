@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
-// tslint:disable-next-line:ordered-imports
+/* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct-compat';
@@ -114,6 +114,10 @@ export class CfnResource extends CfnRefElement {
 
       case RemovalPolicy.RETAIN:
         deletionPolicy = CfnDeletionPolicy.RETAIN;
+        break;
+
+      case RemovalPolicy.SNAPSHOT:
+        deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
       default:
@@ -269,7 +273,7 @@ export class CfnResource extends CfnRefElement {
             Type: this.cfnResourceType,
             Properties: ignoreEmpty(this.cfnProperties),
             DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
+            CreationPolicy: capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
             UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),

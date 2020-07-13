@@ -63,6 +63,7 @@ If you only care that a resource of a particular type exists (regardless of its 
 
 ```ts
 haveResource(type, subsetOfProperties)
+haveResourceLike(type, subsetOfProperties)
 ```
 
 Example:
@@ -76,7 +77,42 @@ expect(stack).to(haveResource('AWS::CertificateManager::Certificate', {
 }));
 ```
 
-`ABSENT` is a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
+The object you give to `haveResource`/`haveResourceLike` like can contain the
+following values:
+
+- **Literal values**: the given property in the resource must match the given value *exactly*.
+- `ABSENT`: a magic value to assert that a particular key in an object is *not* set (or set to `undefined`).
+- special matchers for inexact matching. You can use these to match values based on more lenient conditions
+  than the default (such as an array containing at least one element, ignoring the rest, or an inexact string
+  match).
+
+The following matchers exist:
+
+- `objectLike(O)` - the value has to be an object matching at least the keys in `O` (but may contain
+  more). The nested values must match exactly.
+- `deepObjectLike(O)` - as `objectLike`, but nested objects are also treated as partial specifications.
+- `exactValue(X)` - must match exactly the given value. Use this to escape from `deepObjectLike`'s leniency
+  back to exact value matching.
+- `arrayWith(E, [F, ...])` - value must be an array containing the given elements (or matchers) in any order.
+- `stringLike(S)` - value must be a string matching `S`. `S` may contain `*` as wildcard to match any number
+  of characters.
+- `anything()` - matches any value.
+- `notMatching(M)` - any value that does NOT match the given matcher (or exact value) given.
+- `encodedJson(M)` - value must be a string which, when decoded as JSON, matches the given matcher or
+  exact value.
+
+Slightly more complex example with array matchers:
+
+```ts
+expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+  PolicyDocument: {
+    Statement: arrayWith(objectLike({
+      Action: ['s3:GetObject'],
+      Resource: ['arn:my:arn'],
+    }})
+  }
+}));
+```
 
 ### Check number of resources
 

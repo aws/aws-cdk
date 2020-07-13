@@ -20,6 +20,7 @@ export let testEnv = async (): Promise<Env> => {
 
 export const cloudFormation = makeAwsCaller(AWS.CloudFormation);
 export const s3 = makeAwsCaller(AWS.S3);
+export const ecr = makeAwsCaller(AWS.ECR);
 export const sns = makeAwsCaller(AWS.SNS);
 export const iam = makeAwsCaller(AWS.IAM);
 export const lambda = makeAwsCaller(AWS.Lambda);
@@ -35,7 +36,7 @@ async function awsCall<
   B extends keyof ServiceCalls<A>,
 >(ctor: new (config: any) => A, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
   const env = await testEnv();
-  const cfn = new ctor({ region: env.region });
+  const cfn = new ctor({ region: env.region, maxRetries: 6, retryDelayOptions: { base: 500 } });
   const response = cfn[call](request);
   try {
     return await response.promise();
@@ -92,6 +93,10 @@ export async function deleteStacks(...stackNames: string[]) {
   if (stackNames.length === 0) { return; }
 
   for (const stackName of stackNames) {
+    await cloudFormation('updateTerminationProtection', {
+      EnableTerminationProtection: false,
+      StackName: stackName,
+    });
     await cloudFormation('deleteStack', {
       StackName: stackName,
     });
@@ -186,6 +191,10 @@ export async function emptyBucket(bucketName: string) {
       Quiet: false,
     },
   });
+}
+
+export async function deleteImageRepository(repositoryName: string) {
+  await ecr('deleteRepository', { repositoryName, force: true });
 }
 
 export async function deleteBucket(bucketName: string) {

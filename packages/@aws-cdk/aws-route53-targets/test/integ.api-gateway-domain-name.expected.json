@@ -177,7 +177,7 @@
               {
                 "Ref": "apiDeploymentStageprod896C8101"
               },
-              "/*/{proxy+}"
+              "/*/*"
             ]
           ]
         }
@@ -214,7 +214,7 @@
               {
                 "Ref": "apiC8550315"
               },
-              "/test-invoke-stage/*/{proxy+}"
+              "/test-invoke-stage/*/*"
             ]
           ]
         }

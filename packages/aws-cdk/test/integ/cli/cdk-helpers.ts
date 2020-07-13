@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { cloudFormation, deleteBucket, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
+import { cloudFormation, deleteBucket, deleteImageRepository, deleteStacks, emptyBucket, outputFromStack, testEnv } from './aws-helpers';
 
 export const INTEG_TEST_DIR = path.join(os.tmpdir(), 'cdk-integ-test2');
 
@@ -39,6 +39,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
+  neverRequireApproval?: boolean;
 }
 
 export function log(x: string) {
@@ -48,8 +49,10 @@ export function log(x: string) {
 export async function cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
   stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
+  const neverRequireApproval = options.neverRequireApproval ?? true;
+
   return await cdk(['deploy',
-    '--require-approval=never', // We never want a prompt in an unattended test
+    ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
     ...(options.options ?? []),
     ...fullStackName(stackNames)], options);
 }
@@ -139,7 +142,8 @@ export async function deleteableStacks(prefix: string): Promise<AWS.CloudFormati
 
   return (response.Stacks ?? [])
     .filter(s => s.StackName.startsWith(prefix))
-    .filter(s => statusFilter.includes(s.StackStatus));
+    .filter(s => statusFilter.includes(s.StackStatus))
+    .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
 }
 
 /**
@@ -151,6 +155,10 @@ export async function cleanup(): Promise<void> {
   // Bootstrap stacks have buckets that need to be cleaned
   const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
   await Promise.all(bucketNames.map(emptyBucket));
+
+  // Bootstrap stacks have ECR repositories with images which should be deleted
+  const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+  await Promise.all(imageRepositoryNames.map(deleteImageRepository));
 
   await deleteStacks(...stacksToDelete.map(s => s.StackName));
 
@@ -206,7 +214,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}: ${Buffer.concat(stderr).toString('utf-8').trim()}`));
       }
     });
   });

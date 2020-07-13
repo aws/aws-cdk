@@ -1,5 +1,6 @@
 import { CfnResource } from './cfn-resource';
 import { Stack } from './stack';
+import { Stage } from './stage';
 import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
 
 type Element = CfnResource | Stack;
@@ -31,12 +32,19 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   const sourceStack = Stack.of(source);
   const targetStack = Stack.of(target);
 
+  const sourceStage = Stage.of(sourceStack);
+  const targetStage = Stage.of(targetStack);
+  if (sourceStage !== targetStage) {
+    // eslint-disable-next-line max-len
+    throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+  }
+
   // find the deepest common stack between the two elements
   const sourcePath = pathToRoot(sourceStack);
   const targetPath = pathToRoot(targetStack);
   const commonStack = findLastCommonElement(sourcePath, targetPath);
 
-  // if there is no common stack, then define an assembly-level dependency
+  // if there is no common stack, then define a assembly-level dependency
   // between the two top-level stacks
   if (!commonStack) {
     const topLevelSource = sourcePath[0]; // first path element is the top-level stack
@@ -87,4 +95,13 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
 
     return resourceInCommonStackFor(resourceStack);
   }
+}
+
+/**
+ * Return a string representation of the given assembler, for use in error messages
+ */
+function describeStage(assembly: Stage | undefined): string {
+  if (!assembly) { return 'an unrooted construct tree'; }
+  if (!assembly.parentStage) { return 'the App'; }
+  return `Stage '${assembly.node.path}'`;
 }

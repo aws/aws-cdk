@@ -1,5 +1,5 @@
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAlarmAction } from './alarm-action';
+import { Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
@@ -8,25 +8,6 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
-
-/**
- * Represents a CloudWatch Alarm
- */
-export interface IAlarm extends IResource {
-  /**
-   * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
-   *
-   * @attribute
-   */
-  readonly alarmArn: string;
-
-  /**
-   * Name of the alarm
-   *
-   * @attribute
-   */
-  readonly alarmName: string;
-}
 
 /**
  * Properties for Alarms
@@ -70,6 +51,18 @@ export enum ComparisonOperator {
    * Used only for alarms based on anomaly detection models
    */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is lower than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
@@ -107,7 +100,7 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource implements IAlarm {
+export class Alarm extends AlarmBase {
 
   /**
    * Import an existing CloudWatch alarm provided an ARN
@@ -117,7 +110,7 @@ export class Alarm extends Resource implements IAlarm {
    * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
    */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends Resource implements IAlarm {
+    class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
     }
@@ -142,10 +135,6 @@ export class Alarm extends Resource implements IAlarm {
    * The metric object this alarm was based on
    */
   public readonly metric: IMetric;
-
-  private alarmActionArns?: string[];
-  private insufficientDataActionArns?: string[];
-  private okActionArns?: string[];
 
   /**
    * This metric as an annotation
@@ -208,49 +197,10 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
-  }
-
-  /**
-   * Trigger this action if the alarm fires
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if there is insufficient data to evaluate the alarm
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if the alarm returns from breaching state into ok state
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**

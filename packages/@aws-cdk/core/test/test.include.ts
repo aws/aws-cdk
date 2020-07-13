@@ -50,6 +50,30 @@ export = {
     test.throws(() => toCloudFormation(stack));
     test.done();
   },
+
+  'correctly merges template sections that contain strings'(test: Test) {
+    const stack = new Stack();
+
+    new CfnInclude(stack, 'T1', {
+      template: {
+        AWSTemplateFormatVersion: '2010-09-09',
+        Description: 'Test 1',
+      },
+    });
+    new CfnInclude(stack, 'T2', {
+      template: {
+        AWSTemplateFormatVersion: '2010-09-09',
+        Description: 'Test 2',
+      },
+    });
+
+    test.deepEqual(toCloudFormation(stack), {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Test 1\nTest 2',
+    });
+
+    test.done();
+  },
 };
 
 const template = {

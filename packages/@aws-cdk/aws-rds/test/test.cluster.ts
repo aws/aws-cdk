@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -8,7 +8,7 @@ import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
-  'check that instantiation works'(test: Test) {
+  'creating a Cluster also creates 2 DB Instances'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -35,17 +35,19 @@ export = {
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
       },
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
+    expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: ABSENT,
+      UpdateReplacePolicy: ABSENT,
     }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
+
   'can create a cluster with a single instance'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -96,7 +98,7 @@ export = {
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
-        securityGroup: sg,
+        securityGroups: [sg],
       },
     });
 
@@ -142,6 +144,28 @@ export = {
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     }));
+
+    test.done();
+  },
+
+  "sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'"(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new DatabaseCluster(stack, 'Cluster', {
+      masterUser: { username: 'admin' },
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+        vpc,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -218,7 +242,7 @@ export = {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      kmsKey: new kms.Key(stack, 'Key'),
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
     });
 
     // THEN
@@ -275,8 +299,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      engineVersion: '5.7.mysql_aurora.2.04.4',
+      engine: DatabaseClusterEngine.auroraMysql({
+        version: '5.7.mysql_aurora.2.04.4',
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -302,8 +327,9 @@ export = {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      engineVersion: '10.7',
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: '10.7',
+      }),
       masterUser: {
         username: 'admin',
       },
@@ -359,9 +385,9 @@ export = {
       instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
         allowAllOutbound: false,
-      }),
+      })],
     });
 
     // WHEN
@@ -930,7 +956,7 @@ export = {
     test.done();
   },
 
-  'PostgreSQL cluster with s3 export buckets does not generate custom parameter group'(test: Test) {
+  'PostgreSQL cluster with s3 export buckets does not generate custom parameter group and specifies the correct port'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -952,7 +978,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -961,6 +987,36 @@ export = {
           ],
         },
       }],
+      DBClusterParameterGroupName: 'default.aurora-postgresql11',
+      Port: 5432,
+    }));
+
+    expect(stack).notTo(haveResource('AWS::RDS::DBClusterParameterGroup'));
+
+    test.done();
+  },
+
+  'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-mysql5.7',
     }));
 
     expect(stack).notTo(haveResource('AWS::RDS::DBClusterParameterGroup'));

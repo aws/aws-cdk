@@ -5,6 +5,7 @@ import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
+import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
@@ -120,7 +121,7 @@ export = {
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")'(test: Test) {
     test.deepEqual(resolve({ prop: new DataType() }), { prop: { foo: 12, goo: 'hello' } });
     test.done();
@@ -487,7 +488,9 @@ export = {
       return fn2();
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.ok(token.creationTrace.find(x => x.includes('fn1')));
     test.ok(token.creationTrace.find(x => x.includes('fn2')));
     test.done();
@@ -509,7 +512,10 @@ export = {
       }
       return fn2();
     }
+
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.throws(() => token.throwError('message!'), /Token created:/);
     test.done();
   },
@@ -588,12 +594,15 @@ export = {
       return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const x = showMeInTheStackTrace();
     let message;
     try {
       resolve(x);
     } catch (e) {
       message = e.message;
+    } finally {
+      restoreStackTraceColection(previousValue);
     }
 
     test.ok(message && message.includes('showMeInTheStackTrace'));

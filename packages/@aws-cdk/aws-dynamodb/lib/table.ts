@@ -2,7 +2,10 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn,
+  IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+} from '@aws-cdk/core';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -412,7 +415,7 @@ export interface ITable extends IResource {
 export interface TableAttributes {
   /**
    * The ARN of the dynamodb table.
-   * One of this, or {@link tabeName}, is required.
+   * One of this, or {@link tableName}, is required.
    *
    * @default - no table arn
    */
@@ -420,7 +423,7 @@ export interface TableAttributes {
 
   /**
    * The table name of the dynamodb table.
-   * One of this, or {@link tabeArn}, is required.
+   * One of this, or {@link tableArn}, is required.
    *
    * @default - no table name
    */
@@ -439,6 +442,28 @@ export interface TableAttributes {
    * @default - no key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The name of the global indexes set for this Table.
+   * Note that you need to set either this property,
+   * or {@link localIndexes},
+   * if you want methods like grantReadData()
+   * to grant permissions for indexes as well as the table itself.
+   *
+   * @default - no global indexes
+   */
+  readonly globalIndexes?: string[];
+
+  /**
+   * The name of the local indexes set for this Table.
+   * Note that you need to set either this property,
+   * or {@link globalIndexes},
+   * if you want methods like grantReadData()
+   * to grant permissions for indexes as well as the table itself.
+   *
+   * @default - no local indexes
+   */
+  readonly localIndexes?: string[];
 }
 
 abstract class TableBase extends Resource implements ITable {
@@ -682,7 +707,7 @@ abstract class TableBase extends Resource implements ITable {
   private combinedGrant(
     grantee: iam.IGrantable,
     opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
-  ) {
+  ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
         Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
@@ -773,6 +798,8 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
+        (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -780,10 +807,6 @@ export class Table extends TableBase {
         this.tableName = tableName;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
-      }
-
-      protected get hasIndex(): boolean {
-        return false;
       }
     }
 
@@ -867,7 +890,7 @@ export class Table extends TableBase {
       }
       this.billingMode = BillingMode.PAY_PER_REQUEST;
     } else if (props.stream) {
-      streamSpecification = { streamViewType : props.stream };
+      streamSpecification = { streamViewType: props.stream };
     }
 
     this.table = new CfnTable(this, 'Resource', {
@@ -911,7 +934,7 @@ export class Table extends TableBase {
       this.tableSortKey = props.sortKey;
     }
 
-    if (props.replicationRegions) {
+    if (props.replicationRegions && props.replicationRegions.length > 0) {
       this.createReplicaTables(props.replicationRegions);
     }
   }
@@ -1225,9 +1248,12 @@ export class Table extends TableBase {
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
 
+    const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
+    const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
+
     // Permissions in the source region
-    this.grant(provider.onEventHandler, 'dynamodb:*');
-    this.grant(provider.isCompleteHandler, 'dynamodb:DescribeTable');
+    this.grant(onEventHandlerPolicy, 'dynamodb:*');
+    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
 
     let previousRegion;
     for (const region of new Set(regions)) { // Remove duplicates
@@ -1241,6 +1267,10 @@ export class Table extends TableBase {
           Region: region,
         },
       });
+      currentRegion.node.addDependency(
+        onEventHandlerPolicy.policy,
+        isCompleteHandlerPolicy.policy,
+      );
 
       // Deploy time check to prevent from creating a replica in the region
       // where this stack is deployed. Only needed for environment agnostic
@@ -1272,7 +1302,7 @@ export class Table extends TableBase {
 
     // Permissions in the destination regions (outside of the loop to
     // minimize statements in the policy)
-    provider.onEventHandler.addToRolePolicy(new iam.PolicyStatement({
+    onEventHandlerPolicy.grantPrincipal.addToPolicy(new iam.PolicyStatement({
       actions: ['dynamodb:*'],
       resources: this.regionalArns,
     }));
@@ -1407,4 +1437,49 @@ export enum StreamViewType {
 interface ScalableAttributePair {
   scalableReadAttribute?: ScalableTableAttribute;
   scalableWriteAttribute?: ScalableTableAttribute;
+}
+
+/**
+ * An inline policy that is logically bound to the source table of a DynamoDB Global Tables
+ * "cluster". This is here to ensure permissions are removed as part of (and not before) the
+ * CleanUp phase of a stack update, when a replica is removed (or the entire "cluster" gets
+ * replaced).
+ *
+ * If statements are added directly to the handler roles (as opposed to in a separate inline
+ * policy resource), new permissions are in effect before clean up happens, and so replicas that
+ * need to be dropped can no longer be due to lack of permissions.
+ */
+class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
+  public readonly grantPrincipal: iam.IPrincipal;
+  public readonly policy: iam.IPolicy;
+
+  public constructor(sourceTable: Table, role: iam.IRole) {
+    super(sourceTable, `SourceTableAttachedPolicy-${role.node.uniqueId}`);
+
+    const policy = new iam.Policy(this, 'Resource', { roles: [role] });
+    this.policy = policy;
+    this.grantPrincipal = new SourceTableAttachedPrincipal(role, policy);
+  }
+}
+
+/**
+ * An `IPrincipal` entity that can be used as the target of `grant` calls, used by the
+ * `SourceTableAttachedPolicy` class so it can act as an `IGrantable`.
+ */
+class SourceTableAttachedPrincipal extends iam.PrincipalBase {
+  public constructor(private readonly role: iam.IRole, private readonly policy: iam.Policy) {
+    super();
+  }
+
+  public get policyFragment(): iam.PrincipalPolicyFragment {
+    return this.role.policyFragment;
+  }
+
+  public addToPrincipalPolicy(statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
+    this.policy.addStatements(statement);
+    return {
+      policyDependable: this.policy,
+      statementAdded: true,
+    };
+  }
 }

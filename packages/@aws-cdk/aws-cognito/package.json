@@ -96,11 +96,22 @@
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps"
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "features": [
+    {
+      "name": "Higher level constructs for User Pools",
+      "stability": "Developer Preview"
+    },
+    {
+      "name": "Higher level constructs for Identity Pools",
+      "stability": "Not Implemented"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }

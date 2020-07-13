@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -63,7 +63,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
-   * @default - no paramters
+   * @default - no parameters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
@@ -205,7 +205,8 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * The policy to apply to the resource.
+   * The policy that will be added to the execution role of the Lambda
+   * function implementing this custom resource provider.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.

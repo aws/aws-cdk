@@ -16,7 +16,7 @@ import {
   TableEncryption,
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
@@ -59,7 +59,7 @@ function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
       indexName: `${LSI_NAME}${n}`,
-      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
+      sortKey: { name: `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
     };
     yield localSecondaryIndexProps;
     n++;
@@ -2182,6 +2182,63 @@ describe('import', () => {
         Roles: [stack.resolve(role.roleName)],
       });
     });
+
+    test('creates the correct index grant if indexes have been provided when importing', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        globalIndexes: ['global'],
+        localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
   });
 });
 
@@ -2718,7 +2775,7 @@ describe('global', () => {
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.STRING } });
+  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
   const user = new iam.User(stack, 'user');
 
   // WHEN

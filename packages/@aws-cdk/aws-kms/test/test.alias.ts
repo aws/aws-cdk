@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default alias'(test: Test) {
@@ -170,6 +170,60 @@ export = {
         },
       },
     });
+
+    test.done();
+  },
+
+  'imported alias by name - can be used where a key is expected'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string, key: IKey) {
+        super(scope, id);
+
+        new CfnOutput(stack, 'OutId', {
+          value: key.keyId,
+        });
+        new CfnOutput(stack, 'OutArn', {
+          value: key.keyArn,
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct', myAlias);
+
+    const template = SynthUtils.synthesize(stack).template.Outputs;
+
+    test.deepEqual(template, {
+      'OutId': {
+        'Value': 'alias/myAlias',
+      },
+      'OutArn': {
+        'Value': {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':kms:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/myAlias',
+          ]],
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'imported alias by name - will throw an error when accessing the key'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    test.throws(() => myAlias.aliasTargetKey, 'Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().');
 
     test.done();
   },

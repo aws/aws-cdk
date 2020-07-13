@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
-// tslint:disable: object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('LambdaInvoke', () => {
 
@@ -106,7 +106,7 @@ describe('LambdaInvoke', () => {
       lambdaFunction,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       payload: sfn.TaskInput.fromObject({
-        token: sfn.Context.taskToken,
+        token: sfn.JsonPath.taskToken,
       }),
       qualifier: 'my-alias',
     });
@@ -183,7 +183,7 @@ describe('LambdaInvoke', () => {
         lambdaFunction,
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       });
-    }).toThrow(/Task Token is required in `payload` for callback. Use Context.taskToken to set the token./);
+    }).toThrow(/Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token./);
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {

@@ -25,3 +25,8 @@ artifacts:
   files:
     - "**/*"
   base-directory: dist
+reports:
+  jest-tests:
+    files:
+      - "**/junit.xml"
+    file-format: JunitXml

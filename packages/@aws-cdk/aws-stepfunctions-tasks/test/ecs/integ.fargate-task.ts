@@ -24,7 +24,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256,
 });
-taskDefinition.addContainer('TheContainer', {
+const containerDefinition = taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
@@ -33,22 +33,27 @@ taskDefinition.addContainer('TheContainer', {
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
   result: sfn.Result.fromObject({ SomeKey: 'SomeValue' }),
-}).next(new sfn.Task(stack, 'FargateTask', { task: new tasks.RunEcsFargateTask({
-  integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-  cluster, taskDefinition,
-  assignPublicIp: true,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
+}).next(
+  new sfn.Task(stack, 'FargateTask', {
+    task: new tasks.RunEcsFargateTask({
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      cluster,
+      taskDefinition,
+      assignPublicIp: true,
+      containerOverrides: [
         {
-          name: 'SOME_KEY',
-          value: sfn.Data.stringAt('$.SomeKey'),
+          containerDefinition,
+          environment: [
+            {
+              name: 'SOME_KEY',
+              value: sfn.JsonPath.stringAt('$.SomeKey'),
+            },
+          ],
         },
       ],
-    },
-  ],
-})}));
+    }),
+  }),
+);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definition,

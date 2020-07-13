@@ -1,6 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
+title: "[module] "
 labels: bug, needs-triage
 ---
 
@@ -33,8 +34,9 @@ what is the error message you are seeing?
 
   - **CLI Version      :**
   - **Framework Version:**
+  - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS               :**
-  - **Language         :**
+  - **Language (Version):** <!-- [all | TypeScript (3.8.3) | Java (8)| Python (3.7.3) | etc... ] -->
 
 ### Other
 

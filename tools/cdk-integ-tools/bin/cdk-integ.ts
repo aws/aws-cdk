@@ -3,7 +3,7 @@
 import * as yargs from 'yargs';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 async function main() {
   const argv = yargs
@@ -11,6 +11,7 @@ async function main() {
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
+    .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._);
@@ -21,7 +22,7 @@ async function main() {
   }
 
   for (const test of tests) {
-    console.error(`Trying to deploy ${test.name}`);
+    console.error(`Synthesizing ${test.name}.`);
 
     const stackToDeploy = await test.determineTestStack();
     console.error(`Selected stack: ${stackToDeploy}`);
@@ -33,30 +34,36 @@ async function main() {
       args.push('--verbose');
     }
 
-    try {
-      // tslint:disable-next-line:max-line-length
-      await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
-        verbose: argv.verbose,
-        // Note: no "context" and "env", so use default user settings!
-      });
+    const dryRun = argv['dry-run'] ?? false;
 
-      console.error('Success! Writing out reference synth.');
+    try {
+
+      if (dryRun) {
+        console.error('Skipping deployment (--dry-run), updating snapshot.');
+      } else {
+        console.error(`Deploying ${test.name}...`);
+        await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+          verbose: argv.verbose,
+          // Note: no "context" and "env", so use default user settings!
+        });
+        console.error('Deployment succeeded, updating snapshot.');
+      }
 
       // If this all worked, write the new expectation file
-      const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
-        json: true,
-        verbose: argv.verbose,
-        ...DEFAULT_SYNTH_OPTIONS,
-      });
+      const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
       await test.writeExpected(actual);
     } finally {
-      if (argv.clean) {
-        console.error('Cleaning up.');
-        await test.invoke(['destroy', '--force', ...stackToDeploy ]);
-      } else {
-        console.error('Skipping clean up (--no-clean).');
+
+      if (!dryRun) {
+        if (argv.clean) {
+          console.error('Cleaning up.');
+          await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+        } else {
+          console.error('Skipping clean up (--no-clean).');
+        }
       }
+
     }
   }
 }

@@ -43,6 +43,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
@@ -77,7 +78,8 @@ you need to have the following SDKs and tools locally:
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
-- [Java OpenJDK 8](http://openjdk.java.net/install/)
+- [Java OpenJDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [Apache Maven](http://maven.apache.org/install.html)
 - [.NET Core SDK 3.1](https://www.microsoft.com/net/download)
 - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
 - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
@@ -89,6 +91,13 @@ $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
 $ yarn install
 $ yarn build
+```
+
+If you get compiler errors when building, a common cause is globally installed tools like tslint and typescript. Try uninstalling them.
+
+```
+npm uninstall -g tslint
+npm uninstall -g typescript
 ```
 
 Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
@@ -175,6 +184,17 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
+For Gitpod users only! The best way to supply CDK with your AWS credentials is to add them as
+[persisting environment variables](https://www.gitpod.io/docs/environment-variables).
+Adding them works as follows via terminal:
+
+```shell
+eval $(gp env -e AWS_ACCESS_KEY_ID=XXXXXXXXX)
+eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
+eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
+eval $(gp env -e)
+```
+
 If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
@@ -197,7 +217,7 @@ Examples:
 
 ### Step 4: Commit
 
-Create a commit with the proposed change changes:
+Create a commit with the proposed changes:
 
 * Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
@@ -226,7 +246,7 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 ### Step 5: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Submit a Pull Request on GitHub. A reviewer will later be assigned by the maintainers.
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
@@ -319,7 +339,7 @@ All packages in the repo use a standard base configuration found at [eslintrc.js
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
-extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint). 
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 #### pkglint
 
@@ -901,6 +921,24 @@ To debug your CDK application along with the CDK repository,
 
 6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
 7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
+
+### Run a CDK unit test in the debugger
+
+If you want to run the VSCode debugger on unit tests of the CDK project
+itself, do the following:
+
+1. Set a breakpoint inside your unit test.
+2. In your terminal, depending on the type of test, run either:
+
+```
+# (For tests names test.xxx.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/nodeunit -t 'TESTNAME'
+
+# (For tests names xxxx.test.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
+```
+
+3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
 
 ## Related Repositories
 

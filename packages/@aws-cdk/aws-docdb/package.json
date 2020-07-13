@@ -51,7 +51,7 @@
     "cloudformation": "AWS::DocDB",
     "jest": true
   },
-"keywords": [
+  "keywords": [
     "aws",
     "cdk",
     "constructs",

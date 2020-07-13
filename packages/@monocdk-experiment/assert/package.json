@@ -36,11 +36,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.4",
+    "@types/node": "^10.17.27",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.0.0",
+    "ts-jest": "^26.1.2",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
     "monocdk-experiment": "0.0.0",
     "constructs": "^3.0.2"

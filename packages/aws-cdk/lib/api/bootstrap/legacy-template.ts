@@ -3,6 +3,13 @@ import { BootstrappingParameters, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT 
 export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
   return {
     Description: 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
+    Conditions: {
+      UsePublicAccessBlockConfiguration: {
+        'Fn::Equals': [
+          params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
+          'true',
+        ]},
+    },
     Resources: {
       StagingBucket: {
         Type: 'AWS::S3::Bucket',
@@ -18,11 +25,16 @@ export function legacyBootstrapTemplate(params: BootstrappingParameters): any {
             }],
           },
           PublicAccessBlockConfiguration: {
-            BlockPublicAcls: true,
-            BlockPublicPolicy: true,
-            IgnorePublicAcls: true,
-            RestrictPublicBuckets: true,
-          },
+            'Fn::If': [
+              'UsePublicAccessBlockConfiguration',
+              {
+                BlockPublicAcls: true,
+                BlockPublicPolicy: true,
+                IgnorePublicAcls: true,
+                RestrictPublicBuckets: true,
+              },
+              { Ref: 'AWS::NoValue' },
+            ]},
         },
       },
       StagingBucketPolicy: {

@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as fs_path from 'path';
+import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
 import * as util from './util';
@@ -329,7 +329,7 @@ export class Settings {
   private prohibitContextKey(key: string, fileName: string) {
     if (!this.settings.context) { return; }
     if (key in this.settings.context) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
     }
   }
@@ -338,7 +338,7 @@ export class Settings {
     if (!this.settings.context) { return; }
     for (const contextKey of Object.keys(this.settings.context)) {
       if (contextKey.startsWith(prefix)) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
       }
     }
