@@ -24,7 +24,7 @@ describe('fromBucket', () => {
       id: 'MyOrigin',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
-        originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.26]}',
+        originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.69]}',
       },
     });
   });
