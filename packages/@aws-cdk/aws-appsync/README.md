@@ -104,7 +104,7 @@ In `IAM`:
             "appsync:GraphQL"
          ],
          "Resource": [
-            "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExampleß"
+            "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExample"
          ]
       }
    ]
@@ -126,7 +126,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
 });
 
 const grantResources = [
-  {custom: '/types/Mutation/fields/updateExample'},
+  { custom: '/types/Mutation/fields/updateExample' },
 ];
 
 api.grant(role, grantResources, 'appsync:graphql')
@@ -147,12 +147,12 @@ grantFullAccess
 
 ```ts
 // For generic types
-api.grantMutation(role, fields: [
+api.grantMutation(role, [
   'updateExample',
 ]);
 
 // For custom types and granular design
-api.grantType(role, type: 'Mutation', fields: [
+api.grantType(role, type: 'Mutation', [
   'updateExample',
 ]);
 ```
