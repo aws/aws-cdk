@@ -62,7 +62,7 @@ test('unpartitioned JSON table', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -139,7 +139,7 @@ test('partitioned JSON table', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -204,7 +204,7 @@ test('compressed table', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -293,7 +293,7 @@ test('encrypted table: SSE-S3', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -436,7 +436,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -569,7 +569,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -647,7 +647,7 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -760,7 +760,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -875,7 +875,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
               {
                 Ref: 'TableBucketDA42407C',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -992,7 +992,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
               {
                 Ref: 'Bucket83908E77',
               },
-              '/data/',
+              '/',
             ],
           ],
         },
@@ -1228,7 +1228,7 @@ test('grants: read only', () => {
                       'Arn',
                     ],
                   },
-                  '/data/',
+                  '/',
                 ],
               ],
             },
@@ -1331,7 +1331,7 @@ test('grants: write only', () => {
                       'Arn',
                     ],
                   },
-                  '/data/',
+                  '/',
                 ],
               ],
             },
@@ -1444,7 +1444,7 @@ test('grants: read and write', () => {
                       'Arn',
                     ],
                   },
-                  '/data/',
+                  '/',
                 ],
               ],
             },
