@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ClusterParameterGroup, IParameterGroup, ParameterGroup } from './parameter-group';
 import { ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 import { compare } from './private/version';
@@ -82,7 +82,7 @@ export interface IClusterEngine {
   /**
    * Method called when the engine is used to create a new cluster.
    */
-  bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
+  bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
 }
 
 interface ClusterEngineBaseProps {
@@ -114,7 +114,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
     this.parameterGroupFamily = this.establishParameterGroupFamily();
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const parameterGroup = options.parameterGroup ?? this.defaultParameterGroup(scope);
     return {
       parameterGroup,
@@ -127,7 +127,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
    * possibly an imported one,
    * if one wasn't provided by the customer explicitly.
    */
-  protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
+  protected abstract defaultParameterGroup(scope: Construct): IParameterGroup | undefined;
 
   private establishParameterGroupFamily(): string {
     const ret = this.calculateParameterGroupFamily();
@@ -163,7 +163,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ClusterParameterGroup(scope, 'ClusterParameterGroup', {
@@ -217,7 +217,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(_scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(_scope: Construct): IParameterGroup | undefined {
     // the default.aurora5.6 ParameterGroup is actually the default,
     // so just return undefined in this case
     return undefined;
@@ -244,7 +244,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraMySqlDatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);
   }
@@ -273,7 +273,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);
   }

@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
 import { ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
+import { Construct } from 'constructs';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -47,7 +47,7 @@ export interface IInstanceEngine {
   /**
    * Method called when the engine is used to create a new instance.
    */
-  bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
+  bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
 }
 
 interface InstanceEngineBaseProps {
@@ -71,7 +71,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineVersion = props.version;
   }
 
-  public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone) {
       throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${this.engineType}`);
     }
@@ -279,7 +279,7 @@ abstract class SqlServerInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(_scope: Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
     return {
     };
   }

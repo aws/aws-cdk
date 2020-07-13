@@ -1409,9 +1409,7 @@ test('error when validating construct if a local secondary index exists without 
   });
 
   const errors = table.node.validate();
-
-  expect(errors.length).toBe(1);
-  expect(errors[0]?.message).toBe('a sort key of the table must be specified to add local secondary indexes');
+  expect(errors[0]).toBe('a sort key of the table must be specified to add local secondary indexes');
 });
 
 test('can enable Read AutoScaling', () => {
