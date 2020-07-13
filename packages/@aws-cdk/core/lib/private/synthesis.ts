@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, ValidationError } from 'constructs';
+import { IConstruct } from 'constructs';
 import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
@@ -118,7 +118,7 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
 export function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
-  visit(root, 'pre', construct => errors.push(...construct.node.validate()));
+  visit(root, 'pre', source => errors.push(...source.node.validate().map(message => ({ source, message }))));
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
@@ -142,4 +142,15 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   if (order === 'post') {
     cb(root);
   }
+}
+
+interface ValidationError {
+  /**
+   * The construct which emitted the error.
+   */
+  readonly source: IConstruct;
+  /**
+   * The error message.
+   */
+  readonly message: string;
 }

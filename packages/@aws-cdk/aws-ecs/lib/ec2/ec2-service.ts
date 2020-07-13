@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Lazy, Resource, Stack } from '@aws-cdk/core';
-import { Construct, IValidation } from 'constructs';
+import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -129,7 +129,7 @@ export interface Ec2ServiceAttributes {
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, IValidation {
+export class Ec2Service extends BaseService implements IEc2Service {
 
   /**
    * Imports from the specified service ARN.
@@ -234,6 +234,8 @@ export class Ec2Service extends BaseService implements IEc2Service, IValidation 
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
+
+    this.node.addValidation({ validate: () => this.validateService() });
   }
 
   /**
@@ -263,7 +265,7 @@ export class Ec2Service extends BaseService implements IEc2Service, IValidation 
   /**
    * Validates this Ec2Service.
    */
-  public validate(): string[] {
+  private validateService(): string[] {
     const ret = new Array<string>();
     if (!this.cluster.hasEc2Capacity) {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');

@@ -106,7 +106,7 @@ export class Stage implements IStage {
     return rule;
   }
 
-  public validate(): string[] {
+  public validateStage(): string[] {
     return [
       ...this.validateHasActions(),
       ...this.validateActions(),

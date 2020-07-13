@@ -1,7 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stage } from '@aws-cdk/core';
+import { Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
 import { topologicalSort } from './private/toposort';

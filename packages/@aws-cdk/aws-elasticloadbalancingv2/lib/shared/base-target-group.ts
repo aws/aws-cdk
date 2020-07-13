@@ -267,6 +267,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
+
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -310,7 +312,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     }
   }
 
-  protected validate(): string[]  {
+  protected validateTargetGroup(): string[]  {
     const ret = [];
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {

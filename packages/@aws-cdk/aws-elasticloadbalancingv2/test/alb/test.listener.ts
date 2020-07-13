@@ -426,7 +426,7 @@ export = {
     });
 
     // THEN
-    const validationErrors: string[] = (group as any).validate();
+    const validationErrors: string[] = group.node.validate();
     test.deepEqual(validationErrors, ["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
 
     test.done();

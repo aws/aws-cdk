@@ -311,8 +311,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[]  {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[]  {
+    const ret = super.validateTargetGroup();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {

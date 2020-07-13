@@ -1,7 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, AppProps, Construct, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
+import { App, AppProps, Environment, SecretValue, Stack, StackProps, Stage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdkp from '../lib';

@@ -1,5 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { App, CfnOutput, Logging, Stack, Stage } from '@aws-cdk/core';
+import { App, Aspects, CfnOutput, Logging, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
@@ -102,6 +102,9 @@ export class CdkPipeline extends Construct {
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
+    Aspects.of(this).apply({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -169,21 +172,13 @@ export class CdkPipeline extends Construct {
    * Our own convenience methods will never generate a pipeline that does that (although
    * this is a nice verification), but a user can also add the stacks by hand.
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     const ret = new Array<string>();
 
     ret.push(...this.validateDeployOrder());
     ret.push(...this.validateRequestedOutputs());
 
     return ret;
-  }
-
-  protected onPrepare() {
-    super.onPrepare();
-
-    // TODO: Support this in a proper way in the upstream library. For now, we
-    // "un-add" the Assets stage if it turns out to be empty.
-    this._assets.removeAssetsStageIfEmpty();
   }
 
   /**

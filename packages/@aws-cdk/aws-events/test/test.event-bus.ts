@@ -14,7 +14,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {
-      Name: 'stackBus7803A768',
+      Name: 'StackBusAA0A1E4B',
     }));
 
     test.done();

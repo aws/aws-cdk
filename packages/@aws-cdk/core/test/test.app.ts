@@ -165,8 +165,10 @@ export = {
   'app.synth() performs validation first and if there are errors, it returns the errors'(test: Test) {
 
     class Child extends Construct {
-      protected validate() {
-        return [`Error from ${this.node.id}`];
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.node.addValidation({ validate: () => [`Error from ${this.node.id}`] });
       }
     }
 

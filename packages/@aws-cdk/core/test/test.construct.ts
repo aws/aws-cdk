@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ConstructOrder, IConstruct, IValidation } from 'constructs';
+import { Construct, ConstructOrder, IConstruct } from 'constructs';
 import { Test } from 'nodeunit';
 import { App as Root, Logging } from '../lib';
 import { validateTree } from '../lib/private/synthesis';
@@ -322,40 +322,40 @@ export = {
   // tslint:disable-next-line:max-line-length
   'construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)'(test: Test) {
 
-    class MyConstruct extends Construct implements IValidation {
-      public validate() {
-        return [ 'my-error1', 'my-error2' ];
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.node.addValidation({ validate: () => [ 'my-error1', 'my-error2' ] });
       }
     }
 
-    class YourConstruct extends Construct implements IValidation {
-      public validate() {
-        return [ 'your-error1' ];
+    class YourConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.node.addValidation({ validate: () => [ 'your-error1' ] });
       }
     }
 
-    class TheirConstruct extends Construct implements IValidation {
+    class TheirConstruct extends Construct {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
         new YourConstruct(this, 'YourConstruct');
-      }
 
-      public validate() {
-        return [ 'their-error' ];
+        this.node.addValidation({ validate: () => [ 'their-error' ]} );
       }
     }
 
-    class TestStack extends Root implements IValidation {
+    class TestStack extends Root {
       constructor() {
         super();
 
         new MyConstruct(this, 'MyConstruct');
         new TheirConstruct(this, 'TheirConstruct');
-      }
 
-      public validate() {
-        return  [ 'stack-error' ];
+        this.node.addValidation({ validate: () => [ 'stack-error' ] });
       }
     }
 

@@ -1,6 +1,7 @@
 import { arrayWith, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { stringLike } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';

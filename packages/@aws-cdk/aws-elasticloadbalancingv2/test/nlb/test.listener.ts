@@ -200,7 +200,7 @@ export = {
       },
     });
 
-    const validationErrors: string[] = (targetGroup as any).validate();
+    const validationErrors: string[] = targetGroup.node.validate();
     const intervalError = validationErrors.find((err) => /Health check interval '60' not supported. Must be one of the following values/.test(err));
     test.notEqual(intervalError, undefined, 'Failed to return health check interval validation error');
 
@@ -225,7 +225,7 @@ export = {
     });
 
     // THEN
-    const validationErrors: string[] = (targetGroup as any).validate();
+    const validationErrors: string[] = targetGroup.node.validate();
     test.deepEqual(validationErrors, ["Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"]);
 
     test.done();
@@ -250,7 +250,7 @@ export = {
     });
 
     // THEN
-    const validationErrors: string[] = (targetGroup as any).validate();
+    const validationErrors: string[] = targetGroup.node.validate();
     test.deepEqual(validationErrors, [
       "'TCP' health checks do not support the path property. Must be one of [HTTP, HTTPS]",
     ]);
@@ -277,7 +277,7 @@ export = {
     });
 
     // THEN
-    const validationErrors: string[] = (targetGroup as any).validate();
+    const validationErrors: string[] = targetGroup.node.validate();
     test.deepEqual(validationErrors, [
       'Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10',
     ]);
