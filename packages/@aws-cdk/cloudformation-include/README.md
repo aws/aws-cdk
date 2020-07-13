@@ -106,8 +106,6 @@ const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
 // bucket is of type s3.IBucket
 ```
 
-
-
 ## Conditions
 
 If your template uses [CloudFormation Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html),
@@ -202,20 +200,21 @@ const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
 });
 ```
 
-now you can access the ChildStack nested stack and included template with:
+Now you can access the ChildStack nested stack and included template with:
 
 ```typescript
-const childStack = parentTemplate.getNestedStack('ChildStack').stack;
-const childStackTemplate = parentTemplate.getNestedStack('ChildStack').includedTemplate;
+const includedChildStack = parentTemplate.getNestedStack('ChildStack');
+const childStack: core.NestedStack = includedChildStack.stack;
+const childStackTemplate: cfn_inc.CfnInclude = includedChildStack.includedTemplate;
 ```
 
 we can modify childStack:
 
 ```typescript
-const bucket = childStackTemplate.getResource('ImportBucket') as s3.CfnBucket;
+const bucket = childStackTemplate.getResource('MyBucket') as s3.CfnBucket;
 bucket.bucketName = 'my-new-bucket-name';
 
-const bucketReadRole = new iam.Role(childStack, "myRole", {
+const bucketReadRole = new iam.Role(childStack, 'MyRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
@@ -227,13 +226,6 @@ bucketReadRole.addToPolicy(new iam.PolicyStatement({
   ],
   resources: [bucket.attrArn],
 }));
-
-```
-
-and if you want to perform operations like getResource that you would on any other included template, you can do so with:
-
-```typescript
-parentTemplate.getNestedStack('ChildStack').includedTemplate;
 ```
 
 ## Known limitations

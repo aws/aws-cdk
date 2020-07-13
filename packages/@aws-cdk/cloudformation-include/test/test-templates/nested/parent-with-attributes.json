@@ -1,0 +1,26 @@
+{
+  "Resources": {
+    "ChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
+        "NotificationARNs": [ "arn1" ],
+        "TimeoutInMinutes": 5
+      }
+    },
+    "AnotherChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json"
+      },
+      "Metadata": {
+        "Property1": "Value1"
+      },
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "ChildStack"
+      ],
+      "UpdateReplacePolicy": "Retain"
+    }
+  }
+}
