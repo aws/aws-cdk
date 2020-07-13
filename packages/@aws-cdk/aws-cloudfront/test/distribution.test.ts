@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { Distribution, Origin, PriceClass } from '../lib';
 
 let app: App;
@@ -15,23 +15,23 @@ beforeEach(() => {
 });
 
 test('minimal example renders correctly', () => {
-  const origin = Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'Bucket'));
+  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         ForwardedValues: { QueryString: false },
-        TargetOriginId: 'MyOrigin',
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
       Enabled: true,
       Origins: [{
         DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
-        Id: 'MyOrigin',
+        Id: 'StackMyDistOrigin1D6D5E535',
         S3OriginConfig: {
           OriginAccessIdentity: { 'Fn::Join': [ '',
-            [ 'origin-access-identity/cloudfront/', { Ref: 'MyOriginS3OriginIdentityBEF16CC0' } ],
+            [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
           ]},
         },
       }],
@@ -42,7 +42,7 @@ test('minimal example renders correctly', () => {
 describe('multiple behaviors', () => {
 
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
-    const origin = Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
 
     expect(() => {
       new Distribution(stack, 'MyDist', {
@@ -55,7 +55,7 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to the original origin', () => {
-    const origin = Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -67,22 +67,22 @@ describe('multiple behaviors', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin',
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           PathPattern: 'api/*',
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin',
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
         Origins: [{
           DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
-          Id: 'MyOrigin',
+          Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyOriginS3OriginIdentityBEF16CC0' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
             ]},
           },
         }],
@@ -91,8 +91,8 @@ describe('multiple behaviors', () => {
   });
 
   test('a second behavior can be added to a secondary origin', () => {
-    const origin = Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(stack, 'MyOrigin2', new s3.Bucket(stack, 'Bucket2'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
@@ -104,31 +104,31 @@ describe('multiple behaviors', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin',
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           PathPattern: 'api/*',
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin2',
+          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
         Origins: [{
           DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
-          Id: 'MyOrigin',
+          Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyOriginS3OriginIdentityBEF16CC0' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
             ]},
           },
         },
         {
           DomainName: { 'Fn::GetAtt': [ 'Bucket25524B414', 'RegionalDomainName' ] },
-          Id: 'MyOrigin2',
+          Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyOrigin2S3OriginIdentityB67B10D6' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
             ]},
           },
         }],
@@ -137,51 +137,51 @@ describe('multiple behaviors', () => {
   });
 
   test('behavior creation order is preserved', () => {
-    const origin = Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'Bucket'));
-    const origin2 = Origin.fromBucket(stack, 'MyOrigin2', new s3.Bucket(stack, 'Bucket2'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
+    const origin2 = Origin.fromBucket(new s3.Bucket(stack, 'Bucket2'));
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
       additionalBehaviors: {
         'api/1*': { origin: origin2 },
       },
     });
-    dist.addBehavior('api/2*', { origin });
+    dist.addBehavior('api/2*', origin);
 
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin',
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           PathPattern: 'api/1*',
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin2',
+          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         },
         {
           PathPattern: 'api/2*',
           ForwardedValues: { QueryString: false },
-          TargetOriginId: 'MyOrigin',
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
         Enabled: true,
         Origins: [{
           DomainName: { 'Fn::GetAtt': [ 'Bucket83908E77', 'RegionalDomainName' ] },
-          Id: 'MyOrigin',
+          Id: 'StackMyDistOrigin1D6D5E535',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyOriginS3OriginIdentityBEF16CC0' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin1ED86A27E' } ],
             ]},
           },
         },
         {
           DomainName: { 'Fn::GetAtt': [ 'Bucket25524B414', 'RegionalDomainName' ] },
-          Id: 'MyOrigin2',
+          Id: 'StackMyDistOrigin20B96F3AD',
           S3OriginConfig: {
             OriginAccessIdentity: { 'Fn::Join': [ '',
-              [ 'origin-access-identity/cloudfront/', { Ref: 'MyOrigin2S3OriginIdentityB67B10D6' } ],
+              [ 'origin-access-identity/cloudfront/', { Ref: 'MyDistS3Origin2E88F08BB' } ],
             ]},
           },
         }],
@@ -194,7 +194,7 @@ describe('multiple behaviors', () => {
 describe('certificates', () => {
 
   test('should fail if using an imported certificate from outside of us-east-1', () => {
-    const origin = Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     expect(() => {
@@ -209,7 +209,7 @@ describe('certificates', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket')) },
+      defaultBehavior: { origin: Origin.fromBucket(new s3.Bucket(stack, 'Bucket')) },
       certificate,
     });
 
@@ -226,7 +226,7 @@ describe('certificates', () => {
 describe('custom error responses', () => {
 
   test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -240,7 +240,7 @@ describe('custom error responses', () => {
   });
 
   test('should fail if only the error code is provided', () => {
-    const origin = Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -251,7 +251,7 @@ describe('custom error responses', () => {
   });
 
   test('should render the array of error configs if provided', () => {
-    const origin = Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket'));
+    const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorConfigurations: [{
@@ -261,7 +261,7 @@ describe('custom error responses', () => {
       },
       {
         errorCode: 500,
-        errorCachingMinTtl: 2,
+        errorCachingMinTtl: Duration.seconds(2),
       }],
     });
 
@@ -285,7 +285,7 @@ describe('custom error responses', () => {
 });
 
 test('price class is included if provided', () => {
-  const origin = Origin.fromBucket(stack, 'Origin', new s3.Bucket(stack, 'Bucket'));
+  const origin = Origin.fromBucket(new s3.Bucket(stack, 'Bucket'));
   new Distribution(stack, 'Dist', {
     defaultBehavior: { origin },
     priceClass: PriceClass.PRICE_CLASS_200,

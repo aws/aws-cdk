@@ -18,12 +18,22 @@ export interface OriginProps {
 }
 
 /**
+ * Options passed to Origin.bind().
+ */
+export interface OriginBindOptions {
+  /**
+   * The positional index of this origin within the distribution. Used for ensuring unique IDs.
+   */
+  readonly originIndex: number;
+}
+
+/**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
  *
  * @experimental
  */
-export abstract class Origin extends Construct {
+export abstract class Origin {
 
   /**
    * Creates a pre-configured origin for a S3 bucket.
@@ -33,38 +43,45 @@ export abstract class Origin extends Construct {
    *
    * @param bucket the bucket to act as an origin.
    */
-  public static fromBucket(scope: Construct, id: string, bucket: IBucket): Origin {
-    return new S3Origin(scope, id, {
-      domainName: bucket.bucketRegionalDomainName,
-      bucket,
-    });
-  }
-
-  /**
-   * Creates a pre-configured origin for a S3 bucket, where the bucket has been configured for website hosting.
-   *
-   * @param bucket the bucket to act as an origin.
-   */
-  public static fromWebsiteBucket(scope: Construct, id: string, bucket: IBucket): Origin {
-    return new HttpOrigin(scope, id, {
-      domainName: bucket.bucketWebsiteDomainName,
-      protocolPolicy: OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
-    });
+  public static fromBucket(bucket: IBucket): Origin {
+    if (bucket.isWebsite) {
+      return new HttpOrigin({
+        domainName: bucket.bucketWebsiteDomainName,
+        protocolPolicy: OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
+      });
+    } else {
+      return new S3Origin({ domainName: bucket.bucketRegionalDomainName, bucket });
+    }
   }
 
   /**
    * The domain name of the origin.
    */
   public readonly domainName: string;
-  /**
-   * The unique id of the origin.
-   */
-  public readonly id: string;
 
-  constructor(scope: Construct, id: string, props: OriginProps) {
-    super(scope, id);
+  private originId!: string;
+
+  constructor(props: OriginProps) {
     this.domainName = props.domainName;
-    this.id = this.node.id;
+  }
+
+  /**
+   * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
+   *
+   * @param scope the distribution to bind this Origin to.
+   */
+  public bind(scope: Construct, options: OriginBindOptions): void {
+    this.originId = new Construct(scope, `Origin${options.originIndex}`).node.uniqueId;
+  }
+
+  /**
+   * The unique id for this origin.
+   *
+   * Cannot be accesed until bind() is called.
+   */
+  public get id(): string {
+    if (!this.originId) { throw new Error('Cannot access originId until `bind` is called.'); }
+    return this.originId;
   }
 
   /**
@@ -120,13 +137,20 @@ export interface S3OriginProps extends OriginProps {
  * @experimental
  */
 export class S3Origin extends Origin {
-  private readonly originAccessIdentity: OriginAccessIdentity;
+  private readonly bucket: IBucket;
+  private originAccessIdentity!: OriginAccessIdentity;
 
-  constructor(scope: Construct, id: string, props: S3OriginProps) {
-    super(scope, id, props);
+  constructor(props: S3OriginProps) {
+    super(props);
+    this.bucket = props.bucket;
+  }
 
-    this.originAccessIdentity = new OriginAccessIdentity(this, 'S3OriginIdentity');
-    props.bucket.grantRead(this.originAccessIdentity);
+  public bind(scope: Construct, options: OriginBindOptions) {
+    super.bind(scope, options);
+    if (!this.originAccessIdentity) {
+      this.originAccessIdentity = new OriginAccessIdentity(scope, `S3Origin${options.originIndex}`);
+      this.bucket.grantRead(this.originAccessIdentity);
+    }
   }
 
   protected renderS3OriginConfig(): CfnDistribution.S3OriginConfigProperty | undefined {
@@ -157,9 +181,8 @@ export class HttpOrigin extends Origin {
 
   private readonly protocolPolicy?: OriginProtocolPolicy;
 
-  constructor(scope: Construct, id: string, props: HttpOriginProps) {
-    super(scope, id, props);
-
+  constructor(props: HttpOriginProps) {
+    super(props);
     this.protocolPolicy = props.protocolPolicy;
   }
 

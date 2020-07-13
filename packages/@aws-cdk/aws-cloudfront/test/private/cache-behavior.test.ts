@@ -15,10 +15,12 @@ beforeEach(() => {
 });
 
 test('renders the minimum template with an origin and path specified', () => {
+  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
   const behavior = new CacheBehavior({
-    origin: Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'MyBucket')),
+    origin,
     pathPattern: '*',
   });
+  origin.bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,
@@ -29,13 +31,15 @@ test('renders the minimum template with an origin and path specified', () => {
 });
 
 test('renders with all properties specified', () => {
+  const origin = Origin.fromBucket(new s3.Bucket(stack, 'MyBucket'));
   const behavior = new CacheBehavior({
-    origin: Origin.fromBucket(stack, 'MyOrigin', new s3.Bucket(stack, 'MyBucket')),
+    origin,
     pathPattern: '*',
     allowedMethods: AllowedMethods.ALLOW_ALL,
     forwardQueryString: true,
     forwardQueryStringCacheKeys: ['user_id', 'auth'],
   });
+  origin.bind(stack, { originIndex: 0 });
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: behavior.origin.id,

@@ -3,13 +3,17 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+| Features | Stability |
+| --- | --- |
+| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for Distribution | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge) |
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+> **Experimental:** Higher level constructs in this module that are marked as experimental are under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -137,36 +141,25 @@ documents.
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 
 // Creates a distribution for a S3 bucket.
-const myBucket = new s3.Bucket(...);
+const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: cloudfront.Origin.fromBucket(myBucket) },
 });
-
-// Equivalent to the above
-const myBucket = new s3.Bucket(...);
-cloudfront.Distribution.forBucket(this, 'myDist', myBucket);
-
-// Creates a distribution for a S3 bucket that has been configured for website hosting.
-const myWebsiteBucket = new s3.Bucket(...);
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: cloudfront.Origin.fromWebsiteBucket(myBucket) },
-});
-
-// Equivalent to the above
-const myBucket = new s3.Bucket(...);
-cloudfront.Distribution.forWebsiteBucket(this, 'myDist', myBucket);
 ```
 
-The `forBucket` options will automatically create an origin access identity and grant it access to the underlying bucket. This can be used in
-conjunction with a bucket that is not public to require that your users access your content using CloudFront URLs and not S3 URLs directly.
+The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
+treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
+CloudFront's redirect and error handling will be used. In the latter case, the Origin wil create an origin access identity and grant it access to the
+underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
+URLs and not S3 URLs directly.
 
 ### Domain Names and Certificates
 
-When you create a distribution, CloudFront returns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`. CloudFront
-distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by default. If you want to use your own domain name, such as
-`www.example.com`, you must associate a certificate with your distribution that contains your domain name. The certificate must be present in the AWS
-Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate may either be created by ACM, or created elsewhere and
-imported into ACM.
+When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
+be retrieved from `distribution.domainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by default. If
+you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains your domain
+name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate may either be
+created by ACM, or created elsewhere and imported into ACM.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {
@@ -198,13 +191,12 @@ const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-Additional cache behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
+Additional behaviors can be specified at creation, or added after the initial creation. Each additional behavior is associated with an origin,
 and enable customization for a specific set of resources based on a URL path pattern. For example, we can add a behavior to `myWebDistribution` to
 override the default time-to-live (TTL) for all of the images.
 
 ```ts
-myWebDistribution.addBehavior('/images/*.jpg', {
-  origin: cloudfront.Origin.fromBucket(myOtherBucket),
+myWebDistribution.addBehavior('/images/*.jpg', cloudfront.Origin.fromBucket(myOtherBucket), {
   viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   defaultTtl: cdk.Duration.days(7),
 });
@@ -220,12 +212,12 @@ new cloudfront.Distribution(this, 'myDist', {
     allowedMethods: AllowedMethods.ALLOW_ALL,
     viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   },
-  additionalBehaviors: [{
-    '/images/*.jpg', {
+  additionalBehaviors: {
+    '/images/*.jpg': {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       defaultTtl: cdk.Duration.days(7),
     },
-  }]
+  },
 });
 ```

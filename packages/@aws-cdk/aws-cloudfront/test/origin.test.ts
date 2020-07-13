@@ -15,13 +15,14 @@ beforeEach(() => {
 
 describe('fromBucket', () => {
 
-  test('renders all properties, including S3Origin config', () => {
+  test('as bucket, renders all properties, including S3Origin config', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(stack, 'MyOrigin', bucket);
+    const origin = Origin.fromBucket(bucket);
+    origin.bind(stack, { originIndex: 0 });
 
     expect(origin._renderOrigin()).toEqual({
-      id: 'MyOrigin',
+      id: 'StackOrigin029E19582',
       domainName: bucket.bucketRegionalDomainName,
       s3OriginConfig: {
         originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.69]}',
@@ -29,10 +30,10 @@ describe('fromBucket', () => {
     });
   });
 
-  test('creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
+  test('as bucket, creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = Origin.fromBucket(stack, 'Origin', bucket);
+    const origin = Origin.fromBucket(bucket);
     new Distribution(stack, 'Dist', { defaultBehavior: { origin } });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
@@ -44,27 +45,29 @@ describe('fromBucket', () => {
       PolicyDocument: {
         Statement: [{
           Principal: {
-            CanonicalUser: { 'Fn::GetAtt': [ 'OriginS3OriginIdentity1E4900C6', 'S3CanonicalUserId' ] },
+            CanonicalUser: { 'Fn::GetAtt': [ 'DistS3Origin1C4519663', 'S3CanonicalUserId' ] },
           },
         }],
       },
     });
   });
 
-});
+  test('as website buvcket, renders all properties, including custom origin config', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      websiteIndexDocument: 'index.html',
+    });
 
-test('fromWebsiteBucket renders all properties, including custom origin config', () => {
-  const bucket = new s3.Bucket(stack, 'Bucket', {
-    websiteIndexDocument: 'index.html',
+    const origin = Origin.fromBucket(bucket);
+    origin.bind(stack, { originIndex: 0 });
+
+    expect(origin._renderOrigin()).toEqual({
+      id: 'StackOrigin029E19582',
+      domainName: bucket.bucketWebsiteDomainName,
+      customOriginConfig: {
+        originProtocolPolicy: 'http-only',
+      },
+    });
   });
 
-  const origin = Origin.fromWebsiteBucket(stack, 'MyOrigin', bucket);
-
-  expect(origin._renderOrigin()).toEqual({
-    id: 'MyOrigin',
-    domainName: bucket.bucketWebsiteDomainName,
-    customOriginConfig: {
-      originProtocolPolicy: 'http-only',
-    },
-  });
 });
+

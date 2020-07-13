@@ -1,6 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
 import { Origin } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
@@ -85,7 +84,7 @@ export interface DistributionProps {
    *
    * @default - No custom error configuration.
    */
-  readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
+  readonly errorConfigurations?: CustomErrorResponse[];
 }
 
 /**
@@ -111,35 +110,14 @@ export class Distribution extends Resource implements IDistribution {
     }();
   }
 
-  /**
-   * Creates a Distribution for an S3 Bucket, where the bucket has not been configured for website hosting.
-   *
-   * This creates a single-origin distribution with a single default behavior.
-   */
-  public static forBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
-    return new Distribution(scope, id, {
-      defaultBehavior: { origin: Origin.fromBucket(scope, 'SingleOriginBucket', bucket) },
-    });
-  }
-
-  /**
-   * Creates a Distribution for an S3 bucket, where the bucket has been configured for website hosting.
-   *
-   * This creates a single-origin distribution with a single default behavior.
-   */
-  public static forWebsiteBucket(scope: Construct, id: string, bucket: s3.IBucket): Distribution {
-    return new Distribution(scope, id, {
-      defaultBehavior: { origin: Origin.fromWebsiteBucket(scope, 'SingleOriginWebsiteBucket', bucket) },
-    });
-  }
-
   public readonly domainName: string;
   public readonly distributionId: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
+  private readonly origins: Set<Origin> = new Set<Origin>();
 
-  private readonly errorConfigurations: CfnDistribution.CustomErrorResponseProperty[];
+  private readonly errorConfigurations: CustomErrorResponse[];
   private readonly certificate?: acm.ICertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
@@ -153,9 +131,10 @@ export class Distribution extends Resource implements IDistribution {
     }
 
     this.defaultBehavior = new CacheBehavior({ pathPattern: '*', ...props.defaultBehavior });
+    this.addOrigin(this.defaultBehavior.origin);
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
-        this.addBehavior(pathPattern, behaviorOptions);
+        this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
       });
     }
 
@@ -182,20 +161,24 @@ export class Distribution extends Resource implements IDistribution {
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, behaviorOptions: BehaviorOptions) {
+  public addBehavior(pathPattern: string, origin: Origin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
-    this.additionalBehaviors.push(new CacheBehavior({ pathPattern, ...behaviorOptions }));
+    this.additionalBehaviors.push(new CacheBehavior({ pathPattern, origin, ...behaviorOptions }));
+    this.addOrigin(origin);
+  }
+
+  private addOrigin(origin: Origin) {
+    if (!this.origins.has(origin)) {
+      this.origins.add(origin);
+      origin.bind(this, { originIndex: this.origins.size });
+    }
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
-    const origins = new Set<Origin>();
-    origins.add(this.defaultBehavior.origin);
-    this.additionalBehaviors.forEach(behavior => origins.add(behavior.origin));
-
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    origins.forEach(origin => renderedOrigins.push(origin._renderOrigin()));
+    this.origins.forEach(origin => renderedOrigins.push(origin._renderOrigin()));
     return renderedOrigins;
   }
 
@@ -206,7 +189,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderCustomErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorConfigurations.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: CfnDistribution.CustomErrorResponseProperty) {
+    function validateCustomErrorResponse(errorResponse: CustomErrorResponse) {
       if (errorResponse.responsePagePath && !errorResponse.responseCode) {
         throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
       }
@@ -215,7 +198,15 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
     this.errorConfigurations.forEach(e => validateCustomErrorResponse(e));
-    return this.errorConfigurations;
+
+    return this.errorConfigurations.map(errorConfig => {
+      return {
+        errorCachingMinTtl: errorConfig.errorCachingMinTtl?.toSeconds(),
+        errorCode: errorConfig.errorCode,
+        responseCode: errorConfig.responseCode,
+        responsePagePath: errorConfig.responsePagePath,
+      };
+    });
   }
 
 }
@@ -265,16 +256,44 @@ export class AllowedMethods {
 }
 
 /**
- * Options for creating a new behavior.
+ * Options for configuring custom error responses.
  *
  * @experimental
  */
-export interface BehaviorOptions {
+export interface CustomErrorResponse {
   /**
-   * The origin that you want CloudFront to route requests to when they match this cache behavior.
+   * The minimum amount of time, in seconds, that you want CloudFront to cache the HTTP status code specified in ErrorCode.
+   *
+   * @default the default caching TTL behavior applies
    */
-  readonly origin: Origin;
+  readonly errorCachingMinTtl?: Duration;
+  /**
+   * The HTTP status code for which you want to specify a custom error page and/or a caching duration.
+   */
+  readonly errorCode: number;
+  /**
+   * The HTTP status code that you want CloudFront to return to the viewer along with the custom error page.
+   *
+   * If you specify a value for `responseCode`, you must also specify a value for `responsePagePath`.
+   *
+   * @default not set, the error code will be returned as the response code.
+   */
+  readonly responseCode?: number;
+  /**
+   * The path to the custom error page that you want CloudFront to return to a viewer when your origin returns the
+   * `errorCode`, for example, /4xx-errors/403-forbidden.html
+   *
+   * @default the default CloudFront response is shown.
+   */
+  readonly responsePagePath?: string;
+}
 
+/**
+ * Options for adding a new behavior to a Distribution.
+ *
+ * @experimental
+ */
+export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
@@ -298,4 +317,16 @@ export interface BehaviorOptions {
    * @default empty list
    */
   readonly forwardQueryStringCacheKeys?: string[];
+}
+
+/**
+ * Options for creating a new behavior.
+ *
+ * @experimental
+ */
+export interface BehaviorOptions extends AddBehaviorOptions {
+  /**
+   * The origin that you want CloudFront to route requests to when they match this behavior.
+   */
+  readonly origin: Origin;
 }
