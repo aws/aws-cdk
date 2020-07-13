@@ -1,6 +1,6 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as appsync from '../lib';
 
 test('should not throw an Error', () => {

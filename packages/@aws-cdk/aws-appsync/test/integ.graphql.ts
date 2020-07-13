@@ -1,7 +1,7 @@
+import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { join } from 'path';
 import {
   AuthorizationType,
   GraphQLApi,

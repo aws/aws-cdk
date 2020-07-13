@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import {
@@ -9,7 +10,6 @@ import {
 } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable, Lazy, Stack } from '@aws-cdk/core';
-import { readFileSync } from 'fs';
 import {
   CfnApiKey,
   CfnGraphQLApi,

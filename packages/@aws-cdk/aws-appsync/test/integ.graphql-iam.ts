@@ -1,9 +1,9 @@
+import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { join } from 'path';
 import {
   AuthorizationType,
   GraphQLApi,
@@ -21,12 +21,11 @@ import {
  * Install dependencies and deploy integration test. Invoke Lambda
  * function with different permissions to test policies.
  *
- * -- bash verify.integ.graphql.iam.sh --start             -- download dependencies      --
- * -- cdk deploy --app "node integ.graphql.iam.js"         -- deploy integ stack         --
+ * -- bash verify.integ.graphql-iam.sh --start             -- get dependencies/deploy    --
  * -- aws lambda list-functions                            -- obtain testFail/testQuery  --
- * -- aws lambda invoke --function-name [FAIL] /dev/stdout -- fails beacuse no IAM Role` --
- * -- aws lambda invoke --function-name [Query] /dev/stdout-- succeeds with empty get  ` --
- * -- bash verify.integ.graphql.iam.sh --clean             -- clean up dependencies      --
+ * -- aws lambda invoke /dev/stdout --function-name [FAIL] -- fails beacuse no IAM Role` --
+ * -- aws lambda invoke /dev/stdout --function-name [Query]-- succeeds with empty get  ` --
+ * -- bash verify.integ.graphql-iam.sh --clean             -- clean dependencies/deploy  --
  */
 
 const app = new App();
@@ -37,7 +36,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphQLApi(stack, 'Api', {
   name: 'Integ_Test_IAM',
-  schemaDefinitionFile: join(__dirname, 'integ.graphql.iam.graphql'),
+  schemaDefinitionFile: join(__dirname, 'integ.graphql-iam.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
@@ -88,18 +87,26 @@ testDS.createResolver({
 
 const lambdaIAM = new Role(stack, 'LambdaIAM', {assumedBy: new ServicePrincipal('lambda')});
 
-api.grantFullAccess(lambdaIAM);
+const grantResources = [
+  {custom: 'types/Query/fields/getTests'},
+];
+
+api.grant(lambdaIAM, grantResources, 'appsync:graphql');
+api.grantType(lambdaIAM, 'test');
+api.grantMutation(lambdaIAM, [
+  'addTest',
+]);
 
 new Function(stack, 'testQuery', {
   code: Code.fromAsset('lambda'),
-  handler: 'iamQuery.handler',
+  handler: 'verify-iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
   environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset('lambda'),
-  handler: 'iamQuery.handler',
+  handler: 'verify-iam-query.handler',
   runtime: Runtime.NODEJS_12_X,
   environment: {APPSYNC_ENDPOINT: api.graphQlUrl },
 });
