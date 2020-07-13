@@ -51,7 +51,7 @@ const canary = new Canary(this, 'MyCanary', {
 
 The canary will automatically produce a CloudWatch Dashboard:
 
-![UI Screenshot](images/ui-screenshot-1.png)
+![UI Screenshot](images/ui-screenshot.png)
 
 ### Alarms
 
