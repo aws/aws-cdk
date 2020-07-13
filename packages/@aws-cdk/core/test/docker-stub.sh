@@ -6,6 +6,7 @@ set -euo pipefail
 # `/tmp/docker-stub.input` and accepts one of 3 commands that impact it's
 # behavior.
 
+echo "$@" >> /tmp/docker-stub.input.concat
 echo "$@" > /tmp/docker-stub.input
 
 if echo "$@" | grep "DOCKER_STUB_SUCCESS_NO_OUTPUT"; then
