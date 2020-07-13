@@ -320,6 +320,20 @@ export interface MetricExpressionConfig {
    * How many seconds to aggregate over
    */
   readonly period: number;
+
+  /**
+   * Region which this metric comes from.
+   *
+   * @default Deployment region.
+   */
+  readonly region?: string;
+
+  /**
+   * Account which this metric comes from.
+   *
+   * @default Deployment account.
+   */
+  readonly account?: string;
 }
 
 /**
