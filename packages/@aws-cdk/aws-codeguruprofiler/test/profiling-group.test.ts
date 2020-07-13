@@ -197,7 +197,7 @@ describe('profiling group', () => {
         'MyProfilingGroup829F0507': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
           'Properties': {
-            'ProfilingGroupName': 'stackMyProfilingGroupFF8661FB',
+            'ProfilingGroupName': 'StackMyProfilingGroup664763A5',
           },
         },
       },
@@ -214,7 +214,7 @@ describe('profiling group', () => {
         'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C': {
           'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
           'Properties': {
-            'ProfilingGroupName': 'stackMyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMuserThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndE6003CC8',
+            'ProfilingGroupName': 'StackMyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMuserThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndB7D9636D',
           },
         },
       },

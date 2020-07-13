@@ -874,7 +874,7 @@ export = {
           'MyBucketKeyC17130CF': {
             'Type': 'AWS::KMS::Key',
             'Properties': {
-              'Description': 'Created by stack/MyBucket',
+              'Description': 'Created by Stack/MyBucket',
               'KeyPolicy': {
                 'Statement': [
                   {
