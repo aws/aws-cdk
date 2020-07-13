@@ -55,7 +55,7 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
-The default for `s3Prefix` is the root of the bucket.
+By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
 
 #### Partitions
 
