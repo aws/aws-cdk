@@ -75,3 +75,84 @@ demoDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 ```
+
+## Permissions
+
+When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
+with correct permissions must be used for access to API.
+
+When configuring permissions, you can specify specific resources to only be
+accessible by `IAM` authorization. For example, if you want to only allow mutability
+for `IAM` authorized access you would configure the following.
+
+In `schema.graphql`:
+```
+type Mutation {
+  updateExample(...): ...
+    @aws_iam
+}
+```
+
+In `IAM`:
+```
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Effect": "Allow",
+         "Action": [
+            "appsync:GraphQL"
+         ],
+         "Resource": [
+            "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExampleß"
+         ]
+      }
+   ]
+}
+```
+
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/security.html#aws-iam-authorization) for more details.
+
+To make this easier, CDK employees `grant` functions to 
+
+Use the `grant` function for more granular authorization.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+const api = new appsync.GraphQLApi(stack, 'API', {
+  definition
+});
+
+const grantResources = [
+  {custom: '/types/Mutation/fields/updateExample'},
+];
+
+api.grant(role, grantResources, 'appsync:graphql')
+```
+
+### Generic Permissions
+
+Alternatively, you can use more generic `grant` functions to accomplish the same usage.
+
+These include:
+```
+grantMutation
+grantQuery
+grantSubscription
+grantType
+grantFullAccess
+```
+
+```ts
+// For generic types
+api.grantMutation(role, fields: [
+  'updateExample',
+]);
+
+// For custom types and granular design
+api.grantType(role, type: 'Mutation', fields: [
+  'updateExample',
+]);
+```
