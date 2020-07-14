@@ -82,6 +82,158 @@ describe('CDK Include', () => {
     );
   });
 
+  test('asset parameters generated in parent and child are identical', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-onechild.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
+        },
+      },
+    });
+
+    const parentStack = loadTestFileToJsObject('parent-onechild.json');
+
+    const assetParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
+    const assetParamKey = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        ...parentStack.Parameters,
+        [assetParam]: {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+        [assetParamKey]: {
+          "Type": "String",
+          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
+        },
+      },
+      "Resources": {
+        ...parentStack.Resources,
+        "ChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [ "", [
+                "https://s3.",
+                  { "Ref": "AWS::Region" },
+                  ".",
+                  { "Ref": "AWS::URLSuffix" },
+                  "/",
+                  { "Ref": assetParam },
+                  "/",
+                  { "Fn::Select": [
+                    0,
+                    { "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey }
+                    ]}
+                  ]},
+                  {
+                    "Fn::Select": [
+                      1,
+                      { "Fn::Split": [
+                          "||",
+                          { "Ref": assetParamKey, }
+                      ]}
+                    ]
+                  }
+                ]
+              ]
+            },
+            "Parameters": {
+              "MyBucketParameter": "some-magic-bucket-name"
+            }
+          }
+        },
+      }
+    });
+  });
+
+
+  test('asset parameters generated in parent, child and grandchild are identical', () => {
+    const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-onechild.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-no-bucket.json'),
+          nestedStacks: {
+            'GrandChildStack': {
+              templateFile: testTemplateFilePath('grandchild-import-stack.json')
+            }
+          }
+        },
+      },
+    });
+
+    const childTemplate = parentTemplate.getNestedStack('ChildStack');
+    const grandChildTemplate = childTemplate.includedTemplate.getNestedStack('GrandChildStack');
+
+    const assetParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
+    const assetParamKey = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
+
+    expect(childTemplate.stack).toMatchTemplate({
+      "Parameters": {
+        "MyBucketParameter": {
+          "Type": "String",
+          "Default": "default-bucket-param-name"
+        },
+        [assetParam]: {
+          "Type": "String"
+        },
+        [assetParamKey]: {
+          "Type": "String"
+        },
+      },
+      "Resources": {
+        "GrandChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [ "", [
+                "https://s3.",
+                  { "Ref": "AWS::Region" },
+                  ".",
+                  { "Ref": "AWS::URLSuffix" },
+                  "/",
+                  { "Ref": assetParam },
+                  "/",
+                  { "Fn::Select": [
+                    0,
+                    { "Fn::Split": [
+                        "||",
+                        { "Ref": assetParamKey }
+                    ]}
+                  ]},
+                  {
+                    "Fn::Select": [
+                      1,
+                      { "Fn::Split": [
+                          "||",
+                          { "Ref": assetParamKey, }
+                      ]}
+                    ]
+                  }
+                ]
+              ],
+            },
+            "Parameters": {
+              "MyBucketParameter": "some-other-bucket-name"
+            }
+          },
+        }
+      },
+    });
+
+    expect(grandChildTemplate.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-import-stack.json')
+    );
+  });
+
   test('throws an error when provided a nested stack that is not present in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
@@ -239,11 +391,11 @@ describe('CDK Include', () => {
       "Metadata": {
         "Property1": "Value1",
       },
-      "DeletionPolicy" : "Retain",
+      "DeletionPolicy": "Retain",
       "DependsOn": [
         "ChildStack",
       ],
-      "UpdateReplacePolicy" : "Retain",
+      "UpdateReplacePolicy": "Retain",
     }, ResourcePart.CompleteDefinition);
   });
 
@@ -256,7 +408,7 @@ describe('CDK Include', () => {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
-        "NotificationARNs": [ "arn1" ],
+        "NotificationARNs": ["arn1"],
         "TimeoutInMinutes": 5,
       },
     }, ResourcePart.CompleteDefinition);
