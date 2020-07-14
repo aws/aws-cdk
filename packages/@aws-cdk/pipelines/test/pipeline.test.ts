@@ -40,7 +40,6 @@ test('references stack template in subassembly', () => {
   });
 });
 
-// tslint:disable: max-line-length
 test('action has right settings for same-env deployment', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
@@ -160,8 +159,6 @@ test('action has right settings for cross-account/cross-region deployment', () =
     }),
   });
 });
-
-// tslint:enable: max-line-length
 
 test('pipeline has self-mutation stage', () => {
   // THEN

@@ -32,9 +32,6 @@
     "eslint": {
       "disable": true
     },
-    "tslint": {
-      "disable": true
-    },
     "pre": [
       "npm run gen"
     ]

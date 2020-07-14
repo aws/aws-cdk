@@ -59,7 +59,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
    */
   readonly codeBuildCloneOutput?: boolean;
-  // tslint:enable:max-line-length
 }
 
 /**

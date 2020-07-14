@@ -15,7 +15,7 @@ const directory = argv._[0] || '.';
 argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
-  const ruleClasses = require('../lib/rules');
+  const ruleClasses = require('../lib/rules'); // eslint-disable-line @typescript-eslint/no-require-imports
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
   const pkgs = findPackageJsons(directory);

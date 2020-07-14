@@ -22,9 +22,6 @@
     "eslint": {
       "disable": true
     },
-    "tslint": {
-      "disable": true
-    },
     "pkglint": {
       "disable": true
     }

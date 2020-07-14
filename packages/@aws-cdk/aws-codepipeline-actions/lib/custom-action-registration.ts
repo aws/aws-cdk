@@ -36,8 +36,6 @@ export interface CustomActionProperty {
    */
   queryable?: boolean;
 
-  // tslint:enable:max-line-length
-
   /**
    * Whether this property is required.
    */

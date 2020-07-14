@@ -136,7 +136,6 @@ export class OAuthScope {
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
-  // tslint:enable:max-line-length
   public readonly scopeName: string;
 
   private constructor(scopeName: string) {

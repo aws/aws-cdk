@@ -127,7 +127,6 @@ describe('IAM policy statement', () => {
     test('the kitchen sink', () => {
       const stack = new Stack();
 
-      /* tslint:disable */
       const policyDocument = {
         Version: '2012-10-17',
         Statement: [
@@ -158,7 +157,6 @@ describe('IAM policy statement', () => {
           },
         ],
       };
-      /* tslint:enable */
 
       const doc = PolicyDocument.fromJson(policyDocument);
 
