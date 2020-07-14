@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 // do not descend into these directories when searching for `package.json` files.
 export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];

@@ -129,7 +129,6 @@ export class Alias extends AliasBase {
    * @param attrs the properties of the referenced KMS Alias
    */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
-    // tslint:disable-next-line: class-name
     class _Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }

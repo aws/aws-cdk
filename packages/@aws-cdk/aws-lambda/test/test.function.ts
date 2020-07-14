@@ -1,13 +1,17 @@
+import * as path from 'path';
 import { expect, haveOutput, haveResource } from '@aws-cdk/assert';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
 import {Test, testCase} from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
+
+/* eslint-disable quote-props */
 
 export = testCase({
   'add incompatible layer'(test: Test) {
@@ -162,13 +166,11 @@ export = testCase({
       logRetention: logs.RetentionDays.FIVE_DAYS,
     });
 
-    // tslint:disable:no-unused-expression
     // Call logGroup a few times. If more than one instance of LogRetention was created,
     // the second call will fail on duplicate constructs.
     fn.logGroup;
     fn.logGroup;
     fn.logGroup;
-    // tslint:enable:no-unused-expression
 
     test.done();
   },
@@ -357,7 +359,6 @@ export = testCase({
   },
 
   'currentVersion': {
-
     // see test.function-hash.ts for more coverage for this
     'logical id of version is based on the function hash'(test: Test) {
       // GIVEN
@@ -405,4 +406,59 @@ export = testCase({
     },
   },
 
+  'filesystem': {
+
+    'mount efs filesystem'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          {
+            Arn: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':elasticfilesystem:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':access-point/',
+                  {
+                    Ref: 'EfsAccessPointE419FED9',
+                  },
+                ],
+              ],
+            },
+            LocalMountPath: '/mnt/msg',
+          }],
+      }));
+      test.done();
+    },
+  },
 });

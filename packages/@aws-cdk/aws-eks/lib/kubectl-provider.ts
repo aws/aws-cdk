@@ -24,6 +24,7 @@ export class KubectlProvider extends NestedStack {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
+      description: 'onEvent handler for EKS kubectl resource provider',
       layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0' }) ],
       memorySize: 256,
     });
