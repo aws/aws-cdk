@@ -130,11 +130,11 @@ const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
 
 if (Token.isUnresolved(stack.region)) {
-  throw new Error(`region cannot be a token and must be configured to one of: ${supportedRegions}`);
+  throw new Error(`region (${stack.region}) cannot be a token and must be configured to one of: ${supportedRegions}`);
 }
 
 if (!supportedRegions.includes(stack.region)) {
-  throw new Error(`region must be configured to one of: ${supportedRegions}`);
+  throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
 }
 
 app.synth();
