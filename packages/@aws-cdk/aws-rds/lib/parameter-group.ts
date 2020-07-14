@@ -11,6 +11,17 @@ export interface IParameterGroup extends IResource {
    * @attribute
    */
   readonly parameterGroupName: string;
+
+  /**
+   * Adds a parameter to this group.
+   * If this is an imported parameter group,
+   * this method does nothing.
+   *
+   * @returns true if the parameter was actually added
+   *   (i.e., this ParameterGroup is not imported),
+   *   false otherwise
+   */
+  addParameter(key: string, value: string): boolean;
 }
 
 /**
@@ -23,6 +34,8 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
+
+      public addParameter(): boolean { return false; }
     }
     return new Import(scope, id);
   }
@@ -35,7 +48,13 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
    * Parameters of the parameter group
    */
-  protected parameters?: { [key: string]: string } = {};
+  protected readonly parameters: { [key: string]: string };
+
+  constructor(scope: Construct, id: string, parameters: { [key: string]: string } | undefined) {
+    super(scope, id);
+
+    this.parameters = parameters ?? {};
+  }
 
   /**
    * Add a parameter to this parameter group
@@ -43,11 +62,9 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * @param key The key of the parameter to be added
    * @param value The value of the parameter to be added
    */
-  public addParameter(key: string, value: string) {
-    if (!this.parameters) {
-      this.parameters = {};
-    }
+  public addParameter(key: string, value: string): boolean {
     this.parameters[key] = value;
+    return true;
   }
 }
 
@@ -87,9 +104,7 @@ export class ParameterGroup extends ParameterGroupBase {
   public readonly parameterGroupName: string;
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
-    super(scope, id);
-
-    this.parameters = props.parameters ? props.parameters : {};
+    super(scope, id, props.parameters);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       description: props.description || `Parameter group for ${props.family}`,
@@ -104,7 +119,6 @@ export class ParameterGroup extends ParameterGroupBase {
 /**
  * Construction properties for a ClusterParameterGroup
  */
-// tslint:disable-next-line:no-empty-interface
 export interface ClusterParameterGroupProps extends ParameterGroupProps {
 
 }
@@ -120,9 +134,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
   public readonly parameterGroupName: string;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
-    super(scope, id);
-
-    this.parameters = props.parameters ? props.parameters : {};
+    super(scope, id, props.parameters);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description || `Cluster parameter group for ${props.family}`,

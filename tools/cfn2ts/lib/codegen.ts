@@ -55,7 +55,7 @@ export default class CodeGenerator {
     this.code.line('// See: docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html');
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
-    this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('/* eslint-disable max-len */ // This is generated code - line lengths are difficult to control');
     this.code.line();
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
     // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
@@ -232,6 +232,7 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @experimental');
     this.code.line(' */');
+    // eslint-disable-next-line max-len
     this.code.openBlock(`public static fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CORE}.FromCloudFormationOptions): ` +
       `${resourceName.className}`);
     this.code.line('resourceAttributes = resourceAttributes || {};');
@@ -262,6 +263,7 @@ export default class CodeGenerator {
     this.code.line('// handle DependsOn');
     // DependsOn can be either a single string, or an array of strings
     this.code.line('resourceAttributes.DependsOn = resourceAttributes.DependsOn ?? [];');
+    // eslint-disable-next-line max-len
     this.code.line('const dependencies: string[] = Array.isArray(resourceAttributes.DependsOn) ? resourceAttributes.DependsOn : [resourceAttributes.DependsOn];');
     this.code.openBlock('for (const dep of dependencies)');
     this.code.line('const depResource = options.finder.findResource(dep);');
@@ -519,7 +521,7 @@ export default class CodeGenerator {
           const scalarValidator = `${CORE}.unionValidator(${validatorNames})`;
           const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
           const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitAtom(type)).join(', ')}])`;
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitAtom(type)).join(', ')}]))`;
 
           return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
@@ -789,9 +791,11 @@ export default class CodeGenerator {
     this.beginNamespace(typeName);
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
+    /*
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line('// tslint:disable-next-line:no-empty-interface | A genuine empty-object type');
+      this.code.line('// eslint-disable-next-line somethingsomething | A genuine empty-object type');
     }
+    */
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
     if (propTypeSpec.Properties) {

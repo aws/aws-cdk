@@ -127,38 +127,36 @@ describe('IAM policy statement', () => {
     test('the kitchen sink', () => {
       const stack = new Stack();
 
-      /* tslint:disable */
       const policyDocument = {
-        'Version': '2012-10-17',
-        'Statement': [
+        Version: '2012-10-17',
+        Statement: [
           {
-            'Sid': 'FirstStatement',
-            'Effect': 'Allow',
-            'Action': 'iam:ChangePassword',
-            'Resource': '*',
+            Sid: 'FirstStatement',
+            Effect: 'Allow',
+            Action: 'iam:ChangePassword',
+            Resource: '*',
           },
           {
-            'Sid': 'SecondStatement',
-            'Effect': 'Allow',
-            'Action': 's3:ListAllMyBuckets',
-            'Resource': '*',
+            Sid: 'SecondStatement',
+            Effect: 'Allow',
+            Action: 's3:ListAllMyBuckets',
+            Resource: '*',
           },
           {
-            'Sid': 'ThirdStatement',
-            'Effect': 'Allow',
-            'Action': [
+            Sid: 'ThirdStatement',
+            Effect: 'Allow',
+            Action: [
               's3:List*',
               's3:Get*',
             ],
-            'Resource': [
+            Resource: [
               'arn:aws:s3:::confidential-data',
               'arn:aws:s3:::confidential-data/*',
             ],
-            'Condition': {'Bool': {'aws:MultiFactorAuthPresent': 'true'}},
+            Condition: {Bool: {'aws:MultiFactorAuthPresent': 'true'}},
           },
         ],
       };
-      /* tslint:enable */
 
       const doc = PolicyDocument.fromJson(policyDocument);
 

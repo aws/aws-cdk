@@ -93,10 +93,9 @@ $ cd aws-cdk
 $ yarn build
 ```
 
-If you get compiler errors when building, a common cause is globally installed tools like tslint and typescript. Try uninstalling them.
+If you get compiler errors when building, a common cause is a globally installed typescript. Try uninstalling it.
 
 ```
-npm uninstall -g tslint
 npm uninstall -g typescript
 ```
 
@@ -277,7 +276,7 @@ However, in many cases, you can probably get away with just building a portion o
 want to work on.
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK. Be sure to install
-the [tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for it as well, since we have
+the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for it as well, since we have
 strict linting rules that will prevent your code from compiling, but with VSCode and this extension can be automatically
 fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
@@ -331,9 +330,6 @@ The following linters are used -
 - [awslint](#awslint)
 
 #### eslint
-
-Historically, the CDK has used tslint for linting its typescript source code. With [tslint's deprecation in
-2019](https://medium.com/palantir/tslint-in-2019-1a144c2317a9), we are slowly moving over to using eslint.
 
 All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
