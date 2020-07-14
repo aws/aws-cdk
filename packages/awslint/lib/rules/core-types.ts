@@ -3,13 +3,13 @@ import { getDocTag } from './util';
 
 const CORE_MODULE = '@aws-cdk/core';
 enum CoreTypesFqn {
-  CfnResource = '@aws-cdk/core.CfnResource',
-  Construct = '@aws-cdk/core.Construct',
-  ConstructInterface = '@aws-cdk/core.IConstruct',
-  Resource = '@aws-cdk/core.Resource',
-  ResourceInterface = '@aws-cdk/core.IResource',
-  ResolvableInterface = '@aws-cdk/core.IResolvable',
-  PhysicalName = '@aws-cdk/core.PhysicalName'
+  CfnResource = "@aws-cdk/core.CfnResource",
+  Construct = "constructs.Construct",
+  ConstructInterface = "constructs.IConstruct",
+  Resource = "@aws-cdk/core.Resource",
+  ResourceInterface = "@aws-cdk/core.IResource",
+  ResolvableInterface = "@aws-cdk/core.IResolvable",
+  PhysicalName = "@aws-cdk/core.PhysicalName"
 }
 
 export class CoreTypes {

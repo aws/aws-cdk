@@ -1,14 +1,13 @@
-export * from './aspect';
 export * from './tag-aspect';
+export * from './aspect';
 
-export * from './construct-compat';
 export * from './token';
 export * from './resolvable';
 export * from './lazy';
 export * from './tag-manager';
-export * from './dependency';
 export * from './string-fragments';
 export * from './stack-synthesizers';
+export * from './synthesis';
 
 export * from './reference';
 export * from './cfn-condition';
@@ -54,6 +53,8 @@ export * from './fs';
 export * from './custom-resource';
 export * from './nested-stack';
 export * from './custom-resource-provider';
+
+export * from './logging';
 
 export * from './cfn-capabilities';
 export * from './cloudformation.generated';

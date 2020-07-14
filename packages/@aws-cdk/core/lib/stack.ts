@@ -2,16 +2,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
+import { App } from './app';
 import { Arn, ArnComponents } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
-import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
+import { Logging } from './logging';
+import * as cfnlang from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
@@ -182,7 +184,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Options for CloudFormation template (like version, transform, description).
    */
-  public readonly templateOptions: ITemplateOptions = {};
+  public readonly templateOptions: ITemplateOptions;
 
   /**
    * The AWS region into which this stack will be deployed (e.g. `us-west-2`).
@@ -201,7 +203,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Logging.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly region: string;
@@ -223,7 +225,7 @@ export class Stack extends Construct implements ITaggable {
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
-   * fail (throw an error, emit a synth error using `node.addError`) or
+   * fail (throw an error, emit a synth error using `Logging.of(construct).addError()`) or
    * implement some other region-agnostic behavior.
    */
   public readonly account: string;
@@ -284,29 +286,41 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Other stacks this stack depends on
    */
-  private readonly _stackDependencies: { [uniqueId: string]: StackDependency } = { };
+  private readonly _stackDependencies: { [uniqueId: string]: StackDependency };
 
   /**
    * Lists all missing contextual information.
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly _missingContext = new Array<cxschema.MissingContext>();
+  private readonly _missingContext: cxschema.MissingContext[];
 
   private readonly _stackName: string;
 
   /**
    * Creates a new stack.
    *
-   * @param scope Parent of this stack, usually a Program instance.
+   * @param scope Parent of this stack, usually an `App` or a `Stage`, but could be any construct.
    * @param id The construct ID of this stack. If `stackName` is not explicitly
    * defined, this id (and any parent IDs) will be used to determine the
    * physical ID of the stack.
    * @param props Stack properties.
    */
   public constructor(scope?: Construct, id?: string, props: StackProps = {}) {
-    // For unit test convenience parents are optional, so bypass the type check when calling the parent.
-    super(scope!, id!);
+    // For unit test scope and id are optional for stacks, but we still want an App
+    // as the parent because apps implement much of the synthesis logic.
+    scope = scope ?? new App({
+      autoSynth: false,
+      outdir: FileSystem.mkdtemp('cdk-test-app-'),
+    });
+
+    id = id ?? 'Stack'; // this will also be the default stack name
+
+    super(scope, id);
+
+    this._missingContext = new Array<cxschema.MissingContext>();
+    this._stackDependencies = { };
+    this.templateOptions = { };
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -363,7 +377,7 @@ export class Stack extends Construct implements ITaggable {
     return resolve(obj, {
       scope: this,
       prefix: [],
-      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+      resolver: cfnlang.CLOUDFORMATION_TOKEN_RESOLVER,
       preparing: false,
     });
   }
@@ -372,7 +386,7 @@ export class Stack extends Construct implements ITaggable {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public toJsonString(obj: any, space?: number): string {
-    return CloudFormationLang.toJSON(obj, space).toString();
+    return cfnlang.CloudFormationLang.toJSON(obj, space).toString();
   }
 
   /**
@@ -688,6 +702,32 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Synthesizes the cloudformation template into a cloud assembly.
+   * @internal
+   */
+  public _synthesizeTemplate(session: ISynthesisSession): void {
+    // In principle, stack synthesis is delegated to the
+    // StackSynthesis object.
+    //
+    // However, some parts of synthesis currently use some private
+    // methods on Stack, and I don't really see the value in refactoring
+    // this right now, so some parts still happen here.
+    const builder = session.assembly;
+
+    // write the CloudFormation template as a JSON file
+    const outPath = path.join(builder.outdir, this.templateFile);
+    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
+    fs.writeFileSync(outPath, text);
+
+    for (const ctx of this._missingContext) {
+      builder.addMissing(ctx);
+    }
+
+    // Delegate adding artifacts to the Synthesizer
+    this.synthesizer.synthesizeStackArtifacts(session);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -748,28 +788,6 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  protected synthesize(session: ISynthesisSession): void {
-    // In principle, stack synthesis is delegated to the
-    // StackSynthesis object.
-    //
-    // However, some parts of synthesis currently use some private
-    // methods on Stack, and I don't really see the value in refactoring
-    // this right now, so some parts still happen here.
-    const builder = session.assembly;
-
-    // write the CloudFormation template as a JSON file
-    const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
-
-    for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
-    }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
-  }
-
   /**
    * Returns the CloudFormation template for this stack by traversing
    * the tree and invoking _toCloudFormation() on all Entity objects.
@@ -781,7 +799,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (this.templateOptions.transform) {
       // eslint-disable-next-line max-len
-      this.node.addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
+      Logging.of(this).addWarning('This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }
 
@@ -917,7 +935,7 @@ export class Stack extends Construct implements ITaggable {
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
     if (ids.length === 1 && !ids[0]) {
-      ids[0] = 'Stack';
+      throw new Error('unexpected: stack id must always be defined (it will be "Stack" by default)');
     }
 
     return makeStackName(ids);
@@ -1066,10 +1084,11 @@ function makeStackName(components: string[]) {
 import { addDependency } from './deps';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer, ISynthesisSession } from './stack-synthesizers';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
+import { FileSystem } from './fs';
 
 interface StackDependency {
   stack: Stack;

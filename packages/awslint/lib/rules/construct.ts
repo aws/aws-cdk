@@ -24,7 +24,7 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
-  public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
+  public readonly ROOT_CLASS: reflect.ClassType; // constructs.Construct
 
   public readonly fqn: string;
   public readonly interfaceFqn: string;

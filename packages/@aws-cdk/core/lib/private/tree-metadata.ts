@@ -2,8 +2,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
+import { Construct, IConstruct } from 'constructs';
+import { Logging } from '../logging';
 import { Stack } from '../stack';
+import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
 
 const FILE_PATH = 'tree.json';
@@ -20,7 +22,11 @@ export class TreeMetadata extends Construct {
     super(scope, 'Tree');
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  /**
+   * Create tree.json
+   * @internal
+   */
+  public _synthesizeTree(session: ISynthesisSession) {
     const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: IConstruct): Node => {
@@ -28,7 +34,7 @@ export class TreeMetadata extends Construct {
         try {
           return visit(c);
         } catch (e) {
-          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Logging.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });

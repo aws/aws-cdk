@@ -1,17 +1,17 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as constructs from 'constructs';
-import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
+import { IConstruct } from 'constructs';
+import { Aspects, IAspect } from '../aspect';
+import { Stack } from '../stack';
 import { Stage, StageSynthesisOptions } from '../stage';
+import { SynthesisOptions } from '../synthesis';
 import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
   synthNestedAssemblies(root, options);
 
   invokeAspects(root);
-
-  // This is mostly here for legacy purposes as the framework itself does not use prepare anymore.
-  prepareTree(root);
 
   // resolve references
   prepareApp(root);
@@ -58,18 +58,25 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
+  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+
   recurse(root, []);
 
-  function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
-    // hackery to be able to access some private members with strong types (yack!)
-    const node: NodeWithAspectPrivatesHangingOut = construct.node._actualNode as any;
+  function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
+    const node = construct.node;
 
-    const allAspectsHere = [...inheritedAspects ?? [], ...node._aspects];
+    const allAspectsHere = [...inheritedAspects ?? [], ...Aspects.of(construct).aspects];
 
     for (const aspect of allAspectsHere) {
-      if (node.invokedAspects.includes(aspect)) { continue; }
+
+      let invoked = invokedByPath[node.path];
+      if (!invoked) {
+        invoked = invokedByPath[node.path] = [];
+      }
+
+      if (invoked.includes(aspect)) { continue; }
       aspect.visit(construct);
-      node.invokedAspects.push(aspect);
+      invoked.push(aspect);
     }
 
     for (const child of construct.node.children) {
@@ -81,37 +88,37 @@ function invokeAspects(root: IConstruct) {
 }
 
 /**
- * Prepare all constructs in the given construct tree in post-order.
- *
- * Stop at Assembly boundaries.
- */
-function prepareTree(root: IConstruct) {
-  visit(root, 'post', construct => construct.onPrepare());
-}
-
-/**
  * Synthesize children in post-order into the given builder
  *
  * Stop at Assembly boundaries.
  */
 function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
-  visit(root, 'post', construct => construct.onSynthesize({
-    outdir: builder.outdir,
-    assembly: builder,
-  }));
+  visit(root, 'post', construct => {
+    const session = {
+      outdir: builder.outdir,
+      assembly: builder,
+    };
+
+    if (construct instanceof Stack) {
+      construct._synthesizeTemplate(session);
+    } else if (construct instanceof TreeMetadata) {
+      construct._synthesizeTree(session);
+    } else {
+      if (typeof((construct as any).synthesize) === 'function') {
+        throw new Error(`"synthesize" is no longer supported: ${construct.node.path}`);
+      }
+    }
+  });
 }
 
 /**
  * Validate all constructs in the given construct tree
+ * (Exported for unit tests)
  */
-function validateTree(root: IConstruct) {
+export function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
-  visit(root, 'pre', construct => {
-    for (const message of construct.onValidate()) {
-      errors.push({ message, source: construct as unknown as Construct });
-    }
-  });
+  visit(root, 'pre', source => errors.push(...source.node.validate().map(message => ({ source, message }))));
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
@@ -122,9 +129,9 @@ function validateTree(root: IConstruct) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
   if (order === 'pre') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
 
   for (const child of root.node.children) {
@@ -133,38 +140,17 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
   }
 
   if (order === 'post') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
 }
 
-/**
- * Interface which provides access to special methods of Construct
- *
- * @experimental
- */
-interface IProtectedConstructMethods extends IConstruct {
+interface ValidationError {
   /**
-   * Method that gets called when a construct should synthesize itself to an assembly
+   * The construct which emitted the error.
    */
-  onSynthesize(session: constructs.ISynthesisSession): void;
-
+  readonly source: IConstruct;
   /**
-   * Method that gets called to validate a construct
+   * The error message.
    */
-  onValidate(): string[];
-
-  /**
-   * Method that gets called to prepare a construct
-   */
-  onPrepare(): void;
+  readonly message: string;
 }
-
-/**
- * The constructs Node type, but with some aspects-related fields public.
- *
- * Hackery!
- */
-type NodeWithAspectPrivatesHangingOut = Omit<constructs.Node, 'invokedAspects' | '_aspects'> & {
-  readonly invokedAspects: constructs.IAspect[];
-  readonly _aspects: constructs.IAspect[];
-};

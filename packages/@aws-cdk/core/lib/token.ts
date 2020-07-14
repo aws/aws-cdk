@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
