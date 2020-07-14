@@ -147,6 +147,13 @@ export = nodeunit.testCase({
 
     test.done();
   },
+
+  'add two durations'(test: nodeunit.Test) {
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds(), Duration.seconds(90).toSeconds());
+    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }), Duration.seconds(90).toMinutes({ integral: false }));
+
+    test.done();
+  },
 });
 
 function floatEqual(test: nodeunit.Test, actual: number, expected: number) {
