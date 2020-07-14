@@ -19,11 +19,6 @@ async function main() {
       desc: 'Specify a different tsc executable',
       defaultDescription: 'tsc provided by node dependencies',
     })
-    .option('tslint', {
-      type: 'string',
-      desc: 'Specify a different tslint executable',
-      defaultDescription: 'tslint provided by node dependencies',
-    })
     .option('eslint', {
       type: 'string',
       desc: 'Specify a different eslint executable',
@@ -46,7 +41,7 @@ async function main() {
     await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint };
+  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(timers, overrides);
   await lintCurrentPackage(options, overrides);
 

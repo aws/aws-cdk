@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.

@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { canonicalizeTemplate, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
 export = testCase({

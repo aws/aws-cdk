@@ -52,6 +52,15 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
+Use the `buildArgs` prop to pass build arguments when building the bundling image:
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  buildArgs: {
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
+  },
+});
+```
+
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps` and `cacheDir`.
 

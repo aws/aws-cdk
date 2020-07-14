@@ -1,6 +1,6 @@
+import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
