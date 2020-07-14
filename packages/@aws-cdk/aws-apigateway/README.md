@@ -998,10 +998,10 @@ By default, SpecRestApi will create an endpoint with a edge optimized endpoint c
 It is possible to modify this by providing the endpointConfiguration as shown here:
 
 ```ts
-const api = new SpecRestApi(this, 'ExampleRestApi', {
-  apiDefinition: ApiDefinition.fromInline(replacedSwagger),
+const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
+  apiDefinition: apigateway.ApiDefinition.fromInline(replacedSwagger),
   endpointConfiguration: {
-    types: [EndpointType.PRIVATE],
+    types: [apigateway.EndpointType.PRIVATE],
   },
 });
 ```
