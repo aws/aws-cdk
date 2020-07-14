@@ -25,18 +25,6 @@ beforeEach(() => {
 });
 
 describe('grant Permissions', () => {
-  test('grant should not throw error', () => {
-    // WHEN
-    const grantResources = [
-      { custom: 'success' },
-    ];
-    const when = () => {
-      api.grant(role, grantResources, 'appsync:GraphQL');
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
 
   test('grant provides custom permissions when called with `custom` argument', () => {
     // WHEN
@@ -203,16 +191,6 @@ describe('grant Permissions', () => {
 
 describe('grantMutation Permissions', () => {
 
-  test('grantMutation should not throw error', () => {
-    // WHEN
-    const when = () => {
-      api.grantMutation(role);
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
-
   test('grantMutation provides Mutation/* permissions when called with no `fields` argument', () => {
     // WHEN
     api.grantMutation(role);
@@ -273,16 +251,6 @@ describe('grantMutation Permissions', () => {
 });
 
 describe('grantQuery Permissions', () => {
-
-  test('grantQuery should not throw error', () => {
-    // WHEN
-    const when = () => {
-      api.grantQuery(role);
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
 
   test('grantQuery provides Query/* permissions when called without the `fields` argument', () => {
     // WHEN
@@ -345,16 +313,6 @@ describe('grantQuery Permissions', () => {
 
 describe('grantSubscription Permissions', () => {
 
-  test('grantSubscription should not throw error', () => {
-    // WHEN
-    const when = () => {
-      api.grantSubscription(role);
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
-
   test('grantSubscription provides Subscription/* permissions when called without `fields` argument', () => {
     // WHEN
     api.grantSubscription(role);
@@ -414,16 +372,6 @@ describe('grantSubscription Permissions', () => {
 });
 
 describe('grantType Permissions', () => {
-
-  test('grantType should not throw error', () => {
-    // WHEN
-    const when = () => {
-      api.grantType(role, 'custom');
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
 
   test('grantType provides [type param]/* permissions when called without `fields` argument', () => {
     // WHEN
@@ -485,15 +433,6 @@ describe('grantType Permissions', () => {
 });
 
 describe('grantFullAccess Permissions', () => {
-  test('grantFullAccess should not throw error', () => {
-    // WHEN
-    const when = () => {
-      api.grantFullAccess(role);
-    };
-
-    // THEN
-    expect(when).not.toThrow();
-  });
 
   test('grantFullAccess provides /* permissions', () => {
     // WHEN
