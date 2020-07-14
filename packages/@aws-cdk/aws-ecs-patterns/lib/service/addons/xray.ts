@@ -10,7 +10,7 @@ export class XRayAddon extends ServiceAddon {
   }
 
   // @ts-ignore - Ignore unused params that are required for abstract class extend
-  public prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
   }
 

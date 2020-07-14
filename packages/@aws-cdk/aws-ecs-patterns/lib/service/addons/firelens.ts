@@ -42,7 +42,7 @@ export class FireLensAddon extends ServiceAddon {
     super('firelens');
   }
 
-  public prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
 
     // Create a log group for the service, into which FireLens

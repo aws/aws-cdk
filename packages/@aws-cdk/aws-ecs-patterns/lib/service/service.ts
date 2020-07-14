@@ -1,35 +1,72 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { ServiceAddon } from './addons/addon-interfaces';
+import { ServiceAddon, TaskDefinitionBuild } from './addons/addon-interfaces';
 
-type AddFunc = (addon: ServiceAddon) => Service;
-
-interface ServiceInterface {
-  add: AddFunc;
-}
-
+/**
+ * The settings for an ECS Service
+ */
 export interface ServiceProps {
-  readonly vpc: ec2.Vpc,
-  readonly cluster: ecs.Cluster
-}
+  /**
+   * The VPC used by the service for networking
+   */
+  readonly vpc: ec2.IVpc,
 
-export class Service extends cdk.Construct implements ServiceInterface {
+  /**
+   * The ECS cluster which provides compute capacity to this service
+   */
+  readonly cluster: ecs.ICluster
+}
+/**
+ * A service builder class. This construct support various addons
+ * which can construct an ECS service progressively.
+ */
+export class Service extends cdk.Construct {
+  /**
+   * The underlying ECS service that was created
+   */
   public service!: ecs.Ec2Service;
-  public prepared: boolean;
-  public readonly scope: cdk.Stack;
+
+  /**
+   * The name of this service
+   */
   public readonly id: string;
-  public readonly vpc: ec2.Vpc;
-  public readonly cluster: ecs.Cluster;
+
+  /**
+   * The VPC into which this service should be placed
+   */
+  public readonly vpc: ec2.IVpc;
+
+  /**
+   * The cluster that is providing capacity for this service
+   */
+  public readonly cluster: ecs.ICluster;
+
+  /**
+   * The generated task definition for this service, is only
+   * generated once .prepare() has been executed
+   */
   protected taskDefinition!: ecs.Ec2TaskDefinition;
 
+  /**
+   * The list of addons that have been registered to run when
+   * preparing this service.
+   */
   private addons: Record<string, ServiceAddon>;
+
+  // Whether or not this service has been prepared. This is used
+  // for dependency resolution. Sometimes the preparation of one service
+  // requires preparing other services recursively. In the case of
+  // a circular dependency this flag prevents infinite recursion.
+  private _prepared: boolean;
 
   // A list of downstream services, allows addons to
   // establish connections to other services
   private downstreamServices: Service[];
 
-  constructor(scope: cdk.Stack, id: string, props: ServiceProps) {
+  private readonly scope: cdk.Construct;
+
+  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     this.scope = scope;
@@ -38,11 +75,19 @@ export class Service extends cdk.Construct implements ServiceInterface {
     this.cluster = props.cluster;
     this.addons = {};
     this.downstreamServices = [];
-    this.prepared = false;
+    this._prepared = false;
   }
 
-  // Add an addon to the service
+  /**
+   * Adds a new addon to the service. The addon mutates the results service
+   * to add resources or features to the service
+   * @param addon - The addon that you wish to add
+   */
   public add(addon: ServiceAddon) {
+    if (this._prepared) {
+      throw new Error('This service has already been prepared, new addons can not be added now');
+    }
+
     if (this.addons[addon.name]) {
       throw new Error(`The addon ${addon.name} has already been added`);
     }
@@ -56,30 +101,43 @@ export class Service extends cdk.Construct implements ServiceInterface {
     return this;
   }
 
-  // Tell addons from one service to connect to addons from
-  // another sevice if they have implemented a hook for that.
+  /**
+   * Tell addons from one service to connect to addons from
+   * another sevice if they have implemented a hook for that.
+   * @param service
+   */
   public connectTo(service: Service) {
     this.downstreamServices.push(service);
   }
 
-  // Get the addon of a specific key if it exists
-  public getAddon(type: string) {
-    const addon = this.addons[type];
+  /**
+   * Get the addon with a specific name. This is generally used for
+   * addons to discover each other's existence.
+   * @param name
+   */
+  public getAddon(name: string) {
+    const addon = this.addons[name];
 
     if (!addon) {
-      throw new Error(`The addon ${type} does not exist on service ${this.id}`);
+      throw new Error(`The addon ${name} does not exist on service ${this.id}`);
     }
 
     return addon;
   }
 
-  // Run all the addon hooks to prepare the final service
+  /**
+   * Build the service, running all addon hooks to generate the
+   * settings and resources required for the service to operate
+   */
   public prepare() {
-    if (this.prepared) {
+    if (this._prepared) {
       return; // Already prepared
     }
 
-    let taskDefProps = {} as ecs.Ec2TaskDefinitionProps;
+    let taskDefProps = {
+      cpu: '256',
+      memory: '512',
+    } as TaskDefinitionBuild;
 
     // At the point of preparation all addons have been defined on the service
     // so give each addon a chance to now add hooks to other addons if
@@ -139,7 +197,7 @@ export class Service extends cdk.Construct implements ServiceInterface {
       }
     }
 
-    this.prepared = true;
+    this._prepared = true;
 
     // Last but not least give each addon a chance to
     // establish a connection to each downstream service.
@@ -150,5 +208,12 @@ export class Service extends cdk.Construct implements ServiceInterface {
         }
       }
     });
+  }
+
+  /**
+   * Getter for checking to see whether this service has already been prepared
+   */
+  public get prepared() {
+    return this._prepared;
   }
 }

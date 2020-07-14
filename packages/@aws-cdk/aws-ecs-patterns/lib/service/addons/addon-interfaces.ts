@@ -1,5 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 
 /**
@@ -10,22 +10,26 @@ import { Service } from '../service';
 export interface TaskDefinitionBuild {
   /**
    * How much CPU the task needs to run
+   * @default - 256 CPU
    */
   readonly cpu?: string;
 
   /**
    * How much memeory the task needs to run
+   * @default - 512 MB of memory
    */
   readonly memoryMiB?: string;
 
   /**
    * The proxy configuration, used for routing task network
    * traffic through a sidecar container that asks as a proxy
+   * @default - No proxy configured
    */
   readonly proxyConfiguration?: ecs.ProxyConfiguration;
 
   /**
    * The network mode used for the task
+   * @default - AWS VPC networking mode
    */
   readonly networkMode?: ecs.NetworkMode;
 }
@@ -38,7 +42,7 @@ export interface ServiceBuild {
   /**
    * The cluster in which to add the service
    */
-  readonly cluster: ecs.Cluster,
+  readonly cluster: ecs.ICluster,
 
   /**
    * The task definition registered to this service
@@ -47,12 +51,16 @@ export interface ServiceBuild {
 
   /**
    * Configuration for how to register the service in service discovery
+   * @default - No Cloud Map configured
    */
   readonly cloudMapOptions?: ecs.CloudMapOptions
 }
 
-// The shape of a service addon. Implemented addons extend this abstract
-// class to implement their own logic in each hook.
+/**
+ * The shape of a service addon. This abstract class is implemented
+ * by other addons which extend the hooks to implement their own
+ * logic that they want to run during each step of preparing the service
+ */
 export abstract class ServiceAddon {
   /**
    * The name of the addon
@@ -68,7 +76,7 @@ export abstract class ServiceAddon {
   public container?: ecs.ContainerDefinition;
 
   protected parentService!: Service;
-  protected scope!: Stack;
+  protected scope!: cdk.Construct;
 
   // A list of other addons which want to mutate the
   // container definition for this addon.
@@ -117,7 +125,7 @@ export abstract class ServiceAddon {
    * @param parent - The parent service which this addon has been added to
    * @param scope - The scope that this addon should create resources in
    */
-  public prehook(parent: Service, scope: Stack) {
+  public prehook(parent: Service, scope: cdk.Construct) {
     this.parentService = parent;
     this.scope = scope;
   }
@@ -128,8 +136,9 @@ export abstract class ServiceAddon {
    * change the task definition's role to add permissions, etc
    * @param taskDefinition - The created task definition to add containers to
    */
-  // @ts-ignore - Ignore the empty block, reimplemented by classes that extend
-  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) { } // tslint:disable-line
+  public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {
+    taskDefinition = taskDefinition;
+  }
 
   /**
    * Once all containers are added to the task definition this hook is
@@ -137,8 +146,9 @@ export abstract class ServiceAddon {
    * graph so that its container starts in the right order based on the
    * other addons that were enabled
    */
-  // @ts-ignore - Ignore the empty block, reimplemented by classes that extend
-  public bakeContainerDependencies() { } // tslint:disable-line
+  public bakeContainerDependencies() {
+    return;
+  }
 
   /**
    * Prior to launching the task definition as a service this hook
@@ -158,8 +168,9 @@ export abstract class ServiceAddon {
    * create any final resources which might depend on the service itself
    * @param service - The generated service
    */
-  // @ts-ignore - Ignore the empty block, reimplemented by classes that extend
-  public useService(service: ecs.Ec2Service) { } // tslint:disable-line
+  public useService(service: ecs.Ec2Service) {
+    service = service;
+  }
 
   /**
    * This hook allows the addon to establish a connection to
@@ -168,11 +179,16 @@ export abstract class ServiceAddon {
    * proxy for another service.
    * @param service - The other service to connect to
    */
-  // @ts-ignore - Ignore the empty block, reimplemented by classes that extend
-  public connectToService(service: Service) { } // tslint:disable-line
+  public connectToService(service: Service) {
+    service = service;
+  }
 }
 
-export class ContainerMutatingHook {
+/**
+ * This is an abstract class wrapper for a mutating hook. It is
+ * extended by any addon which wants to mutate other addon's containers.
+ */
+export abstract class ContainerMutatingHook {
   /**
    * This is a hook for modifying the container definition of any upstream
    * containers. This is primarily used for the application addon.

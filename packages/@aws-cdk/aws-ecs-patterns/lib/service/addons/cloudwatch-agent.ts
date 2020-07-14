@@ -22,7 +22,7 @@ export class CloudwatchAgentAddon extends ServiceAddon {
     super('cloudwatchAgent');
   }
 
-  public prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
     this.scope = scope;
   }

@@ -13,7 +13,7 @@ export class HttpLoadBalancerAddon extends ServiceAddon {
   }
 
   // Before the service is created go ahead and create the load balancer itself.
-  public prehook(service: Service, scope: cdk.Stack) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
 
     this.loadBalancer = new alb.ApplicationLoadBalancer(scope, `${this.parentService.id}-load-balancer`, {
