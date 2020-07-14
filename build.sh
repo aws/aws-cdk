@@ -60,6 +60,9 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
 
-/bin/bash scripts/check-api-compatibility.sh
+echo "***************************************************************************************************"
+echo " API compatibility check is disabled since this is a major version branch"
+echo "***************************************************************************************************"
+#/bin/bash scripts/check-api-compatibility.sh
 
 touch $BUILD_INDICATOR
