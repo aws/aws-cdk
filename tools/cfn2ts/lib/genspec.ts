@@ -52,7 +52,7 @@ export class CodeName {
     readonly specName?: SpecName,
     readonly methodName?: string) {
   }
-  // tslint:enable:no-shadowed-variable
+  /* eslint-enable no-shadow */
 
   /**
    * Alias for className

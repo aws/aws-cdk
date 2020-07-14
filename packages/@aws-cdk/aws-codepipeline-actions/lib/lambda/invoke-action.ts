@@ -39,8 +39,6 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    */
   readonly userParameters?: { [key: string]: any };
 
-  // tslint:enable:max-line-length
-
   /**
    * The lambda function to invoke.
    */
