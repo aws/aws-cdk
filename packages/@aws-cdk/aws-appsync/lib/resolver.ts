@@ -1,4 +1,5 @@
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { GraphQLApi } from './graphqlapi';

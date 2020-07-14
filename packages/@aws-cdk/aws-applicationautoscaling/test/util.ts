@@ -1,9 +1,9 @@
 import * as scalingcommon from '@aws-cdk/aws-autoscaling-common';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as fc from 'fast-check';
 import * as appscaling from '../lib';
 
-export function createScalableTarget(scope: cdk.Construct) {
+export function createScalableTarget(scope: Construct) {
   return new appscaling.ScalableTarget(scope, 'Target', {
     serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
     scalableDimension: 'test:TestCount',

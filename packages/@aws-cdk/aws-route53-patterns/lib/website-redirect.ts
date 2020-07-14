@@ -3,7 +3,8 @@ import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProt
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
-import { Construct, RemovalPolicy } from '@aws-cdk/core';
+import { RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 
 /**

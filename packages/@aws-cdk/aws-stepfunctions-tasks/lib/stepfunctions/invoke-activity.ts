@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for invoking an Activity worker
@@ -23,7 +23,7 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   // No IAM permissions necessary, execution role implicitly has Activity permissions.
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
+  constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);
 
     this.taskMetrics = {

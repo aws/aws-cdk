@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
 /**

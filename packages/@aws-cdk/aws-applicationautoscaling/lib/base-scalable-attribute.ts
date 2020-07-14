@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
@@ -43,10 +43,10 @@ export interface BaseScalableAttributeProps extends EnableScalingProps {
  * - Don't expose all scaling methods (for example Dynamo tables don't support
  *   Step Scaling, so the Dynamo subclass won't expose this method).
  */
-export abstract class BaseScalableAttribute extends cdk.Construct {
+export abstract class BaseScalableAttribute extends Construct {
   private target: ScalableTarget;
 
-  public constructor(scope: cdk.Construct, id: string, protected readonly props: BaseScalableAttributeProps) {
+  public constructor(scope: Construct, id: string, protected readonly props: BaseScalableAttributeProps) {
     super(scope, id);
 
     this.target = new ScalableTarget(this, 'Target', {

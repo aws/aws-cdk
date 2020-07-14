@@ -1,6 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { JobDefinitionContainer } from './job-definition';
 
 /**
@@ -57,13 +57,13 @@ export class JobDefinitionImageConfig {
    */
   public readonly imageName: string;
 
-  constructor(scope: cdk.Construct, container: JobDefinitionContainer) {
+  constructor(scope: Construct, container: JobDefinitionContainer) {
     const config = this.bindImageConfig(scope, container);
 
     this.imageName = config.imageName;
   }
 
-  private bindImageConfig(scope: cdk.Construct, container: JobDefinitionContainer): ecs.ContainerImageConfig {
+  private bindImageConfig(scope: Construct, container: JobDefinitionContainer): ecs.ContainerImageConfig {
     return container.image.bind(scope, new ecs.ContainerDefinition(scope, 'Resource-Batch-Job-Container-Definition', {
       command: container.command,
       cpu: container.vcpus,

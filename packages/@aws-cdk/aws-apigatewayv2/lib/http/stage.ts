@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { CommonStageOptions, IDomainName, IStage } from '../common';
 import { IHttpApi } from './api';

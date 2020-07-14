@@ -1,6 +1,7 @@
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as efs from '@aws-cdk/aws-efs';
-import { App, Construct, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as backup from '../lib';
 
 class TestStack extends Stack {

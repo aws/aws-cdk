@@ -1,5 +1,6 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as acm from '../lib';
 
 class AcmStack extends Stack {

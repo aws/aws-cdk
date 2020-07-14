@@ -1,5 +1,6 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Token } from '@aws-cdk/core';
+import { Logging, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
@@ -37,7 +38,7 @@ export class RepositoryImage extends ContainerImage {
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Logging.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {

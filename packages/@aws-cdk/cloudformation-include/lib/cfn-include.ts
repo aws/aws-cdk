@@ -1,5 +1,6 @@
 import * as core from '@aws-cdk/core';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
+import { Construct } from 'constructs';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 
@@ -28,7 +29,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
-  constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
+  constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
 
     // read the template into a JS object
@@ -52,7 +53,7 @@ export class CfnInclude extends core.CfnElement {
       this.getOrCreateResource(logicalId);
     }
 
-    const outputScope = new core.Construct(this, '$Ouputs');
+    const outputScope = new Construct(this, '$Ouputs');
 
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
@@ -177,7 +178,7 @@ export class CfnInclude extends core.CfnElement {
     this.parameters[logicalId] = cfnParameter;
   }
 
-  private createOutput(logicalId: string, scope: core.Construct): void {
+  private createOutput(logicalId: string, scope: Construct): void {
     const self = this;
     const outputAttributes = new cfn_parse.CfnParser({
       finder: {

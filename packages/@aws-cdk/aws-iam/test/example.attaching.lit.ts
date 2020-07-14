@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Group, Policy, User } from '../lib';
 
-export class ExampleConstruct extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string) {
+export class ExampleConstruct extends Construct {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     /// !show

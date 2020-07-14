@@ -1,6 +1,7 @@
 /// !cdk-integ *
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Fn, Stack } from '@aws-cdk/core';
+import { App, Fn, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn from '../lib';
 
 // references between siblings

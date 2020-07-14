@@ -5,7 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Size } from '@aws-cdk/core';
+import { Duration, Size } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker

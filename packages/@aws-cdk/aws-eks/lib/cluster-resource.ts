@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnComponents, Construct, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, CustomResource, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnClusterProps } from './eks.generated';

@@ -1,4 +1,5 @@
-import { AssetStaging, Construct } from '@aws-cdk/core';
+import { AssetStaging } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 import { FingerprintOptions } from './fs/options';
 

@@ -1,4 +1,5 @@
-import { Construct, CustomResource, Stack } from '@aws-cdk/core';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 
 /**

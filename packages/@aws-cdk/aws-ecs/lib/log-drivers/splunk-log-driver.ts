@@ -1,4 +1,5 @@
-import { Construct, SecretValue } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';

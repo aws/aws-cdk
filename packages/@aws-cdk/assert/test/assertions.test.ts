@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as cx from '@aws-cdk/cx-api';
 
+import { Construct } from 'constructs';
 import { countResources, countResourcesLike, exist, expect as cdkExpect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <synthStack> at <some path> to have <some type>', () => {
@@ -332,7 +333,7 @@ interface TestResourceProps extends cdk.CfnResourceProps {
 }
 
 class TestResource extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+  constructor(scope: Construct, id: string, props: TestResourceProps) {
     super(scope, id, props);
   }
 }
@@ -342,7 +343,7 @@ interface TestParameterProps extends cdk.CfnParameterProps {
 }
 
 class TestParameter extends cdk.CfnParameter {
-  constructor(scope: cdk.Construct, id: string, props: TestParameterProps) {
+  constructor(scope: Construct, id: string, props: TestParameterProps) {
     super(scope, id, props);
   }
 }

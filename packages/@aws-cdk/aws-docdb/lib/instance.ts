@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
@@ -66,7 +66,7 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
   /**
    * Import an existing database instance.
    */
-  public static fromDatabaseInstanceAttributes(scope: cdk.Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly instanceIdentifier = attrs.instanceIdentifier;
@@ -197,7 +197,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
    */
   public readonly instanceEndpoint: Endpoint;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
 
     const instance = new CfnDBInstance(this, 'Resource', {

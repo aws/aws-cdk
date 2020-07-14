@@ -2,6 +2,7 @@ import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -124,9 +125,7 @@ export = {
     });
 
     // THEN
-    const errors = cdk.ConstructNode.validate(stack.node);
-    test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificates)']);
-
+    test.throws(() => app.synth(), /HTTPS Listener needs at least one certificate/);
     test.done();
   },
 
@@ -426,7 +425,7 @@ export = {
     });
 
     // THEN
-    const validationErrors: string[] = (group as any).validate();
+    const validationErrors: string[] = group.node.validate();
     test.deepEqual(validationErrors, ["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
 
     test.done();
@@ -1357,7 +1356,7 @@ export = {
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+  constructor(scope: Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }

@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, NestedStack, NestedStackProps, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, NestedStack, NestedStackProps, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as path from 'path';
 import * as ecr_assets from '../lib';
 

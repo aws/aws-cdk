@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -66,7 +67,7 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends cdk.Construct {
+export class StepScalingAction extends Construct {
   /**
    * ARN of the scaling policy
    */
@@ -74,7 +75,7 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace

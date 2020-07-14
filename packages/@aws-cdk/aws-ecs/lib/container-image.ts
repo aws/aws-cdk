@@ -1,5 +1,5 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 
@@ -40,7 +40,7 @@ export abstract class ContainerImage {
    */
   public static fromDockerImageAsset(asset: DockerImageAsset): ContainerImage {
     return {
-      bind(_scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+      bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
         return {
           imageName: asset.imageUri,
@@ -52,7 +52,7 @@ export abstract class ContainerImage {
   /**
    * Called when the image is used by a ContainerDefinition
    */
-  public abstract bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+  public abstract bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
 }
 
 /**

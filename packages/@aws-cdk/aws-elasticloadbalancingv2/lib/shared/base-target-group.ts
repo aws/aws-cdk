@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -144,7 +145,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
+export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -193,7 +194,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
    */
-  protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
+  protected readonly loadBalancerAttachedDependencies = new DependencyGroup();
 
   /**
    * The types of the directly registered members of this target group
@@ -222,7 +223,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   private readonly resource: CfnTargetGroup;
 
-  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+  constructor(scope: Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
@@ -271,7 +272,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  public get loadBalancerAttached(): cdk.IDependable {
+  public get loadBalancerAttached(): IDependable {
     return this.loadBalancerAttachedDependencies;
   }
 
@@ -313,7 +314,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     const ret = super.validate();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      this.node.addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+      cdk.Logging.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
@@ -357,7 +358,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends cdk.IConstruct {
+export interface ITargetGroup extends IConstruct {
   /**
    * ARN of the target group
    */
@@ -371,7 +372,7 @@ export interface ITargetGroup extends cdk.IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  readonly loadBalancerAttached: cdk.IDependable;
+  readonly loadBalancerAttached: IDependable;
 }
 
 /**

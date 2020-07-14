@@ -1,7 +1,7 @@
 import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { DatabaseCluster, DatabaseInstance } from '../lib';
 
 const CLUSTER_INSTANCE_TYPE = ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE);
@@ -142,7 +142,7 @@ class TestStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
   public readonly cluster: DatabaseCluster;
 
-  constructor(scope?: cdk.Construct, id?: string, props: cdk.StackProps = {}) {
+  constructor(scope?: Construct, id?: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
     this.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

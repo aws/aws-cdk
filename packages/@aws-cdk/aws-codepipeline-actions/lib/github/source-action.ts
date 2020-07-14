@@ -1,5 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Construct, SecretValue } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

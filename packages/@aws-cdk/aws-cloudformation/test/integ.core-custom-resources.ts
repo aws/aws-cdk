@@ -7,7 +7,8 @@
  *   - GetAtt.Attribute1: "foo"
  *   - GetAtt.Attribute2: 1234
  */
-import { App, CfnOutput, Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
+import { App, CfnOutput, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

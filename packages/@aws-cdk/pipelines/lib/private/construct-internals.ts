@@ -1,8 +1,9 @@
 /**
  * Get access to construct internals that we need but got removed from the Stages PR.
  */
-import { App, IConstruct, Stage } from '@aws-cdk/core';
+import { App, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct } from 'constructs';
 import * as path from 'path';
 
 export function appOf(construct: IConstruct): App {

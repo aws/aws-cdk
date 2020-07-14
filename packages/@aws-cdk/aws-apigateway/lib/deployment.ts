@@ -1,4 +1,5 @@
-import { CfnResource, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as crypto from 'crypto';
 import { CfnDeployment } from './apigateway.generated';
 import { IRestApi, RestApi, SpecRestApi } from './restapi';
