@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, Dependable, IDependable } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -124,12 +125,31 @@ export class Policy extends Resource implements IPolicy {
         Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
-    const resource = new CfnPolicy(this, 'Resource', {
+    // this function returns `true` if the CFN resource should be included in
+    // the cloudformation template unless `force` is `true`, if the policy
+    // document is empty, the resource will not be included.
+    const shouldExist = () => this.force || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
+
+    class CfnPolicyConditional extends CfnPolicy implements IDependable {
+      protected toCloudFormation(): object {
+        return shouldExist() ? super.toCloudFormation() : {};
+      }
+    }
+
+    const resource = new CfnPolicyConditional(this, 'Resource', {
       policyDocument: this.document,
       policyName: this.physicalName,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+    });
+
+    // implement custom Dependable logic which returns an empty array if the
+    // policy document is empty (and force is `false`).
+    Dependable.implement(this, {
+      get dependencyRoots() {
+        return shouldExist() ? [resource] : [];
+      },
     });
 
     this._policyName = this.physicalName!;
@@ -222,14 +242,6 @@ export class Policy extends Resource implements IPolicy {
     }
 
     return result;
-  }
-
-  protected prepare() {
-    // Remove the resource if it shouldn't exist. This will prevent it from being rendered to the template.
-    const shouldExist = this.force || this.referenceTaken || (!this.document.isEmpty && this.isAttached);
-    if (!shouldExist) {
-      this.node.tryRemoveChild('Resource');
-    }
   }
 
   /**

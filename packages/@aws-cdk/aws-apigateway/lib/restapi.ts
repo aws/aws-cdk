@@ -1,6 +1,7 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { Construct, DependencyGroup } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -543,8 +544,16 @@ export class RestApi extends RestApiBase {
    */
   public readonly methods = new Array<Method>();
 
+  /**
+   * A dependency group that represents all methods attached to this API GW (lazy).
+   * @internal
+   */
+  public readonly _methodsDependencyGroup: DependencyGroup;
+
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
+
+    this._methodsDependencyGroup = new DependencyGroup();
 
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
@@ -622,6 +631,10 @@ export class RestApi extends RestApiBase {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+
+    // we want to take a direct dependency on the CfnMethod resource because
+    // Method itself has other children and depending on them will cause cyclic deps.
+    this._methodsDependencyGroup.add(method.node.findChild('Resource'));
   }
 
   /**

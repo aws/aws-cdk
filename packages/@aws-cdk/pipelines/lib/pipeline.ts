@@ -104,6 +104,7 @@ export class CdkPipeline extends Construct {
     });
 
     this.node.addValidation({ validate: () => this.validatePipeline() });
+    Aspects.of(this).apply({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -178,14 +179,6 @@ export class CdkPipeline extends Construct {
     ret.push(...this.validateRequestedOutputs());
 
     return ret;
-  }
-
-  protected onPrepare() {
-    super.onPrepare();
-
-    // TODO: Support this in a proper way in the upstream library. For now, we
-    // "un-add" the Assets stage if it turns out to be empty.
-    this._assets.removeAssetsStageIfEmpty();
   }
 
   /**
