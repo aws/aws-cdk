@@ -32,7 +32,7 @@ nodeunitShim({
         'MyFleetInstanceSecurityGroup774E8234': {
           'Type': 'AWS::EC2::SecurityGroup',
           'Properties': {
-            'GroupDescription': 'MyFleet/InstanceSecurityGroup',
+            'GroupDescription': 'TestStack/MyFleet/InstanceSecurityGroup',
             'SecurityGroupEgress': [
               {
                 'CidrIp': '0.0.0.0/0',
@@ -43,7 +43,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -68,7 +68,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
           },
@@ -122,7 +122,7 @@ nodeunitShim({
               {
                 'Key': 'Name',
                 'PropagateAtLaunch': true,
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -521,7 +521,7 @@ nodeunitShim({
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'MyFleet',
+          Value: 'TestStack/MyFleet',
         },
         {
           Key: 'notsuper',

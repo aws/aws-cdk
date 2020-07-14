@@ -18,7 +18,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EC2'],
       }));
@@ -194,7 +194,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
@@ -287,7 +287,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
             Command: [
@@ -428,7 +428,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
@@ -557,7 +557,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
             Essential: true,
@@ -624,7 +624,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [{
           MountPoints: [
             {
@@ -675,7 +675,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [{
           Name: 'dependency1',
         },
@@ -858,7 +858,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [{
           MountPoints: [
             {
@@ -966,7 +966,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         Volumes: [{
           Name: 'scratch',
           DockerVolumeConfiguration: {

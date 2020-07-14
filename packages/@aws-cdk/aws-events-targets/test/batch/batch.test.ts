@@ -48,7 +48,7 @@ test('use aws batch job as an eventrule target', () => {
         },
         BatchParameters: {
           JobDefinition: { Ref: 'MyJob8719E923' },
-          JobName: 'Rule',
+          JobName: 'StackRuleF6E31DD0',
         },
       },
     ],

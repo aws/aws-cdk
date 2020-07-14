@@ -78,7 +78,7 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'SecurityGroup1',
+      GroupDescription: 'Stack/SecurityGroup1',
       SecurityGroupIngress: [
         {
           Description: 'from 0.0.0.0/0:88',
@@ -91,7 +91,7 @@ nodeunitShim({
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: 'SecurityGroup2',
+      GroupDescription: 'Stack/SecurityGroup2',
       SecurityGroupIngress: [
         {
           Description: 'from 0.0.0.0/0:88',

@@ -127,7 +127,7 @@ export = {
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 50,
       startingPosition: lambda.StartingPosition.LATEST,
-    })), /DynamoDB Streams must be enabled on the table T/);
+    })), /DynamoDB Streams must be enabled on the table Stack\/T/);
 
     test.done();
   },

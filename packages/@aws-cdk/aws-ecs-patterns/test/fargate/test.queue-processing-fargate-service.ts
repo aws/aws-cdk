@@ -96,7 +96,7 @@ export = {
           Image: 'test',
         },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+      Family: 'StackServiceQueueProcessingTaskDef0CCF68C6',
     }));
 
     test.done();
@@ -193,7 +193,7 @@ export = {
           Image: 'test',
         },
       ],
-      Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+      Family: 'StackServiceQueueProcessingTaskDef0CCF68C6',
     }));
 
     test.done();

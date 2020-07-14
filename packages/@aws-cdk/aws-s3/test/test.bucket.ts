@@ -610,13 +610,20 @@ export = {
       test.done();
     },
 
-    'import can also be used to import arbitrary ARNs'(test: Test) {
+    'import does not create any resources'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
       bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // at this point we technically didn't create any resources in the consuming stack.
       expect(stack).toMatch({});
+      test.done();
+    },
+
+    'import can also be used to import arbitrary ARNs'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
@@ -867,7 +874,7 @@ export = {
           'MyBucketKeyC17130CF': {
             'Type': 'AWS::KMS::Key',
             'Properties': {
-              'Description': 'Created by MyBucket',
+              'Description': 'Created by Stack/MyBucket',
               'KeyPolicy': {
                 'Statement': [
                   {

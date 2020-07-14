@@ -209,9 +209,9 @@ export = {
       const nested2 = new NestedStack(nested1, 'Nested2');
 
       // THEN
-      test.throws(() => nested1.addDependency(root), /Nested stack 'Nested1' cannot depend on a parent stack ''/);
-      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack 'Nested1'/);
-      test.throws(() => nested2.addDependency(root), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack ''/);
+      test.throws(() => nested1.addDependency(root), /Nested stack 'Stack\/Nested1' cannot depend on a parent stack 'Stack'/);
+      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Stack\/Nested1\/Nested2' cannot depend on a parent stack 'Stack\/Nested1'/);
+      test.throws(() => nested2.addDependency(root), /Nested stack 'Stack\/Nested1\/Nested2' cannot depend on a parent stack 'Stack'/);
       test.done();
     },
 
