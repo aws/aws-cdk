@@ -63,26 +63,29 @@ Foo
 Bar
 Baz
 
-$ # List all stack including all details (add --json to output JSON instead of YAML)
+$ # List all stacks including more details (add --json to output JSON instead of YAML)
 $ cdk list --app='node bin/main.js' --long
--
-    name: Foo
-    environment:
-        name: 000000000000/bermuda-triangle-1
-        account: '000000000000'
-        region: bermuda-triangle-1
--
-    name: Bar
-    environment:
-        name: 111111111111/bermuda-triangle-2
-        account: '111111111111'
-        region: bermuda-triangle-2
--
-    name: Baz
-    environment:
-        name: 333333333333/bermuda-triangle-3
-        account: '333333333333'
-        region: bermuda-triangle-3
+- id: Foo
+  name: Foo
+  resources: 7
+  environment:
+    name: 000000000000/bermuda-triangle-1
+    account: '000000000000'
+    region: bermuda-triangle-1
+- id: Bar
+  name: Foo
+  resources: 11
+  environment:
+    name: 111111111111/bermuda-triangle-2
+    account: '111111111111'
+    region: bermuda-triangle-2
+- id: Baz
+  name: Baz
+  resources: 19
+  environment:
+    name: 333333333333/bermuda-triangle-3
+    account: '333333333333'
+    region: bermuda-triangle-3
 ```
 
 #### `cdk synthesize`
