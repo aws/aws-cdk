@@ -362,6 +362,32 @@ integTest('cdk diff', async () => {
     .rejects.toThrow('exited with error');
 });
 
+integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', async () => {
+  // GIVEN
+  const diff1 = await cdk(['diff', fullStackName('test-1')]);
+  expect(diff1).toContain('AWS::SNS::Topic');
+
+  await cdkDeploy('test-2');
+  const diff2 = await cdk(['diff', fullStackName('test-2')]);
+  expect(diff2).toContain('There were no differences');
+
+  // WHEN / THEN
+  await expect(cdk(['diff', '--fail', fullStackName('test-1'), fullStackName('test-2')])).rejects.toThrow('exited with error');
+});
+
+integTest('cdk diff --fail with multiple stack exits with if any of the stacks contains a diff', async () => {
+  // GIVEN
+  await cdkDeploy('test-1');
+  const diff1 = await cdk(['diff', fullStackName('test-1')]);
+  expect(diff1).toContain('There were no differences');
+
+  const diff2 = await cdk(['diff', fullStackName('test-2')]);
+  expect(diff2).toContain('AWS::SNS::Topic');
+
+  // WHEN / THEN
+  await expect(cdk(['diff', '--fail', fullStackName('test-1'), fullStackName('test-2')])).rejects.toThrow('exited with error');
+});
+
 integTest('deploy stack with docker asset', async () => {
   await cdkDeploy('docker');
 });

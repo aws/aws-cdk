@@ -101,7 +101,7 @@ export class CdkToolkit {
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        diffs += printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
