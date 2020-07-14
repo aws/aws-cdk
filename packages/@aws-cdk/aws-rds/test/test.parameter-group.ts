@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ParameterGroup } from '../lib';
+import { DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   "does not create a parameter group if it wasn't bound to a cluster or instance"(test: Test) {
@@ -10,7 +10,7 @@ export = {
 
     // WHEN
     new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
@@ -30,7 +30,7 @@ export = {
 
     // WHEN
     const parameterGroup = new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
@@ -41,7 +41,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
@@ -56,7 +56,7 @@ export = {
 
     // WHEN
     const parameterGroup = new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
@@ -67,7 +67,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
@@ -82,7 +82,7 @@ export = {
 
     // WHEN
     const parameterGroup = new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
@@ -104,7 +104,7 @@ export = {
 
     // WHEN
     const clusterParameterGroup = new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key1: 'value1',
@@ -117,7 +117,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key1: 'value1',
         key2: 'value2',

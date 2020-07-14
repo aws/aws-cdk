@@ -1,4 +1,5 @@
 import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
@@ -64,9 +65,9 @@ export interface IParameterGroup extends IResource {
  */
 export interface ParameterGroupProps {
   /**
-   * Database family of this parameter group
+   * The database engine for this parameter group.
    */
-  readonly family: string;
+  readonly engine: IEngine;
 
   /**
    * Description for this parameter group
@@ -122,15 +123,15 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
-    this.family = props.family;
+    this.family = props.engine.parameterGroupFamily;
     this.description = props.description;
     this.parameters = props.parameters ?? {};
   }
 
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
     if (!this.clusterCfnGroup) {
-      const parentScope = this.instanceCfnGroup ?? this;
-      this.clusterCfnGroup = new CfnDBClusterParameterGroup(parentScope, 'Resource', {
+      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
+      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
         parameters: Lazy.anyValue({ produce: () => this.parameters }),
@@ -143,8 +144,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
     if (!this.instanceCfnGroup) {
-      const parentScope = this.clusterCfnGroup ?? this;
-      this.instanceCfnGroup = new CfnDBParameterGroup(parentScope, 'Resource', {
+      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
+      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
         parameters: Lazy.anyValue({ produce: () => this.parameters }),

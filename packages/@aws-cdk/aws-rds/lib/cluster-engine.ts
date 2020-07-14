@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
+import { IEngine } from './engine';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { calculateParameterGroupFamily, ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 
@@ -53,25 +54,7 @@ export interface ClusterEngineConfig {
 /**
  * The interface representing a database cluster (as opposed to instance) engine.
  */
-export interface IClusterEngine {
-  /** The type of the engine, for example "aurora-mysql". */
-  readonly engineType: string;
-
-  /**
-   * The exact version of a given engine.
-   *
-   * @default - default version for the given engine type
-   */
-  readonly engineVersion?: string;
-
-  /**
-   * The family to use for ParameterGroups using this engine.
-   * This is usually equal to "<engineType><engineMajorVersion>",
-   * but can sometimes be a variation of that.
-   * You can pass this property when creating new ParameterGroup.
-   */
-  readonly parameterGroupFamily: string;
-
+export interface IClusterEngine extends IEngine {
   /** The application used by this engine to perform rotation for a single-user scenario. */
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -136,7 +119,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
-        family: this.parameterGroupFamily,
+        engine: this,
       })
       : config.parameterGroup);
     if (options.s3ImportRole) {

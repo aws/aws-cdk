@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
+import { IEngine } from './engine';
 import { calculateParameterGroupFamily, ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 
 /**
@@ -26,26 +27,7 @@ export interface InstanceEngineConfig {
 /**
  * Interface representing a database instance (as opposed to cluster) engine.
  */
-export interface IInstanceEngine {
-  /** The type of the engine, for example "mysql". */
-  readonly engineType: string;
-
-  /**
-   * The exact version of the engine that is used,
-   * for example "5.1.42".
-   *
-   * @default - use the default version for this engine type
-   */
-  readonly engineVersion?: string;
-
-  /**
-   * The family to use for ParameterGroups using this engine.
-   * This is usually equal to "<engineType><engineMajorVersion>",
-   * but can sometimes be a variation of that.
-   * You can pass this property when creating new ParameterGroup.
-   */
-  readonly parameterGroupFamily: string;
-
+export interface IInstanceEngine extends IEngine {
   /** The application used by this engine to perform rotation for a single-user scenario. */
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
 

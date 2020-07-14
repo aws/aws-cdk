@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
 const params = new ParameterGroup(stack, 'Params', {
-  family: 'aurora5.6',
+  engine: DatabaseClusterEngine.AURORA,
   description: 'A nice parameter group',
   parameters: {
     character_set_database: 'utf8mb4',

@@ -121,7 +121,7 @@ export = {
 
     // WHEN
     const group = new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'bye',
       parameters: {
         param: 'value',
@@ -263,7 +263,7 @@ export = {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -889,7 +889,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      family: 'family',
+      engine: DatabaseClusterEngine.AURORA,
       parameters: {
         key: 'value',
       },
@@ -935,7 +935,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'family',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
         aurora_load_from_s3_role: {
