@@ -129,11 +129,18 @@ const app = new App();
 // we need to actually pass in a specific region.
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
 
-if (Token.isUnresolved(stack.region)) {
+// no need for the validation below if we
+// are not going to deploy (i.e in unit tests and when updating snapshots)
+function isDeploying() {
+  // meh :\
+  return process.env.CDK_DEFAULT_ACCOUNT === '12345678';
+}
+
+if (isDeploying() && Token.isUnresolved(stack.region)) {
   throw new Error(`region (${stack.region}) cannot be a token and must be configured to one of: ${supportedRegions}`);
 }
 
-if (!supportedRegions.includes(stack.region)) {
+if (isDeploying() && !supportedRegions.includes(stack.region)) {
   throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
 }
 
