@@ -78,11 +78,13 @@ export = nodeunit.testCase({
   },
 
   'toISOString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toISOString(), 'PT0S');
     test.equal(Duration.seconds(0).toISOString(), 'PT0S');
     test.equal(Duration.minutes(0).toISOString(), 'PT0S');
     test.equal(Duration.hours(0).toISOString(), 'PT0S');
     test.equal(Duration.days(0).toISOString(), 'PT0S');
 
+    test.equal(Duration.millis(5).toISOString(), 'PT0.005S');
     test.equal(Duration.seconds(5).toISOString(), 'PT5S');
     test.equal(Duration.minutes(5).toISOString(), 'PT5M');
     test.equal(Duration.hours(5).toISOString(), 'PT5H');
@@ -94,11 +96,13 @@ export = nodeunit.testCase({
   },
 
   'toIsoString'(test: nodeunit.Test) {
+    test.equal(Duration.millis(0).toIsoString(), 'PT0S');
     test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
     test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
     test.equal(Duration.hours(0).toIsoString(), 'PT0S');
     test.equal(Duration.days(0).toIsoString(), 'PT0S');
 
+    test.equal(Duration.millis(5).toIsoString(), 'PT0.005S');
     test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
     test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
     test.equal(Duration.hours(5).toIsoString(), 'PT5H');
