@@ -170,7 +170,6 @@ export = testCase({
     fn.logGroup;
     fn.logGroup;
     fn.logGroup;
-    // tslint:enable:no-unused-expression
 
     test.done();
   },
