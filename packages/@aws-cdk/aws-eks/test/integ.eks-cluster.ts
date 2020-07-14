@@ -133,7 +133,7 @@ const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
 // are not going to deploy (i.e in unit tests and when updating snapshots)
 function isDeploying() {
   // meh :\
-  return process.env.CDK_DEFAULT_ACCOUNT === '12345678';
+  return process.env.CDK_INTEG_ACCOUNT !== '12345678';
 }
 
 if (isDeploying() && Token.isUnresolved(stack.region)) {
