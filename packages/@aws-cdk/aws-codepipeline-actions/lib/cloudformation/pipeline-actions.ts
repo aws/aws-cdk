@@ -234,7 +234,6 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    */
   readonly extraInputs?: codepipeline.Artifact[];
 }
-// tslint:enable:max-line-length
 
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
