@@ -129,19 +129,20 @@ const app = new App();
 // we need to actually pass in a specific region.
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
 
-// no need for the validation below if we
-// are not going to deploy (i.e in unit tests and when updating snapshots)
-function isDeploying() {
-  // meh :\
-  return process.env.CDK_INTEG_ACCOUNT !== '12345678';
+if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
+
+  // only validate if we are about to actually deploy.
+  // TODO: better way to determine this, right now the 'CDK_INTEG_ACCOUNT' seems like the only way.
+
+  if (Token.isUnresolved(stack.region)) {
+    throw new Error(`region (${stack.region}) cannot be a token and must be configured to one of: ${supportedRegions}`);
+  }
+
+  if (!supportedRegions.includes(stack.region)) {
+    throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
+  }
+
 }
 
-if (isDeploying() && Token.isUnresolved(stack.region)) {
-  throw new Error(`region (${stack.region}) cannot be a token and must be configured to one of: ${supportedRegions}`);
-}
-
-if (isDeploying() && !supportedRegions.includes(stack.region)) {
-  throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
-}
 
 app.synth();
