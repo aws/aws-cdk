@@ -192,7 +192,6 @@ async function main() {
       '*.js.map',
       '*.d.ts',
       'tsconfig.json',
-      'tslint.json',
       'node_modules',
       '*.generated.ts',
       'dist',
