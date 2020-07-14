@@ -17,3 +17,5 @@ nyc.config.js
 *.snk
 !test/test.lambda.handler.js
 !.eslintrc.js
+
+junit.xml

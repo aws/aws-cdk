@@ -336,7 +336,6 @@ integTest('deploy with role', async () => {
 
   async function deleteRole() {
     try {
-      // tslint:disable-next-line: forin
       for (const policyName of (await iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
         await iam('deleteRolePolicy', {
           RoleName: roleName,

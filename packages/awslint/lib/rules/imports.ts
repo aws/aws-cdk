@@ -23,7 +23,7 @@ class ImportsReflection {
     this.fromAttributesMethod = classType.allMethods.find(x => x.name === this.fromAttributesMethodName);
 
     this.fromMethods = classType.allMethods.filter(x =>
-        x.static
+      x.static
         && x.name.match(`^${this.prefix}[A-Z]`)
         && x.name !== this.fromAttributesMethodName);
 
@@ -45,7 +45,7 @@ importsLinter.add({
   eval: e => {
     const hasImport = e.ctx.resource.construct.classType.allMethods.find(x => x.static && x.name === 'import');
     e.assert(!hasImport, e.ctx.resource.fqn + '.import');
-  }
+  },
 });
 
 importsLinter.add({
@@ -58,7 +58,7 @@ importsLinter.add({
     }
 
     e.assert(e.ctx.fromMethods.length > 0 || e.ctx.fromAttributesMethod, e.ctx.resource.fqn);
-  }
+  },
 });
 
 importsLinter.add({
@@ -74,12 +74,12 @@ importsLinter.add({
         parameters: [
           { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
           { name: 'id', type: 'string' },
-          { name: argName, type: 'string' }
+          { name: argName, type: 'string' },
         ],
-        returns: e.ctx.resource.construct.interfaceType
+        returns: e.ctx.resource.construct.interfaceType,
       });
     }
-  }
+  },
 });
 
 importsLinter.add({
@@ -94,10 +94,10 @@ importsLinter.add({
       parameters: [
         { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
         { name: 'id', type: 'string' },
-        { name: 'attrs', type: e.ctx.attributesStruct }
-      ]
+        { name: 'attrs', type: e.ctx.attributesStruct },
+      ],
     });
-  }
+  },
 });
 
 importsLinter.add({
@@ -109,5 +109,5 @@ importsLinter.add({
     }
 
     e.assert(e.ctx.attributesStruct, e.ctx.attributesStructName);
-  }
+  },
 });

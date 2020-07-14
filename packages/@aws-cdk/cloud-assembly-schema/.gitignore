@@ -6,7 +6,6 @@ scripts/*.js
 node_modules
 dist
 tsconfig.json
-tslint.json
 .jsii
 
 .LAST_BUILD
@@ -17,3 +16,5 @@ coverage
 nyc.config.js
 !.eslintrc.js
 !jest.config.js
+
+junit.xml
