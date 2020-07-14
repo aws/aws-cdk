@@ -82,158 +82,6 @@ describe('CDK Include', () => {
     );
   });
 
-  test('asset parameters generated in parent and child are identical', () => {
-    new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-onechild.json'),
-      nestedStacks: {
-        'ChildStack': {
-          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
-        },
-      },
-    });
-
-    const parentStack = loadTestFileToJsObject('parent-onechild.json');
-
-    const assetParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
-    const assetParamKey = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
-    expect(stack).toMatchTemplate({
-      "Parameters": {
-        ...parentStack.Parameters,
-        [assetParam]: {
-          "Type": "String",
-          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
-        },
-        [assetParamKey]: {
-          "Type": "String",
-          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
-        },
-        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
-          "Type": "String",
-          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\""
-        },
-      },
-      "Resources": {
-        ...parentStack.Resources,
-        "ChildStack": {
-          "Type": "AWS::CloudFormation::Stack",
-          "Properties": {
-            "TemplateURL": {
-              "Fn::Join": [ "", [
-                "https://s3.",
-                  { "Ref": "AWS::Region" },
-                  ".",
-                  { "Ref": "AWS::URLSuffix" },
-                  "/",
-                  { "Ref": assetParam },
-                  "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                        "||",
-                        { "Ref": assetParamKey }
-                    ]}
-                  ]},
-                  {
-                    "Fn::Select": [
-                      1,
-                      { "Fn::Split": [
-                          "||",
-                          { "Ref": assetParamKey, }
-                      ]}
-                    ]
-                  }
-                ]
-              ]
-            },
-            "Parameters": {
-              "MyBucketParameter": "some-magic-bucket-name"
-            }
-          }
-        },
-      }
-    });
-  });
-
-
-  test('asset parameters generated in parent, child and grandchild are identical', () => {
-    const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-onechild.json'),
-      nestedStacks: {
-        'ChildStack': {
-          templateFile: testTemplateFilePath('child-no-bucket.json'),
-          nestedStacks: {
-            'GrandChildStack': {
-              templateFile: testTemplateFilePath('grandchild-import-stack.json')
-            }
-          }
-        },
-      },
-    });
-
-    const childTemplate = parentTemplate.getNestedStack('ChildStack');
-    const grandChildTemplate = childTemplate.includedTemplate.getNestedStack('GrandChildStack');
-
-    const assetParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
-    const assetParamKey = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
-
-    expect(childTemplate.stack).toMatchTemplate({
-      "Parameters": {
-        "MyBucketParameter": {
-          "Type": "String",
-          "Default": "default-bucket-param-name"
-        },
-        [assetParam]: {
-          "Type": "String"
-        },
-        [assetParamKey]: {
-          "Type": "String"
-        },
-      },
-      "Resources": {
-        "GrandChildStack": {
-          "Type": "AWS::CloudFormation::Stack",
-          "Properties": {
-            "TemplateURL": {
-              "Fn::Join": [ "", [
-                "https://s3.",
-                  { "Ref": "AWS::Region" },
-                  ".",
-                  { "Ref": "AWS::URLSuffix" },
-                  "/",
-                  { "Ref": assetParam },
-                  "/",
-                  { "Fn::Select": [
-                    0,
-                    { "Fn::Split": [
-                        "||",
-                        { "Ref": assetParamKey }
-                    ]}
-                  ]},
-                  {
-                    "Fn::Select": [
-                      1,
-                      { "Fn::Split": [
-                          "||",
-                          { "Ref": assetParamKey, }
-                      ]}
-                    ]
-                  }
-                ]
-              ],
-            },
-            "Parameters": {
-              "MyBucketParameter": "some-other-bucket-name"
-            }
-          },
-        }
-      },
-    });
-
-    expect(grandChildTemplate.stack).toMatchTemplate(
-      loadTestFileToJsObject('grandchild-import-stack.json')
-    );
-  });
-
   test('throws an error when provided a nested stack that is not present in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
@@ -287,6 +135,71 @@ describe('CDK Include', () => {
     bucket.bucketName = 'modified-bucket-name';
 
     expect(grandChild.stack).toHaveResource('AWS::S3::Bucket', { BucketName: 'modified-bucket-name' });
+  });
+
+  test('asset parameters generated in parent and child are identical', () => {
+    new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-onechild.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('grandchild-import-stack.json'),
+        },
+      },
+    });
+
+    const assetParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
+    const assetParamKey = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        [assetParam]: {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+        [assetParamKey]: {
+          "Type": "String",
+          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+      },
+      "Resources": {
+        "ChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [ "", [
+                "https://s3.",
+                { "Ref": "AWS::Region" },
+                ".",
+                { "Ref": "AWS::URLSuffix" },
+                "/",
+                { "Ref": assetParam },
+                "/",
+                { "Fn::Select": [
+                  0,
+                  { "Fn::Split": [
+                    "||",
+                    { "Ref": assetParamKey },
+                  ]},
+                ]},
+                { "Fn::Select": [
+                  1,
+                  { "Fn::Split": [
+                    "||",
+                    { "Ref": assetParamKey },
+                  ]},
+                ]},
+              ]],
+            },
+            "Parameters": {
+              "MyBucketParameter": "some-magic-bucket-name",
+            },
+          },
+        },
+      },
+    });
   });
 
   test('templates with nested stacks that do not exist in the nested stacks property have those stacks ignored', () => {
@@ -427,6 +340,181 @@ describe('CDK Include', () => {
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('only-nested-stack.expected.json'),
+    );
+  });
+});
+
+describe('asset parameters are correctly passed from parent to grandchild', () => {
+  let stack: core.Stack;
+  let parentTemplate: inc.CfnInclude;
+  let child: inc.IncludedNestedStack;
+  let grandChild: inc.IncludedNestedStack;
+
+  let parentBucketParam: string;
+  let parentKeyParam: string;
+  let parentBucketRef: string;
+  let parentKeyRef: string;
+
+  let childBucketParam: string;
+  let childKeyParam: string;
+
+  beforeAll(() => {
+    stack = new core.Stack();
+    parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
+      templateFile: testTemplateFilePath('parent-onechild.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-no-bucket.json'),
+          nestedStacks: {
+            'GrandChildStack': {
+              templateFile: testTemplateFilePath('grandchild-import-stack.json'),
+            },
+          },
+        },
+      },
+    });
+
+    child = parentTemplate.getNestedStack('ChildStack');
+    grandChild = child.includedTemplate.getNestedStack('GrandChildStack');
+
+    parentBucketParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
+    parentKeyParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
+    parentBucketRef = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
+    parentKeyRef =  'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
+
+    childBucketParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3Bucket23278F13';
+    childKeyParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3VersionKey7316205A';
+  });
+
+  test('correctly creates parameters in the parent stack, and passes them to the child stack', () => {
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        [parentBucketParam]: {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+        [parentKeyParam]: {
+          "Type": "String",
+          "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+        "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+        },
+        [childBucketParam] : {
+          "Type": "String",
+          "Description": "S3 bucket for asset \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+        },
+        [childKeyParam]: {
+          "Type": "String",
+          "Description": "S3 key for asset version \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+        },
+        "AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5ArtifactHashA1DE5198": {
+          "Type": "String",
+          "Description": "Artifact hash for asset \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+        },
+      },
+      "Resources": {
+        "ChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [ "", [
+                "https://s3.",
+                { "Ref": "AWS::Region" },
+                ".",
+                { "Ref": "AWS::URLSuffix" },
+                "/",
+                { "Ref": childBucketParam },
+                "/",
+                { "Fn::Select": [
+                  0,
+                  { "Fn::Split": [
+                    "||",
+                    { "Ref": childKeyParam },
+                  ]},
+                ]},
+                { "Fn::Select": [
+                  1,
+                  { "Fn::Split": [
+                    "||",
+                    { "Ref": childKeyParam },
+                  ]},
+                ]},
+              ]],
+            },
+            "Parameters": {
+              "MyBucketParameter": "some-magic-bucket-name",
+              [parentBucketRef]: {
+                "Ref": parentBucketParam,
+              },
+              [parentKeyRef]: {
+                "Ref": parentKeyParam,
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('correctly creates parameters in the child stack, and passes them to the grandchild stack', () => {
+    expect(child.stack).toMatchTemplate({
+      "Parameters": {
+        "MyBucketParameter": {
+          "Type": "String",
+          "Default": "default-bucket-param-name",
+        },
+        [parentBucketRef]: {
+          "Type": "String",
+        },
+        [parentKeyRef]: {
+          "Type": "String",
+        },
+      },
+      "Resources": {
+        "GrandChildStack": {
+          "Type": "AWS::CloudFormation::Stack",
+          "Properties": {
+            "TemplateURL": {
+              "Fn::Join": [ "", [
+                "https://s3.",
+                { "Ref": "AWS::Region" },
+                ".",
+                { "Ref": "AWS::URLSuffix" },
+                "/",
+                { "Ref": parentBucketRef },
+                "/",
+                { "Fn::Select": [
+                  0,
+                  { "Fn::Split": [
+                    "||",
+                    { "Ref": parentKeyRef },
+                  ]},
+                ]},
+                {
+                  "Fn::Select": [
+                    1,
+                    { "Fn::Split": [
+                      "||",
+                      { "Ref": parentKeyRef },
+                    ]},
+                  ],
+                },
+              ]],
+            },
+            "Parameters": {
+              "MyBucketParameter": "some-other-bucket-name",
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('leaves grandchild stack unmodified', () => {
+    expect(grandChild.stack).toMatchTemplate(
+      loadTestFileToJsObject('grandchild-import-stack.json'),
     );
   });
 });
