@@ -587,47 +587,6 @@ export class GraphQLApi extends Construct {
     });
   }
 
-  private formatOpenIdConnectConfig(
-    config: OpenIdConnectConfig,
-  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
-    return {
-      authTtl: config.tokenExpiryFromAuth,
-      clientId: config.clientId,
-      iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
-    };
-  }
-
-  private formatUserPoolConfig(
-    config: UserPoolConfig,
-  ): CfnGraphQLApi.UserPoolConfigProperty {
-    return {
-      userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.stack.region,
-      appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || 'ALLOW',
-    };
-  }
-
-  private createAPIKey(config: ApiKeyConfig) {
-    let expires: number | undefined;
-    if (config.expires) {
-      expires = new Date(config.expires).valueOf();
-      const days = (d: number) =>
-        Date.now() + Duration.days(d).toMilliseconds();
-      if (expires < days(1) || expires > days(365)) {
-        throw Error('API key expiration must be between 1 and 365 days.');
-      }
-      expires = Math.round(expires / 1000);
-    }
-    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
-      expires,
-      description: config.description || 'Default API Key created by CDK',
-      apiId: this.apiId,
-    });
-    return key.attrApiKey;
-  }
-
   private validateAuthorizationProps(props: GraphQLApiProps) {
     const defaultAuthorizationType =
       props.authorizationConfig?.defaultAuthorization?.authorizationType ||
@@ -689,6 +648,47 @@ export class GraphQLApi extends Construct {
         },
       );
     }
+  }
+
+  private formatOpenIdConnectConfig(
+    config: OpenIdConnectConfig,
+  ): CfnGraphQLApi.OpenIDConnectConfigProperty {
+    return {
+      authTtl: config.tokenExpiryFromAuth,
+      clientId: config.clientId,
+      iatTtl: config.tokenExpiryFromIssue,
+      issuer: config.oidcProvider,
+    };
+  }
+
+  private formatUserPoolConfig(
+    config: UserPoolConfig,
+  ): CfnGraphQLApi.UserPoolConfigProperty {
+    return {
+      userPoolId: config.userPool.userPoolId,
+      awsRegion: config.userPool.stack.region,
+      appIdClientRegex: config.appIdClientRegex,
+      defaultAction: config.defaultAction || 'ALLOW',
+    };
+  }
+
+  private createAPIKey(config: ApiKeyConfig) {
+    let expires: number | undefined;
+    if (config.expires) {
+      expires = new Date(config.expires).valueOf();
+      const days = (d: number) =>
+        Date.now() + Duration.days(d).toMilliseconds();
+      if (expires < days(1) || expires > days(365)) {
+        throw Error('API key expiration must be between 1 and 365 days.');
+      }
+      expires = Math.round(expires / 1000);
+    }
+    const key = new CfnApiKey(this, `${config.name || 'DefaultAPIKey'}ApiKey`, {
+      expires,
+      description: config.description || 'Default API Key created by CDK',
+      apiId: this.apiId,
+    });
+    return key.attrApiKey;
   }
 
   private formatAdditionalAuthorizationModes(
