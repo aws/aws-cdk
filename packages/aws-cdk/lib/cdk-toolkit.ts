@@ -271,6 +271,7 @@ export class CdkToolkit {
         long.push({
           id: stack.id,
           name: stack.stackName,
+          resources: Object.keys(stack.template.Resources).length,
           environment: stack.environment,
         });
       }
