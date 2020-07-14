@@ -1,7 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { PackageJsonManager } from './package-json-manager';
 import { findUp } from './util';
 
@@ -71,6 +71,13 @@ export interface ParcelBaseOptions {
    * @default - 2.0.0-beta.1
    */
   readonly parcelVersion?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
 }
 
 /**
@@ -105,6 +112,7 @@ export class Bundling {
     // Bundling image derived from runtime bundling image (lambci)
     const image = cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../parcel'), {
       buildArgs: {
+        ...options.buildArgs ?? {},
         IMAGE: options.runtime.bundlingDockerImage.image,
         PARCEL_VERSION: options.parcelVersion ?? '2.0.0-beta.1',
       },
