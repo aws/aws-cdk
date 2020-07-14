@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
-import { ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
+import { calculateParameterGroupFamily, ParameterGroupFamilyMapping } from './private/parameter-group-family-mapping';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -38,6 +38,14 @@ export interface IInstanceEngine {
    */
   readonly engineVersion?: string;
 
+  /**
+   * The family to use for ParameterGroups using this engine.
+   * This is usually equal to "<engineType><engineMajorVersion>",
+   * but can sometimes be a variation of that.
+   * You can pass this property when creating new ParameterGroup.
+   */
+  readonly parameterGroupFamily: string;
+
   /** The application used by this engine to perform rotation for a single-user scenario. */
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -61,6 +69,7 @@ interface InstanceEngineBaseProps {
 abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly engineType: string;
   public readonly engineVersion?: string;
+  public readonly parameterGroupFamily: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -69,6 +78,11 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.engineVersion = props.version;
+    const parameterGroupFamily = calculateParameterGroupFamily(props.parameterGroupFamilies, props.version);
+    if (parameterGroupFamily === undefined) {
+      throw new Error(`No parameter group family found for database engine ${this.engineType} with version ${this.engineVersion}.`);
+    }
+    this.parameterGroupFamily = parameterGroupFamily;
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
@@ -231,6 +245,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngine {
     super({
       engineType: 'oracle-se2',
       parameterGroupFamilies: [
+        { engineMajorVersion: '11.2', parameterGroupFamily: 'oracle-se2-11.2' },
         { engineMajorVersion: '12.1', parameterGroupFamily: 'oracle-se2-12.1' },
         { engineMajorVersion: '12.2', parameterGroupFamily: 'oracle-se2-12.2' },
         { engineMajorVersion: '18',   parameterGroupFamily: 'oracle-se2-18'   },
