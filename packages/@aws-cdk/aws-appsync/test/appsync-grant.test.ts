@@ -28,10 +28,7 @@ describe('grant Permissions', () => {
 
   test('grant provides custom permissions when called with `custom` argument', () => {
     // WHEN
-    const grantResources = [
-      { custom: 'types/Mutation/fields/addTest' },
-    ];
-    api.grant(role, grantResources, 'appsync:GraphQL');
+    api.grant(role, appsync.IamResource.custom('types/Mutation/fields/addTest'), 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -60,10 +57,7 @@ describe('grant Permissions', () => {
 
   test('grant provides [type parameter]/* permissions when called with `type` argument', () => {
     // WHEN
-    const grantResources = [
-      { type: 'Mutation' },
-    ];
-    api.grant(role, grantResources, 'appsync:GraphQL');
+    api.grant(role, appsync.IamResource.ofType('Mutation'), 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -92,12 +86,7 @@ describe('grant Permissions', () => {
 
   test('grant provides fields/[field param] permissions when called with `type` and `field` argument', () => {
     // WHEN
-    const grantResources = [
-      { type: 'Mutation',
-        field: 'addTest',
-      },
-    ];
-    api.grant(role, grantResources, 'appsync:GraphQL');
+    api.grant(role, appsync.IamResource.ofType('Mutation', ['addTest']), 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -126,42 +115,7 @@ describe('grant Permissions', () => {
 
   test('grant provides /* permissions when called with no arguments', () => {
     // WHEN
-    const grantResources = [
-      { },
-    ];
-    api.grant(role, grantResources, 'appsync:GraphQL');
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'appsync:GraphQL',
-            Resource: {
-              'Fn::Join': [ '', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
-                '/*',
-              ]],
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('grant provides /* permissions when called with `field` but without `type` arguments', () => {
-    // WHEN
-    const grantResources = [
-      { field: 'garbage' },
-    ];
-    api.grant(role, grantResources, 'appsync:GraphQL');
+    api.grant(role, [ appsync.IamResource.all() ], 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -375,7 +329,7 @@ describe('grantType Permissions', () => {
 
   test('grantType provides [type param]/* permissions when called without `fields` argument', () => {
     // WHEN
-    api.grantType(role, 'customType');
+    api.grantType(role, appsync.IamResource.ofType('customType'));
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -404,7 +358,7 @@ describe('grantType Permissions', () => {
 
   test('grantType provides fields/[field param] permissions when called with `field` argument', () => {
     // WHEN
-    api.grantType(role, 'customType', ['attribute']);
+    api.grantType(role, appsync.IamResource.ofType('customType', ['attribute']));
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

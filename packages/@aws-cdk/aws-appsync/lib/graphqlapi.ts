@@ -1,20 +1,10 @@
 import { readFileSync } from 'fs';
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import {
-  Grant,
-  IGrantable,
-  ManagedPolicy,
-  Role,
-  ServicePrincipal,
-} from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Construct, Duration, IResolvable, Stack } from '@aws-cdk/core';
-import {
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
-} from './appsync.generated';
+import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 
 /**
@@ -102,38 +92,6 @@ export interface UserPoolConfig {
    * @default ALLOW
    */
   readonly defaultAction?: UserPoolDefaultAction;
-}
-
-/**
- * Resources to provision to IAM Role
- *
- * @see grant
- */
-export interface IamResources {
-  /**
-   * Type to make custom resource ARN following the API ID
-   * (i.e.) custom: 'enum/test/*'
-   *
-   * Will OVERWRITE other types.
-   *
-   * @see README.md for usage
-   * @default - no custom provisioning
-   */
-  readonly custom?: string;
-
-  /**
-   * Type to give permissions with attached IAM Role
-   *
-   * @default - allow access to all types  (i.e. '*')
-   */
-  readonly type?: string;
-
-  /**
-   * Field to give permissions with attached IAM Role
-   *
-   * @default - allow access to all fields (i.e. '*')
-   */
-  readonly field?: string;
 }
 
 /**
@@ -281,6 +239,61 @@ export interface GraphQLApiProps {
    */
   readonly schemaDefinitionFile?: string;
 
+}
+
+/**
+ * A IamResource Class for IAM Permissions
+ */
+export class IamResource {
+  /**
+   * Generate the resourceNames given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   */
+  public static custom(...arns: string[]): IamResource[] {
+    return arns.map((arn) => new IamResource(arn));
+  }
+
+  /**
+   * Generate the resourceNames given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty then ARN set to `type/*`
+   */
+  public static ofType(type: string, fields?: string[]): IamResource[] {
+    return fields ? fields.map((field) => new IamResource(this.parseArgs(type, field))) : [ new IamResource(this.parseArgs(type)) ];
+  }
+
+  /**
+   * Generate the resourceNames that accepts all, `*`
+   */
+  public static all(): IamResource {
+    return new IamResource('*');
+  }
+
+  private static parseArgs (type: string, field?: string): string{
+    return field ? `types/${type}/fields/${field}` : `types/${type}/*`;
+  }
+
+  private arn: string;
+
+  private constructor(arn: string){
+    this.arn = arn;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public name(api: GraphQLApi): string {
+    return Stack.of(api).formatArn({
+      service: 'appsync',
+      resource: `apis/${api.apiId}`,
+      sep: '/',
+      resourceName: `${this.arn}`,
+    });
+  }
 }
 
 /**
@@ -475,13 +488,11 @@ export class GraphQLApi extends Construct {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: IamResources[], ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResource[], ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: resources.map((resource) => {
-        return this.generateResourceArn(resource);
-      }),
+      resourceArns: resources.map((resource) => resource.name(this)),
       scope: this,
     });
 
@@ -497,9 +508,7 @@ export class GraphQLApi extends Construct {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:GraphQL'],
-      resourceArns: [
-        this.generateResourceArn({custom: '*'}),
-      ],
+      resourceArns: [ IamResource.all().name(this) ],
       scope: this,
     });
   }
@@ -512,7 +521,7 @@ export class GraphQLApi extends Construct {
    * @param fields The fields to grant access to that are Mutations (leave blank for all)
    */
   public grantMutation(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, 'Mutation', fields);
+    return this.grantType(grantee, IamResource.ofType('Mutation', fields));
   }
 
   /**
@@ -523,7 +532,7 @@ export class GraphQLApi extends Construct {
    * @param fields The fields to grant access to that are Queries (leave blank for all)
    */
   public grantQuery(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, 'Query', fields);
+    return this.grantType(grantee, IamResource.ofType('Query', fields));
   }
 
   /**
@@ -534,7 +543,7 @@ export class GraphQLApi extends Construct {
    * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
    */
   public grantSubscription(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, 'Subscription', fields);
+    return this.grantType(grantee, IamResource.ofType('Subscription', fields));
   }
 
   /**
@@ -542,48 +551,14 @@ export class GraphQLApi extends Construct {
    * principal's policy.
    *
    * @param grantee The principal
-   * @param type The type to grant access
-   * @param fields The fields to grant access to that are of @param type (leave blank for all)
+   * @param resources The resources to give permissions
    */
-  public grantType(grantee: IGrantable, type: string, fields?: string[]): Grant {
+  public grantType(grantee: IGrantable, resources: IamResource[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions: ['appsync:GraphQL'],
-      resourceArns: fields ?
-        fields.map((field) => {
-          return this.generateResourceArn({ type: type, field: field });
-        }) :
-        [
-          this.generateResourceArn({ type: type }),
-        ],
+      resourceArns: resources.map((resource) => resource.name(this)),
       scope: this,
-    });
-  }
-
-  /**
-   * Generate a Resource ARN to use for grant functions.
-   *
-   * If custom is specified, then resourceName is custom.
-   * If type is empty, generate full access ('*').
-   * If field is empty, generate full access to specified type.
-   *
-   * @param resource - an singular IAM resource to provision
-   */
-  private generateResourceArn(resource: IamResources): string {
-    const name = resource.custom ? resource.custom :
-      ( resource.type ?
-        ( resource.field ?
-          `types/${resource.type}/fields/${resource.field}`
-          : `types/${resource.type}/*`
-        )
-        : '*'
-      );
-
-    return Stack.of(this).formatArn({
-      service: 'appsync',
-      resource: `apis/${this.apiId}`,
-      sep: '/',
-      resourceName: `${name}`,
     });
   }
 

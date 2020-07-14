@@ -11,6 +11,7 @@ import {
   PrimaryKey,
   UserPoolDefaultAction,
   Values,
+  IamResource,
 } from '../lib';
 
 /*
@@ -87,12 +88,9 @@ testDS.createResolver({
 
 const lambdaIAM = new Role(stack, 'LambdaIAM', {assumedBy: new ServicePrincipal('lambda')});
 
-const grantResources = [
-  {custom: 'types/Query/fields/getTests'},
-];
 
-api.grant(lambdaIAM, grantResources, 'appsync:graphql');
-api.grantType(lambdaIAM, 'test');
+api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
+api.grantType(lambdaIAM, IamResource.ofType('test'));
 api.grantMutation(lambdaIAM, [
   'addTest',
 ]);

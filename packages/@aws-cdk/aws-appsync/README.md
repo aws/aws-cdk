@@ -86,7 +86,7 @@ accessible by `IAM` authorization. For example, if you want to only allow mutabi
 for `IAM` authorized access you would configure the following.
 
 In `schema.graphql`:
-```
+```ts
 type Mutation {
   updateExample(...): ...
     @aws_iam
@@ -94,7 +94,7 @@ type Mutation {
 ```
 
 In `IAM`:
-```
+```json
 {
    "Version": "2012-10-17",
    "Statement": [
@@ -125,11 +125,7 @@ const api = new appsync.GraphQLApi(stack, 'API', {
   definition
 });
 
-const grantResources = [
-  { custom: 'types/Mutation/fields/updateExample' },
-];
-
-api.grant(role, grantResources, 'appsync:graphql')
+api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:graphql')
 ```
 
 ### Generic Permissions
@@ -152,7 +148,7 @@ api.grantMutation(role, [
 ]);
 
 // For custom types and granular design
-api.grantType(role, type: 'Mutation', [
+api.grantType(role, appsync.IamResource.ofType('Mutation', [
   'updateExample',
-]);
+]));
 ```
