@@ -202,7 +202,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Profiling Group.
    * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
    *
-   * @default - No profiling.
+   * @default - A new profiling group will be created if `profiling` is set.
    */
   readonly profilingGroup?: IProfilingGroup;
 
@@ -518,7 +518,8 @@ export class Function extends FunctionBase {
     verifyCodeConfig(code, props.runtime);
 
     let profilingGroupEnvironmentVariables = {};
-    if (props.profilingGroup) {
+    if (props.profilingGroup && props.profiling !== false) {
+      this.validateProfilingEnvironmentVariables(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -529,6 +530,7 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
+      this.validateProfilingEnvironmentVariables(props);
       const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
@@ -848,6 +850,12 @@ export class Function extends FunctionBase {
     return {
       mode: props.tracing,
     };
+  }
+
+  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    }
   }
 }
 
