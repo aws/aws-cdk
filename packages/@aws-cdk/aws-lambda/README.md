@@ -240,6 +240,22 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
+### Lambda with Profiling
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    profiling: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
+to learn more about AWS Lambda's Profiling support.
+
 ### Lambda with Reserved Concurrent Executions
 
 ```ts
