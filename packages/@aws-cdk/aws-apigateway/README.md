@@ -986,10 +986,28 @@ to configure these.
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
-
+ 
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
+
+### Endpoint configuration
+
+By default, SpecRestApi will create an endpoint with a edge optimized endpoint configuration.
+
+It is possible to modify this by providing the endpointConfiguration as shown here:
+
+```ts
+const api = new SpecRestApi(this, 'ExampleRestApi', {
+  apiDefinition: ApiDefinition.fromInline(replacedSwagger),
+  endpointConfiguration: {
+    types: [EndpointType.PRIVATE],
+  },
+});
+```
+
+**Note:** For private endpoints you will still need to provide the `x-amazon-apigateway-policy` in your openApi file.
+
 
 ## APIGateway v2
 
