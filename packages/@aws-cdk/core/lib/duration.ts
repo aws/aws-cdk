@@ -154,6 +154,8 @@ export class Duration {
   public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
     switch (this.unit) {
+      case TimeUnit.Milliseconds:
+        return Duration.seconds(this.amount / 1000.0).toIsoString();
       case TimeUnit.Seconds:
         return `PT${this.fractionDuration('S', 60, Duration.minutes)}`;
       case TimeUnit.Minutes:
