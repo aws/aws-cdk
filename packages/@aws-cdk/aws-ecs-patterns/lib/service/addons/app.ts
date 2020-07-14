@@ -45,13 +45,13 @@ export class Application extends ServiceAddon {
       cpu: Number(this.props.cpu),
       memoryLimitMiB: Number(this.props.memoryMiB),
       environment: this.props.environment,
-    };
+    } as ecs.ContainerDefinitionOptions;
 
     // Let other addons mutate the container definition. This is
     // used by addons which want to add environment variables, modify
     // logging parameters, etc.
-    this.mutateContainerProps.forEach((hook) => {
-      containerProps = hook(containerProps);
+    this.containerMutatingHooks.forEach((hookProvider) => {
+      containerProps = hookProvider.mutateContainerDefinition(containerProps);
     });
 
     this.container = taskDefinition.addContainer('app', containerProps);

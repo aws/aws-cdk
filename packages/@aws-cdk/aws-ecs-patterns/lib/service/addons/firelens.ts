@@ -2,7 +2,38 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
-import { ContainerDefinitionBuild, ServiceAddon } from './addon-interfaces';
+import { ContainerMutatingHook, ServiceAddon } from './addon-interfaces';
+
+export interface FirelensProps {
+  readonly parentService: Service;
+  readonly logGroup: awslogs.LogGroup;
+}
+
+export class FirelensMutatingHook extends ContainerMutatingHook {
+  private parentService: Service;
+  private logGroup: awslogs.LogGroup;
+
+  constructor(props: FirelensProps) {
+    super();
+    this.parentService = props.parentService;
+    this.logGroup = props.logGroup;
+  }
+
+  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions) {
+    return {
+      ...props,
+
+      logging: ecs.LogDrivers.firelens({
+        options: {
+          Name: 'cloudwatch',
+          region: cdk.Stack.of(this.parentService).region,
+          log_group_name: this.logGroup.logGroupName,
+          log_stream_prefix: `${this.parentService.id}/`,
+        },
+      }),
+    } as ecs.ContainerDefinitionOptions;
+  }
+}
 
 export class FireLensAddon extends ServiceAddon {
   private logGroup!: awslogs.LogGroup;
@@ -33,26 +64,10 @@ export class FireLensAddon extends ServiceAddon {
       throw new Error('Firelens addon requires an application addon');
     }
 
-    const self = this;
-
-    if (!appAddon.mutateContainerProps) {
-      throw new Error('Expected application addon to support an array of container mutations');
-    }
-
-    appAddon.mutateContainerProps.push((containerProps: ContainerDefinitionBuild) => {
-      return {
-        ...containerProps,
-
-        logging: ecs.LogDrivers.firelens({
-          options: {
-            Name: 'cloudwatch',
-            region: cdk.Stack.of(self.parentService).region,
-            log_group_name: self.logGroup.logGroupName,
-            log_stream_prefix: `${self.parentService.id}/`,
-          },
-        }),
-      } as ContainerDefinitionBuild;
-    });
+    appAddon.addContainerMutatingHook(new FirelensMutatingHook({
+      parentService: this.parentService,
+      logGroup: this.logGroup,
+    }));
   }
 
   public useTaskDefinition(taskDefinition: ecs.Ec2TaskDefinition) {

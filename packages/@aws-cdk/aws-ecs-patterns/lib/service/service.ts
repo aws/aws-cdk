@@ -79,7 +79,7 @@ export class Service extends cdk.Construct implements ServiceInterface {
       return; // Already prepared
     }
 
-    let taskDefProps = {};
+    let taskDefProps = {} as ecs.Ec2TaskDefinitionProps;
 
     // At the point of preparation all addons have been defined on the service
     // so give each addon a chance to now add hooks to other addons if
