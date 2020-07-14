@@ -101,6 +101,15 @@ export class Duration {
   }
 
   /**
+   * Add two Durations together
+   */
+  public plus(rhs: Duration): Duration {
+    const targetUnit = finestUnit(this.unit, rhs.unit);
+    const total = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(total, targetUnit);
+  }
+
+  /**
    * Return the total number of milliseconds in this Duration
    *
    * @returns the value of this `Duration` expressed in Milliseconds.
@@ -284,4 +293,11 @@ function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integra
     throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }
   return value;
+}
+
+/**
+ * Return the time unit with highest granularity
+ */
+function finestUnit(a: TimeUnit, b: TimeUnit) {
+  return a.inMillis < b.inMillis ? a : b;
 }
