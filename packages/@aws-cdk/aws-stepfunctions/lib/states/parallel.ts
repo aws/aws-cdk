@@ -62,6 +62,8 @@ export class Parallel extends State implements INextable {
     super(scope, id, props);
 
     this.endStates = [this];
+
+    this.node.addValidation({ validate: () => this.validateParallel() });
   }
 
   /**
@@ -123,7 +125,7 @@ export class Parallel extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validate(): string[] {
+  private validateParallel(): string[] {
     if (this.branches.length === 0) {
       return ['Parallel must have at least one branch'];
     }

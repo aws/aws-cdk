@@ -80,13 +80,15 @@ export class VpcLink extends Resource implements IVpcLink {
     if (props.targets) {
       this.addTargets(...props.targets);
     }
+
+    this.node.addValidation({ validate: () => this.validateLink() });
   }
 
   public addTargets(...targets: elbv2.INetworkLoadBalancer[]) {
     this.targets.push(...targets);
   }
 
-  protected validate(): string[] {
+  private validateLink(): string[] {
     if (this.targets.length === 0) {
       return [ 'No targets added to vpc link' ];
     }

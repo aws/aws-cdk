@@ -92,6 +92,8 @@ export class Domain extends Resource {
     this.domainName = domain.attrDomainName;
     this.domainStatus = domain.attrDomainStatus;
     this.statusReason = domain.attrStatusReason;
+
+    this.node.addValidation({ validate: () => this.validateDomain() });
   }
 
   /**
@@ -112,7 +114,10 @@ export class Domain extends Resource {
     return this.mapSubDomain(branch, '');
   }
 
-  protected validate() {
+  /**
+   * IValidation implementation.
+   */
+  private validateDomain() {
     if (this.subDomains.length === 0) {
       return ['The domain doesn\'t contain any subdomains'];
     }

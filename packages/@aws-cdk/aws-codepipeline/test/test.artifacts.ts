@@ -42,12 +42,11 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      test.equal(error, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
       test.done();
     },
@@ -78,19 +77,18 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      test.equal(error, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
       test.done();
     },
 
     'without a name, when used as an output multiple times - should fail validation'(test: Test) {
       const stack = new cdk.Stack();
-      const sourceOutput = new codepipeline.Artifact();
+      const sourceOutput = new codepipeline.Artifact('Artifact_Source_Source');
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
@@ -115,12 +113,11 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      test.equal(error, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
       test.done();
     },
@@ -217,12 +214,11 @@ export = {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = validate(pipeline);
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      test.equal(error, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
       test.done();
     },
@@ -286,7 +282,6 @@ export = {
   },
 };
 
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
+function validate(construct: IConstruct) {
+  return construct.node.validate();
 }

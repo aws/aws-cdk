@@ -254,6 +254,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       resource: 'policy',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => this.validatePolicy() });
   }
 
   /**
@@ -287,7 +289,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     this.groups.push(group);
   }
 
-  protected validate(): string[] {
+  private validatePolicy(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty

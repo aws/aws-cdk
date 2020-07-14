@@ -102,6 +102,8 @@ export class CdkPipeline extends Construct {
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
     });
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -169,7 +171,7 @@ export class CdkPipeline extends Construct {
    * Our own convenience methods will never generate a pipeline that does that (although
    * this is a nice verification), but a user can also add the stacks by hand.
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     const ret = new Array<string>();
 
     ret.push(...this.validateDeployOrder());

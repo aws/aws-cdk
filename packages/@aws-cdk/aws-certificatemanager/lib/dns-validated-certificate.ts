@@ -106,9 +106,10 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     });
 
     this.certificateArn = certificate.getAtt('Arn').toString();
+    this.node.addValidation({ validate: () => this.validateCert() });
   }
 
-  protected validate(): string[] {
+  private validateCert(): string[] {
     const errors: string[] = [];
     // Ensure the zone name is a parent zone of the certificate domain name
     if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&

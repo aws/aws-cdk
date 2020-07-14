@@ -38,7 +38,7 @@ export = {
     'should fail if Stage has no Actions'(test: Test) {
       const stage = stageForTesting();
 
-      test.deepEqual((stage as any).validate().length, 1);
+      test.deepEqual((stage as any).validateStage().length, 1);
 
       test.done();
     },

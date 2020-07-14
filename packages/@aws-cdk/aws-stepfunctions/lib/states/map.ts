@@ -105,6 +105,8 @@ export class Map extends State implements INextable {
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
     this.itemsPath = props.itemsPath;
+
+    this.node.addValidation({ validate: () => this.validateMap() });
   }
 
   /**
@@ -166,7 +168,7 @@ export class Map extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validate(): string[] {
+  private validateMap(): string[] {
     const errors: string[] = [];
 
     if (this.iteration === undefined) {

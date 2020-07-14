@@ -267,6 +267,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
+
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -310,8 +312,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     }
   }
 
-  protected validate(): string[]  {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[]  {
+    const ret = [];
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
       cdk.Logging.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
