@@ -21,7 +21,6 @@ export const docsLinter = new Linter<DocsLinterContext>(assembly => {
     ]),
     ...flatMap(assembly.interfaces, interfaceType => [
       { assembly, kind: 'type', documentable: interfaceType, errorKey: interfaceType.fqn },
-      // tslint:disable-next-line: max-line-length | This is still being checked by tslint
       ...interfaceType.ownProperties.map(property => ({ assembly, kind: 'interface-property', containingType: interfaceType, documentable: property, errorKey: `${interfaceType.fqn}.${property.name}` })),
       ...interfaceType.ownMethods.map(method => ({ assembly, kind: 'method', containingType: interfaceType, documentable: method, errorKey: `${interfaceType.fqn}.${method.name}` })),
     ]),
