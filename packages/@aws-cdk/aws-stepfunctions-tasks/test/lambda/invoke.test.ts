@@ -177,11 +177,34 @@ describe('LambdaInvoke', () => {
     });
   });
 
-  test('Invoke lambda with function ARN', () => {
+  test('Invoke lambda with payloadResponseOnly', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
-      resourceType: LambdaResourceType.ARN,
+      payloadResponseOnly: true,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'Fn9270CBC0',
+          'Arn',
+        ],
+      },
+    });
+  });
+
+  test('Invoke lambda with payloadResponseOnly with payload', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payloadResponseOnly: true,
+      payload: sfn.TaskInput.fromObject({
+        foo: 'bar',
+      }),
     });
 
     // THEN
@@ -195,9 +218,55 @@ describe('LambdaInvoke', () => {
         ],
       },
       Parameters: {
-        'Payload.$': '$',
+        foo: 'bar',
       },
     });
+  });
+
+  test('fails when conflicting settings are used with payloadResponseOnly', () => {
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+      });
+    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        invocationType: LambdaInvocationType.REQUEST_RESPONSE,
+      });
+    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
+      });
+    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
+
+    expect(() => {
+      new LambdaInvoke(stack, 'Task', {
+        lambdaFunction,
+        payloadResponseOnly: true,
+        payload: sfn.TaskInput.fromObject({
+          foo: 'bar',
+        }),
+        qualifier: '1',
+      });
+    }).toThrow(/payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier./);
   });
 
   test('fails when WAIT_FOR_TASK_TOKEN integration pattern is used without supplying a task token in payload', () => {

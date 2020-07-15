@@ -48,13 +48,14 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
   readonly qualifier?: string;
 
   /**
-   * Whether the Step Functions resource is Lambda:invoke or the function ARN.
+   * Invoke the Lambda in a way that only returns the payload response without additional metadata.
    *
-   * ARN is not compatible with the WAIT_FOR_TASK_TOKEN IntegrationPattern.
+   * payloadResponseOnly does not support integrationPattern, invocationType, clientContext, and qualifier.
+   * It always uses the REQUEST_RESPONSE behavior.
    *
-   * @default ResourceType.INVOKE
+   * @default false
    */
-  readonly resourceType?: LambdaResourceType;
+  readonly payloadResponseOnly?: boolean;
 }
 
 /**
@@ -85,6 +86,13 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.');
     }
 
+    if (this.props.payloadResponseOnly &&
+      (this.integrationPattern || this.props.invocationType || this.props.clientContext || this.props.qualifier)) {
+      throw new Error(
+        'payloadResponseOnly property conflicts with integrationPattern, invocationType, clientContext, and qualifier.',
+      );
+    }
+
     this.taskMetrics = {
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
@@ -109,29 +117,25 @@ export class LambdaInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    switch (this.props.resourceType) {
-      case 'Arn':
-        return {
-          Resource: this.props.lambdaFunction.functionArn,
-          Parameters: sfn.FieldUtils.renderObject({
-            Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
-            InvocationType: this.props.invocationType,
-            ClientContext: this.props.clientContext,
-            Qualifier: this.props.qualifier,
-          }),
-        };
-      case 'Invoke':
-      default:
-        return {
-          Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
-          Parameters: sfn.FieldUtils.renderObject({
-            FunctionName: this.props.lambdaFunction.functionArn,
-            Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
-            InvocationType: this.props.invocationType,
-            ClientContext: this.props.clientContext,
-            Qualifier: this.props.qualifier,
-          }),
-        };
+    if (this.props.payloadResponseOnly) {
+      const res: any = {
+        Resource: this.props.lambdaFunction.functionArn,
+      };
+      if (this.props.payload) {
+        res.Parameters = sfn.FieldUtils.renderObject(this.props.payload.value);
+      }
+      return res;
+    } else {
+      return {
+        Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
+        Parameters: sfn.FieldUtils.renderObject({
+          FunctionName: this.props.lambdaFunction.functionArn,
+          Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
+          InvocationType: this.props.invocationType,
+          ClientContext: this.props.clientContext,
+          Qualifier: this.props.qualifier,
+        }),
+      };
     }
   }
 }
@@ -160,24 +164,4 @@ export enum LambdaInvocationType {
    * Validate parameter values and verify that the user or role has permission to invoke the function.
    */
   DRY_RUN = 'DryRun'
-}
-
-/**
- * Resource type of a Lambda
- */
-export enum LambdaResourceType {
-  /**
-   * The Resource parameter will be "arn:aws:states:::lambda:invoke", and the Lambda function ARN will be specified in
-   * the FunctionName parameter.
-   *
-   * The API response includes the function response and additional data.
-   */
-  INVOKE = 'Invoke',
-
-  /**
-   * The Resource parameter will be the Lambda function ARN.
-   *
-   * The API response includes only the function response.
-   */
-  ARN = 'Arn'
 }

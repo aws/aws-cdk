@@ -624,14 +624,14 @@ new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', 
 ```
 
 If you want to combine the input and the Lambda function response you can use
-the ARN `LambdaResourceType` and specify the `resultPath`. This will put the
-Lambda function ARN directly in the "Resource" string.
+the `payloadResponseOnly` property and specify the `resultPath`. This will put the
+Lambda function ARN directly in the "Resource" string, but it conflicts with the
+integrationPattern, invocationType, clientContext, and qualifier properties.
 
 ```ts
 new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
   lambdaFunction: myLambda,
-  resourceType: tasks.LambdaResourceType.ARN,
-  payload: sfn.TaskInput.fromDataAt('$'),
+  payloadResponseOnly: true,
   resultPath: '$.myLambda',
 });
 ```
