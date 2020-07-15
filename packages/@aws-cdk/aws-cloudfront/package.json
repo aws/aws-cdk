@@ -96,12 +96,12 @@
   "stability": "experimental",
   "features": [
     {
-      "name": "Higher level constructs for CloudFrontWebDistribution",
-      "stability": "Stable"
-    },
-    {
       "name": "Higher level constructs for Distribution",
       "stability": "Experimental"
+    },
+    {
+      "name": "Higher level constructs for CloudFrontWebDistribution",
+      "stability": "Stable"
     }
   ],
   "awslint": {
