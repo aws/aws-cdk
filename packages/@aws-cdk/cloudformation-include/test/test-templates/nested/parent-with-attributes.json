@@ -6,7 +6,10 @@
         "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
         "NotificationARNs": [ "arn1" ],
         "TimeoutInMinutes": 5
-      }
+      },
+      "DependsOn": [
+        "AnotherChildStack"
+      ]
     },
     "AnotherChildStack": {
       "Type": "AWS::CloudFormation::Stack",
@@ -17,9 +20,6 @@
         "Property1": "Value1"
       },
       "DeletionPolicy": "Retain",
-      "DependsOn": [
-        "ChildStack"
-      ],
       "UpdateReplacePolicy": "Retain"
     }
   }

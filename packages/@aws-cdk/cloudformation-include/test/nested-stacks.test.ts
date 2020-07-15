@@ -9,6 +9,7 @@ import * as futils from '../lib/file-utils';
 // tslint:disable:object-literal-key-quotes
 /* eslint-disable quotes */
 
+
 describe('CDK Include', () => {
   let stack: core.Stack;
 
@@ -306,9 +307,6 @@ describe('CDK Include', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
-      "Properties": {
-        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
-      },
       "Metadata": {
         "Property1": "Value1",
       },
