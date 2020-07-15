@@ -93,9 +93,7 @@ export class CfnResource extends CfnRefElement {
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
     if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.cfnOptions.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.node.path,
-      };
+      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
     }
   }
 
@@ -236,6 +234,22 @@ export class CfnResource extends CfnRefElement {
    */
   public addDependsOn(target: CfnResource) {
     addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
+  }
+
+  /**
+   * Add a value to the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.cfnOptions.metadata) {
+      this.cfnOptions.metadata = {};
+    }
+
+    this.cfnOptions.metadata[key] = value;
   }
 
   /**
