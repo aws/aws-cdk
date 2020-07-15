@@ -12,8 +12,16 @@ export interface IDistribution extends IResource {
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
    * @attribute
+   * @deprecated - Use `distributionDomainName` instead.
    */
   readonly domainName: string;
+
+  /**
+   * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
+   *
+   * @attribute
+   */
+  readonly distributionDomainName: string;
 
   /**
    * The distribution ID for this distribution.
@@ -100,17 +108,20 @@ export class Distribution extends Resource implements IDistribution {
   public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IDistribution {
     return new class extends Resource implements IDistribution {
       public readonly domainName: string;
+      public readonly distributionDomainName: string;
       public readonly distributionId: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
+        this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
       }
     }();
   }
 
   public readonly domainName: string;
+  public readonly distributionDomainName: string;
   public readonly distributionId: string;
 
   private readonly defaultBehavior: CacheBehavior;
@@ -152,6 +163,7 @@ export class Distribution extends Resource implements IDistribution {
     } });
 
     this.domainName = distribution.attrDomainName;
+    this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
   }
 

@@ -62,10 +62,10 @@ URLs and not S3 URLs directly.
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
-be retrieved from `distribution.domainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by default. If
-you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains your domain
-name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate may either be
-created by ACM, or created elsewhere and imported into ACM.
+be retrieved from `distribution.distributionDomainName`. CloudFront distributions use a default certificate (`*.cloudfront.net`) to support HTTPS by
+default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
+your domain name. The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
+may either be created by ACM, or created elsewhere and imported into ACM.
 
 ```ts
 const myCertificate = new acm.DnsValidatedCertificate(this, 'mySiteCert', {

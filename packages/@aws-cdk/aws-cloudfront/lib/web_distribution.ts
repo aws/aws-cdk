@@ -677,9 +677,18 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   /**
    * The domain name created by CloudFront for this distribution.
    * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
-   * (In Route53, you could create an ALIAS record to this value, for example. )
+   * (In Route53, you could create an ALIAS record to this value, for example.)
+   *
+   * @deprecated - Use `distributionDomainName` instead.
    */
   public readonly domainName: string;
+
+  /**
+   * The domain name created by CloudFront for this distribution.
+   * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
+   * (In Route53, you could create an ALIAS record to this value, for example.)
+   */
+  public readonly distributionDomainName: string;
 
   /**
    * The distribution ID for this distribution.
@@ -897,6 +906,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
+    this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
   }
 
