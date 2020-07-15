@@ -9,7 +9,7 @@ import * as apigateway from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-inline-private');
 
-const api = new apigateway.SpecRestApi(stack, 'my-api', {
+const api = new apigateway.SpecRestApi(stack, 'my-private-api', {
   apiDefinition: apigateway.ApiDefinition.fromInline({
     openapi: '3.0.2',
     info: {
