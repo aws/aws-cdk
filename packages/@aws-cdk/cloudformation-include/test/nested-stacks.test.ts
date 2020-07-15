@@ -18,7 +18,7 @@ describe('CDK Include', () => {
 
   test('can ingest a template with one child', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-onechild.json'),
+      templateFile: testTemplateFilePath('parent-one-child.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('grandchild-import-stack.json'),
@@ -28,13 +28,13 @@ describe('CDK Include', () => {
 
     const childStack = parentTemplate.getNestedStack('ChildStack');
     expect(childStack.stack).toMatchTemplate(
-      loadTestFileToJsObject('grandchild-stack.expected.json'),
+      loadTestFileToJsObject('grandchild-import-stack.json'),
     );
   });
 
   test('can ingest a template with two children', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('grandchild-import-stack.json'),
@@ -48,17 +48,17 @@ describe('CDK Include', () => {
     const childStack = parentTemplate.getNestedStack('ChildStack');
     const anotherChildStack = parentTemplate.getNestedStack('AnotherChildStack');
     expect(childStack.stack).toMatchTemplate(
-      loadTestFileToJsObject('grandchild-stack.expected.json'),
+      loadTestFileToJsObject('grandchild-import-stack.json'),
     );
 
     expect(anotherChildStack.stack).toMatchTemplate(
-      loadTestFileToJsObject('grandchild-stack.expected.json'),
+      loadTestFileToJsObject('grandchild-import-stack.json'),
     );
   });
 
   test('can ingest a template with one child and one grandchild', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -78,14 +78,14 @@ describe('CDK Include', () => {
     );
 
     expect(grandChildStack.stack).toMatchTemplate(
-      loadTestFileToJsObject('grandchild-stack.expected.json'),
+      loadTestFileToJsObject('grandchild-import-stack.json'),
     );
   });
 
   test('throws an error when provided a nested stack that is not present in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
-        templateFile: testTemplateFilePath('parent-export-stack.json'),
+        templateFile: testTemplateFilePath('parent-two-children.json'),
         nestedStacks: {
           'FakeStack': {
             templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -98,7 +98,7 @@ describe('CDK Include', () => {
   test('Throws an error when NestedStacks contains an ID that is not a CloudFormation::Stack in the template', () => {
     expect(() => {
       new inc.CfnInclude(stack, 'ParentStack', {
-        templateFile: testTemplateFilePath('parent-export-stack.json'),
+        templateFile: testTemplateFilePath('parent-two-children.json'),
         nestedStacks: {
           'ChildStack': {
             templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -115,7 +115,7 @@ describe('CDK Include', () => {
 
   test('can modify resources in nested stacks', () => {
     const parent = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -139,7 +139,7 @@ describe('CDK Include', () => {
 
   test('asset parameters generated in parent and child are identical', () => {
     new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-onechild.json'),
+      templateFile: testTemplateFilePath('parent-one-child.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('grandchild-import-stack.json'),
@@ -202,17 +202,17 @@ describe('CDK Include', () => {
     });
   });
 
-  test('templates with nested stacks that do not exist in the nested stacks property have those stacks ignored', () => {
+  test('templates with nested stacks that were not provided in the nestedStacks property are left unmodified', () => {
     new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
     });
 
-    expect(stack).toMatchTemplate(loadTestFileToJsObject('parent-export-stack.json'));
+    expect(stack).toMatchTemplate(loadTestFileToJsObject('parent-two-children.json'));
   });
 
   test('getNestedStack() throws an exception when getting a resource that does not exist in the template', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -227,7 +227,7 @@ describe('CDK Include', () => {
 
   test('getNestedStack() throws an exception when getting a resource that exists in the template, but is not a Stack', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -243,7 +243,7 @@ describe('CDK Include', () => {
 
   test('getNestedStack() throws an exception when getting a resource that exists in the template, but was not specified in the props', () => {
     const parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-import-stack.json'),
@@ -282,9 +282,9 @@ describe('CDK Include', () => {
     });
   });
 
-  test('ensure that getResource() returns a CfnStack', () => {
+  test('returns the CfnStack object from getResource() for a nested stack that was not in the nestedStacks property', () => {
     const cfnTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-export-stack.json'),
+      templateFile: testTemplateFilePath('parent-two-children.json'),
     });
 
     const childStack1 = cfnTemplate.getResource('ChildStack');
@@ -295,6 +295,14 @@ describe('CDK Include', () => {
   test('attributes are correctly parsed', () => {
     new inc.CfnInclude(stack, 'ParentStack', {
       templateFile: testTemplateFilePath('parent-with-attributes.json'),
+      nestedStacks: {
+        'ChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+        'AnotherChildStack': {
+          templateFile: testTemplateFilePath('child-import-stack.json'),
+        },
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
@@ -318,29 +326,10 @@ describe('CDK Include', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFormation::Stack', {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
-        "NotificationARNs": ["arn1"],
-        "TimeoutInMinutes": 5,
-      },
-    }, ResourcePart.CompleteDefinition);
-  });
-
-  test('correctly modifies the templateUrl property of a nested stack whose template has been passed', () => {
-    new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('only-nested-stack.json'),
-      nestedStacks: {
-        'NestedStack': {
-          // doesn't matter in this test
-          templateFile: testTemplateFilePath('child-import-stack.json'),
-        },
-      },
+      "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/child-import-stack.json",
+      "NotificationARNs": ["arn1"],
+      "TimeoutInMinutes": 5,
     });
-
-    expect(stack).toMatchTemplate(
-      loadTestFileToJsObject('only-nested-stack.expected.json'),
-    );
   });
 });
 
@@ -352,7 +341,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
 
   let parentBucketParam: string;
   let parentKeyParam: string;
-  let parentBucketRef: string;
+  let grandChildBucketParam: string;
   let parentKeyRef: string;
 
   let childBucketParam: string;
@@ -361,7 +350,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
   beforeAll(() => {
     stack = new core.Stack();
     parentTemplate = new inc.CfnInclude(stack, 'ParentStack', {
-      templateFile: testTemplateFilePath('parent-onechild.json'),
+      templateFile: testTemplateFilePath('parent-one-child.json'),
       nestedStacks: {
         'ChildStack': {
           templateFile: testTemplateFilePath('child-no-bucket.json'),
@@ -379,7 +368,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
 
     parentBucketParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
     parentKeyParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
-    parentBucketRef = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
+    grandChildBucketParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
     parentKeyRef =  'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
 
     childBucketParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3Bucket23278F13';
@@ -445,7 +434,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
             },
             "Parameters": {
               "MyBucketParameter": "some-magic-bucket-name",
-              [parentBucketRef]: {
+              [grandChildBucketParam]: {
                 "Ref": parentBucketParam,
               },
               [parentKeyRef]: {
@@ -465,7 +454,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
           "Type": "String",
           "Default": "default-bucket-param-name",
         },
-        [parentBucketRef]: {
+        [grandChildBucketParam]: {
           "Type": "String",
         },
         [parentKeyRef]: {
@@ -483,7 +472,7 @@ describe('asset parameters are correctly passed from parent to grandchild', () =
                 ".",
                 { "Ref": "AWS::URLSuffix" },
                 "/",
-                { "Ref": parentBucketRef },
+                { "Ref": grandChildBucketParam },
                 "/",
                 { "Fn::Select": [
                   0,
