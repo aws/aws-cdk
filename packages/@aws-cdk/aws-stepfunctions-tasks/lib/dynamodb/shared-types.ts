@@ -233,6 +233,14 @@ export class DynamoAttributeValue {
   }
 
   /**
+   * maps a boolean from a string - can be a literal or a json path
+   * @param value the string to map
+   */
+  public static booleanFromJsonPath(value: string) {
+    return new DynamoAttributeValue({ BOOL: value.toString() });
+  }
+
+  /**
    * Represents the data for the attribute. Data can be
    * i.e. "S": "Hello"
    */
