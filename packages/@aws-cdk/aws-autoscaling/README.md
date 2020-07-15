@@ -29,9 +29,20 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-> NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
-> internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
-> your instances to be able to start arbitrary connections.
+NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
+internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
+your instances to be able to start arbitrary connections. Alternatively, you can specify an existing security
+group to attach to the instances that are launched, rather than have the group create a new one.
+
+```ts
+const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {...});
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage(),
+  securityGroup: mySecurityGroup,
+});
+```
 
 ### Machine Images (AMIs)
 
@@ -217,6 +228,19 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
+
+### Max Instance Lifetime
+
+To enable the max instance lifetime support, specify `maxInstanceLifetime` property
+for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
+To clear a previously set value, just leave this property undefinied.
+
+### Instance Monitoring
+
+To disable detailed instance monitoring, specify `instanceMonitoring` property
+for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
+will be enabled.
+
 
 ### Future work
 

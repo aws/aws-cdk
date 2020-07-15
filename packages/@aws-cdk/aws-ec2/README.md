@@ -48,9 +48,11 @@ distinguishes three different subnet types:
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
 
-A default VPC configuration will create public and private subnets, but not
-isolated subnets. See *Advanced Subnet Configuration* below for information
-on how to change the default subnet configuration.
+
+A default VPC configuration will create public and **private** subnets. However, if
+`natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration 
+will create public and **isolated** subnets. See [*Advanced Subnet Configuration*](#advanced-subnet-configuration) 
+below for information on how to change the default subnet configuration.
 
 Constructs using the VPC will "launch instances" (or more accurately, create
 Elastic Network Interfaces) into one or more of the subnets. They all accept
@@ -496,10 +498,8 @@ Endpoints are virtual devices. They are horizontally scaled, redundant, and high
 
 [example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
 
-Not all VPC endpoint services are available in all availability zones. By default,
-CDK will place a VPC endpoint in one subnet per AZ, because CDK doesn't know about
-unavailable AZs. You can determine what the available AZs are from the AWS console.
-The AZs CDK places the VPC endpoint in can be configured as follows:
+By default, CDK will place a VPC endpoint in one subnet per AZ. If you wish to override the AZs CDK places the VPC endpoint in, 
+use the `subnets` parameter as follows:
 
 ```ts
 new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
@@ -510,6 +510,21 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
   subnets: {
     availabilityZones: ['us-east-1a', 'us-east-1c']
   }
+});
+```
+
+Per the [AWS documentation](https://aws.amazon.com/premiumsupport/knowledge-center/interface-endpoint-availability-zone/), not all
+VPC endpoint services are available in all AZs. If you specify the parameter `lookupSupportedAzs`, CDK attempts to discover which
+AZs an endpoint service is available in, and will ensure the VPC endpoint is not placed in a subnet that doesn't match those AZs.
+These AZs will be stored in cdk.context.json.
+
+```ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+  vpc,
+  service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  // Choose which availability zones to place the VPC endpoint in, based on
+  // available AZs
+  lookupSupportedAzs: true
 });
 ```
 
@@ -571,7 +586,6 @@ EBS volume for the bastion host can be encrypted like:
     });
 ```
 
-
 ## Block Devices
 
 To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
@@ -593,6 +607,74 @@ new ec2.Instance(this, 'Instance', {
   ],
 });
 
+```
+
+## Volumes
+
+Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
+
+A notable restriction is that a Volume can only be attached to instances in the same availability zone as the Volume itself.
+
+The following demonstrates how to create a 500 GiB encrypted Volume in the `us-west-2a` availability zone, and give a role the ability to attach that Volume to a specific instance:
+
+```ts
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+const role = new iam.Role(stack, 'SomeRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
+const volume = new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-west-2a',
+  size: cdk.Size.gibibytes(500),
+  encrypted: true,
+});
+
+volume.grantAttachVolume(role, [instance]);
+```
+
+### Instances Attaching Volumes to Themselves
+
+If you need to grant an instance the ability to attach/detach an EBS volume to/from itself, then using `grantAttachVolume` and `grantDetachVolume` as outlined above
+will lead to an unresolvable circular reference between the instance role and the instance. In this case, use `grantAttachVolumeByResourceTag` and `grantDetachVolumeByResourceTag` as follows:
+
+```ts
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+const volume = new ec2.Volume(this, 'Volume', {
+  // ...
+});
+
+const attachGrant = volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
+const detachGrant = volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
+```
+
+### Attaching Volumes
+
+The Amazon EC2 documentation for
+[Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) and
+[Windows Instances](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ebs-volumes.html) contains information on how
+to attach and detach your Volumes to/from instances, and how to format them for use.
+
+The following is a sample skeleton of EC2 UserData that can be used to attach a Volume to the Linux instance that it is running on:
+
+```ts
+const volume = new ec2.Volume(this, 'Volume', {
+  // ...
+});
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
+const targetDevice = '/dev/xvdz';
+instance.userData.addCommands(
+  // Attach the volume to /dev/xvdz
+  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id ${instance.instanceId} --device ${targetDevice}`,
+  // Wait until the volume has attached
+  `while ! test -e ${targetDevice}; do sleep 1; done`
+  // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
+);
 ```
 
 ## VPC Flow Logs

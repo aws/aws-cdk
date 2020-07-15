@@ -13,6 +13,7 @@ class EksClusterStack extends TestStack {
       vpc,
       kubectlEnabled: false,
       defaultCapacity: 0,
+      version: eks.KubernetesVersion.V1_16,
     });
 
     cluster.addCapacity('Nodes', {

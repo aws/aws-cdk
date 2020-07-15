@@ -16,9 +16,28 @@ export interface IApiKey extends IResourceBase {
 }
 
 /**
+ * The options for creating an API Key.
+ */
+export interface ApiKeyOptions extends ResourceOptions {
+  /**
+   * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
+   * @default automically generated name
+   */
+  readonly apiKeyName?: string;
+
+  /**
+   * The value of the API key. Must be at least 20 characters long.
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-value
+   * @default none
+   */
+  readonly value?: string;
+}
+
+/**
  * ApiKey Properties.
  */
-export interface ApiKeyProps extends ResourceOptions {
+export interface ApiKeyProps extends ApiKeyOptions {
   /**
    * [disable-awslint:ref-via-interface]
    * A list of resources this api key is associated with.
@@ -53,13 +72,6 @@ export interface ApiKeyProps extends ResourceOptions {
    * @default false
    */
   readonly generateDistinctId?: boolean;
-
-  /**
-   * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
-   * @default automically generated name
-   */
-  readonly apiKeyName?: string;
 }
 
 /**
@@ -83,6 +95,7 @@ export class ApiKey extends Resource implements IApiKey {
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources),
+      value: props.value,
     });
 
     this.keyId = resource.ref;

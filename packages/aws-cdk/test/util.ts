@@ -1,18 +1,21 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
 import { MockSdkProvider } from './util/mock-sdk';
 
+export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
+
 export interface TestStackArtifact {
   stackName: string;
-  template: any;
+  template?: any;
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
   terminationProtection?: boolean;
 }
 
@@ -49,7 +52,8 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
+    const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
+    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
@@ -71,6 +75,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       dependencies: stack.depends,
       metadata,
       properties: {
+        ...stack.properties,
         templateFile,
         terminationProtection: stack.terminationProtection,
       },

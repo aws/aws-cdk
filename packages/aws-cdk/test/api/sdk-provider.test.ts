@@ -9,7 +9,6 @@ import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 
 SDKMock.setSDKInstance(AWS);
-logging.setVerbose(true);
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
@@ -25,6 +24,8 @@ let defaultEnv: cxapi.Environment;
 
 beforeEach(() => {
   uid = `(${uuid.v4()})`;
+
+  logging.setLogLevel(logging.LogLevel.TRACE);
 
   bockfs({
     '/home/me/.bxt/credentials': dedent(`
@@ -98,6 +99,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  logging.setLogLevel(logging.LogLevel.DEFAULT);
+
   SDKMock.restore();
   bockfs.restore();
 });
@@ -177,7 +180,6 @@ describe('CLI compatible credentials loading', () => {
 
     // WHEN
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions,
-      ec2creds: false,
       profile: 'assumable',
       httpOptions: {
         proxyAddress: 'http://DOESNTMATTER/',
@@ -188,6 +190,32 @@ describe('CLI compatible credentials loading', () => {
 
     // THEN -- the fake proxy agent got called, we don't care about the result
     expect(called).toEqual(true);
+  });
+
+  test('error we get from assuming a role is useful', async () => {
+    // GIVEN
+    // Because of the way ChainableTemporaryCredentials gets its STS client, it's not mockable
+    // using 'mock-aws-sdk'. So instead, we have to mess around with its internals.
+    function makeAssumeRoleFail(s: ISDK) {
+      (s as any).credentials.service.assumeRole = jest.fn().mockImplementation((_request, cb) => {
+        cb(new Error('Nope!'));
+      });
+    }
+
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      httpOptions: {
+        proxyAddress: 'http://localhost:8080/',
+      },
+    });
+
+    // WHEN
+    const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+    makeAssumeRoleFail(sdk);
+
+    // THEN - error message contains both a helpful hint and the underlying AssumeRole message
+    await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('did you bootstrap');
+    await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('Nope!');
   });
 });
 

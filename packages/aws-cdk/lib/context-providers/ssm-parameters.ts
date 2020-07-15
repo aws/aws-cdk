@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Mode, SdkProvider } from '../api';
@@ -11,7 +12,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: {[key: string]: any}) {
+  public async getValue(args: cxschema.SSMParameterContextQuery) {
     const region = args.region;
     const account = args.account;
     if (!('parameterName' in args)) {

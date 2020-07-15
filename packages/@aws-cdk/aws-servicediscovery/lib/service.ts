@@ -123,7 +123,7 @@ export interface DnsServiceProps extends BaseServiceProps {
 
 export interface ServiceProps extends DnsServiceProps {
   /**
-   * The ID of the namespace that you want to use for DNS configuration.
+   * The namespace that you want to use for DNS configuration.
    */
   readonly namespace: INamespace;
 }

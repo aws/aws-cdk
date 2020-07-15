@@ -29,6 +29,8 @@ test('looks up the requested (symmetric) VPC', async () => {
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -83,6 +85,8 @@ test('throws when no such VPC is found', async () => {
   });
 
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   })).rejects.toThrow(/Could not find any VPCs matching/);
@@ -97,6 +101,8 @@ test('throws when multiple VPCs are found', async () => {
 
   // WHEN
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   })).rejects.toThrow(/Found 2 VPCs matching/);
@@ -116,6 +122,8 @@ test('uses the VPC main route table when a subnet has no specific association', 
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -199,6 +207,8 @@ test('Recognize public subnet by route table', async () => {
 
   // WHEN
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -251,6 +261,8 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
 
   // WHEN
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -338,6 +350,8 @@ test('allows specifying the subnet group name tag', async () => {
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
     subnetGroupNameTag: 'Tier',

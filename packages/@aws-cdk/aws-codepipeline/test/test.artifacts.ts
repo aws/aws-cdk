@@ -5,7 +5,7 @@ import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Artifacts in CodePipeline': {
@@ -46,7 +46,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' has an unnamed input Artifact that's not used as an output");
+      test.equal(error.message, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
       test.done();
     },
@@ -82,7 +82,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Artifact 'named' was used as input before being used as output");
+      test.equal(error.message, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
       test.done();
     },
@@ -119,7 +119,7 @@ export = {
       test.equal(errors.length, 1);
       const error = errors[0];
       test.same(error.source, pipeline);
-      test.equal(error.message, "Artifact 'Artifact_Source_Source' has been used as an output more than once");
+      test.equal(error.message, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
       test.done();
     },
@@ -169,6 +169,59 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         //
       }));
+
+      test.done();
+    },
+
+    'violation of runOrder constraints is detected and reported'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const sourceOutput1 = new codepipeline.Artifact('sourceOutput1');
+      const buildOutput1 = new codepipeline.Artifact('buildOutput1');
+      const sourceOutput2 = new codepipeline.Artifact('sourceOutput2');
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput1,
+              }),
+              new FakeSourceAction({
+                actionName: 'source2',
+                output: sourceOutput2,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput1,
+                output: buildOutput1,
+                runOrder: 3,
+              }),
+              new FakeBuildAction({
+                actionName: 'build2',
+                input: sourceOutput2,
+                extraInputs: [buildOutput1],
+                output: new codepipeline.Artifact('buildOutput2'),
+                runOrder: 2,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const errors = validate(stack);
+
+      test.equal(errors.length, 1);
+      const error = errors[0];
+      test.same(error.source, pipeline);
+      test.equal(error.message, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
       test.done();
     },

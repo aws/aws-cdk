@@ -1,8 +1,8 @@
+import * as childProcess from 'child_process';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
@@ -81,7 +81,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       if (error.message.includes(cxschema.VERSION_MISMATCH)) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
-        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
       }
       throw error;
     }
@@ -191,7 +191,7 @@ async function guessExecutable(commandLine: string[]) {
       return commandLine;
     }
 
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === 'win32';
 

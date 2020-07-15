@@ -10,6 +10,7 @@ import * as util from './util';
 const RESOURCE_CLASS_PREFIX = 'Cfn';
 
 export const CORE_NAMESPACE = 'cdk';
+export const CFN_PARSE_NAMESPACE = 'cfn_parse';
 
 /**
  * The name of a class or method in the generated code.
@@ -42,7 +43,7 @@ export class CodeName {
     return new CodeName('', '', primitiveName);
   }
 
-  // tslint:disable:no-shadowed-variable
+  /* eslint-disable no-shadow */
   constructor(
     readonly packageName: string,
     readonly namespace: string,
@@ -50,7 +51,7 @@ export class CodeName {
     readonly specName?: SpecName,
     readonly methodName?: string) {
   }
-  // tslint:enable:no-shadowed-variable
+  /* eslint-enable no-shadow */
 
   /**
    * Alias for className
@@ -150,6 +151,28 @@ export function cfnMapperName(typeName: CodeName): CodeName {
 }
 
 /**
+ * Return the name of the function that converts a pure CloudFormation value
+ * to the appropriate CDK struct instance.
+ */
+export function fromCfnFactoryName(typeName: CodeName): CodeName {
+  if (isPrimitive(typeName)) {
+    // primitive types are handled by specialized functions from @aws-cdk/core
+    return new CodeName('', CFN_PARSE_NAMESPACE, 'FromCloudFormation', undefined, `get${util.upcaseFirst(typeName.className)}`);
+  } else if (isCloudFormationTagCodeName(typeName)) {
+    // tags, since they are shared, have their own function in @aws-cdk/core
+    return new CodeName('', CFN_PARSE_NAMESPACE, 'FromCloudFormation', undefined, 'getCfnTag');
+  } else {
+    return new CodeName(typeName.packageName, '', `${typeName.namespace}${typeName.className}FromCloudFormation`);
+  }
+}
+
+function isCloudFormationTagCodeName(codeName: CodeName): boolean {
+  return codeName.className === TAG_NAME.className &&
+    codeName.packageName === TAG_NAME.packageName &&
+    codeName.namespace === TAG_NAME.namespace;
+}
+
+/**
  * Return the name for the type-checking method
  */
 export function validatorName(typeName: CodeName): CodeName {
@@ -183,7 +206,7 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
   } else {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
     attrType = TOKEN_NAME.fqn;
   }
@@ -205,6 +228,7 @@ export function cloudFormationToScriptName(name: string): string {
   if (name === 'VPCs') { return 'vpcs'; }
   const ret = codemaker.toCamelCase(name);
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {

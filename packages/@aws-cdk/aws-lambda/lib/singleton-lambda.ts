@@ -65,6 +65,30 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.addPermission(name, permission);
   }
 
+  /**
+   * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
+   * as a singleton across the stack. Use this method instead to declare dependencies.
+   */
+  public addDependency(...up: cdk.IDependable[]) {
+    this.lambdaFunction.node.addDependency(...up);
+  }
+
+  /**
+   * The SingletonFunction construct cannot be added as a dependency of another construct using
+   * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
+   */
+  public dependOn(down: cdk.IConstruct) {
+    down.node.addDependency(this.lambdaFunction);
+  }
+
+  /**
+   * Returns the construct tree node that corresponds to the lambda function.
+   * @internal
+   */
+  protected _functionNode(): cdk.ConstructNode {
+    return this.lambdaFunction.node;
+  }
+
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     const existing = cdk.Stack.of(this).node.tryFindChild(constructName);

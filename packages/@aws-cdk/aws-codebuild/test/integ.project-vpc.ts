@@ -25,6 +25,7 @@ new codebuild.Project(stack, 'MyProject', {
       },
     },
   }),
+  grantReportGroupPermissions: false,
   securityGroups: [securityGroup],
   vpc,
 });

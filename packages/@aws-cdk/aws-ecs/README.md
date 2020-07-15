@@ -267,6 +267,8 @@ const service = new ecs.FargateService(this, 'Service', {
   desiredCount: 5
 });
 ```
+`Services` by default will create a security group if not provided.
+If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
 ### Include an application/network load balancer
 
@@ -472,7 +474,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' })
 });
 ```
 

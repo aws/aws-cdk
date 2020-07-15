@@ -6,6 +6,7 @@ import { Timers } from './timer';
 
 interface ShellOptions {
   timers?: Timers;
+  env?: child_process.SpawnOptions['env'];
 }
 
 /**
@@ -22,6 +23,10 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: [ 'ignore', 'pipe', 'pipe' ],
+    env: {
+      ...process.env,
+      ...options.env,
+    },
   });
 
   const makeRed = process.stderr.isTTY ? colors.red : (x: string) => x;

@@ -236,9 +236,9 @@ export class FirelensLogRouter extends ContainerDefinition {
   /**
    * Render this container definition to a CloudFormation object
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
-      ...(super.renderContainerDefinition(taskDefinition)),
+      ...(super.renderContainerDefinition()),
       firelensConfiguration: this.firelensConfig && renderFirelensConfig(this.firelensConfig),
     };
   }

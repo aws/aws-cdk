@@ -14,6 +14,7 @@ new codebuild.Project(stack, 'MyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
   }),
+  grantReportGroupPermissions: false,
   artifacts:
     codebuild.Artifacts.s3({
       bucket,

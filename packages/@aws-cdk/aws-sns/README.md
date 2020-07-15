@@ -76,6 +76,27 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 }));
 ```
 
+### DLQ setup for SNS Subscription
+CDK can attach provided Queue as DLQ for your SNS subscription.
+See the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.
+
+Example of usage with user provided DLQ.
+
+```ts
+const topic = new sns.Topic(stack, 'Topic');
+const dlQueue = new Queue(stack, 'DeadLetterQueue', {
+    queueName: 'MySubscription_DLQ',
+    retentionPeriod: cdk.Duration.days(14),
+});
+
+new sns.Subscription(stack, 'Subscription', {
+    endpoint: 'endpoint',
+    protocol: sns.SubscriptionProtocol.LAMBDA,
+    topic,
+    deadLetterQueue: dlQueue,
+});
+```
+
 ### CloudWatch Event Rule Target
 
 SNS topics can be used as targets for CloudWatch event rules.

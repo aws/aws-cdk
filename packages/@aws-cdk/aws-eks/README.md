@@ -25,7 +25,9 @@ This example defines an Amazon EKS cluster with the following configuration:
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-const cluster = new eks.Cluster(this, 'hello-eks');
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_16,
+});
 
 cluster.addResource('mypod', {
   apiVersion: 'v1',
@@ -45,17 +47,20 @@ cluster.addResource('mypod', {
 
 ### Capacity
 
-By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances.
+By default, `eks.Cluster` is created with a managed nodegroup with x2 `m5.large` instances. You must specify the kubernetes version for the cluster with the `version` property.
 
 ```ts
-new eks.Cluster(this, 'cluster-two-m5-large');
+new eks.Cluster(this, 'cluster-two-m5-large', {
+  version: eks.KubernetesVersion.V1_16,
+});
 ```
 
 To use the traditional self-managed Amazon EC2 instances instead, set `defaultCapacityType` to `DefaultCapacityType.EC2`
 
 ```ts
 const cluster = new eks.Cluster(this, 'cluster-self-managed-ec2', {
-  defaultCapacityType: eks.DefaultCapacityType.EC2
+  defaultCapacityType: eks.DefaultCapacityType.EC2,
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
@@ -65,14 +70,18 @@ the `defaultCapacity` and `defaultCapacityInstance` props:
 ```ts
 new eks.Cluster(this, 'cluster', {
   defaultCapacity: 10,
-  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge')
+  defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
 To disable the default capacity, simply set `defaultCapacity` to `0`:
 
 ```ts
-new eks.Cluster(this, 'cluster-with-no-capacity', { defaultCapacity: 0 });
+new eks.Cluster(this, 'cluster-with-no-capacity', { 
+  defaultCapacity: 0,
+  version: eks.KubernetesVersion.V1_16,
+});
 ```
 
 The `cluster.defaultCapacity` property will reference the `AutoScalingGroup`
@@ -145,7 +154,9 @@ The following code defines an Amazon EKS cluster without EC2 capacity and a defa
 Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns) through the `coreDnsComputeType` cluster option.
 
 ```ts
-const cluster = new eks.FargateCluster(this, 'MyCluster');
+const cluster = new eks.FargateCluster(this, 'MyCluster', {
+  version: eks.KubernetesVersion.V1_16,
+});
 
  // apply k8s resources on this cluster
 cluster.addResource(...);
@@ -219,7 +230,8 @@ const clusterAdmin = new iam.Role(this, 'AdminRole', {
 
 // now define the cluster and map role to "masters" RBAC group
 new eks.Cluster(this, 'Cluster', {
-  mastersRole: clusterAdmin
+  mastersRole: clusterAdmin,
+  version: eks.KubernetesVersion.V1_16,
 });
 ```
 
@@ -336,10 +348,55 @@ new KubernetesResource(this, 'hello-kub', {
 cluster.addResource('hello-kub', service, deployment);
 ```
 
+#### Adding resources from a URL
+
+The following example will deploy the resource manifest hosting on remote server:
+
+```ts
+import * as yaml from 'js-yaml';
+import * as request from 'sync-request';
+
+const manifestUrl = 'https://url/of/manifest.yaml';
+const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
+cluster.addResource('my-resource', ...manifest);
+```
+
 Since Kubernetes resources are implemented as CloudFormation resources in the
 CDK. This means that if the resource is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources will be deleted.
+
+#### Dependencies
+
+There are cases where Kubernetes resources must be deployed in a specific order.
+For example, you cannot define a resource in a Kubernetes namespace before the
+namespace was created.
+
+You can represent dependencies between `KubernetesResource`s using
+`resource.node.addDependency()`:
+
+```ts
+const namespace = cluster.addResource('my-namespace', {
+  apiVersion: 'v1',
+  kind: 'Namespace',
+  metadata: { name: 'my-app' }
+});
+
+const service = cluster.addResource('my-service', {
+  metadata: {
+    name: 'myservice',
+    namespace: 'my-app'
+  },
+  spec: // ...
+});
+
+service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
+```
+
+NOTE: when a `KubernetesResource` includes multiple resources (either directly
+or through `cluster.addResource()`) (e.g. `cluster.addResource('foo', r1, r2,
+r3,...))`), these resources will be applied as a single manifest via `kubectl`
+and will be applied sequentially (the standard behavior in `kubectl`).
 
 ### Patching Kubernetes Resources
 
@@ -384,6 +441,33 @@ A convenience method for mapping a role to the `system:masters` group is also av
 
 ```ts
 cluster.awsAuth.addMastersRole(role)
+```
+
+### Cluster Security Group
+
+When you create an Amazon EKS cluster, a
+[cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
+is automatically created as well. This security group is designed to allow
+all traffic from the control plane and managed node groups to flow freely
+between each other.
+
+The ID for that security group can be retrieved after creating the cluster.
+
+```ts
+const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
+```
+
+### Cluster Encryption Configuration
+
+When you create an Amazon EKS cluster, envelope encryption of
+Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled. The documentation
+on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
+can provide more details about the customer master key (CMK) that can be used for the encryption.
+
+The Amazon Resource Name (ARN) for that CMK can be retrieved.
+
+```ts
+const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
 ### Node ssh Access
@@ -486,7 +570,8 @@ cluster.addChart('NginxIngress', {
 });
 ```
 
-Helm charts will be installed and updated using `helm upgrade --install`.
+Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
+are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster. The chart will exists as CloudFormation resource.
 
@@ -496,8 +581,20 @@ deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
 When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cassed and truncated to the last 63 characters.
+which will be lower cased and truncated to the last 63 characters.
 
+By default, all Helm charts will be installed concurrently. In some cases, this
+could cause race conditions where two Helm charts attempt to deploy the same
+resource or if Helm charts depend on each other. You can use
+`chart.node.addDependency()` in order to declare a dependency order between
+charts:
+
+```ts
+const chart1 = cluster.addChart(...);
+const chart2 = cluster.addChart(...);
+
+chart2.node.addDependency(chart1);
+```
 
 ### Bottlerocket
 
@@ -518,9 +615,42 @@ cluster.addCapacity('BottlerocketNodes', {
 
 To define only Bottlerocket capacity in your cluster, set `defaultCapacity` to `0` when you define the cluster as described above.
 
-Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity. 
+Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
 
+### Service Accounts
 
+With services account you can provide Kubernetes Pods access to AWS resources.
+
+```ts
+// add service account
+const sa = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+const mypod = cluster.addResource('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    serviceAccountName: sa.serviceAccountName
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ],
+
+      }
+    ]
+  }
+});
+
+// create the resource after the service account
+mypod.node.addDependency(sa);
+
+// print the IAM role arn for this service account
+new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
+```
 
 ### Roadmap
 

@@ -52,6 +52,17 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+To connect your `App` to GitLab, use the `GitLabSourceCodeProvider`:
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: cdk.SecretValue.secretsManager('my-gitlab-token')
+  })
+});
+```
+
 To connect your `App` to CodeCommit, use the `CodeCommitSourceCodeProvider`:
 ```ts
 const repository = new codecommit.Repository(this, 'Repo', {

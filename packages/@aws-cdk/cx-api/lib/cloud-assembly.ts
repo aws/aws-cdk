@@ -1,11 +1,12 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
+import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
+import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
-import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
-import { TreeCloudArtifact } from './tree-cloud-artifact';
 
 /**
  * The name of the root manifest file of the assembly.
@@ -69,6 +70,8 @@ export class CloudAssembly {
   /**
    * Returns a CloudFormation stack artifact from this assembly.
    *
+   * Will only search the current assembly.
+   *
    * @param stackName the name of the CloudFormation stack.
    * @throws if there is no stack artifact by that name
    * @throws if there is more than one stack with the same stack name. You can
@@ -82,6 +85,7 @@ export class CloudAssembly {
     }
 
     if (artifacts.length > 1) {
+      // eslint-disable-next-line max-len
       throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 
@@ -114,6 +118,33 @@ export class CloudAssembly {
     }
 
     return artifact;
+  }
+
+  /**
+   * Returns a nested assembly artifact.
+   *
+   * @param artifactId The artifact ID of the nested assembly
+   */
+  public getNestedAssemblyArtifact(artifactId: string): NestedCloudAssemblyArtifact {
+    const artifact = this.tryGetArtifact(artifactId);
+    if (!artifact) {
+      throw new Error(`Unable to find artifact with id "${artifactId}"`);
+    }
+
+    if (!(artifact instanceof NestedCloudAssemblyArtifact)) {
+      throw new Error(`Found artifact '${artifactId}' but it's not a nested cloud assembly`);
+    }
+
+    return artifact;
+  }
+
+  /**
+   * Returns a nested assembly.
+   *
+   * @param artifactId The artifact ID of the nested assembly
+   */
+  public getNestedAssembly(artifactId: string): CloudAssembly {
+    return this.getNestedAssemblyArtifact(artifactId).nestedAssembly;
   }
 
   /**
@@ -186,7 +217,7 @@ export class CloudAssemblyBuilder {
    * @param outdir The output directory, uses temporary directory if undefined
    */
   constructor(outdir?: string) {
-    this.outdir = outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+    this.outdir = determineOutputDirectory(outdir);
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
@@ -198,7 +229,7 @@ export class CloudAssemblyBuilder {
         throw new Error(`${this.outdir} must be a directory`);
       }
     } else {
-      fs.mkdirSync(this.outdir);
+      fs.mkdirSync(this.outdir, { recursive: true });
     }
   }
 
@@ -251,6 +282,23 @@ export class CloudAssemblyBuilder {
     return new CloudAssembly(this.outdir);
   }
 
+  /**
+   * Creates a nested cloud assembly
+   */
+  public createNestedAssembly(artifactId: string, displayName: string) {
+    const directoryName = artifactId;
+    const innerAsmDir = path.join(this.outdir, directoryName);
+
+    this.addArtifact(artifactId, {
+      type: cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY,
+      properties: {
+        directoryName,
+        displayName,
+      } as cxschema.NestedCloudAssemblyProperties,
+    });
+
+    return new CloudAssemblyBuilder(innerAsmDir);
+  }
 }
 
 /**
@@ -285,8 +333,27 @@ export interface MetadataEntry extends cxschema.MetadataEntry {
  * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.Stack.reportMissingContext
  */
-export interface MissingContext extends cxschema.MissingContext {
+export interface MissingContext {
+  /**
+   * The missing context key.
+   */
+  readonly key: string;
 
+  /**
+   * The provider from which we expect this context key to be obtained.
+   *
+   * (This is the old untyped definition, which is necessary for backwards compatibility.
+   * See cxschema for a type definition.)
+   */
+  readonly provider: string;
+
+  /**
+   * A set of provider-specific options.
+   *
+   * (This is the old untyped definition, which is necessary for backwards compatibility.
+   * See cxschema for a type definition.)
+   */
+  readonly props: Record<string, any>;
 }
 
 export interface AssemblyBuildOptions {
@@ -321,4 +388,11 @@ function filterUndefined(obj: any): any {
 
 function ignore(_x: any) {
   return;
+}
+
+/**
+ * Turn the given optional output directory into a fixed output directory
+ */
+function determineOutputDirectory(outdir?: string) {
+  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
 }

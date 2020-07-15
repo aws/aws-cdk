@@ -45,10 +45,9 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {},
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.4",
     "@types/mock-fs": "^4.10.0",
     "cdk-build-tools": "0.0.0",
     "jest": "^25.5.4",
@@ -71,7 +70,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {
@@ -84,5 +83,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true
+  }
 }

@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default bucket'(test: Test) {
@@ -127,7 +127,6 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
-      // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
     });
@@ -1050,6 +1049,50 @@ export = {
     test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), ['s3:DeleteObject*', 's3:PutObject*', 's3:Abort*']);
     test.deepEqual(actions('PutterDefaultPolicyAB138DD3'), ['s3:PutObject*', 's3:Abort*']);
     test.deepEqual(actions('DeleterDefaultPolicyCD33B8A0'), 's3:DeleteObject*');
+    test.done();
+  },
+
+  'grantDelete, with a KMS Key'(test: Test) {
+    // given
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'MyKey');
+    const deleter = new iam.User(stack, 'Deleter');
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'my-bucket-physical-name',
+      encryptionKey: key,
+      encryption: s3.BucketEncryption.KMS,
+    });
+
+    // when
+    bucket.grantDelete(deleter);
+
+    // then
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:DeleteObject*',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'MyBucketF68F3FF0',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    }));
+
     test.done();
   },
 

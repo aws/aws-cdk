@@ -8,7 +8,7 @@ import { CfnRotationSchedule } from './secretsmanager.generated';
  */
 export interface RotationScheduleOptions {
   /**
-   * THe Lambda function that can rotate the secret.
+   * The Lambda function that can rotate the secret.
    */
   readonly rotationLambda: lambda.IFunction;
 

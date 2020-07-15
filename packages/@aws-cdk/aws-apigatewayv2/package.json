@@ -48,7 +48,8 @@
     "build+test+package": "npm run build+test && npm run package"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApiGatewayV2"
+    "cloudformation": "AWS::ApiGatewayV2",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -61,23 +62,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -87,6 +71,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -95,17 +80,20 @@
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
+      "from-method:@aws-cdk/aws-apigatewayv2.HttpStage",
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
     ]

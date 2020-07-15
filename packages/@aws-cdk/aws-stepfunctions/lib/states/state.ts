@@ -1,7 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Condition } from '../condition';
+import { JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
@@ -17,7 +18,7 @@ export interface StateProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -37,7 +38,7 @@ export interface StateProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -47,7 +48,7 @@ export interface StateProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default $
@@ -214,7 +215,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     if (this.containingGraph === graph) { return; }
 
     if (this.containingGraph) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
     }
 
@@ -512,7 +513,7 @@ export function renderList<T>(xs: T[], fn: (x: T) => any): any {
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }
-  if (jsonPath === DISCARD) { return null; }
+  if (jsonPath === JsonPath.DISCARD) { return null; }
 
   if (!jsonPath.startsWith('$')) {
     throw new Error(`Expected JSON path to start with '$', got: ${jsonPath}`);

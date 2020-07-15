@@ -15,3 +15,6 @@ coverage
 .LAST_PACKAGE
 *.snk
 !.eslintrc.js
+!jest.config.js
+
+junit.xml

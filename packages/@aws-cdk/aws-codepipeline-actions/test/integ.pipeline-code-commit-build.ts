@@ -4,7 +4,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import * as cpactions from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const app = new cdk.App();
 
@@ -21,7 +21,9 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   trigger: cpactions.CodeCommitTrigger.POLL,
 });
 
-const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
+const project = new codebuild.PipelineProject(stack, 'MyBuildProject', {
+  grantReportGroupPermissions: false,
+});
 const buildAction = new cpactions.CodeBuildAction({
   actionName: 'build',
   project,

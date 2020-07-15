@@ -73,7 +73,7 @@ export interface IBucket extends IResource {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  addToResourcePolicy(permission: iam.PolicyStatement): void;
+  addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The https URL of an S3 object. For example:
@@ -418,14 +418,17 @@ abstract class BucketBase extends Resource implements IBucket {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: iam.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
   }
 
   /**
@@ -627,7 +630,7 @@ abstract class BucketBase extends Resource implements IBucket {
       });
     }
 
-    if (this.encryptionKey) {
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
@@ -1301,7 +1304,7 @@ export class Bucket extends BucketBase {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x: CfnBucket.RuleProperty = {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration && rule.expiration.toDays(),

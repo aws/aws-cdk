@@ -525,7 +525,7 @@ export = {
 
     test.throws(() => {
       ConstructNode.prepare(app.node);
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
     test.done();
@@ -851,6 +851,19 @@ export = {
 
     test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
     test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
+    test.done();
+  },
+
+  'Termination Protection is reflected in Cloud Assembly artifact'(test: Test) {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    test.equals(artifact.terminationProtection, true);
+
     test.done();
   },
 };

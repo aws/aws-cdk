@@ -5,6 +5,7 @@ import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
+import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
@@ -25,7 +26,7 @@ export async function provideContextValues(
     const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
     if (!constructor) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
     }
 
@@ -54,9 +55,10 @@ export function registerContextProvider(name: string, provider: ProviderConstruc
 }
 
 const availableContextProviders: ProviderMap = {
-  [cxapi.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
-  [cxapi.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
-  [cxapi.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
-  [cxapi.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
-  [cxapi.AMI_PROVIDER]: AmiContextProviderPlugin,
+  [cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
+  [cxschema.ContextProvider.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
+  [cxschema.ContextProvider.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
+  [cxschema.ContextProvider.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
+  [cxschema.ContextProvider.AMI_PROVIDER]: AmiContextProviderPlugin,
+  [cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: EndpointServiceAZContextProviderPlugin,
 };

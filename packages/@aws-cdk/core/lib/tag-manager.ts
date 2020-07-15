@@ -279,7 +279,8 @@ export class TagManager {
    * Renders tags into the proper format based on TagType
    */
   public renderTags(): any {
-    return this.tagFormatter.formatTags(Array.from(this.tags.values()));
+    const sortedTags = Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
+    return this.tagFormatter.formatTags(sortedTags);
   }
 
   /**

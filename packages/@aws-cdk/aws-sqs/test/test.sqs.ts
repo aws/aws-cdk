@@ -1,11 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sqs from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default properties'(test: Test) {
@@ -45,6 +45,58 @@ export = {
                 ],
               },
               'maxReceiveCount': 3,
+            },
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'message retention period must be between 1 minute to 14 days'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(30),
+    }), /message retention period must be 60 seconds or more/);
+
+    test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
+      retentionPeriod: Duration.days(15),
+    }), /message retention period must be 1209600 seconds of less/);
+
+    test.done();
+  },
+
+  'message retention period can be provided as a parameter'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'my-retention-period', {
+      type: 'Number',
+      default: 30,
+    });
+
+    // WHEN
+    new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(parameter.valueAsNumber),
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      'Parameters': {
+        'myretentionperiod': {
+          'Type': 'Number',
+          'Default': 30,
+        },
+      },
+      'Resources': {
+        'MyQueueE6CA6235': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'MessageRetentionPeriod': {
+              'Ref': 'myretentionperiod',
             },
           },
         },

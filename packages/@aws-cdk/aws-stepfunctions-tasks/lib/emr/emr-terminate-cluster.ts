@@ -1,27 +1,18 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Stack } from '@aws-cdk/core';
-import { getResourceArn } from '../resource-arn-suffix';
+import { Aws, Construct, Stack } from '@aws-cdk/core';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for EmrTerminateCluster
  *
  * @experimental
  */
-export interface EmrTerminateClusterProps {
+export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
   /**
    * The ClusterId to terminate.
    */
   readonly clusterId: string;
-
-  /**
-   * The service integration pattern indicates different ways to call TerminateCluster.
-   *
-   * The valid value is either FIRE_AND_FORGET or SYNC.
-   *
-   * @default SYNC
-   */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
 }
 
 /**
@@ -29,38 +20,42 @@ export interface EmrTerminateClusterProps {
  *
  * @experimental
  */
-export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
+export class EmrTerminateCluster extends sfn.TaskStateBase {
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =  [
+    sfn.IntegrationPattern.REQUEST_RESPONSE,
+    sfn.IntegrationPattern.RUN_JOB,
+  ];
 
-  private readonly integrationPattern: sfn.ServiceIntegrationPattern;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(private readonly props: EmrTerminateClusterProps) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
+  private readonly integrationPattern: sfn.IntegrationPattern;
 
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
+  constructor(scope: Construct, id: string, private readonly props: EmrTerminateClusterProps) {
+    super(scope, id, props);
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
+    validatePatternSupported(this.integrationPattern, EmrTerminateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call TerminateCluster.`);
-    }
+    this.taskPolicies = this.createPolicyStatements();
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
-      resourceArn: getResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
-      policyStatements: this.createPolicyStatements(_task),
-      parameters: {
+      Resource: integrationResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
-      },
+      }),
     };
   }
 
   /**
    * This generates the PolicyStatements required by the Task to call TerminateCluster.
    */
-  private createPolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = Stack.of(task);
+  private createPolicyStatements(): iam.PolicyStatement[] {
+    const stack = Stack.of(this);
 
     const policyStatements = [
       new iam.PolicyStatement({
@@ -72,7 +67,7 @@ export class EmrTerminateCluster implements sfn.IStepFunctionsTask {
       }),
     ];
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(new iam.PolicyStatement({
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
         resources: [stack.formatArn({

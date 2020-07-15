@@ -6,7 +6,7 @@ import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CodeCommit Source Action': {
@@ -106,6 +106,66 @@ export = {
       }));
 
       expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+
+      test.done();
+    },
+
+    'cannot be created with an empty branch'(test: Test) {
+      const stack = new Stack();
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      test.throws(() => {
+        new cpactions.CodeCommitSourceAction({
+          actionName: 'Source2',
+          repository: repo,
+          output: new codepipeline.Artifact(),
+          branch: '',
+        });
+      }, /'branch' parameter cannot be an empty string/);
+
+      test.done();
+    },
+
+    'allows using the same repository multiple times with different branches when trigger=EVENTS'(test: Test) {
+      const stack = new Stack();
+
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+      const sourceOutput1 = new codepipeline.Artifact();
+      const sourceOutput2 = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source1',
+                repository: repo,
+                output: sourceOutput1,
+              }),
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source2',
+                repository: repo,
+                output: sourceOutput2,
+                branch: 'develop',
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput1,
+              }),
+            ],
+          },
+        ],
+      });
 
       test.done();
     },

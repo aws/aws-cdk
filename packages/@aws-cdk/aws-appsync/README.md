@@ -54,6 +54,7 @@ type Mutation {
     saveCustomer(id: String!, customer: SaveCustomerInput!): Customer
     removeCustomer(id: String!): Customer
     saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order
+    doPostOnAws: String!
 }
 ```
 
@@ -64,7 +65,7 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const userPool = new UserPool(this, 'UserPool'{
+    const userPool = new UserPool(this, 'UserPool', {
       userPoolName: 'myPool',
     });
 
@@ -75,13 +76,16 @@ export class ApiStack extends Stack {
       },
       authorizationConfig: {
         defaultAuthorization: {
-          userPool,
-          defaultAction: UserPoolDefaultAction.ALLOW,
+          authorizationType: AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool,
+            defaultAction: UserPoolDefaultAction.ALLOW
+          },
         },
         additionalAuthorizationModes: [
           {
-            apiKeyDesc: 'My API Key',
-          },
+            authorizationType: AuthorizationType.API_KEY,
+          }
         ],
       },
       schemaDefinitionFile: './schema.graphql',
@@ -107,6 +111,7 @@ export class ApiStack extends Stack {
         type: AttributeType.STRING,
       },
     });
+    // If your table is already created you can also use use import table and use it as data source.
     const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
     customerDS.createResolver({
       typeName: 'Query',
@@ -153,6 +158,40 @@ export class ApiStack extends Stack {
       fieldName: 'removeCustomer',
       requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
       responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+    });
+
+    const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+
+    httpDS.createResolver({
+      typeName: 'Mutation',
+      fieldName: 'doPostOnAws',
+      requestMappingTemplate: MappingTemplate.fromString(`{
+        "version": "2018-05-29",
+        "method": "POST",
+        # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+        "resourcePath": "/path/123",
+        "params":{
+            "body": $util.toJson($ctx.args),
+            "headers":{
+                "Content-Type": "application/json",
+                "Authorization": "$ctx.request.headers.Authorization"
+            }
+        }
+      }`),
+      responseMappingTemplate: MappingTemplate.fromString(`
+        ## Raise a GraphQL field error in case of a datasource invocation error
+        #if($ctx.error)
+          $util.error($ctx.error.message, $ctx.error.type)
+        #end
+        ## if the response status code is not 200, then return an error. Else return the body **
+        #if($ctx.result.statusCode == 200)
+            ## If response is 200, return the body.
+            $ctx.result.body
+        #else
+            ## If response is not 200, append the response to error block.
+            $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+        #end
+      `),
     });
   }
 }

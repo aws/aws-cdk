@@ -140,7 +140,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     this.sourceHash = staging.sourceHash;
 
     const stack = Stack.of(this);
-    const location = stack.addDockerImageAsset({
+    const location = stack.synthesizer.addDockerImageAsset({
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,

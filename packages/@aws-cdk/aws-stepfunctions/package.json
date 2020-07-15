@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::StepFunctions"
+    "cloudformation": "AWS::StepFunctions",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -85,16 +86,8 @@
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.2"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 75,
-        "statements": 80
-      }
-    }
-  },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
@@ -102,8 +95,8 @@
       "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

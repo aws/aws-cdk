@@ -31,7 +31,7 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
   const packageJsonDir = path.dirname(packageJsonFile);
 
   const yarnLockLoc = await findYarnLock(packageJsonDir);
-  const yarnLock: YarnLock = lockfile.parse(await fs.readFile(yarnLockLoc, { encoding: 'utf-8' }));
+  const yarnLock: YarnLock = lockfile.parse(await fs.readFile(yarnLockLoc, { encoding: 'utf8' }));
   const pkgJson = await loadPackageJson(packageJsonFile);
 
   const lock = await generateLockFile(pkgJson, yarnLock, packageJsonDir);
@@ -42,7 +42,7 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
 
   if (options.outputFile) {
     // Write the shrinkwrap file
-    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf-8'} );
+    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8'} );
   }
 
   return lock;
@@ -58,7 +58,7 @@ async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDi
   };
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock, rootDir: string): Promise<Record<string, PackageLockPackage>> {
   const ret: Record<string, PackageLockPackage> = {};
 
@@ -123,7 +123,7 @@ async function findUp(fileName: string, start: string) {
 }
 
 async function loadPackageJson(fileName: string): Promise<PackageJson> {
-  return JSON.parse(await fs.readFile(fileName, { encoding: 'utf-8' }));
+  return JSON.parse(await fs.readFile(fileName, { encoding: 'utf8' }));
 }
 
 async function fileExists(fullPath: string): Promise<boolean> {
@@ -143,7 +143,7 @@ export function formatPackageLock(entry: PackageLockEntry) {
 
   function recurse(names: string[], thisEntry: PackageLockEntry) {
     if (names.length > 0) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       lines.push(`${names.join(' -> ')} @ ${thisEntry.version}`);
     }
     for (const [depName, depEntry] of Object.entries(thisEntry.dependencies || {})) {

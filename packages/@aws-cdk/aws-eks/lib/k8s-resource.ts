@@ -54,7 +54,7 @@ export class KubernetesResource extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster._kubectlProvider;
+    const provider = props.cluster._attachKubectlResourceScope(this);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -65,7 +65,7 @@ export class KubernetesResource extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
+        RoleArn: props.cluster._kubectlCreationRole.roleArn,
       },
     });
   }

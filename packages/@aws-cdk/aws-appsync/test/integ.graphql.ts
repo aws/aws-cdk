@@ -2,7 +2,29 @@ import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { join } from 'path';
-import { GraphQLApi, KeyCondition, MappingTemplate, PrimaryKey, UserPoolDefaultAction, Values } from '../lib';
+import {
+  AuthorizationType,
+  GraphQLApi,
+  KeyCondition,
+  MappingTemplate,
+  PrimaryKey,
+  UserPoolDefaultAction,
+  Values,
+} from '../lib';
+
+/*
+ * Creates an Appsync GraphQL API and with multiple tables.
+ * Testing for importing, querying, and mutability.
+ *
+ * Stack verification steps:
+ * Add to a table through appsync GraphQL API.
+ * Read from a table through appsync API.
+ *
+ * -- aws appsync list-graphql-apis                 -- obtain apiId               --
+ * -- aws appsync get-graphql-api --api-id [apiId]  -- obtain GraphQL endpoint    --
+ * -- aws appsync list-api-keys --api-id [apiId]    -- obtain api key             --
+ * -- bash verify.integ.graphql.sh [apiKey] [url]   -- shows query and mutation   --
+ */
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
@@ -16,14 +38,15 @@ const api = new GraphQLApi(stack, 'Api', {
   schemaDefinitionFile: join(__dirname, 'schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: {
-      userPool,
-      defaultAction: UserPoolDefaultAction.ALLOW,
+      authorizationType: AuthorizationType.USER_POOL,
+      userPoolConfig: {
+        userPool,
+        defaultAction: UserPoolDefaultAction.ALLOW,
+      },
     },
     additionalAuthorizationModes: [
       {
-        apiKeyDesc: 'My API Key',
-        // Can't specify a date because it will inevitably be in the past.
-        // expires: '2019-02-05T12:00:00Z',
+        authorizationType: AuthorizationType.API_KEY,
       },
     ],
   },
@@ -63,8 +86,20 @@ const orderTable = new Table(stack, 'OrderTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
+new Table(stack, 'PaymentTable', {
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+const paymentTable =  Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
+
 const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
 const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
+const paymentDS = api.addDynamoDbDataSource('Payment', 'The payment data source', paymentTable);
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -137,6 +172,53 @@ orderDS.createResolver({
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+
+paymentDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getPayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+paymentDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'savePayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('payment')),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+
+const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+
+httpDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'doPostOnAws',
+  requestMappingTemplate: MappingTemplate.fromString(`{
+    "version": "2018-05-29",
+    "method": "POST",
+    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts
+    "resourcePath": "/path/123",
+    "params":{
+        "body": $util.toJson($ctx.args),
+        "headers":{
+            "Content-Type": "application/json",
+            "Authorization": "$ctx.request.headers.Authorization"
+        }
+    }
+  }`),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    ## Raise a GraphQL field error in case of a datasource invocation error
+    #if($ctx.error)
+      $util.error($ctx.error.message, $ctx.error.type)
+    #end
+    ## if the response status code is not 200, then return an error. Else return the body **
+    #if($ctx.result.statusCode == 200)
+        ## If response is 200, return the body.
+        $ctx.result.body
+    #else
+        ## If response is not 200, append the response to error block.
+        $utils.appendError($ctx.result.body, "$ctx.result.statusCode")
+    #end
+  `),
 });
 
 app.synth();

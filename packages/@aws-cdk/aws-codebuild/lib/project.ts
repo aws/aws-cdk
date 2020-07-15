@@ -16,6 +16,7 @@ import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
+import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 
@@ -519,6 +520,21 @@ export interface CommonProjectProps {
    * @default - no file system locations
    */
   readonly fileSystemLocations?: IFileSystemLocation[];
+
+  /**
+   * Add permissions to this project's role to create and use test report groups with name starting with the name of this project.
+   *
+   * That is the standard report group that gets created when a simple name
+   * (in contrast to an ARN)
+   * is used in the 'reports' section of the buildspec of this project.
+   * This is usually harmless, but you can turn these off if you don't plan on using test
+   * reports in this project.
+   *
+   * @default true
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
+   */
+  readonly grantReportGroupPermissions?: boolean;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -762,6 +778,20 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
+    // add permissions to create and use test report groups
+    // with names starting with the project's name,
+    // unless the customer explicitly opts out of it
+    if (props.grantReportGroupPermissions !== false) {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'codebuild:CreateReportGroup',
+          'codebuild:CreateReport',
+          'codebuild:UpdateReport',
+          'codebuild:BatchPutTestCases',
+        ],
+        resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
+      }));
+    }
 
     if (props.encryptionKey) {
       this.encryptionKey = props.encryptionKey;
@@ -909,6 +939,9 @@ export class Project extends ProjectBase {
         statement.sid = 'CodeBuild';
         this.buildImage.repository.addToResourcePolicy(statement);
       }
+    }
+    if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
+      this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
     return {

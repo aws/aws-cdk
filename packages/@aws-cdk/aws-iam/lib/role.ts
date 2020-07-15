@@ -6,7 +6,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
 import { AttachedPolicies } from './util';
 
@@ -177,10 +177,9 @@ export class Role extends Resource implements IRole {
     const parsedArn = scopeStack.parseArn(roleArn);
     const resourceName = parsedArn.resourceName!;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
-    // we want to support these as well, so strip out the 'service-role/' prefix if we see it
-    const roleName = resourceName.startsWith('service-role/')
-      ? resourceName.slice('service-role/'.length)
-      : resourceName;
+    // or 'arn:aws:iam::<account>:role/service-role/servicename.amazonaws.com/service-role/<roleName>'
+    // we want to support these as well, so we just use the element after the last slash as role name
+    const roleName = resourceName.split('/').pop()!;
 
     class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
@@ -192,12 +191,16 @@ export class Role extends Resource implements IRole {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
       public attachInlinePolicy(policy: Policy): void {
@@ -351,13 +354,17 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   /**

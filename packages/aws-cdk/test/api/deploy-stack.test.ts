@@ -1,12 +1,9 @@
 import { deployStack } from '../../lib';
-import { testStack } from '../util';
+import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
-
-const FAKE_TEMPLATE = { resource: 'noerrorresource' };
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
-  template: FAKE_TEMPLATE,
 });
 
 const FAKE_STACK_WITH_PARAMETERS = testStack({
@@ -22,7 +19,7 @@ const FAKE_STACK_WITH_PARAMETERS = testStack({
 
 const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   stackName: 'termination-protection',
-  template: FAKE_TEMPLATE,
+  template: DEFAULT_FAKE_TEMPLATE,
   terminationProtection: true,
 });
 
@@ -51,7 +48,8 @@ beforeEach(() => {
       Changes: [],
     })),
     executeChangeSet: jest.fn((_o) => ({})),
-    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(FAKE_TEMPLATE) })),
+    deleteStack: jest.fn((_o) => ({})),
+    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(DEFAULT_FAKE_TEMPLATE) })),
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
@@ -193,6 +191,113 @@ test('deploy is skipped if template did not change', async () => {
   expect(cfnMocks.executeChangeSet).not.toBeCalled();
 });
 
+test('deploy is skipped if parameters are the same', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {},
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy is not skipped if parameters are different', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      HasValue: 'NewValue',
+    },
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
+      { ParameterKey: 'HasDefault', UsePreviousValue: true },
+      { ParameterKey: 'OtherParameter', UsePreviousValue: true },
+    ],
+  }));
+});
+
+test('if existing stack failed to create, it is deleted and recreated', async () => {
+  // GIVEN
+  givenStackExists(
+    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+  );
+  givenTemplateIs({
+    DifferentThan: 'TheDefault',
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.deleteStack).toHaveBeenCalled();
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    ChangeSetType: 'CREATE',
+  }));
+});
+
+test('if existing stack failed to create, it is deleted and recreated even if the template did not change', async () => {
+  // GIVEN
+  givenStackExists(
+    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+  );
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.deleteStack).toHaveBeenCalled();
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    ChangeSetType: 'CREATE',
+  }));
+});
+
 test('deploy not skipped if template did not change and --force is applied', async () => {
   // GIVEN
   givenStackExists();
@@ -299,10 +404,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
 test('deploy not skipped if template changed', async () => {
   // GIVEN
   givenStackExists();
-  cfnMocks.getTemplate!.mockReset();
-  cfnMocks.getTemplate!.mockReturnValue({
-    TemplateBody: JSON.stringify({ changed: 123 }),
-  });
+  givenTemplateIs({ changed: 123 });
 
   // WHEN
   await deployStack({
@@ -328,6 +430,48 @@ test('not executed and no error if --no-execute is given', async () => {
 
   // THEN
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('use S3 url for stack deployment if present in Stack Artifact', async () => {
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 'https://use-me-use-me/',
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://use-me-use-me/',
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+});
+
+test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
+  // WHEN
+  await deployStack({
+    stack: testStack({
+      stackName: 'withouterrors',
+      properties: {
+        stackTemplateAssetObjectUrl: 's3://use-me-use-me-${AWS::AccountId}/object',
+      },
+    }),
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    TemplateURL: 'https://s3.bermuda-triangle-1337.amazonaws.com/use-me-use-me-123456789/object',
+  }));
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', async () => {
@@ -437,19 +581,37 @@ test('updateTerminationProtection called when termination protection is undefine
 
 /**
  * Set up the mocks so that it looks like the stack exists to start with
+ *
+ * The last element of this array will be continuously repeated.
  */
-function givenStackExists(overrides: Partial<AWS.CloudFormation.Stack> = {}) {
+function givenStackExists(...overrides: Array<Partial<AWS.CloudFormation.Stack>>) {
   cfnMocks.describeStacks!.mockReset();
+
+  if (overrides.length === 0) {
+    overrides = [{}];
+  }
+
+  const baseResponse = {
+    StackName: 'mock-stack-name',
+    StackId: 'mock-stack-id',
+    CreationTime: new Date(),
+    StackStatus: 'CREATE_COMPLETE',
+    EnableTerminationProtection: false,
+  };
+
+  for (const override of overrides.slice(0, overrides.length - 1)) {
+    cfnMocks.describeStacks!.mockImplementationOnce(() => ({
+      Stacks: [ {...baseResponse, ...override }],
+    }));
+  }
   cfnMocks.describeStacks!.mockImplementation(() => ({
-    Stacks: [
-      {
-        StackName: 'mock-stack-name',
-        StackId: 'mock-stack-id',
-        CreationTime: new Date(),
-        StackStatus: 'CREATE_COMPLETE',
-        EnableTerminationProtection: false,
-        ...overrides,
-      },
-    ],
+    Stacks: [ {...baseResponse, ...overrides[overrides.length - 1] }],
   }));
+}
+
+function givenTemplateIs(template: any) {
+  cfnMocks.getTemplate!.mockReset();
+  cfnMocks.getTemplate!.mockReturnValue({
+    TemplateBody: JSON.stringify(template),
+  });
 }

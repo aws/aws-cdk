@@ -1,4 +1,6 @@
+import { arrayWith, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
@@ -40,5 +42,33 @@ describe('Activity', () => {
       metricName: 'ActivitiesFailed',
       statistic: 'Sum',
     });
+  });
+
+  test('Activity can grant permissions to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const activity = new stepfunctions.Activity(stack, 'Activity');
+
+    // WHEN
+    activity.grant(role, 'states:SendTaskSuccess');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(objectLike({
+          Action: 'states:SendTaskSuccess',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'Activity04690B0A',
+          },
+        })),
+      },
+    });
+
   });
 });

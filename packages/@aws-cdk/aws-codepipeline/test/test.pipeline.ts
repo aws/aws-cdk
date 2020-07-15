@@ -3,12 +3,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Pipeline': {
@@ -46,7 +47,7 @@ export = {
     },
 
     'that is cross-region': {
-      'validates that source actions are in the same account as the pipeline'(test: Test) {
+      'validates that source actions are in the same region as the pipeline'(test: Test) {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'PipelineStack', { env: { region: 'us-west-1', account: '123456789012' }});
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -293,6 +294,46 @@ export = {
             },
           ],
         }));
+
+        test.done();
+      },
+
+      'generates the support stack containing the replication Bucket without the need to bootstrap in that environment'(test: Test) {
+        const app = new cdk.App({
+          treeMetadata: false, // we can't set the context otherwise, because App will have a child
+        });
+        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+
+        const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                region: 'eu-south-1',
+              })],
+            },
+          ],
+        });
+
+        const assembly = app.synth();
+        const supportStackArtifact = assembly.getStackByName('PipelineStack-support-eu-south-1');
+        test.equal(supportStackArtifact.assumeRoleArn,
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+        test.equal(supportStackArtifact.cloudFormationExecutionRoleArn,
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
         test.done();
       },

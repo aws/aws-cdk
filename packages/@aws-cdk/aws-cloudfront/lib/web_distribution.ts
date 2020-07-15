@@ -141,14 +141,30 @@ export interface LoggingConfiguration {
  */
 export interface SourceConfiguration {
   /**
+   * The number of times that CloudFront attempts to connect to the origin.
+   * You can specify 1, 2, or 3 as the number of attempts.
+   *
+   * @default 3
+   */
+  readonly connectionAttempts?: number;
+
+  /**
+   * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
+   * You can specify a number of seconds between 1 and 10 (inclusive).
+   *
+   * @default cdk.Duration.seconds(10)
+   */
+  readonly connectionTimeout?: cdk.Duration;
+
+  /**
    * An s3 origin source - if you're using s3 for your assets
    */
-  readonly s3OriginSource?: S3OriginConfig
+  readonly s3OriginSource?: S3OriginConfig;
 
   /**
    * A custom origin source - for all non-s3 sources.
    */
-  readonly customOriginSource?: CustomOriginConfig,
+  readonly customOriginSource?: CustomOriginConfig;
 
   /**
    * The behaviors associated with this source.
@@ -161,7 +177,7 @@ export interface SourceConfiguration {
    *
    * @default /
    */
-  readonly originPath?: string,
+  readonly originPath?: string;
 
   /**
    * Any additional headers to pass to the origin
@@ -482,6 +498,59 @@ export class ViewerCertificate {
     public readonly aliases: string[] = []) { }
 }
 
+/**
+ * Controls the countries in which your content is distributed.
+ */
+export class GeoRestriction {
+
+  /**
+   * Whitelist specific countries which you want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static whitelist(...locations: string[]) {
+    return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
+  }
+
+  /**
+   * Blacklist specific countries which you don't want CloudFront to distribute your content.
+   *
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  public static blacklist(...locations: string[]) {
+    return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
+  }
+
+  private static LOCATION_REGEX = /^[A-Z]{2}$/;
+
+  private static validateLocations(locations: string[]) {
+    if (locations.length === 0) {
+      throw new Error('Should provide at least 1 location');
+    }
+    locations.forEach(location => {
+      if (!GeoRestriction.LOCATION_REGEX.test(location)) {
+        // eslint-disable-next-line max-len
+        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+      }
+    });
+    return locations;
+  }
+
+  /**
+   * Creates an instance of GeoRestriction for internal use
+   *
+   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
+   * @param locations Two-letter, uppercase country code for a country
+   * that you want to whitelist/blacklist. Include one element for each country.
+   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
+   */
+  private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}
+}
+
 export interface CloudFrontWebDistributionProps {
 
   /**
@@ -523,7 +592,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PRICE_CLASS_100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
@@ -576,6 +645,13 @@ export interface CloudFrontWebDistributionProps {
    * @see https://aws.amazon.com/premiumsupport/knowledge-center/custom-ssl-certificate-cloudfront/
    */
   readonly viewerCertificate?: ViewerCertificate;
+
+  /**
+   * Controls the countries in which your content is distributed.
+   *
+   * @default No geo restriction
+   */
+  readonly geoRestriction?: GeoRestriction;
 }
 
 /**
@@ -664,7 +740,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
     };
@@ -712,6 +788,16 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         }
       }
 
+      const connectionAttempts = originConfig.connectionAttempts ?? 3;
+      if (connectionAttempts < 1 || 3 < connectionAttempts || !Number.isInteger(connectionAttempts)) {
+        throw new Error('connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
+      }
+
+      const connectionTimeout = (originConfig.connectionTimeout || cdk.Duration.seconds(10)).toSeconds();
+      if (connectionTimeout < 1 || 10 < connectionTimeout || !Number.isInteger(connectionTimeout)) {
+        throw new Error('connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+      }
+
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource
@@ -732,6 +818,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
           }
           : undefined,
+        connectionAttempts,
+        connectionTimeout,
       };
 
       for (const behavior of originConfig.behaviors) {
@@ -796,7 +884,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
         }
       }
@@ -814,6 +902,18 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix,
+        },
+      };
+    }
+
+    if (props.geoRestriction) {
+      distributionConfig = {
+        ...distributionConfig,
+        restrictions: {
+          geoRestriction: {
+            restrictionType: props.geoRestriction.restrictionType,
+            locations: props.geoRestriction.locations,
+          },
         },
       };
     }

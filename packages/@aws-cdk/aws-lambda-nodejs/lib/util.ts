@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 // From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
 const STACK_RE = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
@@ -50,35 +51,19 @@ export function nodeMajorVersion(): number {
 }
 
 /**
- * Finds closest package.json path
+ * Find a file by walking up parent directories
  */
-export function findPkgPath(): string | undefined {
-  let pkgPath;
+export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  const absoluteDirectory = path.resolve(directory);
 
-  for (const path of module.paths) {
-    pkgPath = path.replace(/node_modules$/, 'package.json');
-    if (fs.existsSync(pkgPath)) {
-      break;
-    }
+  if (fs.existsSync(path.join(directory, name))) {
+    return directory;
   }
 
-  return pkgPath;
-}
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory === root) {
+    return undefined;
+  }
 
-/**
- * Updates the package.json and returns the original
- */
-export function updatePkg(pkgPath: string, data: any): Buffer {
-  const original = fs.readFileSync(pkgPath);
-
-  const pkgJson = JSON.parse(original.toString());
-
-  const updated = {
-    ...pkgJson,
-    ...data,
-  };
-
-  fs.writeFileSync(pkgPath, JSON.stringify(updated, null, 2));
-
-  return original;
+  return findUp(name, path.dirname(absoluteDirectory));
 }

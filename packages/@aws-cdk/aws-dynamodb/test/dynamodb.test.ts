@@ -2,6 +2,7 @@ import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnDeletionPolicy, ConstructNode, Duration, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import {
   Attribute,
@@ -12,9 +13,10 @@ import {
   ProjectionType,
   StreamViewType,
   Table,
+  TableEncryption,
 } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
@@ -57,7 +59,7 @@ function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
       indexName: `${LSI_NAME}${n}`,
-      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
+      sortKey: { name: `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type },
     };
     yield localSecondaryIndexProps;
     n++;
@@ -343,6 +345,482 @@ test('when specifying every property', () => {
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
     },
   );
+});
+
+test('when specifying sse with customer managed CMK', () => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'MyTableKey8597C7A6',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('when specifying only encryptionKey', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('when specifying sse with customer managed CMK with encryptionKey provided by user', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+    encryptionKey,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+  table.node.applyAspect(new Tag('Environment', 'Production'));
+
+  expect(stack).toHaveResource('AWS::DynamoDB::Table', {
+    'SSESpecification': {
+      'KMSMasterKeyId': {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+      'SSEEnabled': true,
+      'SSEType': 'KMS',
+    },
+  });
+});
+
+test('fails if encryption key is used with AWS managed CMK', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.AWS_MANAGED,
+    encryptionKey,
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+});
+
+test('fails if encryption key is used with default encryption', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.DEFAULT,
+    encryptionKey,
+  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+});
+
+test('fails if encryption key is used with serverSideEncryption', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    serverSideEncryption: true,
+    encryptionKey,
+  })).toThrow(/encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead/);
+});
+
+test('fails if both encryption and serverSideEncryption is specified', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.DEFAULT,
+    serverSideEncryption: true,
+  })).toThrow(/Only one of encryption and serverSideEncryption can be specified, but both were provided/);
+});
+
+test('fails if both replication regions used with customer managed CMK', () => {
+  const stack = new Stack();
+  expect(() => new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  })).toThrow('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
+});
+
+test('if an encryption key is included, decrypt permissions are also added for grantStream', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key', {
+    enableKeyRotation: true,
+  });
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryptionKey,
+    stream: StreamViewType.NEW_IMAGE,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantStreamRead(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'Key961B73FD': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'StreamSpecification': {
+            'StreamViewType': 'NEW_IMAGE',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'dynamodb:ListStreams',
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TableA3D7B5AFA',
+                          'Arn',
+                        ],
+                      },
+                      '/stream/*',
+                    ],
+                  ],
+                },
+              },
+              {
+                'Action': [
+                  'dynamodb:DescribeStream',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableA3D7B5AFA',
+                    'StreamArn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
+});
+
+test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantReadWriteData(user);
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'TableAKey07CC09EC': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::GetAtt': [
+                      'MyUserDC45028B',
+                      'Arn',
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Table A',
+          'EnableKeyRotation': true,
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'TableA3D7B5AFA': {
+        'Type': 'AWS::DynamoDB::Table',
+        'Properties': {
+          'KeySchema': [
+            {
+              'AttributeName': 'hashKey',
+              'KeyType': 'HASH',
+            },
+          ],
+          'AttributeDefinitions': [
+            {
+              'AttributeName': 'hashKey',
+              'AttributeType': 'S',
+            },
+          ],
+          'ProvisionedThroughput': {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+          },
+          'SSESpecification': {
+            'KMSMasterKeyId': {
+              'Fn::GetAtt': [
+                'TableAKey07CC09EC',
+                'Arn',
+              ],
+            },
+            'SSEEnabled': true,
+            'SSEType': 'KMS',
+          },
+          'TableName': 'MyTable',
+        },
+        'UpdateReplacePolicy': 'Retain',
+        'DeletionPolicy': 'Retain',
+      },
+      'MyUserDC45028B': {
+        'Type': 'AWS::IAM::User',
+      },
+      'MyUserDefaultPolicy7B897426': {
+        'Type': 'AWS::IAM::Policy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': [
+                  'dynamodb:BatchGetItem',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:Query',
+                  'dynamodb:GetItem',
+                  'dynamodb:Scan',
+                  'dynamodb:BatchWriteItem',
+                  'dynamodb:PutItem',
+                  'dynamodb:UpdateItem',
+                  'dynamodb:DeleteItem',
+                ],
+                'Effect': 'Allow',
+                'Resource': [
+                  {
+                    'Fn::GetAtt': [
+                      'TableA3D7B5AFA',
+                      'Arn',
+                    ],
+                  },
+                  {
+                    'Ref': 'AWS::NoValue',
+                  },
+                ],
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:DescribeKey',
+                  'kms:Encrypt',
+                  'kms:ReEncrypt*',
+                  'kms:GenerateDataKey*',
+                ],
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'TableAKey07CC09EC',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'PolicyName': 'MyUserDefaultPolicy7B897426',
+          'Users': [
+            {
+              'Ref': 'MyUserDC45028B',
+            },
+          ],
+        },
+      },
+    },
+  });
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
@@ -636,7 +1114,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
   const gsiNonKeyAttributes: string[] = [];
-  for (let i = 0; i < 21; i++) {
+  for (let i = 0; i < 101; i++) {
     gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
   }
 
@@ -646,7 +1124,7 @@ test('error when adding a global secondary index with projection type INCLUDE, b
     sortKey: GSI_SORT_KEY,
     projectionType: ProjectionType.INCLUDE,
     nonKeyAttributes: gsiNonKeyAttributes,
-  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
+  })).toThrow(/a maximum number of nonKeyAttributes across all of secondary indexes is 100/);
 });
 
 test('error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table', () => {
@@ -1169,6 +1647,54 @@ describe('metrics', () => {
 describe('grants', () => {
 
   test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'my-table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+    const user = new iam.User(stack, 'user');
+
+    // WHEN
+    table.grant(user, 'dynamodb:action1', 'dynamodb:action2');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'dynamodb:action1',
+              'dynamodb:action2',
+            ],
+            'Effect': 'Allow',
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Ref': 'AWS::NoValue',
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
+    });
+  });
+
+  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
     testGrant(
       ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
   });
@@ -1349,14 +1875,37 @@ describe('grants', () => {
             ],
             'Effect': 'Allow',
             'Resource': [
-              { 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] },
-              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/index/*']] },
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
             ],
           },
         ],
         'Version': '2012-10-17',
       },
-      'Users': [{ 'Ref': 'user2C2B57AE' }],
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
     });
   });
 
@@ -1631,6 +2180,63 @@ describe('import', () => {
           Version: '2012-10-17',
         },
         Roles: [stack.resolve(role.roleName)],
+      });
+    });
+
+    test('creates the correct index grant if indexes have been provided when importing', () => {
+      const stack = new Stack();
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableName: 'MyTableName',
+        globalIndexes: ['global'],
+        localIndexes: ['local'],
+      });
+
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      });
+
+      table.grantReadData(role);
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
       });
     });
   });
@@ -2169,7 +2775,7 @@ describe('global', () => {
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.STRING } });
+  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
   const user = new iam.User(stack, 'user');
 
   // WHEN
@@ -2184,13 +2790,25 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
           'Action': action,
           'Effect': 'Allow',
           'Resource': [
-            { 'Fn::GetAtt': [ 'mytable0324D45C', 'Arn' ] },
-            { 'Ref' : 'AWS::NoValue' },
+            {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'Arn',
+              ],
+            },
+            {
+              'Ref': 'AWS::NoValue',
+            },
           ],
         },
       ],
       'Version': '2012-10-17',
     },
-    'Users': [ { 'Ref': 'user2C2B57AE' } ],
+    'PolicyName': 'userDefaultPolicy083DF682',
+    'Users': [
+      {
+        'Ref': 'user2C2B57AE',
+      },
+    ],
   });
 }

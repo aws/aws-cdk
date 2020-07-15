@@ -1,11 +1,11 @@
-import { AssetManifestSchema } from '@aws-cdk/cdk-assets-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, DestinationIdentifier, DestinationPattern, DockerImageManifestEntry, FileManifestEntry } from '../lib';
 
 beforeEach(() => {
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
-      version: AssetManifestSchema.currentVersion(),
+      version: Manifest.version(),
       files: {
         asset1: {
           type: 'file',

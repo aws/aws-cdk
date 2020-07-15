@@ -7,7 +7,7 @@ import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
 import { testFixture, testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'a default cluster spans all subnets'(test: Test) {
@@ -102,10 +102,10 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Private' },
         { Key: 'aws-cdk:subnet-type', Value: 'Private' },
         { Key: 'kubernetes.io/role/internal-elb', Value: '1' },
+        { Key: 'Name', Value: 'Stack/VPC/PrivateSubnet1' },
       ],
     }));
 
@@ -123,10 +123,10 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
-        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
         { Key: 'aws-cdk:subnet-name', Value: 'Public' },
         { Key: 'aws-cdk:subnet-type', Value: 'Public' },
         { Key: 'kubernetes.io/role/elb', Value: '1' },
+        { Key: 'Name', Value: 'Stack/VPC/PublicSubnet1' },
       ],
     }));
 
@@ -147,14 +147,14 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: 'Name',
-          PropagateAtLaunch: true,
-          Value: 'Stack/Cluster/Default',
-        },
-        {
           Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
           PropagateAtLaunch: true,
           Value: 'owned',
+        },
+        {
+          Key: 'Name',
+          PropagateAtLaunch: true,
+          Value: 'Stack/Cluster/Default',
         },
       ],
     }));

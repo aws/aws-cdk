@@ -85,6 +85,95 @@ test('Execute State Machine - Sync', () => {
       },
     },
   });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'ChildStateMachine9133117F',
+          },
+        },
+        {
+          Action: [
+            'states:DescribeExecution',
+            'states:StopExecution',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'ChildStateMachine9133117F',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForStepFunctionsExecutionRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [
+      {
+        Ref: 'ParentStateMachineRoleE902D002',
+      },
+    ],
+  });
 });
 
 test('Execute State Machine - Wait For Task Token', () => {
@@ -92,7 +181,7 @@ test('Execute State Machine - Wait For Task Token', () => {
     task: new tasks.StartExecution(child, {
       integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       input: {
-        token: sfn.Context.taskToken,
+        token: sfn.JsonPath.taskToken,
       },
     }),
   });
@@ -134,5 +223,5 @@ test('Execute State Machine - Wait For Task Token - Missing Task Token', () => {
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       }),
     });
-  }).toThrow('Task Token is missing in input (pass Context.taskToken somewhere in input');
+  }).toThrow('Task Token is missing in input (pass JsonPath.taskToken somewhere in input');
 });

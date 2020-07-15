@@ -1,0 +1,99 @@
+{
+  "name": "@aws-cdk/example-construct-library",
+  "private": true,
+  "version": "0.0.0",
+  "description": "An example CDK Construct Library that can serve as a template for creating new libraries",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.example.construct.library",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-example-construct-library"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Example.Construct.Library",
+        "packageId": "Amazon.CDK.Example.Construct.Library",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.example-construct-library",
+        "module": "aws_cdk.example_construct_library"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/example-construct-library"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package",
+    "compat": "cdk-compat"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "example",
+    "construct",
+    "library"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "jest": "^25.5.3",
+    "pkglint": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.2"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "jest": true
+  }
+}

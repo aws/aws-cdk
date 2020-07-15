@@ -4,11 +4,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -21,7 +17,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### TypeScript example
+### Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -31,22 +27,22 @@ import * as lambda from '@aws-cdk/aws-lambda';
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new sfn.Task(this, 'Submit Job', {
-    task: new tasks.RunLambdaTask(submitLambda),
-    // Lambda's result is in the attribute `Payload`
-    outputPath: '$.Payload',
+const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
+  lambdaFunction: submitLambda,
+  // Lambda's result is in the attribute `Payload`
+  outputPath: '$.Payload',
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
     time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
-const getStatus = new sfn.Task(this, 'Get Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Pass just the field named "guid" into the Lambda, put the
-    // Lambda's result in a field called "status" in the response
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Pass just the field named "guid" into the Lambda, put the
+  // Lambda's result in a field called "status" in the response
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
@@ -54,11 +50,11 @@ const jobFailed = new sfn.Fail(this, 'Job Failed', {
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-    task: new tasks.RunLambdaTask(getStatusLambda),
-    // Use "guid" field as input
-    inputPath: '$.guid',
-    outputPath: '$.Payload',
+const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
+  lambdaFunction: getStatusLambda,
+  // Use "guid" field as input
+  inputPath: '$.guid',
+  outputPath: '$.Payload',
 });
 
 const definition = submitJob
@@ -113,6 +109,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
+* [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
 state and transformed during the execution of the workflow. For more
@@ -130,19 +127,44 @@ directly in the Amazon States language.
 
 ### Pass
 
-A `Pass` state does no work, but it can optionally transform the execution's
-JSON state.
+A `Pass` state passes its input to its output, without performing work.
+Pass states are useful when constructing and debugging state machines.
+
+The following example injects some fixed data into the state machine through
+the `result` field. The `result` field will be added to the input and the result
+will be passed as the state's output.
 
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
 const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-    result: { hello: "world" },
-    resultPath: '$.subObject',
+  result: stepfunctions.Result.fromObject({ hello: 'world' }),
+  resultPath: '$.subObject',
 });
 
 // Set the next state
 pass.next(nextState);
 ```
+
+The `Pass` state also supports passing key-value pairs as input. Values can
+be static, or selected from the input with a path.
+
+The following example filters the `greeting` field from the state input
+and also injects a field called `otherData`.
+
+```ts
+const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
+  parameters: { // input to the pass state
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
+    otherData: 'some-extra-stuff'
+  },
+});
+```
+
+The object specified in `parameters` will be the input of the `Pass` state.
+Since neither `Result` nor `ResultPath` are supplied, the `Pass` state copies
+its input through to its output.
+
+Learn more about the [Pass state](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-pass-state.html)
 
 ### Wait
 
@@ -251,9 +273,79 @@ execute the same steps for multiple entries of an array in the state input.
 ```ts
 const map = new stepfunctions.Map(this, 'Map State', {
     maxConcurrency: 1,
-    itemsPath: stepfunctions.Data.stringAt('$.inputForMap')
+    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap')
 });
 map.iterator(new stepfunctions.Pass(this, 'Pass State'));
+```
+
+### Custom State
+
+It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
+the states or service integrations you are looking for. The primary reasons for this lack of
+functionality are:
+
+* A [service integration](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-service-integrations.html) is available through Amazon States Langauge, but not available as construct
+  classes in the CDK.
+* The state or state properties are available through Step Functions, but are not configurable
+  through constructs
+
+If a feature is not available, a `CustomState` can be used to supply any Amazon States Language
+JSON-based object as the state definition.
+
+[Code Snippets](https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1) are available and can be plugged in as the state definition.
+
+Custom states can be chained together with any of the other states to create your state machine
+definition. You will also need to provide any permissions that are required to the `role` that
+the State Machine uses.
+
+The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
+
+```ts
+import * as ddb from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
+// create a table
+const table = new ddb.Table(this, 'montable', {
+  partitionKey: {
+    name: 'id',
+    type: ddb.AttributeType.STRING,
+  },
+});
+
+const finalStatus = new sfn.Pass(stack, 'final step');
+
+// States language JSON to put an item into DynamoDB
+// snippet generated from https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1
+const stateJson = {
+  Type: 'Task',
+  Resource: 'arn:aws:states:::dynamodb:putItem',
+  Parameters: {
+    TableName: table.tableName,
+    Item: {
+      id: {
+        S: 'MyEntry',
+      },
+    },
+  },
+  ResultPath: null,
+};
+
+// custom state which represents a task to insert data into DynamoDB
+const custom = new sfn.CustomState(this, 'my custom task', {
+  stateJson,
+});
+
+const chain = sfn.Chain.start(custom)
+      .next(finalStatus);
+
+const sm = new sfn.StateMachine(this, 'StateMachine', {
+  definition: chain,
+  timeout: cdk.Duration.seconds(30),
+});
+
+// don't forget permissions. You need to assign them
+table.grantWriteData(sm.role);
 ```
 
 ## Task Chaining
@@ -362,6 +454,22 @@ const activity = new stepfunctions.Activity(this, 'Activity');
 new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
+### Activity-Level Permissions
+
+Granting IAM permissions to an activity can be achieved by calling the `grant(principal, actions)` API:
+
+```ts
+const activity = new stepfunctions.Activity(this, 'Activity');
+
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+activity.grant(role, 'states:SendTaskSuccess');
+```
+
+This will grant the IAM principal the specified actions onto the activity.
+
 ## Metrics
 
 `Task` object expose various metrics on the execution of that particular task. For example,
@@ -412,11 +520,135 @@ new stepfunctions.StateMachine(stack, 'MyStateMachine', {
 });
 ```
 
-## Future work
+## State Machine Permission Grants
 
-Contributions welcome:
+IAM roles, users, or groups which need to be able to work with a State Machine should be granted IAM permissions.
 
-- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one
-  might make for a nice API.
-- [ ] Expression parser for Conditions.
-- [ ] Simulate state machines in unit tests.
+Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
+
+- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
+- `stateMachine.grantRead(principal)` - grants the principal read access
+- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
+- `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified 
+- `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
+
+### Start Execution Permission 
+
+Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role permission to start execution of state machine
+stateMachine.grantStartExecution(role);
+```
+
+The following permission is provided to a service principal by the `grantStartExecution()` API:
+
+- `states:StartExecution` - to state machine
+
+### Read Permissions
+
+Grant `read` access to a state machine by calling the `grantRead()` API.
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role read access to state machine
+stateMachine.grantRead(role);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `states:ListExecutions` - to state machine
+- `states:ListStateMachines` - to state machine
+- `states:DescribeExecution` - to executions
+- `states:DescribeStateMachineForExecution` - to executions
+- `states:GetExecutionHistory` - to executions
+- `states:ListActivities` - to `*`
+- `states:DescribeStateMachine` - to `*`
+- `states:DescribeActivity` - to `*`
+
+### Task Response Permissions
+
+Grant permission to allow task responses to a state machine by calling the `grantTaskResponse()` API:
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role task response permissions to the state machine
+stateMachine.grantTaskResponse(role);
+```
+
+The following read permissions are provided to a service principal by the `grantRead()` API:
+
+- `states:SendTaskSuccess` - to state machine
+- `states:SendTaskFailure` - to state machine
+- `states:SendTaskHeartbeat` - to state machine
+
+### Execution-level Permissions
+
+Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
+
+```ts
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+// Give role permission to get execution history of ALL executions for the state machine
+stateMachine.grantExecution(role, 'states:GetExecutionHistory');
+```
+
+### Custom Permissions
+
+You can add any set of permissions to a state machine by calling the `grant()` API.
+
+```ts
+const user = new iam.User(stack, 'MyUser');
+
+const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+  definition,
+});
+
+//give user permission to send task success to the state machine
+stateMachine.grant(user, 'states:SendTaskSuccess');
+```
+
+## Import
+
+Any Step Functions state machine that has been created outside the stack can be imported
+into your CDK stack.
+
+State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API
+
+```ts
+import * as sfn from 'aws-stepfunctions';
+
+const stack = new Stack(app, 'MyStack');
+sfn.StateMachine.fromStateMachineArn(
+  stack,
+  'ImportedStateMachine',
+  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
+```

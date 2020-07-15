@@ -100,7 +100,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
  * This class is not instantiable by consumers on purpose, so that they will be
  * required to call the Grant factory functions.
  */
-export class Grant {
+export class Grant implements cdk.IDependable {
   /**
    * Grant the given permissions to the principal
    *
@@ -129,9 +129,13 @@ export class Grant {
       principals: [options.grantee!.grantPrincipal],
     });
 
-    options.resource.addToResourcePolicy(statement);
+    const resourceResult = options.resource.addToResourcePolicy(statement);
 
-    return new Grant({ resourceStatement: statement, options });
+    return new Grant({
+      resourceStatement: statement,
+      options,
+      policyDependable: resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined,
+    });
   }
 
   /**
@@ -146,9 +150,16 @@ export class Grant {
       resources: options.resourceArns,
     });
 
-    const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
+    const addedToPrincipal = options.grantee.grantPrincipal.addToPrincipalPolicy(statement);
+    if (!addedToPrincipal.statementAdded) {
+      return new Grant({ principalStatement: undefined, options });
+    }
 
-    return new Grant({ principalStatement: addedToPrincipal ? statement : undefined, options });
+    if (!addedToPrincipal.policyDependable) {
+      throw new Error('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
+    }
+
+    return new Grant({ principalStatement: statement, options, policyDependable: addedToPrincipal.policyDependable });
   }
 
   /**
@@ -172,9 +183,15 @@ export class Grant {
       principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
     });
 
-    options.resource.addToResourcePolicy(statement);
+    const resourceResult = options.resource.addToResourcePolicy(statement);
+    const resourceDependable = resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined;
 
-    return new Grant({ principalStatement: statement, resourceStatement: result.resourceStatement, options });
+    return new Grant({
+      principalStatement: statement,
+      resourceStatement: result.resourceStatement,
+      options,
+      policyDependable: resourceDependable ? new CompositeDependable(result, resourceDependable) : result,
+    });
   }
 
   /**
@@ -218,6 +235,12 @@ export class Grant {
     this.options = props.options;
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
+
+    cdk.DependableTrait.implement(this, {
+      get dependencyRoots() {
+        return props.policyDependable ? cdk.DependableTrait.get(props.policyDependable).dependencyRoots : [];
+      },
+    });
   }
 
   /**
@@ -232,8 +255,19 @@ export class Grant {
    */
   public assertSuccess(): void {
     if (!this.success) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+    }
+  }
+
+  /**
+   * Make sure this grant is applied before the given constructs are deployed
+   *
+   * The same as construct.node.addDependency(grant), but slightly nicer to read.
+   */
+  public applyBefore(...constructs: cdk.IConstruct[]) {
+    for (const construct of constructs) {
+      construct.node.addDependency(this);
     }
   }
 }
@@ -246,6 +280,13 @@ interface GrantProps {
   readonly options: CommonGrantOptions;
   readonly principalStatement?: PolicyStatement;
   readonly resourceStatement?: PolicyStatement;
+
+  /**
+   * Constructs whose deployment applies the grant
+   *
+   * Used to add dependencies on grants
+   */
+  readonly policyDependable?: cdk.IDependable;
 }
 
 /**
@@ -255,5 +296,40 @@ export interface IResourceWithPolicy extends cdk.IConstruct {
   /**
    * Add a statement to the resource's resource policy
    */
-  addToResourcePolicy(statement: PolicyStatement): void;
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * Result of calling addToResourcePolicy
+ */
+export interface AddToResourcePolicyResult {
+  /**
+   * Whether the statement was added
+   */
+  readonly statementAdded: boolean;
+
+  /**
+   * Dependable which allows depending on the policy change being applied
+   *
+   * @default - If `statementAdded` is true, the resource object itself.
+   * Otherwise, no dependable.
+   */
+  readonly policyDependable?: cdk.IDependable;
+}
+
+/**
+ * Composite dependable
+ *
+ * Not as simple as eagerly getting the dependency roots from the
+ * inner dependables, as they may be mutable so we need to defer
+ * the query.
+ */
+export class CompositeDependable implements cdk.IDependable {
+  constructor(...dependables: cdk.IDependable[]) {
+    cdk.DependableTrait.implement(this, {
+      get dependencyRoots(): cdk.IConstruct[] {
+        return Array.prototype.concat.apply([], dependables.map(d => cdk.DependableTrait.get(d).dependencyRoots));
+      },
+    });
+  }
 }

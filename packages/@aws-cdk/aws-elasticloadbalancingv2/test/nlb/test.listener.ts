@@ -315,6 +315,25 @@ export = {
 
     test.done();
   },
+
+  'not allowed to specify defaultTargetGroups and defaultAction together'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    test.throws(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultTargetGroups: [group],
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+      });
+    }, /Specify at most one/);
+
+    test.done();
+  },
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {

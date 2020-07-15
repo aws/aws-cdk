@@ -47,7 +47,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::DynamoDB"
+    "cloudformation": "AWS::DynamoDB",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,8 +64,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^25.2.1",
-    "aws-sdk": "^2.669.0",
+    "@types/jest": "^26.0.4",
+    "aws-sdk": "^2.713.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -72,13 +73,14 @@
     "jest": "^25.5.4",
     "pkglint": "0.0.0",
     "sinon": "^9.0.2",
-    "ts-jest": "^25.4.0"
+    "ts-jest": "^26.1.2"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.2"
@@ -89,17 +91,17 @@
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "jest": {},
   "maturity": "stable"
 }

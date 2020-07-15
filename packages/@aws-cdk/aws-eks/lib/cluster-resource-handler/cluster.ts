@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -131,11 +131,21 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     if (updates.updateLogging || updates.updateAccess) {
-      const updateResponse = await this.eks.updateClusterConfig({
+      const config: aws.EKS.UpdateClusterConfigRequest = {
         name: this.clusterName,
         logging: this.newProps.logging,
-        resourcesVpcConfig: this.newProps.resourcesVpcConfig,
-      });
+      };
+      if (updates.updateAccess) {
+        // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
+        // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
+        // will fail, therefore we take only the access fields explicitly
+        config.resourcesVpcConfig = {
+          endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
+          endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
+          publicAccessCidrs: this.newProps.resourcesVpcConfig.publicAccessCidrs,
+        };
+      }
+      const updateResponse = await this.eks.updateClusterConfig(config);
 
       return { EksUpdateId: updateResponse.update?.id };
     }
@@ -149,7 +159,14 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     // if this is an EKS update, we will monitor the update event itself
     if (this.event.EksUpdateId) {
-      return this.isEksUpdateComplete(this.event.EksUpdateId);
+      const complete = await this.isEksUpdateComplete(this.event.EksUpdateId);
+      if (!complete) {
+        return { IsComplete: false };
+      }
+
+      // fall through: if the update is done, we simply delegate to isActive()
+      // in order to extract attributes and state from the cluster itself, which
+      // is supposed to be in an ACTIVE state after the update is complete.
     }
 
     return this.isActive();
@@ -190,7 +207,20 @@ export class ClusterResourceHandler extends ResourceHandler {
           Name: cluster.name,
           Endpoint: cluster.endpoint,
           Arn: cluster.arn,
-          CertificateAuthorityData: cluster.certificateAuthority?.data,
+
+          // IMPORTANT: CFN expects that attributes will *always* have values,
+          // so return an empty string in case the value is not defined.
+          // Otherwise, CFN will throw with `Vendor response doesn't contain
+          // XXXX key`.
+
+          CertificateAuthorityData: cluster.certificateAuthority?.data ?? '',
+          ClusterSecurityGroupId: cluster.resourcesVpcConfig?.clusterSecurityGroupId ?? '',
+          OpenIdConnectIssuerUrl: cluster.identity?.oidc?.issuer ?? '',
+          OpenIdConnectIssuer: cluster.identity?.oidc?.issuer?.substring(8) ?? '', // Strips off https:// from the issuer url
+
+          // We can safely return the first item from encryption configuration array, because it has a limit of 1 item
+          // https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#AmazonEKS-CreateCluster-request-encryptionConfig
+          EncryptionConfigKeyArn: cluster.encryptionConfig?.shift()?.provider?.keyArn ?? '',
         },
       };
     }
@@ -212,9 +242,9 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     switch (describeUpdateResponse.update.status) {
       case 'InProgress':
-        return { IsComplete: false };
+        return false;
       case 'Successful':
-        return { IsComplete: true };
+        return true;
       case 'Failed':
       case 'Cancelled':
         throw new Error(`cluster update id "${eksUpdateId}" failed with errors: ${JSON.stringify(describeUpdateResponse.update.errors)}`);

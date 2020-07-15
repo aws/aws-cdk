@@ -6,6 +6,8 @@ import { getResourceArn } from '../resource-arn-suffix';
 
 /**
  * Properties for SendMessageTask
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export interface SendToQueueProps {
   /**
@@ -54,6 +56,8 @@ export interface SendToQueueProps {
  *
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
+ *
+ * @deprecated Use `SqsSendMessage`
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
 
@@ -73,7 +77,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
     if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+        throw new Error('Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)');
       }
     }
   }

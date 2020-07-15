@@ -1,3 +1,372 @@
+# CloudFormation Resource Specification v16.0.0
+
+## New Resource Types
+
+* AWS::AppConfig::HostedConfigurationVersion
+* AWS::ECS::CapacityProvider
+
+## Removed Resource Types
+
+* AWS::EC2::PrefixList
+
+## Attribute Changes
+
+* AWS::EC2::FlowLog Id (__added__)
+
+## Property Changes
+
+* AWS::ECS::Cluster CapacityProviders (__added__)
+* AWS::ECS::Cluster DefaultCapacityProviderStrategy (__added__)
+* AWS::SSM::MaintenanceWindow ScheduleOffset (__added__)
+* AWS::SSM::MaintenanceWindowTask TaskType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ServiceDiscovery::HttpNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags (__added__)
+* AWS::ServiceDiscovery::Service Tags (__added__)
+* AWS::WAFv2::WebACLAssociation ResourceArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::WAFv2::WebACLAssociation WebACLArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AppMesh::Route.GrpcTimeout (__added__)
+* AWS::AppMesh::Route.HttpTimeout (__added__)
+* AWS::AppMesh::Route.TcpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.Duration (__added__)
+* AWS::AppMesh::VirtualNode.GrpcTimeout (__added__)
+* AWS::AppMesh::VirtualNode.HttpTimeout (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTimeout (__added__)
+* AWS::AppMesh::VirtualNode.TcpTimeout (__added__)
+* AWS::ECS::Cluster.CapacityProviderStrategyItem (__added__)
+* AWS::AppMesh::Route.GrpcRoute Timeout (__added__)
+* AWS::AppMesh::Route.HttpRoute Timeout (__added__)
+* AWS::AppMesh::Route.TcpRoute Timeout (__added__)
+* AWS::AppMesh::VirtualNode.Listener Timeout (__added__)
+* AWS::FMS::Policy.IEMap ORGUNIT (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api OpenApiVersion (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.EventBridgeRuleEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added EventBridgeRuleEvent
+
+# CloudFormation Resource Specification v15.1.0
+
+## New Resource Types
+
+* AWS::EC2::PrefixList
+* AWS::EFS::AccessPoint
+* AWS::IoT::ProvisioningTemplate
+* AWS::RDS::DBProxy
+* AWS::RDS::DBProxyTargetGroup
+
+## Attribute Changes
+
+* AWS::Chatbot::SlackChannelConfiguration Arn (__added__)
+* AWS::EFS::FileSystem FileSystemId (__added__)
+* AWS::ElastiCache::ReplicationGroup ReaderEndPoint.Address (__added__)
+* AWS::ElastiCache::ReplicationGroup ReaderEndPoint.Port (__added__)
+* AWS::ImageBuilder::Image OutputResources (__deleted__)
+
+## Property Changes
+
+* AWS::CertificateManager::Certificate CertificateAuthorityArn (__added__)
+* AWS::CertificateManager::Certificate CertificateTransparencyLoggingPreference (__added__)
+* AWS::Chatbot::SlackChannelConfiguration Arn (__deleted__)
+* AWS::CodeGuruProfiler::ProfilingGroup AgentPermissions (__added__)
+* AWS::DynamoDB::Table SSESpecification.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::Volume OutpostArn (__added__)
+* AWS::EFS::FileSystem FileSystemPolicy (__added__)
+* AWS::EFS::FileSystem LifecyclePolicies.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-efs-filesystem-lifecyclepolicies
+* AWS::EFS::FileSystem ProvisionedThroughputInMibps.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-provisionedthroughputinmibps
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-efs-filesystem-provisionedthroughputinmibps
+* AWS::EFS::FileSystem ThroughputMode.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-throughputmode
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-efs-filesystem-throughputmode
+* AWS::ElastiCache::ReplicationGroup MultiAZEnabled (__added__)
+* AWS::MSK::Cluster ConfigurationInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster KafkaVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance MultiAZ.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::SNS::Topic ContentBasedDeduplication (__added__)
+* AWS::SNS::Topic FifoTopic (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::ClientVpnEndpoint.FederatedAuthenticationRequest (__added__)
+* AWS::Events::Rule.HttpParameters (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftRetryOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.VpcConfiguration (__added__)
+* AWS::S3::Bucket.DeleteMarkerReplication (__added__)
+* AWS::S3::Bucket.Metrics (__added__)
+* AWS::S3::Bucket.ReplicationRuleAndOperator (__added__)
+* AWS::S3::Bucket.ReplicationRuleFilter (__added__)
+* AWS::S3::Bucket.ReplicationTime (__added__)
+* AWS::S3::Bucket.ReplicationTimeValue (__added__)
+* AWS::CertificateManager::Certificate.DomainValidationOption HostedZoneId (__added__)
+* AWS::CertificateManager::Certificate.DomainValidationOption ValidationDomain.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudFront::Distribution.Origin ConnectionAttempts (__added__)
+* AWS::CloudFront::Distribution.Origin ConnectionTimeout (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery Period (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientAuthenticationRequest FederatedAuthentication (__added__)
+* AWS::ECS::TaskDefinition.InferenceAccelerator DevicePolicy (__deleted__)
+* AWS::EFS::FileSystem.ElasticFileSystemTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemtags.html#cfn-efs-filesystem-filesystemtags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-elasticfilesystemtag.html#cfn-efs-filesystem-elasticfilesystemtag-key
+* AWS::EFS::FileSystem.ElasticFileSystemTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemtags.html#cfn-efs-filesystem-filesystemtags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-elasticfilesystemtag.html#cfn-efs-filesystem-elasticfilesystemtag-value
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToIA.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticfilesystem-filesystem-lifecyclepolicy.html#cfn-elasticfilesystem-filesystem-lifecyclepolicy-transitiontoia
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-lifecyclepolicy.html#cfn-efs-filesystem-lifecyclepolicy-transitiontoia
+* AWS::ElasticLoadBalancingV2::LoadBalancer.SubnetMapping PrivateIPv4Address (__added__)
+* AWS::ElasticLoadBalancingV2::LoadBalancer.SubnetMapping AllocationId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Events::Rule.Target HttpParameters (__added__)
+* AWS::KinesisFirehose::DeliveryStream.BufferingHints IntervalInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.BufferingHints SizeInMBs.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration InputFormatConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration OutputFormatConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.DataFormatConversionConfiguration SchemaConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchBufferingHints IntervalInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchBufferingHints SizeInMBs.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration ClusterEndpoint (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration VpcConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration DomainARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration IndexRotationPeriod.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration RetryOptions.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration S3BackupMode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchDestinationConfiguration TypeName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ElasticsearchRetryOptions DurationInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration CompressionFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.InputFormatConfiguration Deserializer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.OpenXJsonSerDe ColumnToJsonKeyMappings.DuplicatesAllowed (__deleted__)
+* AWS::KinesisFirehose::DeliveryStream.OutputFormatConfiguration Serializer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.Processor Parameters.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration RetryOptions (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration S3BackupConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.RedshiftDestinationConfiguration S3BackupMode (__added__)
+* AWS::KinesisFirehose::DeliveryStream.S3DestinationConfiguration BufferingHints.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.S3DestinationConfiguration CompressionFormat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration CatalogId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration DatabaseName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration Region.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration RoleARN.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration TableName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SchemaConfiguration VersionId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisFirehose::DeliveryStream.SplunkRetryOptions DurationInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.ConfigurationInfo Arn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.ConfigurationInfo Revision.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::Bucket.ReplicationDestination Metrics (__added__)
+* AWS::S3::Bucket.ReplicationDestination ReplicationTime (__added__)
+* AWS::S3::Bucket.ReplicationRule DeleteMarkerReplication (__added__)
+* AWS::S3::Bucket.ReplicationRule Filter (__added__)
+* AWS::S3::Bucket.ReplicationRule Priority (__added__)
+* AWS::S3::Bucket.ReplicationRule Prefix.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v14.4.0
+
+## New Resource Types
+
+* AWS::GlobalAccelerator::Accelerator
+* AWS::GlobalAccelerator::EndpointGroup
+* AWS::GlobalAccelerator::Listener
+* AWS::ImageBuilder::Component
+* AWS::ImageBuilder::DistributionConfiguration
+* AWS::ImageBuilder::Image
+* AWS::ImageBuilder::ImagePipeline
+* AWS::ImageBuilder::ImageRecipe
+* AWS::ImageBuilder::InfrastructureConfiguration
+* AWS::Macie::CustomDataIdentifier
+* AWS::Macie::FindingsFilter
+* AWS::Macie::Session
+
+## Attribute Changes
+
+* AWS::Athena::NamedQuery NamedQueryId (__added__)
+* AWS::SSM::Association AssociationId (__added__)
+
+## Property Changes
+
+* AWS::Cloud9::EnvironmentEC2 ConnectionType (__added__)
+* AWS::CodeStarConnections::Connection Tags (__added__)
+* AWS::DMS::Endpoint NeptuneSettings (__added__)
+* AWS::DMS::ReplicationTask TaskData (__added__)
+* AWS::ECS::Cluster ClusterSettings.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Cluster ClusterSettings.ItemType (__changed__)
+  * Old: ClusterSetting
+  * New: ClusterSettings
+* AWS::ECS::Cluster Tags.DuplicatesAllowed (__deleted__)
+* AWS::Neptune::DBCluster RestoreToTime (__added__)
+* AWS::Neptune::DBCluster RestoreType (__added__)
+* AWS::Neptune::DBCluster SourceDBClusterIdentifier (__added__)
+* AWS::Neptune::DBCluster UseLatestRestorableTime (__added__)
+* AWS::SSM::Association AutomationTargetParameterName (__added__)
+* AWS::SSM::Association ComplianceSeverity (__added__)
+* AWS::SSM::Association MaxConcurrency (__added__)
+* AWS::SSM::Association MaxErrors (__added__)
+* AWS::SSM::Association SyncCompliance (__added__)
+* AWS::SSM::Association WaitForSuccessTimeoutSeconds (__added__)
+* AWS::SSM::Association InstanceId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association Name.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association Parameters.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association Targets.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association Targets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Parameter DataType (__added__)
+* AWS::ServiceCatalog::CloudFormationProduct ReplaceProvisioningArtifacts (__added__)
+* AWS::StepFunctions::StateMachine DefinitionS3Location (__added__)
+* AWS::StepFunctions::StateMachine DefinitionSubstitutions (__added__)
+* AWS::StepFunctions::StateMachine DefinitionString.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Synthetics::Canary RunConfig.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::EC2::LaunchTemplate.CapacityReservationPreference (__removed__)
+* AWS::ECS::Cluster.ClusterSetting (__removed__)
+* AWS::SSM::Association.ParameterValues (__removed__)
+* AWS::DMS::Endpoint.NeptuneSettings (__added__)
+* AWS::ECS::Cluster.ClusterSettings (__added__)
+* AWS::StepFunctions::StateMachine.DefinitionSubstitutions (__added__)
+* AWS::StepFunctions::StateMachine.S3Location (__added__)
+* AWS::DLM::LifecyclePolicy.CreateRule CronExpression (__added__)
+* AWS::DLM::LifecyclePolicy.CreateRule Interval.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.CreateRule IntervalUnit.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRetainRule Interval.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRetainRule IntervalUnit.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule Encrypted.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule TargetRegion.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.Type (__deleted__)
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification CapacityReservationPreference.PrimitiveType (__added__)
+* AWS::SSM::Association.S3OutputLocation OutputS3Region (__added__)
+* AWS::SSM::Association.Target Key.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::Association.Target Values.DuplicatesAllowed (__deleted__)
+* AWS::SSM::Association.Target Values.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v14.1.0
 
 ## New Resource Types

@@ -30,14 +30,14 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   resources: [Trailbucket.arnForObjects(`AWSLogs/${cdk.Stack.of(stack).account}/*`)],
   actions: ['s3:PutObject'],
   principals: [cloudTrailPrincipal],
-  conditions:  {
+  conditions: {
     StringEquals: {'s3:x-amz-acl': 'bucket-owner-full-control'},
   },
 }));
 
 const trail = new cloudtrail.Trail(stack, 'Trail', {bucket: Trailbucket});
 
-trail.addLambdaEventSelector([lambdaFunction.functionArn]);
-trail.addS3EventSelector([bucket.arnForObjects('')]);
+trail.addLambdaEventSelector([lambdaFunction]);
+trail.addS3EventSelector([{bucket}]);
 
 app.synth();

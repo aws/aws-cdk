@@ -358,3 +358,22 @@ scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
   targetUtilizationPercent: 50,
 });
 ```
+
+### Set deployment configuration on QueueProcessingService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {},
+  queue,
+  maxScalingCapacity: 5,
+  maxHealthyPercent: 200,
+  minHealthPercent: 66,
+});
+```
+

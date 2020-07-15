@@ -4,7 +4,7 @@ import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'minimal setup'(test: Test) {
@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'my-api');
-    api.root.addMethod('GET'); // must have at least one method
+    api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
     expect(stack).toMatch({
@@ -127,7 +127,7 @@ export = {
     test.done();
   },
 
-  'fails in synthesis if there are no methods'(test: Test) {
+  'fails in synthesis if there are no methods or definition'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');
@@ -332,18 +332,6 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Role'));
     expect(stack).to(haveResource('AWS::ApiGateway::Account'));
-    test.done();
-  },
-
-  'fromRestApiId'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
-
-    // THEN
-    test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
     test.done();
   },
 
@@ -679,6 +667,34 @@ export = {
     test.done();
   },
 
+  'addApiKey is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addApiKey('myapikey', {
+      apiKeyName: 'myApiKey1',
+      value: '01234567890ABCDEFabcdef',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+      Name: 'myApiKey1',
+      StageKeys: [
+        {
+          RestApiId: { Ref: 'myapi162F20B8' },
+          StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+        },
+      ],
+      Value: '01234567890ABCDEFabcdef',
+    }));
+
+    test.done();
+  },
+
   'addModel is supported'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -904,5 +920,103 @@ export = {
     }));
 
     test.done();
+  },
+
+  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'test-api');
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.ok(method.restApi);
+    test.ok(method.api);
+    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+
+    test.done();
+  },
+
+  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
+      restApiId: 'test-rest-api-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
+    test.ok(method.api);
+
+    test.done();
+  },
+
+  Import: {
+    'fromRestApiId()'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
+
+      // THEN
+      test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
+      test.done();
+    },
+
+    'fromRestApiAttributes()'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const imported = apigw.RestApi.fromRestApiAttributes(stack, 'imported-api', {
+        restApiId: 'test-restapi-id',
+        rootResourceId: 'test-root-resource-id',
+      });
+      const resource = imported.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(imported.restApiRootResourceId),
+      }));
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      }));
+
+      test.done();
+    },
+  },
+
+  SpecRestApi: {
+    'add Methods and Resources'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+
+      // WHEN
+      const resource = api.root.addResource('pets');
+      resource.addMethod('GET');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+        PathPart: 'pets',
+        ParentId: stack.resolve(api.restApiRootResourceId),
+      }));
+      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        ResourceId: stack.resolve(resource.resourceId),
+      }));
+      test.done();
+    },
   },
 };

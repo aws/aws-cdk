@@ -64,14 +64,14 @@ export class BackupResource {
   /**
    * A DynamoDB table
    */
-  public static fromDynamoDbTable(table: dynamodb.Table) {
+  public static fromDynamoDbTable(table: dynamodb.ITable) {
     return BackupResource.fromArn(table.tableArn);
   }
 
   /**
    * An EC2 instance
    */
-  public static fromEc2Instance(instance: ec2.Instance) {
+  public static fromEc2Instance(instance: ec2.IInstance) {
     return BackupResource.fromArn(Stack.of(instance).formatArn({
       service: 'ec2',
       resource: 'instance',
@@ -82,7 +82,7 @@ export class BackupResource {
   /**
    * An EFS file system
    */
-  public static fromEfsFileSystem(fileSystem: efs.FileSystem) {
+  public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
     return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
       resource: 'file-system',
@@ -93,7 +93,7 @@ export class BackupResource {
   /**
    * A RDS database instance
    */
-  public static fromRdsDatabaseInstance(instance: rds.DatabaseInstance) {
+  public static fromRdsDatabaseInstance(instance: rds.IDatabaseInstance) {
     return BackupResource.fromArn(instance.instanceArn);
   }
 

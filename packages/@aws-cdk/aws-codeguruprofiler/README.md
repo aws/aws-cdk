@@ -9,8 +9,26 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+Amazon CodeGuru Profiler collects runtime performance data from your live applications, and provides recommendations that can help you fine-tune your application performance.
+
+### Installation
+
+Import to your project:
 
 ```ts
 import * as codeguruprofiler from '@aws-cdk/aws-codeguruprofiler';
+```
+
+### Basic usage
+
+Here's how to setup a profiling group and give your compute role permissions to publish to the profiling group to the profiling agent can publish profiling information:
+
+```ts
+// The execution role of your application that publishes to the ProfilingGroup via CodeGuru Profiler Profiling Agent. (the following is merely an example)
+const publishAppRole = new Role(stack, 'PublishAppRole', {
+  assumedBy: new AccountRootPrincipal(),
+});
+
+const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup');
+profilingGroup.grantPublish(publishAppRole);
 ```

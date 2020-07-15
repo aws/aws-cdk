@@ -4,6 +4,7 @@
 *.snk
 !*.d.ts
 !*.js
+**/cdk.out
 
 # Coverage
 coverage
@@ -19,3 +20,8 @@ dist
 tsconfig.json
 !.jsii
 .eslintrc.js
+jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

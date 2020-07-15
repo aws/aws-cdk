@@ -39,6 +39,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 

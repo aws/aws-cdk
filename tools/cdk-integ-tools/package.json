@@ -30,15 +30,16 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
-    "@types/yargs": "^15.0.4",
+    "@types/yargs": "^15.0.5",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/assert": "0.0.0",
     "aws-cdk": "0.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "yargs": "^15.3.1"
   },
   "keywords": [
@@ -47,6 +48,9 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/assert": "0.0.0"
   }
 }

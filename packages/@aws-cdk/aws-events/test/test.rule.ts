@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default rule'(test: Test) {
@@ -717,7 +717,7 @@ export = {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': 'MySid',
+        'StatementId': `Allow-account-${sourceAccount}`,
         'Principal': sourceAccount,
       }));
 

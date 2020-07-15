@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
@@ -25,8 +26,9 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe1({
+        version: '11.2',
+      }),
       configurations: [
         {
           name: 'XMLDB',
@@ -46,7 +48,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     const instance = new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',

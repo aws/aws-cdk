@@ -39,6 +39,32 @@ const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret
 SecretsManager secret values can only be used in select set of properties. For the
 list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html).
 
+A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret will fail.
+
+### Grant permission to use the secret to a role
+
+You must grant permission to a resource for that resource to be allowed to 
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
+ method, depending on your need:
+
+```ts
+const role = new iam.Role(stack, 'SomeRole', { assumedBy: new iam.AccountRootPrincipal() });
+const secret = new secretsmanager.Secret(stack, 'Secret');
+secret.grantRead(role);
+secret.grantWrite(role);
+```
+
+If, as in the following example, your secret was created with a KMS key:
+```ts
+const key = new kms.Key(stack, 'KMS');
+const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+secret.grantRead(role);
+secret.grantWrite(role);
+```
+then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
+relevant encrypt and decrypt permissions to the KMS key through the
+SecretsManager service principal.
+
 ### Rotating a Secret with a custom Lambda function
 A rotation schedule can be added to a Secret using a custom Lambda function:
 ```ts

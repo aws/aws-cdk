@@ -411,10 +411,13 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
-   * listener.addTargets(service.loadBalancerTarget({
-   *   containerName: 'MyContainer',
-   *   containerPort: 1234
-   * }));
+   * listener.addTargets('ECS', {
+   *   port: 80,
+   *   targets: [service.loadBalancerTarget({
+   *     containerName: 'MyContainer',
+   *     containerPort: 1234,
+   *   })],
+   * });
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     const self = this;
@@ -586,8 +589,9 @@ export abstract class BaseService extends Resource
 
   /**
    * This method is called to create a networkConfiguration.
+   * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
@@ -602,6 +606,29 @@ export abstract class BaseService extends Resource
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
+      },
+    };
+  }
+
+  /**
+   * This method is called to create a networkConfiguration.
+   */
+  // eslint-disable-next-line max-len
+  protected configureAwsVpcNetworkingWithSecurityGroups(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
+    if (vpcSubnets === undefined) {
+      vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
+    }
+    if (securityGroups === undefined || securityGroups.length === 0) {
+      securityGroups = [ new ec2.SecurityGroup(this, 'SecurityGroup', { vpc }) ];
+    }
+
+    securityGroups.forEach((sg) => { this.connections.addSecurityGroup(sg); }, this);
+
+    this.networkConfiguration = {
+      awsvpcConfiguration: {
+        assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
+        subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
+        securityGroups: securityGroups.map((sg) => sg.securityGroupId),
       },
     };
   }

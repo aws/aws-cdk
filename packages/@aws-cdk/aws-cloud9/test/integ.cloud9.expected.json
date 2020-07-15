@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "C9Stack/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "C9Stack/VPC/PublicSubnet1"
           }
         ]
       }
@@ -123,16 +123,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "C9Stack/VPC/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "C9Stack/VPC/PublicSubnet2"
           }
         ]
       }
@@ -188,16 +188,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "C9Stack/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "C9Stack/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -250,16 +250,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "C9Stack/VPC/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "C9Stack/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -323,10 +323,27 @@
         }
       }
     },
+    "Repo02AC86CF": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "foo"
+      }
+    },
     "C9EnvF05FC3BE": {
       "Type": "AWS::Cloud9::EnvironmentEC2",
       "Properties": {
         "InstanceType": "t2.micro",
+        "Repositories": [
+          {
+            "PathComponent": "/foo",
+            "RepositoryUrl": {
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "CloneUrlHttp"
+              ]
+            }
+          }
+        ],
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }

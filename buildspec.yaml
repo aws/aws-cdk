@@ -5,6 +5,10 @@ version: 0.2
 phases:
   install:
     commands:
+      # Start docker daemon inside the container
+      - nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
   pre_build:
@@ -21,3 +25,8 @@ artifacts:
   files:
     - "**/*"
   base-directory: dist
+reports:
+  jest-tests:
+    files:
+      - "**/junit.xml"
+    file-format: JunitXml

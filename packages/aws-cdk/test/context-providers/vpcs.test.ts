@@ -33,7 +33,11 @@ test('looks up the requested VPC', async () => {
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({
@@ -65,7 +69,11 @@ test('throws when no such VPC is found', async () => {
   });
 
   // WHEN
-  await expect(provider.getValue({ filter })).rejects.toThrow(/Could not find any VPCs matching/);
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  })).rejects.toThrow(/Could not find any VPCs matching/);
 });
 
 test('throws when multiple VPCs are found', async () => {
@@ -79,7 +87,11 @@ test('throws when multiple VPCs are found', async () => {
   });
 
   // WHEN
-  await expect(provider.getValue({ filter })).rejects.toThrow(/Found 2 VPCs matching/);
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  })).rejects.toThrow(/Found 2 VPCs matching/);
 });
 
 test('uses the VPC main route table when a subnet has no specific association', async () => {
@@ -100,7 +112,11 @@ test('uses the VPC main route table when a subnet has no specific association', 
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({
@@ -159,7 +175,11 @@ test('Recognize public subnet by route table', async () => {
   });
 
   // WHEN
-  const result = await provider.getValue({ filter });
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
 
   // THEN
   expect(result).toEqual({

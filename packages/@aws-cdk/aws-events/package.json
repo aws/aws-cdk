@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-events",
   "version": "0.0.0",
-  "description": "AWS CloudWatch Events Construct Library",
+  "description": "Amazon EventBridge Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -54,7 +54,8 @@
     "cdk",
     "constructs",
     "cloudwatch",
-    "events"
+    "events",
+    "eventbridge"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -64,7 +65,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
@@ -82,7 +83,7 @@
     "constructs": "^3.0.2"
   },
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [

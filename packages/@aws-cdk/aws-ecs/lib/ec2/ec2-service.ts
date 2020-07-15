@@ -24,7 +24,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
@@ -43,8 +43,18 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * This property is only used for tasks that use the awsvpc network mode.
    *
    * @default - A new security group is created.
+   * @deprecated use securityGroups instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The placement constraints to use for tasks in the service. For more information, see
@@ -166,6 +176,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
     }
 
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
+    }
+
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
       : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
 
@@ -191,8 +205,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.strategies = [];
     this.daemon = props.daemon || false;
 
+    let securityGroups;
+    if (props.securityGroup !== undefined) {
+      securityGroups = [ props.securityGroup ];
+    } else if (props.securityGroups !== undefined) {
+      securityGroups = props.securityGroups;
+    }
+
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
+      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
       // We have to be smart here -- by default future Security Group rules would be created
@@ -251,11 +272,14 @@ export class Ec2Service extends BaseService implements IEc2Service {
 }
 
 /**
- * Validate combinations of networking arguments
+ * Validate combinations of networking arguments.
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
-    throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined
+    || props.securityGroup !== undefined
+    || props.securityGroups !== undefined
+    || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 

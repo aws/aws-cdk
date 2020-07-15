@@ -46,7 +46,7 @@ export class AccessLogField {
    * The API owner's AWS account ID.
    */
   public static contextAccountId() {
-    return '$context.requestId';
+    return '$context.identity.accountId';
   }
 
   /**

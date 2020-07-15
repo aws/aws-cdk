@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
@@ -10,7 +11,7 @@ export class AZContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: {[key: string]: any}) {
+  public async getValue(args: cxschema.AvailabilityZonesContextQuery) {
     const region = args.region;
     const account = args.account;
     debug(`Reading AZs for ${account}:${region}`);

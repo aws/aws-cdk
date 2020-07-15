@@ -291,4 +291,68 @@ export = {
 
     test.done();
   },
+
+  'rotation function name does not exceed 64 chars'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(3306),
+      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+    });
+
+    // WHEN
+    const id = 'SecretRotation'.repeat(5);
+    new secretsmanager.SecretRotation(stack, id, {
+      application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      secret,
+      target,
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': [
+            '',
+            [
+              'https://secretsmanager.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
+        },
+        functionName: 'RotationSecretRotationSecretRotationSecretRotationSecretRotation',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'SecretRotationSecretRotationSecretRotationSecretRotationSecretRotationSecurityGroupBFCB171A',
+            'GroupId',
+          ],
+        },
+        vpcSubnetIds: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+              },
+              ',',
+              {
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+              },
+            ],
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
 };

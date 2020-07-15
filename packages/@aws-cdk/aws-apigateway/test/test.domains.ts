@@ -1,9 +1,10 @@
-// tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
+
+/* eslint-disable quote-props */
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {
@@ -267,6 +268,20 @@ export = {
     test.done();
   },
 
+  'domain name cannot contain uppercase letters'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
+
+    // WHEN
+    test.throws(() => {
+      new apigw.DomainName(stack, 'someDomain', {domainName: 'someDomainWithUpercase.domain.com', certificate});
+    }, /uppercase/);
+
+    // THEN
+    test.done();
+  },
+
   'multiple domain names can be added'(test: Test) {
     // GIVEN
     const domainName = 'my.domain.com';
@@ -351,7 +366,7 @@ export = {
     });
 
     const testStage = new apigw.Stage(stack, 'test-stage', {
-      deployment : testDeploy,
+      deployment: testDeploy,
     });
 
     // WHEN

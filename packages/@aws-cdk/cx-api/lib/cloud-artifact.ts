@@ -1,9 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssembly } from './cloud-assembly';
-import {
-  MetadataEntryResult,
-  SynthesisMessage,
-  SynthesisMessageLevel } from './metadata';
+import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -50,6 +47,10 @@ export class CloudArtifact {
         return new CloudFormationStackArtifact(assembly, id, artifact);
       case cxschema.ArtifactType.CDK_TREE:
         return new TreeCloudArtifact(assembly, id, artifact);
+      case cxschema.ArtifactType.ASSET_MANIFEST:
+        return new AssetManifestArtifact(assembly, id, artifact);
+      case cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY:
+        return new NestedCloudAssemblyArtifact(assembly, id, artifact);
       default:
         return undefined;
     }
@@ -89,7 +90,7 @@ export class CloudArtifact {
     if (this._deps) { return this._deps; }
 
     this._deps = this._dependencyIDs.map(id => {
-      const dep = this.assembly.artifacts.find(a => a.id === id);
+      const dep = this.assembly.tryGetArtifact(id);
       if (!dep) {
         throw new Error(`Artifact ${this.id} depends on non-existing artifact ${id}`);
       }
@@ -144,5 +145,7 @@ export class CloudArtifact {
 }
 
 // needs to be defined at the end to avoid a cyclic dependency
-import { CloudFormationStackArtifact } from './cloudformation-artifact';
-import { TreeCloudArtifact } from './tree-cloud-artifact';
+import { AssetManifestArtifact } from './artifacts/asset-manifest-artifact';
+import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
+import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
+import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';

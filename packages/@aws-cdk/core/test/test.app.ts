@@ -1,3 +1,4 @@
+import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
@@ -189,7 +190,7 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key',
-          provider: 'fake',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
             account: '12345689012',
             region: 'ab-north-1',
@@ -199,9 +200,8 @@ export = {
 
         this.reportMissingContext({
           key: 'missing-context-key-2',
-          provider: 'fake2',
+          provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
-            foo: 'bar',
             account: '12345689012',
             region: 'ab-south-1',
           },
@@ -217,7 +217,7 @@ export = {
     test.deepEqual(assembly.manifest.missing, [
       {
         key: 'missing-context-key',
-        provider: 'fake',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-north-1',
@@ -225,11 +225,10 @@ export = {
       },
       {
         key: 'missing-context-key-2',
-        provider: 'fake2',
+        provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
           account: '12345689012',
           region: 'ab-south-1',
-          foo: 'bar',
         },
       },
     ]);
@@ -322,6 +321,32 @@ export = {
         template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
       },
     ]);
+
+    test.done();
+  },
+
+  'stacks are written to the assembly file in a topological order'(test: Test) {
+    // WHEN
+    const assembly = withApp({}, (app) => {
+      const stackC = new Stack(app, 'StackC');
+      const stackD = new Stack(app, 'StackD');
+      const stackA = new Stack(app, 'StackA');
+      const stackB = new Stack(app, 'StackB');
+
+      // Create the following dependency order:
+      // A ->
+      //      C -> D
+      // B ->
+      stackC.addDependency(stackA);
+      stackC.addDependency(stackB);
+      stackD.addDependency(stackC);
+    });
+
+    // THEN
+    const artifactsIds = assembly.artifacts.map(a => a.id);
+    test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
 
     test.done();
   },
