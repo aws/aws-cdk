@@ -39,8 +39,8 @@ export interface IncludedNestedStack {
    * The NestedStack object that represents the template, which
    * respresents the scope of the template.
    */
-
   readonly stack: core.NestedStack;
+
   /**
    * The CfnInclude that respresents the template, which can
    * be used to access Resources and other template elements.
