@@ -251,6 +251,9 @@ export class IamResource {
    * @param arns The custom arns that need to be permissioned
    */
   public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('Missing custom arn definition.');
+    }
     return new IamResource(arns);
   }
 
@@ -258,15 +261,15 @@ export class IamResource {
    * Generate the resourceNames given a type and fields
    *
    * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty then ARN set to `type/*`
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
    */
-  public static ofType(type: string, fields?: string[]): IamResource {
-    const arns = fields ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [ `types/${type}/*` ];
     return new IamResource(arns);
   }
 
   /**
-   * Generate the resourceNames that accepts all, `*`
+   * Generate the resourceNames that accepts all types, `*`
    */
   public static all(): IamResource {
     return new IamResource(['*']);
@@ -492,22 +495,6 @@ export class GraphQLApi extends Construct {
       resourceArns: resources.resourceArns(this),
       scope: this,
     });
-
-  }
-
-  /**
-   * Adds an IAM policy statement for full access to this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   */
-  public grantFullAccess(grantee: IGrantable): Grant {
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['appsync:GraphQL'],
-      resourceArns: IamResource.all().resourceArns(this),
-      scope: this,
-    });
   }
 
   /**
@@ -517,8 +504,8 @@ export class GraphQLApi extends Construct {
    * @param grantee The principal
    * @param fields The fields to grant access to that are Mutations (leave blank for all)
    */
-  public grantMutation(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, IamResource.ofType('Mutation', fields));
+  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
   }
 
   /**
@@ -528,8 +515,8 @@ export class GraphQLApi extends Construct {
    * @param grantee The principal
    * @param fields The fields to grant access to that are Queries (leave blank for all)
    */
-  public grantQuery(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, IamResource.ofType('Query', fields));
+  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
   }
 
   /**
@@ -539,24 +526,8 @@ export class GraphQLApi extends Construct {
    * @param grantee The principal
    * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
    */
-  public grantSubscription(grantee: IGrantable, fields?: string[]): Grant {
-    return this.grantType(grantee, IamResource.ofType('Subscription', fields));
-  }
-
-  /**
-   * Adds an IAM policy statement for Type access to this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   * @param resources The resources to give permissions
-   */
-  public grantType(grantee: IGrantable, resources: IamResource): Grant {
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['appsync:GraphQL'],
-      resourceArns: resources.resourceArns(this),
-      scope: this,
-    });
+  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 
   private validateAuthorizationProps(props: GraphQLApiProps) {

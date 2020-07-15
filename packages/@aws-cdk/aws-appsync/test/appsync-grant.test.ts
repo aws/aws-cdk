@@ -26,6 +26,16 @@ beforeEach(() => {
 
 describe('grant Permissions', () => {
 
+  test('IamResource throws error when custom is called with no arguments', () => {
+    // WHEN
+    const when = () => {
+      api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
+    };
+
+    //THEN
+    expect(when).toThrowError('Missing custom arn definition.');
+  });
+
   test('grant provides custom permissions when called with `custom` argument', () => {
     // WHEN
     api.grant(role, appsync.IamResource.custom('types/Mutation/fields/addTest'), 'appsync:GraphQL');
@@ -86,7 +96,7 @@ describe('grant Permissions', () => {
 
   test('grant provides fields/[field param] permissions when called with `type` and `field` argument', () => {
     // WHEN
-    api.grant(role, appsync.IamResource.ofType('Mutation', ['addTest']), 'appsync:GraphQL');
+    api.grant(role, appsync.IamResource.ofType('Mutation', 'addTest'), 'appsync:GraphQL');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -113,7 +123,7 @@ describe('grant Permissions', () => {
     });
   });
 
-  test('grant provides /* permissions when called with no arguments', () => {
+  test('grant provides all permissions when called with IamResource.all()', () => {
     // WHEN
     api.grant(role, appsync.IamResource.all(), 'appsync:GraphQL');
 
@@ -136,6 +146,102 @@ describe('grant Permissions', () => {
                 '/*',
               ]],
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grant provides multiple permissions using one IamResource custom call', () => {
+    // WHEN
+    api.grant(role, appsync.IamResource.custom('I', 'am', 'custom'), 'appsync:GraphQL');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:GraphQL',
+            Resource: [
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/I',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/am',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/custom',
+                ]]},
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grant provides multiple permissions using one IamResource ofType call', () => {
+    // WHEN
+    api.grant(role, appsync.IamResource.ofType('I', 'am', 'custom'), 'appsync:GraphQL');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:GraphQL',
+            Resource: [
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/I/fields/am',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/I/fields/custom',
+                ]]},
+            ],
           },
         ],
       },
@@ -176,7 +282,7 @@ describe('grantMutation Permissions', () => {
 
   test('grantMutation provides fields/[field param] permissions when called with `fields` argument', () => {
     // WHEN
-    api.grantMutation(role, ['addTest']);
+    api.grantMutation(role, 'addTest');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -197,6 +303,48 @@ describe('grantMutation Permissions', () => {
                 '/types/Mutation/fields/addTest',
               ]],
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantMutation provides multiple permissions when called with `fields` argument', () => {
+    // WHEN
+    api.grantMutation(role, 'addTest', 'removeTest');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:GraphQL',
+            Resource: [
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Mutation/fields/addTest',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Mutation/fields/removeTest',
+                ]]},
+            ],
           },
         ],
       },
@@ -237,7 +385,7 @@ describe('grantQuery Permissions', () => {
 
   test('grantQuery provides fields/[field param] permissions when called with `fields` arugment', () => {
     // WHEN
-    api.grantQuery(role, ['getTest']);
+    api.grantQuery(role, 'getTest');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -258,6 +406,48 @@ describe('grantQuery Permissions', () => {
                 '/types/Query/fields/getTest',
               ]],
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantQuery provides multiple permissions when called with `fields` argument', () => {
+    // WHEN
+    api.grantQuery(role, 'getTests', 'getTest');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:GraphQL',
+            Resource: [
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Query/fields/getTests',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Query/fields/getTest',
+                ]]},
+            ],
           },
         ],
       },
@@ -297,7 +487,7 @@ describe('grantSubscription Permissions', () => {
   });
 
   test('grantSubscription provides fields/[field param] when called with `field` argument', () => {
-    api.grantSubscription(role, ['subscribe']);
+    api.grantSubscription(role, 'subscribe');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -323,13 +513,10 @@ describe('grantSubscription Permissions', () => {
       },
     });
   });
-});
 
-describe('grantType Permissions', () => {
-
-  test('grantType provides [type param]/* permissions when called without `fields` argument', () => {
+  test('grantSubscription provides multiple permissions when called with `fields` argument', () => {
     // WHEN
-    api.grantType(role, appsync.IamResource.ofType('customType'));
+    api.grantSubscription(role, 'subscribe', 'custom');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
@@ -337,80 +524,32 @@ describe('grantType Permissions', () => {
         Statement: [
           {
             Action: 'appsync:GraphQL',
-            Resource: {
-              'Fn::Join': [ '', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
-                '/types/customType/*',
-              ]],
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('grantType provides fields/[field param] permissions when called with `field` argument', () => {
-    // WHEN
-    api.grantType(role, appsync.IamResource.ofType('customType', ['attribute']));
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'appsync:GraphQL',
-            Resource: {
-              'Fn::Join': [ '', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
-                '/types/customType/fields/attribute',
-              ]],
-            },
-          },
-        ],
-      },
-    });
-  });
-});
-
-describe('grantFullAccess Permissions', () => {
-
-  test('grantFullAccess provides /* permissions', () => {
-    // WHEN
-    api.grantFullAccess(role);
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'appsync:GraphQL',
-            Resource: {
-              'Fn::Join': [ '', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
-                '/*',
-              ]],
-            },
+            Resource: [
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Subscription/fields/subscribe',
+                ]]},
+              {
+                'Fn::Join': [ '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': [ 'API62EA1CFF', 'ApiId' ] },
+                  '/types/Subscription/fields/custom',
+                ]]},
+            ],
           },
         ],
       },

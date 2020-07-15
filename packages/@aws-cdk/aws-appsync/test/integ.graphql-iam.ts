@@ -90,10 +90,8 @@ const lambdaIAM = new Role(stack, 'LambdaIAM', {assumedBy: new ServicePrincipal(
 
 
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
-api.grantType(lambdaIAM, IamResource.ofType('test'));
-api.grantMutation(lambdaIAM, [
-  'addTest',
-]);
+api.grant(lambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
+api.grantMutation(lambdaIAM, 'addTest');
 
 new Function(stack, 'testQuery', {
   code: Code.fromAsset('verify'),
