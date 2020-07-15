@@ -1,7 +1,7 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
 import { Bundling, ParcelBaseOptions } from './bundling';
 import { PackageJsonManager } from './package-json-manager';
 import { nodeMajorVersion, parseStackTrace } from './util';
@@ -69,6 +69,9 @@ export class NodejsFunction extends lambda.Function {
         }),
         handler: `index.${handler}`,
       });
+
+      // Enable connection reuse for aws-sdk
+      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1');
     } finally {
       // We can only restore after the code has been bound to the function
       packageJsonManager.restore();

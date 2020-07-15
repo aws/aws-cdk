@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Runtime } from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -35,6 +35,11 @@ test('NodejsFunction with .ts handler', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
+    Environment: {
+      Variables: {
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      },
+    },
   });
 });
 
