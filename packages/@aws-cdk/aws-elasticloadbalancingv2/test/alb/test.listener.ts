@@ -125,7 +125,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => app.synth(), /HTTPS Listener needs at least one certificate/);
+    test.throws(() => expect(stack), /HTTPS Listener needs at least one certificate/);
     test.done();
   },
 
