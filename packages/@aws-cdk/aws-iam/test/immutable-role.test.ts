@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Construct, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('ImmutableRole', () => {
   let stack: Stack;

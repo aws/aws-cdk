@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default properties'(test: Test) {

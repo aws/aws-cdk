@@ -10,12 +10,12 @@ export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a
 
 cfnResourceLinter.add({
   code: 'resource-class',
-  message: `every resource must have a resource class (L2), add '@resource %s' to its docstring`,
+  message: 'every resource must have a resource class (L2), add \'@resource %s\' to its docstring',
   warning: true,
   eval: e => {
     const l2 = ResourceReflection.findAll(e.ctx.classType.assembly).find(r => r.cfn.fullname === e.ctx.fullname);
     e.assert(l2, e.ctx.fullname, e.ctx.fullname);
-  }
+  },
 });
 
 export class CfnResourceReflection {
